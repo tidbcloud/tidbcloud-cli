@@ -1,0 +1,8 @@
+.idea/
+.make/
+bin/
+vendor/
+.vscode
+.DS_Store
+*.out
+coverage
