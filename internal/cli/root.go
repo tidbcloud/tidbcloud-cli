@@ -19,6 +19,11 @@ import (
 	"fmt"
 	"os"
 
+	"tidbcloud-cli/internal/cli/cluster"
+	"tidbcloud-cli/internal/cli/config"
+	"tidbcloud-cli/internal/cli/project"
+
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -26,8 +31,6 @@ import (
 const (
 	cliName = "tidbcloud-cli"
 )
-
-var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -40,6 +43,10 @@ var rootCmd = &cobra.Command{
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute(ctx context.Context) {
+	rootCmd.AddCommand(cluster.ClusterCmd())
+	rootCmd.AddCommand(config.ConfigCmd())
+	rootCmd.AddCommand(project.ProjectCmd())
+
 	err := rootCmd.ExecuteContext(ctx)
 	if err != nil {
 		os.Exit(1)
@@ -48,38 +55,22 @@ func Execute(ctx context.Context) {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.tidbcloud-cli.yaml)")
-
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
-		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
-	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
+	// Find home directory.
+	home, err := os.UserHomeDir()
+	cobra.CheckErr(err)
 
-		// Search config in home directory with name ".tidbcloud-cli" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigType("yaml")
-		viper.SetConfigName(".tidbcloud-cli")
-	}
-
-	viper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	// Search config in home directory with name ".tidbcloud-cli" (without extension).
+	viper.AddConfigPath(home)
+	viper.SetConfigType("toml")
+	viper.SetConfigName(".tidbcloud-cli")
+	_ = viper.SafeWriteConfig()
+	err = viper.ReadInConfig()
+	if err != nil {
+		color.Red("Failed to read config file: %s", err.Error())
+		os.Exit(1)
 	}
 }
