@@ -28,7 +28,7 @@ func ProjectCmd() *cobra.Command {
 	var projectCmd = &cobra.Command{
 		Use:               "project",
 		Short:             "Manage projects.",
-		PersistentPreRunE: util.CheckAuth,
+		PersistentPreRunE: util.CheckAuth(),
 	}
 
 	projectCmd.AddCommand(ListCmd())
