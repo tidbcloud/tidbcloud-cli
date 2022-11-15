@@ -34,7 +34,7 @@ func ClusterCmd() *cobra.Command {
 	var clusterCmd = &cobra.Command{
 		Use:               "cluster",
 		Short:             "Manage clusters for your project.",
-		PersistentPreRunE: util.CheckAuth,
+		PersistentPreRunE: util.CheckAuth(),
 	}
 
 	clusterCmd.AddCommand(CreateCmd())
