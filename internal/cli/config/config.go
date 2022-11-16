@@ -15,10 +15,12 @@
 package config
 
 import (
+	"tidbcloud-cli/internal/util"
+
 	"github.com/spf13/cobra"
 )
 
-func ConfigCmd() *cobra.Command {
+func ConfigCmd(h *util.Helper) *cobra.Command {
 	var configCmd = &cobra.Command{
 		Use:   "config",
 		Short: "A brief description of your command",
@@ -30,12 +32,12 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	}
 
-	configCmd.AddCommand(InitCmd())
-	configCmd.AddCommand(ListCmd())
-	configCmd.AddCommand(DeleteCmd())
-	configCmd.AddCommand(SetCmd())
-	configCmd.AddCommand(UseCmd())
+	configCmd.AddCommand(InitCmd(h))
+	configCmd.AddCommand(ListCmd(h))
+	configCmd.AddCommand(DeleteCmd(h))
+	configCmd.AddCommand(SetCmd(h))
+	configCmd.AddCommand(UseCmd(h))
 	configCmd.AddCommand(EditCmd())
-	configCmd.AddCommand(DescribeCmd())
+	configCmd.AddCommand(DescribeCmd(h))
 	return configCmd
 }

@@ -20,17 +20,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const (
-	defaultPageSize = 100
-)
-
-func ProjectCmd() *cobra.Command {
+func ProjectCmd(h *util.Helper) *cobra.Command {
 	var projectCmd = &cobra.Command{
 		Use:               "project",
 		Short:             "Manage projects.",
 		PersistentPreRunE: util.CheckAuth(),
 	}
 
-	projectCmd.AddCommand(ListCmd())
+	projectCmd.AddCommand(ListCmd(h))
 	return projectCmd
 }

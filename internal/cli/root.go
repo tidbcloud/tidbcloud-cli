@@ -22,6 +22,8 @@ import (
 	"tidbcloud-cli/internal/cli/cluster"
 	"tidbcloud-cli/internal/cli/config"
 	"tidbcloud-cli/internal/cli/project"
+	"tidbcloud-cli/internal/iostream"
+	"tidbcloud-cli/internal/util"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -34,21 +36,32 @@ const (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:          cliName,
-	Short:        "CLI tool to manage TiDB Cloud",
-	Long:         fmt.Sprintf("%s is a CLI library for communicating with TiDB Cloud's API.", cliName),
-	SilenceUsage: true,
+	Use:           cliName,
+	Short:         "CLI tool to manage TiDB Cloud",
+	Long:          fmt.Sprintf("%s is a CLI library for communicating with TiDB Cloud's API.", cliName),
+	SilenceUsage:  true,
+	SilenceErrors: true,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute(ctx context.Context) {
-	rootCmd.AddCommand(cluster.ClusterCmd())
-	rootCmd.AddCommand(config.ConfigCmd())
-	rootCmd.AddCommand(project.ProjectCmd())
+	h := &util.Helper{
+		Client: func() util.CloudClient {
+			publicKey, privateKey := util.GetAccessKeys()
+			return util.NewClientDelegate(publicKey, privateKey)
+		},
+		QueryPageSize: util.DefaultPageSize,
+		IOStreams:     iostream.System(),
+	}
+
+	rootCmd.AddCommand(cluster.ClusterCmd(h))
+	rootCmd.AddCommand(config.ConfigCmd(h))
+	rootCmd.AddCommand(project.ProjectCmd(h))
 
 	err := rootCmd.ExecuteContext(ctx)
 	if err != nil {
+		fmt.Fprintf(os.Stderr, color.RedString("Error: %s", err.Error()))
 		os.Exit(1)
 	}
 }

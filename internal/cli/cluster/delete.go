@@ -16,10 +16,10 @@ package cluster
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/openapi"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 
@@ -37,7 +37,7 @@ const (
 	clusterIDIdx
 )
 
-func DeleteCmd() *cobra.Command {
+func DeleteCmd(h *util.Helper) *cobra.Command {
 	var deleteCmd = &cobra.Command{
 		Use:     "delete",
 		Short:   "Delete a cluster from your project.",
@@ -57,8 +57,7 @@ func DeleteCmd() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			publicKey, privateKey := util.GetAccessKeys()
-			apiClient := openapi.NewApiClient(publicKey, privateKey)
+			d := h.Client()
 
 			var projectID string
 			var clusterID string
@@ -91,7 +90,7 @@ func DeleteCmd() *cobra.Command {
 			params := clusterApi.NewDeleteClusterParams().
 				WithProjectID(projectID).
 				WithClusterID(clusterID)
-			_, err := apiClient.Cluster.DeleteCluster(params)
+			_, err := d.DeleteCluster(params)
 			if err != nil {
 				return err
 			}
@@ -102,12 +101,12 @@ func DeleteCmd() *cobra.Command {
 				case <-time.After(2 * time.Minute):
 					return errors.New("timeout waiting for deleting cluster, please check status on dashboard")
 				case <-ticker.C:
-					_, err := apiClient.Cluster.GetCluster(clusterApi.NewGetClusterParams().
+					_, err := d.GetCluster(clusterApi.NewGetClusterParams().
 						WithClusterID(clusterID).
 						WithProjectID(projectID))
 					if err != nil {
 						if _, ok := err.(*clusterApi.GetClusterNotFound); ok {
-							color.Green("cluster deleted")
+							fmt.Fprintf(h.IOStreams.Out, color.GreenString("cluster deleted"))
 							return nil
 						}
 						return err

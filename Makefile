@@ -1,4 +1,5 @@
 GOLANGCI_VERSION=v1.49.0
+COVERAGE=coverage.out
 
 .PHONY: deps
 deps:  ## Download go module dependencies
@@ -37,7 +38,7 @@ gen-mocks: ## Generate mocks
 
 .PHONY: test
 test: ## Run unit-tests
-	@go test ./...
+	@go test -race -cover -count=1 -coverprofile $(COVERAGE)  ./...
 
 .PHONY: build
 build: ## Generate a binary in ./bin

@@ -19,7 +19,6 @@ import (
 	"fmt"
 
 	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/openapi"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 
@@ -28,7 +27,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func DescribeCmd() *cobra.Command {
+func DescribeCmd(h *util.Helper) *cobra.Command {
 	var describeCmd = &cobra.Command{
 		Use:     "describe",
 		Short:   "Describe a cluster.",
@@ -48,8 +47,7 @@ func DescribeCmd() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			publicKey, privateKey := util.GetAccessKeys()
-			apiClient := openapi.NewApiClient(publicKey, privateKey)
+			d := h.Client()
 
 			var projectID string
 			var clusterID string
@@ -82,7 +80,7 @@ func DescribeCmd() *cobra.Command {
 			params := clusterApi.NewGetClusterParams().
 				WithProjectID(projectID).
 				WithClusterID(clusterID)
-			cluster, err := apiClient.Cluster.GetCluster(params)
+			cluster, err := d.GetCluster(params)
 			if err != nil {
 				return err
 			}
@@ -92,7 +90,7 @@ func DescribeCmd() *cobra.Command {
 				return err
 			}
 
-			fmt.Println(string(v))
+			fmt.Fprintln(h.IOStreams.Out, string(v))
 			return nil
 		},
 	}

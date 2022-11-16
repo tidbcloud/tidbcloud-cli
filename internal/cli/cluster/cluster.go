@@ -21,25 +21,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const (
-	defaultPageSize = 100
-)
-
 var (
 	focusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
 	cursorStyle  = focusedStyle.Copy()
 )
 
-func ClusterCmd() *cobra.Command {
+func ClusterCmd(h *util.Helper) *cobra.Command {
 	var clusterCmd = &cobra.Command{
 		Use:               "cluster",
 		Short:             "Manage clusters for your project.",
 		PersistentPreRunE: util.CheckAuth(),
 	}
 
-	clusterCmd.AddCommand(CreateCmd())
-	clusterCmd.AddCommand(DeleteCmd())
-	clusterCmd.AddCommand(ListCmd())
-	clusterCmd.AddCommand(DescribeCmd())
+	clusterCmd.AddCommand(CreateCmd(h))
+	clusterCmd.AddCommand(DeleteCmd(h))
+	clusterCmd.AddCommand(ListCmd(h))
+	clusterCmd.AddCommand(DescribeCmd(h))
 	return clusterCmd
 }

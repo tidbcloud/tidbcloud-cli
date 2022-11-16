@@ -24,7 +24,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func DescribeCmd() *cobra.Command {
+func DescribeCmd(h *util.Helper) *cobra.Command {
 	describeCmd := &cobra.Command{
 		Use:     "describe <profileName>",
 		Aliases: []string{"get"},
@@ -46,7 +46,7 @@ func DescribeCmd() *cobra.Command {
 				return err
 			}
 
-			fmt.Println(string(v))
+			fmt.Fprintln(h.IOStreams.Out, string(v))
 			return nil
 		},
 	}

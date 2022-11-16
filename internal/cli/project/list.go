@@ -20,7 +20,6 @@ import (
 	"strconv"
 
 	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/openapi"
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/util"
 
@@ -30,22 +29,21 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func ListCmd() *cobra.Command {
+func ListCmd(h *util.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:     "list",
 		Short:   "List all accessible projects.",
 		Aliases: []string{"ls"},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			publicKey, privateKey := util.GetAccessKeys()
-			apiClient := openapi.NewApiClient(publicKey, privateKey)
+			d := h.Client()
 			params := projectApi.NewListProjectsParams()
 
 			var total int64 = math.MaxInt64
 			var page int64 = 1
-			var pageSize int64 = defaultPageSize
+			var pageSize = h.QueryPageSize
 			var items []*projectApi.ListProjectsOKBodyItemsItems0
 			for (page-1)*pageSize < total {
-				projects, err := apiClient.Project.ListProjects(params.WithPage(&page).WithPageSize(&pageSize))
+				projects, err := d.ListProjects(params.WithPage(&page).WithPageSize(&pageSize))
 				if err != nil {
 					return err
 				}
@@ -60,7 +58,11 @@ func ListCmd() *cobra.Command {
 				return err
 			}
 			if format == output.JsonFormat {
-				err := output.PrintJson(items)
+				res := projectApi.ListProjectsOKBody{
+					Items: items,
+					Total: &total,
+				}
+				err := output.PrintJson(h.IOStreams.Out, res)
 				if err != nil {
 					return err
 				}

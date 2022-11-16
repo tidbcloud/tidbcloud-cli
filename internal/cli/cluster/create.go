@@ -20,7 +20,6 @@ import (
 	"time"
 
 	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/openapi"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 
@@ -44,7 +43,7 @@ type CreateServerlessOpts struct {
 	serverlessProviders []*clusterApi.ListProviderRegionsOKBodyItemsItems0
 }
 
-func CreateCmd() *cobra.Command {
+func CreateCmd(h *util.Helper) *cobra.Command {
 	var createCmd = &cobra.Command{
 		Use:   "create",
 		Short: "Create one cluster in the specified project.",
@@ -79,8 +78,7 @@ func CreateCmd() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			publicKey, privateKey := util.GetAccessKeys()
-			apiClient := openapi.NewApiClient(publicKey, privateKey)
+			d := h.Client()
 
 			var clusterName string
 			var clusterType string
@@ -89,7 +87,7 @@ func CreateCmd() *cobra.Command {
 			var rootPassword string
 			var projectID string
 			if cmd.Flags().NFlag() == 0 {
-				regions, err := apiClient.Cluster.ListProviderRegions(nil)
+				regions, err := d.ListProviderRegions(clusterApi.NewListProviderRegionsParams())
 				if err != nil {
 					return err
 				}
@@ -183,11 +181,12 @@ func CreateCmd() *cobra.Command {
 			}
 
 			clusterDefBody := &clusterApi.CreateClusterBody{}
+
 			err := clusterDefBody.UnmarshalBinary([]byte(fmt.Sprintf(`{
 			"name": "%s",
-			"cluster_type": %s,
-			"cloud_provider": %s,
-			"region": %s,
+			"cluster_type": "%s",
+			"cloud_provider": "%s",
+			"region": "%s",
 			"config" : {
 				"root_password": "%s",
 				"ip_access_list": [
@@ -203,7 +202,7 @@ func CreateCmd() *cobra.Command {
 			}
 
 			task := func() tea.Msg {
-				createClusterResult, err := apiClient.Cluster.CreateCluster(clusterApi.NewCreateClusterParams().WithProjectID(projectID).WithBody(*clusterDefBody))
+				createClusterResult, err := d.CreateCluster(clusterApi.NewCreateClusterParams().WithProjectID(projectID).WithBody(*clusterDefBody))
 				if err != nil {
 					return err
 				}
@@ -215,7 +214,7 @@ func CreateCmd() *cobra.Command {
 					case <-time.After(2 * time.Minute):
 						return ui.Result("Timeout waiting for cluster to be ready, please check status on dashboard.")
 					case <-ticker.C:
-						clusterResult, err := apiClient.Cluster.GetCluster(clusterApi.NewGetClusterParams().
+						clusterResult, err := d.GetCluster(clusterApi.NewGetClusterParams().
 							WithClusterID(newClusterID).
 							WithProjectID(projectID))
 						if err != nil {
@@ -234,9 +233,9 @@ func CreateCmd() *cobra.Command {
 				return err
 			}
 			if m, _ := createModel.(ui.SpinnerModel); m.Err != nil {
-				color.Red(m.Err.Error())
+				fmt.Fprintf(h.IOStreams.Err, color.RedString(m.Err.Error()))
 			} else {
-				color.Green(m.Output)
+				fmt.Fprintf(h.IOStreams.Out, color.GreenString(m.Output))
 			}
 			return nil
 		},

@@ -26,7 +26,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func ListCmd() *cobra.Command {
+func ListCmd(h *util.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:     "list",
 		Short:   "list all profiles",
@@ -38,12 +38,12 @@ func ListCmd() *cobra.Command {
 			}
 			curP := viper.Get(prop.CurProfile)
 
-			fmt.Println("Profile Name")
+			fmt.Fprintf(h.IOStreams.Out, "Profile Name")
 			for _, key := range profiles {
 				if key == curP {
-					color.Green(key + "\t*")
+					fmt.Fprintf(h.IOStreams.Out, color.GreenString(key+"\t*"))
 				} else {
-					color.Green(key)
+					fmt.Fprintf(h.IOStreams.Out, color.GreenString(key))
 				}
 			}
 			return nil

@@ -44,7 +44,7 @@ const (
 	privateKeyIdx
 )
 
-func InitCmd() *cobra.Command {
+func InitCmd(h *util.Helper) *cobra.Command {
 	var initCmd = &cobra.Command{
 		Use:   "init",
 		Short: "Configure a profile to store access settings",
@@ -67,7 +67,7 @@ func InitCmd() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			color.Green("Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.")
+			fmt.Fprintf(h.IOStreams.Out, color.GreenString("Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys."))
 
 			var profileName string
 			var publicKey string
@@ -124,7 +124,7 @@ func InitCmd() *cobra.Command {
 
 			fgGreen := color.New(color.FgGreen).SprintFunc()
 			hiGreen := color.New(color.FgHiGreen, color.BgWhite).SprintFunc()
-			fmt.Printf("%s %s\n", fgGreen("Current profile has been changed to"), hiGreen(profileName))
+			fmt.Fprintf(h.IOStreams.Out, "%s %s\n", fgGreen("Current profile has been changed to"), hiGreen(profileName))
 			return nil
 		},
 	}

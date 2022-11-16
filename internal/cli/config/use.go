@@ -16,6 +16,7 @@ package config
 
 import (
 	"fmt"
+	"io"
 
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/util"
@@ -25,14 +26,14 @@ import (
 	"github.com/spf13/viper"
 )
 
-func UseCmd() *cobra.Command {
+func UseCmd(h *util.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:   "use <profileName>",
 		Short: "Use the specified profile.",
 		Args:  util.RequiredArgs("profileName"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			profileName := args[0]
-			err := setProfile(profileName)
+			err := setProfile(h.IOStreams.Out, profileName)
 			if err != nil {
 				return err
 			}
@@ -43,7 +44,7 @@ func UseCmd() *cobra.Command {
 	return listCmd
 }
 
-func setProfile(profileName string) error {
+func setProfile(out io.Writer, profileName string) error {
 	profiles, err := GetAllProfiles()
 	if err != nil {
 		return err
@@ -61,6 +62,6 @@ func setProfile(profileName string) error {
 
 	fgGreen := color.New(color.FgGreen).SprintFunc()
 	hiGreen := color.New(color.FgHiGreen, color.BgWhite).SprintFunc()
-	fmt.Printf("%s %s\n", fgGreen("Current profile has been changed to"), hiGreen(profileName))
+	fmt.Fprintf(out, "%s %s\n", fgGreen("Current profile has been changed to"), hiGreen(profileName))
 	return nil
 }
