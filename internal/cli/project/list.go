@@ -19,9 +19,9 @@ import (
 	"math"
 	"strconv"
 
+	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
-	"tidbcloud-cli/internal/util"
 
 	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 	"github.com/charmbracelet/bubbles/table"
@@ -29,7 +29,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func ListCmd(h *util.Helper) *cobra.Command {
+func ListCmd(h *internal.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:     "list",
 		Short:   "List all accessible projects.",

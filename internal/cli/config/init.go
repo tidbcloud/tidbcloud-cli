@@ -18,10 +18,11 @@ import (
 	"errors"
 	"fmt"
 
+	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -44,13 +45,14 @@ const (
 	privateKeyIdx
 )
 
-func InitCmd(h *util.Helper) *cobra.Command {
+func InitCmd(h *internal.Helper) *cobra.Command {
 	var initCmd = &cobra.Command{
 		Use:   "init",
 		Short: "Configure a profile to store access settings",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			// mark required flags in non-interactive mode
 			if cmd.Flags().NFlag() != 0 {
-				err := cmd.MarkFlagRequired(flag.ProfileName)
+				err := cmd.MarkFlagRequired(flag.Profile)
 				if err != nil {
 					return err
 				}
@@ -87,7 +89,7 @@ func InitCmd(h *util.Helper) *cobra.Command {
 				publicKey = inputs[publicKeyIdx].Value()
 				privateKey = inputs[privateKeyIdx].Value()
 			} else {
-				pName, err := cmd.Flags().GetString(flag.ProfileName)
+				pName, err := cmd.Flags().GetString(flag.Profile)
 				if err != nil {
 					return err
 				}
@@ -106,12 +108,9 @@ func InitCmd(h *util.Helper) *cobra.Command {
 				privateKey = priKey
 			}
 
-			profiles, err := GetAllProfiles()
+			err := config.ValidateProfile(profileName)
 			if err != nil {
 				return err
-			}
-			if util.StringInSlice(profiles, profileName) {
-				return errors.New("profile already exists, use `config set` to update")
 			}
 
 			viper.Set(fmt.Sprintf("%s.%s", profileName, prop.PublicKey), publicKey)
@@ -129,7 +128,6 @@ func InitCmd(h *util.Helper) *cobra.Command {
 		},
 	}
 
-	initCmd.Flags().StringP(flag.ProfileName, flag.ProfileNameShort, "", "the name of the profile")
 	initCmd.Flags().String(flag.PublicKey, "", "the public key of the TiDB Cloud API")
 	initCmd.Flags().String(flag.PrivateKey, "", "the private key of the TiDB Cloud API")
 	return initCmd

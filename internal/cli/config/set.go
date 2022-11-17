@@ -17,6 +17,7 @@ package config
 import (
 	"fmt"
 
+	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/util"
 
@@ -25,33 +26,21 @@ import (
 	"github.com/spf13/viper"
 )
 
-func SetCmd(h *util.Helper) *cobra.Command {
+func SetCmd(h *internal.Helper) *cobra.Command {
 	var setCmd = &cobra.Command{
 		Use:   "set <propertyName> <value>",
-		Short: "Configure specific properties of the active profile or global.",
-		Long: fmt.Sprintf(`Configure specific properties of the active profile or global.
-Available profile properties : %v. 
-Available global properties : %v`, prop.ProfileProperties(), prop.GlobalProperties()),
+		Short: "Configure specific properties of the active profile.",
+		Long: fmt.Sprintf(`Configure specific properties of the active profile.
+Available properties : %v.`, prop.ProfileProperties()),
 		Args: util.RequiredArgs("propertyName", "value"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			propertyName := args[0]
 			value := args[1]
 
 			var res string
-			if util.StringInSlice(prop.GlobalProperties(), propertyName) {
-				if propertyName == prop.CurProfile {
-					err := setProfile(h.IOStreams.Out, value)
-					if err != nil {
-						return err
-					}
-					res = fmt.Sprintf("Set property `%s` to value `%s` successfully", propertyName, value)
-				} else {
-					viper.Set(propertyName, value)
-					res = fmt.Sprintf("Set property `%s` to value `%s` successfully", propertyName, value)
-				}
-			} else if util.StringInSlice(prop.ProfileProperties(), propertyName) {
-				curP := viper.Get(prop.CurProfile)
-				if curP == nil {
+			if util.StringInSlice(prop.ProfileProperties(), propertyName) {
+				curP := h.Config.ActiveProfile
+				if curP == "" {
 					return fmt.Errorf("no profile is configured, please use `config init` to create a profile")
 				}
 				viper.Set(fmt.Sprintf("%s.%s", curP, propertyName), value)

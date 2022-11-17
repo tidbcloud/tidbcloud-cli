@@ -19,9 +19,9 @@ import (
 	"fmt"
 	"time"
 
+	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
 
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -39,15 +39,20 @@ const (
 	passwordIdx
 )
 
+const (
+	serverlessType = "DEVELOPER"
+)
+
 type CreateServerlessOpts struct {
 	serverlessProviders []*clusterApi.ListProviderRegionsOKBodyItemsItems0
 }
 
-func CreateCmd(h *util.Helper) *cobra.Command {
+func CreateCmd(h *internal.Helper) *cobra.Command {
 	var createCmd = &cobra.Command{
 		Use:   "create",
 		Short: "Create one cluster in the specified project.",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			// mark required flags in non-interactive mode
 			if cmd.Flags().NFlag() != 0 {
 				err := cmd.MarkFlagRequired(flag.ClusterName)
 				if err != nil {
@@ -87,6 +92,7 @@ func CreateCmd(h *util.Helper) *cobra.Command {
 			var rootPassword string
 			var projectID string
 			if cmd.Flags().NFlag() == 0 {
+				// interactive mode
 				regions, err := d.ListProviderRegions(clusterApi.NewListProviderRegionsParams())
 				if err != nil {
 					return err
@@ -94,12 +100,13 @@ func CreateCmd(h *util.Helper) *cobra.Command {
 
 				opts := CreateServerlessOpts{}
 				for i, item := range regions.Payload.Items {
-					if item.ClusterType == "DEVELOPER" {
+					// filter out non-serverless providers, currently only serverless is supported
+					if item.ClusterType == serverlessType {
 						opts.serverlessProviders = append(opts.serverlessProviders, regions.Payload.Items[i])
 					}
 				}
 
-				p := tea.NewProgram(ui.InitialSelectModel([]interface{}{"DEVELOPER"}, "Choose the cluster type:"))
+				p := tea.NewProgram(ui.InitialSelectModel([]interface{}{serverlessType}, "Choose the cluster type:"))
 				typeModel, err := p.StartReturningModel()
 				if err != nil {
 					return err
@@ -109,6 +116,7 @@ func CreateCmd(h *util.Helper) *cobra.Command {
 				}
 				clusterType = typeModel.(ui.SelectModel).Choices[typeModel.(ui.SelectModel).Selected].(string)
 
+				// distinct cloud providers
 				set := hashset.New()
 				for _, provider := range opts.serverlessProviders {
 					set.Add(provider.CloudProvider)
@@ -123,6 +131,7 @@ func CreateCmd(h *util.Helper) *cobra.Command {
 				}
 				cloudProvider = providerModel.(ui.SelectModel).Choices[providerModel.(ui.SelectModel).Selected].(string)
 
+				// filter out regions for the selected cloud provider
 				set = hashset.New()
 				for _, provider := range opts.serverlessProviders {
 					if provider.CloudProvider == providerModel.(ui.SelectModel).Choices[providerModel.(ui.SelectModel).Selected] {
@@ -139,6 +148,7 @@ func CreateCmd(h *util.Helper) *cobra.Command {
 				}
 				region = regionModel.(ui.SelectModel).Choices[regionModel.(ui.SelectModel).Selected].(string)
 
+				// variables for input
 				p = tea.NewProgram(initialCreateInputModel())
 				inputModel, err := p.StartReturningModel()
 				if err != nil {
@@ -152,12 +162,12 @@ func CreateCmd(h *util.Helper) *cobra.Command {
 				rootPassword = inputModel.(ui.TextInputModel).Inputs[passwordIdx].Value()
 				projectID = inputModel.(ui.TextInputModel).Inputs[clusterProjectIDIdx].Value()
 			} else {
-				cName, err := cmd.Flags().GetString(flag.ClusterName)
+				// non-interactive mode, get values from flags
+				var err error
+				clusterName, err = cmd.Flags().GetString(flag.ClusterName)
 				if err != nil {
 					return err
 				}
-				clusterName = cName
-
 				clusterType, err = cmd.Flags().GetString(flag.ClusterType)
 				if err != nil {
 					return err
@@ -201,6 +211,7 @@ func CreateCmd(h *util.Helper) *cobra.Command {
 				return err
 			}
 
+			// use spinner to indicate that the cluster is being created
 			task := func() tea.Msg {
 				createClusterResult, err := d.CreateCluster(clusterApi.NewCreateClusterParams().WithProjectID(projectID).WithBody(*clusterDefBody))
 				if err != nil {

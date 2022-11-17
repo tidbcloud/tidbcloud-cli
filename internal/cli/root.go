@@ -18,11 +18,16 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
+	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/cli/cluster"
-	"tidbcloud-cli/internal/cli/config"
+	configCmd "tidbcloud-cli/internal/cli/config"
 	"tidbcloud-cli/internal/cli/project"
+	"tidbcloud-cli/internal/config"
+	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/iostream"
+	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/util"
 
 	"github.com/fatih/color"
@@ -31,39 +36,81 @@ import (
 )
 
 const (
-	cliName = "tidbcloud-cli"
+	cliName = "ticloud"
 )
 
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:           cliName,
-	Short:         "CLI tool to manage TiDB Cloud",
-	Long:          fmt.Sprintf("%s is a CLI library for communicating with TiDB Cloud's API.", cliName),
-	SilenceUsage:  true,
-	SilenceErrors: true,
-}
-
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute(ctx context.Context) {
-	h := &util.Helper{
+	c := &config.Config{
+		ActiveProfile: "",
+	}
+
+	h := &internal.Helper{
 		Client: func() util.CloudClient {
-			publicKey, privateKey := util.GetAccessKeys()
+			publicKey, privateKey := util.GetAccessKeys(c.ActiveProfile)
 			return util.NewClientDelegate(publicKey, privateKey)
 		},
-		QueryPageSize: util.DefaultPageSize,
+		QueryPageSize: internal.DefaultPageSize,
 		IOStreams:     iostream.System(),
+		Config:        c,
+	}
+
+	var rootCmd = &cobra.Command{
+		Use:   cliName,
+		Short: "CLI tool to manage TiDB Cloud",
+		Long:  fmt.Sprintf("%s is a CLI library for communicating with TiDB Cloud's API.", cliName),
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			profile, err := cmd.Flags().GetString(flag.Profile)
+			if err != nil {
+				return err
+			}
+			if profile != "" {
+				err := config.ValidateProfile(profile)
+				if err != nil {
+					return err
+				}
+
+				h.Config.ActiveProfile = profile
+			} else {
+				h.Config.ActiveProfile = viper.GetString(prop.CurProfile)
+			}
+
+			if shouldCheckAuth(cmd) {
+				err := util.CheckAuth(h.Config.ActiveProfile)
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		},
+		SilenceUsage:  true,
+		SilenceErrors: true,
 	}
 
 	rootCmd.AddCommand(cluster.ClusterCmd(h))
-	rootCmd.AddCommand(config.ConfigCmd(h))
+	rootCmd.AddCommand(configCmd.ConfigCmd(h))
 	rootCmd.AddCommand(project.ProjectCmd(h))
+
+	rootCmd.PersistentFlags().StringP(flag.Profile, flag.ProfileShort, "", "Profile to use from your configuration file.")
 
 	err := rootCmd.ExecuteContext(ctx)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, color.RedString("Error: %s", err.Error()))
+		fmt.Fprintf(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
 		os.Exit(1)
 	}
+}
+
+func shouldCheckAuth(cmd *cobra.Command) bool {
+	cmdPrefixShouldSkip := []string{
+		fmt.Sprintf("%s %s", cliName, "config"),
+		fmt.Sprintf("%s %s", cliName, "help"),
+		fmt.Sprintf("%s %s", cliName, "completion")}
+	for _, p := range cmdPrefixShouldSkip {
+		if strings.HasPrefix(cmd.CommandPath(), p) {
+			return false
+		}
+	}
+
+	return true
 }
 
 func init() {

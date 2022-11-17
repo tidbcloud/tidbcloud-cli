@@ -18,6 +18,8 @@ import (
 	"fmt"
 	"os"
 
+	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/util"
 
@@ -28,7 +30,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func DeleteCmd(h *util.Helper) *cobra.Command {
+func DeleteCmd(h *internal.Helper) *cobra.Command {
 	var deleteCmd = &cobra.Command{
 		Use:     "delete <profileName>",
 		Short:   "Delete a profile",
@@ -53,7 +55,7 @@ func DeleteCmd(h *util.Helper) *cobra.Command {
 			// If the deleting profile is the current profile, set the current profile to another profile
 			curP := t.Get(prop.CurProfile)
 			if curP == profileName {
-				profiles, err := GetAllProfiles()
+				profiles, err := config.GetAllProfiles()
 				if err != nil {
 					return err
 				}

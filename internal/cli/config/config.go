@@ -15,21 +15,15 @@
 package config
 
 import (
-	"tidbcloud-cli/internal/util"
+	"tidbcloud-cli/internal"
 
 	"github.com/spf13/cobra"
 )
 
-func ConfigCmd(h *util.Helper) *cobra.Command {
+func ConfigCmd(h *internal.Helper) *cobra.Command {
 	var configCmd = &cobra.Command{
 		Use:   "config",
-		Short: "A brief description of your command",
-		Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+		Short: "Configure and manage your user profiles.",
 	}
 
 	configCmd.AddCommand(InitCmd(h))

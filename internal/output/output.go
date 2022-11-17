@@ -36,7 +36,7 @@ func PrintJson(out io.Writer, items interface{}) error {
 	if err != nil {
 		return err
 	}
-	fmt.Fprintf(out, string(v))
+	fmt.Fprintln(out, string(v))
 	return nil
 }
 

@@ -18,6 +18,8 @@ import (
 	"fmt"
 	"io"
 
+	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/util"
 
@@ -26,14 +28,14 @@ import (
 	"github.com/spf13/viper"
 )
 
-func UseCmd(h *util.Helper) *cobra.Command {
+func UseCmd(h *internal.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:   "use <profileName>",
 		Short: "Use the specified profile.",
 		Args:  util.RequiredArgs("profileName"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			profileName := args[0]
-			err := setProfile(h.IOStreams.Out, profileName)
+			err := SetProfile(h.IOStreams.Out, profileName)
 			if err != nil {
 				return err
 			}
@@ -44,14 +46,12 @@ func UseCmd(h *util.Helper) *cobra.Command {
 	return listCmd
 }
 
-func setProfile(out io.Writer, profileName string) error {
-	profiles, err := GetAllProfiles()
+// SetProfile sets the specified profile as the active profile if profile exist.
+// If not, return error.
+func SetProfile(out io.Writer, profileName string) error {
+	err := config.ValidateProfile(profileName)
 	if err != nil {
 		return err
-	}
-
-	if !util.StringInSlice(profiles, profileName) {
-		return fmt.Errorf("profile %s not found", profileName)
 	}
 
 	viper.Set(prop.CurProfile, profileName)

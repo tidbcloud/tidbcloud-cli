@@ -15,16 +15,15 @@
 package project
 
 import (
-	"tidbcloud-cli/internal/util"
+	"tidbcloud-cli/internal"
 
 	"github.com/spf13/cobra"
 )
 
-func ProjectCmd(h *util.Helper) *cobra.Command {
+func ProjectCmd(h *internal.Helper) *cobra.Command {
 	var projectCmd = &cobra.Command{
-		Use:               "project",
-		Short:             "Manage projects.",
-		PersistentPreRunE: util.CheckAuth(),
+		Use:   "project",
+		Short: "Manage projects.",
 	}
 
 	projectCmd.AddCommand(ListCmd(h))

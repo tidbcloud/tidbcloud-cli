@@ -18,16 +18,18 @@ import (
 	"fmt"
 	"math"
 
+	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/util"
 
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/charmbracelet/bubbles/table"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
-func ListCmd(h *util.Helper) *cobra.Command {
+func ListCmd(h *internal.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:     "list <projectID>",
 		Short:   "List all clusters in a project.",
@@ -42,6 +44,7 @@ func ListCmd(h *util.Helper) *cobra.Command {
 			var page int64 = 1
 			var pageSize = h.QueryPageSize
 			var items []*clusterApi.ListClustersOfProjectOKBodyItemsItems0
+			// loop to get all clusters
 			for (page-1)*pageSize < total {
 				clusters, err := d.ListClustersOfProject(params.WithPage(&page).WithPageSize(&pageSize))
 				if err != nil {
@@ -68,6 +71,8 @@ func ListCmd(h *util.Helper) *cobra.Command {
 					return err
 				}
 			} else if format == output.HumanFormat {
+				// for human format, we print the table with brief information.
+				color.New(color.BgYellow).Fprintf(h.IOStreams.Out, "  For detailed information, please output with json format.")
 				columns := []table.Column{
 					{Title: "ID", Width: 20},
 					{Title: "Name", Width: 20},
