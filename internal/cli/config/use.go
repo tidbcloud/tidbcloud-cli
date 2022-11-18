@@ -16,7 +16,10 @@ package config
 
 import (
 	"fmt"
+	"io"
 
+	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/util"
 
@@ -25,14 +28,14 @@ import (
 	"github.com/spf13/viper"
 )
 
-func UseCmd() *cobra.Command {
+func UseCmd(h *internal.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:   "use <profileName>",
 		Short: "Use the specified profile.",
 		Args:  util.RequiredArgs("profileName"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			profileName := args[0]
-			err := setProfile(profileName)
+			err := SetProfile(h.IOStreams.Out, profileName)
 			if err != nil {
 				return err
 			}
@@ -43,14 +46,12 @@ func UseCmd() *cobra.Command {
 	return listCmd
 }
 
-func setProfile(profileName string) error {
-	profiles, err := GetAllProfiles()
+// SetProfile sets the specified profile as the active profile if profile exist.
+// If not, return error.
+func SetProfile(out io.Writer, profileName string) error {
+	err := config.ValidateProfile(profileName)
 	if err != nil {
 		return err
-	}
-
-	if !util.StringInSlice(profiles, profileName) {
-		return fmt.Errorf("profile %s not found", profileName)
 	}
 
 	viper.Set(prop.CurProfile, profileName)
@@ -61,6 +62,6 @@ func setProfile(profileName string) error {
 
 	fgGreen := color.New(color.FgGreen).SprintFunc()
 	hiGreen := color.New(color.FgHiGreen, color.BgWhite).SprintFunc()
-	fmt.Printf("%s %s\n", fgGreen("Current profile has been changed to"), hiGreen(profileName))
+	fmt.Fprintf(out, "%s %s\n", fgGreen("Current profile has been changed to"), hiGreen(profileName))
 	return nil
 }

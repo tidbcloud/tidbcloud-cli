@@ -17,6 +17,7 @@ package output
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 
 	"tidbcloud-cli/internal/ui"
 
@@ -30,12 +31,12 @@ const (
 	HumanFormat string = "human"
 )
 
-func PrintJson(items interface{}) error {
+func PrintJson(out io.Writer, items interface{}) error {
 	v, err := json.MarshalIndent(items, "", "  ")
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(v))
+	fmt.Fprintln(out, string(v))
 	return nil
 }
 

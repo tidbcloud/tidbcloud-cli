@@ -17,43 +17,36 @@ package config
 import (
 	"fmt"
 
+	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/util"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-func SetCmd() *cobra.Command {
+func SetCmd(h *internal.Helper) *cobra.Command {
 	var setCmd = &cobra.Command{
 		Use:   "set <propertyName> <value>",
-		Short: "Configure specific properties of the active profile or global.",
-		Long: fmt.Sprintf(`Configure specific properties of the active profile or global.
-Available profile properties : %v. 
-Available global properties : %v`, prop.ProfileProperties(), prop.GlobalProperties()),
+		Short: "Configure specific properties of the active profile.",
+		Long: fmt.Sprintf(`Configure specific properties of the active profile.
+Available properties : %v.`, prop.ProfileProperties()),
 		Args: util.RequiredArgs("propertyName", "value"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			propertyName := args[0]
 			value := args[1]
 
-			if util.StringInSlice(prop.GlobalProperties(), propertyName) {
-				if propertyName == prop.CurProfile {
-					err := setProfile(value)
-					if err != nil {
-						return err
-					}
-				} else {
-					viper.Set(propertyName, value)
-				}
-
-			} else if util.StringInSlice(prop.ProfileProperties(), propertyName) {
-				curP := viper.Get(prop.CurProfile)
-				if curP == nil {
+			var res string
+			if util.StringInSlice(prop.ProfileProperties(), propertyName) {
+				curP := h.Config.ActiveProfile
+				if curP == "" {
 					return fmt.Errorf("no profile is configured, please use `config init` to create a profile")
 				}
 				viper.Set(fmt.Sprintf("%s.%s", curP, propertyName), value)
+				res = fmt.Sprintf("Set profile `%s` property `%s` to value `%s` successfully", curP, propertyName, value)
 			} else {
-				return fmt.Errorf("unrecognized property %s ", propertyName)
+				return fmt.Errorf("unrecognized property `%s`, use `config set --help` to find available properties", propertyName)
 			}
 
 			err := viper.WriteConfig()
@@ -61,6 +54,7 @@ Available global properties : %v`, prop.ProfileProperties(), prop.GlobalProperti
 				return err
 			}
 
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString(res))
 			return nil
 		},
 	}

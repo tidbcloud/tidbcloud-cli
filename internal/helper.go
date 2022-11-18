@@ -12,26 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package config
+package internal
 
 import (
-	"tidbcloud-cli/internal"
-
-	"github.com/spf13/cobra"
+	"tidbcloud-cli/internal/config"
+	"tidbcloud-cli/internal/iostream"
+	"tidbcloud-cli/internal/util"
 )
 
-func ConfigCmd(h *internal.Helper) *cobra.Command {
-	var configCmd = &cobra.Command{
-		Use:   "config",
-		Short: "Configure and manage your user profiles.",
-	}
+const (
+	DefaultPageSize = 100
+)
 
-	configCmd.AddCommand(InitCmd(h))
-	configCmd.AddCommand(ListCmd(h))
-	configCmd.AddCommand(DeleteCmd(h))
-	configCmd.AddCommand(SetCmd(h))
-	configCmd.AddCommand(UseCmd(h))
-	configCmd.AddCommand(EditCmd())
-	configCmd.AddCommand(DescribeCmd(h))
-	return configCmd
+type Helper struct {
+	Client        func() util.CloudClient
+	QueryPageSize int64
+	IOStreams     *iostream.IOStreams
+	Config        *config.Config
 }

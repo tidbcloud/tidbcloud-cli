@@ -19,10 +19,9 @@ import (
 	"fmt"
 	"time"
 
+	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/openapi"
 	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
 
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -40,15 +39,20 @@ const (
 	passwordIdx
 )
 
+const (
+	serverlessType = "DEVELOPER"
+)
+
 type CreateServerlessOpts struct {
 	serverlessProviders []*clusterApi.ListProviderRegionsOKBodyItemsItems0
 }
 
-func CreateCmd() *cobra.Command {
+func CreateCmd(h *internal.Helper) *cobra.Command {
 	var createCmd = &cobra.Command{
 		Use:   "create",
 		Short: "Create one cluster in the specified project.",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			// mark required flags in non-interactive mode
 			if cmd.Flags().NFlag() != 0 {
 				err := cmd.MarkFlagRequired(flag.ClusterName)
 				if err != nil {
@@ -79,8 +83,7 @@ func CreateCmd() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			publicKey, privateKey := util.GetAccessKeys()
-			apiClient := openapi.NewApiClient(publicKey, privateKey)
+			d := h.Client()
 
 			var clusterName string
 			var clusterType string
@@ -89,19 +92,21 @@ func CreateCmd() *cobra.Command {
 			var rootPassword string
 			var projectID string
 			if cmd.Flags().NFlag() == 0 {
-				regions, err := apiClient.Cluster.ListProviderRegions(nil)
+				// interactive mode
+				regions, err := d.ListProviderRegions(clusterApi.NewListProviderRegionsParams())
 				if err != nil {
 					return err
 				}
 
 				opts := CreateServerlessOpts{}
 				for i, item := range regions.Payload.Items {
-					if item.ClusterType == "DEVELOPER" {
+					// filter out non-serverless providers, currently only serverless is supported
+					if item.ClusterType == serverlessType {
 						opts.serverlessProviders = append(opts.serverlessProviders, regions.Payload.Items[i])
 					}
 				}
 
-				p := tea.NewProgram(ui.InitialSelectModel([]interface{}{"DEVELOPER"}, "Choose the cluster type:"))
+				p := tea.NewProgram(ui.InitialSelectModel([]interface{}{serverlessType}, "Choose the cluster type:"))
 				typeModel, err := p.StartReturningModel()
 				if err != nil {
 					return err
@@ -111,6 +116,7 @@ func CreateCmd() *cobra.Command {
 				}
 				clusterType = typeModel.(ui.SelectModel).Choices[typeModel.(ui.SelectModel).Selected].(string)
 
+				// distinct cloud providers
 				set := hashset.New()
 				for _, provider := range opts.serverlessProviders {
 					set.Add(provider.CloudProvider)
@@ -125,6 +131,7 @@ func CreateCmd() *cobra.Command {
 				}
 				cloudProvider = providerModel.(ui.SelectModel).Choices[providerModel.(ui.SelectModel).Selected].(string)
 
+				// filter out regions for the selected cloud provider
 				set = hashset.New()
 				for _, provider := range opts.serverlessProviders {
 					if provider.CloudProvider == providerModel.(ui.SelectModel).Choices[providerModel.(ui.SelectModel).Selected] {
@@ -141,6 +148,7 @@ func CreateCmd() *cobra.Command {
 				}
 				region = regionModel.(ui.SelectModel).Choices[regionModel.(ui.SelectModel).Selected].(string)
 
+				// variables for input
 				p = tea.NewProgram(initialCreateInputModel())
 				inputModel, err := p.StartReturningModel()
 				if err != nil {
@@ -154,12 +162,12 @@ func CreateCmd() *cobra.Command {
 				rootPassword = inputModel.(ui.TextInputModel).Inputs[passwordIdx].Value()
 				projectID = inputModel.(ui.TextInputModel).Inputs[clusterProjectIDIdx].Value()
 			} else {
-				cName, err := cmd.Flags().GetString(flag.ClusterName)
+				// non-interactive mode, get values from flags
+				var err error
+				clusterName, err = cmd.Flags().GetString(flag.ClusterName)
 				if err != nil {
 					return err
 				}
-				clusterName = cName
-
 				clusterType, err = cmd.Flags().GetString(flag.ClusterType)
 				if err != nil {
 					return err
@@ -183,11 +191,12 @@ func CreateCmd() *cobra.Command {
 			}
 
 			clusterDefBody := &clusterApi.CreateClusterBody{}
+
 			err := clusterDefBody.UnmarshalBinary([]byte(fmt.Sprintf(`{
 			"name": "%s",
-			"cluster_type": %s,
-			"cloud_provider": %s,
-			"region": %s,
+			"cluster_type": "%s",
+			"cloud_provider": "%s",
+			"region": "%s",
 			"config" : {
 				"root_password": "%s",
 				"ip_access_list": [
@@ -202,8 +211,9 @@ func CreateCmd() *cobra.Command {
 				return err
 			}
 
+			// use spinner to indicate that the cluster is being created
 			task := func() tea.Msg {
-				createClusterResult, err := apiClient.Cluster.CreateCluster(clusterApi.NewCreateClusterParams().WithProjectID(projectID).WithBody(*clusterDefBody))
+				createClusterResult, err := d.CreateCluster(clusterApi.NewCreateClusterParams().WithProjectID(projectID).WithBody(*clusterDefBody))
 				if err != nil {
 					return err
 				}
@@ -215,7 +225,7 @@ func CreateCmd() *cobra.Command {
 					case <-time.After(2 * time.Minute):
 						return ui.Result("Timeout waiting for cluster to be ready, please check status on dashboard.")
 					case <-ticker.C:
-						clusterResult, err := apiClient.Cluster.GetCluster(clusterApi.NewGetClusterParams().
+						clusterResult, err := d.GetCluster(clusterApi.NewGetClusterParams().
 							WithClusterID(newClusterID).
 							WithProjectID(projectID))
 						if err != nil {
@@ -234,9 +244,9 @@ func CreateCmd() *cobra.Command {
 				return err
 			}
 			if m, _ := createModel.(ui.SpinnerModel); m.Err != nil {
-				color.Red(m.Err.Error())
+				fmt.Fprintf(h.IOStreams.Err, color.RedString(m.Err.Error()))
 			} else {
-				color.Green(m.Output)
+				fmt.Fprintf(h.IOStreams.Out, color.GreenString(m.Output))
 			}
 			return nil
 		},

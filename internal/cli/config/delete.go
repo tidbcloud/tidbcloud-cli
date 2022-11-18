@@ -15,18 +15,22 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
+	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/util"
 
+	"github.com/fatih/color"
 	"github.com/pelletier/go-toml"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-func DeleteCmd() *cobra.Command {
+func DeleteCmd(h *internal.Helper) *cobra.Command {
 	var deleteCmd = &cobra.Command{
 		Use:     "delete <profileName>",
 		Short:   "Delete a profile",
@@ -51,7 +55,7 @@ func DeleteCmd() *cobra.Command {
 			// If the deleting profile is the current profile, set the current profile to another profile
 			curP := t.Get(prop.CurProfile)
 			if curP == profileName {
-				profiles, err := GetAllProfiles()
+				profiles, err := config.GetAllProfiles()
 				if err != nil {
 					return err
 				}
@@ -87,6 +91,8 @@ func DeleteCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Profile %s deleted successfully", profileName))
 			return nil
 		},
 	}

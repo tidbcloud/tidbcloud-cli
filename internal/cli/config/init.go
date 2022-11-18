@@ -18,6 +18,8 @@ import (
 	"errors"
 	"fmt"
 
+	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/ui"
@@ -44,11 +46,12 @@ const (
 	privateKeyIdx
 )
 
-func InitCmd() *cobra.Command {
+func InitCmd(h *internal.Helper) *cobra.Command {
 	var initCmd = &cobra.Command{
 		Use:   "init",
 		Short: "Configure a profile to store access settings",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			// mark required flags in non-interactive mode
 			if cmd.Flags().NFlag() != 0 {
 				err := cmd.MarkFlagRequired(flag.ProfileName)
 				if err != nil {
@@ -67,7 +70,7 @@ func InitCmd() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			color.Green("Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.")
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys."))
 
 			var profileName string
 			var publicKey string
@@ -106,12 +109,12 @@ func InitCmd() *cobra.Command {
 				privateKey = priKey
 			}
 
-			profiles, err := GetAllProfiles()
+			profiles, err := config.GetAllProfiles()
 			if err != nil {
 				return err
 			}
 			if util.StringInSlice(profiles, profileName) {
-				return errors.New("profile already exists, use `config set` to update")
+				return fmt.Errorf("profile %s already exists, use `config set` to modify", profileName)
 			}
 
 			viper.Set(fmt.Sprintf("%s.%s", profileName, prop.PublicKey), publicKey)
@@ -124,12 +127,12 @@ func InitCmd() *cobra.Command {
 
 			fgGreen := color.New(color.FgGreen).SprintFunc()
 			hiGreen := color.New(color.FgHiGreen, color.BgWhite).SprintFunc()
-			fmt.Printf("%s %s\n", fgGreen("Current profile has been changed to"), hiGreen(profileName))
+			fmt.Fprintf(h.IOStreams.Out, "%s %s\n", fgGreen("Current profile has been changed to"), hiGreen(profileName))
 			return nil
 		},
 	}
 
-	initCmd.Flags().StringP(flag.ProfileName, flag.ProfileNameShort, "", "the name of the profile")
+	initCmd.Flags().String(flag.ProfileName, "", "the name of the profile to be created")
 	initCmd.Flags().String(flag.PublicKey, "", "the public key of the TiDB Cloud API")
 	initCmd.Flags().String(flag.PrivateKey, "", "the private key of the TiDB Cloud API")
 	return initCmd

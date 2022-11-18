@@ -15,14 +15,10 @@
 package cluster
 
 import (
-	"tidbcloud-cli/internal/util"
+	"tidbcloud-cli/internal"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
-)
-
-const (
-	defaultPageSize = 100
 )
 
 var (
@@ -30,16 +26,15 @@ var (
 	cursorStyle  = focusedStyle.Copy()
 )
 
-func ClusterCmd() *cobra.Command {
+func ClusterCmd(h *internal.Helper) *cobra.Command {
 	var clusterCmd = &cobra.Command{
-		Use:               "cluster",
-		Short:             "Manage clusters for your project.",
-		PersistentPreRunE: util.CheckAuth(),
+		Use:   "cluster",
+		Short: "Manage clusters for your project.",
 	}
 
-	clusterCmd.AddCommand(CreateCmd())
-	clusterCmd.AddCommand(DeleteCmd())
-	clusterCmd.AddCommand(ListCmd())
-	clusterCmd.AddCommand(DescribeCmd())
+	clusterCmd.AddCommand(CreateCmd(h))
+	clusterCmd.AddCommand(DeleteCmd(h))
+	clusterCmd.AddCommand(ListCmd(h))
+	clusterCmd.AddCommand(DescribeCmd(h))
 	return clusterCmd
 }

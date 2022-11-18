@@ -16,12 +16,12 @@ package cluster
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
+	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/openapi"
 	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
 
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -37,12 +37,13 @@ const (
 	clusterIDIdx
 )
 
-func DeleteCmd() *cobra.Command {
+func DeleteCmd(h *internal.Helper) *cobra.Command {
 	var deleteCmd = &cobra.Command{
 		Use:     "delete",
 		Short:   "Delete a cluster from your project.",
 		Aliases: []string{"rm"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			// mark required flags in non-interactive mode
 			if cmd.Flags().NFlag() != 0 {
 				err := cmd.MarkFlagRequired(flag.ProjectID)
 				if err != nil {
@@ -57,12 +58,12 @@ func DeleteCmd() *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			publicKey, privateKey := util.GetAccessKeys()
-			apiClient := openapi.NewApiClient(publicKey, privateKey)
+			d := h.Client()
 
 			var projectID string
 			var clusterID string
 			if cmd.Flags().NFlag() == 0 {
+				// interactive mode
 				p := tea.NewProgram(initialClusterIdentifies())
 				inputModel, err := p.StartReturningModel()
 				if err != nil {
@@ -75,6 +76,7 @@ func DeleteCmd() *cobra.Command {
 				projectID = inputModel.(ui.TextInputModel).Inputs[projectIDIdx].Value()
 				clusterID = inputModel.(ui.TextInputModel).Inputs[clusterIDIdx].Value()
 			} else {
+				// non-interactive mode, get values from flags
 				pID, err := cmd.Flags().GetString(flag.ProjectID)
 				if err != nil {
 					return err
@@ -91,7 +93,7 @@ func DeleteCmd() *cobra.Command {
 			params := clusterApi.NewDeleteClusterParams().
 				WithProjectID(projectID).
 				WithClusterID(clusterID)
-			_, err := apiClient.Cluster.DeleteCluster(params)
+			_, err := d.DeleteCluster(params)
 			if err != nil {
 				return err
 			}
@@ -102,12 +104,12 @@ func DeleteCmd() *cobra.Command {
 				case <-time.After(2 * time.Minute):
 					return errors.New("timeout waiting for deleting cluster, please check status on dashboard")
 				case <-ticker.C:
-					_, err := apiClient.Cluster.GetCluster(clusterApi.NewGetClusterParams().
+					_, err := d.GetCluster(clusterApi.NewGetClusterParams().
 						WithClusterID(clusterID).
 						WithProjectID(projectID))
 					if err != nil {
 						if _, ok := err.(*clusterApi.GetClusterNotFound); ok {
-							color.Green("cluster deleted")
+							fmt.Fprintf(h.IOStreams.Out, color.GreenString("cluster deleted"))
 							return nil
 						}
 						return err

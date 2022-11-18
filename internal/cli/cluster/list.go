@@ -18,34 +18,35 @@ import (
 	"fmt"
 	"math"
 
+	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/openapi"
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/util"
 
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/charmbracelet/bubbles/table"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
-func ListCmd() *cobra.Command {
+func ListCmd(h *internal.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:     "list <projectID>",
 		Short:   "List all clusters in a project.",
 		Args:    util.RequiredArgs("projectID"),
 		Aliases: []string{"ls"},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			publicKey, privateKey := util.GetAccessKeys()
-			apiClient := openapi.NewApiClient(publicKey, privateKey)
+			d := h.Client()
 			pID := args[0]
 
 			params := clusterApi.NewListClustersOfProjectParams().WithProjectID(pID)
 			var total int64 = math.MaxInt64
 			var page int64 = 1
-			var pageSize int64 = defaultPageSize
+			var pageSize = h.QueryPageSize
 			var items []*clusterApi.ListClustersOfProjectOKBodyItemsItems0
+			// loop to get all clusters
 			for (page-1)*pageSize < total {
-				clusters, err := apiClient.Cluster.ListClustersOfProject(params.WithPage(&page).WithPageSize(&pageSize))
+				clusters, err := d.ListClustersOfProject(params.WithPage(&page).WithPageSize(&pageSize))
 				if err != nil {
 					return err
 				}
@@ -61,11 +62,17 @@ func ListCmd() *cobra.Command {
 			}
 
 			if format == output.JsonFormat {
-				err := output.PrintJson(items)
+				res := &clusterApi.ListClustersOfProjectOKBody{
+					Items: items,
+					Total: &total,
+				}
+				err := output.PrintJson(h.IOStreams.Out, res)
 				if err != nil {
 					return err
 				}
 			} else if format == output.HumanFormat {
+				// for human format, we print the table with brief information.
+				color.New(color.BgYellow).Fprintf(h.IOStreams.Out, "  For detailed information, please output with json format.")
 				columns := []table.Column{
 					{Title: "ID", Width: 20},
 					{Title: "Name", Width: 20},
