@@ -54,6 +54,16 @@ func Execute(ctx context.Context) {
 		Config:        c,
 	}
 
+	rootCmd := RootCmd(h)
+
+	err := rootCmd.ExecuteContext(ctx)
+	if err != nil {
+		fmt.Fprintf(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
+		os.Exit(1)
+	}
+}
+
+func RootCmd(h *internal.Helper) *cobra.Command {
 	var rootCmd = &cobra.Command{
 		Use:   cliName,
 		Short: "CLI tool to manage TiDB Cloud",
@@ -91,12 +101,7 @@ func Execute(ctx context.Context) {
 	rootCmd.AddCommand(project.ProjectCmd(h))
 
 	rootCmd.PersistentFlags().StringP(flag.Profile, flag.ProfileShort, "", "Profile to use from your configuration file.")
-
-	err := rootCmd.ExecuteContext(ctx)
-	if err != nil {
-		fmt.Fprintf(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
-		os.Exit(1)
-	}
+	return rootCmd
 }
 
 func shouldCheckAuth(cmd *cobra.Command) bool {

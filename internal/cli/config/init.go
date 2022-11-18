@@ -23,6 +23,7 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/ui"
+	"tidbcloud-cli/internal/util"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -52,7 +53,7 @@ func InitCmd(h *internal.Helper) *cobra.Command {
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			// mark required flags in non-interactive mode
 			if cmd.Flags().NFlag() != 0 {
-				err := cmd.MarkFlagRequired(flag.Profile)
+				err := cmd.MarkFlagRequired(flag.ProfileName)
 				if err != nil {
 					return err
 				}
@@ -69,7 +70,7 @@ func InitCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Fprintf(h.IOStreams.Out, color.GreenString("Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys."))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys."))
 
 			var profileName string
 			var publicKey string
@@ -89,7 +90,7 @@ func InitCmd(h *internal.Helper) *cobra.Command {
 				publicKey = inputs[publicKeyIdx].Value()
 				privateKey = inputs[privateKeyIdx].Value()
 			} else {
-				pName, err := cmd.Flags().GetString(flag.Profile)
+				pName, err := cmd.Flags().GetString(flag.ProfileName)
 				if err != nil {
 					return err
 				}
@@ -108,9 +109,12 @@ func InitCmd(h *internal.Helper) *cobra.Command {
 				privateKey = priKey
 			}
 
-			err := config.ValidateProfile(profileName)
+			profiles, err := config.GetAllProfiles()
 			if err != nil {
 				return err
+			}
+			if util.StringInSlice(profiles, profileName) {
+				return fmt.Errorf("profile %s already exists, use `config set` to modify", profileName)
 			}
 
 			viper.Set(fmt.Sprintf("%s.%s", profileName, prop.PublicKey), publicKey)
@@ -128,6 +132,7 @@ func InitCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
+	initCmd.Flags().String(flag.ProfileName, "", "the name of the profile to be created")
 	initCmd.Flags().String(flag.PublicKey, "", "the public key of the TiDB Cloud API")
 	initCmd.Flags().String(flag.PrivateKey, "", "the private key of the TiDB Cloud API")
 	return initCmd

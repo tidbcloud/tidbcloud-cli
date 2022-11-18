@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
 	"testing"
 
 	"tidbcloud-cli/internal"
@@ -23,8 +24,11 @@ type CreateClusterSuite struct {
 }
 
 func (suite *CreateClusterSuite) SetupTest() {
-	var pageSize int64 = 10
+	if err := os.Setenv("NO_COLOR", "true"); err != nil {
+		suite.T().Error(err)
+	}
 
+	var pageSize int64 = 10
 	suite.mockClient = new(mock.ApiClient)
 	suite.h = &internal.Helper{
 		Client: func() util.CloudClient {
@@ -96,20 +100,16 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 			name:         "create cluster success",
 			args:         []string{"--project-id", projectID, "--cluster-name", clusterName, "--cluster-type", clusterType, "--cloud-provider", cloudProvider, "--region", region, "--root-password", rootPassword},
 			stdoutString: "Cluster 12345 is ready.",
-			stderrString: "",
 		},
 		{
 			name:         "create cluster with shorthand flag",
 			args:         []string{"-p", projectID, "--cluster-name", clusterName, "--cluster-type", clusterType, "--cloud-provider", cloudProvider, "-r", region, "--root-password", rootPassword},
 			stdoutString: "Cluster 12345 is ready.",
-			stderrString: "",
 		},
 		{
-			name:         "without required project id",
-			args:         []string{"--cluster-name", clusterName, "--cluster-type", clusterType, "--cloud-provider", cloudProvider, "-r", region, "--root-password", rootPassword},
-			err:          fmt.Errorf("required flag(s) \"project-id\" not set"),
-			stdoutString: "",
-			stderrString: "",
+			name: "without required project id",
+			args: []string{"--cluster-name", clusterName, "--cluster-type", clusterType, "--cloud-provider", cloudProvider, "-r", region, "--root-password", rootPassword},
+			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
 		},
 	}
 

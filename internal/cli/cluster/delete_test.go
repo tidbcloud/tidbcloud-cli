@@ -3,6 +3,7 @@ package cluster
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"testing"
 
 	"tidbcloud-cli/internal"
@@ -22,8 +23,11 @@ type DeleteClusterSuite struct {
 }
 
 func (suite *DeleteClusterSuite) SetupTest() {
-	var pageSize int64 = 10
+	if err := os.Setenv("NO_COLOR", "true"); err != nil {
+		suite.T().Error(err)
+	}
 
+	var pageSize int64 = 10
 	suite.mockClient = new(mock.ApiClient)
 	suite.h = &internal.Helper{
 		Client: func() util.CloudClient {
@@ -60,20 +64,16 @@ func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 			name:         "delete cluster success",
 			args:         []string{"--project-id", projectID, "--cluster-id", clusterID},
 			stdoutString: "cluster deleted",
-			stderrString: "",
 		},
 		{
 			name:         "delete cluster with output flag",
 			args:         []string{"-p", projectID, "-c", clusterID},
 			stdoutString: "cluster deleted",
-			stderrString: "",
 		},
 		{
-			name:         "delete cluster without required project id",
-			args:         []string{"-c", clusterID},
-			err:          fmt.Errorf("required flag(s) \"project-id\" not set"),
-			stdoutString: "",
-			stderrString: "",
+			name: "delete cluster without required project id",
+			args: []string{"-c", clusterID},
+			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
 		},
 	}
 

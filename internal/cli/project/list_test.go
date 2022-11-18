@@ -3,6 +3,7 @@ package project
 import (
 	"bytes"
 	"encoding/json"
+	"os"
 	"strings"
 	"testing"
 
@@ -61,8 +62,11 @@ type ListProjectSuite struct {
 }
 
 func (suite *ListProjectSuite) SetupTest() {
-	var pageSize int64 = 10
+	if err := os.Setenv("NO_COLOR", "true"); err != nil {
+		suite.T().Error(err)
+	}
 
+	var pageSize int64 = 10
 	suite.mockClient = new(mock.ApiClient)
 	suite.h = &internal.Helper{
 		Client: func() util.CloudClient {
@@ -101,13 +105,11 @@ func (suite *ListProjectSuite) TestListProjectArgs() {
 			name:         "list projects with output flag",
 			args:         []string{"--output", "json"},
 			stdoutString: resultStr,
-			stderrString: "",
 		},
 		{
 			name:         "list projects with output shorthand flag",
 			args:         []string{"-o", "json"},
 			stdoutString: resultStr,
-			stderrString: "",
 		},
 	}
 
@@ -159,7 +161,6 @@ func (suite *ListProjectSuite) TestListProjectWithMultiPages() {
 			name:         "query with multi pages",
 			args:         []string{"--output", "json"},
 			stdoutString: resultMultiPageStr,
-			stderrString: "",
 		},
 	}
 

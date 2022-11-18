@@ -1,0 +1,9 @@
+current_profile = 'test'
+
+[test]
+private_key = '324OPIFO2423423DFO'
+public_key = 'SDIWODIJQNDKJQW'
+
+[test1]
+private_key = '{OPIFOPIDFO'
+public_key = 'SDIWODIJQNDKJQW'

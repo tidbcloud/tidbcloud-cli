@@ -46,7 +46,7 @@ Available properties : %v.`, prop.ProfileProperties()),
 				viper.Set(fmt.Sprintf("%s.%s", curP, propertyName), value)
 				res = fmt.Sprintf("Set profile `%s` property `%s` to value `%s` successfully", curP, propertyName, value)
 			} else {
-				return fmt.Errorf("unrecognized property %s ", propertyName)
+				return fmt.Errorf("unrecognized property `%s`, use `config set --help` to find available properties", propertyName)
 			}
 
 			err := viper.WriteConfig()

@@ -20,6 +20,7 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
+	"tidbcloud-cli/internal/util"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -30,6 +31,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		Use:     "describe <profileName>",
 		Aliases: []string{"get"},
 		Short:   "Return a specific profile.",
+		Args:    util.RequiredArgs("profileName"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := args[0]
 			err := config.ValidateProfile(name)

@@ -6,3 +6,5 @@ vendor/
 .DS_Store
 *.out
 coverage
+
+internal/cli/config/.tidbcloud-cli.toml

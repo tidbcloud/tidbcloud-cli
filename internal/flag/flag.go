@@ -24,6 +24,7 @@ const (
 	OutputShort    string = "o"
 	ProjectID      string = "project-id"
 	ProjectIDShort string = "p"
+	ProfileName    string = "profile-name"
 	Profile        string = "profile"
 	ProfileShort   string = "P"
 	PublicKey      string = "public-key"

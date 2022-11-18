@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 
@@ -170,8 +171,11 @@ type ListClusterSuite struct {
 }
 
 func (suite *ListClusterSuite) SetupTest() {
-	var pageSize int64 = 10
+	if err := os.Setenv("NO_COLOR", "true"); err != nil {
+		suite.T().Error(err)
+	}
 
+	var pageSize int64 = 10
 	suite.mockClient = new(mock.ApiClient)
 	suite.h = &internal.Helper{
 		Client: func() util.CloudClient {
@@ -211,20 +215,16 @@ func (suite *ListClusterSuite) TestListClusterArgs() {
 			name:         "list clusters with output flag",
 			args:         []string{projectID, "--output", "json"},
 			stdoutString: listResultStr,
-			stderrString: "",
 		},
 		{
 			name:         "list clusters with output shorthand flag",
 			args:         []string{projectID, "-o", "json"},
 			stdoutString: listResultStr,
-			stderrString: "",
 		},
 		{
-			name:         "list clusters without required project id",
-			args:         []string{"-o", "json"},
-			err:          fmt.Errorf("missing argument <projectID> \n\nUsage:\n  list <projectID> [flags]\n\nAliases:\n  list, ls\n\nFlags:\n  -h, --help            help for list\n  -o, --output string   Output format. One of: human, json, default: human (default \"human\")\n"),
-			stdoutString: "",
-			stderrString: "",
+			name: "list clusters without required project id",
+			args: []string{"-o", "json"},
+			err:  fmt.Errorf("missing argument <projectID> \n\nUsage:\n  list <projectID> [flags]\n\nAliases:\n  list, ls\n\nFlags:\n  -h, --help            help for list\n  -o, --output string   Output format. One of: human, json, default: human (default \"human\")\n"),
 		},
 	}
 
@@ -277,7 +277,6 @@ func (suite *ListClusterSuite) TestListClusterWithMultiPages() {
 			name:         "query with multi pages",
 			args:         []string{projectID, "--output", "json"},
 			stdoutString: listResultMultiPageStr,
-			stderrString: "",
 		},
 	}
 

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
 	"testing"
 
 	"tidbcloud-cli/internal"
@@ -69,8 +70,11 @@ type DescribeClusterSuite struct {
 }
 
 func (suite *DescribeClusterSuite) SetupTest() {
-	var pageSize int64 = 10
+	if err := os.Setenv("NO_COLOR", "true"); err != nil {
+		suite.T().Error(err)
+	}
 
+	var pageSize int64 = 10
 	suite.mockClient = new(mock.ApiClient)
 	suite.h = &internal.Helper{
 		Client: func() util.CloudClient {
@@ -110,20 +114,16 @@ func (suite *DescribeClusterSuite) TestDescribeClusterArgs() {
 			name:         "describe cluster success",
 			args:         []string{"--project-id", projectID, "--cluster-id", clusterID},
 			stdoutString: getClusterResultStr,
-			stderrString: "",
 		},
 		{
 			name:         "describe cluster with shorthand flag",
 			args:         []string{"-p", projectID, "-c", clusterID},
 			stdoutString: getClusterResultStr,
-			stderrString: "",
 		},
 		{
-			name:         "describe cluster without required project id",
-			args:         []string{"-c", clusterID},
-			err:          fmt.Errorf("required flag(s) \"project-id\" not set"),
-			stdoutString: "",
-			stderrString: "",
+			name: "describe cluster without required project id",
+			args: []string{"-c", clusterID},
+			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
 		},
 	}
 
