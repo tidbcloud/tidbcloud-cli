@@ -7,4 +7,4 @@ vendor/
 *.out
 coverage
 
-internal/cli/config/.tidbcloud-cli.toml
+.tidbcloud-cli.toml
