@@ -22,8 +22,8 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/iostream"
+	"tidbcloud-cli/internal/util"
 
-	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -39,12 +39,7 @@ func (suite *InitConfigSuite) SetupTest() {
 		suite.T().Error(err)
 	}
 
-	fs := afero.NewOsFs()
-	err := fs.Remove(".tidbcloud-cli.toml")
-	if err != nil {
-		suite.T().Error(err)
-	}
-
+	viper.Reset()
 	viper.AddConfigPath(".")
 	viper.SetConfigType("toml")
 	viper.SetConfigName(".tidbcloud-cli")
@@ -54,6 +49,13 @@ func (suite *InitConfigSuite) SetupTest() {
 			Out: &bytes.Buffer{},
 			Err: &bytes.Buffer{},
 		},
+	}
+}
+
+func (suite *InitConfigSuite) TearDownTest() {
+	err := util.RemoveFile(".tidbcloud-cli.toml")
+	if err != nil {
+		suite.T().Error(err)
 	}
 }
 
