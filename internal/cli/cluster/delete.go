@@ -15,7 +15,6 @@
 package cluster
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -27,6 +26,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
+	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -47,11 +47,11 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			if cmd.Flags().NFlag() != 0 {
 				err := cmd.MarkFlagRequired(flag.ProjectID)
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 				err = cmd.MarkFlagRequired(flag.ClusterID)
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 			}
 
@@ -63,11 +63,15 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			var projectID string
 			var clusterID string
 			if cmd.Flags().NFlag() == 0 {
+				if !h.IOStreams.CanPrompt {
+					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
+				}
+
 				// interactive mode
 				p := tea.NewProgram(initialClusterIdentifies())
 				inputModel, err := p.StartReturningModel()
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 				if inputModel.(ui.TextInputModel).Interrupted {
 					return nil
@@ -79,12 +83,12 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				// non-interactive mode, get values from flags
 				pID, err := cmd.Flags().GetString(flag.ProjectID)
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 
 				cID, err := cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 				projectID = pID
 				clusterID = cID
@@ -95,7 +99,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				WithClusterID(clusterID)
 			_, err := d.DeleteCluster(params)
 			if err != nil {
-				return err
+				return errors.Trace(err)
 			}
 
 			ticker := time.NewTicker(1 * time.Second)
@@ -112,7 +116,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 							fmt.Fprintf(h.IOStreams.Out, color.GreenString("cluster deleted"))
 							return nil
 						}
-						return err
+						return errors.Trace(err)
 					}
 				}
 			}

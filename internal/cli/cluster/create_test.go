@@ -49,10 +49,7 @@ func (suite *CreateClusterSuite) SetupTest() {
 			return suite.mockClient
 		},
 		QueryPageSize: pageSize,
-		IOStreams: &iostream.IOStreams{
-			Out: &bytes.Buffer{},
-			Err: &bytes.Buffer{},
-		},
+		IOStreams:     iostream.Test(),
 	}
 }
 
@@ -113,12 +110,12 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 		{
 			name:         "create cluster success",
 			args:         []string{"--project-id", projectID, "--cluster-name", clusterName, "--cluster-type", clusterType, "--cloud-provider", cloudProvider, "--region", region, "--root-password", rootPassword},
-			stdoutString: "Cluster 12345 is ready.",
+			stdoutString: "Waiting for cluster to be ready...\nCluster 12345 is ready.",
 		},
 		{
 			name:         "create cluster with shorthand flag",
 			args:         []string{"-p", projectID, "--cluster-name", clusterName, "--cluster-type", clusterType, "--cloud-provider", cloudProvider, "-r", region, "--root-password", rootPassword},
-			stdoutString: "Cluster 12345 is ready.",
+			stdoutString: "Waiting for cluster to be ready...\nCluster 12345 is ready.",
 		},
 		{
 			name: "without required project id",

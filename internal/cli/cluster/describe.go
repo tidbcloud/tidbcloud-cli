@@ -24,6 +24,7 @@ import (
 
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -37,11 +38,11 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 			if cmd.Flags().NFlag() != 0 {
 				err := cmd.MarkFlagRequired(flag.ProjectID)
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 				err = cmd.MarkFlagRequired(flag.ClusterID)
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 			}
 
@@ -53,11 +54,15 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 			var projectID string
 			var clusterID string
 			if cmd.Flags().NFlag() == 0 {
+				if !h.IOStreams.CanPrompt {
+					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
+				}
+
 				// interactive mode
 				p := tea.NewProgram(initialClusterIdentifies())
 				inputModel, err := p.StartReturningModel()
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 				if inputModel.(ui.TextInputModel).Interrupted {
 					return nil
@@ -69,12 +74,12 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				// non-interactive mode, get values from flags
 				pID, err := cmd.Flags().GetString(flag.ProjectID)
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 
 				cID, err := cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 				projectID = pID
 				clusterID = cID
@@ -85,12 +90,12 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				WithClusterID(clusterID)
 			cluster, err := d.GetCluster(params)
 			if err != nil {
-				return err
+				return errors.Trace(err)
 			}
 
 			v, err := json.MarshalIndent(cluster.Payload, "", "  ")
 			if err != nil {
-				return err
+				return errors.Trace(err)
 			}
 
 			fmt.Fprintln(h.IOStreams.Out, string(v))

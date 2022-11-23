@@ -17,6 +17,7 @@ package config
 import (
 	"os"
 
+	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	exec "golang.org/x/sys/execabs"
@@ -34,7 +35,7 @@ func EditCmd() *cobra.Command {
 			c.Stdout = os.Stdout
 			c.Stderr = os.Stderr
 
-			return c.Run()
+			return errors.Trace(c.Run())
 		},
 	}
 

@@ -45,10 +45,7 @@ func (suite *InitConfigSuite) SetupTest() {
 	viper.SetConfigName(".tidbcloud-cli")
 	_ = viper.SafeWriteConfig()
 	suite.h = &internal.Helper{
-		IOStreams: &iostream.IOStreams{
-			Out: &bytes.Buffer{},
-			Err: &bytes.Buffer{},
-		},
+		IOStreams: iostream.Test(),
 	}
 }
 

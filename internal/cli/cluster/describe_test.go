@@ -95,10 +95,7 @@ func (suite *DescribeClusterSuite) SetupTest() {
 			return suite.mockClient
 		},
 		QueryPageSize: pageSize,
-		IOStreams: &iostream.IOStreams{
-			Out: &bytes.Buffer{},
-			Err: &bytes.Buffer{},
-		},
+		IOStreams:     iostream.Test(),
 	}
 }
 

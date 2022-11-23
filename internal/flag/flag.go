@@ -20,6 +20,7 @@ const (
 	ClusterIDShort string = "c"
 	ClusterName    string = "cluster-name"
 	ClusterType    string = "cluster-type"
+	NoColor        string = "no-color"
 	Output         string = "output"
 	OutputShort    string = "o"
 	ProjectID      string = "project-id"

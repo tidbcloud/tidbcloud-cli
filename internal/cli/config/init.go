@@ -15,7 +15,6 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 
 	"tidbcloud-cli/internal"
@@ -25,10 +24,12 @@ import (
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 
+	"github.com/fatih/color"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/fatih/color"
+	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -55,7 +56,7 @@ func InitCmd(h *internal.Helper) *cobra.Command {
 			if cmd.Flags().NFlag() != 0 {
 				err := cmd.MarkFlagRequired(flag.ProfileName)
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 				err = cmd.MarkFlagRequired(flag.PublicKey)
 				if err != nil {
@@ -76,10 +77,14 @@ func InitCmd(h *internal.Helper) *cobra.Command {
 			var publicKey string
 			var privateKey string
 			if cmd.Flags().NFlag() == 0 {
+				if !h.IOStreams.CanPrompt {
+					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
+				}
+
 				p := tea.NewProgram(initialDeletionInputModel())
 				inputModel, err := p.StartReturningModel()
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 				if inputModel.(ui.TextInputModel).Interrupted {
 					return nil
@@ -92,26 +97,26 @@ func InitCmd(h *internal.Helper) *cobra.Command {
 			} else {
 				pName, err := cmd.Flags().GetString(flag.ProfileName)
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 				profileName = pName
 
 				pKey, err := cmd.Flags().GetString(flag.PublicKey)
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 				publicKey = pKey
 
 				priKey, err := cmd.Flags().GetString(flag.PrivateKey)
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 				privateKey = priKey
 			}
 
 			profiles, err := config.GetAllProfiles()
 			if err != nil {
-				return err
+				return errors.Trace(err)
 			}
 			if util.StringInSlice(profiles, profileName) {
 				return fmt.Errorf("profile %s already exists, use `config set` to modify", profileName)
@@ -122,7 +127,7 @@ func InitCmd(h *internal.Helper) *cobra.Command {
 			viper.Set(prop.CurProfile, profileName)
 			err = viper.WriteConfig()
 			if err != nil {
-				return err
+				return errors.Trace(err)
 			}
 
 			fgGreen := color.New(color.FgGreen).SprintFunc()

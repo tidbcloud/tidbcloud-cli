@@ -35,8 +35,7 @@ type DeleteConfigSuite struct {
 }
 
 func (suite *DeleteConfigSuite) SetupTest() {
-	err := os.Setenv("NO_COLOR", "true")
-	if err != nil {
+	if err := os.Setenv("NO_COLOR", "true"); err != nil {
 		suite.T().Error(err)
 	}
 
@@ -46,10 +45,7 @@ func (suite *DeleteConfigSuite) SetupTest() {
 	viper.SetConfigName(".tidbcloud-cli")
 	_ = viper.SafeWriteConfig()
 	suite.h = &internal.Helper{
-		IOStreams: &iostream.IOStreams{
-			Out: &bytes.Buffer{},
-			Err: &bytes.Buffer{},
-		},
+		IOStreams: iostream.Test(),
 	}
 
 	profile := "test"
@@ -59,7 +55,7 @@ func (suite *DeleteConfigSuite) SetupTest() {
 	viper.Set("test.public_key", publicKey)
 	viper.Set("test.private_key", privateKey)
 	viper.Set("current_profile", profile)
-	err = viper.WriteConfig()
+	err := viper.WriteConfig()
 	if err != nil {
 		suite.T().Error(err)
 	}

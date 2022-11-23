@@ -15,18 +15,33 @@
 package iostream
 
 import (
+	"bytes"
 	"io"
 	"os"
+
+	"github.com/mattn/go-isatty"
 )
 
 type IOStreams struct {
-	Out io.Writer
-	Err io.Writer
+	Out       io.Writer
+	Err       io.Writer
+	CanPrompt bool
 }
 
 func System() *IOStreams {
+	canPrompt := isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd())
+
 	return &IOStreams{
-		Out: os.Stdout,
-		Err: os.Stderr,
+		Out:       os.Stdout,
+		Err:       os.Stderr,
+		CanPrompt: canPrompt,
+	}
+}
+
+func Test() *IOStreams {
+	return &IOStreams{
+		Out:       &bytes.Buffer{},
+		Err:       &bytes.Buffer{},
+		CanPrompt: false,
 	}
 }

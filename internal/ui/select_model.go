@@ -17,8 +17,9 @@ package ui
 import (
 	"fmt"
 
-	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
+
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 type SelectModel struct {
