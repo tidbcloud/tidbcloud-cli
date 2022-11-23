@@ -118,7 +118,7 @@ func (suite *RootCmdSuite) TestFlagProfile() {
 
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
-			cmd := RootCmd(suite.h)
+			cmd := RootCmd(suite.h, "", "", "")
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
@@ -138,6 +138,9 @@ func (suite *RootCmdSuite) TestFlagProfile() {
 			assert.Equal(tt.propertyValue, viper.GetString(tt.propertyKey))
 		})
 	}
+}
+
+func (suite *RootCmdSuite) TestVersion() {
 }
 
 func TestRootCmdSuite(t *testing.T) {

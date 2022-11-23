@@ -24,6 +24,7 @@ import (
 	"tidbcloud-cli/internal/cli/cluster"
 	configCmd "tidbcloud-cli/internal/cli/config"
 	"tidbcloud-cli/internal/cli/project"
+	"tidbcloud-cli/internal/cli/version"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/iostream"
@@ -39,7 +40,7 @@ const (
 	cliName = "ticloud"
 )
 
-func Execute(ctx context.Context) {
+func Execute(ctx context.Context, ver, commit, buildDate string) {
 	c := &config.Config{
 		ActiveProfile: "",
 	}
@@ -54,7 +55,7 @@ func Execute(ctx context.Context) {
 		Config:        c,
 	}
 
-	rootCmd := RootCmd(h)
+	rootCmd := RootCmd(h, ver, commit, buildDate)
 
 	err := rootCmd.ExecuteContext(ctx)
 	if err != nil {
@@ -63,7 +64,7 @@ func Execute(ctx context.Context) {
 	}
 }
 
-func RootCmd(h *internal.Helper) *cobra.Command {
+func RootCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
 	var rootCmd = &cobra.Command{
 		Use:   cliName,
 		Short: "CLI tool to manage TiDB Cloud",
@@ -99,6 +100,7 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 	rootCmd.AddCommand(cluster.ClusterCmd(h))
 	rootCmd.AddCommand(configCmd.ConfigCmd(h))
 	rootCmd.AddCommand(project.ProjectCmd(h))
+	rootCmd.AddCommand(version.VersionCmd(h, ver, commit, buildDate))
 
 	rootCmd.PersistentFlags().StringP(flag.Profile, flag.ProfileShort, "", "Profile to use from your configuration file.")
 	return rootCmd
