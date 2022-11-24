@@ -9,3 +9,4 @@ coverage
 dist/
 
 .tidbcloud-cli.toml
+.CHANGELOG.md

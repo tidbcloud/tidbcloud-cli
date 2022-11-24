@@ -26,7 +26,7 @@ jobs:
           gh api repos/$GITHUB_REPOSITORY/releases/generate-notes \
             -f tag_name="${GITHUB_REF#refs/tags/}" \
             -f target_commitish=main \
-            -q .body > CHANGELOG.md
+            -q .body > .CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
@@ -34,7 +34,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v3
         with:
           version: v1.12.3
-          args: release --release-notes=CHANGELOG.md
+          args: release --release-notes=.CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           GORELEASER_CURRENT_TAG: ${{steps.changelog.outputs.tag-name}}
