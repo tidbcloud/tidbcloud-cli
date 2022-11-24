@@ -117,7 +117,8 @@ func shouldCheckAuth(cmd *cobra.Command) bool {
 	cmdPrefixShouldSkip := []string{
 		fmt.Sprintf("%s %s", cliName, "config"),
 		fmt.Sprintf("%s %s", cliName, "help"),
-		fmt.Sprintf("%s %s", cliName, "completion")}
+		fmt.Sprintf("%s %s", cliName, "completion"),
+		fmt.Sprintf("%s %s", cliName, "version")}
 	for _, p := range cmdPrefixShouldSkip {
 		if strings.HasPrefix(cmd.CommandPath(), p) {
 			return false
