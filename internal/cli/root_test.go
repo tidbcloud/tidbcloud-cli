@@ -35,8 +35,7 @@ type RootCmdSuite struct {
 }
 
 func (suite *RootCmdSuite) SetupTest() {
-	err := os.Setenv("NO_COLOR", "true")
-	if err != nil {
+	if err := os.Setenv("NO_COLOR", "true"); err != nil {
 		suite.T().Error(err)
 	}
 
@@ -45,10 +44,7 @@ func (suite *RootCmdSuite) SetupTest() {
 	viper.SetConfigName(".tidbcloud-cli")
 	_ = viper.SafeWriteConfig()
 	suite.h = &internal.Helper{
-		IOStreams: &iostream.IOStreams{
-			Out: &bytes.Buffer{},
-			Err: &bytes.Buffer{},
-		},
+		IOStreams: iostream.Test(),
 		Config: &config.Config{
 			ActiveProfile: "",
 		},
@@ -118,7 +114,7 @@ func (suite *RootCmdSuite) TestFlagProfile() {
 
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
-			cmd := RootCmd(suite.h)
+			cmd := RootCmd(suite.h, "", "", "")
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
@@ -138,6 +134,9 @@ func (suite *RootCmdSuite) TestFlagProfile() {
 			assert.Equal(tt.propertyValue, viper.GetString(tt.propertyKey))
 		})
 	}
+}
+
+func (suite *RootCmdSuite) TestVersion() {
 }
 
 func TestRootCmdSuite(t *testing.T) {

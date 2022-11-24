@@ -24,6 +24,7 @@ import (
 	"tidbcloud-cli/internal/cli/cluster"
 	configCmd "tidbcloud-cli/internal/cli/config"
 	"tidbcloud-cli/internal/cli/project"
+	"tidbcloud-cli/internal/cli/version"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/iostream"
@@ -31,6 +32,7 @@ import (
 	"tidbcloud-cli/internal/util"
 
 	"github.com/fatih/color"
+	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -39,7 +41,7 @@ const (
 	cliName = "ticloud"
 )
 
-func Execute(ctx context.Context) {
+func Execute(ctx context.Context, ver, commit, buildDate string) {
 	c := &config.Config{
 		ActiveProfile: "",
 	}
@@ -54,7 +56,7 @@ func Execute(ctx context.Context) {
 		Config:        c,
 	}
 
-	rootCmd := RootCmd(h)
+	rootCmd := RootCmd(h, ver, commit, buildDate)
 
 	err := rootCmd.ExecuteContext(ctx)
 	if err != nil {
@@ -63,20 +65,25 @@ func Execute(ctx context.Context) {
 	}
 }
 
-func RootCmd(h *internal.Helper) *cobra.Command {
+func RootCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
 	var rootCmd = &cobra.Command{
 		Use:   cliName,
 		Short: "CLI tool to manage TiDB Cloud",
 		Long:  fmt.Sprintf("%s is a CLI library for communicating with TiDB Cloud's API.", cliName),
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			var flagNoColor = cmd.Flags().Lookup(flag.NoColor)
+			if flagNoColor != nil && flagNoColor.Changed {
+				color.NoColor = true
+			}
+
 			profile, err := cmd.Flags().GetString(flag.Profile)
 			if err != nil {
-				return err
+				return errors.Trace(err)
 			}
 			if profile != "" {
 				err := config.ValidateProfile(profile)
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 
 				h.Config.ActiveProfile = profile
@@ -87,7 +94,7 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 			if shouldCheckAuth(cmd) {
 				err := util.CheckAuth(h.Config.ActiveProfile)
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 			}
 			return nil
@@ -99,7 +106,9 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 	rootCmd.AddCommand(cluster.ClusterCmd(h))
 	rootCmd.AddCommand(configCmd.ConfigCmd(h))
 	rootCmd.AddCommand(project.ProjectCmd(h))
+	rootCmd.AddCommand(version.VersionCmd(h, ver, commit, buildDate))
 
+	rootCmd.PersistentFlags().Bool(flag.NoColor, false, "Disable color output")
 	rootCmd.PersistentFlags().StringP(flag.Profile, flag.ProfileShort, "", "Profile to use from your configuration file.")
 	return rootCmd
 }

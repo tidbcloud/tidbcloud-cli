@@ -15,9 +15,10 @@
 package ui
 
 import (
+	"github.com/fatih/color"
+
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/fatih/color"
 )
 
 type errMsg error

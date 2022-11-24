@@ -196,10 +196,7 @@ func (suite *ListClusterSuite) SetupTest() {
 			return suite.mockClient
 		},
 		QueryPageSize: pageSize,
-		IOStreams: &iostream.IOStreams{
-			Out: &bytes.Buffer{},
-			Err: &bytes.Buffer{},
-		},
+		IOStreams:     iostream.Test(),
 	}
 }
 
@@ -225,6 +222,11 @@ func (suite *ListClusterSuite) TestListClusterArgs() {
 		stdoutString string
 		stderrString string
 	}{
+		{
+			name:         "list clusters with default format(json when without tty)",
+			args:         []string{projectID},
+			stdoutString: listResultStr,
+		},
 		{
 			name:         "list clusters with output flag",
 			args:         []string{projectID, "--output", "json"},

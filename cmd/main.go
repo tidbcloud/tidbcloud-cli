@@ -22,8 +22,14 @@ import (
 	"tidbcloud-cli/internal/cli"
 )
 
+var (
+	version string
+	commit  string
+	date    string
+)
+
 func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
-	cli.Execute(ctx)
+	cli.Execute(ctx, version, commit, date)
 }

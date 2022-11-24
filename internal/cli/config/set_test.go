@@ -36,8 +36,7 @@ type SetConfigSuite struct {
 }
 
 func (suite *SetConfigSuite) SetupTest() {
-	err := os.Setenv("NO_COLOR", "true")
-	if err != nil {
+	if err := os.Setenv("NO_COLOR", "true"); err != nil {
 		suite.T().Error(err)
 	}
 
@@ -47,11 +46,8 @@ func (suite *SetConfigSuite) SetupTest() {
 	viper.SetConfigName(".tidbcloud-cli")
 	_ = viper.SafeWriteConfig()
 	suite.h = &internal.Helper{
-		IOStreams: &iostream.IOStreams{
-			Out: &bytes.Buffer{},
-			Err: &bytes.Buffer{},
-		},
-		Config: &config.Config{ActiveProfile: "test"},
+		IOStreams: iostream.Test(),
+		Config:    &config.Config{ActiveProfile: "test"},
 	}
 }
 

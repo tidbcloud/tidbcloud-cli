@@ -23,9 +23,11 @@ import (
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/util"
 
+	"github.com/fatih/color"
+
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/charmbracelet/bubbles/table"
-	"github.com/fatih/color"
+	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -48,7 +50,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			for (page-1)*pageSize < total {
 				clusters, err := d.ListClustersOfProject(params.WithPage(&page).WithPageSize(&pageSize))
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 
 				total = *clusters.Payload.Total
@@ -58,17 +60,19 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 			format, err := cmd.Flags().GetString(flag.Output)
 			if err != nil {
-				return err
+				return errors.Trace(err)
 			}
 
-			if format == output.JsonFormat {
+			// for terminal which can prompt, humanFormat is the default format.
+			// for other terminals, json format is the default format.
+			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
 				res := &clusterApi.ListClustersOfProjectOKBody{
 					Items: items,
 					Total: &total,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 			} else if format == output.HumanFormat {
 				// for human format, we print the table with brief information.
@@ -96,7 +100,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 				err := output.PrintHumanTable(columns, rows)
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 				return nil
 			} else {

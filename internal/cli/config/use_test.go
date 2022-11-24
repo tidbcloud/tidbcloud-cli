@@ -35,8 +35,7 @@ type UseConfigSuite struct {
 }
 
 func (suite *UseConfigSuite) SetupTest() {
-	err := os.Setenv("NO_COLOR", "true")
-	if err != nil {
+	if err := os.Setenv("NO_COLOR", "true"); err != nil {
 		suite.T().Error(err)
 	}
 
@@ -46,10 +45,7 @@ func (suite *UseConfigSuite) SetupTest() {
 	viper.SetConfigName(".tidbcloud-cli")
 	_ = viper.SafeWriteConfig()
 	suite.h = &internal.Helper{
-		IOStreams: &iostream.IOStreams{
-			Out: &bytes.Buffer{},
-			Err: &bytes.Buffer{},
-		},
+		IOStreams: iostream.Test(),
 	}
 
 	profile := "test"
@@ -61,7 +57,7 @@ func (suite *UseConfigSuite) SetupTest() {
 	viper.Set("current_profile", profile)
 	viper.Set("test1.public_key", publicKey)
 	viper.Set("test1.private_key", privateKey)
-	err = viper.WriteConfig()
+	err := viper.WriteConfig()
 	if err != nil {
 		suite.T().Error(err)
 	}
@@ -99,11 +95,9 @@ func (suite *UseConfigSuite) TestUseConfigArgs() {
 			err:  fmt.Errorf("missing argument <profileName> \n\nUsage:\n  use <profileName> [flags]\n\nFlags:\n  -h, --help   help for use\n"),
 		},
 		{
-			name:         "use config with non-existed profile",
-			args:         []string{"test2"},
-			err:          fmt.Errorf("profile test2 not found"),
-			stdoutString: "",
-			stderrString: "",
+			name: "use config with non-existed profile",
+			args: []string{"test2"},
+			err:  fmt.Errorf("profile test2 not found"),
 		},
 	}
 

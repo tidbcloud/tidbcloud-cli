@@ -22,6 +22,7 @@ import (
 	"tidbcloud-cli/internal/util"
 
 	"github.com/fatih/color"
+	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -51,7 +52,7 @@ Available properties : %v.`, prop.ProfileProperties()),
 
 			err := viper.WriteConfig()
 			if err != nil {
-				return err
+				return errors.Trace(err)
 			}
 
 			fmt.Fprintln(h.IOStreams.Out, color.GreenString(res))

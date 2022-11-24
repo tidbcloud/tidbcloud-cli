@@ -22,6 +22,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/util"
 
+	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -42,7 +43,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 			value := viper.Get(name)
 			v, err := json.MarshalIndent(value, "", "  ")
 			if err != nil {
-				return err
+				return errors.Trace(err)
 			}
 
 			fmt.Fprintln(h.IOStreams.Out, string(v))

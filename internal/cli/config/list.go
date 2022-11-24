@@ -22,6 +22,7 @@ import (
 	"tidbcloud-cli/internal/prop"
 
 	"github.com/fatih/color"
+	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -34,7 +35,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			profiles, err := config.GetAllProfiles()
 			if err != nil {
-				return err
+				return errors.Trace(err)
 			}
 			curP := viper.Get(prop.CurProfile)
 

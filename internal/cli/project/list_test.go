@@ -87,10 +87,7 @@ func (suite *ListProjectSuite) SetupTest() {
 			return suite.mockClient
 		},
 		QueryPageSize: pageSize,
-		IOStreams: &iostream.IOStreams{
-			Out: &bytes.Buffer{},
-			Err: &bytes.Buffer{},
-		},
+		IOStreams:     iostream.Test(),
 	}
 }
 
@@ -115,6 +112,11 @@ func (suite *ListProjectSuite) TestListProjectArgs() {
 		stdoutString string
 		stderrString string
 	}{
+		{
+			name:         "list projects with default format(json when without tty)",
+			args:         []string{},
+			stdoutString: resultStr,
+		},
 		{
 			name:         "list projects with output flag",
 			args:         []string{"--output", "json"},

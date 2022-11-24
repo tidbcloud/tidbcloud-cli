@@ -24,6 +24,8 @@ import (
 	"tidbcloud-cli/internal/util"
 
 	"github.com/fatih/color"
+
+	"github.com/juju/errors"
 	"github.com/pelletier/go-toml"
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
@@ -44,12 +46,12 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			settings := viper.AllSettings()
 			t, err := toml.TreeFromMap(settings)
 			if err != nil {
-				return err
+				return errors.Trace(err)
 			}
 
 			err = t.Delete(profileName)
 			if err != nil {
-				return err
+				return errors.Trace(err)
 			}
 
 			// If the deleting profile is the current profile, set the current profile to another profile
@@ -57,7 +59,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			if curP == profileName {
 				profiles, err := config.GetAllProfiles()
 				if err != nil {
-					return err
+					return errors.Trace(err)
 				}
 
 				newP := ""
@@ -71,7 +73,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 					// If there is no other profile, unset current profile
 					err = t.Delete(prop.CurProfile)
 					if err != nil {
-						return err
+						return errors.Trace(err)
 					}
 				} else {
 					t.Set(prop.CurProfile, newP)
@@ -81,7 +83,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			fs := afero.NewOsFs()
 			file, err := fs.OpenFile(viper.ConfigFileUsed(), os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 			if err != nil {
-				return err
+				return errors.Trace(err)
 			}
 
 			defer file.Close()
@@ -89,7 +91,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			s := t.String()
 			_, err = file.WriteString(s)
 			if err != nil {
-				return err
+				return errors.Trace(err)
 			}
 
 			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Profile %s deleted successfully", profileName))
