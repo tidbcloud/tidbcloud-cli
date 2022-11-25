@@ -24,7 +24,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-const CliName = "ticloud"
+const (
+	CliName  = "ticloud"
+	HomePath = ".ticloud"
+)
 
 type Config struct {
 	ActiveProfile string

@@ -53,6 +53,7 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 	}
 
 	rootCmd := RootCmd(h, ver, commit, buildDate)
+	initConfig()
 
 	err := rootCmd.ExecuteContext(ctx)
 	if err != nil {
@@ -124,20 +125,22 @@ func shouldCheckAuth(cmd *cobra.Command) bool {
 	return true
 }
 
-func init() {
-	cobra.OnInitialize(initConfig)
-}
-
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	// Find home directory.
 	home, err := os.UserHomeDir()
 	cobra.CheckErr(err)
+	path := home + "/" + config.HomePath
+	err = os.MkdirAll(path, os.ModePerm)
+	if err != nil {
+		color.Red("Failed to create ticloud home directory: %s", err)
+		os.Exit(1)
+	}
 
 	// Search config in home directory with name ".tidbcloud-cli" (without extension).
-	viper.AddConfigPath(home)
+	viper.AddConfigPath(path)
 	viper.SetConfigType("toml")
-	viper.SetConfigName(".tidbcloud-cli")
+	viper.SetConfigName("config")
 	_ = viper.SafeWriteConfig()
 	err = viper.ReadInConfig()
 	if err != nil {

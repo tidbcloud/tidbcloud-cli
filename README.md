@@ -4,28 +4,10 @@ The `ticloud` command line tool brings deploy cluster requests, and other TiDB C
 
 ## Installation
 
-#### macOS
+#### macOS and Linux
 
-- amd64
 ```
-curl -L https://github.com/tidbcloud/tidbcloud-cli/releases/download/v0.1.0-rc1/ticloud_0.1.0-rc1_macos_x86_64.tar.gz | tar -xz 
-```
-
-- arm64
-```
-curl -L https://github.com/tidbcloud/tidbcloud-cli/releases/download/v0.1.0-rc1/ticloud_0.1.0-rc1_macos_arm64.tar.gz | tar -xz
-```
-
-#### Linux
-
-- amd64
-```
-curl -L https://github.com/tidbcloud/tidbcloud-cli/releases/download/v0.1.0-rc1/ticloud_0.1.0-rc1_linux_x86_64.tar.gz | tar -xz
-```
-
-- arm64
-```
-curl -L https://github.com/tidbcloud/tidbcloud-cli/releases/download/v0.1.0-rc1/ticloud_0.1.0-rc1_linux_arm64.tar.gz | tar -xz
+curl https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh | sh
 ```
 
 #### Manually
