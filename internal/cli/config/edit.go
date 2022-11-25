@@ -15,7 +15,10 @@
 package config
 
 import (
+	"fmt"
 	"os"
+
+	"tidbcloud-cli/internal/config"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -29,6 +32,8 @@ func EditCmd() *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:   "edit",
 		Short: "Opens the config file with the default text editor.",
+		Example: fmt.Sprintf(`  To open the config
+  $ %[1]s config edit`, config.CliName),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			c := exec.Command(defaultEditor, viper.ConfigFileUsed()) //nolint:gosec
 			c.Stdin = os.Stdin

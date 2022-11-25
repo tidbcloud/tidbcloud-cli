@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/ui"
 
@@ -39,8 +40,13 @@ const (
 
 func DeleteCmd(h *internal.Helper) *cobra.Command {
 	var deleteCmd = &cobra.Command{
-		Use:     "delete",
-		Short:   "Delete a cluster from your project.",
+		Use:   "delete",
+		Short: "Delete a cluster from your project.",
+		Example: fmt.Sprintf(`  Delete a cluster in interactive mode:
+  $ %[1]s cluster delete
+
+  Delete a cluster in non-interactive mode:
+  $ %[1]s cluster delete -p <project-id> -c <cluster-id>`, config.CliName),
 		Aliases: []string{"rm"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			// mark required flags in non-interactive mode

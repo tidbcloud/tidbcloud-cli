@@ -20,6 +20,7 @@ import (
 	"strconv"
 
 	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
 
@@ -34,6 +35,11 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		Use:     "list",
 		Short:   "List all accessible projects.",
 		Aliases: []string{"ls"},
+		Example: fmt.Sprintf(`  List the projects:
+  $ %[1]s project list
+
+  List the projects with json format:
+  $ %[1]s project list -o json`, config.CliName),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			d := h.Client()
 			params := projectApi.NewListProjectsParams()

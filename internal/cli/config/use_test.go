@@ -92,7 +92,7 @@ func (suite *UseConfigSuite) TestUseConfigArgs() {
 		{
 			name: "use config with no args",
 			args: []string{},
-			err:  fmt.Errorf("missing argument <profileName> \n\nUsage:\n  use <profileName> [flags]\n\nFlags:\n  -h, --help   help for use\n"),
+			err:  fmt.Errorf("missing argument <profileName> \n\nUsage:\n  use <profileName> [flags]\n\nExamples:\n  Use the \"test\" profile as the active profile:\n  $ ticloud config use test\n\nFlags:\n  -h, --help   help for use\n"),
 		},
 		{
 			name: "use config with non-existed profile",
