@@ -6,22 +6,26 @@ The `ticloud` command line tool brings deploy cluster requests, and other TiDB C
 
 #### macOS
 
+- amd64
 ```
-# arm64
-curl  https://github.com/tidbcloud/tidbcloud-cli/releases/download/v0.1.0-rc1/ticloud_0.1.0-rc1_macos_arm64.tar.gz | tar -xz && cp -i ticloud /usr/local/bin/
-
-# amd64
 curl  https://github.com/tidbcloud/tidbcloud-cli/releases/download/v0.1.0-rc1/ticloud_0.1.0-rc1_macos_x86_64.tar.gz | tar -xz && cp -i ticloud /usr/local/bin/
+```
+
+- arm64
+```
+curl  https://github.com/tidbcloud/tidbcloud-cli/releases/download/v0.1.0-rc1/ticloud_0.1.0-rc1_macos_arm64.tar.gz | tar -xz && cp -i ticloud /usr/local/bin/
 ```
 
 #### Linux
 
+- amd64
 ```
-# arm64
-curl  https://github.com/tidbcloud/tidbcloud-cli/releases/download/v0.1.0-rc1/ticloud_0.1.0-rc1_linux_arm64.tar.gz | tar -xz && cp -i ticloud /usr/local/bin/
-
-# amd64
 curl  https://github.com/tidbcloud/tidbcloud-cli/releases/download/v0.1.0-rc1/ticloud_0.1.0-rc1_linux_x86_64.tar.gz | tar -xz && cp -i ticloud /usr/local/bin/
+```
+
+- arm64
+```
+curl  https://github.com/tidbcloud/tidbcloud-cli/releases/download/v0.1.0-rc1/ticloud_0.1.0-rc1_linux_arm64.tar.gz | tar -xz && cp -i ticloud /usr/local/bin/
 ```
 
 #### Manually
@@ -37,21 +41,13 @@ In order to use the `ticloud` CLI, you need to have a TiDB Cloud account. If you
 Config a profile with your TiDB Cloud [API key](https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management).
 
 ```
-# interactive mode(recommended)
 ticloud config init
-
-# non-interactive mode:
-ticloud config init --profile-name dev --public-key xxx --public-key xxx
 ```
 
 #### Create a cluster
 
 ```
-# interactive mode(recommended)
 ticloud cluster create
-
-# non-interactive mode:
-ticloud cluster create --project-id <project-id> --cluster-name <cluster-name> --cloud-provider <cloud-provider> -r <region> --root-password <password> --cluster-type <cluster-type>
 ```
 
 ## Documentation
