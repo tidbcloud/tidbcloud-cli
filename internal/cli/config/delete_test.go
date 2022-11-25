@@ -86,7 +86,7 @@ func (suite *DeleteConfigSuite) TestDeleteConfigArgs() {
 		{
 			name: "delete config with no args",
 			args: []string{},
-			err:  fmt.Errorf("missing argument <profileName> \n\nUsage:\n  delete <profileName> [flags]\n\nAliases:\n  delete, rm\n\nFlags:\n  -h, --help   help for delete\n"),
+			err:  fmt.Errorf("missing argument <profileName> \n\nUsage:\n  delete <profileName> [flags]\n\nAliases:\n  delete, rm\n\nExamples:\n  Delete the profile configuration:\n  $ ticloud config delete <profileName>\n\nFlags:\n  -h, --help   help for delete\n"),
 		},
 		{
 			name:         "delete config with non-existed profile",
