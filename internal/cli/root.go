@@ -53,6 +53,7 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 	}
 
 	rootCmd := RootCmd(h, ver, commit, buildDate)
+	initConfig()
 
 	err := rootCmd.ExecuteContext(ctx)
 	if err != nil {
@@ -122,10 +123,6 @@ func shouldCheckAuth(cmd *cobra.Command) bool {
 	}
 
 	return true
-}
-
-func init() {
-	cobra.OnInitialize(initConfig)
 }
 
 // initConfig reads in config file and ENV variables if set.
