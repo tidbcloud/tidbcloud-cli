@@ -7,9 +7,7 @@ The `ticloud` command line tool brings deploy cluster requests, and other TiDB C
 #### macOS and Linux
 
 ```
-
 curl https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh | sh
-
 ```
 
 #### Manually
