@@ -19,6 +19,7 @@ import (
 	"fmt"
 
 	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/ui"
 
@@ -33,6 +34,11 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		Use:     "describe",
 		Short:   "Describe a cluster.",
 		Aliases: []string{"get"},
+		Example: fmt.Sprintf(`  Get the cluster info in interactive mode:
+  $ %[1]s cluster describe
+
+  Get the cluster info in non-interactive mode:
+  $ %[1]s cluster describe -p <project-id> -c <cluster-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			// mark required flags in non-interactive mode
 			if cmd.Flags().NFlag() != 0 {

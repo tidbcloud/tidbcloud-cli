@@ -18,6 +18,7 @@ import (
 	"fmt"
 
 	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/util"
 
@@ -32,7 +33,15 @@ func SetCmd(h *internal.Helper) *cobra.Command {
 		Use:   "set <propertyName> <value>",
 		Short: "Configure specific properties of the active profile.",
 		Long: fmt.Sprintf(`Configure specific properties of the active profile.
-Available properties : %v.`, prop.ProfileProperties()),
+Available properties : %v.
+
+If use -P flag, the config in the specific profile will be set.
+If not, the config in the active profile will be set`, prop.ProfileProperties()),
+		Example: fmt.Sprintf(`  Set the value of the public-key in active profile:
+  $ %[1]s config set public-key <public-key>
+
+  Set the value of the public-key in the specific profile "test":
+  $ %[1]s config set public-key <public-key> -P test`, config.CliName),
 		Args: util.RequiredArgs("propertyName", "value"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			propertyName := args[0]

@@ -37,10 +37,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-const (
-	cliName = "ticloud"
-)
-
 func Execute(ctx context.Context, ver, commit, buildDate string) {
 	c := &config.Config{
 		ActiveProfile: "",
@@ -67,9 +63,9 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 
 func RootCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
 	var rootCmd = &cobra.Command{
-		Use:   cliName,
+		Use:   config.CliName,
 		Short: "CLI tool to manage TiDB Cloud",
-		Long:  fmt.Sprintf("%s is a CLI library for communicating with TiDB Cloud's API.", cliName),
+		Long:  fmt.Sprintf("%s is a CLI library for communicating with TiDB Cloud's API.", config.CliName),
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			var flagNoColor = cmd.Flags().Lookup(flag.NoColor)
 			if flagNoColor != nil && flagNoColor.Changed {
@@ -115,10 +111,10 @@ func RootCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
 
 func shouldCheckAuth(cmd *cobra.Command) bool {
 	cmdPrefixShouldSkip := []string{
-		fmt.Sprintf("%s %s", cliName, "config"),
-		fmt.Sprintf("%s %s", cliName, "help"),
-		fmt.Sprintf("%s %s", cliName, "completion"),
-		fmt.Sprintf("%s %s", cliName, "version")}
+		fmt.Sprintf("%s %s", config.CliName, "config"),
+		fmt.Sprintf("%s %s", config.CliName, "help"),
+		fmt.Sprintf("%s %s", config.CliName, "completion"),
+		fmt.Sprintf("%s %s", config.CliName, "version")}
 	for _, p := range cmdPrefixShouldSkip {
 		if strings.HasPrefix(cmd.CommandPath(), p) {
 			return false

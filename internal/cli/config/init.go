@@ -51,6 +51,11 @@ func InitCmd(h *internal.Helper) *cobra.Command {
 	var initCmd = &cobra.Command{
 		Use:   "init",
 		Short: "Configure a profile to store access settings",
+		Example: fmt.Sprintf(`  To configure the tool to work with TiDB Cloud in interactive mode:
+  $ %[1]s config init
+
+  To configure the tool to work with TiDB Cloud in non-interactive mode::
+  $ %[1]s config init --profile-name <profile-name> --public-key <public-key> --private-key <private-key>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			// mark required flags in non-interactive mode
 			if cmd.Flags().NFlag() != 0 {

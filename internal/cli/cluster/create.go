@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
@@ -52,6 +53,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	var createCmd = &cobra.Command{
 		Use:   "create",
 		Short: "Create one cluster in the specified project.",
+		Example: fmt.Sprintf(`  Create a cluster in interactive mode:
+  $ %[1]s cluster create
+
+  Create a cluster in non-interactive mode:
+  $ %[1]s cluster create --project-id <project-id> --cluster-name <cluster-name> --cloud-provider <cloud-provider> -r <region> --root-password <password> --cluster-type <cluster-type>`,
+			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			// mark required flags in non-interactive mode
 			if cmd.Flags().NFlag() != 0 {

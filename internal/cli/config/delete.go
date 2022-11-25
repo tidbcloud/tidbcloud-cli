@@ -34,8 +34,10 @@ import (
 
 func DeleteCmd(h *internal.Helper) *cobra.Command {
 	var deleteCmd = &cobra.Command{
-		Use:     "delete <profileName>",
-		Short:   "Delete a profile",
+		Use:   "delete <profileName>",
+		Short: "Delete a profile",
+		Example: fmt.Sprintf(`  Delete the profile configuration:
+  $ %[1]s config delete <profileName>`, config.CliName),
 		Aliases: []string{"rm"},
 		Args:    util.RequiredArgs("profileName"),
 		RunE: func(cmd *cobra.Command, args []string) error {
