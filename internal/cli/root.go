@@ -133,11 +133,17 @@ func initConfig() {
 	// Find home directory.
 	home, err := os.UserHomeDir()
 	cobra.CheckErr(err)
+	path := home + "/" + config.HomePath
+	err = os.MkdirAll(path, os.ModePerm)
+	if err != nil {
+		color.Red("Failed to create ticloud home directory: %s", err)
+		os.Exit(1)
+	}
 
 	// Search config in home directory with name ".tidbcloud-cli" (without extension).
-	viper.AddConfigPath(home)
+	viper.AddConfigPath(path)
 	viper.SetConfigType("toml")
-	viper.SetConfigName(".tidbcloud-cli")
+	viper.SetConfigName("config")
 	_ = viper.SafeWriteConfig()
 	err = viper.ReadInConfig()
 	if err != nil {
