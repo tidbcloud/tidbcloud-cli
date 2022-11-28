@@ -33,7 +33,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 
 			fmt.Fprintln(h.IOStreams.Out, color.GreenString("done!"))
 			fmt.Fprintln(h.IOStreams.Out, color.GreenString("start to execute the install.sh script"))
-			result, err := exec.CommandContext(ctx, "/bin/sh", "-c", string(out)).Output()
+			result, err := exec.CommandContext(ctx, "/bin/sh", "-c", string(out)).Output() //nolint:gosec
 			if ctx.Err() == context.DeadlineExceeded {
 				return errors.New("timeout when execute the install.sh script")
 			}
