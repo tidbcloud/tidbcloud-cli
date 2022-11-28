@@ -53,7 +53,7 @@ type CreateServerlessOpts struct {
 func CreateCmd(h *internal.Helper) *cobra.Command {
 	var createCmd = &cobra.Command{
 		Use:   "create",
-		Short: "Create one cluster in the specified project.",
+		Short: "Create one cluster in the specified project",
 		Example: fmt.Sprintf(`  Create a cluster in interactive mode:
   $ %[1]s cluster create
 

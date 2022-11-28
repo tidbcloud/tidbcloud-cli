@@ -31,7 +31,7 @@ import (
 func SetCmd(h *internal.Helper) *cobra.Command {
 	var setCmd = &cobra.Command{
 		Use:   "set <propertyName> <value>",
-		Short: "Configure specific properties of the active profile.",
+		Short: "Configure specific properties of the active profile",
 		Long: fmt.Sprintf(`Configure specific properties of the active profile.
 Available properties : %v.
 
@@ -51,7 +51,7 @@ If not, the config in the active profile will be set`, prop.ProfileProperties())
 			if util.StringInSlice(prop.ProfileProperties(), propertyName) {
 				curP := h.Config.ActiveProfile
 				if curP == "" {
-					return fmt.Errorf("no profile is configured, please use `config init` to create a profile")
+					return fmt.Errorf("no profile is configured, please use `config create` to create a profile")
 				}
 				viper.Set(fmt.Sprintf("%s.%s", curP, propertyName), value)
 				res = fmt.Sprintf("Set profile `%s` property `%s` to value `%s` successfully", curP, propertyName, value)
