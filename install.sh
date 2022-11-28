@@ -1,6 +1,6 @@
 #!/bin/sh
 
-version="0.1.0-rc2"
+version="0.1.0-rc3"
 
 repo='https://github.com/tidbcloud/tidbcloud-cli/releases/download'
 if [ -n "$TICLOUD_MIRRORS" ]; then
