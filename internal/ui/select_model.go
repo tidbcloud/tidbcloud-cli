@@ -18,6 +18,7 @@ import (
 	"fmt"
 
 	"github.com/fatih/color"
+	"github.com/juju/errors"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
@@ -30,8 +31,12 @@ type SelectModel struct {
 	Interrupted bool
 }
 
-func InitialSelectModel(choices []interface{}, hint string) SelectModel {
-	return SelectModel{
+func InitialSelectModel(choices []interface{}, hint string) (*SelectModel, error) {
+	if len(choices) == 0 {
+		return nil, errors.New("There are no available choices")
+	}
+
+	return &SelectModel{
 		// Our to-do list is a grocery list
 		Choices: choices,
 
@@ -41,7 +46,7 @@ func InitialSelectModel(choices []interface{}, hint string) SelectModel {
 		Selected:    -1,
 		Interrupted: false,
 		Hint:        hint,
-	}
+	}, nil
 }
 
 func (m SelectModel) Init() tea.Cmd {

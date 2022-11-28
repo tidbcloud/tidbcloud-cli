@@ -59,7 +59,7 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 	projectID := "12345"
 	clusterID := "12345"
 	clusterName := "test"
-	clusterType := "DEVELOPER"
+	clusterType := "SERVERLESS"
 	cloudProvider := "AWS"
 	region := "us-west-1"
 	rootPassword := "123456"
@@ -79,7 +79,7 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 					}
 				]
 			}
-			}`, clusterName, clusterType, cloudProvider, region, rootPassword)))
+			}`, clusterName, "DEVELOPER", cloudProvider, region, rootPassword)))
 	assert.Nil(err)
 
 	body := &cluster.GetClusterOKBody{}
