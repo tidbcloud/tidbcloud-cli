@@ -20,10 +20,11 @@ import (
 	"os/signal"
 
 	"tidbcloud-cli/internal/cli"
+	"tidbcloud-cli/internal/config"
 )
 
 var (
-	version string
+	version = config.DevVersion
 	commit  string
 	date    string
 )

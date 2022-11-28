@@ -18,12 +18,14 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/cli/cluster"
 	configCmd "tidbcloud-cli/internal/cli/config"
 	"tidbcloud-cli/internal/cli/project"
+	"tidbcloud-cli/internal/cli/update"
 	"tidbcloud-cli/internal/cli/version"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
@@ -52,6 +54,13 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 		Config:        c,
 	}
 
+	buildVersion := ver
+	updateMessageChan := make(chan *util.ReleaseInfo)
+	go func() {
+		rel, _ := checkForUpdate(buildVersion, h.IOStreams.CanPrompt)
+		updateMessageChan <- rel
+	}()
+
 	rootCmd := RootCmd(h, ver, commit, buildDate)
 	initConfig()
 
@@ -59,6 +68,14 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 	if err != nil {
 		fmt.Fprintf(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
 		os.Exit(1)
+	}
+
+	newRelease := <-updateMessageChan
+	if newRelease != nil {
+		fmt.Fprintf(h.IOStreams.Out, fmt.Sprintf("\n\n%s %s → %s\n",
+			color.YellowString("A new version of %s is available:", config.CliName),
+			color.CyanString(buildVersion),
+			color.CyanString(newRelease.Version)))
 	}
 }
 
@@ -104,6 +121,7 @@ func RootCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
 	rootCmd.AddCommand(configCmd.ConfigCmd(h))
 	rootCmd.AddCommand(project.ProjectCmd(h))
 	rootCmd.AddCommand(version.VersionCmd(h, ver, commit, buildDate))
+	rootCmd.AddCommand(update.UpdateCmd(h))
 
 	rootCmd.PersistentFlags().Bool(flag.NoColor, false, "Disable color output")
 	rootCmd.PersistentFlags().StringP(flag.Profile, flag.ProfileShort, "", "Profile to use from your configuration file.")
@@ -123,6 +141,16 @@ func shouldCheckAuth(cmd *cobra.Command) bool {
 	}
 
 	return true
+}
+
+func checkForUpdate(currentVersion string, isTerminal bool) (*util.ReleaseInfo, error) {
+	if !isTerminal || currentVersion == config.DevVersion {
+		return nil, nil
+	}
+
+	home, _ := os.UserHomeDir()
+	stateFilePath := filepath.Join(home, config.HomePath, "state.yml")
+	return util.CheckForUpdate(stateFilePath, config.Repo, currentVersion)
 }
 
 // initConfig reads in config file and ENV variables if set.

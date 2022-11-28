@@ -11,6 +11,8 @@ require (
 	github.com/fatih/color v1.13.0
 	github.com/go-openapi/runtime v0.24.1
 	github.com/go-openapi/strfmt v0.21.3
+	github.com/go-resty/resty/v2 v2.7.0
+	github.com/hashicorp/go-version v1.6.0
 	github.com/icholy/digest v0.1.15
 	github.com/juju/errors v1.0.0
 	github.com/mattn/go-isatty v0.0.16
@@ -20,6 +22,7 @@ require (
 	github.com/spf13/viper v1.13.0
 	github.com/stretchr/testify v1.8.0
 	golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -68,5 +71,4 @@ require (
 	golang.org/x/text v0.3.7 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

@@ -49,7 +49,7 @@ func PrintHumanTable(columns []table.Column, rows []table.Row) error {
 	)
 
 	s := table.DefaultStyles()
-	s.Selected = lipgloss.NewStyle().Foreground(lipgloss.Color("212"))
+	s.Selected = lipgloss.NewStyle()
 	t.SetStyles(s)
 
 	m := ui.InitialTableModel(t)
