@@ -15,7 +15,8 @@ import (
 
 func UpdateCmd(h *internal.Helper) *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "update",
+		Use:   "update",
+		Short: "Update the CLI to the latest version",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// 创建一个上下文并且设置超时时间
 			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
