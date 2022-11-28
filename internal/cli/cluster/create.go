@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/cli/project"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/ui"
@@ -36,13 +37,13 @@ import (
 type createClusterField int
 
 const (
-	clusterProjectIDIdx createClusterField = iota
-	clusterNameIdx
+	clusterNameIdx createClusterField = iota
 	passwordIdx
 )
 
 const (
-	serverlessType = "DEVELOPER"
+	serverlessType = "SERVERLESS"
+	deverloperType = "DEVELOPER"
 )
 
 type CreateServerlessOpts struct {
@@ -112,13 +113,18 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 				opts := CreateServerlessOpts{}
 				for i, item := range regions.Payload.Items {
-					// filter out non-serverless providers, currently only serverless is supported
-					if item.ClusterType == serverlessType {
+					// Filter out non-serverless providers, currently only serverless is supported.
+					// But currently serverless is called "DEVELOPER" in the API.
+					if item.ClusterType == deverloperType {
 						opts.serverlessProviders = append(opts.serverlessProviders, regions.Payload.Items[i])
 					}
 				}
 
-				p := tea.NewProgram(ui.InitialSelectModel([]interface{}{serverlessType}, "Choose the cluster type:"))
+				model, err := ui.InitialSelectModel([]interface{}{serverlessType}, "Choose the cluster type:")
+				if err != nil {
+					return err
+				}
+				p := tea.NewProgram(model)
 				typeModel, err := p.StartReturningModel()
 				if err != nil {
 					return errors.Trace(err)
@@ -133,7 +139,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				for _, provider := range opts.serverlessProviders {
 					set.Add(provider.CloudProvider)
 				}
-				p = tea.NewProgram(ui.InitialSelectModel(set.Values(), "Choose the cloud provider:"))
+				model, err = ui.InitialSelectModel(set.Values(), "Choose the cloud provider:")
+				if err != nil {
+					return err
+				}
+				p = tea.NewProgram(model)
 				providerModel, err := p.StartReturningModel()
 				if err != nil {
 					return errors.Trace(err)
@@ -150,7 +160,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						set.Add(provider.Region)
 					}
 				}
-				p = tea.NewProgram(ui.InitialSelectModel(set.Values(), "Choose the cloud region:"))
+				model, err = ui.InitialSelectModel(set.Values(), "Choose the cloud region:")
+				if err != nil {
+					return err
+				}
+				p = tea.NewProgram(model)
 				regionModel, err := p.StartReturningModel()
 				if err != nil {
 					return errors.Trace(err)
@@ -159,6 +173,28 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return nil
 				}
 				region = regionModel.(ui.SelectModel).Choices[regionModel.(ui.SelectModel).Selected].(string)
+
+				_, items, err := project.RetrieveProjects(h.QueryPageSize, h.Client())
+				if err != nil {
+					return err
+				}
+				set = hashset.New()
+				for _, item := range items {
+					set.Add(item.ID)
+				}
+				model, err = ui.InitialSelectModel(set.Values(), "Choose the project ID:")
+				if err != nil {
+					return err
+				}
+				p = tea.NewProgram(model)
+				projectModel, err := p.StartReturningModel()
+				if err != nil {
+					return errors.Trace(err)
+				}
+				if m, _ := projectModel.(ui.SelectModel); m.Interrupted {
+					return nil
+				}
+				projectID = projectModel.(ui.SelectModel).Choices[projectModel.(ui.SelectModel).Selected].(string)
 
 				// variables for input
 				p = tea.NewProgram(initialCreateInputModel())
@@ -172,7 +208,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 				clusterName = inputModel.(ui.TextInputModel).Inputs[clusterNameIdx].Value()
 				rootPassword = inputModel.(ui.TextInputModel).Inputs[passwordIdx].Value()
-				projectID = inputModel.(ui.TextInputModel).Inputs[clusterProjectIDIdx].Value()
 			} else {
 				// non-interactive mode, get values from flags
 				var err error
@@ -200,6 +235,13 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
+			}
+
+			if clusterType != serverlessType {
+				return errors.New("Currently only \"SERVERLESS\" cluster are supported to create in CLI")
+			} else {
+				// Currently serverless type is called \"DEVELOPER\" in API, but it will be changed to \"SERVERLESS\" soon.
+				clusterType = deverloperType
 			}
 
 			clusterDefBody := &clusterApi.CreateClusterBody{}
@@ -240,7 +282,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	createCmd.Flags().String(flag.ClusterName, "", "Name of the cluster to de created")
-	createCmd.Flags().String(flag.ClusterType, "", "Cluster type, only support serverless now")
+	createCmd.Flags().String(flag.ClusterType, "", "Cluster type, only support \"SERVERLESS\" now")
 	createCmd.Flags().String(flag.CloudProvider, "", "Cloud provider, e.g. AWS")
 	createCmd.Flags().StringP(flag.Region, flag.RegionShort, "", "Cloud region")
 	createCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project, in which the cluster will be created")
@@ -312,16 +354,16 @@ func CreateAndSpinnerWait(d util.CloudClient, projectID string, clusterDefBody *
 		return errors.Trace(err), true
 	}
 	if m, _ := createModel.(ui.SpinnerModel); m.Err != nil {
-		fmt.Fprintf(h.IOStreams.Err, color.RedString(m.Err.Error()))
+		fmt.Fprintln(h.IOStreams.Err, color.RedString(m.Err.Error()))
 	} else {
-		fmt.Fprintf(h.IOStreams.Out, color.GreenString(m.Output))
+		fmt.Fprintln(h.IOStreams.Out, color.GreenString(m.Output))
 	}
 	return nil, false
 }
 
 func initialCreateInputModel() ui.TextInputModel {
 	m := ui.TextInputModel{
-		Inputs: make([]textinput.Model, 3),
+		Inputs: make([]textinput.Model, 2),
 	}
 
 	var t textinput.Model
@@ -332,17 +374,6 @@ func initialCreateInputModel() ui.TextInputModel {
 		f := createClusterField(i)
 
 		switch f {
-		case clusterProjectIDIdx:
-			t.Placeholder = "Project ID"
-			t.Focus()
-			t.PromptStyle = focusedStyle
-			t.TextStyle = focusedStyle
-			t.Validate = func(s string) error {
-				if len(s) == 0 {
-					return errors.New("project ID is required")
-				}
-				return nil
-			}
 		case clusterNameIdx:
 			t.Placeholder = "Cluster Name"
 			t.Validate = func(s string) error {

@@ -74,12 +74,12 @@ func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 		{
 			name:         "delete cluster success",
 			args:         []string{"--project-id", projectID, "--cluster-id", clusterID},
-			stdoutString: "cluster deleted",
+			stdoutString: "cluster deleted\n",
 		},
 		{
 			name:         "delete cluster with output flag",
 			args:         []string{"-p", projectID, "-c", clusterID},
-			stdoutString: "cluster deleted",
+			stdoutString: "cluster deleted\n",
 		},
 		{
 			name: "delete cluster without required project id",
