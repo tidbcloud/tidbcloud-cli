@@ -25,8 +25,10 @@ import (
 )
 
 const (
-	CliName  = "ticloud"
-	HomePath = ".ticloud"
+	CliName    = "ticloud"
+	HomePath   = ".ticloud"
+	DevVersion = "dev"
+	Repo       = "tidbcloud/tidbcloud-cli"
 )
 
 type Config struct {

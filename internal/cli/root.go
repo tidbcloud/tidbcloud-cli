@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"tidbcloud-cli/internal"
@@ -52,6 +53,13 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 		Config:        c,
 	}
 
+	buildVersion := ver
+	updateMessageChan := make(chan *util.ReleaseInfo)
+	go func() {
+		rel, _ := checkForUpdate(buildVersion, h.IOStreams.CanPrompt)
+		updateMessageChan <- rel
+	}()
+
 	rootCmd := RootCmd(h, ver, commit, buildDate)
 	initConfig()
 
@@ -59,6 +67,14 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 	if err != nil {
 		fmt.Fprintf(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
 		os.Exit(1)
+	}
+
+	newRelease := <-updateMessageChan
+	if newRelease != nil {
+		fmt.Fprintf(h.IOStreams.Out, fmt.Sprintf("\n\n%s %s → %s\n",
+			color.YellowString("A new version of %s is available:", config.CliName),
+			color.CyanString(buildVersion),
+			color.CyanString(newRelease.Version)))
 	}
 }
 
@@ -123,6 +139,16 @@ func shouldCheckAuth(cmd *cobra.Command) bool {
 	}
 
 	return true
+}
+
+func checkForUpdate(currentVersion string, isTerminal bool) (*util.ReleaseInfo, error) {
+	if !isTerminal || currentVersion == config.DevVersion {
+		return nil, nil
+	}
+
+	home, _ := os.UserHomeDir()
+	stateFilePath := filepath.Join(home, config.HomePath, "state.yml")
+	return util.CheckForUpdate(stateFilePath, config.Repo, currentVersion)
 }
 
 // initConfig reads in config file and ENV variables if set.
