@@ -23,7 +23,7 @@ import (
 func ProjectCmd(h *internal.Helper) *cobra.Command {
 	var projectCmd = &cobra.Command{
 		Use:   "project",
-		Short: "Manage projects.",
+		Short: "Manage projects",
 	}
 
 	projectCmd.AddCommand(ListCmd(h))

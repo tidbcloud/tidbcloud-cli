@@ -35,7 +35,7 @@ import (
 func DescribeCmd(h *internal.Helper) *cobra.Command {
 	var describeCmd = &cobra.Command{
 		Use:     "describe",
-		Short:   "Describe a cluster.",
+		Short:   "Describe a cluster",
 		Aliases: []string{"get"},
 		Example: fmt.Sprintf(`  Get the cluster info in interactive mode:
   $ %[1]s cluster describe

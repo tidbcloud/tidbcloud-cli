@@ -31,7 +31,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 	describeCmd := &cobra.Command{
 		Use:     "describe <profileName>",
 		Aliases: []string{"get"},
-		Short:   "Return a specific profile.",
+		Short:   "Return a specific profile",
 		Example: fmt.Sprintf(`  Return the profile configuration:
   $ %[1]s config describe <profileName>`, config.CliName),
 		Args: util.RequiredArgs("profileName"),

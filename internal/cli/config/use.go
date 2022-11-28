@@ -31,7 +31,7 @@ import (
 func UseCmd(h *internal.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:   "use <profileName>",
-		Short: "Use the specified profile as the active profile.",
+		Short: "Use the specified profile as the active profile",
 		Example: fmt.Sprintf(`  Use the "test" profile as the active profile:
   $ %[1]s config use test`, config.CliName),
 		Args: util.RequiredArgs("profileName"),

@@ -35,7 +35,7 @@ import (
 func DeleteCmd(h *internal.Helper) *cobra.Command {
 	var deleteCmd = &cobra.Command{
 		Use:   "delete",
-		Short: "Delete a cluster from your project.",
+		Short: "Delete a cluster from your project",
 		Example: fmt.Sprintf(`  Delete a cluster in interactive mode:
   $ %[1]s cluster delete
 

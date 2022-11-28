@@ -81,7 +81,7 @@ func (suite *ListConfigSuite) TestListConfigArgs() {
 		{
 			name:         "list config",
 			args:         []string{},
-			stdoutString: "Profile Name\ntest\t*\ntest1\n",
+			stdoutString: "Profile Name\ntest\t(active)\ntest1\n",
 		},
 	}
 

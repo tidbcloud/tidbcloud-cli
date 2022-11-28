@@ -29,12 +29,12 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type InitConfigSuite struct {
+type CreateConfigSuite struct {
 	suite.Suite
 	h *internal.Helper
 }
 
-func (suite *InitConfigSuite) SetupTest() {
+func (suite *CreateConfigSuite) SetupTest() {
 	if err := os.Setenv("NO_COLOR", "true"); err != nil {
 		suite.T().Error(err)
 	}
@@ -49,14 +49,14 @@ func (suite *InitConfigSuite) SetupTest() {
 	}
 }
 
-func (suite *InitConfigSuite) TearDownTest() {
+func (suite *CreateConfigSuite) TearDownTest() {
 	err := util.RemoveFile(".tidbcloud-cli.toml")
 	if err != nil {
 		suite.T().Error(err)
 	}
 }
 
-func (suite *InitConfigSuite) TestInitConfigArgs() {
+func (suite *CreateConfigSuite) TestCreateConfigArgs() {
 	assert := require.New(suite.T())
 	profile := "test"
 	publicKey := "SDIWODIJQNDKJQW"
@@ -70,12 +70,12 @@ func (suite *InitConfigSuite) TestInitConfigArgs() {
 		stderrString string
 	}{
 		{
-			name:         "init config",
+			name:         "create config",
 			args:         []string{"--profile-name", profile, "--public-key", publicKey, "--private-key", privateKey},
 			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\nCurrent profile has been changed to test\n",
 		},
 		{
-			name: "init config without required private key",
+			name: "create config without required private key",
 			args: []string{"--profile-name", profile, "--public-key", publicKey},
 			err:  fmt.Errorf("required flag(s) \"private-key\" not set"),
 		},
@@ -86,7 +86,7 @@ func (suite *InitConfigSuite) TestInitConfigArgs() {
 			err := viper.ReadInConfig()
 			assert.Nil(err)
 
-			cmd := InitCmd(suite.h)
+			cmd := CreateCmd(suite.h)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
@@ -99,7 +99,7 @@ func (suite *InitConfigSuite) TestInitConfigArgs() {
 	}
 }
 
-func (suite *InitConfigSuite) TestInitConfigWithExistedProfile() {
+func (suite *CreateConfigSuite) TestCreateConfigWithExistedProfile() {
 	assert := require.New(suite.T())
 	profile := "test"
 	publicKey := "SDIWODIJQNDKJQW"
@@ -121,7 +121,7 @@ func (suite *InitConfigSuite) TestInitConfigWithExistedProfile() {
 		stderrString string
 	}{
 		{
-			name:         "init config with existed profile",
+			name:         "create config with existed profile",
 			args:         []string{"--profile-name", profile, "--public-key", publicKey, "--private-key", privateKey},
 			err:          fmt.Errorf("profile test already exists, use `config set` to modify"),
 			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\n",
@@ -133,7 +133,7 @@ func (suite *InitConfigSuite) TestInitConfigWithExistedProfile() {
 			err := viper.ReadInConfig()
 			assert.Nil(err)
 
-			cmd := InitCmd(suite.h)
+			cmd := CreateCmd(suite.h)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
@@ -146,6 +146,6 @@ func (suite *InitConfigSuite) TestInitConfigWithExistedProfile() {
 	}
 }
 
-func TestInitConfigSuite(t *testing.T) {
-	suite.Run(t, new(InitConfigSuite))
+func TestCreateConfigSuite(t *testing.T) {
+	suite.Run(t, new(CreateConfigSuite))
 }
