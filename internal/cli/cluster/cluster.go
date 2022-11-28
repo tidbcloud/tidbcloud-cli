@@ -29,7 +29,7 @@ var (
 func ClusterCmd(h *internal.Helper) *cobra.Command {
 	var clusterCmd = &cobra.Command{
 		Use:   "cluster",
-		Short: "Manage clusters for your project.",
+		Short: "Manage clusters for your project",
 	}
 
 	clusterCmd.AddCommand(CreateCmd(h))

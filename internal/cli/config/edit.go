@@ -31,7 +31,7 @@ const defaultEditor = "vi"
 func EditCmd() *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:   "edit",
-		Short: "Opens the config file with the default text editor.",
+		Short: "Open the config file with the default text editor",
 		Example: fmt.Sprintf(`  To open the config
   $ %[1]s config edit`, config.CliName),
 		RunE: func(cmd *cobra.Command, args []string) error {

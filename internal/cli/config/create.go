@@ -39,23 +39,23 @@ var (
 	cursorStyle  = focusedStyle.Copy()
 )
 
-type initConfigField int
+type createConfigField int
 
 const (
-	profileNameIdx initConfigField = iota
+	profileNameIdx createConfigField = iota
 	publicKeyIdx
 	privateKeyIdx
 )
 
-func InitCmd(h *internal.Helper) *cobra.Command {
-	var initCmd = &cobra.Command{
-		Use:   "init",
+func CreateCmd(h *internal.Helper) *cobra.Command {
+	var createCmd = &cobra.Command{
+		Use:   "create",
 		Short: "Configure a profile to store access settings",
 		Example: fmt.Sprintf(`  To configure the tool to work with TiDB Cloud in interactive mode:
-  $ %[1]s config init
+  $ %[1]s config create
 
   To configure the tool to work with TiDB Cloud in non-interactive mode::
-  $ %[1]s config init --profile-name <profile-name> --public-key <public-key> --private-key <private-key>`, config.CliName),
+  $ %[1]s config create --profile-name <profile-name> --public-key <public-key> --private-key <private-key>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			// mark required flags in non-interactive mode
 			if cmd.Flags().NFlag() != 0 {
@@ -142,10 +142,10 @@ func InitCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	initCmd.Flags().String(flag.ProfileName, "", "the name of the profile to be created")
-	initCmd.Flags().String(flag.PublicKey, "", "the public key of the TiDB Cloud API")
-	initCmd.Flags().String(flag.PrivateKey, "", "the private key of the TiDB Cloud API")
-	return initCmd
+	createCmd.Flags().String(flag.ProfileName, "", "the name of the profile to be created")
+	createCmd.Flags().String(flag.PublicKey, "", "the public key of the TiDB Cloud API")
+	createCmd.Flags().String(flag.PrivateKey, "", "the private key of the TiDB Cloud API")
+	return createCmd
 }
 
 func initialDeletionInputModel() ui.TextInputModel {
@@ -158,7 +158,7 @@ func initialDeletionInputModel() ui.TextInputModel {
 		t = textinput.New()
 		t.CursorStyle = cursorStyle
 		t.CharLimit = 64
-		f := initConfigField(i)
+		f := createConfigField(i)
 
 		switch f {
 		case profileNameIdx:

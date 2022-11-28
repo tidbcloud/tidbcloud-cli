@@ -35,7 +35,7 @@ import (
 func ListCmd(h *internal.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:   "list <projectID>",
-		Short: "List all clusters in a project.",
+		Short: "List all clusters in a project",
 		Args:  util.RequiredArgs("projectID"),
 		Example: fmt.Sprintf(`  List the clusters in the project:
   $ %[1]s cluster list <projectID> 

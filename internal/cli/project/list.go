@@ -34,7 +34,7 @@ import (
 func ListCmd(h *internal.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:     "list",
-		Short:   "List all accessible projects.",
+		Short:   "List all accessible projects",
 		Aliases: []string{"ls"},
 		Example: fmt.Sprintf(`  List the projects:
   $ %[1]s project list

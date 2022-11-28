@@ -23,10 +23,10 @@ import (
 func ConfigCmd(h *internal.Helper) *cobra.Command {
 	var configCmd = &cobra.Command{
 		Use:   "config",
-		Short: "Configure and manage your user profiles.",
+		Short: "Configure and manage your user profiles",
 	}
 
-	configCmd.AddCommand(InitCmd(h))
+	configCmd.AddCommand(CreateCmd(h))
 	configCmd.AddCommand(ListCmd(h))
 	configCmd.AddCommand(DeleteCmd(h))
 	configCmd.AddCommand(SetCmd(h))

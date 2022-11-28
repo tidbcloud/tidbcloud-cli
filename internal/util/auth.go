@@ -24,7 +24,7 @@ import (
 
 func CheckAuth(profile string) error {
 	if profile == "" {
-		return fmt.Errorf("no active profile for auth, please use `config init` to create one")
+		return fmt.Errorf("no active profile for auth, please use `config create` to create one")
 	}
 
 	publicKey := viper.Get(fmt.Sprintf("%s.%s", profile, prop.PublicKey))

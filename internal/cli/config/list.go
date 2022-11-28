@@ -30,7 +30,7 @@ import (
 func ListCmd(h *internal.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:     "list",
-		Short:   "list all profiles",
+		Short:   "List all profiles",
 		Aliases: []string{"ls"},
 		Example: fmt.Sprintf(`  Return a list of available profiles by name:
   $ %[1]s config list`, config.CliName),
@@ -44,7 +44,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			fmt.Fprintf(h.IOStreams.Out, "Profile Name\n")
 			for _, key := range profiles {
 				if key == curP {
-					fmt.Fprintf(h.IOStreams.Out, color.GreenString(key+"\t*\n"))
+					fmt.Fprintf(h.IOStreams.Out, color.GreenString(key+"\t(active)\n"))
 				} else {
 					fmt.Fprintf(h.IOStreams.Out, color.GreenString(key+"\n"))
 				}
