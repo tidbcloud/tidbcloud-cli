@@ -69,7 +69,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				}
 			} else if format == output.HumanFormat {
 				// for human format, we print the table with brief information.
-				color.New(color.BgYellow).Fprintf(h.IOStreams.Out, "  For detailed information, please output with json format.")
+				color.New(color.FgYellow).Fprintf(h.IOStreams.Out, "  For detailed information, please output with json format.")
 				columns := []table.Column{
 					{Title: "ID", Width: 20},
 					{Title: "Name", Width: 20},
