@@ -42,14 +42,30 @@ const (
 
 const (
 	serverlessType = "SERVERLESS"
-	deverloperType = "DEVELOPER"
+	developerType  = "DEVELOPER"
 )
 
-type CreateServerlessOpts struct {
+type CreateOpts struct {
 	serverlessProviders []*clusterApi.ListProviderRegionsOKBodyItemsItems0
+	interactive         bool
+}
+
+func (c CreateOpts) NonInteractiveFlags() []string {
+	return []string{
+		flag.ClusterName,
+		flag.ClusterType,
+		flag.CloudProvider,
+		flag.Region,
+		flag.RootPassword,
+		flag.ProjectID,
+	}
 }
 
 func CreateCmd(h *internal.Helper) *cobra.Command {
+	opts := CreateOpts{
+		interactive: true,
+	}
+
 	var createCmd = &cobra.Command{
 		Use:   "create",
 		Short: "Create one cluster in the specified project",
@@ -60,31 +76,21 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s cluster create --project-id <project-id> --cluster-name <cluster-name> --cloud-provider <cloud-provider> -r <region> --root-password <password> --cluster-type <cluster-type>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			flags := opts.NonInteractiveFlags()
+			for _, fn := range flags {
+				f := cmd.Flags().Lookup(fn)
+				if f != nil && f.Changed {
+					opts.interactive = false
+				}
+			}
+
 			// mark required flags in non-interactive mode
-			if cmd.Flags().NFlag() != 0 {
-				err := cmd.MarkFlagRequired(flag.ClusterName)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				err = cmd.MarkFlagRequired(flag.ClusterType)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				err = cmd.MarkFlagRequired(flag.CloudProvider)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				err = cmd.MarkFlagRequired(flag.Region)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				err = cmd.MarkFlagRequired(flag.RootPassword)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				err = cmd.MarkFlagRequired(flag.ProjectID)
-				if err != nil {
-					return errors.Trace(err)
+			if !opts.interactive {
+				for _, fn := range flags {
+					err := cmd.MarkFlagRequired(fn)
+					if err != nil {
+						return errors.Trace(err)
+					}
 				}
 			}
 
@@ -99,7 +105,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			var region string
 			var rootPassword string
 			var projectID string
-			if cmd.Flags().NFlag() == 0 {
+			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
@@ -110,11 +116,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 
-				opts := CreateServerlessOpts{}
 				for i, item := range regions.Payload.Items {
 					// Filter out non-serverless providers, currently only serverless is supported.
 					// But currently serverless is called "DEVELOPER" in the API.
-					if item.ClusterType == deverloperType {
+					if item.ClusterType == developerType {
 						opts.serverlessProviders = append(opts.serverlessProviders, regions.Payload.Items[i])
 					}
 				}
@@ -224,7 +229,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				return errors.New("Currently only \"SERVERLESS\" cluster are supported to create in CLI")
 			} else {
 				// Currently serverless type is called \"DEVELOPER\" in API, but it will be changed to \"SERVERLESS\" soon.
-				clusterType = deverloperType
+				clusterType = developerType
 			}
 
 			clusterDefBody := &clusterApi.CreateClusterBody{}
