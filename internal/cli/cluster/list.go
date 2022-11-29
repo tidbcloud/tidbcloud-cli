@@ -26,12 +26,9 @@ import (
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 
+	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/emirpasic/gods/sets/hashset"
-	"github.com/fatih/color"
-
-	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
-	"github.com/charmbracelet/bubbles/table"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
@@ -104,18 +101,16 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 			} else if format == output.HumanFormat {
-				// for human format, we print the table with brief information.
-				color.New(color.FgYellow).Fprintf(h.IOStreams.Out, "  For detailed information, please output with json format.")
-				columns := []table.Column{
-					{Title: "ID", Width: 20},
-					{Title: "Name", Width: 20},
-					{Title: "Status", Width: 10},
-					{Title: "Version", Width: 10},
-					{Title: "Region", Width: 15},
-					{Title: "Type", Width: 10},
+				columns := []output.Column{
+					"ID",
+					"Name",
+					"Status",
+					"Version",
+					"Region",
+					"Type",
 				}
 
-				var rows []table.Row
+				var rows []output.Row
 				for _, item := range items {
 					t := item.ClusterType
 					// Currently serverless is called "DEVELOPER" in the API.
@@ -125,7 +120,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 						t = serverlessType
 					}
 
-					rows = append(rows, table.Row{
+					rows = append(rows, output.Row{
 						*(item.ID),
 						item.Name,
 						item.Status.ClusterStatus,
@@ -135,7 +130,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					})
 				}
 
-				err := output.PrintHumanTable(columns, rows)
+				err := output.PrintHumanTable(h.IOStreams.Out, columns, rows)
 				if err != nil {
 					return errors.Trace(err)
 				}
