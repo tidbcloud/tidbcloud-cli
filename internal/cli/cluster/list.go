@@ -16,19 +16,14 @@ package cluster
 
 import (
 	"fmt"
-	"math"
 
 	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/cli/project"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
-	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
+	"tidbcloud-cli/internal/service/cloud"
 
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/emirpasic/gods/sets/hashset"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
@@ -54,32 +49,16 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				_, projectItems, err := project.RetrieveProjects(h.QueryPageSize, h.Client())
+				project, err := cloud.GetSelectedProject(h.QueryPageSize, h.Client())
 				if err != nil {
 					return err
 				}
-				set := hashset.New()
-				for _, item := range projectItems {
-					set.Add(item.ID)
-				}
-				model, err := ui.InitialSelectModel(set.Values(), "Choose the project ID:")
-				if err != nil {
-					return err
-				}
-				p := tea.NewProgram(model)
-				projectModel, err := p.StartReturningModel()
-				if err != nil {
-					return errors.Trace(err)
-				}
-				if m, _ := projectModel.(ui.SelectModel); m.Interrupted {
-					return nil
-				}
-				pID = projectModel.(ui.SelectModel).Choices[projectModel.(ui.SelectModel).Selected].(string)
+				pID = project.ID
 			} else {
 				pID = args[0]
 			}
 
-			total, items, err := retrieveClusters(pID, h.QueryPageSize, h.Client())
+			total, items, err := cloud.RetrieveClusters(pID, h.QueryPageSize, h.Client())
 			if err != nil {
 				return err
 			}
@@ -145,23 +124,4 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, "Output format. One of: human, json, default: human")
 	return listCmd
-}
-
-func retrieveClusters(pID string, pageSize int64, d util.CloudClient) (int64, []*clusterApi.ListClustersOfProjectOKBodyItemsItems0, error) {
-	params := clusterApi.NewListClustersOfProjectParams().WithProjectID(pID)
-	var total int64 = math.MaxInt64
-	var page int64 = 1
-	var items []*clusterApi.ListClustersOfProjectOKBodyItemsItems0
-	// loop to get all clusters
-	for (page-1)*pageSize < total {
-		clusters, err := d.ListClustersOfProject(params.WithPage(&page).WithPageSize(&pageSize))
-		if err != nil {
-			return 0, nil, errors.Trace(err)
-		}
-
-		total = *clusters.Payload.Total
-		page += 1
-		items = append(items, clusters.Payload.Items...)
-	}
-	return total, items, nil
 }

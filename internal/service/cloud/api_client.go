@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package util
+package cloud
 
 import (
 	"net/http"
@@ -29,7 +29,7 @@ const (
 	apiBaseUrl = "api.tidbcloud.com"
 )
 
-type CloudClient interface {
+type TiDBCloudClient interface {
 	CreateCluster(params *cluster.CreateClusterParams, opts ...cluster.ClientOption) (*cluster.CreateClusterOK, error)
 
 	DeleteCluster(params *cluster.DeleteClusterParams, opts ...cluster.ClientOption) (*cluster.DeleteClusterOK, error)

@@ -16,14 +16,13 @@ package project
 
 import (
 	"fmt"
-	"math"
 	"strconv"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
-	"tidbcloud-cli/internal/util"
+	"tidbcloud-cli/internal/service/cloud"
 
 	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 	"github.com/fatih/color"
@@ -42,7 +41,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
   List the projects with json format:
   $ %[1]s project list -o json`, config.CliName),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			total, items, err := RetrieveProjects(h.QueryPageSize, h.Client())
+			total, items, err := cloud.RetrieveProjects(h.QueryPageSize, h.Client())
 			if err != nil {
 				return err
 			}
@@ -97,23 +96,4 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, "Output format. One of: json|human, default: human")
 	return listCmd
-}
-
-func RetrieveProjects(size int64, d util.CloudClient) (int64, []*projectApi.ListProjectsOKBodyItemsItems0, error) {
-	params := projectApi.NewListProjectsParams()
-	var total int64 = math.MaxInt64
-	var page int64 = 1
-	var pageSize = size
-	var items []*projectApi.ListProjectsOKBodyItemsItems0
-	for (page-1)*pageSize < total {
-		projects, err := d.ListProjects(params.WithPage(&page).WithPageSize(&pageSize))
-		if err != nil {
-			return 0, nil, errors.Trace(err)
-		}
-
-		total = *projects.Payload.Total
-		page += 1
-		items = append(items, projects.Payload.Items...)
-	}
-	return total, items, nil
 }
