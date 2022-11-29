@@ -5,4 +5,6 @@ header:
   paths:
     - '**/*.sh'
     - '**/*.go'
+  paths-ignore:
+    - '**/mock/**'
   comment: on-failure
