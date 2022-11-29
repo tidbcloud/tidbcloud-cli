@@ -17,7 +17,6 @@ package cluster
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -236,11 +235,6 @@ func (suite *ListClusterSuite) TestListClusterArgs() {
 			name:         "list clusters with output shorthand flag",
 			args:         []string{projectID, "-o", "json"},
 			stdoutString: listResultStr,
-		},
-		{
-			name: "list clusters without required project id",
-			args: []string{"-o", "json"},
-			err:  fmt.Errorf("missing argument <projectID> \n\nUsage:\n  list <projectID> [flags]\n\nAliases:\n  list, ls\n\nExamples:\n  List the clusters in the project:\n  $ ticloud cluster list <projectID> \n\n  List the clusters in the project with json format:\n  $ ticloud cluster list <projectID> -o json\n\nFlags:\n  -h, --help            help for list\n  -o, --output string   Output format. One of: human, json, default: human (default \"human\")\n"),
 		},
 	}
 
