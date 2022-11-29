@@ -26,7 +26,7 @@ import (
 	"tidbcloud-cli/internal/util"
 
 	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
-	"github.com/charmbracelet/bubbles/table"
+	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
@@ -61,17 +61,17 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 			} else if format == output.HumanFormat {
-				columns := []table.Column{
-					{Title: "ID", Width: 20},
-					{Title: "Name", Width: 20},
-					{Title: "ClusterCount", Width: 15},
-					{Title: "UserCount", Width: 10},
-					{Title: "OrgID", Width: 20},
+				columns := []output.Column{
+					"ID",
+					"Name",
+					"ClusterCount",
+					"UserCount",
+					"OrgID",
 				}
 
-				var rows []table.Row
+				var rows []output.Row
 				for _, item := range items {
-					rows = append(rows, table.Row{
+					rows = append(rows, output.Row{
 						item.ID,
 						item.Name,
 						strconv.FormatInt(item.ClusterCount, 10),
@@ -80,7 +80,9 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					})
 				}
 
-				err := output.PrintHumanTable(columns, rows)
+				err := output.PrintHumanTable(nil, columns, rows)
+				// for human format, we print the table with brief information.
+				color.New(color.FgYellow).Fprintln(h.IOStreams.Out, "\nFor detailed information, please output with json format.")
 				if err != nil {
 					return errors.Trace(err)
 				}

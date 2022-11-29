@@ -19,17 +19,17 @@ import (
 	"fmt"
 	"io"
 
-	"tidbcloud-cli/internal/ui"
-
-	"github.com/charmbracelet/bubbles/table"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"github.com/fatih/color"
+	"github.com/rodaine/table"
 )
 
 const (
 	JsonFormat  string = "json"
 	HumanFormat string = "human"
 )
+
+type Column string
+type Row []string
 
 func PrintJson(out io.Writer, items interface{}) error {
 	v, err := json.MarshalIndent(items, "", "  ")
@@ -40,22 +40,28 @@ func PrintJson(out io.Writer, items interface{}) error {
 	return nil
 }
 
-func PrintHumanTable(columns []table.Column, rows []table.Row) error {
-	t := table.New(
-		table.WithColumns(columns),
-		table.WithRows(rows),
-		table.WithFocused(false),
-		table.WithHeight(len(rows)),
-	)
+func PrintHumanTable(out io.Writer, columns []Column, rows []Row) error {
+	headerFmt := color.New(color.FgCyan, color.Underline).SprintfFunc()
 
-	s := table.DefaultStyles()
-	s.Selected = lipgloss.NewStyle()
-	t.SetStyles(s)
+	c := make([]interface{}, len(columns))
+	for i, col := range columns {
+		c[i] = col
+	}
+	tbl := table.New(c...)
+	tbl.WithHeaderFormatter(headerFmt)
 
-	m := ui.InitialTableModel(t)
-	if err := tea.NewProgram(m).Start(); err != nil {
-		return err
+	for _, row := range rows {
+		r := make([]interface{}, len(row))
+		for i, col := range row {
+			r[i] = col
+		}
+		tbl.AddRow(r...)
 	}
 
+	fmt.Fprintln(out)
+	tbl.Print()
+
+	// for human format, we print the table with brief information.
+	color.New(color.FgYellow).Fprintln(out, "\nFor detailed information, please output with json format.")
 	return nil
 }
