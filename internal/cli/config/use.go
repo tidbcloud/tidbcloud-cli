@@ -63,7 +63,7 @@ func SetProfile(out io.Writer, profileName string) error {
 	}
 
 	fgGreen := color.New(color.FgGreen).SprintFunc()
-	hiGreen := color.New(color.FgHiGreen, color.BgWhite).SprintFunc()
+	hiGreen := color.New(color.FgHiCyan).SprintFunc()
 	fmt.Fprintf(out, "%s %s\n", fgGreen("Current profile has been changed to"), hiGreen(profileName))
 	return nil
 }

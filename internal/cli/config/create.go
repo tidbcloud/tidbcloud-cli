@@ -136,7 +136,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			fgGreen := color.New(color.FgGreen).SprintFunc()
-			hiGreen := color.New(color.FgHiGreen, color.BgWhite).SprintFunc()
+			hiGreen := color.New(color.FgHiCyan).SprintFunc()
 			fmt.Fprintf(h.IOStreams.Out, "%s %s\n", fgGreen("Current profile has been changed to"), hiGreen(profileName))
 			return nil
 		},
