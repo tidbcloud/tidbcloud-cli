@@ -17,7 +17,7 @@ package internal
 import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/iostream"
-	"tidbcloud-cli/internal/util"
+	"tidbcloud-cli/internal/service/cloud"
 )
 
 const (
@@ -25,7 +25,7 @@ const (
 )
 
 type Helper struct {
-	Client        func() util.CloudClient
+	Client        func() cloud.TiDBCloudClient
 	QueryPageSize int64
 	IOStreams     *iostream.IOStreams
 	Config        *config.Config

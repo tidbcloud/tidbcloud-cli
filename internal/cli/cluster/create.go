@@ -19,11 +19,10 @@ import (
 	"time"
 
 	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/cli/project"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
+	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
 
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -174,27 +173,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 				region = regionModel.(ui.SelectModel).Choices[regionModel.(ui.SelectModel).Selected].(string)
 
-				_, items, err := project.RetrieveProjects(h.QueryPageSize, h.Client())
+				project, err := cloud.GetSelectedProject(h.QueryPageSize, h.Client())
 				if err != nil {
 					return err
 				}
-				set = hashset.New()
-				for _, item := range items {
-					set.Add(item.ID)
-				}
-				model, err = ui.InitialSelectModel(set.Values(), "Choose the project ID:")
-				if err != nil {
-					return err
-				}
-				p = tea.NewProgram(model)
-				projectModel, err := p.StartReturningModel()
-				if err != nil {
-					return errors.Trace(err)
-				}
-				if m, _ := projectModel.(ui.SelectModel); m.Interrupted {
-					return nil
-				}
-				projectID = projectModel.(ui.SelectModel).Choices[projectModel.(ui.SelectModel).Selected].(string)
+				projectID = project.ID
 
 				// variables for input
 				p = tea.NewProgram(initialCreateInputModel())
@@ -290,7 +273,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	return createCmd
 }
 
-func CreateAndWaitReady(h *internal.Helper, d util.CloudClient, projectID string, clusterDefBody *clusterApi.CreateClusterBody) (error, bool) {
+func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, projectID string, clusterDefBody *clusterApi.CreateClusterBody) (error, bool) {
 	createClusterResult, err := d.CreateCluster(clusterApi.NewCreateClusterParams().WithProjectID(projectID).WithBody(*clusterDefBody))
 	if err != nil {
 		return errors.Trace(err), true
@@ -319,7 +302,7 @@ func CreateAndWaitReady(h *internal.Helper, d util.CloudClient, projectID string
 	}
 }
 
-func CreateAndSpinnerWait(d util.CloudClient, projectID string, clusterDefBody *clusterApi.CreateClusterBody, h *internal.Helper) (error, bool) {
+func CreateAndSpinnerWait(d cloud.TiDBCloudClient, projectID string, clusterDefBody *clusterApi.CreateClusterBody, h *internal.Helper) (error, bool) {
 	// use spinner to indicate that the cluster is being created
 	task := func() tea.Msg {
 		createClusterResult, err := d.CreateCluster(clusterApi.NewCreateClusterParams().WithProjectID(projectID).WithBody(*clusterDefBody))

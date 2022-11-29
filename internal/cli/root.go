@@ -31,6 +31,7 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/prop"
+	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
 
 	"github.com/fatih/color"
@@ -45,9 +46,9 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 	}
 
 	h := &internal.Helper{
-		Client: func() util.CloudClient {
+		Client: func() cloud.TiDBCloudClient {
 			publicKey, privateKey := util.GetAccessKeys(c.ActiveProfile)
-			return util.NewClientDelegate(publicKey, privateKey)
+			return cloud.NewClientDelegate(publicKey, privateKey)
 		},
 		QueryPageSize: internal.DefaultPageSize,
 		IOStreams:     iostream.System(),

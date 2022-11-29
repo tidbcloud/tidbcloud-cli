@@ -24,7 +24,7 @@ import (
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
-	"tidbcloud-cli/internal/util"
+	"tidbcloud-cli/internal/service/cloud"
 
 	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/stretchr/testify/require"
@@ -45,7 +45,7 @@ func (suite *CreateClusterSuite) SetupTest() {
 	var pageSize int64 = 10
 	suite.mockClient = new(mock.ApiClient)
 	suite.h = &internal.Helper{
-		Client: func() util.CloudClient {
+		Client: func() cloud.TiDBCloudClient {
 			return suite.mockClient
 		},
 		QueryPageSize: pageSize,
