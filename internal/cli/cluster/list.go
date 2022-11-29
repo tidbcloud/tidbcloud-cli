@@ -19,11 +19,15 @@ import (
 	"math"
 
 	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/cli/project"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
+	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/emirpasic/gods/sets/hashset"
 	"github.com/fatih/color"
 
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
@@ -36,15 +40,47 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:   "list <projectID>",
 		Short: "List all clusters in a project",
-		Args:  util.RequiredArgs("projectID"),
-		Example: fmt.Sprintf(`  List the clusters in the project:
+		Example: fmt.Sprintf(`  List all clusters in the project(interactive mode):
+  $ %[1]s cluster list
+
+  List the clusters in the project(non-interactive mode):
   $ %[1]s cluster list <projectID> 
 
   List the clusters in the project with json format:
   $ %[1]s cluster list <projectID> -o json`, config.CliName),
 		Aliases: []string{"ls"},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			pID := args[0]
+			var pID string
+			if len(args) == 0 {
+				if !h.IOStreams.CanPrompt {
+					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
+				}
+
+				// interactive mode
+				_, projectItems, err := project.RetrieveProjects(h.QueryPageSize, h.Client())
+				if err != nil {
+					return err
+				}
+				set := hashset.New()
+				for _, item := range projectItems {
+					set.Add(item.ID)
+				}
+				model, err := ui.InitialSelectModel(set.Values(), "Choose the project ID:")
+				if err != nil {
+					return err
+				}
+				p := tea.NewProgram(model)
+				projectModel, err := p.StartReturningModel()
+				if err != nil {
+					return errors.Trace(err)
+				}
+				if m, _ := projectModel.(ui.SelectModel); m.Interrupted {
+					return nil
+				}
+				pID = projectModel.(ui.SelectModel).Choices[projectModel.(ui.SelectModel).Selected].(string)
+			} else {
+				pID = args[0]
+			}
 
 			total, items, err := retrieveClusters(pID, h.QueryPageSize, h.Client())
 			if err != nil {
@@ -75,19 +111,27 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					{Title: "Name", Width: 20},
 					{Title: "Status", Width: 10},
 					{Title: "Version", Width: 10},
-					{Title: "Region", Width: 10},
+					{Title: "Region", Width: 15},
 					{Title: "Type", Width: 10},
 				}
 
 				var rows []table.Row
 				for _, item := range items {
+					t := item.ClusterType
+					// Currently serverless is called "DEVELOPER" in the API.
+					// For better user experience, we change it to "SERVERLESS".
+					// But we still keep the original value in the json result.
+					if t == deverloperType {
+						t = serverlessType
+					}
+
 					rows = append(rows, table.Row{
 						*(item.ID),
 						item.Name,
 						item.Status.ClusterStatus,
 						item.Status.TidbVersion,
 						item.Region,
-						item.ClusterType,
+						t,
 					})
 				}
 
