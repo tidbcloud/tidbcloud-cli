@@ -29,7 +29,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type DeleteOpts struct {
+	interactive bool
+}
+
+func (c DeleteOpts) NonInteractiveFlags() []string {
+	return []string{
+		flag.ClusterID,
+		flag.ProjectID,
+	}
+}
+
 func DeleteCmd(h *internal.Helper) *cobra.Command {
+	opts := DeleteOpts{
+		interactive: true,
+	}
+
 	var deleteCmd = &cobra.Command{
 		Use:   "delete",
 		Short: "Delete a cluster from your project",
@@ -40,15 +55,21 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s cluster delete -p <project-id> -c <cluster-id>`, config.CliName),
 		Aliases: []string{"rm"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			// mark required flags in non-interactive mode
-			if cmd.Flags().NFlag() != 0 {
-				err := cmd.MarkFlagRequired(flag.ProjectID)
-				if err != nil {
-					return errors.Trace(err)
+			flags := opts.NonInteractiveFlags()
+			for _, fn := range flags {
+				f := cmd.Flags().Lookup(fn)
+				if f != nil && f.Changed {
+					opts.interactive = false
 				}
-				err = cmd.MarkFlagRequired(flag.ClusterID)
-				if err != nil {
-					return errors.Trace(err)
+			}
+
+			// mark required flags in non-interactive mode
+			if !opts.interactive {
+				for _, fn := range flags {
+					err := cmd.MarkFlagRequired(fn)
+					if err != nil {
+						return errors.Trace(err)
+					}
 				}
 			}
 
@@ -59,7 +80,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 
 			var projectID string
 			var clusterID string
-			if cmd.Flags().NFlag() == 0 {
+			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}

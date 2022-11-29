@@ -28,7 +28,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type ListOpts struct {
+	interactive bool
+}
+
 func ListCmd(h *internal.Helper) *cobra.Command {
+	opts := ListOpts{
+		interactive: true,
+	}
+
 	var listCmd = &cobra.Command{
 		Use:   "list <projectID>",
 		Short: "List all clusters in a project",
@@ -41,9 +49,14 @@ func ListCmd(h *internal.Helper) *cobra.Command {
   List the clusters in the project with json format:
   $ %[1]s cluster list <projectID> -o json`, config.CliName),
 		Aliases: []string{"ls"},
+		PreRun: func(cmd *cobra.Command, args []string) {
+			if len(args) > 0 {
+				opts.interactive = false
+			}
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var pID string
-			if len(args) == 0 {
+			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
@@ -95,7 +108,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					// Currently serverless is called "DEVELOPER" in the API.
 					// For better user experience, we change it to "SERVERLESS".
 					// But we still keep the original value in the json result.
-					if t == deverloperType {
+					if t == developerType {
 						t = serverlessType
 					}
 

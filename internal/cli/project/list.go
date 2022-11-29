@@ -79,7 +79,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					})
 				}
 
-				err := output.PrintHumanTable(nil, columns, rows)
+				err := output.PrintHumanTable(h.IOStreams.Out, columns, rows)
 				// for human format, we print the table with brief information.
 				color.New(color.FgYellow).Fprintln(h.IOStreams.Out, "\nFor detailed information, please output with json format.")
 				if err != nil {

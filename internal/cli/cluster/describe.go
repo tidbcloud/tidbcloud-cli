@@ -28,7 +28,22 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type DescribeOpts struct {
+	interactive bool
+}
+
+func (c DescribeOpts) NonInteractiveFlags() []string {
+	return []string{
+		flag.ClusterID,
+		flag.ProjectID,
+	}
+}
+
 func DescribeCmd(h *internal.Helper) *cobra.Command {
+	opts := DescribeOpts{
+		interactive: true,
+	}
+
 	var describeCmd = &cobra.Command{
 		Use:     "describe",
 		Short:   "Describe a cluster",
@@ -39,15 +54,21 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
   Get the cluster info in non-interactive mode:
   $ %[1]s cluster describe -p <project-id> -c <cluster-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			// mark required flags in non-interactive mode
-			if cmd.Flags().NFlag() != 0 {
-				err := cmd.MarkFlagRequired(flag.ProjectID)
-				if err != nil {
-					return errors.Trace(err)
+			flags := opts.NonInteractiveFlags()
+			for _, fn := range flags {
+				f := cmd.Flags().Lookup(fn)
+				if f != nil && f.Changed {
+					opts.interactive = false
 				}
-				err = cmd.MarkFlagRequired(flag.ClusterID)
-				if err != nil {
-					return errors.Trace(err)
+			}
+
+			// mark required flags in non-interactive mode
+			if !opts.interactive {
+				for _, fn := range flags {
+					err := cmd.MarkFlagRequired(fn)
+					if err != nil {
+						return errors.Trace(err)
+					}
 				}
 			}
 
@@ -58,7 +79,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 
 			var projectID string
 			var clusterID string
-			if cmd.Flags().NFlag() == 0 {
+			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}

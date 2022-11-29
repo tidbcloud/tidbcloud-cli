@@ -47,7 +47,23 @@ const (
 	privateKeyIdx
 )
 
+type CreateOpts struct {
+	interactive bool
+}
+
+func (c CreateOpts) NonInteractiveFlags() []string {
+	return []string{
+		flag.ProfileName,
+		flag.PublicKey,
+		flag.PrivateKey,
+	}
+}
+
 func CreateCmd(h *internal.Helper) *cobra.Command {
+	opts := CreateOpts{
+		interactive: true,
+	}
+
 	var createCmd = &cobra.Command{
 		Use:   "create",
 		Short: "Configure a profile to store access settings",
@@ -57,19 +73,21 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   To configure the tool to work with TiDB Cloud in non-interactive mode::
   $ %[1]s config create --profile-name <profile-name> --public-key <public-key> --private-key <private-key>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			flags := opts.NonInteractiveFlags()
+			for _, fn := range flags {
+				f := cmd.Flags().Lookup(fn)
+				if f != nil && f.Changed {
+					opts.interactive = false
+				}
+			}
+
 			// mark required flags in non-interactive mode
-			if cmd.Flags().NFlag() != 0 {
-				err := cmd.MarkFlagRequired(flag.ProfileName)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				err = cmd.MarkFlagRequired(flag.PublicKey)
-				if err != nil {
-					return err
-				}
-				err = cmd.MarkFlagRequired(flag.PrivateKey)
-				if err != nil {
-					return err
+			if !opts.interactive {
+				for _, fn := range flags {
+					err := cmd.MarkFlagRequired(fn)
+					if err != nil {
+						return errors.Trace(err)
+					}
 				}
 			}
 
