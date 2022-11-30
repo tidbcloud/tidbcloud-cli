@@ -25,7 +25,6 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 
 	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
-	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
@@ -81,7 +80,6 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 				err := output.PrintHumanTable(h.IOStreams.Out, columns, rows)
 				// for human format, we print the table with brief information.
-				color.New(color.FgYellow).Fprintln(h.IOStreams.Out, "\nFor detailed information, please output with json format.")
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -94,6 +92,6 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, "Output format. One of: json|human, default: human")
+	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, "Output format. One of: json|human. For the complete result, please use json format.")
 	return listCmd
 }
