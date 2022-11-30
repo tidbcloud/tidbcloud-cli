@@ -254,14 +254,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if h.IOStreams.CanPrompt {
-				err2, done := CreateAndSpinnerWait(d, projectID, clusterDefBody, h)
-				if done {
-					return errors.Trace(err2)
+				err := CreateAndSpinnerWait(d, projectID, clusterDefBody, h)
+				if err != nil {
+					return errors.Trace(err)
 				}
 			} else {
-				err2, done := CreateAndWaitReady(h, d, projectID, clusterDefBody)
-				if done {
-					return err2
+				err := CreateAndWaitReady(h, d, projectID, clusterDefBody)
+				if err != nil {
+					return err
 				}
 			}
 
@@ -278,36 +278,36 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	return createCmd
 }
 
-func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, projectID string, clusterDefBody *clusterApi.CreateClusterBody) (error, bool) {
+func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, projectID string, clusterDefBody *clusterApi.CreateClusterBody) error {
 	createClusterResult, err := d.CreateCluster(clusterApi.NewCreateClusterParams().WithProjectID(projectID).WithBody(*clusterDefBody))
 	if err != nil {
-		return errors.Trace(err), true
+		return errors.Trace(err)
 	}
 	newClusterID := *createClusterResult.GetPayload().ID
 	ticker := time.NewTicker(1 * time.Second)
 
-	fmt.Fprintln(h.IOStreams.Out, "Waiting for cluster to be ready...")
+	fmt.Fprintln(h.IOStreams.Out, "Waiting for cluster to be ready")
 	for {
 		select {
 		case <-time.After(2 * time.Minute):
-			return errors.New("Timeout waiting for cluster to be ready, please check status on dashboard."), true
+			return errors.New("Timeout waiting for cluster to be ready, please check status on dashboard.")
 		case <-ticker.C:
 			clusterResult, err := d.GetCluster(clusterApi.NewGetClusterParams().
 				WithClusterID(newClusterID).
 				WithProjectID(projectID))
 			if err != nil {
-				return errors.Trace(err), true
+				return errors.Trace(err)
 			}
 			s := clusterResult.GetPayload().Status.ClusterStatus
 			if s == "AVAILABLE" {
 				fmt.Fprint(h.IOStreams.Out, color.GreenString("Cluster %s is ready.", newClusterID))
-				return nil, true
+				return nil
 			}
 		}
 	}
 }
 
-func CreateAndSpinnerWait(d cloud.TiDBCloudClient, projectID string, clusterDefBody *clusterApi.CreateClusterBody, h *internal.Helper) (error, bool) {
+func CreateAndSpinnerWait(d cloud.TiDBCloudClient, projectID string, clusterDefBody *clusterApi.CreateClusterBody, h *internal.Helper) error {
 	// use spinner to indicate that the cluster is being created
 	task := func() tea.Msg {
 		createClusterResult, err := d.CreateCluster(clusterApi.NewCreateClusterParams().WithProjectID(projectID).WithBody(*clusterDefBody))
@@ -336,17 +336,17 @@ func CreateAndSpinnerWait(d cloud.TiDBCloudClient, projectID string, clusterDefB
 		}
 	}
 
-	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Waiting for cluster to be ready..."))
+	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Waiting for cluster to be ready...\n"))
 	createModel, err := p.StartReturningModel()
 	if err != nil {
-		return errors.Trace(err), true
+		return errors.Trace(err)
 	}
 	if m, _ := createModel.(ui.SpinnerModel); m.Err != nil {
 		fmt.Fprintln(h.IOStreams.Err, color.RedString(m.Err.Error()))
 	} else {
 		fmt.Fprintln(h.IOStreams.Out, color.GreenString(m.Output))
 	}
-	return nil, false
+	return nil
 }
 
 func initialCreateInputModel() ui.TextInputModel {

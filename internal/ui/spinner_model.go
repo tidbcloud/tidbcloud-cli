@@ -78,7 +78,7 @@ func (m SpinnerModel) View() string {
 	if m.Output != "" {
 		return m.Output
 	}
-	str := color.New(color.FgYellow).Sprintf("%s %s...press q to quit \n", m.spinner.View(), m.Hint)
+	str := color.New(color.FgYellow).Sprintf("%s %s. press q to quit \n", m.spinner.View(), m.Hint)
 	if m.quitting {
 		return str + "\n"
 	}

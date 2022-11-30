@@ -12,13 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package util
+package github
 
 import (
 	"fmt"
 	"os"
 	"path/filepath"
 	"time"
+
+	"tidbcloud-cli/internal/config"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/hashicorp/go-version"
@@ -36,10 +38,17 @@ type StateEntry struct {
 	LatestRelease      ReleaseInfo `yaml:"latest_release"`
 }
 
-func CheckForUpdate(stateFilePath, repo, currentVersion string) (*ReleaseInfo, error) {
-	stateEntry, _ := getStateEntry(stateFilePath)
-	if stateEntry != nil && time.Since(stateEntry.CheckedForUpdateAt).Hours() < 24 {
-		return nil, nil
+// CheckForUpdate checks for updates and returns the latest release info if there is a newer version.
+// For checking after every command, we should use stateEntry to avoid checking too frequently.
+// For checking when using `update`, we should use forceCheck to ignore the stateEntry.
+func CheckForUpdate(repo, currentVersion string, withRateLimit bool) (*ReleaseInfo, error) {
+	home, _ := os.UserHomeDir()
+	stateFilePath := filepath.Join(home, config.HomePath, "state.yml")
+	if withRateLimit {
+		stateEntry, _ := getStateEntry(stateFilePath)
+		if stateEntry != nil && time.Since(stateEntry.CheckedForUpdateAt).Hours() < 24 {
+			return nil, nil
+		}
 	}
 
 	releaseInfo, err := getLatestReleaseInfo(repo)
@@ -47,9 +56,11 @@ func CheckForUpdate(stateFilePath, repo, currentVersion string) (*ReleaseInfo, e
 		return nil, err
 	}
 
-	err = setStateEntry(stateFilePath, time.Now(), *releaseInfo)
-	if err != nil {
-		return nil, err
+	if withRateLimit {
+		err = setStateEntry(stateFilePath, time.Now(), *releaseInfo)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	if versionGreaterThan(releaseInfo.Version, currentVersion) {
@@ -77,6 +88,7 @@ func getStateEntry(stateFilePath string) (*StateEntry, error) {
 func getLatestReleaseInfo(repo string) (*ReleaseInfo, error) {
 	var latestRelease ReleaseInfo
 	client := resty.New()
+	client.SetTimeout(5 * time.Second)
 	response, err := client.
 		R().
 		SetResult(&latestRelease).
