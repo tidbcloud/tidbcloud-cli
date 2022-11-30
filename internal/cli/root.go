@@ -176,7 +176,7 @@ func initConfig() {
 	home, err := os.UserHomeDir()
 	cobra.CheckErr(err)
 	path := home + "/" + config.HomePath
-	err = os.MkdirAll(path, os.ModePerm)
+	err = os.MkdirAll(path, 0700)
 	if err != nil {
 		color.Red("Failed to create ticloud home directory: %s", err)
 		os.Exit(1)
@@ -186,6 +186,7 @@ func initConfig() {
 	viper.AddConfigPath(path)
 	viper.SetConfigType("toml")
 	viper.SetConfigName("config")
+	viper.SetConfigPermissions(0600)
 	_ = viper.SafeWriteConfig()
 	err = viper.ReadInConfig()
 	if err != nil {
