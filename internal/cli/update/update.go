@@ -113,21 +113,20 @@ func CreateAndSpinnerWait(h *internal.Helper, newRelease *github.ReleaseInfo) er
 		}()
 
 		ticker := time.NewTicker(1 * time.Second)
-		for {
+		for range ticker.C {
 			select {
-			case <-ticker.C:
-				select {
-				case err := <-res:
-					if err != nil {
-						return err
-					} else {
-						return ui.Result("Update successfully!")
-					}
-				default:
-					// continue
+			case err := <-res:
+				if err != nil {
+					return err
+				} else {
+					return ui.Result("Update successfully!")
 				}
+			default:
+				// continue
 			}
 		}
+
+		return errors.New("update failed")
 	}
 
 	p := tea.NewProgram(ui.InitialSpinnerModel(task, fmt.Sprintf("Updating the CLI to version %s", newRelease.Version)))

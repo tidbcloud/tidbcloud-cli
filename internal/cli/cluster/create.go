@@ -286,7 +286,7 @@ func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, projectID s
 	newClusterID := *createClusterResult.GetPayload().ID
 	ticker := time.NewTicker(1 * time.Second)
 
-	fmt.Fprintln(h.IOStreams.Out, "Waiting for cluster to be ready")
+	fmt.Fprintln(h.IOStreams.Out, "... Waiting for cluster to be ready")
 	for {
 		select {
 		case <-time.After(2 * time.Minute):
