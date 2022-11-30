@@ -342,7 +342,7 @@ func CreateAndSpinnerWait(d cloud.TiDBCloudClient, projectID string, clusterDefB
 		return errors.Trace(err)
 	}
 	if m, _ := createModel.(ui.SpinnerModel); m.Err != nil {
-		fmt.Fprintln(h.IOStreams.Err, color.RedString(m.Err.Error()))
+		return m.Err
 	} else {
 		fmt.Fprintln(h.IOStreams.Out, color.GreenString(m.Output))
 	}
