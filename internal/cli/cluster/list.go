@@ -38,16 +38,16 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var listCmd = &cobra.Command{
-		Use:   "list <projectID>",
+		Use:   "list <project-id>",
 		Short: "List all clusters in a project",
 		Example: fmt.Sprintf(`  List all clusters in the project(interactive mode):
   $ %[1]s cluster list
 
   List the clusters in the project(non-interactive mode):
-  $ %[1]s cluster list <projectID> 
+  $ %[1]s cluster list <project-id> 
 
   List the clusters in the project with json format:
-  $ %[1]s cluster list <projectID> -o json`, config.CliName),
+  $ %[1]s cluster list <project-id> -o json`, config.CliName),
 		Aliases: []string{"ls"},
 		PreRun: func(cmd *cobra.Command, args []string) {
 			if len(args) > 0 {
@@ -135,6 +135,6 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, "Output format. One of: human, json, default: human")
+	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, "Output format. One of: human, json. For the complete result, please use json format.")
 	return listCmd
 }

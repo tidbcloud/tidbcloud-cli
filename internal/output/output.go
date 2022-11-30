@@ -62,6 +62,5 @@ func PrintHumanTable(out io.Writer, columns []Column, rows []Row) error {
 	tbl.Print()
 
 	// for human format, we print the table with brief information.
-	color.New(color.FgYellow).Fprintln(out, "\nFor detailed information, please output with json format.")
 	return nil
 }
