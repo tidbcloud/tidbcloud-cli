@@ -14,7 +14,7 @@
 # limitations under the License.
 
 
-version="0.1.0-rc4"
+version="0.1.0-rc5"
 
 repo='https://github.com/tidbcloud/tidbcloud-cli/releases/download'
 if [ -n "$TICLOUD_MIRRORS" ]; then
