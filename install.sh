@@ -14,7 +14,13 @@
 # limitations under the License.
 
 
-version="0.1.0-rc5"
+version=$(curl -s https://api.github.com/repos/tidbcloud/tidbcloud-cli/releases/latest  |  grep -oE  '"tag_nam":.*?[^\\]".*?[^\\]"' |  awk -F':' '{print $2}' | awk -F '"' '{print $2}' | awk -F 'v' '{print $2}')
+
+if [ -z "$version" ];
+then
+    echo "Can't get the latest version"
+    exit 1
+fi
 
 repo='https://github.com/tidbcloud/tidbcloud-cli/releases/download'
 if [ -n "$TICLOUD_MIRRORS" ]; then
