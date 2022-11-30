@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"tidbcloud-cli/internal"
@@ -32,6 +31,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/service/github"
 	"tidbcloud-cli/internal/util"
 
 	"github.com/fatih/color"
@@ -55,13 +55,6 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 		Config:        c,
 	}
 
-	buildVersion := ver
-	updateMessageChan := make(chan *util.ReleaseInfo)
-	go func() {
-		rel, _ := checkForUpdate(buildVersion, h.IOStreams.CanPrompt)
-		updateMessageChan <- rel
-	}()
-
 	rootCmd := RootCmd(h, ver, commit, buildDate)
 	initConfig()
 
@@ -70,22 +63,22 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 		fmt.Fprintf(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
 		os.Exit(1)
 	}
-
-	newRelease := <-updateMessageChan
-	if newRelease != nil {
-		fmt.Fprintf(h.IOStreams.Out, fmt.Sprintf("\n\n%s %s → %s\n",
-			color.YellowString("A new version of %s is available:", config.CliName),
-			color.CyanString(buildVersion),
-			color.CyanString(newRelease.Version)))
-	}
 }
 
 func RootCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
+	updateMessageChan := make(chan *github.ReleaseInfo)
 	var rootCmd = &cobra.Command{
 		Use:   config.CliName,
 		Short: "CLI tool to manage TiDB Cloud",
 		Long:  fmt.Sprintf("%s is a CLI library for communicating with TiDB Cloud's API.", config.CliName),
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if shouldCheckNewRelease(cmd) {
+				go func() {
+					rel, _ := checkForUpdate(ver, h.IOStreams.CanPrompt)
+					updateMessageChan <- rel
+				}()
+			}
+
 			var flagNoColor = cmd.Flags().Lookup(flag.NoColor)
 			if flagNoColor != nil && flagNoColor.Changed {
 				color.NoColor = true
@@ -114,6 +107,18 @@ func RootCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
 			}
 			return nil
 		},
+		PersistentPostRun: func(cmd *cobra.Command, args []string) {
+			if shouldCheckNewRelease(cmd) {
+				newRelease := <-updateMessageChan
+				if newRelease != nil {
+					fmt.Fprintf(h.IOStreams.Out, fmt.Sprintf("\n\n%s %s → %s\n",
+						color.YellowString("A new version of %s is available:", config.CliName),
+						color.CyanString(ver),
+						color.CyanString(newRelease.Version)))
+					fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use `ticloud update` to update to the latest version"))
+				}
+			}
+		},
 		SilenceUsage:  true,
 		SilenceErrors: true,
 	}
@@ -122,19 +127,16 @@ func RootCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
 	rootCmd.AddCommand(configCmd.ConfigCmd(h))
 	rootCmd.AddCommand(project.ProjectCmd(h))
 	rootCmd.AddCommand(version.VersionCmd(h, ver, commit, buildDate))
-	rootCmd.AddCommand(update.UpdateCmd(h))
+	rootCmd.AddCommand(update.UpdateCmd(h, ver))
 
 	rootCmd.PersistentFlags().Bool(flag.NoColor, false, "Disable color output")
 	rootCmd.PersistentFlags().StringP(flag.Profile, flag.ProfileShort, "", "Profile to use from your configuration file.")
 	return rootCmd
 }
 
-func shouldCheckAuth(cmd *cobra.Command) bool {
+func shouldCheckNewRelease(cmd *cobra.Command) bool {
 	cmdPrefixShouldSkip := []string{
-		fmt.Sprintf("%s %s", config.CliName, "config"),
-		fmt.Sprintf("%s %s", config.CliName, "help"),
-		fmt.Sprintf("%s %s", config.CliName, "completion"),
-		fmt.Sprintf("%s %s", config.CliName, "version")}
+		fmt.Sprintf("%s %s", config.CliName, "update")}
 	for _, p := range cmdPrefixShouldSkip {
 		if strings.HasPrefix(cmd.CommandPath(), p) {
 			return false
@@ -144,14 +146,28 @@ func shouldCheckAuth(cmd *cobra.Command) bool {
 	return true
 }
 
-func checkForUpdate(currentVersion string, isTerminal bool) (*util.ReleaseInfo, error) {
+func shouldCheckAuth(cmd *cobra.Command) bool {
+	cmdPrefixShouldSkip := []string{
+		fmt.Sprintf("%s %s", config.CliName, "config"),
+		fmt.Sprintf("%s %s", config.CliName, "help"),
+		fmt.Sprintf("%s %s", config.CliName, "completion"),
+		fmt.Sprintf("%s %s", config.CliName, "version"),
+		fmt.Sprintf("%s %s", config.CliName, "update")}
+	for _, p := range cmdPrefixShouldSkip {
+		if strings.HasPrefix(cmd.CommandPath(), p) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func checkForUpdate(currentVersion string, isTerminal bool) (*github.ReleaseInfo, error) {
 	if !isTerminal || currentVersion == config.DevVersion {
 		return nil, nil
 	}
 
-	home, _ := os.UserHomeDir()
-	stateFilePath := filepath.Join(home, config.HomePath, "state.yml")
-	return util.CheckForUpdate(stateFilePath, config.Repo, currentVersion)
+	return github.CheckForUpdate(config.Repo, currentVersion, true)
 }
 
 // initConfig reads in config file and ENV variables if set.

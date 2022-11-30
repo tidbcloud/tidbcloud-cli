@@ -20,6 +20,7 @@ import (
 	"strings"
 
 	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/config"
 
 	"github.com/spf13/cobra"
 )
@@ -39,12 +40,12 @@ func VersionCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Comman
 // Format formats a version string with the given information.
 func Format(ver, commit, buildDate string) string {
 	if ver == "" && buildDate == "" && commit == "" {
-		return "pscale version (built from source)"
+		return fmt.Sprintf("%s version (built from source)", config.CliName)
 	}
 
 	ver = strings.TrimPrefix(ver, "v")
 
-	return fmt.Sprintf("pscale version %s (build date: %s commit: %s)\n%s\n", ver, buildDate, commit, changelogURL(ver))
+	return fmt.Sprintf("%s version %s (build date: %s commit: %s)\n%s\n", config.CliName, ver, buildDate, commit, changelogURL(ver))
 }
 
 func changelogURL(version string) string {
