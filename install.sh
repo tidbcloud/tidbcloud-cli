@@ -18,8 +18,12 @@ version=$1
 
 if [ -z "$version" ];
 then
-    echo "Can't get the latest version"
-    exit 1
+    version=$(curl -s https://api.github.com/repos/tidbcloud/tidbcloud-cli/releases/latest  |  grep -oE  '"tag_name":.*?[^\\]".*?[^\\]"' |  awk -F':' '{print $2}' | awk -F '"' '{print $2}' | awk -F 'v' '{print $2}')
+    if [ -z "$version" ];
+    then
+        echo "Failed to get latest version"
+        exit 1
+    fi
 fi
 
 echo "The latest version is $version"
