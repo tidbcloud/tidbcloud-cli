@@ -14,7 +14,15 @@
 # limitations under the License.
 
 
-version="0.1.0-rc6"
+version=$1
+
+if [ -z "$version" ];
+then
+    echo "Can't get the latest version"
+    exit 1
+fi
+
+echo "The latest version is $version"
 
 repo='https://github.com/tidbcloud/tidbcloud-cli/releases/download'
 if [ -n "$TICLOUD_MIRRORS" ]; then

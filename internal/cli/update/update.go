@@ -98,16 +98,18 @@ func CreateAndSpinnerWait(h *internal.Helper, newRelease *github.ReleaseInfo) er
 
 			out, err := c1.Output()
 			if err != nil {
-				res <- errors.Annotate(err, "failed to download the install.sh script")
+				res <- errors.Annotate(err, string(out))
 			}
 
-			_, err = exec.CommandContext(ctx, "/bin/sh", "-c", string(out)).Output() //nolint:gosec
+			out1, err := exec.CommandContext(ctx, "/bin/sh", "-c", string(out)).Output() //nolint:gosec
 			if ctx.Err() == context.DeadlineExceeded {
 				res <- errors.New("timeout when execute the install.sh script")
 			}
 			if err != nil {
-				res <- errors.Annotate(err, "execute the install.sh script")
+				res <- errors.Annotate(err, string(out1))
 			}
+
+			fmt.Fprintln(h.IOStreams.Out, string(out1))
 
 			res <- nil
 		}()
