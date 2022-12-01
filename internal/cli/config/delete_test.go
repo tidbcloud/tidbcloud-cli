@@ -80,17 +80,22 @@ func (suite *DeleteConfigSuite) TestDeleteConfigArgs() {
 	}{
 		{
 			name:         "delete config",
-			args:         []string{"test"},
+			args:         []string{"test", "--force"},
 			stdoutString: "Profile test deleted successfully\n",
 		},
 		{
+			name: "delete config without force",
+			args: []string{"test"},
+			err:  fmt.Errorf("the terminal doesn't support prompt, please run with --force to delete the profile"),
+		},
+		{
 			name: "delete config with no args",
-			args: []string{},
-			err:  fmt.Errorf("missing argument <profileName> \n\nUsage:\n  delete <profileName> [flags]\n\nAliases:\n  delete, rm\n\nExamples:\n  Delete the profile configuration:\n  $ ticloud config delete <profileName>\n\nFlags:\n  -h, --help   help for delete\n"),
+			args: []string{"--force"},
+			err:  fmt.Errorf("missing argument <profileName> \n\nUsage:\n  delete <profileName> [flags]\n\nAliases:\n  delete, rm\n\nExamples:\n  Delete the profile configuration:\n  $ ticloud config delete <profileName>\n\nFlags:\n      --force   Delete a profile without confirmation\n  -h, --help    help for delete\n"),
 		},
 		{
 			name:         "delete config with non-existed profile",
-			args:         []string{"test1"},
+			args:         []string{"test1", "--force"},
 			stdoutString: "Profile test1 deleted successfully\n",
 		},
 	}
@@ -149,7 +154,7 @@ func (suite *DeleteConfigSuite) TestDeleteConfigWithActiveProfile() {
 	}{
 		{
 			name:         "delete active profile",
-			args:         []string{"test"},
+			args:         []string{"test", "--force"},
 			stdoutString: "Profile test deleted successfully\n",
 		},
 	}

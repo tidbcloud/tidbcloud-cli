@@ -16,6 +16,7 @@ package cluster
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"tidbcloud-cli/internal"
@@ -23,11 +24,15 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
+
+const confirmed = "yes"
 
 type DeleteOpts struct {
 	interactive bool
@@ -45,6 +50,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 		interactive: true,
 	}
 
+	var force bool
 	var deleteCmd = &cobra.Command{
 		Use:   "delete",
 		Short: "Delete a cluster from your project",
@@ -112,6 +118,32 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cID
 			}
 
+			if !force {
+				if !h.IOStreams.CanPrompt {
+					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to delete the cluster")
+				}
+
+				confirmationMessage := fmt.Sprintf("%s %s %s", color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to confirm:"))
+
+				prompt := &survey.Input{
+					Message: confirmationMessage,
+				}
+
+				var userInput string
+				err := survey.AskOne(prompt, &userInput)
+				if err != nil {
+					if err == terminal.InterruptErr {
+						os.Exit(0)
+					} else {
+						return err
+					}
+				}
+
+				if userInput != confirmed {
+					return errors.New("incorrect confirm string entered, skipping database deletion")
+				}
+			}
+
 			params := clusterApi.NewDeleteClusterParams().
 				WithProjectID(projectID).
 				WithClusterID(clusterID)
@@ -141,6 +173,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
+	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a database without confirmation")
 	deleteCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The project ID of the cluster to be deleted.")
 	deleteCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster to be deleted.")
 	return deleteCmd
