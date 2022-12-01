@@ -364,6 +364,9 @@ func initialCreateInputModel() ui.TextInputModel {
 		switch f {
 		case clusterNameIdx:
 			t.Placeholder = "Cluster Name"
+			t.Focus()
+			t.PromptStyle = focusedStyle
+			t.TextStyle = focusedStyle
 			t.Validate = func(s string) error {
 				if len(s) == 0 {
 					return errors.New("cluster Name is required")
