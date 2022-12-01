@@ -38,9 +38,15 @@ func UpdateCmd(h *internal.Helper, ver string) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// When update CLI, we don't need to check the version again after command executes.
 			newRelease, err := github.CheckForUpdate(config.Repo, ver, false)
+			// FIXME: Since github API has rate limit, we should not return error when check update failed.
+			// FIXME: And the update operation is idempotent, so we can ignore the error.
+			// TODO: Replace the GitHub API with our own API to get the latest version.
 			if err != nil {
-				return err
+				newRelease = &github.ReleaseInfo{
+					Version: "latest",
+				}
 			}
+
 			if newRelease == nil {
 				fmt.Fprintln(h.IOStreams.Out, "The CLI is already up to date.")
 				return nil
@@ -71,7 +77,7 @@ func CreateAndWaitReady(h *internal.Helper, newRelease *github.ReleaseInfo) erro
 		return errors.Annotate(err, string(out))
 	}
 
-	out1, err := exec.CommandContext(ctx, "/bin/sh", "-c", string(out), newRelease.Version).Output() //nolint:gosec
+	out1, err := exec.CommandContext(ctx, "/bin/sh", "-c", string(out)).Output() //nolint:gosec
 	if ctx.Err() == context.DeadlineExceeded {
 		return errors.New("timeout when execute the install.sh script")
 	}
@@ -97,7 +103,7 @@ func CreateAndSpinnerWait(h *internal.Helper, newRelease *github.ReleaseInfo) er
 				res <- errors.Annotate(err, string(out))
 			}
 
-			out1, err := exec.CommandContext(ctx, "/bin/sh", "-c", string(out), newRelease.Version).Output() //nolint:gosec
+			out1, err := exec.CommandContext(ctx, "/bin/sh", "-c", string(out)).Output() //nolint:gosec
 			if ctx.Err() == context.DeadlineExceeded {
 				res <- errors.New("timeout when execute the install.sh script")
 			}
