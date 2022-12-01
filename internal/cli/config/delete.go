@@ -20,9 +20,12 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
+	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/util"
 
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/fatih/color"
 
 	"github.com/juju/errors"
@@ -32,7 +35,11 @@ import (
 	"github.com/spf13/viper"
 )
 
+const confirmed = "yes"
+
 func DeleteCmd(h *internal.Helper) *cobra.Command {
+	var force bool
+
 	var deleteCmd = &cobra.Command{
 		Use:   "delete <profileName>",
 		Short: "Delete a profile",
@@ -44,6 +51,32 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			// Configuration needs to be deleted from toml, as viper doesn't support this yet.
 			// FIXME :: change when https://github.com/spf13/viper/pull/519 is merged.
 			profileName := args[0]
+
+			if !force {
+				if !h.IOStreams.CanPrompt {
+					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to delete the profile")
+				}
+
+				confirmationMessage := fmt.Sprintf("%s %s %s", color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to confirm:"))
+
+				prompt := &survey.Input{
+					Message: confirmationMessage,
+				}
+
+				var userInput string
+				err := survey.AskOne(prompt, &userInput)
+				if err != nil {
+					if err == terminal.InterruptErr {
+						os.Exit(0)
+					} else {
+						return err
+					}
+				}
+
+				if userInput != confirmed {
+					return errors.New("incorrect confirm string entered, skipping profile deletion")
+				}
+			}
 
 			settings := viper.AllSettings()
 			t, err := toml.TreeFromMap(settings)
@@ -101,5 +134,6 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
+	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a profile without confirmation")
 	return deleteCmd
 }

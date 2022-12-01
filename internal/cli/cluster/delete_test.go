@@ -73,17 +73,22 @@ func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 	}{
 		{
 			name:         "delete cluster success",
-			args:         []string{"--project-id", projectID, "--cluster-id", clusterID},
+			args:         []string{"--project-id", projectID, "--cluster-id", clusterID, "--force"},
 			stdoutString: "cluster deleted\n",
 		},
 		{
+			name: "delete cluster without force",
+			args: []string{"--project-id", projectID, "--cluster-id", clusterID},
+			err:  fmt.Errorf("the terminal doesn't support prompt, please run with --force to delete the cluster"),
+		},
+		{
 			name:         "delete cluster with output flag",
-			args:         []string{"-p", projectID, "-c", clusterID},
+			args:         []string{"-p", projectID, "-c", clusterID, "--force"},
 			stdoutString: "cluster deleted\n",
 		},
 		{
 			name: "delete cluster without required project id",
-			args: []string{"-c", clusterID},
+			args: []string{"-c", clusterID, "--force"},
 			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
 		},
 	}
