@@ -41,10 +41,12 @@ Documentation page is on the way.
 ## Roadmap
 
 There are many features we want to add to the CLI.
-- CLI Supports auth login.
-- CLI Supports connecting to the TiDB Cloud cluster.
-- CLI Supports generating connect-string for multiple frameworks and MySQL clients.
-- CLI Supports generating demo code for using TiDB Cloud cluster.
-- CLI Supports creating the dedicated cluster(on condition that dedicated support flavor).
-- CLI Supports import data to TiDB Cloud cluster.
-- CLI Supports backing up and restoring the TiDB Cloud cluster.
+- CLI supports auth login.
+- CLI supports connecting to the TiDB Cloud cluster.
+- CLI supports generating connect-string for multiple frameworks and MySQL clients.
+- CLI supports generating demo code for using TiDB Cloud cluster.
+- CLI supports creating the dedicated cluster(on condition that dedicated support flavor).
+- CLI supports import data to TiDB Cloud cluster.
+- CLI supports backing up and restoring the TiDB Cloud cluster.
+- CLI supports telemetry.
+- Migrate the CLI archives to TiUP mirrors.
