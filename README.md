@@ -42,9 +42,9 @@ Documentation page is on the way.
 
 There are many features we want to add to the CLI.
 - CLI Supports auth login.
-- CLI Supports connect to TiDB Cloud cluster.
-- CLI Supports generate connect-string for multiple frameworks and mysql clients.
-- CLI Supports generate demo code for using TiDB Cloud cluster.
-- CLI Supports create the dedicated cluster(on condition that dedicated support flavor).
+- CLI Supports connecting to the TiDB Cloud cluster.
+- CLI Supports generating connect-string for multiple frameworks and MySQL clients.
+- CLI Supports generating demo code for using TiDB Cloud cluster.
+- CLI Supports creating the dedicated cluster(on condition that dedicated support flavor).
 - CLI Supports import data to TiDB Cloud cluster.
-- CLI Supports backup and restore TiDB Cloud cluster.
+- CLI Supports backing up and restoring the TiDB Cloud cluster.
