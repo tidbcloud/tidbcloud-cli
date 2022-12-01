@@ -38,9 +38,15 @@ func UpdateCmd(h *internal.Helper, ver string) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// When update CLI, we don't need to check the version again after command executes.
 			newRelease, err := github.CheckForUpdate(config.Repo, ver, false)
+			// FIXME: Since github API has rate limit, we should not return error when check update failed.
+			// FIXME: And the update operation is idempotent, so we can ignore the error.
+			// TODO: Replace the GitHub API with our own API to get the latest version.
 			if err != nil {
-				return err
+				newRelease = &github.ReleaseInfo{
+					Version: "latest",
+				}
 			}
+
 			if newRelease == nil {
 				fmt.Fprintln(h.IOStreams.Out, "The CLI is already up to date.")
 				return nil
@@ -58,28 +64,26 @@ func UpdateCmd(h *internal.Helper, ver string) *cobra.Command {
 }
 
 func CreateAndWaitReady(h *internal.Helper, newRelease *github.ReleaseInfo) error {
+	fmt.Fprintf(h.IOStreams.Out, "... Updating the CLI to version %s\n", newRelease.Version)
+
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
-	fmt.Fprintf(h.IOStreams.Out, "... Updating the CLI to version %s\n", newRelease.Version)
-	c1 := exec.CommandContext(ctx, "curl", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh")
+
+	out, err := exec.CommandContext(ctx, "curl", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh").Output()
 	if ctx.Err() == context.DeadlineExceeded {
 		return errors.New("timeout when download the install.sh script")
 	}
-
-	out, err := c1.Output()
 	if err != nil {
-		return errors.Annotate(err, "failed to download the install.sh script")
+		return errors.Annotate(err, string(out))
 	}
 
-	_, err = exec.CommandContext(ctx, "/bin/sh", "-c", string(out)).Output() //nolint:gosec
+	out1, err := exec.CommandContext(ctx, "/bin/sh", "-c", string(out)).Output() //nolint:gosec
 	if ctx.Err() == context.DeadlineExceeded {
 		return errors.New("timeout when execute the install.sh script")
 	}
 	if err != nil {
-		return errors.Annotate(err, "execute the install.sh script")
+		return errors.Annotate(err, string(out1))
 	}
-
-	fmt.Fprintln(h.IOStreams.Out, "Update successfully!")
 
 	return nil
 }
@@ -91,22 +95,20 @@ func CreateAndSpinnerWait(h *internal.Helper, newRelease *github.ReleaseInfo) er
 		go func() {
 			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 			defer cancel()
-			c1 := exec.CommandContext(ctx, "curl", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh")
+			out, err := exec.CommandContext(ctx, "curl", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh").Output()
 			if ctx.Err() == context.DeadlineExceeded {
 				res <- errors.New("timeout when download the install.sh script")
 			}
-
-			out, err := c1.Output()
 			if err != nil {
-				res <- errors.Annotate(err, "failed to download the install.sh script")
+				res <- errors.Annotate(err, string(out))
 			}
 
-			_, err = exec.CommandContext(ctx, "/bin/sh", "-c", string(out)).Output() //nolint:gosec
+			out1, err := exec.CommandContext(ctx, "/bin/sh", "-c", string(out)).Output() //nolint:gosec
 			if ctx.Err() == context.DeadlineExceeded {
 				res <- errors.New("timeout when execute the install.sh script")
 			}
 			if err != nil {
-				res <- errors.Annotate(err, "execute the install.sh script")
+				res <- errors.Annotate(err, string(out1))
 			}
 
 			res <- nil
