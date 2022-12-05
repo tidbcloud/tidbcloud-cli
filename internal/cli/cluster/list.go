@@ -98,6 +98,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					"Name",
 					"Status",
 					"Version",
+					"Cloud",
 					"Region",
 					"Type",
 				}
@@ -117,6 +118,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 						item.Name,
 						item.Status.ClusterStatus,
 						item.Status.TidbVersion,
+						item.CloudProvider,
 						item.Region,
 						t,
 					})
