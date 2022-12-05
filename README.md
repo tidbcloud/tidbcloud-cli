@@ -23,7 +23,7 @@ In order to use the `ticloud` CLI, you need to have a TiDB Cloud account. If you
 Config a profile with your TiDB Cloud [API key](https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management).
 
 ```
-ticloud config init
+ticloud config create
 ```
 
 #### Create a cluster
