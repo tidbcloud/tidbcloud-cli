@@ -15,6 +15,7 @@
 package ui
 
 import (
+	"github.com/charmbracelet/lipgloss"
 	"github.com/fatih/color"
 
 	"github.com/charmbracelet/bubbles/spinner"
@@ -37,7 +38,7 @@ type Result string
 func InitialSpinnerModel(task tea.Cmd, hint string) SpinnerModel {
 	s := spinner.New()
 	s.Spinner = spinner.Points
-	//s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
+	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("32"))
 	return SpinnerModel{spinner: s, Task: task, Output: "", Hint: hint}
 }
 
@@ -72,7 +73,7 @@ func (m SpinnerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m SpinnerModel) View() string {
-	str := color.New(color.FgYellow).Sprintf("%s %s.", m.spinner.View(), m.Hint) + "\n"
+	str := color.New(color.FgYellow).Sprintf("%s %s.", m.spinner.View(), color.BlueString(m.Hint)) + "\n"
 	if m.quitting {
 		return str + "\n"
 	}
