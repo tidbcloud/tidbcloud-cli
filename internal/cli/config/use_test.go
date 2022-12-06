@@ -52,11 +52,11 @@ func (suite *UseConfigSuite) SetupTest() {
 	publicKey := "SDIWODIJQNDKJQW"
 	privateKey := "SDWIOUEOSDSDC"
 
-	viper.Set("test.public_key", publicKey)
-	viper.Set("test.private_key", privateKey)
-	viper.Set("current_profile", profile)
-	viper.Set("test1.public_key", publicKey)
-	viper.Set("test1.private_key", privateKey)
+	viper.Set("test.public-key", publicKey)
+	viper.Set("test.private-key", privateKey)
+	viper.Set("current-profile", profile)
+	viper.Set("test1.public-key", publicKey)
+	viper.Set("test1.private-key", privateKey)
 	err := viper.WriteConfig()
 	if err != nil {
 		suite.T().Error(err)
@@ -75,7 +75,7 @@ func (suite *UseConfigSuite) TestUseConfigArgs() {
 
 	err := viper.ReadInConfig()
 	assert.Nil(err)
-	assert.Equal("test", viper.GetString("current_profile"))
+	assert.Equal("test", viper.GetString("current-profile"))
 
 	tests := []struct {
 		name         string
@@ -123,7 +123,7 @@ func (suite *UseConfigSuite) TestUseConfigArgs() {
 				viper.SetConfigName(".tidbcloud-cli")
 				err := viper.ReadInConfig()
 				assert.Nil(err)
-				assert.Equal("test1", viper.GetString("current_profile"))
+				assert.Equal("test1", viper.GetString("current-profile"))
 			}
 		})
 	}

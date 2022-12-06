@@ -52,9 +52,9 @@ func (suite *DeleteConfigSuite) SetupTest() {
 	publicKey := "SDIWODIJQNDKJQW"
 	privateKey := "SDWIOUEOSDSDC"
 
-	viper.Set("test.public_key", publicKey)
-	viper.Set("test.private_key", privateKey)
-	viper.Set("current_profile", profile)
+	viper.Set("test.public-key", publicKey)
+	viper.Set("test.private-key", privateKey)
+	viper.Set("current-profile", profile)
 	err := viper.WriteConfig()
 	if err != nil {
 		suite.T().Error(err)
@@ -121,9 +121,9 @@ func (suite *DeleteConfigSuite) TestDeleteConfigArgs() {
 				viper.SetConfigName(".tidbcloud-cli")
 				err := viper.ReadInConfig()
 				assert.Nil(err)
-				assert.Equal("", viper.GetString("current_profile"))
-				assert.Equal("", viper.GetString(tt.args[0]+".public_key"))
-				assert.Equal("", viper.GetString(tt.args[0]+".private_key"))
+				assert.Equal("", viper.GetString("current-profile"))
+				assert.Equal("", viper.GetString(tt.args[0]+".public-key"))
+				assert.Equal("", viper.GetString(tt.args[0]+".private-key"))
 				assert.Equal("", viper.GetString(tt.args[0]))
 			}
 		})
@@ -136,9 +136,9 @@ func (suite *DeleteConfigSuite) TestDeleteConfigWithActiveProfile() {
 	publicKey := "SDIWODIJQNDKJQW"
 	privateKey := "SDWIOUEOSDSDC"
 
-	viper.Set("test.public_key", publicKey)
-	viper.Set("test.private_key", privateKey)
-	viper.Set("current_profile", newProfile)
+	viper.Set("test.public-key", publicKey)
+	viper.Set("test.private-key", privateKey)
+	viper.Set("current-profile", newProfile)
 
 	err := viper.WriteConfig()
 	if err != nil {
@@ -180,9 +180,9 @@ func (suite *DeleteConfigSuite) TestDeleteConfigWithActiveProfile() {
 			viper.SetConfigName(".tidbcloud-cli")
 			err = viper.ReadInConfig()
 			assert.Nil(err)
-			assert.Equal(newProfile, viper.GetString("current_profile"))
-			assert.Equal("", viper.GetString(tt.args[0]+".public_key"))
-			assert.Equal("", viper.GetString(tt.args[0]+".private_key"))
+			assert.Equal(newProfile, viper.GetString("current-profile"))
+			assert.Equal("", viper.GetString(tt.args[0]+".public-key"))
+			assert.Equal("", viper.GetString(tt.args[0]+".private-key"))
 			assert.Equal("", viper.GetString(tt.args[0]))
 		})
 	}
