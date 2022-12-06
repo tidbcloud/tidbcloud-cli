@@ -119,7 +119,13 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.New("profile name is required")
 				}
 				publicKey = inputs[publicKeyIdx].Value()
+				if len(publicKey) == 0 {
+					return errors.New("public key is required")
+				}
 				privateKey = inputs[privateKeyIdx].Value()
+				if len(privateKey) == 0 {
+					return errors.New("private key is required")
+				}
 			} else {
 				pName, err := cmd.Flags().GetString(flag.ProfileName)
 				if err != nil {
