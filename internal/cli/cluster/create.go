@@ -16,6 +16,7 @@ package cluster
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"tidbcloud-cli/internal"
@@ -134,7 +135,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if m, _ := typeModel.(ui.SelectModel); m.Interrupted {
-					return nil
+					os.Exit(130)
 				}
 				clusterType = typeModel.(ui.SelectModel).Choices[typeModel.(ui.SelectModel).Selected].(string)
 
@@ -153,7 +154,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if m, _ := providerModel.(ui.SelectModel); m.Interrupted {
-					return nil
+					os.Exit(130)
 				}
 				cloudProvider = providerModel.(ui.SelectModel).Choices[providerModel.(ui.SelectModel).Selected].(string)
 
@@ -174,7 +175,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if m, _ := regionModel.(ui.SelectModel); m.Interrupted {
-					return nil
+					os.Exit(130)
 				}
 				region = regionModel.(ui.SelectModel).Choices[regionModel.(ui.SelectModel).Selected].(string)
 
