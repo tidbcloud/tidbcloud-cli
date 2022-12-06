@@ -173,7 +173,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a database without confirmation")
+	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a cluster without confirmation")
 	deleteCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The project ID of the cluster to be deleted.")
 	deleteCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster to be deleted.")
 	return deleteCmd
