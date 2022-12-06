@@ -17,6 +17,7 @@ package cloud
 import (
 	"fmt"
 	"math"
+	"os"
 
 	"tidbcloud-cli/internal/ui"
 
@@ -67,7 +68,7 @@ func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error
 		return nil, err
 	}
 	if m, _ := projectModel.(ui.SelectModel); m.Interrupted {
-		return nil, fmt.Errorf("interrupted")
+		os.Exit(130)
 	}
 	res := projectModel.(ui.SelectModel).Choices[projectModel.(ui.SelectModel).Selected].(*Project)
 	return res, nil
@@ -100,7 +101,7 @@ func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient
 		return nil, errors.Trace(err)
 	}
 	if m, _ := clusterModel.(ui.SelectModel); m.Interrupted {
-		return nil, fmt.Errorf("interrupted")
+		os.Exit(130)
 	}
 	cluster := clusterModel.(ui.SelectModel).Choices[clusterModel.(ui.SelectModel).Selected].(*Cluster)
 	return cluster, nil

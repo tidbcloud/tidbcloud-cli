@@ -67,7 +67,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				err := survey.AskOne(prompt, &userInput)
 				if err != nil {
 					if err == terminal.InterruptErr {
-						os.Exit(0)
+						os.Exit(130)
 					} else {
 						return err
 					}
