@@ -73,7 +73,7 @@ func (m SpinnerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m SpinnerModel) View() string {
-	str := color.New(color.FgYellow).Sprintf("%s %s.", m.spinner.View(), color.BlueString(m.Hint)) + "\n"
+	str := color.New(color.FgYellow).Sprintf("%s %s", m.spinner.View(), color.BlueString(m.Hint)) + "\n"
 	if m.quitting {
 		return str + "\n"
 	}

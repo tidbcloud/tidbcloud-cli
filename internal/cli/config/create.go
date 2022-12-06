@@ -115,8 +115,17 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 				inputs := inputModel.(ui.TextInputModel).Inputs
 				profileName = inputs[profileNameIdx].Value()
+				if len(profileName) == 0 {
+					return errors.New("profile name is required")
+				}
 				publicKey = inputs[publicKeyIdx].Value()
+				if len(publicKey) == 0 {
+					return errors.New("public key is required")
+				}
 				privateKey = inputs[privateKeyIdx].Value()
+				if len(privateKey) == 0 {
+					return errors.New("private key is required")
+				}
 			} else {
 				pName, err := cmd.Flags().GetString(flag.ProfileName)
 				if err != nil {
@@ -184,12 +193,6 @@ func initialDeletionInputModel() ui.TextInputModel {
 			t.Focus()
 			t.PromptStyle = focusedStyle
 			t.TextStyle = focusedStyle
-			t.Validate = func(s string) error {
-				if len(s) == 0 {
-					return errors.New("profile name is required")
-				}
-				return nil
-			}
 		case publicKeyIdx:
 			t.Placeholder = "Public Key"
 			t.CharLimit = 128

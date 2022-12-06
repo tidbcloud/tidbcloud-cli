@@ -196,7 +196,13 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				clusterName = inputModel.(ui.TextInputModel).Inputs[clusterNameIdx].Value()
+				if len(clusterName) == 0 {
+					return errors.New("cluster name is required")
+				}
 				rootPassword = inputModel.(ui.TextInputModel).Inputs[passwordIdx].Value()
+				if len(rootPassword) == 0 {
+					return errors.New("root password is required")
+				}
 			} else {
 				// non-interactive mode, get values from flags
 				var err error
@@ -368,22 +374,10 @@ func initialCreateInputModel() ui.TextInputModel {
 			t.Focus()
 			t.PromptStyle = focusedStyle
 			t.TextStyle = focusedStyle
-			t.Validate = func(s string) error {
-				if len(s) == 0 {
-					return errors.New("cluster Name is required")
-				}
-				return nil
-			}
 		case passwordIdx:
 			t.Placeholder = "Password"
 			t.EchoMode = textinput.EchoPassword
 			t.EchoCharacter = '•'
-			t.Validate = func(s string) error {
-				if len(s) == 0 {
-					return errors.New("password is required")
-				}
-				return nil
-			}
 		}
 
 		m.Inputs[i] = t
