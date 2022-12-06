@@ -66,11 +66,11 @@ func (suite *RootCmdSuite) TestFlagProfile() {
 	publicKey := "SDIWODIJQNDKJQW"
 	privateKey := "SDWIOUEOSDSDC"
 
-	viper.Set("test.public_key", publicKey)
-	viper.Set("test.private_key", privateKey)
-	viper.Set("current_profile", profile)
-	viper.Set("test1.public_key", publicKey)
-	viper.Set("test1.private_key", privateKey)
+	viper.Set("test.public-key", publicKey)
+	viper.Set("test.private-key", privateKey)
+	viper.Set("current-profile", profile)
+	viper.Set("test1.public-key", publicKey)
+	viper.Set("test1.private-key", privateKey)
 	err := viper.WriteConfig()
 	if err != nil {
 		suite.T().Error(err)
@@ -91,23 +91,23 @@ func (suite *RootCmdSuite) TestFlagProfile() {
 	}{
 		{
 			name:          "test without flag profile",
-			args:          []string{"config", "set", "private_key", privateKey3},
-			stdoutString:  "Set profile `test` property `private_key` to value `324OPIFO2423423DFO` successfully\n",
-			propertyKey:   "test.private_key",
+			args:          []string{"config", "set", "private-key", privateKey3},
+			stdoutString:  "Set profile `test` property `private-key` to value `324OPIFO2423423DFO` successfully\n",
+			propertyKey:   "test.private-key",
 			propertyValue: "324OPIFO2423423DFO",
 		},
 		{
 			name:          "test flag --profile",
-			args:          []string{"config", "set", "private_key", privateKey1, "--profile", "test1"},
-			stdoutString:  "Set profile `test1` property `private_key` to value `SAJKGDUYAKGD` successfully\n",
-			propertyKey:   "test1.private_key",
+			args:          []string{"config", "set", "private-key", privateKey1, "--profile", "test1"},
+			stdoutString:  "Set profile `test1` property `private-key` to value `SAJKGDUYAKGD` successfully\n",
+			propertyKey:   "test1.private-key",
 			propertyValue: "SAJKGDUYAKGD",
 		},
 		{
 			name:          "test flag -P",
-			args:          []string{"config", "set", "private_key", privateKey2, "-P", "test1"},
-			stdoutString:  "Set profile `test1` property `private_key` to value `{OPIFOPIDFO` successfully\n",
-			propertyKey:   "test1.private_key",
+			args:          []string{"config", "set", "private-key", privateKey2, "-P", "test1"},
+			stdoutString:  "Set profile `test1` property `private-key` to value `{OPIFOPIDFO` successfully\n",
+			propertyKey:   "test1.private-key",
 			propertyValue: "{OPIFOPIDFO",
 		},
 	}
@@ -130,7 +130,7 @@ func (suite *RootCmdSuite) TestFlagProfile() {
 			viper.SetConfigName(".tidbcloud-cli")
 			err = viper.ReadInConfig()
 			assert.Nil(err)
-			assert.Equal("test", viper.GetString("current_profile"))
+			assert.Equal("test", viper.GetString("current-profile"))
 			assert.Equal(tt.propertyValue, viper.GetString(tt.propertyKey))
 		})
 	}

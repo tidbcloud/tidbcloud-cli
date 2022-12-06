@@ -105,9 +105,9 @@ func (suite *CreateConfigSuite) TestCreateConfigWithExistedProfile() {
 	publicKey := "SDIWODIJQNDKJQW"
 	privateKey := "SDWIOUEOSDSDC"
 
-	viper.Set("test.public_key", publicKey)
-	viper.Set("test.private_key", privateKey)
-	viper.Set("current_profile", profile)
+	viper.Set("test.public-key", publicKey)
+	viper.Set("test.private-key", privateKey)
+	viper.Set("current-profile", profile)
 	err := viper.WriteConfig()
 	if err != nil {
 		suite.T().Error(err)

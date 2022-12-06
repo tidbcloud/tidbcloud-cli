@@ -116,7 +116,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			fs := afero.NewOsFs()
-			file, err := fs.OpenFile(viper.ConfigFileUsed(), os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
+			file, err := fs.OpenFile(viper.ConfigFileUsed(), os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0600)
 			if err != nil {
 				return errors.Trace(err)
 			}

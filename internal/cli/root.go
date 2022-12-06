@@ -188,6 +188,15 @@ func initConfig() {
 	viper.SetConfigName("config")
 	viper.SetConfigPermissions(0600)
 	_ = viper.SafeWriteConfig()
+
+	// After version 0.1.2, we replace underscore with hyphen in properties.
+	// In order to keep backward compatibility, we need to replace the old names to the new ones.
+	data, _ := os.ReadFile(path + "/config.toml")
+	newData := strings.Replace(string(data), "public_key", "public-key", -1)
+	newData = strings.Replace(newData, "private_key", "private-key", -1)
+	newData = strings.Replace(newData, "current_profile", "current-profile", -1)
+	_ = os.WriteFile(path+"/config.toml", []byte(newData), 0600)
+
 	err = viper.ReadInConfig()
 	if err != nil {
 		color.Red("Failed to read config file: %s", err.Error())
