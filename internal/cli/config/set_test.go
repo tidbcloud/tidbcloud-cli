@@ -65,9 +65,9 @@ func (suite *SetConfigSuite) TestSetConfigArgs() {
 	publicKey := "SDIWODIJQNDKJQW"
 	privateKey := "SDWIOUEOSDSDC"
 
-	viper.Set("test.public_key", publicKey)
-	viper.Set("test.private_key", privateKey)
-	viper.Set("current_profile", profile)
+	viper.Set("test.public-key", publicKey)
+	viper.Set("test.private-key", privateKey)
+	viper.Set("current-profile", profile)
 	err := viper.WriteConfig()
 	if err != nil {
 		suite.T().Error(err)
@@ -83,8 +83,8 @@ func (suite *SetConfigSuite) TestSetConfigArgs() {
 	}{
 		{
 			name:         "set config",
-			args:         []string{"private_key", newPrivateKey},
-			stdoutString: "Set profile `test` property `private_key` to value `TYTYTYYTYT` successfully\n",
+			args:         []string{"private-key", newPrivateKey},
+			stdoutString: "Set profile `test` property `private-key` to value `TYTYTYYTYT` successfully\n",
 		},
 		{
 			name: "set config with no args",
@@ -120,9 +120,9 @@ func (suite *SetConfigSuite) TestSetConfigArgs() {
 				viper.SetConfigName(".tidbcloud-cli")
 				err := viper.ReadInConfig()
 				assert.Nil(err)
-				assert.Equal(profile, viper.GetString("current_profile"))
-				assert.Equal(publicKey, viper.GetString(profile+".public_key"))
-				assert.Equal(newPrivateKey, viper.GetString(profile+".private_key"))
+				assert.Equal(profile, viper.GetString("current-profile"))
+				assert.Equal(publicKey, viper.GetString(profile+".public-key"))
+				assert.Equal(newPrivateKey, viper.GetString(profile+".private-key"))
 			}
 		})
 	}
@@ -142,7 +142,7 @@ func (suite *SetConfigSuite) TestSetConfigWhenNoActiveProfile() {
 	}{
 		{
 			name: "set config",
-			args: []string{"private_key", "value"},
+			args: []string{"private-key", "value"},
 			err:  fmt.Errorf("no profile is configured, please use `config create` to create a profile"),
 		},
 	}

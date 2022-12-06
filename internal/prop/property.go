@@ -15,9 +15,9 @@
 package prop
 
 const (
-	PublicKey  string = "public_key"
-	PrivateKey string = "private_key"
-	CurProfile string = "current_profile"
+	PublicKey  string = "public-key"
+	PrivateKey string = "private-key"
+	CurProfile string = "current-profile"
 )
 
 func GlobalProperties() []string {

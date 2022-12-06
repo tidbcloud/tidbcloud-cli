@@ -52,9 +52,9 @@ func (suite *DescribeConfigSuite) SetupTest() {
 	publicKey := "SDIWODIJQNDKJQW"
 	privateKey := "SDWIOUEOSDSDC"
 
-	viper.Set("test.public_key", publicKey)
-	viper.Set("test.private_key", privateKey)
-	viper.Set("current_profile", profile)
+	viper.Set("test.public-key", publicKey)
+	viper.Set("test.private-key", privateKey)
+	viper.Set("current-profile", profile)
 	err := viper.WriteConfig()
 	if err != nil {
 		suite.T().Error(err)
@@ -81,7 +81,7 @@ func (suite *DescribeConfigSuite) TestDescribeConfigArgs() {
 		{
 			name:         "describe config",
 			args:         []string{"test"},
-			stdoutString: "{\n  \"private_key\": \"SDWIOUEOSDSDC\",\n  \"public_key\": \"SDIWODIJQNDKJQW\"\n}\n",
+			stdoutString: "{\n  \"private-key\": \"SDWIOUEOSDSDC\",\n  \"public-key\": \"SDIWODIJQNDKJQW\"\n}\n",
 		},
 		{
 			name: "describe config with no args",
