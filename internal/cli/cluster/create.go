@@ -196,7 +196,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 				clusterName = inputModel.(ui.TextInputModel).Inputs[clusterNameIdx].Value()
 				if len(clusterName) == 0 {
-					return errors.New("cluster Name is required")
+					return errors.New("cluster name is required")
 				}
 				rootPassword = inputModel.(ui.TextInputModel).Inputs[passwordIdx].Value()
 				if len(rootPassword) == 0 {
