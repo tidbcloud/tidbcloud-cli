@@ -45,3 +45,8 @@ func GetAccessKeys(profile string) (publicKey string, privateKey string) {
 	privateKey = viper.GetString(fmt.Sprintf("%s.%s", profile, prop.PrivateKey))
 	return
 }
+
+func GetApiHost(profile string) (apiHost string) {
+	apiHost = viper.GetString(fmt.Sprintf("%s.%s", profile, prop.ApiHost))
+	return
+}

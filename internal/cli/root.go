@@ -48,7 +48,11 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 	h := &internal.Helper{
 		Client: func() cloud.TiDBCloudClient {
 			publicKey, privateKey := util.GetAccessKeys(c.ActiveProfile)
-			return cloud.NewClientDelegate(publicKey, privateKey)
+			apiHost := util.GetApiHost(c.ActiveProfile)
+			if apiHost == "" {
+				apiHost = cloud.DefaultApiHost
+			}
+			return cloud.NewClientDelegate(publicKey, privateKey, apiHost)
 		},
 		QueryPageSize: internal.DefaultPageSize,
 		IOStreams:     iostream.System(),

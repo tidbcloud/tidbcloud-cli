@@ -36,7 +36,13 @@ ticloud cluster create
 
 Please check the CLI help for more information.
 
-Documentation page is on the way.
+### Set up TiDB Cloud API host
+
+Usually you don't need to set up the TiDB Cloud API host, the default value is `api.tidbcloud.com`.
+
+```shell
+ticloud config set api-host ticloud.com
+```
 
 ## Roadmap
 

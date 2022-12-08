@@ -26,7 +26,7 @@ import (
 )
 
 const (
-	apiBaseUrl = "api.tidbcloud.com"
+	DefaultApiHost = "api.tidbcloud.com"
 )
 
 type TiDBCloudClient interface {
@@ -47,9 +47,9 @@ type ClientDelegate struct {
 	c *apiClient.GoTidbcloud
 }
 
-func NewClientDelegate(publicKey string, privateKey string) *ClientDelegate {
+func NewClientDelegate(publicKey string, privateKey string, apiUrl string) *ClientDelegate {
 	return &ClientDelegate{
-		c: NewApiClient(publicKey, privateKey),
+		c: NewApiClient(publicKey, privateKey, apiUrl),
 	}
 }
 
@@ -77,12 +77,12 @@ func (d *ClientDelegate) ListProjects(params *project.ListProjectsParams, opts .
 	return d.c.Project.ListProjects(params, opts...)
 }
 
-func NewApiClient(publicKey string, privateKey string) *apiClient.GoTidbcloud {
+func NewApiClient(publicKey string, privateKey string, apiUrl string) *apiClient.GoTidbcloud {
 	httpclient := &http.Client{
 		Transport: &digest.Transport{
 			Username: publicKey,
 			Password: privateKey,
 		},
 	}
-	return apiClient.New(httpTransport.NewWithClient(apiBaseUrl, "/", []string{"https"}, httpclient), strfmt.Default)
+	return apiClient.New(httpTransport.NewWithClient(apiUrl, "/", []string{"https"}, httpclient), strfmt.Default)
 }

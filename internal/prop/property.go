@@ -18,6 +18,7 @@ const (
 	PublicKey  string = "public-key"
 	PrivateKey string = "private-key"
 	CurProfile string = "current-profile"
+	ApiHost    string = "api-host"
 )
 
 func GlobalProperties() []string {
@@ -25,9 +26,9 @@ func GlobalProperties() []string {
 }
 
 func ProfileProperties() []string {
-	return []string{PublicKey, PrivateKey}
+	return []string{PublicKey, PrivateKey, ApiHost}
 }
 
 func Properties() []string {
-	return []string{PublicKey, PrivateKey, CurProfile}
+	return []string{PublicKey, PrivateKey, CurProfile, ApiHost}
 }
