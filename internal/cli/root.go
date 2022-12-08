@@ -49,6 +49,7 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 		Client: func() cloud.TiDBCloudClient {
 			publicKey, privateKey := util.GetAccessKeys(c.ActiveProfile)
 			apiHost := util.GetApiHost(c.ActiveProfile)
+			// If the user has not set the api host, use the default one.
 			if apiHost == "" {
 				apiHost = cloud.DefaultApiHost
 			}
