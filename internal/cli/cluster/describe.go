@@ -75,7 +75,10 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			d := h.Client()
+			d, err := h.Client()
+			if err != nil {
+				return err
+			}
 
 			var projectID string
 			var clusterID string
@@ -85,13 +88,13 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, h.Client())
+				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				projectID = project.ID
 
-				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, h.Client())
+				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}

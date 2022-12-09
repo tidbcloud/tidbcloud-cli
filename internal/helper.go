@@ -25,7 +25,7 @@ const (
 )
 
 type Helper struct {
-	Client        func() cloud.TiDBCloudClient
+	Client        func() (cloud.TiDBCloudClient, error)
 	QueryPageSize int64
 	IOStreams     *iostream.IOStreams
 	Config        *config.Config

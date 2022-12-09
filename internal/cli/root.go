@@ -46,9 +46,18 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 	}
 
 	h := &internal.Helper{
-		Client: func() cloud.TiDBCloudClient {
+		Client: func() (cloud.TiDBCloudClient, error) {
 			publicKey, privateKey := util.GetAccessKeys(c.ActiveProfile)
-			return cloud.NewClientDelegate(publicKey, privateKey)
+			apiUrl := util.GetApiUrl(c.ActiveProfile)
+			// If the user has not set the api url, use the default one.
+			if apiUrl == "" {
+				apiUrl = cloud.DefaultApiUrl
+			}
+			delegate, err := cloud.NewClientDelegate(publicKey, privateKey, apiUrl)
+			if err != nil {
+				return nil, err
+			}
+			return delegate, nil
 		},
 		QueryPageSize: internal.DefaultPageSize,
 		IOStreams:     iostream.System(),

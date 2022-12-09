@@ -17,6 +17,7 @@ package config
 import (
 	"bytes"
 	"fmt"
+	"net/url"
 	"os"
 	"testing"
 
@@ -25,6 +26,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/util"
 
+	"github.com/juju/errors"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -96,6 +98,15 @@ func (suite *SetConfigSuite) TestSetConfigArgs() {
 			args: []string{"unknown", "value"},
 			err:  fmt.Errorf("unrecognized property `unknown`, use `config set --help` to find available properties"),
 		},
+		{
+			name: "set config with unknown property",
+			args: []string{"api-url", "baidu.com"},
+			err: errors.Annotate(&url.Error{
+				Op:  "parse",
+				URL: "baidu.com",
+				Err: fmt.Errorf("invalid URI for request"),
+			}, "api url should format as <schema>://<host>"),
+		},
 	}
 
 	for _, tt := range tests {
@@ -108,7 +119,11 @@ func (suite *SetConfigSuite) TestSetConfigArgs() {
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
 			err = cmd.Execute()
-			assert.Equal(tt.err, err)
+			if err != nil {
+				assert.EqualError(tt.err, err.Error())
+			} else {
+				assert.Equal(tt.err, err)
+			}
 
 			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
 			assert.Equal(tt.stderrString, suite.h.IOStreams.Err.(*bytes.Buffer).String())

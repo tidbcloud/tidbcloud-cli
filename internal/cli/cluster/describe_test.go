@@ -91,8 +91,8 @@ func (suite *DescribeClusterSuite) SetupTest() {
 	var pageSize int64 = 10
 	suite.mockClient = new(mock.ApiClient)
 	suite.h = &internal.Helper{
-		Client: func() cloud.TiDBCloudClient {
-			return suite.mockClient
+		Client: func() (cloud.TiDBCloudClient, error) {
+			return suite.mockClient, nil
 		},
 		QueryPageSize: pageSize,
 		IOStreams:     iostream.Test(),
