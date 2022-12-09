@@ -98,7 +98,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			d := h.Client()
+			d, err := h.Client()
+			if err != nil {
+				return err
+			}
 
 			var clusterName string
 			var clusterType string
@@ -179,7 +182,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 				region = regionModel.(ui.SelectModel).Choices[regionModel.(ui.SelectModel).Selected].(string)
 
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, h.Client())
+				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -241,7 +244,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 			clusterDefBody := &clusterApi.CreateClusterBody{}
 
-			err := clusterDefBody.UnmarshalBinary([]byte(fmt.Sprintf(`{
+			err = clusterDefBody.UnmarshalBinary([]byte(fmt.Sprintf(`{
 			"name": "%s",
 			"cluster_type": "%s",
 			"cloud_provider": "%s",

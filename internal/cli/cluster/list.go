@@ -55,6 +55,11 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			}
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			d, err := h.Client()
+			if err != nil {
+				return err
+			}
+
 			var pID string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
@@ -62,7 +67,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, h.Client())
+				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -71,7 +76,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				pID = args[0]
 			}
 
-			total, items, err := cloud.RetrieveClusters(pID, h.QueryPageSize, h.Client())
+			total, items, err := cloud.RetrieveClusters(pID, h.QueryPageSize, d)
 			if err != nil {
 				return err
 			}

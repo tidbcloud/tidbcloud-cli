@@ -14,11 +14,17 @@
 
 package prop
 
+import (
+	"net/url"
+
+	"github.com/juju/errors"
+)
+
 const (
 	PublicKey  string = "public-key"
 	PrivateKey string = "private-key"
 	CurProfile string = "current-profile"
-	ApiHost    string = "api-host"
+	ApiUrl     string = "api-url"
 )
 
 func GlobalProperties() []string {
@@ -26,9 +32,17 @@ func GlobalProperties() []string {
 }
 
 func ProfileProperties() []string {
-	return []string{PublicKey, PrivateKey, ApiHost}
+	return []string{PublicKey, PrivateKey, ApiUrl}
 }
 
 func Properties() []string {
-	return []string{PublicKey, PrivateKey, CurProfile, ApiHost}
+	return []string{PublicKey, PrivateKey, CurProfile, ApiUrl}
+}
+
+func ValidateApiUrl(value string) (*url.URL, error) {
+	u, err := url.ParseRequestURI(value)
+	if err != nil {
+		return nil, errors.Annotate(err, "api url should format as <schema>://<host>")
+	}
+	return u, nil
 }

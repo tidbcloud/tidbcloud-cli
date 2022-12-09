@@ -40,7 +40,11 @@ func ListCmd(h *internal.Helper) *cobra.Command {
   List the projects with json format:
   $ %[1]s project list -o json`, config.CliName),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			total, items, err := cloud.RetrieveProjects(h.QueryPageSize, h.Client())
+			d, err := h.Client()
+			if err != nil {
+				return err
+			}
+			total, items, err := cloud.RetrieveProjects(h.QueryPageSize, d)
 			if err != nil {
 				return err
 			}

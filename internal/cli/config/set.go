@@ -53,6 +53,13 @@ If not, the config in the active profile will be set`, prop.ProfileProperties())
 				if curP == "" {
 					return fmt.Errorf("no profile is configured, please use `config create` to create a profile")
 				}
+
+				if propertyName == prop.ApiUrl {
+					_, err := prop.ValidateApiUrl(value)
+					if err != nil {
+						return err
+					}
+				}
 				viper.Set(fmt.Sprintf("%s.%s", curP, propertyName), value)
 				res = fmt.Sprintf("Set profile `%s` property `%s` to value `%s` successfully", curP, propertyName, value)
 			} else {
