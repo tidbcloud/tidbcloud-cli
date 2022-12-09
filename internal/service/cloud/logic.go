@@ -51,6 +51,15 @@ func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error
 	if err != nil {
 		return nil, err
 	}
+
+	// If there is only one project, return it directly.
+	if len(projectItems) == 1 {
+		return &Project{
+			projectItems[0].ID,
+			projectItems[0].Name,
+		}, nil
+	}
+
 	set := hashset.New()
 	for _, item := range projectItems {
 		set.Add(&Project{
