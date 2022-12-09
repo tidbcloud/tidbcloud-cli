@@ -28,7 +28,7 @@ import (
 )
 
 const (
-	DefaultApiUrl = "api.tidbcloud.com"
+	DefaultApiUrl = "https://api.tidbcloud.com"
 )
 
 type TiDBCloudClient interface {

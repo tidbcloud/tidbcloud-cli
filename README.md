@@ -38,10 +38,10 @@ Please check the CLI help for more information.
 
 ### Set up TiDB Cloud API host
 
-Usually you don't need to set up the TiDB Cloud API host, the default value is `api.tidbcloud.com`.
+Usually you don't need to set up the TiDB Cloud API url, the default value is `https://api.tidbcloud.com`.
 
 ```shell
-ticloud config set api-host ticloud.com
+ticloud config set api-url https://api.tidbcloud.com
 ```
 
 ## Roadmap
