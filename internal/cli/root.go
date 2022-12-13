@@ -120,7 +120,7 @@ func RootCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
 			if shouldCheckNewRelease(cmd) {
 				newRelease := <-updateMessageChan
 				if newRelease != nil {
-					fmt.Fprintf(h.IOStreams.Out, fmt.Sprintf("\n\n%s %s → %s\n",
+					fmt.Fprintf(h.IOStreams.Out, fmt.Sprintf("\n%s %s → %s\n",
 						color.YellowString("A new version of %s is available:", config.CliName),
 						color.CyanString(ver),
 						color.CyanString(newRelease.Version)))
