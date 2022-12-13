@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-version="0.1.2"
+version="0.1.3"
 
 repo='https://github.com/tidbcloud/tidbcloud-cli/releases/download'
 if [ -n "$TICLOUD_MIRRORS" ]; then
