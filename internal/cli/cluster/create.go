@@ -367,7 +367,7 @@ func initialCreateInputModel() ui.TextInputModel {
 	var t textinput.Model
 	for i := range m.Inputs {
 		t = textinput.New()
-		t.CursorStyle = cursorStyle
+		t.CursorStyle = config.CursorStyle
 		t.CharLimit = 64
 		f := createClusterField(i)
 
@@ -375,8 +375,8 @@ func initialCreateInputModel() ui.TextInputModel {
 		case clusterNameIdx:
 			t.Placeholder = "Cluster Name"
 			t.Focus()
-			t.PromptStyle = focusedStyle
-			t.TextStyle = focusedStyle
+			t.PromptStyle = config.FocusedStyle
+			t.TextStyle = config.FocusedStyle
 		case passwordIdx:
 			t.Placeholder = "Password"
 			t.EchoMode = textinput.EchoPassword

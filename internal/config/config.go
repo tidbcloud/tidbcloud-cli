@@ -21,6 +21,7 @@ import (
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/util"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/viper"
 )
 
@@ -29,6 +30,11 @@ const (
 	HomePath   = ".ticloud"
 	DevVersion = "dev"
 	Repo       = "tidbcloud/tidbcloud-cli"
+)
+
+var (
+	FocusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
+	CursorStyle  = FocusedStyle.Copy()
 )
 
 type Config struct {

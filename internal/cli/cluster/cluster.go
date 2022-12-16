@@ -17,13 +17,7 @@ package cluster
 import (
 	"tidbcloud-cli/internal"
 
-	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/cobra"
-)
-
-var (
-	focusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
-	cursorStyle  = focusedStyle.Copy()
 )
 
 func ClusterCmd(h *internal.Helper) *cobra.Command {

@@ -20,6 +20,8 @@ import (
 	"os"
 
 	"tidbcloud-cli/internal/ui"
+	importApi "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
+	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
@@ -44,6 +46,14 @@ type Cluster struct {
 
 func (c Cluster) String() string {
 	return fmt.Sprintf("%s(%s)", c.Name, c.ID)
+}
+
+type Import struct {
+	ID string
+}
+
+func (i Import) String() string {
+	return fmt.Sprintf("%s", i.ID)
 }
 
 func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error) {
@@ -116,6 +126,41 @@ func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient
 	return cluster, nil
 }
 
+func GetSelectedImport(pID string, cID string, pageSize int64, client TiDBCloudClient) (*Import, error) {
+	_, importItems, err := RetrieveImports(pID, cID, pageSize, client)
+	if err != nil {
+		return nil, err
+	}
+
+	// If there is only one project, return it directly.
+	if len(importItems) == 1 {
+		return &Import{
+			ID: importItems[0].ID,
+		}, nil
+	}
+
+	set := hashset.New()
+	for _, item := range importItems {
+		set.Add(&Project{
+			ID: item.ID,
+		})
+	}
+	model, err := ui.InitialSelectModel(set.Values(), "Choose the import task:")
+	if err != nil {
+		return nil, err
+	}
+	p := tea.NewProgram(model)
+	importModel, err := p.StartReturningModel()
+	if err != nil {
+		return nil, err
+	}
+	if m, _ := importModel.(ui.SelectModel); m.Interrupted {
+		os.Exit(130)
+	}
+	res := importModel.(ui.SelectModel).Choices[importModel.(ui.SelectModel).Selected].(*Import)
+	return res, nil
+}
+
 func RetrieveProjects(size int64, d TiDBCloudClient) (int64, []*projectApi.ListProjectsOKBodyItemsItems0, error) {
 	params := projectApi.NewListProjectsParams()
 	var total int64 = math.MaxInt64
@@ -150,6 +195,26 @@ func RetrieveClusters(pID string, pageSize int64, d TiDBCloudClient) (int64, []*
 		total = *clusters.Payload.Total
 		page += 1
 		items = append(items, clusters.Payload.Items...)
+	}
+	return total, items, nil
+}
+
+func RetrieveImports(pID string, cID string, pageSize int64, d TiDBCloudClient) (int64, []*importModel.OpenapiGetImportResp, error) {
+	params := importApi.NewListImportsParams().WithProjectID(pID).WithClusterID(cID)
+	ps := int32(pageSize)
+	var total int64 = math.MaxInt64
+	var page int32 = 1
+	var items []*importModel.OpenapiGetImportResp
+	// loop to get all clusters
+	for int64(page-1*ps) < total {
+		imports, err := d.ListImports(params.WithPage(&page).WithPageSize(&ps))
+		if err != nil {
+			return 0, nil, errors.Trace(err)
+		}
+
+		total = *imports.Payload.Total
+		page += 1
+		items = append(items, imports.Payload.Imports...)
 	}
 	return total, items, nil
 }
