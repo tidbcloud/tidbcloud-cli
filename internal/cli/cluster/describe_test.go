@@ -80,7 +80,7 @@ const getClusterResultStr = `{
 type DescribeClusterSuite struct {
 	suite.Suite
 	h          *internal.Helper
-	mockClient *mock.ApiClient
+	mockClient *mock.TiDBCloudClient
 }
 
 func (suite *DescribeClusterSuite) SetupTest() {
@@ -89,7 +89,7 @@ func (suite *DescribeClusterSuite) SetupTest() {
 	}
 
 	var pageSize int64 = 10
-	suite.mockClient = new(mock.ApiClient)
+	suite.mockClient = new(mock.TiDBCloudClient)
 	suite.h = &internal.Helper{
 		Client: func() (cloud.TiDBCloudClient, error) {
 			return suite.mockClient, nil

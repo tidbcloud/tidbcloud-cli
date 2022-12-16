@@ -18,6 +18,8 @@ import (
 	"net/http"
 
 	"tidbcloud-cli/internal/prop"
+	importClient "tidbcloud-cli/pkg/tidbcloud/import/client"
+	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/operations"
 
 	apiClient "github.com/c4pt0r/go-tidbcloud-sdk-v1/client"
 	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
@@ -43,19 +45,29 @@ type TiDBCloudClient interface {
 	ListProviderRegions(params *cluster.ListProviderRegionsParams, opts ...cluster.ClientOption) (*cluster.ListProviderRegionsOK, error)
 
 	ListProjects(params *project.ListProjectsParams, opts ...project.ClientOption) (*project.ListProjectsOK, error)
+
+	CancelImport(params *importOp.CancelImportParams, opts ...importOp.ClientOption) (*importOp.CancelImportOK, error)
+
+	CreateImport(params *importOp.CreateImportParams, opts ...importOp.ClientOption) (*importOp.CreateImportOK, error)
+
+	GetImport(params *importOp.GetImportParams, opts ...importOp.ClientOption) (*importOp.GetImportOK, error)
+
+	ListImports(params *importOp.ListImportsParams, opts ...importOp.ClientOption) (*importOp.ListImportsOK, error)
 }
 
 type ClientDelegate struct {
-	c *apiClient.GoTidbcloud
+	c  *apiClient.GoTidbcloud
+	ic *importClient.TidbcloudImport
 }
 
 func NewClientDelegate(publicKey string, privateKey string, apiUrl string) (*ClientDelegate, error) {
-	client, err := NewApiClient(publicKey, privateKey, apiUrl)
+	c, ic, err := NewApiClient(publicKey, privateKey, apiUrl)
 	if err != nil {
 		return nil, err
 	}
 	return &ClientDelegate{
-		c: client,
+		c:  c,
+		ic: ic,
 	}, nil
 }
 
@@ -83,7 +95,23 @@ func (d *ClientDelegate) ListProjects(params *project.ListProjectsParams, opts .
 	return d.c.Project.ListProjects(params, opts...)
 }
 
-func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClient.GoTidbcloud, error) {
+func (d *ClientDelegate) CancelImport(params *importOp.CancelImportParams, opts ...importOp.ClientOption) (*importOp.CancelImportOK, error) {
+	return d.ic.Operations.CancelImport(params, opts...)
+}
+
+func (d *ClientDelegate) CreateImport(params *importOp.CreateImportParams, opts ...importOp.ClientOption) (*importOp.CreateImportOK, error) {
+	return d.ic.Operations.CreateImport(params, opts...)
+}
+
+func (d *ClientDelegate) GetImport(params *importOp.GetImportParams, opts ...importOp.ClientOption) (*importOp.GetImportOK, error) {
+	return d.ic.Operations.GetImport(params, opts...)
+}
+
+func (d *ClientDelegate) ListImports(params *importOp.ListImportsParams, opts ...importOp.ClientOption) (*importOp.ListImportsOK, error) {
+	return d.ic.Operations.ListImports(params, opts...)
+}
+
+func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport, error) {
 	httpclient := &http.Client{
 		Transport: &digest.Transport{
 			Username: publicKey,
@@ -94,8 +122,9 @@ func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClien
 	// Parse the URL
 	u, err := prop.ValidateApiUrl(apiUrl)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return apiClient.New(httpTransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpclient), strfmt.Default), nil
+	transport := httpTransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpclient)
+	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), nil
 }

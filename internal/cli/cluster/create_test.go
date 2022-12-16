@@ -34,7 +34,7 @@ import (
 type CreateClusterSuite struct {
 	suite.Suite
 	h          *internal.Helper
-	mockClient *mock.ApiClient
+	mockClient *mock.TiDBCloudClient
 }
 
 func (suite *CreateClusterSuite) SetupTest() {
@@ -43,7 +43,7 @@ func (suite *CreateClusterSuite) SetupTest() {
 	}
 
 	var pageSize int64 = 10
-	suite.mockClient = new(mock.ApiClient)
+	suite.mockClient = new(mock.TiDBCloudClient)
 	suite.h = &internal.Helper{
 		Client: func() (cloud.TiDBCloudClient, error) {
 			return suite.mockClient, nil
