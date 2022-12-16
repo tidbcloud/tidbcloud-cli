@@ -19,7 +19,7 @@ import (
 
 	"tidbcloud-cli/internal/prop"
 	importClient "tidbcloud-cli/pkg/tidbcloud/import/client"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/operations"
+	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 
 	apiClient "github.com/c4pt0r/go-tidbcloud-sdk-v1/client"
 	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
@@ -96,19 +96,19 @@ func (d *ClientDelegate) ListProjects(params *project.ListProjectsParams, opts .
 }
 
 func (d *ClientDelegate) CancelImport(params *importOp.CancelImportParams, opts ...importOp.ClientOption) (*importOp.CancelImportOK, error) {
-	return d.ic.Operations.CancelImport(params, opts...)
+	return d.ic.ImportService.CancelImport(params, opts...)
 }
 
 func (d *ClientDelegate) CreateImport(params *importOp.CreateImportParams, opts ...importOp.ClientOption) (*importOp.CreateImportOK, error) {
-	return d.ic.Operations.CreateImport(params, opts...)
+	return d.ic.ImportService.CreateImport(params, opts...)
 }
 
 func (d *ClientDelegate) GetImport(params *importOp.GetImportParams, opts ...importOp.ClientOption) (*importOp.GetImportOK, error) {
-	return d.ic.Operations.GetImport(params, opts...)
+	return d.ic.ImportService.GetImport(params, opts...)
 }
 
 func (d *ClientDelegate) ListImports(params *importOp.ListImportsParams, opts ...importOp.ClientOption) (*importOp.ListImportsOK, error) {
-	return d.ic.Operations.ListImports(params, opts...)
+	return d.ic.ImportService.ListImports(params, opts...)
 }
 
 func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport, error) {

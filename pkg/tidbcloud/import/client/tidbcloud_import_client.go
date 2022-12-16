@@ -6,11 +6,11 @@ package client
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"tidbcloud-cli/pkg/tidbcloud/import/client/operations"
-
 	"github.com/go-openapi/runtime"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+
+	"tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 )
 
 // Default tidbcloud import HTTP client.
@@ -19,7 +19,7 @@ var Default = NewHTTPClient(nil)
 const (
 	// DefaultHost is the default Host
 	// found in Meta (info) section of spec file
-	DefaultHost string = "localhost"
+	DefaultHost string = "api.tidbcloud.com"
 	// DefaultBasePath is the default BasePath
 	// found in Meta (info) section of spec file
 	DefaultBasePath string = "/"
@@ -55,7 +55,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *TidbcloudI
 
 	cli := new(TidbcloudImport)
 	cli.Transport = transport
-	cli.Operations = operations.New(transport, formats)
+	cli.ImportService = import_service.New(transport, formats)
 	return cli
 }
 
@@ -100,7 +100,7 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 
 // TidbcloudImport is a client for tidbcloud import
 type TidbcloudImport struct {
-	Operations operations.ClientService
+	ImportService import_service.ClientService
 
 	Transport runtime.ClientTransport
 }
@@ -108,5 +108,5 @@ type TidbcloudImport struct {
 // SetTransport changes the transport on the client and all its subresources
 func (c *TidbcloudImport) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
-	c.Operations.SetTransport(transport)
+	c.ImportService.SetTransport(transport)
 }

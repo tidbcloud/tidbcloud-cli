@@ -15,22 +15,22 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// DataflowListImportResp dataflow list import resp
+// OpenapiListImportsResp openapi list imports resp
 //
-// swagger:model dataflowListImportResp
-type DataflowListImportResp struct {
+// swagger:model openapiListImportsResp
+type OpenapiListImportsResp struct {
 
-	// imports
+	// The items of import jobs in the cluster.
 	// Required: true
-	Imports []*DataflowImportGetResp `json:"imports"`
+	Imports []*OpenapiGetImportResp `json:"imports"`
 
-	// total
+	// The total number of import jobs in the cluster.
 	// Required: true
-	Total *string `json:"total"`
+	Total *int64 `json:"total"`
 }
 
-// Validate validates this dataflow list import resp
-func (m *DataflowListImportResp) Validate(formats strfmt.Registry) error {
+// Validate validates this openapi list imports resp
+func (m *OpenapiListImportsResp) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateImports(formats); err != nil {
@@ -47,7 +47,7 @@ func (m *DataflowListImportResp) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *DataflowListImportResp) validateImports(formats strfmt.Registry) error {
+func (m *OpenapiListImportsResp) validateImports(formats strfmt.Registry) error {
 
 	if err := validate.Required("imports", "body", m.Imports); err != nil {
 		return err
@@ -74,7 +74,7 @@ func (m *DataflowListImportResp) validateImports(formats strfmt.Registry) error 
 	return nil
 }
 
-func (m *DataflowListImportResp) validateTotal(formats strfmt.Registry) error {
+func (m *OpenapiListImportsResp) validateTotal(formats strfmt.Registry) error {
 
 	if err := validate.Required("total", "body", m.Total); err != nil {
 		return err
@@ -83,8 +83,8 @@ func (m *DataflowListImportResp) validateTotal(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this dataflow list import resp based on the context it is used
-func (m *DataflowListImportResp) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this openapi list imports resp based on the context it is used
+func (m *OpenapiListImportsResp) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateImports(ctx, formats); err != nil {
@@ -97,7 +97,7 @@ func (m *DataflowListImportResp) ContextValidate(ctx context.Context, formats st
 	return nil
 }
 
-func (m *DataflowListImportResp) contextValidateImports(ctx context.Context, formats strfmt.Registry) error {
+func (m *OpenapiListImportsResp) contextValidateImports(ctx context.Context, formats strfmt.Registry) error {
 
 	for i := 0; i < len(m.Imports); i++ {
 
@@ -118,7 +118,7 @@ func (m *DataflowListImportResp) contextValidateImports(ctx context.Context, for
 }
 
 // MarshalBinary interface implementation
-func (m *DataflowListImportResp) MarshalBinary() ([]byte, error) {
+func (m *OpenapiListImportsResp) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -126,8 +126,8 @@ func (m *DataflowListImportResp) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *DataflowListImportResp) UnmarshalBinary(b []byte) error {
-	var res DataflowListImportResp
+func (m *OpenapiListImportsResp) UnmarshalBinary(b []byte) error {
+	var res OpenapiListImportsResp
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

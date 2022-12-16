@@ -14,57 +14,68 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// DataflowImportCreateReq dataflow import create req
+// OpenapiDPImportCreateReq openapi d p import create req
 //
-// swagger:model dataflowImportCreateReq
-type DataflowImportCreateReq struct {
+// swagger:model openapiDPImportCreateReq
+type OpenapiDPImportCreateReq struct {
 
-	// aws role arn
+	// The arn of AWS IAM role.
 	AwsRoleArn string `json:"aws_role_arn,omitempty"`
 
-	// cluster id
+	// The ID of the cluster.
+	// Example: 1
 	// Required: true
 	ClusterID *string `json:"cluster_id"`
 
-	// csv format
-	CsvFormat *DataflowCustomCSVFormat `json:"csv_format,omitempty"`
+	// The CSV configuration.
+	CsvFormat *OpenapiCustomCSVFormat `json:"csv_format,omitempty"`
 
 	// 1: sql statement(dumpling default format
 	// 2: aurora snapshot(parquet)
 	// 3: custom csv
 	// 4: parquet format(not aurora)
+	//
+	// The format of data to import.
 	// Required: true
-	DataFormat *int64 `json:"data_format"`
+	DataFormat *uint32 `json:"data_format"`
 
 	// 1: aws s3
 	// 2: GCS
+	//
+	// The cloud provider that keeps the data to import.
 	// Required: true
-	DataSourceType *int64 `json:"data_source_type"`
+	DataSourceType *uint32 `json:"data_source_type"`
 
-	// filter
+	// The table filter.
 	// Required: true
 	Filter *string `json:"filter"`
 
 	// object name pattern
 	ObjectNamePattern string `json:"object_name_pattern,omitempty"`
 
-	// org id
+	// The ID of the orgnization.
+	// Example: 1
 	// Required: true
 	OrgID *string `json:"org_id"`
 
-	// project id
+	// The ID of the project.
+	// Example: 1
 	// Required: true
 	ProjectID *string `json:"project_id"`
 
-	// region
+	// The region of the s3 bucket that contains data to import.
 	// Required: true
 	Region *string `json:"region"`
 
 	// import info
+	//
+	// The full s3 path that contains data to import.
 	// Required: true
 	SourceURL *string `json:"source_url"`
 
 	// deprecated
+	//
+	// Deprectaed.
 	// Required: true
 	TargetPassword *string `json:"target_password"`
 
@@ -72,12 +83,14 @@ type DataflowImportCreateReq struct {
 	TargetTablePattern string `json:"target_table_pattern,omitempty"`
 
 	// deprecated
+	//
+	// Deprectaed.
 	// Required: true
 	TargetUsername *string `json:"target_username"`
 }
 
-// Validate validates this dataflow import create req
-func (m *DataflowImportCreateReq) Validate(formats strfmt.Registry) error {
+// Validate validates this openapi d p import create req
+func (m *OpenapiDPImportCreateReq) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateClusterID(formats); err != nil {
@@ -130,7 +143,7 @@ func (m *DataflowImportCreateReq) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *DataflowImportCreateReq) validateClusterID(formats strfmt.Registry) error {
+func (m *OpenapiDPImportCreateReq) validateClusterID(formats strfmt.Registry) error {
 
 	if err := validate.Required("cluster_id", "body", m.ClusterID); err != nil {
 		return err
@@ -139,7 +152,7 @@ func (m *DataflowImportCreateReq) validateClusterID(formats strfmt.Registry) err
 	return nil
 }
 
-func (m *DataflowImportCreateReq) validateCsvFormat(formats strfmt.Registry) error {
+func (m *OpenapiDPImportCreateReq) validateCsvFormat(formats strfmt.Registry) error {
 	if swag.IsZero(m.CsvFormat) { // not required
 		return nil
 	}
@@ -158,7 +171,7 @@ func (m *DataflowImportCreateReq) validateCsvFormat(formats strfmt.Registry) err
 	return nil
 }
 
-func (m *DataflowImportCreateReq) validateDataFormat(formats strfmt.Registry) error {
+func (m *OpenapiDPImportCreateReq) validateDataFormat(formats strfmt.Registry) error {
 
 	if err := validate.Required("data_format", "body", m.DataFormat); err != nil {
 		return err
@@ -167,7 +180,7 @@ func (m *DataflowImportCreateReq) validateDataFormat(formats strfmt.Registry) er
 	return nil
 }
 
-func (m *DataflowImportCreateReq) validateDataSourceType(formats strfmt.Registry) error {
+func (m *OpenapiDPImportCreateReq) validateDataSourceType(formats strfmt.Registry) error {
 
 	if err := validate.Required("data_source_type", "body", m.DataSourceType); err != nil {
 		return err
@@ -176,7 +189,7 @@ func (m *DataflowImportCreateReq) validateDataSourceType(formats strfmt.Registry
 	return nil
 }
 
-func (m *DataflowImportCreateReq) validateFilter(formats strfmt.Registry) error {
+func (m *OpenapiDPImportCreateReq) validateFilter(formats strfmt.Registry) error {
 
 	if err := validate.Required("filter", "body", m.Filter); err != nil {
 		return err
@@ -185,7 +198,7 @@ func (m *DataflowImportCreateReq) validateFilter(formats strfmt.Registry) error 
 	return nil
 }
 
-func (m *DataflowImportCreateReq) validateOrgID(formats strfmt.Registry) error {
+func (m *OpenapiDPImportCreateReq) validateOrgID(formats strfmt.Registry) error {
 
 	if err := validate.Required("org_id", "body", m.OrgID); err != nil {
 		return err
@@ -194,7 +207,7 @@ func (m *DataflowImportCreateReq) validateOrgID(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *DataflowImportCreateReq) validateProjectID(formats strfmt.Registry) error {
+func (m *OpenapiDPImportCreateReq) validateProjectID(formats strfmt.Registry) error {
 
 	if err := validate.Required("project_id", "body", m.ProjectID); err != nil {
 		return err
@@ -203,7 +216,7 @@ func (m *DataflowImportCreateReq) validateProjectID(formats strfmt.Registry) err
 	return nil
 }
 
-func (m *DataflowImportCreateReq) validateRegion(formats strfmt.Registry) error {
+func (m *OpenapiDPImportCreateReq) validateRegion(formats strfmt.Registry) error {
 
 	if err := validate.Required("region", "body", m.Region); err != nil {
 		return err
@@ -212,7 +225,7 @@ func (m *DataflowImportCreateReq) validateRegion(formats strfmt.Registry) error 
 	return nil
 }
 
-func (m *DataflowImportCreateReq) validateSourceURL(formats strfmt.Registry) error {
+func (m *OpenapiDPImportCreateReq) validateSourceURL(formats strfmt.Registry) error {
 
 	if err := validate.Required("source_url", "body", m.SourceURL); err != nil {
 		return err
@@ -221,7 +234,7 @@ func (m *DataflowImportCreateReq) validateSourceURL(formats strfmt.Registry) err
 	return nil
 }
 
-func (m *DataflowImportCreateReq) validateTargetPassword(formats strfmt.Registry) error {
+func (m *OpenapiDPImportCreateReq) validateTargetPassword(formats strfmt.Registry) error {
 
 	if err := validate.Required("target_password", "body", m.TargetPassword); err != nil {
 		return err
@@ -230,7 +243,7 @@ func (m *DataflowImportCreateReq) validateTargetPassword(formats strfmt.Registry
 	return nil
 }
 
-func (m *DataflowImportCreateReq) validateTargetUsername(formats strfmt.Registry) error {
+func (m *OpenapiDPImportCreateReq) validateTargetUsername(formats strfmt.Registry) error {
 
 	if err := validate.Required("target_username", "body", m.TargetUsername); err != nil {
 		return err
@@ -239,8 +252,8 @@ func (m *DataflowImportCreateReq) validateTargetUsername(formats strfmt.Registry
 	return nil
 }
 
-// ContextValidate validate this dataflow import create req based on the context it is used
-func (m *DataflowImportCreateReq) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this openapi d p import create req based on the context it is used
+func (m *OpenapiDPImportCreateReq) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateCsvFormat(ctx, formats); err != nil {
@@ -253,7 +266,7 @@ func (m *DataflowImportCreateReq) ContextValidate(ctx context.Context, formats s
 	return nil
 }
 
-func (m *DataflowImportCreateReq) contextValidateCsvFormat(ctx context.Context, formats strfmt.Registry) error {
+func (m *OpenapiDPImportCreateReq) contextValidateCsvFormat(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.CsvFormat != nil {
 		if err := m.CsvFormat.ContextValidate(ctx, formats); err != nil {
@@ -270,7 +283,7 @@ func (m *DataflowImportCreateReq) contextValidateCsvFormat(ctx context.Context, 
 }
 
 // MarshalBinary interface implementation
-func (m *DataflowImportCreateReq) MarshalBinary() ([]byte, error) {
+func (m *OpenapiDPImportCreateReq) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -278,8 +291,8 @@ func (m *DataflowImportCreateReq) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *DataflowImportCreateReq) UnmarshalBinary(b []byte) error {
-	var res DataflowImportCreateReq
+func (m *OpenapiDPImportCreateReq) UnmarshalBinary(b []byte) error {
+	var res OpenapiDPImportCreateReq
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

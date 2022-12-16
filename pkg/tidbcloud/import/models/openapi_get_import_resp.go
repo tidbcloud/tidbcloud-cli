@@ -15,89 +15,97 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// DataflowImportGetResp dataflow import get resp
+// OpenapiGetImportResp ImportItem
 //
-// swagger:model dataflowImportGetResp
-type DataflowImportGetResp struct {
+// ImportItem is the information of import job.
+//
+// swagger:model openapiGetImportResp
+type OpenapiGetImportResp struct {
 
-	// all completed tables
-	AllCompletedTables []*DataflowImportTableCompletionInfo `json:"all_completed_tables"`
+	// Completion information of the tables imported.
+	AllCompletedTables []*OpenapiImportTableCompletionInfo `json:"all_completed_tables"`
 
-	// cluster id
+	// The ID of the cluster.
+	// Example: 1
 	// Required: true
 	ClusterID *string `json:"cluster_id"`
 
-	// completed percent
+	//  The process in percent of the import job, but doesn't include the post-processing progress.
 	// Required: true
-	CompletedPercent *int64 `json:"completed_percent"`
+	// Maximum: 100
+	// Minimum: 1
+	CompletedPercent *uint32 `json:"completed_percent"`
 
-	// completed tables
+	// The number of completed tables.
 	// Required: true
-	CompletedTables *int64 `json:"completed_tables"`
+	CompletedTables *uint32 `json:"completed_tables"`
 
-	// created at
+	// The creation timestamp of the import job.
 	// Required: true
 	// Format: date-time
 	CreatedAt *strfmt.DateTime `json:"created_at"`
 
-	// current tables
+	// The current tables are being imported.
 	// Required: true
-	CurrentTables []*DataflowCurrentTable `json:"current_tables"`
+	CurrentTables []*OpenapiCurrentTable `json:"current_tables"`
 
-	// data format
+	// The format of data to import.
 	// Required: true
-	DataFormat *int64 `json:"data_format"`
+	DataFormat *uint32 `json:"data_format"`
 
-	// data source type
+	// The cloud provider that keeps the data to import.
 	// Required: true
-	DataSourceType *int64 `json:"data_source_type"`
+	DataSourceType *uint32 `json:"data_source_type"`
 
-	// elapsed time seconds
+	// The elapsed time of the import job in seconds.
 	// Required: true
-	ElapsedTimeSeconds *int64 `json:"elapsed_time_seconds"`
+	ElapsedTimeSeconds *uint32 `json:"elapsed_time_seconds"`
 
-	// id
+	// The ID of the import job.
+	// Example: 1
 	ID string `json:"id,omitempty"`
 
-	// import create req
-	ImportCreateReq *DataflowImportCreateReq `json:"import_create_req,omitempty"`
+	// The create request of the import job.
+	ImportCreateReq *OpenapiDPImportCreateReq `json:"import_create_req,omitempty"`
 
-	// message
+	// The message.
 	// Required: true
 	Message *string `json:"message"`
 
-	// pending tables
+	// The number of pending tables.
 	// Required: true
-	PendingTables *int64 `json:"pending_tables"`
+	PendingTables *uint32 `json:"pending_tables"`
 
-	// post import completed percent
-	PostImportCompletedPercent int64 `json:"post_import_completed_percent,omitempty"`
+	// The post-process in percent of the import job.
+	// Maximum: 100
+	// Minimum: 1
+	PostImportCompletedPercent uint32 `json:"post_import_completed_percent,omitempty"`
 
-	// processed source data size
-	ProcessedSourceDataSize string `json:"processed_source_data_size,omitempty"`
+	// The size of source data processed.
+	ProcessedSourceDataSize uint64 `json:"processed_source_data_size,omitempty"`
 
-	// source url
+	// The full s3 path that contains data to import.
 	// Required: true
 	SourceURL *string `json:"source_url"`
 
-	// status
+	// The status of the import job.
 	// Required: true
-	Status *DataflowImportGetRespStatus `json:"status"`
+	Status *OpenapiGetImportRespStatus `json:"status"`
 
-	// total files
+	// The total number of files of the data imported.
 	// Required: true
-	TotalFiles *int64 `json:"total_files"`
+	TotalFiles *uint32 `json:"total_files"`
 
-	// total size
+	// The total size of the data imported.
 	// Required: true
-	TotalSize *string `json:"total_size"`
+	TotalSize *uint64 `json:"total_size"`
 
-	// total tables count
-	TotalTablesCount int64 `json:"total_tables_count,omitempty"`
+	// The total number of tables.
+	TotalTablesCount uint32 `json:"total_tables_count,omitempty"`
 }
 
-// Validate validates this dataflow import get resp
-func (m *DataflowImportGetResp) Validate(formats strfmt.Registry) error {
+// Validate validates this openapi get import resp
+func (m *OpenapiGetImportResp) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateAllCompletedTables(formats); err != nil {
@@ -148,6 +156,10 @@ func (m *DataflowImportGetResp) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validatePostImportCompletedPercent(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateSourceURL(formats); err != nil {
 		res = append(res, err)
 	}
@@ -170,7 +182,7 @@ func (m *DataflowImportGetResp) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *DataflowImportGetResp) validateAllCompletedTables(formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) validateAllCompletedTables(formats strfmt.Registry) error {
 	if swag.IsZero(m.AllCompletedTables) { // not required
 		return nil
 	}
@@ -196,7 +208,7 @@ func (m *DataflowImportGetResp) validateAllCompletedTables(formats strfmt.Regist
 	return nil
 }
 
-func (m *DataflowImportGetResp) validateClusterID(formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) validateClusterID(formats strfmt.Registry) error {
 
 	if err := validate.Required("cluster_id", "body", m.ClusterID); err != nil {
 		return err
@@ -205,16 +217,24 @@ func (m *DataflowImportGetResp) validateClusterID(formats strfmt.Registry) error
 	return nil
 }
 
-func (m *DataflowImportGetResp) validateCompletedPercent(formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) validateCompletedPercent(formats strfmt.Registry) error {
 
 	if err := validate.Required("completed_percent", "body", m.CompletedPercent); err != nil {
+		return err
+	}
+
+	if err := validate.MinimumUint("completed_percent", "body", uint64(*m.CompletedPercent), 1, false); err != nil {
+		return err
+	}
+
+	if err := validate.MaximumUint("completed_percent", "body", uint64(*m.CompletedPercent), 100, false); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (m *DataflowImportGetResp) validateCompletedTables(formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) validateCompletedTables(formats strfmt.Registry) error {
 
 	if err := validate.Required("completed_tables", "body", m.CompletedTables); err != nil {
 		return err
@@ -223,7 +243,7 @@ func (m *DataflowImportGetResp) validateCompletedTables(formats strfmt.Registry)
 	return nil
 }
 
-func (m *DataflowImportGetResp) validateCreatedAt(formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) validateCreatedAt(formats strfmt.Registry) error {
 
 	if err := validate.Required("created_at", "body", m.CreatedAt); err != nil {
 		return err
@@ -236,7 +256,7 @@ func (m *DataflowImportGetResp) validateCreatedAt(formats strfmt.Registry) error
 	return nil
 }
 
-func (m *DataflowImportGetResp) validateCurrentTables(formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) validateCurrentTables(formats strfmt.Registry) error {
 
 	if err := validate.Required("current_tables", "body", m.CurrentTables); err != nil {
 		return err
@@ -263,7 +283,7 @@ func (m *DataflowImportGetResp) validateCurrentTables(formats strfmt.Registry) e
 	return nil
 }
 
-func (m *DataflowImportGetResp) validateDataFormat(formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) validateDataFormat(formats strfmt.Registry) error {
 
 	if err := validate.Required("data_format", "body", m.DataFormat); err != nil {
 		return err
@@ -272,7 +292,7 @@ func (m *DataflowImportGetResp) validateDataFormat(formats strfmt.Registry) erro
 	return nil
 }
 
-func (m *DataflowImportGetResp) validateDataSourceType(formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) validateDataSourceType(formats strfmt.Registry) error {
 
 	if err := validate.Required("data_source_type", "body", m.DataSourceType); err != nil {
 		return err
@@ -281,7 +301,7 @@ func (m *DataflowImportGetResp) validateDataSourceType(formats strfmt.Registry) 
 	return nil
 }
 
-func (m *DataflowImportGetResp) validateElapsedTimeSeconds(formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) validateElapsedTimeSeconds(formats strfmt.Registry) error {
 
 	if err := validate.Required("elapsed_time_seconds", "body", m.ElapsedTimeSeconds); err != nil {
 		return err
@@ -290,7 +310,7 @@ func (m *DataflowImportGetResp) validateElapsedTimeSeconds(formats strfmt.Regist
 	return nil
 }
 
-func (m *DataflowImportGetResp) validateImportCreateReq(formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) validateImportCreateReq(formats strfmt.Registry) error {
 	if swag.IsZero(m.ImportCreateReq) { // not required
 		return nil
 	}
@@ -309,7 +329,7 @@ func (m *DataflowImportGetResp) validateImportCreateReq(formats strfmt.Registry)
 	return nil
 }
 
-func (m *DataflowImportGetResp) validateMessage(formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) validateMessage(formats strfmt.Registry) error {
 
 	if err := validate.Required("message", "body", m.Message); err != nil {
 		return err
@@ -318,7 +338,7 @@ func (m *DataflowImportGetResp) validateMessage(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *DataflowImportGetResp) validatePendingTables(formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) validatePendingTables(formats strfmt.Registry) error {
 
 	if err := validate.Required("pending_tables", "body", m.PendingTables); err != nil {
 		return err
@@ -327,7 +347,23 @@ func (m *DataflowImportGetResp) validatePendingTables(formats strfmt.Registry) e
 	return nil
 }
 
-func (m *DataflowImportGetResp) validateSourceURL(formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) validatePostImportCompletedPercent(formats strfmt.Registry) error {
+	if swag.IsZero(m.PostImportCompletedPercent) { // not required
+		return nil
+	}
+
+	if err := validate.MinimumUint("post_import_completed_percent", "body", uint64(m.PostImportCompletedPercent), 1, false); err != nil {
+		return err
+	}
+
+	if err := validate.MaximumUint("post_import_completed_percent", "body", uint64(m.PostImportCompletedPercent), 100, false); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *OpenapiGetImportResp) validateSourceURL(formats strfmt.Registry) error {
 
 	if err := validate.Required("source_url", "body", m.SourceURL); err != nil {
 		return err
@@ -336,7 +372,7 @@ func (m *DataflowImportGetResp) validateSourceURL(formats strfmt.Registry) error
 	return nil
 }
 
-func (m *DataflowImportGetResp) validateStatus(formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) validateStatus(formats strfmt.Registry) error {
 
 	if err := validate.Required("status", "body", m.Status); err != nil {
 		return err
@@ -360,7 +396,7 @@ func (m *DataflowImportGetResp) validateStatus(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *DataflowImportGetResp) validateTotalFiles(formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) validateTotalFiles(formats strfmt.Registry) error {
 
 	if err := validate.Required("total_files", "body", m.TotalFiles); err != nil {
 		return err
@@ -369,7 +405,7 @@ func (m *DataflowImportGetResp) validateTotalFiles(formats strfmt.Registry) erro
 	return nil
 }
 
-func (m *DataflowImportGetResp) validateTotalSize(formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) validateTotalSize(formats strfmt.Registry) error {
 
 	if err := validate.Required("total_size", "body", m.TotalSize); err != nil {
 		return err
@@ -378,8 +414,8 @@ func (m *DataflowImportGetResp) validateTotalSize(formats strfmt.Registry) error
 	return nil
 }
 
-// ContextValidate validate this dataflow import get resp based on the context it is used
-func (m *DataflowImportGetResp) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this openapi get import resp based on the context it is used
+func (m *OpenapiGetImportResp) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateAllCompletedTables(ctx, formats); err != nil {
@@ -404,7 +440,7 @@ func (m *DataflowImportGetResp) ContextValidate(ctx context.Context, formats str
 	return nil
 }
 
-func (m *DataflowImportGetResp) contextValidateAllCompletedTables(ctx context.Context, formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) contextValidateAllCompletedTables(ctx context.Context, formats strfmt.Registry) error {
 
 	for i := 0; i < len(m.AllCompletedTables); i++ {
 
@@ -424,7 +460,7 @@ func (m *DataflowImportGetResp) contextValidateAllCompletedTables(ctx context.Co
 	return nil
 }
 
-func (m *DataflowImportGetResp) contextValidateCurrentTables(ctx context.Context, formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) contextValidateCurrentTables(ctx context.Context, formats strfmt.Registry) error {
 
 	for i := 0; i < len(m.CurrentTables); i++ {
 
@@ -444,7 +480,7 @@ func (m *DataflowImportGetResp) contextValidateCurrentTables(ctx context.Context
 	return nil
 }
 
-func (m *DataflowImportGetResp) contextValidateImportCreateReq(ctx context.Context, formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) contextValidateImportCreateReq(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.ImportCreateReq != nil {
 		if err := m.ImportCreateReq.ContextValidate(ctx, formats); err != nil {
@@ -460,7 +496,7 @@ func (m *DataflowImportGetResp) contextValidateImportCreateReq(ctx context.Conte
 	return nil
 }
 
-func (m *DataflowImportGetResp) contextValidateStatus(ctx context.Context, formats strfmt.Registry) error {
+func (m *OpenapiGetImportResp) contextValidateStatus(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Status != nil {
 		if err := m.Status.ContextValidate(ctx, formats); err != nil {
@@ -477,7 +513,7 @@ func (m *DataflowImportGetResp) contextValidateStatus(ctx context.Context, forma
 }
 
 // MarshalBinary interface implementation
-func (m *DataflowImportGetResp) MarshalBinary() ([]byte, error) {
+func (m *OpenapiGetImportResp) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -485,8 +521,8 @@ func (m *DataflowImportGetResp) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *DataflowImportGetResp) UnmarshalBinary(b []byte) error {
-	var res DataflowImportGetResp
+func (m *OpenapiGetImportResp) UnmarshalBinary(b []byte) error {
+	var res OpenapiGetImportResp
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

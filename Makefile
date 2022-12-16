@@ -18,6 +18,19 @@ devtools:  ## Install dev tools
 .PHONY: setup
 setup: deps devtools ## Set up dev env
 
+.PHONY: generate-mocks
+generate-mocks:
+	@echo "==> Generating mocks"
+	go install github.com/vektra/mockery/v2@latest
+	mockery --name TiDBCloudClient --recursive --output=internal/mock --outpkg mock --filename api_client.go
+
+# Required to install go-swagger https://goswagger.io/install.html
+.PHONY: generate-import-client
+generate-import-client:
+	@echo "==> Generating import client"
+	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
+	swagger generate client -f ./api/import/swagger.yaml -A import -t ./internal/import
+
 .PHONY: addcopy
 addcopy: ## Add copyright to all files
 	@scripts/add-copy.sh

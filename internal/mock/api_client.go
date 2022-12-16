@@ -3,10 +3,11 @@
 package mock
 
 import (
-	cluster "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
-	mock "github.com/stretchr/testify/mock"
+	import_service "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 
-	operations "tidbcloud-cli/pkg/tidbcloud/import/client/operations"
+	cluster "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
+
+	mock "github.com/stretchr/testify/mock"
 
 	project "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 )
@@ -17,7 +18,7 @@ type TiDBCloudClient struct {
 }
 
 // CancelImport provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) CancelImport(params *operations.CancelImportParams, opts ...operations.ClientOption) (*operations.CancelImportOK, error) {
+func (_m *TiDBCloudClient) CancelImport(params *import_service.CancelImportParams, opts ...import_service.ClientOption) (*import_service.CancelImportOK, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -27,17 +28,17 @@ func (_m *TiDBCloudClient) CancelImport(params *operations.CancelImportParams, o
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
-	var r0 *operations.CancelImportOK
-	if rf, ok := ret.Get(0).(func(*operations.CancelImportParams, ...operations.ClientOption) *operations.CancelImportOK); ok {
+	var r0 *import_service.CancelImportOK
+	if rf, ok := ret.Get(0).(func(*import_service.CancelImportParams, ...import_service.ClientOption) *import_service.CancelImportOK); ok {
 		r0 = rf(params, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*operations.CancelImportOK)
+			r0 = ret.Get(0).(*import_service.CancelImportOK)
 		}
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*operations.CancelImportParams, ...operations.ClientOption) error); ok {
+	if rf, ok := ret.Get(1).(func(*import_service.CancelImportParams, ...import_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -77,7 +78,7 @@ func (_m *TiDBCloudClient) CreateCluster(params *cluster.CreateClusterParams, op
 }
 
 // CreateImport provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) CreateImport(params *operations.CreateImportParams, opts ...operations.ClientOption) (*operations.CreateImportOK, error) {
+func (_m *TiDBCloudClient) CreateImport(params *import_service.CreateImportParams, opts ...import_service.ClientOption) (*import_service.CreateImportOK, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -87,17 +88,17 @@ func (_m *TiDBCloudClient) CreateImport(params *operations.CreateImportParams, o
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
-	var r0 *operations.CreateImportOK
-	if rf, ok := ret.Get(0).(func(*operations.CreateImportParams, ...operations.ClientOption) *operations.CreateImportOK); ok {
+	var r0 *import_service.CreateImportOK
+	if rf, ok := ret.Get(0).(func(*import_service.CreateImportParams, ...import_service.ClientOption) *import_service.CreateImportOK); ok {
 		r0 = rf(params, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*operations.CreateImportOK)
+			r0 = ret.Get(0).(*import_service.CreateImportOK)
 		}
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*operations.CreateImportParams, ...operations.ClientOption) error); ok {
+	if rf, ok := ret.Get(1).(func(*import_service.CreateImportParams, ...import_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -167,7 +168,7 @@ func (_m *TiDBCloudClient) GetCluster(params *cluster.GetClusterParams, opts ...
 }
 
 // GetImport provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) GetImport(params *operations.GetImportParams, opts ...operations.ClientOption) (*operations.GetImportOK, error) {
+func (_m *TiDBCloudClient) GetImport(params *import_service.GetImportParams, opts ...import_service.ClientOption) (*import_service.GetImportOK, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -177,17 +178,17 @@ func (_m *TiDBCloudClient) GetImport(params *operations.GetImportParams, opts ..
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
-	var r0 *operations.GetImportOK
-	if rf, ok := ret.Get(0).(func(*operations.GetImportParams, ...operations.ClientOption) *operations.GetImportOK); ok {
+	var r0 *import_service.GetImportOK
+	if rf, ok := ret.Get(0).(func(*import_service.GetImportParams, ...import_service.ClientOption) *import_service.GetImportOK); ok {
 		r0 = rf(params, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*operations.GetImportOK)
+			r0 = ret.Get(0).(*import_service.GetImportOK)
 		}
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*operations.GetImportParams, ...operations.ClientOption) error); ok {
+	if rf, ok := ret.Get(1).(func(*import_service.GetImportParams, ...import_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -227,7 +228,7 @@ func (_m *TiDBCloudClient) ListClustersOfProject(params *cluster.ListClustersOfP
 }
 
 // ListImports provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) ListImports(params *operations.ListImportsParams, opts ...operations.ClientOption) (*operations.ListImportsOK, error) {
+func (_m *TiDBCloudClient) ListImports(params *import_service.ListImportsParams, opts ...import_service.ClientOption) (*import_service.ListImportsOK, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -237,17 +238,17 @@ func (_m *TiDBCloudClient) ListImports(params *operations.ListImportsParams, opt
 	_ca = append(_ca, _va...)
 	ret := _m.Called(_ca...)
 
-	var r0 *operations.ListImportsOK
-	if rf, ok := ret.Get(0).(func(*operations.ListImportsParams, ...operations.ClientOption) *operations.ListImportsOK); ok {
+	var r0 *import_service.ListImportsOK
+	if rf, ok := ret.Get(0).(func(*import_service.ListImportsParams, ...import_service.ClientOption) *import_service.ListImportsOK); ok {
 		r0 = rf(params, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*operations.ListImportsOK)
+			r0 = ret.Get(0).(*import_service.ListImportsOK)
 		}
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*operations.ListImportsParams, ...operations.ClientOption) error); ok {
+	if rf, ok := ret.Get(1).(func(*import_service.ListImportsParams, ...import_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)

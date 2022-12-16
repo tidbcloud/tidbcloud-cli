@@ -14,26 +14,28 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// DataflowCurrentTable dataflow current table
+// OpenapiCurrentTable openapi current table
 //
-// swagger:model dataflowCurrentTable
-type DataflowCurrentTable struct {
+// swagger:model openapiCurrentTable
+type OpenapiCurrentTable struct {
 
-	// completed percent
+	// The process in percent of importing the table.
 	// Required: true
-	CompletedPercent *int64 `json:"completed_percent"`
+	// Maximum: 100
+	// Minimum: 1
+	CompletedPercent *uint32 `json:"completed_percent"`
 
-	// name
+	// The name of the table.
 	// Required: true
 	Name *string `json:"name"`
 
-	// size
+	// The data size of the table.
 	// Required: true
-	Size *string `json:"size"`
+	Size *uint64 `json:"size"`
 }
 
-// Validate validates this dataflow current table
-func (m *DataflowCurrentTable) Validate(formats strfmt.Registry) error {
+// Validate validates this openapi current table
+func (m *OpenapiCurrentTable) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateCompletedPercent(formats); err != nil {
@@ -54,16 +56,24 @@ func (m *DataflowCurrentTable) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *DataflowCurrentTable) validateCompletedPercent(formats strfmt.Registry) error {
+func (m *OpenapiCurrentTable) validateCompletedPercent(formats strfmt.Registry) error {
 
 	if err := validate.Required("completed_percent", "body", m.CompletedPercent); err != nil {
+		return err
+	}
+
+	if err := validate.MinimumUint("completed_percent", "body", uint64(*m.CompletedPercent), 1, false); err != nil {
+		return err
+	}
+
+	if err := validate.MaximumUint("completed_percent", "body", uint64(*m.CompletedPercent), 100, false); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (m *DataflowCurrentTable) validateName(formats strfmt.Registry) error {
+func (m *OpenapiCurrentTable) validateName(formats strfmt.Registry) error {
 
 	if err := validate.Required("name", "body", m.Name); err != nil {
 		return err
@@ -72,7 +82,7 @@ func (m *DataflowCurrentTable) validateName(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *DataflowCurrentTable) validateSize(formats strfmt.Registry) error {
+func (m *OpenapiCurrentTable) validateSize(formats strfmt.Registry) error {
 
 	if err := validate.Required("size", "body", m.Size); err != nil {
 		return err
@@ -81,13 +91,13 @@ func (m *DataflowCurrentTable) validateSize(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this dataflow current table based on context it is used
-func (m *DataflowCurrentTable) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this openapi current table based on context it is used
+func (m *OpenapiCurrentTable) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *DataflowCurrentTable) MarshalBinary() ([]byte, error) {
+func (m *OpenapiCurrentTable) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -95,8 +105,8 @@ func (m *DataflowCurrentTable) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *DataflowCurrentTable) UnmarshalBinary(b []byte) error {
-	var res DataflowCurrentTable
+func (m *OpenapiCurrentTable) UnmarshalBinary(b []byte) error {
+	var res OpenapiCurrentTable
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

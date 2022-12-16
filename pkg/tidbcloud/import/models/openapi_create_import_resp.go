@@ -14,18 +14,19 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// DataflowClusterImportID dataflow cluster import Id
+// OpenapiCreateImportResp openapi create import resp
 //
-// swagger:model dataflowClusterImportId
-type DataflowClusterImportID struct {
+// swagger:model openapiCreateImportResp
+type OpenapiCreateImportResp struct {
 
-	// id
+	// The ID of the import job.
+	// Example: 1
 	// Required: true
 	ID *string `json:"id"`
 }
 
-// Validate validates this dataflow cluster import Id
-func (m *DataflowClusterImportID) Validate(formats strfmt.Registry) error {
+// Validate validates this openapi create import resp
+func (m *OpenapiCreateImportResp) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateID(formats); err != nil {
@@ -38,7 +39,7 @@ func (m *DataflowClusterImportID) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *DataflowClusterImportID) validateID(formats strfmt.Registry) error {
+func (m *OpenapiCreateImportResp) validateID(formats strfmt.Registry) error {
 
 	if err := validate.Required("id", "body", m.ID); err != nil {
 		return err
@@ -47,13 +48,13 @@ func (m *DataflowClusterImportID) validateID(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this dataflow cluster import Id based on context it is used
-func (m *DataflowClusterImportID) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this openapi create import resp based on context it is used
+func (m *OpenapiCreateImportResp) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *DataflowClusterImportID) MarshalBinary() ([]byte, error) {
+func (m *OpenapiCreateImportResp) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -61,8 +62,8 @@ func (m *DataflowClusterImportID) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *DataflowClusterImportID) UnmarshalBinary(b []byte) error {
-	var res DataflowClusterImportID
+func (m *OpenapiCreateImportResp) UnmarshalBinary(b []byte) error {
+	var res OpenapiCreateImportResp
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

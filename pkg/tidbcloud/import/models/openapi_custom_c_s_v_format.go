@@ -12,10 +12,10 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// DataflowCustomCSVFormat dataflow custom c s v format
+// OpenapiCustomCSVFormat openapi custom c s v format
 //
-// swagger:model dataflowCustomCSVFormat
-type DataflowCustomCSVFormat struct {
+// swagger:model openapiCustomCSVFormat
+type OpenapiCustomCSVFormat struct {
 
 	// backslash escape
 	BackslashEscape bool `json:"backslash_escape,omitempty"`
@@ -39,18 +39,18 @@ type DataflowCustomCSVFormat struct {
 	TrimLastSeparator bool `json:"trim_last_separator,omitempty"`
 }
 
-// Validate validates this dataflow custom c s v format
-func (m *DataflowCustomCSVFormat) Validate(formats strfmt.Registry) error {
+// Validate validates this openapi custom c s v format
+func (m *OpenapiCustomCSVFormat) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this dataflow custom c s v format based on context it is used
-func (m *DataflowCustomCSVFormat) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this openapi custom c s v format based on context it is used
+func (m *OpenapiCustomCSVFormat) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *DataflowCustomCSVFormat) MarshalBinary() ([]byte, error) {
+func (m *OpenapiCustomCSVFormat) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -58,8 +58,8 @@ func (m *DataflowCustomCSVFormat) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *DataflowCustomCSVFormat) UnmarshalBinary(b []byte) error {
-	var res DataflowCustomCSVFormat
+func (m *OpenapiCustomCSVFormat) UnmarshalBinary(b []byte) error {
+	var res OpenapiCustomCSVFormat
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

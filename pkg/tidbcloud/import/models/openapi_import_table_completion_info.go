@@ -14,25 +14,25 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// DataflowImportTableCompletionInfo dataflow import table completion info
+// OpenapiImportTableCompletionInfo openapi import table completion info
 //
-// swagger:model dataflowImportTableCompletionInfo
-type DataflowImportTableCompletionInfo struct {
+// swagger:model openapiImportTableCompletionInfo
+type OpenapiImportTableCompletionInfo struct {
 
-	// message
+	// The message.
 	Message string `json:"message,omitempty"`
 
-	// result
+	// The result status of importing the table.
 	// Required: true
 	Result *ImportTableCompletionInfoResult `json:"result"`
 
-	// table name
+	// The name of the table.
 	// Required: true
 	TableName *string `json:"table_name"`
 }
 
-// Validate validates this dataflow import table completion info
-func (m *DataflowImportTableCompletionInfo) Validate(formats strfmt.Registry) error {
+// Validate validates this openapi import table completion info
+func (m *OpenapiImportTableCompletionInfo) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateResult(formats); err != nil {
@@ -49,7 +49,7 @@ func (m *DataflowImportTableCompletionInfo) Validate(formats strfmt.Registry) er
 	return nil
 }
 
-func (m *DataflowImportTableCompletionInfo) validateResult(formats strfmt.Registry) error {
+func (m *OpenapiImportTableCompletionInfo) validateResult(formats strfmt.Registry) error {
 
 	if err := validate.Required("result", "body", m.Result); err != nil {
 		return err
@@ -73,7 +73,7 @@ func (m *DataflowImportTableCompletionInfo) validateResult(formats strfmt.Regist
 	return nil
 }
 
-func (m *DataflowImportTableCompletionInfo) validateTableName(formats strfmt.Registry) error {
+func (m *OpenapiImportTableCompletionInfo) validateTableName(formats strfmt.Registry) error {
 
 	if err := validate.Required("table_name", "body", m.TableName); err != nil {
 		return err
@@ -82,8 +82,8 @@ func (m *DataflowImportTableCompletionInfo) validateTableName(formats strfmt.Reg
 	return nil
 }
 
-// ContextValidate validate this dataflow import table completion info based on the context it is used
-func (m *DataflowImportTableCompletionInfo) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this openapi import table completion info based on the context it is used
+func (m *OpenapiImportTableCompletionInfo) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateResult(ctx, formats); err != nil {
@@ -96,7 +96,7 @@ func (m *DataflowImportTableCompletionInfo) ContextValidate(ctx context.Context,
 	return nil
 }
 
-func (m *DataflowImportTableCompletionInfo) contextValidateResult(ctx context.Context, formats strfmt.Registry) error {
+func (m *OpenapiImportTableCompletionInfo) contextValidateResult(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Result != nil {
 		if err := m.Result.ContextValidate(ctx, formats); err != nil {
@@ -113,7 +113,7 @@ func (m *DataflowImportTableCompletionInfo) contextValidateResult(ctx context.Co
 }
 
 // MarshalBinary interface implementation
-func (m *DataflowImportTableCompletionInfo) MarshalBinary() ([]byte, error) {
+func (m *OpenapiImportTableCompletionInfo) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -121,8 +121,8 @@ func (m *DataflowImportTableCompletionInfo) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *DataflowImportTableCompletionInfo) UnmarshalBinary(b []byte) error {
-	var res DataflowImportTableCompletionInfo
+func (m *OpenapiImportTableCompletionInfo) UnmarshalBinary(b []byte) error {
+	var res OpenapiImportTableCompletionInfo
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}
