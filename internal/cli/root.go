@@ -53,7 +53,7 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 			if apiUrl == "" {
 				apiUrl = cloud.DefaultApiUrl
 			}
-			delegate, err := cloud.NewClientDelegate(publicKey, privateKey, apiUrl)
+			delegate, err := cloud.NewClientDelegate(publicKey, privateKey, apiUrl, ver)
 			if err != nil {
 				return nil, err
 			}
