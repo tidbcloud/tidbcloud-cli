@@ -104,6 +104,8 @@ func NewApiClient(publicKey string, privateKey string, apiUrl string, ver string
 	return apiClient.New(transport, strfmt.Default), nil
 }
 
+// NewTransportWithAgent returns a new http.RoundTripper that add the User-Agent header,
+// according to https://github.com/go-swagger/go-swagger/issues/1563.
 func NewTransportWithAgent(inner http.RoundTripper, userAgent string) http.RoundTripper {
 	return &UserAgentTransport{
 		inner: inner,
