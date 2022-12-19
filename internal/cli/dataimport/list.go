@@ -27,11 +27,14 @@ func (c ListOpts) NonInteractiveFlags() []string {
 }
 
 func ListCmd(h *internal.Helper) *cobra.Command {
-	opts := ListOpts{}
+	opts := ListOpts{
+		interactive: true,
+	}
 
 	var listCmd = &cobra.Command{
-		Use:   "list",
-		Short: "List a data import task",
+		Use:     "list",
+		Short:   "List a data import task",
+		Aliases: []string{"ls"},
 		Example: fmt.Sprintf(`  List an import task in interactive mode:
   $ %[1]s import list
 
@@ -124,12 +127,12 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				for _, item := range importTasks {
 
 					rows = append(rows, output.Row{
-						item.ID,
+						strconv.FormatUint(item.ID, 10),
+						strconv.FormatUint(uint64(*item.Status), 10),
 						string(*item.Status),
-						item.CreatedAt.String(),
 						*item.SourceURL,
-						strconv.FormatUint(uint64(*item.DataFormat), 10),
-						*item.ClusterID,
+						*item.DataFormat,
+						strconv.FormatUint(*item.ClusterID, 10),
 					})
 				}
 
@@ -146,5 +149,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
+	listCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
+	listCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
+	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, "Output format. One of: human, json. For the complete result, please use json format.")
 	return listCmd
 }

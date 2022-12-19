@@ -281,7 +281,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string",
+          "type": "integer",
           "format": "uint64",
           "example": "1",
           "description": "The ID of the import job."
@@ -427,6 +427,89 @@
         "project_id"
       ]
     },
+    "openapiDPImportCreateReq1": {
+      "type": "object",
+      "properties": {
+        "cluster_id": {
+          "type": "integer",
+          "format": "uint64",
+          "example": "1",
+          "description": "The ID of the cluster."
+        },
+        "source_url": {
+          "type": "string",
+          "description": "The full s3 path that contains data to import.",
+          "title": "import info"
+        },
+        "region": {
+          "type": "string",
+          "description": "The region of the s3 bucket that contains data to import."
+        },
+        "data_format": {
+          "type": "string",
+          "description": "The format of data to import.",
+          "title": "1: sql statement(dumpling default format\n2: aurora snapshot(parquet)\n3: custom csv\n4: parquet format(not aurora)"
+        },
+        "data_source_type": {
+          "type": "integer",
+          "format": "uint32",
+          "description": "The cloud provider that keeps the data to import.",
+          "title": "1: aws s3\n2: GCS"
+        },
+        "target_username": {
+          "type": "string",
+          "description": "Deprectaed.",
+          "title": "deprecated"
+        },
+        "target_password": {
+          "type": "string",
+          "description": "Deprectaed.",
+          "title": "deprecated"
+        },
+        "filter": {
+          "type": "string",
+          "description": "The table filter."
+        },
+        "org_id": {
+          "type": "string",
+          "format": "uint64",
+          "example": "1",
+          "description": "The ID of the orgnization."
+        },
+        "project_id": {
+          "type": "string",
+          "format": "uint64",
+          "example": "1",
+          "description": "The ID of the project."
+        },
+        "csv_format": {
+          "$ref": "#/definitions/openapiCustomCSVFormat",
+          "description": "The CSV configuration."
+        },
+        "aws_role_arn": {
+          "type": "string",
+          "description": "The arn of AWS IAM role."
+        },
+        "object_name_pattern": {
+          "type": "string"
+        },
+        "target_table_pattern": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "cluster_id",
+        "source_url",
+        "region",
+        "data_format",
+        "data_source_type",
+        "target_username",
+        "target_password",
+        "filter",
+        "org_id",
+        "project_id"
+      ]
+    },
     "openapiDataFormat": {
       "type": "string",
       "enum": [
@@ -442,7 +525,7 @@
       "type": "object",
       "properties": {
         "cluster_id": {
-          "type": "string",
+          "type": "integer",
           "format": "uint64",
           "example": "1",
           "description": "The ID of the cluster."
@@ -472,12 +555,13 @@
           "description": "The number of pending tables."
         },
         "created_at": {
-          "type": "string",
-          "format": "date-time",
+          "type": "object",
+          "format": "timestamp",
           "description": "The creation timestamp of the import job."
         },
         "status": {
-          "$ref": "#/definitions/openapiGetImportRespStatus",
+          "type": "integer",
+          "format": "uint32",
           "description": "The status of the import job."
         },
         "completed_percent": {
@@ -495,8 +579,7 @@
           "description": "The current tables are being imported."
         },
         "data_format": {
-          "type": "integer",
-          "format": "uint32",
+          "type": "string",
           "description": "The format of data to import."
         },
         "data_source_type": {
@@ -514,7 +597,7 @@
           "description": "The elapsed time of the import job in seconds."
         },
         "id": {
-          "type": "string",
+          "type": "integer",
           "format": "uint64",
           "example": "1",
           "description": "The ID of the import job."
@@ -544,7 +627,7 @@
           "description": "Completion information of the tables imported."
         },
         "import_create_req": {
-          "$ref": "#/definitions/openapiDPImportCreateReq",
+          "$ref": "#/definitions/openapiDPImportCreateReq1",
           "description": "The create request of the import job."
         }
       },

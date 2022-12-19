@@ -9,6 +9,7 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
+	"tidbcloud-cli/internal/util"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
@@ -40,8 +41,19 @@ func (c StartOpts) NonInteractiveFlags() []string {
 	}
 }
 
+func (c StartOpts) SupportedDataFormats() []string {
+	return []string{
+		string(importModel.OpenapiDataFormatCSV),
+		string(importModel.OpenapiDataFormatSQLFile),
+		string(importModel.OpenapiDataFormatParquet),
+		string(importModel.OpenapiDataFormatAuroraSnapshot),
+	}
+}
+
 func StartCmd(h *internal.Helper) *cobra.Command {
-	opts := StartOpts{}
+	opts := StartOpts{
+		interactive: true,
+	}
 
 	var startCmd = &cobra.Command{
 		Use:   "start",
@@ -98,10 +110,11 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				dataFormats := []interface{}{importModel.OpenapiDataFormatCSV,
-					importModel.OpenapiDataFormatSQLFile, importModel.OpenapiDataFormatParquet,
-					importModel.OpenapiDataFormatAuroraSnapshot}
-				model, err := ui.InitialSelectModel(dataFormats, "Choose the cloud region:")
+				var dataFormats []interface{}
+				for _, f := range opts.SupportedDataFormats() {
+					dataFormats = append(dataFormats, f)
+				}
+				model, err := ui.InitialSelectModel(dataFormats, "Choose the data format:")
 				if err != nil {
 					return err
 				}
@@ -113,7 +126,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 				if m, _ := formatModel.(ui.SelectModel); m.Interrupted {
 					os.Exit(130)
 				}
-				dataFormat = formatModel.(ui.SelectModel).Choices[formatModel.(ui.SelectModel).Selected].(string)
+				dataFormat = string(formatModel.(ui.SelectModel).Choices[formatModel.(ui.SelectModel).Selected].(importModel.OpenapiDataFormat))
 
 				// variables for input
 				p = tea.NewProgram(initialStartInputModel())
@@ -139,6 +152,9 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cmd.Flag(flag.ClusterID).Value.String()
 				awsRoleArn = cmd.Flag(flag.AwsRoleArn).Value.String()
 				dataFormat = cmd.Flag(flag.DataFormat).Value.String()
+				if !util.StringInSlice(opts.SupportedDataFormats(), dataFormat) {
+					return fmt.Errorf("data format %s is not supported, please use one of CSV, SqlFile, Parquet, AuroraSnapshot", dataFormat)
+				}
 				sourceUrl = cmd.Flag(flag.SourceUrl).Value.String()
 			}
 
@@ -146,7 +162,16 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 			err = body.UnmarshalBinary([]byte(fmt.Sprintf(`{
 			"aws_role_arn": "%s",
 			"data_format": "%s",
-			"source_url": "%s"
+			"source_url": "%s",
+			"csv_format": {
+				"separator": ",",
+				"delimiter": "\"",
+				"header": true,
+				"backslash_escape": true,
+				"null": "\\N",
+				"trim_last_separator": false,
+				"not_null": false
+			}
 			}`, awsRoleArn, dataFormat, sourceUrl)))
 			if err != nil {
 				return errors.Trace(err)
@@ -159,11 +184,16 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			fmt.Fprint(h.IOStreams.Out, color.GreenString("Import task %s starts.", *res.Payload.ID))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %d starts.", *(res.Payload.ID)))
 			return nil
 		},
 	}
 
+	startCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
+	startCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
+	startCmd.Flags().String(flag.AwsRoleArn, "", "AWS S3 IAM Role ARN")
+	startCmd.Flags().String(flag.DataFormat, "", "Data format, one of CSV, SqlFile, Parquet, AuroraSnapshot")
+	startCmd.Flags().String(flag.SourceUrl, "", "The S3 path where the source data file is stored")
 	return startCmd
 }
 

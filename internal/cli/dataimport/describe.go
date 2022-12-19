@@ -3,6 +3,7 @@ package dataimport
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -27,11 +28,14 @@ func (c DescribeOpts) NonInteractiveFlags() []string {
 }
 
 func DescribeCmd(h *internal.Helper) *cobra.Command {
-	opts := DescribeOpts{}
+	opts := DescribeOpts{
+		interactive: true,
+	}
 
 	var describeCmd = &cobra.Command{
-		Use:   "describe",
-		Short: "Describe a data import task",
+		Use:     "describe",
+		Short:   "Describe a data import task",
+		Aliases: []string{"get"},
 		Example: fmt.Sprintf(`  Describe an import task in interactive mode:
   $ %[1]s import describe
 
@@ -88,7 +92,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				importID = selectedImport.ID
+				importID = strconv.FormatUint(selectedImport.ID, 10)
 			} else {
 				// non-interactive mode
 				projectID = cmd.Flag(flag.ProjectID).Value.String()
@@ -112,5 +116,8 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
+	describeCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
+	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
+	describeCmd.Flags().String(flag.ImportID, "", "The ID of import task")
 	return describeCmd
 }

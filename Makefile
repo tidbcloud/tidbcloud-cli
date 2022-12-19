@@ -29,7 +29,7 @@ generate-mocks:
 generate-import-client:
 	@echo "==> Generating import client"
 	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
-	swagger generate client -f ./api/import/swagger.yaml -A import -t ./internal/import
+	swagger generate client -f pkg/tidbcloud/import/import-api.json -A tidbcloud-import -t pkg/tidbcloud/import
 
 .PHONY: addcopy
 addcopy: ## Add copyright to all files

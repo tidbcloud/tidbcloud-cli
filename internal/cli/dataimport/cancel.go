@@ -2,6 +2,7 @@ package dataimport
 
 import (
 	"fmt"
+	"strconv"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -27,7 +28,9 @@ func (c CancelOpts) NonInteractiveFlags() []string {
 }
 
 func CancelCmd(h *internal.Helper) *cobra.Command {
-	opts := CancelOpts{}
+	opts := CancelOpts{
+		interactive: true,
+	}
 	var cancelCmd = &cobra.Command{
 		Use:   "cancel",
 		Short: "Cancel a data import task",
@@ -87,7 +90,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				importID = selectedImport.ID
+				importID = strconv.FormatUint(selectedImport.ID, 10)
 			} else {
 				// non-interactive mode
 				projectID = cmd.Flag(flag.ProjectID).Value.String()
@@ -101,10 +104,13 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			fmt.Fprint(h.IOStreams.Out, color.GreenString("Import task %s is canceled.", importID))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s is canceled.", importID))
 			return nil
 		},
 	}
 
+	cancelCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
+	cancelCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
+	cancelCmd.Flags().String(flag.ImportID, "", "The ID of import task")
 	return cancelCmd
 }

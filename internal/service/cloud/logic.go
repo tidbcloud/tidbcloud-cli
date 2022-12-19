@@ -49,11 +49,11 @@ func (c Cluster) String() string {
 }
 
 type Import struct {
-	ID string
+	ID uint64
 }
 
 func (i Import) String() string {
-	return fmt.Sprintf("%s", i.ID)
+	return fmt.Sprintf("%d", i.ID)
 }
 
 func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error) {
@@ -141,7 +141,7 @@ func GetSelectedImport(pID string, cID string, pageSize int64, client TiDBCloudC
 
 	set := hashset.New()
 	for _, item := range importItems {
-		set.Add(&Project{
+		set.Add(&Import{
 			ID: item.ID,
 		})
 	}
@@ -206,7 +206,7 @@ func RetrieveImports(pID string, cID string, pageSize int64, d TiDBCloudClient) 
 	var page int32 = 1
 	var items []*importModel.OpenapiGetImportResp
 	// loop to get all clusters
-	for int64(page-1*ps) < total {
+	for int64((page-1)*ps) < total {
 		imports, err := d.ListImports(params.WithPage(&page).WithPageSize(&ps))
 		if err != nil {
 			return 0, nil, errors.Trace(err)

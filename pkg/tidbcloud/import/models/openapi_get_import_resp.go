@@ -28,7 +28,7 @@ type OpenapiGetImportResp struct {
 	// The ID of the cluster.
 	// Example: 1
 	// Required: true
-	ClusterID *string `json:"cluster_id"`
+	ClusterID *uint64 `json:"cluster_id"`
 
 	//  The process in percent of the import job, but doesn't include the post-processing progress.
 	// Required: true
@@ -42,8 +42,7 @@ type OpenapiGetImportResp struct {
 
 	// The creation timestamp of the import job.
 	// Required: true
-	// Format: date-time
-	CreatedAt *strfmt.DateTime `json:"created_at"`
+	CreatedAt interface{} `json:"created_at"`
 
 	// The current tables are being imported.
 	// Required: true
@@ -51,7 +50,7 @@ type OpenapiGetImportResp struct {
 
 	// The format of data to import.
 	// Required: true
-	DataFormat *uint32 `json:"data_format"`
+	DataFormat *string `json:"data_format"`
 
 	// The cloud provider that keeps the data to import.
 	// Required: true
@@ -63,10 +62,10 @@ type OpenapiGetImportResp struct {
 
 	// The ID of the import job.
 	// Example: 1
-	ID string `json:"id,omitempty"`
+	ID uint64 `json:"id,omitempty"`
 
 	// The create request of the import job.
-	ImportCreateReq *OpenapiDPImportCreateReq `json:"import_create_req,omitempty"`
+	ImportCreateReq *OpenapiDPImportCreateReq1 `json:"import_create_req,omitempty"`
 
 	// The message.
 	// Required: true
@@ -90,7 +89,7 @@ type OpenapiGetImportResp struct {
 
 	// The status of the import job.
 	// Required: true
-	Status *OpenapiGetImportRespStatus `json:"status"`
+	Status *uint32 `json:"status"`
 
 	// The total number of files of the data imported.
 	// Required: true
@@ -245,12 +244,8 @@ func (m *OpenapiGetImportResp) validateCompletedTables(formats strfmt.Registry) 
 
 func (m *OpenapiGetImportResp) validateCreatedAt(formats strfmt.Registry) error {
 
-	if err := validate.Required("created_at", "body", m.CreatedAt); err != nil {
-		return err
-	}
-
-	if err := validate.FormatOf("created_at", "body", "date-time", m.CreatedAt.String(), formats); err != nil {
-		return err
+	if m.CreatedAt == nil {
+		return errors.Required("created_at", "body", nil)
 	}
 
 	return nil
@@ -378,21 +373,6 @@ func (m *OpenapiGetImportResp) validateStatus(formats strfmt.Registry) error {
 		return err
 	}
 
-	if err := validate.Required("status", "body", m.Status); err != nil {
-		return err
-	}
-
-	if m.Status != nil {
-		if err := m.Status.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("status")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("status")
-			}
-			return err
-		}
-	}
-
 	return nil
 }
 
@@ -427,10 +407,6 @@ func (m *OpenapiGetImportResp) ContextValidate(ctx context.Context, formats strf
 	}
 
 	if err := m.contextValidateImportCreateReq(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateStatus(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -488,22 +464,6 @@ func (m *OpenapiGetImportResp) contextValidateImportCreateReq(ctx context.Contex
 				return ve.ValidateName("import_create_req")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("import_create_req")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *OpenapiGetImportResp) contextValidateStatus(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.Status != nil {
-		if err := m.Status.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("status")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("status")
 			}
 			return err
 		}
