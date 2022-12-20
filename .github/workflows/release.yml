@@ -22,7 +22,7 @@ jobs:
       - name: Generate changelog
         id: changelog
         run: |
-          echo "::set-output name=tag-name::${GITHUB_REF#refs/tags/}"
+          echo "tag-name=${GITHUB_REF#refs/tags/}" >> $TAG_NAME
           gh api repos/$GITHUB_REPOSITORY/releases/generate-notes \
             -f tag_name="${GITHUB_REF#refs/tags/}" \
             -f target_commitish=main \
@@ -37,4 +37,54 @@ jobs:
           args: release --release-notes=.CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          GORELEASER_CURRENT_TAG: ${{steps.changelog.outputs.tag-name}}
+          GORELEASER_CURRENT_TAG: ${{steps.changelog.outputs.TAG_NAME}}
+
+      - name: Set up tiup
+        id: init_tiup
+        run: |
+          TMP_DIR=`mktemp -d`
+          export TIUP_HOME="$TMP_DIR/home"
+          echo "TIUP_HOME=$TIUP_HOME" >> $TIUP_HOME 
+          echo "TIUP_BIN=$TIUP_HOME/bin/tiup" >> $TIUP_BIN
+          rm -rf $TIUP_HOME && mkdir -p $TIUP_HOME/{bin,keys}
+          wget -O $TMP_DIR/tiup-linux-amd64.tar.gz -q https://tiup-mirrors.pingcap.com/tiup-linux-amd64.tar.gz
+          tar -zxf $TMP_DIR/tiup-linux-amd64.tar.gz -C $TIUP_HOME/bin && chmod 755 $TIUP_HOME/bin/tiup
+          curl -s https://tiup-mirrors.pingcap.com/root.json -o $TIUP_HOME/bin/root.json
+          cp $TIUP_HOME/bin/root.json bin/root.json
+            
+          TIUP_MIRRORS=${{ secrets.TIUP_SERVER_PROD }}
+          $TIUP_HOME/bin/tiup mirror set ${TIUP_MIRRORS}
+          echo ${{ secrets.TIUP_COMP_KEY_PINGCAP }} | base64 -d > $TIUP_HOME/keys/private.json
+
+      - name: Publish package
+        env:
+          TIUP_HOME: ${{ steps.init_tiup.outputs.TIUP_HOME }}
+          TIUP_BIN: ${{ steps.init_tiup.outputs.TIUP_BIN }}
+          REL_VER: ${{steps.changelog.outputs.TAG_NAME}}
+          BINARY_NAME: "ticloud"
+          COMPONENT_NAME: "ticloud"
+          COMPONENT_DESC: "CLI tool to manage TiDB Cloud"
+        run: |
+          matrix=(
+            'darwin amd64'
+            'darwin arm64'
+            'linux amd64'
+            'linux arm64'
+          )
+          
+            for item in "${matrix[@]}" ; do
+              os_arch=($item)
+              os=(${os_arch[0]})
+              arch=(${os_arch[1]})
+
+              filename="dist/${BINARY_NAME}_${REL_VER}_${os}_${arch}.tar.gz"
+          
+              if [ ! -f "$filename" ]; then
+                echo "File $filename does not exist"
+                exit 1
+              fi
+          
+              echo "Releasing v${REL_VER} for os $os arch $arch..."
+
+              ${TIUP_BIN} mirror publish $COMPONENT_NAME ${REL_VER} $filename $BINARY_NAME --os=$os --arch=$arch --hide --desc="$COMPONENT_DESC"
+            done
