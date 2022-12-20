@@ -22,7 +22,7 @@ jobs:
       - name: Generate changelog
         id: changelog
         run: |
-          echo "tag-name=${GITHUB_REF#refs/tags/}" >> $TAG_NAME
+          echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
           gh api repos/$GITHUB_REPOSITORY/releases/generate-notes \
             -f tag_name="${GITHUB_REF#refs/tags/}" \
             -f target_commitish=main \
@@ -44,13 +44,12 @@ jobs:
         run: |
           TMP_DIR=`mktemp -d`
           export TIUP_HOME="$TMP_DIR/home"
-          echo "TIUP_HOME=$TIUP_HOME" >> $TIUP_HOME 
-          echo "TIUP_BIN=$TIUP_HOME/bin/tiup" >> $TIUP_BIN
+          echo "TIUP_HOME=$TIUP_HOME" >> $GITHUB_OUTPUT
+          echo "TIUP_BIN=$TIUP_HOME/bin/tiup" >> $GITHUB_OUTPUT
           rm -rf $TIUP_HOME && mkdir -p $TIUP_HOME/{bin,keys}
           wget -O $TMP_DIR/tiup-linux-amd64.tar.gz -q https://tiup-mirrors.pingcap.com/tiup-linux-amd64.tar.gz
           tar -zxf $TMP_DIR/tiup-linux-amd64.tar.gz -C $TIUP_HOME/bin && chmod 755 $TIUP_HOME/bin/tiup
           curl -s https://tiup-mirrors.pingcap.com/root.json -o $TIUP_HOME/bin/root.json
-          cp $TIUP_HOME/bin/root.json bin/root.json
             
           TIUP_MIRRORS=${{ secrets.TIUP_SERVER_PROD }}
           $TIUP_HOME/bin/tiup mirror set ${TIUP_MIRRORS}
