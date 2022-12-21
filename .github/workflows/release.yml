@@ -51,7 +51,7 @@ jobs:
           tar -zxf $TMP_DIR/tiup-linux-amd64.tar.gz -C $TIUP_HOME/bin && chmod 755 $TIUP_HOME/bin/tiup
           curl -s https://tiup-mirrors.pingcap.com/root.json -o $TIUP_HOME/bin/root.json
             
-          TIUP_MIRRORS=${{ secrets.TIUP_SERVER_PROD }}
+          TIUP_MIRRORS=${{ secrets.TIUP_SERVER_STAGING }}
           $TIUP_HOME/bin/tiup mirror set ${TIUP_MIRRORS}
           echo ${{ secrets.TIUP_COMP_KEY_PINGCAP }} | base64 -d > $TIUP_HOME/keys/private.json
 
@@ -64,19 +64,26 @@ jobs:
           COMPONENT_NAME: "ticloud"
           COMPONENT_DESC: "CLI tool to manage TiDB Cloud"
         run: |
+          # os and arch have different names in tiup and ticloud
+          # darwin in tiup is macos in ticloud, amd64 in tiup is x86_64 in ticloud.
           matrix=(
-            'darwin amd64'
-            'darwin arm64'
-            'linux amd64'
-            'linux arm64'
+            'darwin macos amd64 x86_64'
+            'darwin macos arm64 arm64'
+            'linux linux amd64 x86_64'
+            'linux linux arm64 arm64'
           )
+          
+          # skip the first letter v in the tag name
+          VER = ${REL_VER:1}
           
             for item in "${matrix[@]}" ; do
               os_arch=($item)
-              os=(${os_arch[0]})
-              arch=(${os_arch[1]})
+              os_tiup=(${os_arch[0]})
+              os_ticloud=(${os_arch[1]})
+              arch_tiup=(${os_arch[2]})
+              arch_ticloud=(${os_arch[3]})
 
-              filename="dist/${BINARY_NAME}_${REL_VER}_${os}_${arch}.tar.gz"
+              filename="dist/${BINARY_NAME}_${VER}_${os_ticloud}_${arch_ticloud}.tar.gz"
           
               if [ ! -f "$filename" ]; then
                 echo "File $filename does not exist"
@@ -85,5 +92,5 @@ jobs:
           
               echo "Releasing v${REL_VER} for os $os arch $arch..."
 
-              ${TIUP_BIN} mirror publish $COMPONENT_NAME ${REL_VER} $filename $BINARY_NAME --os=$os --arch=$arch --hide --desc="$COMPONENT_DESC"
+              ${TIUP_BIN} mirror publish $COMPONENT_NAME ${REL_VER} $filename $BINARY_NAME --os=$os_tiup --arch=$arch_tiup  --desc="$COMPONENT_DESC"
             done
