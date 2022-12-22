@@ -13,16 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-version="0.1.4"
+version="0.1.5"
 
-repo='https://github.com/tidbcloud/tidbcloud-cli/releases/download'
+repo='https://tiup-mirrors.pingcap.com/'
 if [ -n "$TICLOUD_MIRRORS" ]; then
     repo=$TICLOUD_MIRRORS
 fi
 
 case $(uname -s) in
     Linux|linux) os=linux ;;
-    Darwin|darwin) os=macos ;;
+    Darwin|darwin) os=darwin ;;
     *) os= ;;
 esac
 
@@ -32,7 +32,7 @@ if [ -z "$os" ]; then
 fi
 
 case $(uname -m) in
-    amd64|x86_64) arch=x86_64 ;;
+    amd64|x86_64) arch=amd64 ;;
     arm64|aarch64) arch=arm64 ;;
     *) arch= ;;
 esac
@@ -49,9 +49,9 @@ bin_dir=$TICLOUD_HOME/bin
 mkdir -p "$bin_dir"
 
 install_binary() {
-    curl -L "$repo/v${version}/ticloud_${version}_${os}_$arch.tar.gz" -o "/tmp/ticloud_${version}_${os}_$arch.tar.gz" || return 1
-    tar -zxf "/tmp/ticloud_${version}_${os}_$arch.tar.gz" -C "$bin_dir" || return 1
-    rm "/tmp/ticloud_${version}_${os}_$arch.tar.gz"
+    curl -L "$repo/ticloud-v${version}-${os}-$arch.tar.gz" -o "/tmp/ticloud-v${version}-${os}-$arch.tar.gz" || return 1
+    tar -zxf "/tmp/ticloud-v${version}-${os}-$arch.tar.gz" -C "$bin_dir" || return 1
+    rm "/tmp/ticloud-v${version}-${os}-$arch.tar.gz"
     return 0
 }
 
