@@ -61,7 +61,7 @@ jobs:
           TIUP_BIN: ${{ steps.init_tiup.outputs.TIUP_BIN }}
           REL_VER: ${{steps.changelog.outputs.TAG_NAME}}
           BINARY_NAME: "ticloud"
-          COMPONENT_NAME: "ticloud"
+          COMPONENT_NAME: "cloud"
           COMPONENT_DESC: "CLI tool to manage TiDB Cloud"
         run: |
           matrix=(
