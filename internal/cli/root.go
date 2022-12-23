@@ -124,7 +124,17 @@ func RootCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
 						color.YellowString("A new version of %s is available:", config.CliName),
 						color.CyanString(ver),
 						color.CyanString(newRelease.Version)))
-					fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use `ticloud update` to update to the latest version"))
+
+					var binpath string
+					if exepath, err := os.Executable(); err == nil {
+						binpath = exepath
+					}
+
+					if util.IsUnderTiUP(binpath) {
+						fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use `tiup update cloud` to update to the latest version"))
+					} else {
+						fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use `ticloud update` to update to the latest version"))
+					}
 				}
 			}
 		},

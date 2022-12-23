@@ -14,11 +14,28 @@
 
 package util
 
+import "strings"
+
+const tiupBinPrefix = "/.tiup/components/"
+
 func StringInSlice(a []string, x string) bool {
 	for _, b := range a {
 		if b == x {
 			return true
 		}
 	}
+	return false
+}
+
+// IsUnderTiUP checks whether the given binary is under the TiUP path.
+func IsUnderTiUP(binpath string) bool {
+	if binpath == "" {
+		return false
+	}
+
+	if strings.Contains(binpath, tiupBinPrefix) {
+		return true
+	}
+
 	return false
 }

@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
 	"time"
 
@@ -25,6 +26,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/service/github"
 	"tidbcloud-cli/internal/ui"
+	"tidbcloud-cli/internal/util"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
@@ -37,6 +39,15 @@ func UpdateCmd(h *internal.Helper, ver string) *cobra.Command {
 		Use:   "update",
 		Short: "Update the CLI to the latest version",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			var binpath string
+			if exepath, err := os.Executable(); err == nil {
+				binpath = exepath
+			}
+			// If is managed by TiUP, we should disable the update command since binpath is different.
+			if util.IsUnderTiUP(binpath) {
+				return errors.New("the CLI is managed by TiUP, please update it by `tiup update cloud`")
+			}
+
 			// When update CLI, we don't need to check the version again after command executes.
 			newRelease, err := github.CheckForUpdate(config.Repo, ver, false)
 			// FIXME: Since github API has rate limit, we should not return error when check update failed.
