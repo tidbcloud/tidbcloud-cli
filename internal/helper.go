@@ -29,4 +29,5 @@ type Helper struct {
 	QueryPageSize int64
 	IOStreams     *iostream.IOStreams
 	Config        *config.Config
+	IsUnderTiUP   bool
 }
