@@ -49,9 +49,9 @@ bin_dir=$TICLOUD_HOME/bin
 mkdir -p "$bin_dir"
 
 install_binary() {
-    curl -L "$repo/ticloud-v${version}-${os}-$arch.tar.gz" -o "/tmp/ticloud-v${version}-${os}-$arch.tar.gz" || return 1
-    tar -zxf "/tmp/ticloud-v${version}-${os}-$arch.tar.gz" -C "$bin_dir" || return 1
-    rm "/tmp/ticloud-v${version}-${os}-$arch.tar.gz"
+    curl -L "$repo/cloud-v${version}-${os}-$arch.tar.gz" -o "/tmp/cloud-v${version}-${os}-$arch.tar.gz" || return 1
+    tar -zxf "/tmp/cloud-v${version}-${os}-$arch.tar.gz" -C "$bin_dir" || return 1
+    rm "/tmp/cloud-v${version}-${os}-$arch.tar.gz"
     return 0
 }
 
