@@ -22,13 +22,13 @@ The `ticloud` command line tool brings deploy cluster requests, and other TiDB C
 
 #### Installing via script
 
-```
+```shell
 curl https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh | sh
 ```
 
 #### Installing via [TiUP](https://tiup.io/)
 
-```
+```shell
 tiup install cloud
 ```
 
@@ -44,14 +44,20 @@ In order to use the `ticloud` CLI, you need to have a TiDB Cloud account. If you
 
 Config a profile with your TiDB Cloud [API key](https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management).
 
-```
+```shell
 ticloud config create
+
+# via TiUP
+tiup cloud config create
 ```
 
 ### Create a cluster
 
-```
+```shell
 ticloud cluster create
+
+# via TiUP
+tiup cloud cluster create
 ```
 
 ## Documentation
@@ -64,6 +70,9 @@ Usually you don't need to set up the TiDB Cloud API url, the default value is `h
 
 ```shell
 ticloud config set api-url https://api.tidbcloud.com
+
+# via TiUP
+tiup cloud config set api-url https://api.tidbcloud.com
 ```
 
 ## Roadmap
