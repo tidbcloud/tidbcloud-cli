@@ -45,6 +45,14 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 		ActiveProfile: "",
 	}
 
+	var binpath string
+	if exepath, err := os.Executable(); err == nil {
+		binpath = exepath
+	}
+
+	isUnderTiUP := util.IsUnderTiUP(binpath)
+	config.SetCliName(isUnderTiUP)
+
 	h := &internal.Helper{
 		Client: func() (cloud.TiDBCloudClient, error) {
 			publicKey, privateKey := util.GetAccessKeys(c.ActiveProfile)
@@ -62,6 +70,7 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 		QueryPageSize: internal.DefaultPageSize,
 		IOStreams:     iostream.System(),
 		Config:        c,
+		IsUnderTiUP:   isUnderTiUP,
 	}
 
 	rootCmd := RootCmd(h, ver, commit, buildDate)
@@ -125,12 +134,7 @@ func RootCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
 						color.CyanString(ver),
 						color.CyanString(newRelease.Version)))
 
-					var binpath string
-					if exepath, err := os.Executable(); err == nil {
-						binpath = exepath
-					}
-
-					if util.IsUnderTiUP(binpath) {
+					if h.IsUnderTiUP {
 						fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use `tiup update cloud` to update to the latest version"))
 					} else {
 						fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use `ticloud update` to update to the latest version"))
@@ -197,7 +201,7 @@ func initConfig() {
 	path := home + "/" + config.HomePath
 	err = os.MkdirAll(path, 0700)
 	if err != nil {
-		color.Red("Failed to create ticloud home directory: %s", err)
+		color.Red("Failed to create home directory: %s", err)
 		os.Exit(1)
 	}
 

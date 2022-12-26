@@ -25,14 +25,25 @@ import (
 )
 
 const (
-	CliName    = "ticloud"
-	HomePath   = ".ticloud"
-	DevVersion = "dev"
-	Repo       = "tidbcloud/tidbcloud-cli"
+	cliName       = "ticloud"
+	cliNameInTiUP = "cloud"
+	HomePath      = ".ticloud"
+	DevVersion    = "dev"
+	Repo          = "tidbcloud/tidbcloud-cli"
 )
+
+var CliName = cliName
 
 type Config struct {
 	ActiveProfile string
+}
+
+func SetCliName(isUnderTiUP bool) {
+	if isUnderTiUP {
+		CliName = cliNameInTiUP
+	} else {
+		CliName = cliName
+	}
 }
 
 func ValidateProfile(profileName string) error {
