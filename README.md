@@ -5,9 +5,9 @@ The `ticloud` command line tool brings deploy cluster requests, and other TiDB C
 ## Table of Contents
 * [TiDB Cloud CLI](#tidb-cloud-cli)
     * [Installation](#installation)
-        * [MacOS and Linux](#macos-and-linux)
+        * [macOS and Linux](#macos-and-linux)
             * [Installing via script](#installing-via-script)
-            * [Installing via <a href="https://tiup.io/" rel="nofollow">TiUP</a>](#installing-via-tiup)
+            * [Installing via TiUP](#installing-via-tiup)
         * [Manually](#manually)
     * [Quick Start](#quick-start)
         * [Config a profile](#config-a-profile)
@@ -18,7 +18,7 @@ The `ticloud` command line tool brings deploy cluster requests, and other TiDB C
 
 ## Installation
 
-### MacOS and Linux
+### macOS and Linux
 
 #### Installing via script
 
