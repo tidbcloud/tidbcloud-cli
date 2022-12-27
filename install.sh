@@ -15,7 +15,7 @@
 
 version="0.1.6"
 
-repo='https://tiup-mirrors.pingcap.com/'
+repo='https://github.com/tidbcloud/tidbcloud-cli/releases/download'
 if [ -n "$TICLOUD_MIRRORS" ]; then
     repo=$TICLOUD_MIRRORS
 fi
@@ -49,9 +49,9 @@ bin_dir=$TICLOUD_HOME/bin
 mkdir -p "$bin_dir"
 
 install_binary() {
-    curl -L "$repo/cloud-v${version}-${os}-$arch.tar.gz" -o "/tmp/cloud-v${version}-${os}-$arch.tar.gz" || return 1
-    tar -zxf "/tmp/cloud-v${version}-${os}-$arch.tar.gz" -C "$bin_dir" || return 1
-    rm "/tmp/cloud-v${version}-${os}-$arch.tar.gz"
+    curl -L "$repo/v${version}/ticloud_${version}_${os}_$arch.tar.gz" -o "/tmp/ticloud_${version}_${os}_$arch.tar.gz" || return 1
+    tar -zxf "/tmp/ticloud_${version}_${os}_$arch.tar.gz" -C "$bin_dir" || return 1
+    rm "/tmp/ticloud_${version}_${os}_$arch.tar.gz"
     return 0
 }
 
