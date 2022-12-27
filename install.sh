@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-version="0.1.2"
+version="0.1.6"
 
 repo='https://github.com/tidbcloud/tidbcloud-cli/releases/download'
 if [ -n "$TICLOUD_MIRRORS" ]; then
@@ -22,7 +22,7 @@ fi
 
 case $(uname -s) in
     Linux|linux) os=linux ;;
-    Darwin|darwin) os=macos ;;
+    Darwin|darwin) os=darwin ;;
     *) os= ;;
 esac
 
@@ -32,7 +32,7 @@ if [ -z "$os" ]; then
 fi
 
 case $(uname -m) in
-    amd64|x86_64) arch=x86_64 ;;
+    amd64|x86_64) arch=amd64 ;;
     arm64|aarch64) arch=arm64 ;;
     *) arch= ;;
 esac

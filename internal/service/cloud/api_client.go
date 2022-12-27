@@ -15,8 +15,10 @@
 package cloud
 
 import (
+	"fmt"
 	"net/http"
 
+	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	importClient "tidbcloud-cli/pkg/tidbcloud/import/client"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
@@ -31,6 +33,7 @@ import (
 
 const (
 	DefaultApiUrl = "https://api.tidbcloud.com"
+	userAgent     = "User-Agent"
 )
 
 type TiDBCloudClient interface {
@@ -60,8 +63,8 @@ type ClientDelegate struct {
 	ic *importClient.TidbcloudImport
 }
 
-func NewClientDelegate(publicKey string, privateKey string, apiUrl string) (*ClientDelegate, error) {
-	c, ic, err := NewApiClient(publicKey, privateKey, apiUrl)
+func NewClientDelegate(publicKey string, privateKey string, apiUrl string, ver string) (*ClientDelegate, error) {
+	c, ic, err := NewApiClient(publicKey, privateKey, apiUrl, ver)
 	if err != nil {
 		return nil, err
 	}
@@ -111,12 +114,12 @@ func (d *ClientDelegate) ListImports(params *importOp.ListImportsParams, opts ..
 	return d.ic.ImportService.ListImports(params, opts...)
 }
 
-func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport, error) {
+func NewApiClient(publicKey string, privateKey string, apiUrl string, ver string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport, error) {
 	httpclient := &http.Client{
-		Transport: &digest.Transport{
+		Transport: NewTransportWithAgent(&digest.Transport{
 			Username: publicKey,
 			Password: privateKey,
-		},
+		}, fmt.Sprintf("%s/%s", config.CliName, ver)),
 	}
 
 	// Parse the URL
@@ -127,4 +130,23 @@ func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClien
 
 	transport := httpTransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpclient)
 	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), nil
+}
+
+// NewTransportWithAgent returns a new http.RoundTripper that add the User-Agent header,
+// according to https://github.com/go-swagger/go-swagger/issues/1563.
+func NewTransportWithAgent(inner http.RoundTripper, userAgent string) http.RoundTripper {
+	return &UserAgentTransport{
+		inner: inner,
+		Agent: userAgent,
+	}
+}
+
+type UserAgentTransport struct {
+	inner http.RoundTripper
+	Agent string
+}
+
+func (ug *UserAgentTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+	r.Header.Set(userAgent, ug.Agent)
+	return ug.inner.RoundTrip(r)
 }

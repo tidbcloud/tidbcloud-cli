@@ -46,6 +46,14 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 		ActiveProfile: "",
 	}
 
+	var binpath string
+	if exepath, err := os.Executable(); err == nil {
+		binpath = exepath
+	}
+
+	isUnderTiUP := util.IsUnderTiUP(binpath)
+	config.SetCliName(isUnderTiUP)
+
 	h := &internal.Helper{
 		Client: func() (cloud.TiDBCloudClient, error) {
 			publicKey, privateKey := util.GetAccessKeys(c.ActiveProfile)
@@ -54,7 +62,7 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 			if apiUrl == "" {
 				apiUrl = cloud.DefaultApiUrl
 			}
-			delegate, err := cloud.NewClientDelegate(publicKey, privateKey, apiUrl)
+			delegate, err := cloud.NewClientDelegate(publicKey, privateKey, apiUrl, ver)
 			if err != nil {
 				return nil, err
 			}
@@ -63,6 +71,7 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 		QueryPageSize: internal.DefaultPageSize,
 		IOStreams:     iostream.System(),
 		Config:        c,
+		IsUnderTiUP:   isUnderTiUP,
 	}
 
 	rootCmd := RootCmd(h, ver, commit, buildDate)
@@ -121,11 +130,16 @@ func RootCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
 			if shouldCheckNewRelease(cmd) {
 				newRelease := <-updateMessageChan
 				if newRelease != nil {
-					fmt.Fprintf(h.IOStreams.Out, fmt.Sprintf("\n\n%s %s → %s\n",
+					fmt.Fprintf(h.IOStreams.Out, fmt.Sprintf("\n%s %s → %s\n",
 						color.YellowString("A new version of %s is available:", config.CliName),
 						color.CyanString(ver),
 						color.CyanString(newRelease.Version)))
-					fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use `ticloud update` to update to the latest version"))
+
+					if h.IsUnderTiUP {
+						fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use `tiup update cloud` to update to the latest version"))
+					} else {
+						fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use `ticloud update` to update to the latest version"))
+					}
 				}
 			}
 		},
@@ -189,7 +203,7 @@ func initConfig() {
 	path := home + "/" + config.HomePath
 	err = os.MkdirAll(path, 0700)
 	if err != nil {
-		color.Red("Failed to create ticloud home directory: %s", err)
+		color.Red("Failed to create home directory: %s", err)
 		os.Exit(1)
 	}
 

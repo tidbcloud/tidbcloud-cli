@@ -26,19 +26,29 @@ import (
 )
 
 const (
-	CliName    = "ticloud"
-	HomePath   = ".ticloud"
-	DevVersion = "dev"
-	Repo       = "tidbcloud/tidbcloud-cli"
+	cliName       = "ticloud"
+	cliNameInTiUP = "cloud"
+	HomePath      = ".ticloud"
+	DevVersion    = "dev"
+	Repo          = "tidbcloud/tidbcloud-cli"
 )
 
 var (
 	FocusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
 	CursorStyle  = FocusedStyle.Copy()
+	CliName = cliName
 )
 
 type Config struct {
 	ActiveProfile string
+}
+
+func SetCliName(isUnderTiUP bool) {
+	if isUnderTiUP {
+		CliName = cliNameInTiUP
+	} else {
+		CliName = cliName
+	}
 }
 
 func ValidateProfile(profileName string) error {
