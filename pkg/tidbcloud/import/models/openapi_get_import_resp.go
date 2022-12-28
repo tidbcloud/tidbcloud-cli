@@ -28,21 +28,22 @@ type OpenapiGetImportResp struct {
 	// The ID of the cluster.
 	// Example: 1
 	// Required: true
-	ClusterID *uint64 `json:"cluster_id"`
+	ClusterID *string `json:"cluster_id"`
 
 	//  The process in percent of the import job, but doesn't include the post-processing progress.
 	// Required: true
 	// Maximum: 100
 	// Minimum: 1
-	CompletedPercent *uint32 `json:"completed_percent"`
+	CompletedPercent *int64 `json:"completed_percent"`
 
 	// The number of completed tables.
 	// Required: true
-	CompletedTables *uint32 `json:"completed_tables"`
+	CompletedTables *int64 `json:"completed_tables"`
 
 	// The creation timestamp of the import job.
 	// Required: true
-	CreatedAt interface{} `json:"created_at"`
+	// Format: date-time
+	CreatedAt *strfmt.DateTime `json:"created_at"`
 
 	// The current tables are being imported.
 	// Required: true
@@ -50,22 +51,18 @@ type OpenapiGetImportResp struct {
 
 	// The format of data to import.
 	// Required: true
-	DataFormat *string `json:"data_format"`
-
-	// The cloud provider that keeps the data to import.
-	// Required: true
-	DataSourceType *uint32 `json:"data_source_type"`
+	DataFormat *OpenapiDataFormat `json:"data_format"`
 
 	// The elapsed time of the import job in seconds.
 	// Required: true
-	ElapsedTimeSeconds *uint32 `json:"elapsed_time_seconds"`
+	ElapsedTimeSeconds *int64 `json:"elapsed_time_seconds"`
 
 	// The ID of the import job.
 	// Example: 1
-	ID uint64 `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 
 	// The create request of the import job.
-	ImportCreateReq *OpenapiDPImportCreateReq1 `json:"import_create_req,omitempty"`
+	ImportCreateReq *OpenapiCreateImportReq `json:"import_create_req,omitempty"`
 
 	// The message.
 	// Required: true
@@ -73,15 +70,15 @@ type OpenapiGetImportResp struct {
 
 	// The number of pending tables.
 	// Required: true
-	PendingTables *uint32 `json:"pending_tables"`
+	PendingTables *int64 `json:"pending_tables"`
 
 	// The post-process in percent of the import job.
 	// Maximum: 100
 	// Minimum: 1
-	PostImportCompletedPercent uint32 `json:"post_import_completed_percent,omitempty"`
+	PostImportCompletedPercent int64 `json:"post_import_completed_percent,omitempty"`
 
 	// The size of source data processed.
-	ProcessedSourceDataSize uint64 `json:"processed_source_data_size,omitempty"`
+	ProcessedSourceDataSize string `json:"processed_source_data_size,omitempty"`
 
 	// The full s3 path that contains data to import.
 	// Required: true
@@ -89,18 +86,18 @@ type OpenapiGetImportResp struct {
 
 	// The status of the import job.
 	// Required: true
-	Status *uint32 `json:"status"`
+	Status *OpenapiGetImportRespStatus `json:"status"`
 
 	// The total number of files of the data imported.
 	// Required: true
-	TotalFiles *uint32 `json:"total_files"`
+	TotalFiles *int64 `json:"total_files"`
 
 	// The total size of the data imported.
 	// Required: true
-	TotalSize *uint64 `json:"total_size"`
+	TotalSize *string `json:"total_size"`
 
 	// The total number of tables.
-	TotalTablesCount uint32 `json:"total_tables_count,omitempty"`
+	TotalTablesCount int64 `json:"total_tables_count,omitempty"`
 }
 
 // Validate validates this openapi get import resp
@@ -132,10 +129,6 @@ func (m *OpenapiGetImportResp) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateDataFormat(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateDataSourceType(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -222,11 +215,11 @@ func (m *OpenapiGetImportResp) validateCompletedPercent(formats strfmt.Registry)
 		return err
 	}
 
-	if err := validate.MinimumUint("completed_percent", "body", uint64(*m.CompletedPercent), 1, false); err != nil {
+	if err := validate.MinimumInt("completed_percent", "body", *m.CompletedPercent, 1, false); err != nil {
 		return err
 	}
 
-	if err := validate.MaximumUint("completed_percent", "body", uint64(*m.CompletedPercent), 100, false); err != nil {
+	if err := validate.MaximumInt("completed_percent", "body", *m.CompletedPercent, 100, false); err != nil {
 		return err
 	}
 
@@ -244,8 +237,12 @@ func (m *OpenapiGetImportResp) validateCompletedTables(formats strfmt.Registry) 
 
 func (m *OpenapiGetImportResp) validateCreatedAt(formats strfmt.Registry) error {
 
-	if m.CreatedAt == nil {
-		return errors.Required("created_at", "body", nil)
+	if err := validate.Required("created_at", "body", m.CreatedAt); err != nil {
+		return err
+	}
+
+	if err := validate.FormatOf("created_at", "body", "date-time", m.CreatedAt.String(), formats); err != nil {
+		return err
 	}
 
 	return nil
@@ -284,13 +281,19 @@ func (m *OpenapiGetImportResp) validateDataFormat(formats strfmt.Registry) error
 		return err
 	}
 
-	return nil
-}
-
-func (m *OpenapiGetImportResp) validateDataSourceType(formats strfmt.Registry) error {
-
-	if err := validate.Required("data_source_type", "body", m.DataSourceType); err != nil {
+	if err := validate.Required("data_format", "body", m.DataFormat); err != nil {
 		return err
+	}
+
+	if m.DataFormat != nil {
+		if err := m.DataFormat.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("data_format")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("data_format")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -347,11 +350,11 @@ func (m *OpenapiGetImportResp) validatePostImportCompletedPercent(formats strfmt
 		return nil
 	}
 
-	if err := validate.MinimumUint("post_import_completed_percent", "body", uint64(m.PostImportCompletedPercent), 1, false); err != nil {
+	if err := validate.MinimumInt("post_import_completed_percent", "body", m.PostImportCompletedPercent, 1, false); err != nil {
 		return err
 	}
 
-	if err := validate.MaximumUint("post_import_completed_percent", "body", uint64(m.PostImportCompletedPercent), 100, false); err != nil {
+	if err := validate.MaximumInt("post_import_completed_percent", "body", m.PostImportCompletedPercent, 100, false); err != nil {
 		return err
 	}
 
@@ -371,6 +374,21 @@ func (m *OpenapiGetImportResp) validateStatus(formats strfmt.Registry) error {
 
 	if err := validate.Required("status", "body", m.Status); err != nil {
 		return err
+	}
+
+	if err := validate.Required("status", "body", m.Status); err != nil {
+		return err
+	}
+
+	if m.Status != nil {
+		if err := m.Status.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("status")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("status")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -406,7 +424,15 @@ func (m *OpenapiGetImportResp) ContextValidate(ctx context.Context, formats strf
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateDataFormat(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateImportCreateReq(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateStatus(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -456,6 +482,22 @@ func (m *OpenapiGetImportResp) contextValidateCurrentTables(ctx context.Context,
 	return nil
 }
 
+func (m *OpenapiGetImportResp) contextValidateDataFormat(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.DataFormat != nil {
+		if err := m.DataFormat.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("data_format")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("data_format")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *OpenapiGetImportResp) contextValidateImportCreateReq(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.ImportCreateReq != nil {
@@ -464,6 +506,22 @@ func (m *OpenapiGetImportResp) contextValidateImportCreateReq(ctx context.Contex
 				return ve.ValidateName("import_create_req")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("import_create_req")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *OpenapiGetImportResp) contextValidateStatus(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Status != nil {
+		if err := m.Status.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("status")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("status")
 			}
 			return err
 		}

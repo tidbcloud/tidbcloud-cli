@@ -1,3 +1,17 @@
+// Copyright 2022 PingCAP, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package dataimport
 
 import (
@@ -126,7 +140,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 				if m, _ := formatModel.(ui.SelectModel); m.Interrupted {
 					os.Exit(130)
 				}
-				dataFormat = string(formatModel.(ui.SelectModel).Choices[formatModel.(ui.SelectModel).Selected].(importModel.OpenapiDataFormat))
+				dataFormat = formatModel.(ui.SelectModel).Choices[formatModel.(ui.SelectModel).Selected].(string)
 
 				// variables for input
 				p = tea.NewProgram(initialStartInputModel())
@@ -152,7 +166,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cmd.Flag(flag.ClusterID).Value.String()
 				awsRoleArn = cmd.Flag(flag.AwsRoleArn).Value.String()
 				dataFormat = cmd.Flag(flag.DataFormat).Value.String()
-				if !util.StringInSlice(opts.SupportedDataFormats(), dataFormat) {
+				if !util.ElemInSlice(opts.SupportedDataFormats(), dataFormat) {
 					return fmt.Errorf("data format %s is not supported, please use one of CSV, SqlFile, Parquet, AuroraSnapshot", dataFormat)
 				}
 				sourceUrl = cmd.Flag(flag.SourceUrl).Value.String()
@@ -184,7 +198,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %d starts.", *(res.Payload.ID)))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", *(res.Payload.ID)))
 			return nil
 		},
 	}

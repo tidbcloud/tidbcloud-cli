@@ -30,9 +30,6 @@ func (m OpenapiDataFormat) Pointer() *OpenapiDataFormat {
 
 const (
 
-	// OpenapiDataFormatCanNotBeUnknown captures enum value "CanNotBeUnknown"
-	OpenapiDataFormatCanNotBeUnknown OpenapiDataFormat = "CanNotBeUnknown"
-
 	// OpenapiDataFormatSQLFile captures enum value "SqlFile"
 	OpenapiDataFormatSQLFile OpenapiDataFormat = "SqlFile"
 
@@ -51,7 +48,7 @@ var openapiDataFormatEnum []interface{}
 
 func init() {
 	var res []OpenapiDataFormat
-	if err := json.Unmarshal([]byte(`["CanNotBeUnknown","SqlFile","AuroraSnapshot","CSV","Parquet"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["SqlFile","AuroraSnapshot","CSV","Parquet"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {

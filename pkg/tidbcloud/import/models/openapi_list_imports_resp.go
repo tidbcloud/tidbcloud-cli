@@ -26,7 +26,7 @@ type OpenapiListImportsResp struct {
 
 	// The total number of import jobs in the cluster.
 	// Required: true
-	Total *int64 `json:"total"`
+	Total *string `json:"total"`
 }
 
 // Validate validates this openapi list imports resp

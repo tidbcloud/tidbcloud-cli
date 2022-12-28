@@ -23,7 +23,7 @@ type OpenapiCurrentTable struct {
 	// Required: true
 	// Maximum: 100
 	// Minimum: 1
-	CompletedPercent *uint32 `json:"completed_percent"`
+	CompletedPercent *int64 `json:"completed_percent"`
 
 	// The name of the table.
 	// Required: true
@@ -31,7 +31,7 @@ type OpenapiCurrentTable struct {
 
 	// The data size of the table.
 	// Required: true
-	Size *uint64 `json:"size"`
+	Size *string `json:"size"`
 }
 
 // Validate validates this openapi current table
@@ -62,11 +62,11 @@ func (m *OpenapiCurrentTable) validateCompletedPercent(formats strfmt.Registry) 
 		return err
 	}
 
-	if err := validate.MinimumUint("completed_percent", "body", uint64(*m.CompletedPercent), 1, false); err != nil {
+	if err := validate.MinimumInt("completed_percent", "body", *m.CompletedPercent, 1, false); err != nil {
 		return err
 	}
 
-	if err := validate.MaximumUint("completed_percent", "body", uint64(*m.CompletedPercent), 100, false); err != nil {
+	if err := validate.MaximumInt("completed_percent", "body", *m.CompletedPercent, 100, false); err != nil {
 		return err
 	}
 

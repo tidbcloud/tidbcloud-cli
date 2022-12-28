@@ -14,13 +14,15 @@
 
 package util
 
-import "strings"
+import (
+	"strings"
+)
 
 const tiupBinPrefix = "/.tiup/components/"
 
-func StringInSlice(a []string, x string) bool {
-	for _, b := range a {
-		if b == x {
+func ElemInSlice[T comparable](slice []T, o T) bool {
+	for _, b := range slice {
+		if b == o {
 			return true
 		}
 	}

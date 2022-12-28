@@ -144,7 +144,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
-			if util.StringInSlice(profiles, profileName) {
+			if util.ElemInSlice(profiles, profileName) {
 				return fmt.Errorf("profile %s already exists, use `config set` to modify", profileName)
 			}
 

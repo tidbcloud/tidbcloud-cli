@@ -30,9 +30,6 @@ func (m ImportTableCompletionInfoResult) Pointer() *ImportTableCompletionInfoRes
 
 const (
 
-	// ImportTableCompletionInfoResultUNKNOWN captures enum value "UNKNOWN"
-	ImportTableCompletionInfoResultUNKNOWN ImportTableCompletionInfoResult = "UNKNOWN"
-
 	// ImportTableCompletionInfoResultSUCCESS captures enum value "SUCCESS"
 	ImportTableCompletionInfoResultSUCCESS ImportTableCompletionInfoResult = "SUCCESS"
 
@@ -48,7 +45,7 @@ var importTableCompletionInfoResultEnum []interface{}
 
 func init() {
 	var res []ImportTableCompletionInfoResult
-	if err := json.Unmarshal([]byte(`["UNKNOWN","SUCCESS","WARNING","ERROR"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["SUCCESS","WARNING","ERROR"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {

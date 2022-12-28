@@ -30,9 +30,6 @@ func (m OpenapiGetImportRespStatus) Pointer() *OpenapiGetImportRespStatus {
 
 const (
 
-	// OpenapiGetImportRespStatusUNKNOWN captures enum value "UNKNOWN"
-	OpenapiGetImportRespStatusUNKNOWN OpenapiGetImportRespStatus = "UNKNOWN"
-
 	// OpenapiGetImportRespStatusPREPARING captures enum value "PREPARING"
 	OpenapiGetImportRespStatusPREPARING OpenapiGetImportRespStatus = "PREPARING"
 
@@ -57,7 +54,7 @@ var openapiGetImportRespStatusEnum []interface{}
 
 func init() {
 	var res []OpenapiGetImportRespStatus
-	if err := json.Unmarshal([]byte(`["UNKNOWN","PREPARING","IMPORTING","COMPLETED","FAILED","CANCELING","CANCELED"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["PREPARING","IMPORTING","COMPLETED","FAILED","CANCELING","CANCELED"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {

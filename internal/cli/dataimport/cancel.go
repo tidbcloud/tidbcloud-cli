@@ -1,14 +1,28 @@
+// Copyright 2022 PingCAP, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package dataimport
 
 import (
 	"fmt"
-	"strconv"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
+	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
 	"github.com/fatih/color"
 	"github.com/juju/errors"
@@ -38,7 +52,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s import cancel
 
   Cancel an import task in non-interactive mode:
-  $ %[1]s import cancel --project-id <project-id> --cluster-name <cluster-name> --import-id <import-id>`,
+  $ %[1]s import cancel --project-id <project-id> --cluster-id <cluster-id> --import-id <import-id>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -86,11 +100,15 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				selectedImport, err := cloud.GetSelectedImport(projectID, clusterID, h.QueryPageSize, d)
+				// Only task status is pending or importing can be canceled.
+				selectedImport, err := cloud.GetSelectedImport(projectID, clusterID, h.QueryPageSize, d, []importModel.OpenapiGetImportRespStatus{
+					importModel.OpenapiGetImportRespStatusPREPARING,
+					importModel.OpenapiGetImportRespStatusIMPORTING,
+				})
 				if err != nil {
 					return err
 				}
-				importID = strconv.FormatUint(selectedImport.ID, 10)
+				importID = selectedImport.ID
 			} else {
 				// non-interactive mode
 				projectID = cmd.Flag(flag.ProjectID).Value.String()
@@ -104,7 +122,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s is canceled.", importID))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s has been canceled.", importID))
 			return nil
 		},
 	}

@@ -252,12 +252,10 @@
     "ImportTableCompletionInfoResult": {
       "type": "string",
       "enum": [
-        "UNKNOWN",
         "SUCCESS",
         "WARNING",
         "ERROR"
-      ],
-      "default": "UNKNOWN"
+      ]
     },
     "googlerpcStatus": {
       "type": "object",
@@ -277,11 +275,51 @@
         }
       }
     },
+    "openapiCreateImportReq": {
+      "type": "object",
+      "properties": {
+        "project_id": {
+          "type": "string",
+          "format": "uint64",
+          "example": "1",
+          "description": "The ID of the project."
+        },
+        "cluster_id": {
+          "type": "string",
+          "format": "uint64",
+          "example": "1",
+          "description": "The ID of the cluster."
+        },
+        "data_format": {
+          "$ref": "#/definitions/openapiDataFormat",
+          "description": "The format of data to import."
+        },
+        "source_url": {
+          "type": "string",
+          "description": "The full s3 path that contains data to import."
+        },
+        "aws_role_arn": {
+          "type": "string",
+          "description": "The arn of AWS IAM role."
+        },
+        "csv_format": {
+          "$ref": "#/definitions/openapiCustomCSVFormat",
+          "description": "The CSV configuration."
+        }
+      },
+      "required": [
+        "project_id",
+        "cluster_id",
+        "data_format",
+        "source_url",
+        "aws_role_arn"
+      ]
+    },
     "openapiCreateImportResp": {
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "uint64",
           "example": "1",
           "description": "The ID of the import job."
@@ -299,13 +337,13 @@
           "description": "The name of the table."
         },
         "size": {
-          "type": "integer",
+          "type": "string",
           "format": "uint64",
           "description": "The data size of the table."
         },
         "completed_percent": {
           "type": "integer",
-          "format": "uint32",
+          "format": "int64",
           "description": "The process in percent of importing the table.",
           "maximum": 100,
           "minimum": 1
@@ -343,201 +381,32 @@
         }
       }
     },
-    "openapiDPImportCreateReq": {
-      "type": "object",
-      "properties": {
-        "cluster_id": {
-          "type": "string",
-          "format": "uint64",
-          "example": "1",
-          "description": "The ID of the cluster."
-        },
-        "source_url": {
-          "type": "string",
-          "description": "The full s3 path that contains data to import.",
-          "title": "import info"
-        },
-        "region": {
-          "type": "string",
-          "description": "The region of the s3 bucket that contains data to import."
-        },
-        "data_format": {
-          "type": "integer",
-          "format": "uint32",
-          "description": "The format of data to import.",
-          "title": "1: sql statement(dumpling default format\n2: aurora snapshot(parquet)\n3: custom csv\n4: parquet format(not aurora)"
-        },
-        "data_source_type": {
-          "type": "integer",
-          "format": "uint32",
-          "description": "The cloud provider that keeps the data to import.",
-          "title": "1: aws s3\n2: GCS"
-        },
-        "target_username": {
-          "type": "string",
-          "description": "Deprectaed.",
-          "title": "deprecated"
-        },
-        "target_password": {
-          "type": "string",
-          "description": "Deprectaed.",
-          "title": "deprecated"
-        },
-        "filter": {
-          "type": "string",
-          "description": "The table filter."
-        },
-        "org_id": {
-          "type": "string",
-          "format": "uint64",
-          "example": "1",
-          "description": "The ID of the orgnization."
-        },
-        "project_id": {
-          "type": "string",
-          "format": "uint64",
-          "example": "1",
-          "description": "The ID of the project."
-        },
-        "csv_format": {
-          "$ref": "#/definitions/openapiCustomCSVFormat",
-          "description": "The CSV configuration."
-        },
-        "aws_role_arn": {
-          "type": "string",
-          "description": "The arn of AWS IAM role."
-        },
-        "object_name_pattern": {
-          "type": "string"
-        },
-        "target_table_pattern": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "cluster_id",
-        "source_url",
-        "region",
-        "data_format",
-        "data_source_type",
-        "target_username",
-        "target_password",
-        "filter",
-        "org_id",
-        "project_id"
-      ]
-    },
-    "openapiDPImportCreateReq1": {
-      "type": "object",
-      "properties": {
-        "cluster_id": {
-          "type": "integer",
-          "format": "uint64",
-          "example": "1",
-          "description": "The ID of the cluster."
-        },
-        "source_url": {
-          "type": "string",
-          "description": "The full s3 path that contains data to import.",
-          "title": "import info"
-        },
-        "region": {
-          "type": "string",
-          "description": "The region of the s3 bucket that contains data to import."
-        },
-        "data_format": {
-          "type": "string",
-          "description": "The format of data to import.",
-          "title": "1: sql statement(dumpling default format\n2: aurora snapshot(parquet)\n3: custom csv\n4: parquet format(not aurora)"
-        },
-        "data_source_type": {
-          "type": "integer",
-          "format": "uint32",
-          "description": "The cloud provider that keeps the data to import.",
-          "title": "1: aws s3\n2: GCS"
-        },
-        "target_username": {
-          "type": "string",
-          "description": "Deprectaed.",
-          "title": "deprecated"
-        },
-        "target_password": {
-          "type": "string",
-          "description": "Deprectaed.",
-          "title": "deprecated"
-        },
-        "filter": {
-          "type": "string",
-          "description": "The table filter."
-        },
-        "org_id": {
-          "type": "string",
-          "format": "uint64",
-          "example": "1",
-          "description": "The ID of the orgnization."
-        },
-        "project_id": {
-          "type": "string",
-          "format": "uint64",
-          "example": "1",
-          "description": "The ID of the project."
-        },
-        "csv_format": {
-          "$ref": "#/definitions/openapiCustomCSVFormat",
-          "description": "The CSV configuration."
-        },
-        "aws_role_arn": {
-          "type": "string",
-          "description": "The arn of AWS IAM role."
-        },
-        "object_name_pattern": {
-          "type": "string"
-        },
-        "target_table_pattern": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "cluster_id",
-        "source_url",
-        "region",
-        "data_format",
-        "data_source_type",
-        "target_username",
-        "target_password",
-        "filter",
-        "org_id",
-        "project_id"
-      ]
-    },
     "openapiDataFormat": {
       "type": "string",
       "enum": [
-        "CanNotBeUnknown",
         "SqlFile",
         "AuroraSnapshot",
         "CSV",
         "Parquet"
-      ],
-      "default": "CanNotBeUnknown"
+      ]
     },
     "openapiGetImportResp": {
       "type": "object",
       "properties": {
         "cluster_id": {
-          "type": "integer",
+          "type": "string",
           "format": "uint64",
           "example": "1",
           "description": "The ID of the cluster."
         },
         "total_size": {
-          "type": "integer",
+          "type": "string",
           "format": "uint64",
           "description": "The total size of the data imported."
         },
         "total_files": {
           "type": "integer",
-          "format": "uint32",
+          "format": "int64",
           "description": "The total number of files of the data imported."
         },
         "source_url": {
@@ -546,27 +415,26 @@
         },
         "completed_tables": {
           "type": "integer",
-          "format": "uint32",
+          "format": "int64",
           "description": "The number of completed tables."
         },
         "pending_tables": {
           "type": "integer",
-          "format": "uint32",
+          "format": "int64",
           "description": "The number of pending tables."
         },
         "created_at": {
-          "type": "object",
-          "format": "timestamp",
+          "type": "string",
+          "format": "date-time",
           "description": "The creation timestamp of the import job."
         },
         "status": {
-          "type": "integer",
-          "format": "uint32",
+          "$ref": "#/definitions/openapiGetImportRespStatus",
           "description": "The status of the import job."
         },
         "completed_percent": {
           "type": "integer",
-          "format": "uint32",
+          "format": "int64",
           "description": " The process in percent of the import job, but doesn't include the post-processing progress.",
           "maximum": 100,
           "minimum": 1
@@ -579,13 +447,8 @@
           "description": "The current tables are being imported."
         },
         "data_format": {
-          "type": "string",
+          "$ref": "#/definitions/openapiDataFormat",
           "description": "The format of data to import."
-        },
-        "data_source_type": {
-          "type": "integer",
-          "format": "uint32",
-          "description": "The cloud provider that keeps the data to import."
         },
         "message": {
           "type": "string",
@@ -593,28 +456,28 @@
         },
         "elapsed_time_seconds": {
           "type": "integer",
-          "format": "uint32",
+          "format": "int64",
           "description": "The elapsed time of the import job in seconds."
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "uint64",
           "example": "1",
           "description": "The ID of the import job."
         },
         "processed_source_data_size": {
-          "type": "integer",
+          "type": "string",
           "format": "uint64",
           "description": "The size of source data processed."
         },
         "total_tables_count": {
           "type": "integer",
-          "format": "uint32",
+          "format": "int64",
           "description": "The total number of tables."
         },
         "post_import_completed_percent": {
           "type": "integer",
-          "format": "uint32",
+          "format": "int64",
           "description": "The post-process in percent of the import job.",
           "maximum": 100,
           "minimum": 1
@@ -627,7 +490,7 @@
           "description": "Completion information of the tables imported."
         },
         "import_create_req": {
-          "$ref": "#/definitions/openapiDPImportCreateReq1",
+          "$ref": "#/definitions/openapiCreateImportReq",
           "description": "The create request of the import job."
         }
       },
@@ -645,7 +508,6 @@
         "completed_percent",
         "current_tables",
         "data_format",
-        "data_source_type",
         "message",
         "elapsed_time_seconds"
       ]
@@ -653,15 +515,13 @@
     "openapiGetImportRespStatus": {
       "type": "string",
       "enum": [
-        "UNKNOWN",
         "PREPARING",
         "IMPORTING",
         "COMPLETED",
         "FAILED",
         "CANCELING",
         "CANCELED"
-      ],
-      "default": "UNKNOWN"
+      ]
     },
     "openapiImportTableCompletionInfo": {
       "type": "object",
@@ -695,7 +555,7 @@
           "description": "The items of import jobs in the cluster."
         },
         "total": {
-          "type": "integer",
+          "type": "string",
           "format": "int64",
           "description": "The total number of import jobs in the cluster."
         }

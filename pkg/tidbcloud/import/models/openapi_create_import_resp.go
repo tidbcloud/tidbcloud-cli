@@ -22,7 +22,7 @@ type OpenapiCreateImportResp struct {
 	// The ID of the import job.
 	// Example: 1
 	// Required: true
-	ID *uint64 `json:"id"`
+	ID *string `json:"id"`
 }
 
 // Validate validates this openapi create import resp

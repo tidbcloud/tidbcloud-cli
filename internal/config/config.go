@@ -36,7 +36,7 @@ const (
 var (
 	FocusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
 	CursorStyle  = FocusedStyle.Copy()
-	CliName = cliName
+	CliName      = cliName
 )
 
 type Config struct {
@@ -57,7 +57,7 @@ func ValidateProfile(profileName string) error {
 		return err
 	}
 
-	if !util.StringInSlice(profiles, profileName) {
+	if !util.ElemInSlice(profiles, profileName) {
 		return fmt.Errorf("profile %s not found", profileName)
 	}
 
@@ -68,7 +68,7 @@ func GetAllProfiles() ([]string, error) {
 	s := viper.AllSettings()
 	keys := make([]string, 0, len(s))
 	for k := range s {
-		if !util.StringInSlice(prop.GlobalProperties(), k) {
+		if !util.ElemInSlice(prop.GlobalProperties(), k) {
 			keys = append(keys, k)
 		}
 	}

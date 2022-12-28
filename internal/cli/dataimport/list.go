@@ -1,3 +1,17 @@
+// Copyright 2022 PingCAP, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package dataimport
 
 import (
@@ -33,13 +47,16 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 	var listCmd = &cobra.Command{
 		Use:     "list",
-		Short:   "List a data import task",
+		Short:   "List data import tasks",
 		Aliases: []string{"ls"},
-		Example: fmt.Sprintf(`  List an import task in interactive mode:
+		Example: fmt.Sprintf(`  List import tasks in interactive mode:
   $ %[1]s import list
 
-  List an import task in non-interactive mode:
-  $ %[1]s import list --project-id <project-id> --cluster-name <cluster-name> --aws-role-arn <aws-role-arn> --data-format <data-format> --source-url <source-url>`,
+  List import tasks in non-interactive mode:
+  $ %[1]s import list --project-id <project-id> --cluster-id <cluster-id>
+  
+  List the clusters in the project with json format:
+  $ %[1]s import list --project-id <project-id> --cluster-id <cluster-id> --output json`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -96,6 +113,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			totalStr := strconv.FormatUint(total, 10)
 
 			format, err := cmd.Flags().GetString(flag.Output)
 			if err != nil {
@@ -107,7 +125,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
 				res := &importModel.OpenapiListImportsResp{
 					Imports: importTasks,
-					Total:   &total,
+					Total:   &totalStr,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)
 				if err != nil {
@@ -120,19 +138,19 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					"CreatedAt",
 					"SourceURL",
 					"DataFormat",
-					"ClusterID",
+					"Size",
 				}
 
 				var rows []output.Row
 				for _, item := range importTasks {
 
 					rows = append(rows, output.Row{
-						strconv.FormatUint(item.ID, 10),
-						strconv.FormatUint(uint64(*item.Status), 10),
+						item.ID,
 						string(*item.Status),
+						item.CreatedAt.String(),
 						*item.SourceURL,
-						*item.DataFormat,
-						strconv.FormatUint(*item.ClusterID, 10),
+						string(*item.DataFormat),
+						fmt.Sprintf("%sB", *item.TotalSize),
 					})
 				}
 
