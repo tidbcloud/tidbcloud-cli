@@ -156,9 +156,10 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			ticker := time.NewTicker(1 * time.Second)
+			timer := time.After(2 * time.Minute)
 			for {
 				select {
-				case <-time.After(2 * time.Minute):
+				case <-timer:
 					return errors.New("timeout waiting for deleting cluster, please check status on dashboard")
 				case <-ticker.C:
 					_, err := d.GetCluster(clusterApi.NewGetClusterParams().

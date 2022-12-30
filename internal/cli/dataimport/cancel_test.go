@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cluster
+package dataimport
 
 import (
 	"bytes"
@@ -24,19 +24,19 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
+	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 
-	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
 
-type DeleteClusterSuite struct {
+type CancelImportSuite struct {
 	suite.Suite
 	h          *internal.Helper
 	mockClient *mock.TiDBCloudClient
 }
 
-func (suite *DeleteClusterSuite) SetupTest() {
+func (suite *CancelImportSuite) SetupTest() {
 	if err := os.Setenv("NO_COLOR", "true"); err != nil {
 		suite.T().Error(err)
 	}
@@ -52,17 +52,16 @@ func (suite *DeleteClusterSuite) SetupTest() {
 	}
 }
 
-func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
+func (suite *CancelImportSuite) TestCancelImportArgs() {
 	assert := require.New(suite.T())
 
+	result := &importOp.CancelImportOK{}
 	projectID := "12345"
 	clusterID := "12345"
-	suite.mockClient.On("DeleteCluster", cluster.NewDeleteClusterParams().
-		WithProjectID(projectID).WithClusterID(clusterID)).
-		Return(&cluster.DeleteClusterOK{}, nil)
-	suite.mockClient.On("GetCluster", cluster.NewGetClusterParams().
-		WithProjectID(projectID).WithClusterID(clusterID)).
-		Return(nil, &cluster.GetClusterNotFound{})
+	importID := "12345"
+	suite.mockClient.On("CancelImport", importOp.NewCancelImportParams().
+		WithProjectID(projectID).WithClusterID(clusterID).WithID(importID)).
+		Return(result, nil)
 
 	tests := []struct {
 		name         string
@@ -72,30 +71,25 @@ func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 		stderrString string
 	}{
 		{
-			name:         "delete cluster success",
-			args:         []string{"--project-id", projectID, "--cluster-id", clusterID, "--force"},
-			stdoutString: "cluster deleted\n",
+			name:         "cancel import with default format(json when without tty)",
+			args:         []string{"--project-id", projectID, "--cluster-id", clusterID, "--import-id", importID},
+			stdoutString: fmt.Sprintf("Import task %s has been canceled.\n", importID),
 		},
 		{
-			name: "delete cluster without force",
-			args: []string{"--project-id", projectID, "--cluster-id", clusterID},
-			err:  fmt.Errorf("the terminal doesn't support prompt, please run with --force to delete the cluster"),
+			name:         "cancel import with output shorthand flag",
+			args:         []string{"-p", projectID, "-c", clusterID, "--import-id", importID},
+			stdoutString: fmt.Sprintf("Import task %s has been canceled.\n", importID),
 		},
 		{
-			name:         "delete cluster with output flag",
-			args:         []string{"-p", projectID, "-c", clusterID, "--force"},
-			stdoutString: "cluster deleted\n",
-		},
-		{
-			name: "delete cluster without required project id",
-			args: []string{"-c", clusterID, "--force"},
+			name: "cancel import without required project id",
+			args: []string{"-c", clusterID, "--import-id", importID},
 			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
 		},
 	}
 
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
-			cmd := DeleteCmd(suite.h)
+			cmd := CancelCmd(suite.h)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
@@ -111,6 +105,6 @@ func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 	}
 }
 
-func TestDeleteClusterSuite(t *testing.T) {
-	suite.Run(t, new(DeleteClusterSuite))
+func TestCancelImportSuite(t *testing.T) {
+	suite.Run(t, new(CancelImportSuite))
 }

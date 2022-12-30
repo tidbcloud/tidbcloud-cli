@@ -28,15 +28,9 @@ import (
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-)
-
-var (
-	focusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
-	cursorStyle  = focusedStyle.Copy()
 )
 
 type createConfigField int
@@ -150,7 +144,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
-			if util.StringInSlice(profiles, profileName) {
+			if util.ElemInSlice(profiles, profileName) {
 				return fmt.Errorf("profile %s already exists, use `config set` to modify", profileName)
 			}
 
@@ -183,7 +177,7 @@ func initialDeletionInputModel() ui.TextInputModel {
 	var t textinput.Model
 	for i := range m.Inputs {
 		t = textinput.New()
-		t.CursorStyle = cursorStyle
+		t.CursorStyle = config.CursorStyle
 		t.CharLimit = 64
 		f := createConfigField(i)
 
@@ -191,8 +185,8 @@ func initialDeletionInputModel() ui.TextInputModel {
 		case profileNameIdx:
 			t.Placeholder = "Profile Name"
 			t.Focus()
-			t.PromptStyle = focusedStyle
-			t.TextStyle = focusedStyle
+			t.PromptStyle = config.FocusedStyle
+			t.TextStyle = config.FocusedStyle
 		case publicKeyIdx:
 			t.Placeholder = "Public Key"
 			t.CharLimit = 128

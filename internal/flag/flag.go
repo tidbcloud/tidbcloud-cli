@@ -15,12 +15,15 @@
 package flag
 
 const (
+	AwsRoleArn     string = "aws-role-arn"
 	CloudProvider  string = "cloud-provider"
 	ClusterID      string = "cluster-id"
 	ClusterIDShort string = "c"
 	ClusterName    string = "cluster-name"
 	ClusterType    string = "cluster-type"
+	DataFormat     string = "data-format"
 	Force          string = "force"
+	ImportID       string = "import-id"
 	NoColor        string = "no-color"
 	Output         string = "output"
 	OutputShort    string = "o"
@@ -34,4 +37,5 @@ const (
 	Region         string = "region"
 	RegionShort    string = "r"
 	RootPassword   string = "root-password"
+	SourceUrl      string = "source-url"
 )

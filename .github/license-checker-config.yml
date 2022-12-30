@@ -7,4 +7,5 @@ header:
     - '**/*.go'
   paths-ignore:
     - '**/mock/**'
+    - 'pkg/tidbcloud/import/**'
   comment: on-failure

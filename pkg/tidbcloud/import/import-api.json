@@ -1,0 +1,578 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Internal OpenAPIs for TiDB Cloud",
+    "description": "The TiDB Cloud API uses HTTP Digest Authentication. It protects your private key from being sent over the network.The API key contains a public key and a private key, which act as the username and password required in the HTTP Digest Authentication. The private key only displays upon the key creation.",
+    "version": "alpha"
+  },
+  "tags": [
+    {
+      "name": "ImportService"
+    }
+  ],
+  "host": "api.tidbcloud.com",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/internal/projects/{project_id}/clusters/{cluster_id}/imports": {
+      "get": {
+        "summary": "List all import jobs in the cluster.",
+        "operationId": "ListImports",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/openapiListImportsResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "project_id",
+            "description": "The ID of the project.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "cluster_id",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "page",
+            "description": "The number of pages.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 1
+          },
+          {
+            "name": "page_size",
+            "description": "The size of a page.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 10
+          }
+        ],
+        "tags": [
+          "ImportService"
+        ]
+      },
+      "post": {
+        "summary": "Create an import job.",
+        "operationId": "CreateImport",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/openapiCreateImportResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "project_id",
+            "description": "The ID of the project.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "cluster_id",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "data_format": {
+                  "$ref": "#/definitions/openapiDataFormat",
+                  "description": "The format of data to import."
+                },
+                "source_url": {
+                  "type": "string",
+                  "description": "The full s3 path that contains data to import."
+                },
+                "aws_role_arn": {
+                  "type": "string",
+                  "description": "The arn of AWS IAM role."
+                },
+                "csv_format": {
+                  "$ref": "#/definitions/openapiCustomCSVFormat",
+                  "description": "The CSV configuration."
+                }
+              },
+              "required": [
+                "data_format",
+                "source_url",
+                "aws_role_arn"
+              ]
+            }
+          }
+        ],
+        "tags": [
+          "ImportService"
+        ]
+      }
+    },
+    "/api/internal/projects/{project_id}/clusters/{cluster_id}/imports/{id}": {
+      "get": {
+        "summary": "Get an import job.",
+        "operationId": "GetImport",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/openapiGetImportResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "project_id",
+            "description": "The ID of the project.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "cluster_id",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "id",
+            "description": "The ID of the import job.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "ImportService"
+        ]
+      },
+      "delete": {
+        "summary": "Cancel an import job.",
+        "operationId": "CancelImport",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "project_id",
+            "description": "The ID of the project.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "cluster_id",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "id",
+            "description": "The ID of the import job.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          }
+        ],
+        "tags": [
+          "ImportService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "ImportTableCompletionInfoResult": {
+      "type": "string",
+      "enum": [
+        "SUCCESS",
+        "WARNING",
+        "ERROR"
+      ]
+    },
+    "googlerpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "openapiCreateImportReq": {
+      "type": "object",
+      "properties": {
+        "project_id": {
+          "type": "string",
+          "format": "uint64",
+          "example": "1",
+          "description": "The ID of the project."
+        },
+        "cluster_id": {
+          "type": "string",
+          "format": "uint64",
+          "example": "1",
+          "description": "The ID of the cluster."
+        },
+        "data_format": {
+          "$ref": "#/definitions/openapiDataFormat",
+          "description": "The format of data to import."
+        },
+        "source_url": {
+          "type": "string",
+          "description": "The full s3 path that contains data to import."
+        },
+        "aws_role_arn": {
+          "type": "string",
+          "description": "The arn of AWS IAM role."
+        },
+        "csv_format": {
+          "$ref": "#/definitions/openapiCustomCSVFormat",
+          "description": "The CSV configuration."
+        }
+      },
+      "required": [
+        "project_id",
+        "cluster_id",
+        "data_format",
+        "source_url",
+        "aws_role_arn"
+      ]
+    },
+    "openapiCreateImportResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uint64",
+          "example": "1",
+          "description": "The ID of the import job."
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "openapiCurrentTable": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the table."
+        },
+        "size": {
+          "type": "string",
+          "format": "uint64",
+          "description": "The data size of the table."
+        },
+        "completed_percent": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The process in percent of importing the table.",
+          "maximum": 100,
+          "minimum": 1
+        }
+      },
+      "required": [
+        "name",
+        "size",
+        "completed_percent"
+      ]
+    },
+    "openapiCustomCSVFormat": {
+      "type": "object",
+      "properties": {
+        "separator": {
+          "type": "string"
+        },
+        "delimiter": {
+          "type": "string"
+        },
+        "header": {
+          "type": "boolean"
+        },
+        "not_null": {
+          "type": "boolean"
+        },
+        "null": {
+          "type": "string"
+        },
+        "backslash_escape": {
+          "type": "boolean"
+        },
+        "trim_last_separator": {
+          "type": "boolean"
+        }
+      }
+    },
+    "openapiDataFormat": {
+      "type": "string",
+      "enum": [
+        "SqlFile",
+        "AuroraSnapshot",
+        "CSV",
+        "Parquet"
+      ]
+    },
+    "openapiGetImportResp": {
+      "type": "object",
+      "properties": {
+        "cluster_id": {
+          "type": "string",
+          "format": "uint64",
+          "example": "1",
+          "description": "The ID of the cluster."
+        },
+        "total_size": {
+          "type": "string",
+          "format": "uint64",
+          "description": "The total size of the data imported."
+        },
+        "total_files": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The total number of files of the data imported."
+        },
+        "source_url": {
+          "type": "string",
+          "description": "The full s3 path that contains data to import."
+        },
+        "completed_tables": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The number of completed tables."
+        },
+        "pending_tables": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The number of pending tables."
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The creation timestamp of the import job."
+        },
+        "status": {
+          "$ref": "#/definitions/openapiGetImportRespStatus",
+          "description": "The status of the import job."
+        },
+        "completed_percent": {
+          "type": "integer",
+          "format": "int64",
+          "description": " The process in percent of the import job, but doesn't include the post-processing progress.",
+          "maximum": 100,
+          "minimum": 1
+        },
+        "current_tables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/openapiCurrentTable"
+          },
+          "description": "The current tables are being imported."
+        },
+        "data_format": {
+          "$ref": "#/definitions/openapiDataFormat",
+          "description": "The format of data to import."
+        },
+        "message": {
+          "type": "string",
+          "description": "The message."
+        },
+        "elapsed_time_seconds": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The elapsed time of the import job in seconds."
+        },
+        "id": {
+          "type": "string",
+          "format": "uint64",
+          "example": "1",
+          "description": "The ID of the import job."
+        },
+        "processed_source_data_size": {
+          "type": "string",
+          "format": "uint64",
+          "description": "The size of source data processed."
+        },
+        "total_tables_count": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The total number of tables."
+        },
+        "post_import_completed_percent": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The post-process in percent of the import job.",
+          "maximum": 100,
+          "minimum": 1
+        },
+        "all_completed_tables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/openapiImportTableCompletionInfo"
+          },
+          "description": "Completion information of the tables imported."
+        },
+        "import_create_req": {
+          "$ref": "#/definitions/openapiCreateImportReq",
+          "description": "The create request of the import job."
+        }
+      },
+      "description": "ImportItem is the information of import job.",
+      "title": "ImportItem",
+      "required": [
+        "cluster_id",
+        "total_size",
+        "total_files",
+        "source_url",
+        "completed_tables",
+        "pending_tables",
+        "created_at",
+        "status",
+        "completed_percent",
+        "current_tables",
+        "data_format",
+        "message",
+        "elapsed_time_seconds"
+      ]
+    },
+    "openapiGetImportRespStatus": {
+      "type": "string",
+      "enum": [
+        "PREPARING",
+        "IMPORTING",
+        "COMPLETED",
+        "FAILED",
+        "CANCELING",
+        "CANCELED"
+      ]
+    },
+    "openapiImportTableCompletionInfo": {
+      "type": "object",
+      "properties": {
+        "table_name": {
+          "type": "string",
+          "description": "The name of the table."
+        },
+        "result": {
+          "$ref": "#/definitions/ImportTableCompletionInfoResult",
+          "description": "The result status of importing the table."
+        },
+        "message": {
+          "type": "string",
+          "description": "The message."
+        }
+      },
+      "required": [
+        "table_name",
+        "result"
+      ]
+    },
+    "openapiListImportsResp": {
+      "type": "object",
+      "properties": {
+        "imports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/openapiGetImportResp"
+          },
+          "description": "The items of import jobs in the cluster."
+        },
+        "total": {
+          "type": "string",
+          "format": "int64",
+          "description": "The total number of import jobs in the cluster."
+        }
+      },
+      "required": [
+        "imports",
+        "total"
+      ]
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    }
+  }
+}

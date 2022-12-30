@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cluster
+package dataimport
 
 import (
 	"bytes"
@@ -25,65 +25,54 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
+	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
+	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
-	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
 
-const getClusterResultStr = `{
-  "cloud_provider": "AWS",
-  "cluster_type": "DEVELOPER",
-  "config": {
-    "components": {
-      "tidb": {
-        "node_quantity": 1,
-        "node_size": "Shared0"
-      },
-      "tiflash": {
-        "node_quantity": 1,
-        "node_size": "Shared0",
-        "storage_size_gib": 1
-      },
-      "tikv": {
-        "node_quantity": 1,
-        "node_size": "Shared0",
-        "storage_size_gib": 1
-      }
+const getImportResultStr = `{
+  "all_completed_tables": [],
+  "cluster_id": "120466",
+  "completed_percent": 0,
+  "completed_tables": 1,
+  "created_at": "2022-12-28T08:18:11.000Z",
+  "current_tables": [],
+  "data_format": "CSV",
+  "elapsed_time_seconds": 10,
+  "id": "120117",
+  "import_create_req": {
+    "aws_role_arn": "arn",
+    "cluster_id": "120466",
+    "csv_format": {
+      "delimiter": "^",
+      "not_null": true,
+      "null": "@",
+      "separator": "$"
     },
-    "port": 4000
+    "data_format": "CSV",
+    "project_id": "0",
+    "source_url": "s3"
   },
-  "create_timestamp": "1668508515",
-  "id": "1379661944635994072",
-  "name": "sdfds",
-  "project_id": "1372813089189381287",
-  "region": "us-east-1",
-  "status": {
-    "cluster_status": "AVAILABLE",
-    "connection_strings": {
-      "default_user": "28cDWcUJJiewaQ7.root",
-      "standard": {
-        "host": "gateway01.us-east-1.prod.aws.tidbcloud.com",
-        "port": 4000
-      }
-    },
-    "node_map": {
-      "tidb": [],
-      "tiflash": [],
-      "tikv": []
-    },
-    "tidb_version": "v6.3.0"
-  }
+  "message": "[Lightning:Restore:ErrEncodeKV]encode kv error in file jianxu.test1.000000000001.csv:0 at offset 12: column count mismatch, expected 2, got 1",
+  "pending_tables": 0,
+  "processed_source_data_size": "0",
+  "source_url": "s3",
+  "status": "FAILED",
+  "total_files": 0,
+  "total_size": "39",
+  "total_tables_count": 1
 }
 `
 
-type DescribeClusterSuite struct {
+type DescribeImportSuite struct {
 	suite.Suite
 	h          *internal.Helper
 	mockClient *mock.TiDBCloudClient
 }
 
-func (suite *DescribeClusterSuite) SetupTest() {
+func (suite *DescribeImportSuite) SetupTest() {
 	if err := os.Setenv("NO_COLOR", "true"); err != nil {
 		suite.T().Error(err)
 	}
@@ -99,19 +88,21 @@ func (suite *DescribeClusterSuite) SetupTest() {
 	}
 }
 
-func (suite *DescribeClusterSuite) TestDescribeClusterArgs() {
+func (suite *DescribeImportSuite) TestDescribeImportArgs() {
 	assert := require.New(suite.T())
 
-	body := &cluster.GetClusterOKBody{}
-	err := json.Unmarshal([]byte(getClusterResultStr), body)
+	body := &importModel.OpenapiGetImportResp{}
+	err := json.Unmarshal([]byte(getImportResultStr), body)
 	assert.Nil(err)
-	result := &cluster.GetClusterOK{
+	result := &importOp.GetImportOK{
 		Payload: body,
 	}
+
 	projectID := "12345"
 	clusterID := "12345"
-	suite.mockClient.On("GetCluster", cluster.NewGetClusterParams().
-		WithProjectID(projectID).WithClusterID(clusterID)).
+	importID := "12345"
+	suite.mockClient.On("GetImport", importOp.NewGetImportParams().
+		WithProjectID(projectID).WithClusterID(clusterID).WithID(importID)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -122,18 +113,18 @@ func (suite *DescribeClusterSuite) TestDescribeClusterArgs() {
 		stderrString string
 	}{
 		{
-			name:         "describe cluster success",
-			args:         []string{"--project-id", projectID, "--cluster-id", clusterID},
-			stdoutString: getClusterResultStr,
+			name:         "describe import success",
+			args:         []string{"--project-id", projectID, "--cluster-id", clusterID, "--import-id", importID},
+			stdoutString: getImportResultStr,
 		},
 		{
-			name:         "describe cluster with shorthand flag",
-			args:         []string{"-p", projectID, "-c", clusterID},
-			stdoutString: getClusterResultStr,
+			name:         "describe import with shorthand flag",
+			args:         []string{"-p", projectID, "-c", clusterID, "--import-id", importID},
+			stdoutString: getImportResultStr,
 		},
 		{
-			name: "describe cluster without required project id",
-			args: []string{"-c", clusterID},
+			name: "describe import without required project id",
+			args: []string{"-c", clusterID, "--import-id", importID},
 			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
 		},
 	}
@@ -156,6 +147,6 @@ func (suite *DescribeClusterSuite) TestDescribeClusterArgs() {
 	}
 }
 
-func TestDescribeClusterSuite(t *testing.T) {
-	suite.Run(t, new(DescribeClusterSuite))
+func TestDescribeImportSuite(t *testing.T) {
+	suite.Run(t, new(DescribeImportSuite))
 }

@@ -297,9 +297,10 @@ func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, projectID s
 	ticker := time.NewTicker(1 * time.Second)
 
 	fmt.Fprintln(h.IOStreams.Out, "... Waiting for cluster to be ready")
+	timer := time.After(2 * time.Minute)
 	for {
 		select {
-		case <-time.After(2 * time.Minute):
+		case <-timer:
 			return errors.New("Timeout waiting for cluster to be ready, please check status on dashboard.")
 		case <-ticker.C:
 			clusterResult, err := d.GetCluster(clusterApi.NewGetClusterParams().
@@ -327,9 +328,10 @@ func CreateAndSpinnerWait(d cloud.TiDBCloudClient, projectID string, clusterDefB
 		newClusterID := *createClusterResult.GetPayload().ID
 
 		ticker := time.NewTicker(1 * time.Second)
+		timer := time.After(2 * time.Minute)
 		for {
 			select {
-			case <-time.After(2 * time.Minute):
+			case <-timer:
 				return ui.Result("Timeout waiting for cluster to be ready, please check status on dashboard.")
 			case <-ticker.C:
 				clusterResult, err := d.GetCluster(clusterApi.NewGetClusterParams().
@@ -367,7 +369,7 @@ func initialCreateInputModel() ui.TextInputModel {
 	var t textinput.Model
 	for i := range m.Inputs {
 		t = textinput.New()
-		t.CursorStyle = cursorStyle
+		t.CursorStyle = config.CursorStyle
 		t.CharLimit = 64
 		f := createClusterField(i)
 
@@ -375,8 +377,8 @@ func initialCreateInputModel() ui.TextInputModel {
 		case clusterNameIdx:
 			t.Placeholder = "Cluster Name"
 			t.Focus()
-			t.PromptStyle = focusedStyle
-			t.TextStyle = focusedStyle
+			t.PromptStyle = config.FocusedStyle
+			t.TextStyle = config.FocusedStyle
 		case passwordIdx:
 			t.Placeholder = "Password"
 			t.EchoMode = textinput.EchoPassword

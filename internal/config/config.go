@@ -21,6 +21,7 @@ import (
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/util"
 
+	"github.com/charmbracelet/lipgloss"
 	"github.com/spf13/viper"
 )
 
@@ -32,7 +33,11 @@ const (
 	Repo          = "tidbcloud/tidbcloud-cli"
 )
 
-var CliName = cliName
+var (
+	FocusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
+	CursorStyle  = FocusedStyle.Copy()
+	CliName      = cliName
+)
 
 type Config struct {
 	ActiveProfile string
@@ -52,7 +57,7 @@ func ValidateProfile(profileName string) error {
 		return err
 	}
 
-	if !util.StringInSlice(profiles, profileName) {
+	if !util.ElemInSlice(profiles, profileName) {
 		return fmt.Errorf("profile %s not found", profileName)
 	}
 
@@ -63,7 +68,7 @@ func GetAllProfiles() ([]string, error) {
 	s := viper.AllSettings()
 	keys := make([]string, 0, len(s))
 	for k := range s {
-		if !util.StringInSlice(prop.GlobalProperties(), k) {
+		if !util.ElemInSlice(prop.GlobalProperties(), k) {
 			keys = append(keys, k)
 		}
 	}

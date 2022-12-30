@@ -180,7 +180,7 @@ const listResultMultiPageStr = `{
 type ListClusterSuite struct {
 	suite.Suite
 	h          *internal.Helper
-	mockClient *mock.ApiClient
+	mockClient *mock.TiDBCloudClient
 }
 
 func (suite *ListClusterSuite) SetupTest() {
@@ -189,7 +189,7 @@ func (suite *ListClusterSuite) SetupTest() {
 	}
 
 	var pageSize int64 = 10
-	suite.mockClient = new(mock.ApiClient)
+	suite.mockClient = new(mock.TiDBCloudClient)
 	suite.h = &internal.Helper{
 		Client: func() (cloud.TiDBCloudClient, error) {
 			return suite.mockClient, nil

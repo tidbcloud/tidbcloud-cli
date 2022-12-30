@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cluster
+package dataimport
 
 import (
 	"tidbcloud-cli/internal"
@@ -20,15 +20,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func ClusterCmd(h *internal.Helper) *cobra.Command {
-	var clusterCmd = &cobra.Command{
-		Use:   "cluster",
-		Short: "Manage clusters for your project",
+func ImportCmd(h *internal.Helper) *cobra.Command {
+	var importCmd = &cobra.Command{
+		Use:   "import",
+		Short: "Import data into TiDB Cloud cluster",
 	}
 
-	clusterCmd.AddCommand(CreateCmd(h))
-	clusterCmd.AddCommand(DeleteCmd(h))
-	clusterCmd.AddCommand(ListCmd(h))
-	clusterCmd.AddCommand(DescribeCmd(h))
-	return clusterCmd
+	importCmd.AddCommand(ListCmd(h))
+	importCmd.AddCommand(CancelCmd(h))
+	importCmd.AddCommand(StartCmd(h))
+	importCmd.AddCommand(DescribeCmd(h))
+	return importCmd
 }
