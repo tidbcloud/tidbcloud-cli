@@ -86,7 +86,7 @@ jobs:
                 exit 1
               fi
           
-              echo "Releasing v${REL_VER} for os $os arch $arch..."
+              echo "Releasing ${REL_VER} for os $os arch $arch..."
 
               ${TIUP_BIN} mirror publish $COMPONENT_NAME ${REL_VER} $filename $BINARY_NAME --os=$os --arch=$arch  --desc="$COMPONENT_DESC"
             done
