@@ -24,11 +24,9 @@ import (
 )
 
 var (
-	focusedStyle        = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
-	blurredStyle        = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
-	noStyle             = lipgloss.NewStyle()
-	helpStyle           = blurredStyle.Copy()
-	cursorModeHelpStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("244"))
+	focusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
+	blurredStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("240"))
+	noStyle      = lipgloss.NewStyle()
 
 	focusedButton = focusedStyle.Copy().Render("[ Submit ]")
 	blurredButton = fmt.Sprintf("[ %s ]", blurredStyle.Render("Submit"))
@@ -37,7 +35,6 @@ var (
 type TextInputModel struct {
 	focusIndex  int
 	Inputs      []textinput.Model
-	CursorMode  textinput.CursorMode
 	Interrupted bool
 }
 
@@ -52,18 +49,6 @@ func (m TextInputModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "esc":
 			m.Interrupted = true
 			return m, tea.Quit
-
-		// Change cursor mode
-		case "ctrl+r":
-			m.CursorMode++
-			if m.CursorMode > textinput.CursorHide {
-				m.CursorMode = textinput.CursorBlink
-			}
-			cmds := make([]tea.Cmd, len(m.Inputs))
-			for i := range m.Inputs {
-				cmds[i] = m.Inputs[i].SetCursorMode(m.CursorMode)
-			}
-			return m, tea.Batch(cmds...)
 
 		// Set focus to next input
 		case "tab", "shift+tab", "enter", "up", "down":
@@ -140,10 +125,6 @@ func (m TextInputModel) View() string {
 		button = &focusedButton
 	}
 	fmt.Fprintf(&b, "\n\n%s\n\n", *button)
-
-	b.WriteString(helpStyle.Render("cursor mode is "))
-	b.WriteString(cursorModeHelpStyle.Render(m.CursorMode.String()))
-	b.WriteString(helpStyle.Render(" (ctrl+r to change style)"))
 
 	return b.String()
 }
