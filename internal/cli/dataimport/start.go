@@ -17,6 +17,7 @@ package dataimport
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -193,12 +194,18 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 
 			params := importOp.NewCreateImportParams().WithProjectID(projectID).WithClusterID(clusterID).
 				WithBody(body)
-			res, err := d.CreateImport(params)
-			if err != nil {
-				return errors.Trace(err)
+			if h.IOStreams.CanPrompt {
+				err := spinnerWaitStartOp(h, d, params)
+				if err != nil {
+					return err
+				}
+			} else {
+				err := waitStartOp(h, d, params)
+				if err != nil {
+					return err
+				}
 			}
 
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", *(res.Payload.ID)))
 			return nil
 		},
 	}
@@ -209,6 +216,62 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	startCmd.Flags().String(flag.DataFormat, "", "Data format, one of CSV, SqlFile, Parquet, AuroraSnapshot")
 	startCmd.Flags().String(flag.SourceUrl, "", "The S3 path where the source data file is stored")
 	return startCmd
+}
+
+func waitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.CreateImportParams) error {
+	fmt.Fprintf(h.IOStreams.Out, "... Starting the import task\n")
+	res, err := d.CreateImport(params)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", *(res.Payload.ID)))
+	return nil
+}
+
+func spinnerWaitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.CreateImportParams) error {
+	task := func() tea.Msg {
+		errChan := make(chan error)
+
+		go func() {
+			res, err := d.CreateImport(params)
+			if err != nil {
+				errChan <- err
+				return
+			}
+
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", *(res.Payload.ID)))
+			errChan <- nil
+		}()
+
+		ticker := time.NewTicker(1 * time.Second)
+		timer := time.After(2 * time.Minute)
+		for {
+			select {
+			case <-timer:
+				return fmt.Errorf("timeout waiting for import task to start")
+			case <-ticker.C:
+				// continue
+			case err := <-errChan:
+				if err != nil {
+					return err
+				} else {
+					return ui.Result("")
+				}
+			}
+		}
+	}
+
+	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Starting import task"))
+	createModel, err := p.StartReturningModel()
+	if err != nil {
+		return errors.Trace(err)
+	}
+	if m, _ := createModel.(ui.SpinnerModel); m.Err != nil {
+		return m.Err
+	}
+
+	return nil
 }
 
 func initialStartInputModel() ui.TextInputModel {

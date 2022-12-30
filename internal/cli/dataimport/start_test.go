@@ -99,7 +99,7 @@ func (suite *StartImportSuite) TestStartImportArgs() {
 		{
 			name:         "start import success",
 			args:         []string{"--project-id", projectID, "--cluster-id", clusterID, "--aws-role-arn", awsRoleArn, "--data-format", dataFormat, "--source-url", sourceUrl},
-			stdoutString: fmt.Sprintf("Import task %s started.\n", importID),
+			stdoutString: fmt.Sprintf("... Starting the import task\nImport task %s started.\n", importID),
 		},
 		{
 			name: "start import with unsupported data format",
@@ -109,7 +109,7 @@ func (suite *StartImportSuite) TestStartImportArgs() {
 		{
 			name:         "start import with shorthand flag",
 			args:         []string{"-p", projectID, "-c", clusterID, "--aws-role-arn", awsRoleArn, "--data-format", dataFormat, "--source-url", sourceUrl},
-			stdoutString: fmt.Sprintf("Import task %s started.\n", importID),
+			stdoutString: fmt.Sprintf("... Starting the import task\nImport task %s started.\n", importID),
 		},
 		{
 			name: "start import without required project id",

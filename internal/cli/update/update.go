@@ -59,9 +59,9 @@ func UpdateCmd(h *internal.Helper, ver string) *cobra.Command {
 			}
 
 			if h.IOStreams.CanPrompt {
-				return CreateAndSpinnerWait(h, newRelease)
+				return updateAndSpinnerWait(h, newRelease)
 			} else {
-				return CreateAndWaitReady(h, newRelease)
+				return updateAndWaitReady(h, newRelease)
 			}
 		},
 	}
@@ -69,7 +69,7 @@ func UpdateCmd(h *internal.Helper, ver string) *cobra.Command {
 	return cmd
 }
 
-func CreateAndWaitReady(h *internal.Helper, newRelease *github.ReleaseInfo) error {
+func updateAndWaitReady(h *internal.Helper, newRelease *github.ReleaseInfo) error {
 	fmt.Fprintf(h.IOStreams.Out, "... Updating the CLI to version %s\n", newRelease.Version)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
@@ -104,7 +104,7 @@ func CreateAndWaitReady(h *internal.Helper, newRelease *github.ReleaseInfo) erro
 	return nil
 }
 
-func CreateAndSpinnerWait(h *internal.Helper, newRelease *github.ReleaseInfo) error {
+func updateAndSpinnerWait(h *internal.Helper, newRelease *github.ReleaseInfo) error {
 	task := func() tea.Msg {
 		res := make(chan error)
 
@@ -114,24 +114,28 @@ func CreateAndSpinnerWait(h *internal.Helper, newRelease *github.ReleaseInfo) er
 			out, err := exec.CommandContext(ctx, "curl", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh").Output()
 			if ctx.Err() == context.DeadlineExceeded {
 				res <- errors.New("timeout when download the install.sh script")
+				return
 			}
 			if err != nil {
 				res <- errors.Annotate(err, string(out))
+				return
 			}
 
 			out1, err := exec.CommandContext(ctx, "/bin/sh", "-c", string(out)).Output() //nolint:gosec
 			if ctx.Err() == context.DeadlineExceeded {
 				res <- errors.New("timeout when execute the install.sh script")
+				return
 			}
 			if err != nil {
 				res <- errors.Annotate(err, string(out1))
+				return
 			}
 
 			res <- nil
 		}()
 
 		ticker := time.NewTicker(1 * time.Second)
-		for range ticker.C {
+		for {
 			select {
 			case err := <-res:
 				if err != nil {
@@ -139,12 +143,10 @@ func CreateAndSpinnerWait(h *internal.Helper, newRelease *github.ReleaseInfo) er
 				} else {
 					return ui.Result("Update successfully!")
 				}
-			default:
+			case <-ticker.C:
 				// continue
 			}
 		}
-
-		return errors.New("update failed")
 	}
 
 	p := tea.NewProgram(ui.InitialSpinnerModel(task, fmt.Sprintf("Updating the CLI to version %s", newRelease.Version)))
