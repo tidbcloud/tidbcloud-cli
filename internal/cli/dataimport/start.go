@@ -76,7 +76,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s import start
 
   Start an import task in non-interactive mode:
-  $ %[1]s import start --project-id <project-id> --cluster-name <cluster-name> --aws-role-arn <aws-role-arn> --data-format <data-format> --source-url <source-url>`,
+  $ %[1]s import start --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format <data-format> --source-url <source-url>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
