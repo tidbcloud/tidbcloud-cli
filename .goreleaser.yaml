@@ -5,7 +5,7 @@ before:
     - go mod tidy
 builds:
   - <<: &build_defaults
-      main: ./cmd/main.go
+      main: ./cmd/ticloud/main.go
       ldflags:
         - -s -w -X main.version={{.Version}} -X main.commit={{.ShortCommit}} -X main.date={{.Date}}
       flags:

@@ -49,7 +49,7 @@ test: ## Run unit-tests
 
 .PHONY: build
 build: ## Generate a binary in ./bin
-	@go build -o ./bin/ticloud ./cmd/
+	@go build -o ./bin/ticloud ./cmd/ticloud
 
 .PHONY: list
 list: ## List all make targets
