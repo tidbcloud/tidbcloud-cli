@@ -44,9 +44,7 @@ func UpdateCmd(h *internal.Helper, ver string) *cobra.Command {
 
 			// When update CLI, we don't need to check the version again after command executes.
 			newRelease, err := github.CheckForUpdate(config.Repo, ver, false)
-			// FIXME: Since github API has rate limit, we should not return error when check update failed.
-			// FIXME: And the update operation is idempotent, so we can ignore the error.
-			// TODO: Replace the GitHub API with our own API to get the latest version.
+			// If we can't get the latest version, we should update the CLI assuming it's not the latest version.
 			if err != nil {
 				newRelease = &github.ReleaseInfo{
 					Version: "latest",
