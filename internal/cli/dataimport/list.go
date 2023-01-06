@@ -25,6 +25,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
+	"github.com/dustin/go-humanize"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
@@ -150,7 +151,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 						item.CreatedAt.String(),
 						*item.SourceURL,
 						string(*item.DataFormat),
-						fmt.Sprintf("%sB", *item.TotalSize),
+						convertToStoreSize(*item.TotalSize),
 					})
 				}
 
@@ -171,4 +172,12 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	listCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
 	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, "Output format. One of: human, json. For the complete result, please use json format.")
 	return listCmd
+}
+
+func convertToStoreSize(totalSize string) string {
+	size, err := strconv.ParseUint(totalSize, 10, 64)
+	if err != nil {
+		return "NaN"
+	}
+	return humanize.IBytes(size)
 }
