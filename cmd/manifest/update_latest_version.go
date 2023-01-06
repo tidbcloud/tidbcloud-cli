@@ -29,8 +29,7 @@ import (
 func main() {
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
-		//&oauth2.Token{AccessToken: os.Getenv("GITHUB_TOKEN")},
-		&oauth2.Token{AccessToken: "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"},
+		&oauth2.Token{AccessToken: os.Getenv("GITHUB_TOKEN")},
 	)
 	tc := oauth2.NewClient(ctx, ts)
 
@@ -57,7 +56,7 @@ func main() {
 		log.Fatalf("failed to open install.sh: %s", err.Error())
 	}
 
-	strings.TrimPrefix(latestTag, "v")
+	latestTag = strings.TrimPrefix(latestTag, "v")
 	file = regexp.MustCompile("version=\".*\"").ReplaceAll(file, []byte(fmt.Sprintf("version=\"%s\"", latestTag)))
 	err = os.WriteFile("install.sh", file, 0600)
 	if err != nil {

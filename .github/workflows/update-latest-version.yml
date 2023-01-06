@@ -1,9 +1,10 @@
-name: Update manifest
+name: Update latest version
 on:
   workflow_dispatch:
   push:
     tags:
       - "v*"
+  pull_request:
 
 jobs:
   create-pr:
@@ -27,8 +28,9 @@ jobs:
           uses: peter-evans/create-pull-request@v3
           with:
             token: ${{ secrets.GITHUB_TOKEN }}
-            commit-message: "update version-manifest"
-            title: "update manifest"
-            body: "update latest-version file and version in install.sh"
-            branch: "update-manifest"
+            base: main
+            commit-message: "update latest version"
+            title: "update latest version"
+            body: "Update latest-version file and version in install.sh"
+            branch: "update-latest-version"
 
