@@ -86,21 +86,25 @@ func getStateEntry(stateFilePath string) (*StateEntry, error) {
 }
 
 func getLatestReleaseInfo(repo string) (*ReleaseInfo, error) {
-	var latestRelease ReleaseInfo
 	client := resty.New()
 	client.SetTimeout(5 * time.Second)
 	response, err := client.
 		R().
-		SetResult(&latestRelease).
-		Get(fmt.Sprintf("https://api.github.com/repos/%s/releases/latest", repo))
+		Get(fmt.Sprintf("https://raw.githubusercontent.com/%s/main/latest-version", repo))
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
 
+	body := string(response.Body())
+	_, err = version.NewVersion(body)
+	if err != nil {
+		return nil, err
+	}
+	latestRelease := ReleaseInfo{Version: body}
 	if response.IsSuccess() {
 		return &latestRelease, nil
 	} else {
-		return nil, errors.Errorf("failed to get latest release info: %s", response.Status()+" "+string(response.Body()))
+		return nil, errors.Errorf("failed to get latest release info: %s", response.Status()+" "+body)
 	}
 }
 
