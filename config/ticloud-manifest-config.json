@@ -1,0 +1,7 @@
+{
+  "regex": "ticloud_\\d+\\.\\d+\\.\\d+-(\\w+\\.\\d+)?_(\\w+)_?(\\w+)",
+  "groups": {
+    "arch": 3,
+    "platform": 2
+  }
+}

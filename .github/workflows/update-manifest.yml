@@ -1,0 +1,10 @@
+name: Update manifest
+on:
+  workflow_dispatch:
+
+jobs:
+  create-pr:
+    uses: actions/versions-package-tools/.github/workflows/create-pr-to-update-manifest.yml@main
+    with:
+      tool-name: "ticloud"
+    secrets: inherit
