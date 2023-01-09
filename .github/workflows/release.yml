@@ -1,4 +1,4 @@
-name: goreleaser
+name: Release
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - "v*"
 
 jobs:
-  goreleaser:
+  goreleaser and TiUP:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -90,3 +90,30 @@ jobs:
 
               ${TIUP_BIN} mirror publish $COMPONENT_NAME ${REL_VER} $filename $BINARY_NAME --os=$os --arch=$arch  --desc="$COMPONENT_DESC"
             done
+
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+
+      - name: generate manifest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          go run cmd/manifest/update_latest_version.go 
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          commit-message: "update latest version"
+          title: "update latest version"
+          body: "Update latest-version file and version in install.sh"
+          branch: "update-latest-version"
