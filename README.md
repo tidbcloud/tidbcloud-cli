@@ -55,6 +55,8 @@ ticloud config create
 tiup cloud config create
 ```
 
+> :information_source: The config name **MUST NOT** contain '.'
+
 ### Create a cluster
 
 ```shell
