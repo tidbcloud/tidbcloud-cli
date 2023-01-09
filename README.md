@@ -39,7 +39,7 @@ Download the pre-compiled binaries from the [releases](https://github.com/tidbcl
 
 ### GitHub Action
 
-To setup `ticloud` in GitHub Action, use [`setup-tidbcloud-cli`](https://github.com/tidbcloud/setup-tidbcloud-cli).
+To set up `ticloud` in GitHub Action, use [`setup-tidbcloud-cli`](https://github.com/tidbcloud/setup-tidbcloud-cli).
 
 ## Quick Start
 
