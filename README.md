@@ -9,6 +9,7 @@ The `ticloud` command line tool brings deploy cluster requests, and other TiDB C
             * [Installing via script](#installing-via-script)
             * [Installing via TiUP](#installing-via-tiup)
         * [Manually](#manually)
+        * [GitHub Action](#github-action)
     * [Quick Start](#quick-start)
         * [Config a profile](#config-a-profile)
         * [Create a cluster](#create-a-cluster)
