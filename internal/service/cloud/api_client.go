@@ -17,6 +17,7 @@ package cloud
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
@@ -56,6 +57,10 @@ type TiDBCloudClient interface {
 	GetImport(params *importOp.GetImportParams, opts ...importOp.ClientOption) (*importOp.GetImportOK, error)
 
 	ListImports(params *importOp.ListImportsParams, opts ...importOp.ClientOption) (*importOp.ListImportsOK, error)
+
+	GenerateUploadURL(params *importOp.GenerateUploadURLParams, opts ...importOp.ClientOption) (*importOp.GenerateUploadURLOK, error)
+
+	PreSignedUrlUpload(url *string, uploadFile *os.File, size int64) error
 }
 
 type ClientDelegate struct {
@@ -112,6 +117,30 @@ func (d *ClientDelegate) GetImport(params *importOp.GetImportParams, opts ...imp
 
 func (d *ClientDelegate) ListImports(params *importOp.ListImportsParams, opts ...importOp.ClientOption) (*importOp.ListImportsOK, error) {
 	return d.ic.ImportService.ListImports(params, opts...)
+}
+
+func (d *ClientDelegate) GenerateUploadURL(params *importOp.GenerateUploadURLParams, opts ...importOp.ClientOption) (*importOp.GenerateUploadURLOK, error) {
+	return d.ic.ImportService.GenerateUploadURL(params, opts...)
+}
+
+func (d *ClientDelegate) PreSignedUrlUpload(url *string, uploadFile *os.File, size int64) error {
+	request, err := http.NewRequest("PUT", *url, uploadFile)
+	if err != nil {
+		return err
+	}
+	request.ContentLength = size
+
+	putRes, err := http.DefaultClient.Do(request)
+	if err != nil {
+		return err
+	}
+	defer putRes.Body.Close()
+
+	if putRes.StatusCode != http.StatusOK {
+		return fmt.Errorf("upload file failed : %s, %s", putRes.Status, putRes.Body)
+	}
+
+	return nil
 }
 
 func NewApiClient(publicKey string, privateKey string, apiUrl string, ver string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport, error) {

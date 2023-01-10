@@ -58,11 +58,9 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				confirmationMessage := fmt.Sprintf("%s %s %s", color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to confirm:"))
-
 				prompt := &survey.Input{
 					Message: confirmationMessage,
 				}
-
 				var userInput string
 				err := survey.AskOne(prompt, &userInput)
 				if err != nil {

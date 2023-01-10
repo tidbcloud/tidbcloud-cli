@@ -32,6 +32,8 @@ type ClientService interface {
 
 	CreateImport(params *CreateImportParams, opts ...ClientOption) (*CreateImportOK, error)
 
+	GenerateUploadURL(params *GenerateUploadURLParams, opts ...ClientOption) (*GenerateUploadURLOK, error)
+
 	GetImport(params *GetImportParams, opts ...ClientOption) (*GetImportOK, error)
 
 	ListImports(params *ListImportsParams, opts ...ClientOption) (*ListImportsOK, error)
@@ -110,6 +112,43 @@ func (a *Client) CreateImport(params *CreateImportParams, opts ...ClientOption) 
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*CreateImportDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+GenerateUploadURL generates s3 url to upload file
+*/
+func (a *Client) GenerateUploadURL(params *GenerateUploadURLParams, opts ...ClientOption) (*GenerateUploadURLOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGenerateUploadURLParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "GenerateUploadURL",
+		Method:             "POST",
+		PathPattern:        "/api/internal/projects/{project_id}/clusters/{cluster_id}/upload_url",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &GenerateUploadURLReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GenerateUploadURLOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*GenerateUploadURLDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

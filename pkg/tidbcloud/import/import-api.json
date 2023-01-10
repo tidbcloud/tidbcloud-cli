@@ -120,27 +120,41 @@
             "schema": {
               "type": "object",
               "properties": {
+                "type": {
+                  "$ref": "#/definitions/CreateImportReqImportType",
+                  "description": "The type of data source."
+                },
                 "data_format": {
                   "$ref": "#/definitions/openapiDataFormat",
                   "description": "The format of data to import."
                 },
-                "source_url": {
-                  "type": "string",
-                  "description": "The full s3 path that contains data to import."
-                },
-                "aws_role_arn": {
-                  "type": "string",
-                  "description": "The arn of AWS IAM role."
-                },
                 "csv_format": {
                   "$ref": "#/definitions/openapiCustomCSVFormat",
                   "description": "The CSV configuration."
+                },
+                "source_url": {
+                  "type": "string",
+                  "description": "The full s3 path that contains data to import.",
+                  "title": "used for importing from S3"
+                },
+                "aws_role_arn": {
+                  "type": "string",
+                  "description": "The arn of AWS IAM role.",
+                  "title": "used for importing from S3"
+                },
+                "file_name": {
+                  "type": "string",
+                  "description": "The file name returned by generating upload url.",
+                  "title": "used for importing from local file"
+                },
+                "target_table": {
+                  "$ref": "#/definitions/openapiTable",
+                  "description": "The target db and table to import data."
                 }
               },
               "required": [
-                "data_format",
-                "source_url",
-                "aws_role_arn"
+                "type",
+                "data_format"
               ]
             }
           }
@@ -246,9 +260,78 @@
           "ImportService"
         ]
       }
+    },
+    "/api/internal/projects/{project_id}/clusters/{cluster_id}/upload_url": {
+      "post": {
+        "summary": "Generate S3 url to upload file.",
+        "operationId": "GenerateUploadURL",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/openapiGenerateUploadURLResq"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "project_id",
+            "description": "The ID of the project.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "cluster_id",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file_name": {
+                  "type": "string"
+                },
+                "content_length": {
+                  "type": "string",
+                  "format": "int64"
+                }
+              },
+              "required": [
+                "file_name",
+                "content_length"
+              ]
+            }
+          }
+        ],
+        "tags": [
+          "ImportService"
+        ]
+      }
     }
   },
   "definitions": {
+    "CreateImportReqImportType": {
+      "type": "string",
+      "enum": [
+        "S3",
+        "LOCAL"
+      ]
+    },
     "ImportTableCompletionInfoResult": {
       "type": "string",
       "enum": [
@@ -290,29 +373,43 @@
           "example": "1",
           "description": "The ID of the cluster."
         },
+        "type": {
+          "$ref": "#/definitions/CreateImportReqImportType",
+          "description": "The type of data source."
+        },
         "data_format": {
           "$ref": "#/definitions/openapiDataFormat",
           "description": "The format of data to import."
         },
-        "source_url": {
-          "type": "string",
-          "description": "The full s3 path that contains data to import."
-        },
-        "aws_role_arn": {
-          "type": "string",
-          "description": "The arn of AWS IAM role."
-        },
         "csv_format": {
           "$ref": "#/definitions/openapiCustomCSVFormat",
           "description": "The CSV configuration."
+        },
+        "source_url": {
+          "type": "string",
+          "description": "The full s3 path that contains data to import.",
+          "title": "used for importing from S3"
+        },
+        "aws_role_arn": {
+          "type": "string",
+          "description": "The arn of AWS IAM role.",
+          "title": "used for importing from S3"
+        },
+        "file_name": {
+          "type": "string",
+          "description": "The file name returned by generating upload url.",
+          "title": "used for importing from local file"
+        },
+        "target_table": {
+          "$ref": "#/definitions/openapiTable",
+          "description": "The target db and table to import data."
         }
       },
       "required": [
         "project_id",
         "cluster_id",
-        "data_format",
-        "source_url",
-        "aws_role_arn"
+        "type",
+        "data_format"
       ]
     },
     "openapiCreateImportResp": {
@@ -388,6 +485,21 @@
         "AuroraSnapshot",
         "CSV",
         "Parquet"
+      ]
+    },
+    "openapiGenerateUploadURLResq": {
+      "type": "object",
+      "properties": {
+        "upload_url": {
+          "type": "string"
+        },
+        "new_file_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "upload_url",
+        "new_file_name"
       ]
     },
     "openapiGetImportResp": {
@@ -489,9 +601,9 @@
           },
           "description": "Completion information of the tables imported."
         },
-        "import_create_req": {
+        "creation_details": {
           "$ref": "#/definitions/openapiCreateImportReq",
-          "description": "The create request of the import job."
+          "description": "The creation details of the import job."
         }
       },
       "description": "ImportItem is the information of import job.",
@@ -500,7 +612,6 @@
         "cluster_id",
         "total_size",
         "total_files",
-        "source_url",
         "completed_tables",
         "pending_tables",
         "created_at",
@@ -564,6 +675,17 @@
         "imports",
         "total"
       ]
+    },
+    "openapiTable": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string"
+        },
+        "table": {
+          "type": "string"
+        }
+      }
     },
     "protobufAny": {
       "type": "object",

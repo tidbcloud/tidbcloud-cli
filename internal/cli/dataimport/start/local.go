@@ -1,4 +1,4 @@
-// Copyright 2022 PingCAP, Inc.
+// Copyright 2023 PingCAP, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package dataimport
+package start
 
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"tidbcloud-cli/internal"
@@ -35,49 +36,47 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type startImportField int
+type localImportField int
 
 const (
-	awsRoleArnIdx startImportField = iota
-	sourceUrlIdx
+	databaseIdx localImportField = iota
+	tableIdx
 )
 
-type StartOpts struct {
+type LocalOpts struct {
 	interactive bool
 }
 
-func (c StartOpts) NonInteractiveFlags() []string {
+func (c LocalOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.ProjectID,
-		flag.AwsRoleArn,
 		flag.DataFormat,
-		flag.SourceUrl,
+		flag.TargetDatabase,
+		flag.TargetTable,
 	}
 }
 
-func (c StartOpts) SupportedDataFormats() []string {
+func (c LocalOpts) SupportedDataFormats() []string {
 	return []string{
 		string(importModel.OpenapiDataFormatCSV),
-		string(importModel.OpenapiDataFormatSQLFile),
-		string(importModel.OpenapiDataFormatParquet),
-		string(importModel.OpenapiDataFormatAuroraSnapshot),
 	}
 }
 
-func StartCmd(h *internal.Helper) *cobra.Command {
-	opts := StartOpts{
+func LocalCmd(h *internal.Helper) *cobra.Command {
+	opts := LocalOpts{
 		interactive: true,
 	}
 
-	var startCmd = &cobra.Command{
-		Use:   "start",
-		Short: "Start a data import task",
+	var localCmd = &cobra.Command{
+		Use:   "local <filePath>",
+		Short: "Import a local file to TiDB Cloud",
+		Args:  util.RequiredArgs("filePath"),
 		Example: fmt.Sprintf(`  Start an import task in interactive mode:
-  $ %[1]s import start
+  $ %[1]s import start local <filePath>
 
   Start an import task in non-interactive mode:
-  $ %[1]s import start --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format <data-format> --source-url <source-url>`,
+  $ %[1]s import start local <filePath> --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format <data-format> --source-url <source-url>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -101,7 +100,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var projectID, clusterID, awsRoleArn, dataFormat, sourceUrl string
+			var projectID, clusterID, dataFormat, targetDatabase, targetTable string
 			d, err := h.Client()
 			if err != nil {
 				return err
@@ -144,7 +143,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 				dataFormat = formatModel.(ui.SelectModel).Choices[formatModel.(ui.SelectModel).Selected].(string)
 
 				// variables for input
-				p = tea.NewProgram(initialStartInputModel())
+				p = tea.NewProgram(initialLocalInputModel())
 				inputModel, err := p.StartReturningModel()
 				if err != nil {
 					return errors.Trace(err)
@@ -153,41 +152,69 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 					return nil
 				}
 
-				awsRoleArn = inputModel.(ui.TextInputModel).Inputs[awsRoleArnIdx].Value()
-				if len(awsRoleArn) == 0 {
+				targetDatabase = inputModel.(ui.TextInputModel).Inputs[databaseIdx].Value()
+				if len(targetDatabase) == 0 {
 					return errors.New("AWS role ARN is required")
 				}
-				sourceUrl = inputModel.(ui.TextInputModel).Inputs[sourceUrlIdx].Value()
-				if len(sourceUrl) == 0 {
+				targetTable = inputModel.(ui.TextInputModel).Inputs[tableIdx].Value()
+				if len(targetTable) == 0 {
 					return errors.New("source url is required")
 				}
 			} else {
 				// non-interactive mode
 				projectID = cmd.Flag(flag.ProjectID).Value.String()
 				clusterID = cmd.Flag(flag.ClusterID).Value.String()
-				awsRoleArn = cmd.Flag(flag.AwsRoleArn).Value.String()
 				dataFormat = cmd.Flag(flag.DataFormat).Value.String()
 				if !util.ElemInSlice(opts.SupportedDataFormats(), dataFormat) {
-					return fmt.Errorf("data format %s is not supported, please use one of CSV, SqlFile, Parquet, AuroraSnapshot", dataFormat)
+					return fmt.Errorf("data format %s is not supported, please use one of %v", dataFormat, opts.SupportedDataFormats())
 				}
-				sourceUrl = cmd.Flag(flag.SourceUrl).Value.String()
+				targetDatabase = cmd.Flag(flag.TargetDatabase).Value.String()
+				targetTable = cmd.Flag(flag.TargetTable).Value.String()
+			}
+
+			filePath := args[0]
+			uploadFile, err := os.Open(filePath)
+			if err != nil {
+				return err
+			}
+			defer uploadFile.Close()
+
+			stat, err := uploadFile.Stat()
+			if err != nil {
+				return err
+			}
+			size := strconv.FormatInt(stat.Size(), 10)
+			name := stat.Name()
+			urlRes, err := d.GenerateUploadURL(importOp.NewGenerateUploadURLParams().WithProjectID(projectID).WithClusterID(clusterID).WithBody(importOp.GenerateUploadURLBody{
+				ContentLength: &size,
+				FileName:      &name,
+			}))
+			if err != nil {
+				return err
+			}
+			url := urlRes.Payload.UploadURL
+
+			if h.IOStreams.CanPrompt {
+				err := spinnerWaitUploadOp(h, d, url, uploadFile, stat.Size())
+				if err != nil {
+					return err
+				}
+			} else {
+				err := waitUploadOp(h, d, url, uploadFile, stat.Size())
+				if err != nil {
+					return err
+				}
 			}
 
 			body := importOp.CreateImportBody{}
 			err = body.UnmarshalBinary([]byte(fmt.Sprintf(`{
-			"aws_role_arn": "%s",
+			"type": "LOCAL",
 			"data_format": "%s",
-			"source_url": "%s",
-			"csv_format": {
-				"separator": ",",
-				"delimiter": "\"",
-				"header": true,
-				"backslash_escape": true,
-				"null": "\\N",
-				"trim_last_separator": false,
-				"not_null": false
-			}
-			}`, awsRoleArn, dataFormat, sourceUrl)))
+			"file_name": "%s",
+			"target_table": {
+				"schema": "%s",
+				"table": "%s"
+			}}`, dataFormat, *urlRes.Payload.NewFileName, targetDatabase, targetTable)))
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -210,71 +237,15 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	startCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
-	startCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	startCmd.Flags().String(flag.AwsRoleArn, "", "AWS S3 IAM Role ARN")
-	startCmd.Flags().String(flag.DataFormat, "", "Data format, one of CSV, SqlFile, Parquet, AuroraSnapshot")
-	startCmd.Flags().String(flag.SourceUrl, "", "The S3 path where the source data file is stored")
-	return startCmd
+	localCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
+	localCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
+	localCmd.Flags().String(flag.DataFormat, "", "Data format, one of CSV")
+	localCmd.Flags().String(flag.TargetDatabase, "", "Target database to which import data")
+	localCmd.Flags().String(flag.TargetTable, "", "Target table to which import data")
+	return localCmd
 }
 
-func waitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.CreateImportParams) error {
-	fmt.Fprintf(h.IOStreams.Out, "... Starting the import task\n")
-	res, err := d.CreateImport(params)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", *(res.Payload.ID)))
-	return nil
-}
-
-func spinnerWaitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.CreateImportParams) error {
-	task := func() tea.Msg {
-		errChan := make(chan error)
-
-		go func() {
-			res, err := d.CreateImport(params)
-			if err != nil {
-				errChan <- err
-				return
-			}
-
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", *(res.Payload.ID)))
-			errChan <- nil
-		}()
-
-		ticker := time.NewTicker(1 * time.Second)
-		timer := time.After(2 * time.Minute)
-		for {
-			select {
-			case <-timer:
-				return fmt.Errorf("timeout waiting for import task to start")
-			case <-ticker.C:
-				// continue
-			case err := <-errChan:
-				if err != nil {
-					return err
-				} else {
-					return ui.Result("")
-				}
-			}
-		}
-	}
-
-	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Starting import task"))
-	createModel, err := p.StartReturningModel()
-	if err != nil {
-		return errors.Trace(err)
-	}
-	if m, _ := createModel.(ui.SpinnerModel); m.Err != nil {
-		return m.Err
-	}
-
-	return nil
-}
-
-func initialStartInputModel() ui.TextInputModel {
+func initialLocalInputModel() ui.TextInputModel {
 	m := ui.TextInputModel{
 		Inputs: make([]textinput.Model, 2),
 	}
@@ -284,20 +255,78 @@ func initialStartInputModel() ui.TextInputModel {
 		t = textinput.New()
 		t.CursorStyle = config.FocusedStyle
 		t.CharLimit = 0
-		f := startImportField(i)
+		f := localImportField(i)
 
 		switch f {
-		case awsRoleArnIdx:
-			t.Placeholder = "AWS role ARN"
+		case databaseIdx:
+			t.Placeholder = "Target database"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
-		case sourceUrlIdx:
-			t.Placeholder = "Source url"
+		case tableIdx:
+			t.Placeholder = "Target table"
 		}
 
 		m.Inputs[i] = t
 	}
 
 	return m
+}
+
+func waitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *string, uploadFile *os.File, size int64) error {
+	fmt.Fprintf(h.IOStreams.Out, "... Uploading file\n")
+	err := d.PreSignedUrlUpload(url, uploadFile, size)
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintln(h.IOStreams.Out, "File has been uploaded")
+	return nil
+}
+
+func spinnerWaitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *string, uploadFile *os.File, size int64) error {
+	task := func() tea.Msg {
+		errChan := make(chan error)
+
+		go func() {
+			err := d.PreSignedUrlUpload(url, uploadFile, size)
+			if err != nil {
+				errChan <- err
+				return
+			}
+
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("File has been uploaded"))
+			errChan <- nil
+		}()
+
+		ticker := time.NewTicker(1 * time.Second)
+		timer := time.After(2 * time.Minute)
+		for {
+			select {
+			case <-timer:
+				return fmt.Errorf("timeout waiting for upload file")
+			case <-ticker.C:
+				// continue
+			case err := <-errChan:
+				if err != nil {
+					return err
+				} else {
+					return ui.Result("File has been uploaded")
+				}
+			}
+		}
+	}
+
+	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Uploading file"))
+	createModel, err := p.StartReturningModel()
+	if err != nil {
+		return errors.Trace(err)
+	}
+	if m, _ := createModel.(ui.SpinnerModel); m.Err != nil {
+		return m.Err
+	} else {
+		fmt.Fprintf(h.IOStreams.Out, color.GreenString(m.Output))
+	}
+
+	return nil
 }

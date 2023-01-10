@@ -34,34 +34,39 @@ import (
 
 const getImportResultStr = `{
   "all_completed_tables": [],
-  "cluster_id": "120466",
-  "completed_percent": 0,
+  "cluster_id": "121026",
+  "completed_percent": 100,
   "completed_tables": 1,
-  "created_at": "2022-12-28T08:18:11.000Z",
-  "current_tables": [],
-  "data_format": "CSV",
-  "elapsed_time_seconds": 10,
-  "id": "120117",
-  "import_create_req": {
-    "aws_role_arn": "arn",
-    "cluster_id": "120466",
+  "created_at": "2023-01-10T10:32:01.000Z",
+  "creation_details": {
+    "cluster_id": "121026",
     "csv_format": {
-      "delimiter": "^",
-      "not_null": true,
-      "null": "@",
-      "separator": "$"
+      "backslash_escape": true,
+      "delimiter": "\"",
+      "header": true,
+      "null": "\n",
+      "separator": ","
     },
     "data_format": "CSV",
+    "file_name": "a.csv",
     "project_id": "0",
-    "source_url": "s3"
+    "target_table": {
+      "schema": "test",
+      "table": "yxxxx"
+    },
+    "type": "LOCAL"
   },
-  "message": "[Lightning:Restore:ErrEncodeKV]encode kv error in file jianxu.test1.000000000001.csv:0 at offset 12: column count mismatch, expected 2, got 1",
+  "current_tables": [],
+  "data_format": "CSV",
+  "elapsed_time_seconds": 35,
+  "id": "120295",
+  "message": "",
   "pending_tables": 0,
-  "processed_source_data_size": "0",
-  "source_url": "s3",
-  "status": "FAILED",
+  "post_import_completed_percent": 100,
+  "processed_source_data_size": "36",
+  "status": "COMPLETED",
   "total_files": 0,
-  "total_size": "39",
+  "total_size": "36",
   "total_tables_count": 1
 }
 `
