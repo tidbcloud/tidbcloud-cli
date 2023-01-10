@@ -9,6 +9,7 @@ The `ticloud` command line tool brings deploy cluster requests, and other TiDB C
             * [Installing via script](#installing-via-script)
             * [Installing via TiUP](#installing-via-tiup)
         * [Manually](#manually)
+        * [GitHub Action](#github-action)
     * [Quick Start](#quick-start)
         * [Config a profile](#config-a-profile)
         * [Create a cluster](#create-a-cluster)
@@ -38,7 +39,7 @@ Download the pre-compiled binaries from the [releases](https://github.com/tidbcl
 
 ### GitHub Action
 
-To setup `ticloud` in GitHub Action, use [`setup-tidbcloud-cli`](https://github.com/tidbcloud/setup-tidbcloud-cli).
+To set up `ticloud` in GitHub Action, use [`setup-tidbcloud-cli`](https://github.com/tidbcloud/setup-tidbcloud-cli).
 
 ## Quick Start
 
@@ -54,6 +55,8 @@ ticloud config create
 # via TiUP
 tiup cloud config create
 ```
+
+> :information_source: The config name **MUST NOT** contain '.'
 
 ### Create a cluster
 

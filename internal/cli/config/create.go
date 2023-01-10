@@ -16,6 +16,7 @@ package config
 
 import (
 	"fmt"
+	"strings"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -163,7 +164,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	createCmd.Flags().String(flag.ProfileName, "", "the name of the profile to be created")
+	createCmd.Flags().String(flag.ProfileName, "", "the name of the profile, must not contain '.'")
 	createCmd.Flags().String(flag.PublicKey, "", "the public key of the TiDB Cloud API")
 	createCmd.Flags().String(flag.PrivateKey, "", "the private key of the TiDB Cloud API")
 	return createCmd
@@ -187,6 +188,13 @@ func initialDeletionInputModel() ui.TextInputModel {
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
+			t.Placeholder = "Profile Name must not contain '.'"
+			t.Validate = func(value string) error {
+				if strings.Contains(value, ".") {
+					return fmt.Errorf("profile name cannot contain '.'")
+				}
+				return nil
+			}
 		case publicKeyIdx:
 			t.Placeholder = "Public Key"
 			t.CharLimit = 128
