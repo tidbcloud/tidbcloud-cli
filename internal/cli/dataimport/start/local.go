@@ -76,7 +76,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s import start local <filePath>
 
   Start an import task in non-interactive mode:
-  $ %[1]s import start local <filePath> --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format <data-format> --source-url <source-url>`,
+  $ %[1]s import start local <filePath> --project-id <project-id> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
