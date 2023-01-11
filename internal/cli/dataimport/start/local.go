@@ -154,11 +154,11 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 
 				targetDatabase = inputModel.(ui.TextInputModel).Inputs[databaseIdx].Value()
 				if len(targetDatabase) == 0 {
-					return errors.New("AWS role ARN is required")
+					return errors.New("Target database is required")
 				}
 				targetTable = inputModel.(ui.TextInputModel).Inputs[tableIdx].Value()
 				if len(targetTable) == 0 {
-					return errors.New("source url is required")
+					return errors.New("Target table is required")
 				}
 			} else {
 				// non-interactive mode
@@ -239,7 +239,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 
 	localCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	localCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	localCmd.Flags().String(flag.DataFormat, "", "Data format, one of CSV")
+	localCmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %v", opts.SupportedDataFormats()))
 	localCmd.Flags().String(flag.TargetDatabase, "", "Target database to which import data")
 	localCmd.Flags().String(flag.TargetTable, "", "Target table to which import data")
 	return localCmd
@@ -304,7 +304,7 @@ func spinnerWaitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *strin
 		for {
 			select {
 			case <-timer:
-				return fmt.Errorf("timeout waiting for upload file")
+				return fmt.Errorf("timeout waiting for uploading file")
 			case <-ticker.C:
 				// continue
 			case err := <-errChan:

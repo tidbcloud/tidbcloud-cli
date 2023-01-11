@@ -157,7 +157,7 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 				}
 				sourceUrl = inputModel.(ui.TextInputModel).Inputs[sourceUrlIdx].Value()
 				if len(sourceUrl) == 0 {
-					return errors.New("source url is required")
+					return errors.New("Source url is required")
 				}
 			} else {
 				// non-interactive mode
@@ -203,7 +203,7 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 	s3Cmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	s3Cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
 	s3Cmd.Flags().String(flag.AwsRoleArn, "", "AWS S3 IAM Role ARN")
-	s3Cmd.Flags().String(flag.DataFormat, "", "Data format, one of CSV, SqlFile, Parquet, AuroraSnapshot")
+	s3Cmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %v", opts.SupportedDataFormats()))
 	s3Cmd.Flags().String(flag.SourceUrl, "", "The S3 path where the source data file is stored")
 	return s3Cmd
 }
