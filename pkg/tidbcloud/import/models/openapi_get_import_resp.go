@@ -45,6 +45,9 @@ type OpenapiGetImportResp struct {
 	// Format: date-time
 	CreatedAt *strfmt.DateTime `json:"created_at"`
 
+	// The creation details of the import job.
+	CreationDetails *OpenapiCreateImportReq `json:"creation_details,omitempty"`
+
 	// The current tables are being imported.
 	// Required: true
 	CurrentTables []*OpenapiCurrentTable `json:"current_tables"`
@@ -60,9 +63,6 @@ type OpenapiGetImportResp struct {
 	// The ID of the import job.
 	// Example: 1
 	ID string `json:"id,omitempty"`
-
-	// The create request of the import job.
-	ImportCreateReq *OpenapiCreateImportReq `json:"import_create_req,omitempty"`
 
 	// The message.
 	// Required: true
@@ -81,8 +81,7 @@ type OpenapiGetImportResp struct {
 	ProcessedSourceDataSize string `json:"processed_source_data_size,omitempty"`
 
 	// The full s3 path that contains data to import.
-	// Required: true
-	SourceURL *string `json:"source_url"`
+	SourceURL string `json:"source_url,omitempty"`
 
 	// The status of the import job.
 	// Required: true
@@ -124,6 +123,10 @@ func (m *OpenapiGetImportResp) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateCreationDetails(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateCurrentTables(formats); err != nil {
 		res = append(res, err)
 	}
@@ -136,10 +139,6 @@ func (m *OpenapiGetImportResp) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateImportCreateReq(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validateMessage(formats); err != nil {
 		res = append(res, err)
 	}
@@ -149,10 +148,6 @@ func (m *OpenapiGetImportResp) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validatePostImportCompletedPercent(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateSourceURL(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -248,6 +243,25 @@ func (m *OpenapiGetImportResp) validateCreatedAt(formats strfmt.Registry) error 
 	return nil
 }
 
+func (m *OpenapiGetImportResp) validateCreationDetails(formats strfmt.Registry) error {
+	if swag.IsZero(m.CreationDetails) { // not required
+		return nil
+	}
+
+	if m.CreationDetails != nil {
+		if err := m.CreationDetails.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("creation_details")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("creation_details")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *OpenapiGetImportResp) validateCurrentTables(formats strfmt.Registry) error {
 
 	if err := validate.Required("current_tables", "body", m.CurrentTables); err != nil {
@@ -308,25 +322,6 @@ func (m *OpenapiGetImportResp) validateElapsedTimeSeconds(formats strfmt.Registr
 	return nil
 }
 
-func (m *OpenapiGetImportResp) validateImportCreateReq(formats strfmt.Registry) error {
-	if swag.IsZero(m.ImportCreateReq) { // not required
-		return nil
-	}
-
-	if m.ImportCreateReq != nil {
-		if err := m.ImportCreateReq.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("import_create_req")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("import_create_req")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (m *OpenapiGetImportResp) validateMessage(formats strfmt.Registry) error {
 
 	if err := validate.Required("message", "body", m.Message); err != nil {
@@ -355,15 +350,6 @@ func (m *OpenapiGetImportResp) validatePostImportCompletedPercent(formats strfmt
 	}
 
 	if err := validate.MaximumInt("post_import_completed_percent", "body", m.PostImportCompletedPercent, 100, false); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *OpenapiGetImportResp) validateSourceURL(formats strfmt.Registry) error {
-
-	if err := validate.Required("source_url", "body", m.SourceURL); err != nil {
 		return err
 	}
 
@@ -420,15 +406,15 @@ func (m *OpenapiGetImportResp) ContextValidate(ctx context.Context, formats strf
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateCreationDetails(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateCurrentTables(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
 	if err := m.contextValidateDataFormat(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateImportCreateReq(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -462,6 +448,22 @@ func (m *OpenapiGetImportResp) contextValidateAllCompletedTables(ctx context.Con
 	return nil
 }
 
+func (m *OpenapiGetImportResp) contextValidateCreationDetails(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.CreationDetails != nil {
+		if err := m.CreationDetails.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("creation_details")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("creation_details")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (m *OpenapiGetImportResp) contextValidateCurrentTables(ctx context.Context, formats strfmt.Registry) error {
 
 	for i := 0; i < len(m.CurrentTables); i++ {
@@ -490,22 +492,6 @@ func (m *OpenapiGetImportResp) contextValidateDataFormat(ctx context.Context, fo
 				return ve.ValidateName("data_format")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("data_format")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (m *OpenapiGetImportResp) contextValidateImportCreateReq(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.ImportCreateReq != nil {
-		if err := m.ImportCreateReq.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("import_create_req")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("import_create_req")
 			}
 			return err
 		}

@@ -186,9 +186,10 @@ swagger:model CreateImportBody
 */
 type CreateImportBody struct {
 
+	// used for importing from S3
+	//
 	// The arn of AWS IAM role.
-	// Required: true
-	AwsRoleArn *string `json:"aws_role_arn"`
+	AwsRoleArn string `json:"aws_role_arn,omitempty"`
 
 	// The CSV configuration.
 	CsvFormat *models.OpenapiCustomCSVFormat `json:"csv_format,omitempty"`
@@ -197,18 +198,27 @@ type CreateImportBody struct {
 	// Required: true
 	DataFormat *models.OpenapiDataFormat `json:"data_format"`
 
+	// used for importing from local file
+	//
+	// The file name returned by generating upload url.
+	FileName string `json:"file_name,omitempty"`
+
+	// used for importing from S3
+	//
 	// The full s3 path that contains data to import.
+	SourceURL string `json:"source_url,omitempty"`
+
+	// The target db and table to import data.
+	TargetTable *models.OpenapiTable `json:"target_table,omitempty"`
+
+	// The type of data source.
 	// Required: true
-	SourceURL *string `json:"source_url"`
+	Type *models.CreateImportReqImportType `json:"type"`
 }
 
 // Validate validates this create import body
 func (o *CreateImportBody) Validate(formats strfmt.Registry) error {
 	var res []error
-
-	if err := o.validateAwsRoleArn(formats); err != nil {
-		res = append(res, err)
-	}
 
 	if err := o.validateCsvFormat(formats); err != nil {
 		res = append(res, err)
@@ -218,22 +228,17 @@ func (o *CreateImportBody) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := o.validateSourceURL(formats); err != nil {
+	if err := o.validateTargetTable(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := o.validateType(formats); err != nil {
 		res = append(res, err)
 	}
 
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (o *CreateImportBody) validateAwsRoleArn(formats strfmt.Registry) error {
-
-	if err := validate.Required("body"+"."+"aws_role_arn", "body", o.AwsRoleArn); err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -280,10 +285,44 @@ func (o *CreateImportBody) validateDataFormat(formats strfmt.Registry) error {
 	return nil
 }
 
-func (o *CreateImportBody) validateSourceURL(formats strfmt.Registry) error {
+func (o *CreateImportBody) validateTargetTable(formats strfmt.Registry) error {
+	if swag.IsZero(o.TargetTable) { // not required
+		return nil
+	}
 
-	if err := validate.Required("body"+"."+"source_url", "body", o.SourceURL); err != nil {
+	if o.TargetTable != nil {
+		if err := o.TargetTable.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("body" + "." + "target_table")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("body" + "." + "target_table")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (o *CreateImportBody) validateType(formats strfmt.Registry) error {
+
+	if err := validate.Required("body"+"."+"type", "body", o.Type); err != nil {
 		return err
+	}
+
+	if err := validate.Required("body"+"."+"type", "body", o.Type); err != nil {
+		return err
+	}
+
+	if o.Type != nil {
+		if err := o.Type.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("body" + "." + "type")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("body" + "." + "type")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -298,6 +337,14 @@ func (o *CreateImportBody) ContextValidate(ctx context.Context, formats strfmt.R
 	}
 
 	if err := o.contextValidateDataFormat(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := o.contextValidateTargetTable(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := o.contextValidateType(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -331,6 +378,38 @@ func (o *CreateImportBody) contextValidateDataFormat(ctx context.Context, format
 				return ve.ValidateName("body" + "." + "data_format")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("body" + "." + "data_format")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (o *CreateImportBody) contextValidateTargetTable(ctx context.Context, formats strfmt.Registry) error {
+
+	if o.TargetTable != nil {
+		if err := o.TargetTable.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("body" + "." + "target_table")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("body" + "." + "target_table")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (o *CreateImportBody) contextValidateType(ctx context.Context, formats strfmt.Registry) error {
+
+	if o.Type != nil {
+		if err := o.Type.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("body" + "." + "type")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("body" + "." + "type")
 			}
 			return err
 		}

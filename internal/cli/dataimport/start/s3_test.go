@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package dataimport
+package start
 
 import (
 	"bytes"
@@ -31,13 +31,13 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type StartImportSuite struct {
+type S3ImportSuite struct {
 	suite.Suite
 	h          *internal.Helper
 	mockClient *mock.TiDBCloudClient
 }
 
-func (suite *StartImportSuite) SetupTest() {
+func (suite *S3ImportSuite) SetupTest() {
 	if err := os.Setenv("NO_COLOR", "true"); err != nil {
 		suite.T().Error(err)
 	}
@@ -53,7 +53,7 @@ func (suite *StartImportSuite) SetupTest() {
 	}
 }
 
-func (suite *StartImportSuite) TestStartImportArgs() {
+func (suite *S3ImportSuite) TestS3ImportArgs() {
 	assert := require.New(suite.T())
 
 	importID := "12345"
@@ -72,16 +72,9 @@ func (suite *StartImportSuite) TestStartImportArgs() {
 			"aws_role_arn": "%s",
 			"data_format": "%s",
 			"source_url": "%s",
-			"csv_format": {
-				"separator": ",",
-				"delimiter": "\"",
-				"header": true,
-				"backslash_escape": true,
-				"null": "\\N",
-				"trim_last_separator": false,
-				"not_null": false
-			}
+			"type": "S3"
 			}`, awsRoleArn, dataFormat, sourceUrl)))
+	assert.Nil(err)
 
 	projectID := "12345"
 	clusterID := "12345"
@@ -104,7 +97,7 @@ func (suite *StartImportSuite) TestStartImportArgs() {
 		{
 			name: "start import with unsupported data format",
 			args: []string{"--project-id", projectID, "--cluster-id", clusterID, "--aws-role-arn", awsRoleArn, "--data-format", "yaml", "--source-url", sourceUrl},
-			err:  fmt.Errorf("data format yaml is not supported, please use one of CSV, SqlFile, Parquet, AuroraSnapshot"),
+			err:  fmt.Errorf("data format yaml is not supported, please use one of [CSV SqlFile Parquet AuroraSnapshot]"),
 		},
 		{
 			name:         "start import with shorthand flag",
@@ -120,7 +113,7 @@ func (suite *StartImportSuite) TestStartImportArgs() {
 
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
-			cmd := StartCmd(suite.h)
+			cmd := S3Cmd(suite.h)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
@@ -136,6 +129,6 @@ func (suite *StartImportSuite) TestStartImportArgs() {
 	}
 }
 
-func TestStartImportSuite(t *testing.T) {
-	suite.Run(t, new(StartImportSuite))
+func TestS3ImportSuite(t *testing.T) {
+	suite.Run(t, new(S3ImportSuite))
 }

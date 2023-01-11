@@ -19,9 +19,10 @@ import (
 // swagger:model openapiCreateImportReq
 type OpenapiCreateImportReq struct {
 
+	// used for importing from S3
+	//
 	// The arn of AWS IAM role.
-	// Required: true
-	AwsRoleArn *string `json:"aws_role_arn"`
+	AwsRoleArn string `json:"aws_role_arn,omitempty"`
 
 	// The ID of the cluster.
 	// Example: 1
@@ -35,23 +36,32 @@ type OpenapiCreateImportReq struct {
 	// Required: true
 	DataFormat *OpenapiDataFormat `json:"data_format"`
 
+	// used for importing from local file
+	//
+	// The file name returned by generating upload url.
+	FileName string `json:"file_name,omitempty"`
+
 	// The ID of the project.
 	// Example: 1
 	// Required: true
 	ProjectID *string `json:"project_id"`
 
+	// used for importing from S3
+	//
 	// The full s3 path that contains data to import.
+	SourceURL string `json:"source_url,omitempty"`
+
+	// The target db and table to import data.
+	TargetTable *OpenapiTable `json:"target_table,omitempty"`
+
+	// The type of data source.
 	// Required: true
-	SourceURL *string `json:"source_url"`
+	Type *CreateImportReqImportType `json:"type"`
 }
 
 // Validate validates this openapi create import req
 func (m *OpenapiCreateImportReq) Validate(formats strfmt.Registry) error {
 	var res []error
-
-	if err := m.validateAwsRoleArn(formats); err != nil {
-		res = append(res, err)
-	}
 
 	if err := m.validateClusterID(formats); err != nil {
 		res = append(res, err)
@@ -69,22 +79,17 @@ func (m *OpenapiCreateImportReq) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateSourceURL(formats); err != nil {
+	if err := m.validateTargetTable(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateType(formats); err != nil {
 		res = append(res, err)
 	}
 
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *OpenapiCreateImportReq) validateAwsRoleArn(formats strfmt.Registry) error {
-
-	if err := validate.Required("aws_role_arn", "body", m.AwsRoleArn); err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -149,10 +154,44 @@ func (m *OpenapiCreateImportReq) validateProjectID(formats strfmt.Registry) erro
 	return nil
 }
 
-func (m *OpenapiCreateImportReq) validateSourceURL(formats strfmt.Registry) error {
+func (m *OpenapiCreateImportReq) validateTargetTable(formats strfmt.Registry) error {
+	if swag.IsZero(m.TargetTable) { // not required
+		return nil
+	}
 
-	if err := validate.Required("source_url", "body", m.SourceURL); err != nil {
+	if m.TargetTable != nil {
+		if err := m.TargetTable.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("target_table")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("target_table")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *OpenapiCreateImportReq) validateType(formats strfmt.Registry) error {
+
+	if err := validate.Required("type", "body", m.Type); err != nil {
 		return err
+	}
+
+	if err := validate.Required("type", "body", m.Type); err != nil {
+		return err
+	}
+
+	if m.Type != nil {
+		if err := m.Type.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("type")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("type")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -167,6 +206,14 @@ func (m *OpenapiCreateImportReq) ContextValidate(ctx context.Context, formats st
 	}
 
 	if err := m.contextValidateDataFormat(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateTargetTable(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateType(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -200,6 +247,38 @@ func (m *OpenapiCreateImportReq) contextValidateDataFormat(ctx context.Context, 
 				return ve.ValidateName("data_format")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("data_format")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *OpenapiCreateImportReq) contextValidateTargetTable(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.TargetTable != nil {
+		if err := m.TargetTable.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("target_table")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("target_table")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *OpenapiCreateImportReq) contextValidateType(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Type != nil {
+		if err := m.Type.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("type")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("type")
 			}
 			return err
 		}

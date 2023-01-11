@@ -135,21 +135,29 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			} else if format == output.HumanFormat {
 				columns := []output.Column{
 					"ID",
+					"Type",
 					"Status",
 					"CreatedAt",
-					"SourceURL",
+					"Source",
 					"DataFormat",
 					"Size",
 				}
 
 				var rows []output.Row
 				for _, item := range importTasks {
+					var source string
+					if item.CreationDetails.Type != nil && *item.CreationDetails.Type == importModel.CreateImportReqImportTypeS3 {
+						source = item.CreationDetails.SourceURL
+					} else {
+						source = item.CreationDetails.FileName
+					}
 
 					rows = append(rows, output.Row{
 						item.ID,
+						string(*item.CreationDetails.Type),
 						string(*item.Status),
 						item.CreatedAt.String(),
-						*item.SourceURL,
+						source,
 						string(*item.DataFormat),
 						convertToStoreSize(*item.TotalSize),
 					})

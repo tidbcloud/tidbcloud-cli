@@ -16,6 +16,7 @@ package dataimport
 
 import (
 	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/cli/dataimport/start"
 
 	"github.com/spf13/cobra"
 )
@@ -28,7 +29,7 @@ func ImportCmd(h *internal.Helper) *cobra.Command {
 
 	importCmd.AddCommand(ListCmd(h))
 	importCmd.AddCommand(CancelCmd(h))
-	importCmd.AddCommand(StartCmd(h))
+	importCmd.AddCommand(start.StartCmd(h))
 	importCmd.AddCommand(DescribeCmd(h))
 	return importCmd
 }

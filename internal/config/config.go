@@ -31,6 +31,8 @@ const (
 	HomePath      = ".ticloud"
 	DevVersion    = "dev"
 	Repo          = "tidbcloud/tidbcloud-cli"
+
+	Confirmed = "yes"
 )
 
 var (

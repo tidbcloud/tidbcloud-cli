@@ -38,4 +38,6 @@ const (
 	RegionShort    string = "r"
 	RootPassword   string = "root-password"
 	SourceUrl      string = "source-url"
+	TargetDatabase string = "target-database"
+	TargetTable    string = "target-table"
 )
