@@ -104,6 +104,15 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 			"type": "LOCAL",
 			"data_format": "%s",
 			"file_name": "%s",
+			"csv_format": {
+                "separator": ",",
+				"delimiter": "\"",
+				"header": true,
+				"backslash_escape": true,
+				"null": "\\N",
+				"trim_last_separator": false,
+				"not_null": false
+			},
 			"target_table": {
 				"schema": "%s",
 				"table": "%s"
@@ -144,15 +153,104 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 		{
 			name: "start import without required file path",
 			args: []string{"-p", projectID, "-c", clusterID, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable},
-			err:  fmt.Errorf("missing argument <filePath> \n\nUsage:\n  local <filePath> [flags]\n\nExamples:\n  Start an import task in interactive mode:\n  $ ticloud import start local <filePath>\n\n  Start an import task in non-interactive mode:\n  $ ticloud import start local <filePath> --project-id <project-id> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>\n\nFlags:\n  -c, --cluster-id string        Cluster ID\n      --data-format string       Data format, one of [CSV]\n  -h, --help                     help for local\n  -p, --project-id string        Project ID\n      --target-database string   Target database to which import data\n      --target-table string      Target table to which import data\n"),
+			err:  fmt.Errorf("missing argument <filePath> \n\nUsage:\n  start local <filePath> [flags]\n\nExamples:\n  Start an import task in interactive mode:\n  $ ticloud import start local <filePath>\n\n  Start an import task in non-interactive mode:\n  $ ticloud import start local <filePath> --project-id <project-id> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>\n\t\n  Start an impor task with custom CSV format:\n  $ ticloud import start local <filePath> --project-id <project-id> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --separator \\\" --delimiter ' --backslash-escape=false --trim-last-separator=true\n\n\nFlags:\n  -c, --cluster-id string        Cluster ID\n      --data-format string       Data format, one of [CSV]\n  -h, --help                     help for local\n  -p, --project-id string        Project ID\n      --target-database string   Target database to which import data\n      --target-table string      Target table to which import data\n\nGlobal Flags:\n      --backslash-escape      In CSV file whether to parse backslash inside fields as escape characters (default true)\n      --delimiter string      the delimiter used for quoting of CSV file (default \"\\\"\")\n      --separator string      the field separator of CSV file (default \",\")\n      --trim-last-separator   In CSV file whether to treat Separator as the line terminator and trim all trailing separators\n"),
 		},
 	}
 
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
-			cmd := LocalCmd(suite.h)
+			cmd := StartCmd(suite.h)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
+			tt.args = append([]string{"local"}, tt.args...)
+			cmd.SetArgs(tt.args)
+			err = cmd.Execute()
+			assert.Equal(tt.err, err)
+
+			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
+			assert.Equal(tt.stderrString, suite.h.IOStreams.Err.(*bytes.Buffer).String())
+			if tt.err == nil {
+				suite.mockClient.AssertExpectations(suite.T())
+			}
+		})
+	}
+}
+
+func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
+	assert := require.New(suite.T())
+
+	importID := "12345"
+	body := &importModel.OpenapiCreateImportResp{
+		ID: &importID,
+	}
+	result := &importOp.CreateImportOK{
+		Payload: body,
+	}
+
+	dataFormat := "CSV"
+	targetDatabase := "test"
+	targetTable := "test"
+	projectID := "12345"
+	clusterID := "12345"
+	size := "5"
+	fN := fileName
+	uploadUrl := "http://test.com"
+	uploadRes := &importOp.GenerateUploadURLOK{
+		Payload: &importModel.OpenapiGenerateUploadURLResq{
+			NewFileName: &fN,
+			UploadURL:   &uploadUrl,
+		},
+	}
+	suite.mockClient.On("GenerateUploadURL", importOp.NewGenerateUploadURLParams().WithProjectID(projectID).WithClusterID(clusterID).WithBody(importOp.GenerateUploadURLBody{
+		ContentLength: &size,
+		FileName:      &fN,
+	})).Return(uploadRes, nil)
+	suite.mockClient.On("PreSignedUrlUpload", &uploadUrl, mockTool.Anything, mockTool.Anything).Return(nil)
+
+	reqBody := importOp.CreateImportBody{}
+	err := reqBody.UnmarshalBinary([]byte(fmt.Sprintf(`{
+			"type": "LOCAL",
+			"data_format": "%s",
+			"file_name": "%s",
+			"csv_format": {
+                "separator": "\"",
+				"delimiter": ",",
+				"header": true,
+				"backslash_escape": false,
+				"null": "\\N",
+				"trim_last_separator": true,
+				"not_null": false
+			},
+			"target_table": {
+				"schema": "%s",
+				"table": "%s"
+			}}`, dataFormat, fileName, targetDatabase, targetTable)))
+	assert.Nil(err)
+
+	suite.mockClient.On("CreateImport", importOp.NewCreateImportParams().
+		WithProjectID(projectID).WithClusterID(clusterID).WithBody(reqBody)).
+		Return(result, nil)
+
+	tests := []struct {
+		name         string
+		args         []string
+		err          error
+		stdoutString string
+		stderrString string
+	}{
+		{
+			name:         "start import success",
+			args:         []string{fileName, "--project-id", projectID, "--cluster-id", clusterID, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable, "--separator", "\"", "--delimiter", ",", "--backslash-escape=false", "--trim-last-separator=true"},
+			stdoutString: fmt.Sprintf("... Uploading file\nFile has been uploaded\n... Starting the import task\nImport task %s started.\n", importID),
+		},
+	}
+
+	for _, tt := range tests {
+		suite.T().Run(tt.name, func(t *testing.T) {
+			cmd := StartCmd(suite.h)
+			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
+			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
+			tt.args = append([]string{"local"}, tt.args...)
 			cmd.SetArgs(tt.args)
 			err = cmd.Execute()
 			assert.Equal(tt.err, err)

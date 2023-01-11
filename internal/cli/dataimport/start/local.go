@@ -76,7 +76,11 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s import start local <filePath>
 
   Start an import task in non-interactive mode:
-  $ %[1]s import start local <filePath> --project-id <project-id> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>`,
+  $ %[1]s import start local <filePath> --project-id <project-id> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>
+	
+  Start an impor task with custom CSV format:
+  $ %[1]s import start local <filePath> --project-id <project-id> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --separator \" --delimiter ' --backslash-escape=false --trim-last-separator=true
+`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -100,7 +104,8 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var projectID, clusterID, dataFormat, targetDatabase, targetTable string
+			var projectID, clusterID, dataFormat, targetDatabase, targetTable, separator, delimiter string
+			var backslashEscape, trimLastSeparator bool
 			d, err := h.Client()
 			if err != nil {
 				return err
@@ -160,6 +165,11 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 				if len(targetTable) == 0 {
 					return errors.New("Target table is required")
 				}
+
+				separator, delimiter, backslashEscape, trimLastSeparator, err = getCSVFormat()
+				if err != nil {
+					return err
+				}
 			} else {
 				// non-interactive mode
 				projectID = cmd.Flag(flag.ProjectID).Value.String()
@@ -170,6 +180,24 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 				}
 				targetDatabase = cmd.Flag(flag.TargetDatabase).Value.String()
 				targetTable = cmd.Flag(flag.TargetTable).Value.String()
+
+				// optional flags
+				backslashEscape, err = cmd.Flags().GetBool(flag.BackslashEscape)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				separator, err = cmd.Flags().GetString(flag.Separator)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				delimiter, err = cmd.Flags().GetString(flag.Delimiter)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				trimLastSeparator, err = cmd.Flags().GetBool(flag.TrimLastSeparator)
+				if err != nil {
+					return errors.Trace(err)
+				}
 			}
 
 			filePath := args[0]
@@ -211,6 +239,15 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 			"type": "LOCAL",
 			"data_format": "%s",
 			"file_name": "%s",
+			"csv_format": {
+                "separator": ",",
+				"delimiter": "\"",
+				"header": true,
+				"backslash_escape": true,
+				"null": "\\N",
+				"trim_last_separator": false,
+				"not_null": false
+			},
 			"target_table": {
 				"schema": "%s",
 				"table": "%s"
@@ -218,6 +255,11 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
+
+			body.CsvFormat.Separator = separator
+			body.CsvFormat.Delimiter = delimiter
+			body.CsvFormat.BackslashEscape = backslashEscape
+			body.CsvFormat.TrimLastSeparator = trimLastSeparator
 
 			params := importOp.NewCreateImportParams().WithProjectID(projectID).WithClusterID(clusterID).
 				WithBody(body)

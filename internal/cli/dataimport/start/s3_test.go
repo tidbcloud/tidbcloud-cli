@@ -72,7 +72,16 @@ func (suite *S3ImportSuite) TestS3ImportArgs() {
 			"aws_role_arn": "%s",
 			"data_format": "%s",
 			"source_url": "%s",
-			"type": "S3"
+			"type": "S3",
+			"csv_format": {
+                "separator": ",",
+				"delimiter": "\"",
+				"header": true,
+				"backslash_escape": true,
+				"null": "\\N",
+				"trim_last_separator": false,
+				"not_null": false
+			}
 			}`, awsRoleArn, dataFormat, sourceUrl)))
 	assert.Nil(err)
 
@@ -113,9 +122,81 @@ func (suite *S3ImportSuite) TestS3ImportArgs() {
 
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
-			cmd := S3Cmd(suite.h)
+			cmd := StartCmd(suite.h)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
+			tt.args = append([]string{"s3"}, tt.args...)
+			cmd.SetArgs(tt.args)
+			err = cmd.Execute()
+			assert.Equal(tt.err, err)
+
+			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
+			assert.Equal(tt.stderrString, suite.h.IOStreams.Err.(*bytes.Buffer).String())
+			if tt.err == nil {
+				suite.mockClient.AssertExpectations(suite.T())
+			}
+		})
+	}
+}
+
+func (suite *S3ImportSuite) TestS3ImportCSVFormat() {
+	assert := require.New(suite.T())
+
+	importID := "12345"
+	body := &importModel.OpenapiCreateImportResp{
+		ID: &importID,
+	}
+	result := &importOp.CreateImportOK{
+		Payload: body,
+	}
+
+	awsRoleArn := "aws"
+	dataFormat := "CSV"
+	sourceUrl := "s3://test"
+	reqBody := importOp.CreateImportBody{}
+	err := reqBody.UnmarshalBinary([]byte(fmt.Sprintf(`{
+			"aws_role_arn": "%s",
+			"data_format": "%s",
+			"source_url": "%s",
+			"type": "S3",
+			"csv_format": {
+                "separator": "\"",
+				"delimiter": ",",
+				"header": true,
+				"backslash_escape": false,
+				"null": "\\N",
+				"trim_last_separator": true,
+				"not_null": false
+			}
+			}`, awsRoleArn, dataFormat, sourceUrl)))
+	assert.Nil(err)
+
+	projectID := "12345"
+	clusterID := "12345"
+	suite.mockClient.On("CreateImport", importOp.NewCreateImportParams().
+		WithProjectID(projectID).WithClusterID(clusterID).WithBody(reqBody)).
+		Return(result, nil)
+
+	tests := []struct {
+		name         string
+		args         []string
+		err          error
+		stdoutString string
+		stderrString string
+	}{
+		{
+			name:         "start import with custom format",
+			args:         []string{"--project-id", projectID, "--cluster-id", clusterID, "--aws-role-arn", awsRoleArn, "--data-format", dataFormat, "--source-url", sourceUrl, "--separator", "\"", "--delimiter", ",", "--backslash-escape=false", "--trim-last-separator=true"},
+			stdoutString: fmt.Sprintf("... Starting the import task\nImport task %s started.\n", importID),
+		},
+	}
+
+	for _, tt := range tests {
+		suite.T().Run(tt.name, func(t *testing.T) {
+			cmd := StartCmd(suite.h)
+			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
+			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
+			tt.args = append([]string{"s3"}, tt.args...)
 			cmd.SetArgs(tt.args)
 			err = cmd.Execute()
 			assert.Equal(tt.err, err)
