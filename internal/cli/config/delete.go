@@ -35,8 +35,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-const confirmed = "yes"
-
 func DeleteCmd(h *internal.Helper) *cobra.Command {
 	var force bool
 
@@ -57,7 +55,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to delete the profile")
 				}
 
-				confirmationMessage := fmt.Sprintf("%s %s %s", color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to confirm:"))
+				confirmationMessage := fmt.Sprintf("%s %s %s", color.BlueString("Please type"), color.HiBlueString(config.Confirmed), color.BlueString("to confirm:"))
 				prompt := &survey.Input{
 					Message: confirmationMessage,
 				}
@@ -71,7 +69,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 					}
 				}
 
-				if userInput != confirmed {
+				if userInput != config.Confirmed {
 					return errors.New("incorrect confirm string entered, skipping profile deletion")
 				}
 			}

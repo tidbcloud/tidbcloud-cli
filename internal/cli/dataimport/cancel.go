@@ -16,6 +16,7 @@ package dataimport
 
 import (
 	"fmt"
+	"os"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -24,6 +25,8 @@ import (
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -42,9 +45,11 @@ func (c CancelOpts) NonInteractiveFlags() []string {
 }
 
 func CancelCmd(h *internal.Helper) *cobra.Command {
+	var force bool
 	opts := CancelOpts{
 		interactive: true,
 	}
+
 	var cancelCmd = &cobra.Command{
 		Use:   "cancel",
 		Short: "Cancel a data import task",
@@ -116,6 +121,32 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				importID = cmd.Flag(flag.ImportID).Value.String()
 			}
 
+			if !force {
+				if !h.IOStreams.CanPrompt {
+					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to cancel the import task")
+				}
+
+				confirmationMessage := fmt.Sprintf("%s %s %s", color.BlueString("Please type"), color.HiBlueString(config.Confirmed), color.BlueString("to confirm:"))
+
+				prompt := &survey.Input{
+					Message: confirmationMessage,
+				}
+
+				var userInput string
+				err := survey.AskOne(prompt, &userInput)
+				if err != nil {
+					if err == terminal.InterruptErr {
+						os.Exit(130)
+					} else {
+						return err
+					}
+				}
+
+				if userInput != config.Confirmed {
+					return errors.New("incorrect confirm string entered, skipping import cancellation")
+				}
+			}
+
 			params := importOp.NewCancelImportParams().WithProjectID(projectID).WithClusterID(clusterID).WithID(importID)
 			_, err = d.CancelImport(params)
 			if err != nil {
@@ -127,6 +158,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
+	cancelCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a profile without confirmation")
 	cancelCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	cancelCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
 	cancelCmd.Flags().String(flag.ImportID, "", "The ID of import task")
