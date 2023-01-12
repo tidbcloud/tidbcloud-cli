@@ -6,7 +6,7 @@ on:
       - "v*"
 
 jobs:
-  goreleaser and TiUP:
+  goreleaser_and_TiUP:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
