@@ -79,7 +79,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s import start local <filePath> --project-id <project-id> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>
 	
   Start an impor task with custom CSV format:
-  $ %[1]s import start local <filePath> --project-id <project-id> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --separator \" --delimiter ' --backslash-escape=false --trim-last-separator=true
+  $ %[1]s import start local <filePath> --project-id <project-id> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
 `,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
