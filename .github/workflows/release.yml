@@ -93,6 +93,7 @@ jobs:
 
   create-pr:
     runs-on: ubuntu-latest
+    needs: ["goreleaser_and_TiUP"]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
