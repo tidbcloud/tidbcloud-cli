@@ -75,7 +75,11 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
   $ %[1]s import start s3
 
   Start an import task in non-interactive mode:
-  $ %[1]s import start s3 --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format <data-format> --source-url <source-url>`,
+  $ %[1]s import start s3 --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format <data-format> --source-url <source-url>
+
+  Start an impor task with custom CSV format:
+  $ %[1]s import start s3 --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format CSV --source-url <source-url> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
+`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -99,7 +103,9 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var projectID, clusterID, awsRoleArn, dataFormat, sourceUrl string
+			var projectID, clusterID, awsRoleArn, dataFormat, sourceUrl, separator, delimiter string
+			var backslashEscape, trimLastSeparator bool
+
 			d, err := h.Client()
 			if err != nil {
 				return err
@@ -159,6 +165,13 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 				if len(sourceUrl) == 0 {
 					return errors.New("Source url is required")
 				}
+
+				if dataFormat == string(importModel.OpenapiDataFormatCSV) {
+					separator, delimiter, backslashEscape, trimLastSeparator, err = getCSVFormat()
+					if err != nil {
+						return err
+					}
+				}
 			} else {
 				// non-interactive mode
 				projectID = cmd.Flag(flag.ProjectID).Value.String()
@@ -169,6 +182,24 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 					return fmt.Errorf("data format %s is not supported, please use one of %v", dataFormat, opts.SupportedDataFormats())
 				}
 				sourceUrl = cmd.Flag(flag.SourceUrl).Value.String()
+
+				// optional flags
+				backslashEscape, err = cmd.Flags().GetBool(flag.BackslashEscape)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				separator, err = cmd.Flags().GetString(flag.Separator)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				delimiter, err = cmd.Flags().GetString(flag.Delimiter)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				trimLastSeparator, err = cmd.Flags().GetBool(flag.TrimLastSeparator)
+				if err != nil {
+					return errors.Trace(err)
+				}
 			}
 
 			body := importOp.CreateImportBody{}
@@ -176,11 +207,25 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 			"aws_role_arn": "%s",
 			"data_format": "%s",
 			"source_url": "%s",
-			"type": "S3"
+			"type": "S3",
+			"csv_format": {
+                "separator": ",",
+				"delimiter": "\"",
+				"header": true,
+				"backslash_escape": true,
+				"null": "\\N",
+				"trim_last_separator": false,
+				"not_null": false
+			}
 			}`, awsRoleArn, dataFormat, sourceUrl)))
 			if err != nil {
 				return errors.Trace(err)
 			}
+
+			body.CsvFormat.Separator = separator
+			body.CsvFormat.Delimiter = delimiter
+			body.CsvFormat.BackslashEscape = backslashEscape
+			body.CsvFormat.TrimLastSeparator = trimLastSeparator
 
 			params := importOp.NewCreateImportParams().WithProjectID(projectID).WithClusterID(clusterID).
 				WithBody(body)
