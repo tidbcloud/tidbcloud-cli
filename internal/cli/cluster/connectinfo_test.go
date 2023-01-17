@@ -17,8 +17,10 @@ package cluster
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"os"
 	"testing"
+	"tidbcloud-cli/internal/config"
 
 	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/juju/errors"
@@ -196,12 +198,12 @@ Password: ${password}
 		{
 			name: "with unsupported client name",
 			args: []string{"-p", projectID, "-c", clusterID, "--client", "JAVA", "--operating-system", operatingSystem},
-			err:  errors.New("Unsupported clients. Run \"ticloud cluster connect-info -h\" to check supported clients list"),
+			err:  errors.New(fmt.Sprintf("Unsupported client. Run \"%[1]s cluster connect-info -h\" to check supported clients list", config.CliName)),
 		},
 		{
 			name: "with unsupported operating system",
-			args: []string{"-p", projectID, "-c", clusterID, "--client", "JAVA", "--operating-system", "Manjaro"},
-			err:  errors.New("Unsupported clients. Run \"ticloud cluster connect-info -h\" to check supported clients list"),
+			args: []string{"-p", projectID, "-c", clusterID, "--client", "mysqlclient", "--operating-system", "Manjaro"},
+			err:  errors.New(fmt.Sprintf("Unsupported operating system. Run \"%[1]s cluster connect-info -h\" to check supported operating systems list", config.CliName)),
 		},
 	}
 
