@@ -22,6 +22,8 @@ import (
 
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
+	connectInfoApi "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
+	connectInfoModel "tidbcloud-cli/pkg/tidbcloud/connect_info/models"
 	importApi "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
@@ -220,4 +222,57 @@ func RetrieveImports(pID string, cID string, pageSize int64, d TiDBCloudClient) 
 		items = append(items, imports.Payload.Imports...)
 	}
 	return total, items, nil
+}
+
+func RetrieveConnectInfo(d TiDBCloudClient) (*connectInfoModel.ConnectInfo, error) {
+	params := connectInfoApi.NewGetInfoParams()
+	connectInfo, err := d.GetConnectInfo(params)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	return connectInfo.Payload, nil
+}
+
+func GetSelectedConnectClient(connectClientList []string) (string, error) {
+	s := make([]interface{}, len(connectClientList))
+	for i, v := range connectClientList {
+		s[i] = v
+	}
+	model, err := ui.InitialSelectModel(s, "Choose the client")
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	model.EnablePagination(6)
+	model.EnableFilter()
+	p := tea.NewProgram(model)
+	connectClientModel, err := p.StartReturningModel()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := connectClientModel.(ui.SelectModel); m.Interrupted {
+		os.Exit(130)
+	}
+	connectClient := connectClientModel.(ui.SelectModel).GetSelectedItem().(string)
+	return connectClient, nil
+}
+
+func GetSelectedConnectOs(osList []string) (string, error) {
+	s := make([]interface{}, len(osList))
+	for i, v := range osList {
+		s[i] = v
+	}
+	model, err := ui.InitialSelectModel(s, "Choose the operating system")
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	p := tea.NewProgram(model)
+	connectClientModel, err := p.StartReturningModel()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := connectClientModel.(ui.SelectModel); m.Interrupted {
+		os.Exit(130)
+	}
+	operatingSystem := connectClientModel.(ui.SelectModel).GetSelectedItem().(string)
+	return operatingSystem, nil
 }

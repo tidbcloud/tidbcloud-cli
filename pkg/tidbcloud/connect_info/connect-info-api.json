@@ -1,0 +1,113 @@
+{
+    "schemes": [
+        "https"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "title": "Connection Swagger API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {},
+        "version": "1.0"
+    },
+    "tags": [
+        {
+            "name": "ConnectInfoService"
+        }
+    ],
+    "host": "api.tidbcloud.com",
+    "paths": {
+        "/ecosystem/api/internal/connect/info": {
+            "get": {
+                "operationId": "GetInfo",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "$ref": "#/definitions/ConnectInfo"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "default": {
+                        "description": "error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "tags": [
+                    "ConnectInfoService"
+                ]
+            }
+        }
+    },
+    "definitions": {
+        "ClientData": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Content"
+                    }
+                },
+                "display_name": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                }
+            }
+        },
+        "ConnectInfo": {
+            "type": "object",
+            "properties": {
+                "ca_path": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "client_data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ClientData"
+                    }
+                }
+            }
+        },
+        "Content": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "connection_example": {
+                    "type": "string"
+                },
+                "connection_string": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
