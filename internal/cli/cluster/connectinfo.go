@@ -136,7 +136,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s connect-info
 
   Get connection string in non-interactive mode:
-  $ %[1]s connect-info --project-id <project-id> --cluster-name <cluster-name> --client '<client-name>' --operating-system <operating-system>
+  $ %[1]s connect-info --project-id <project-id> --cluster-id <cluster-id> --client '<client-name>' --operating-system <operating-system>
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
