@@ -278,7 +278,11 @@ func (m *SelectModel) handleFiltering(msg tea.Msg) tea.Cmd {
 }
 
 func (m *SelectModel) resetPagination() {
-	m.Paginator.SetTotalPages(len(m.VisibleChoices))
+	items := len(m.VisibleChoices)
+	if items < 1 { // at least one page
+		items = 1
+	}
+	m.Paginator.SetTotalPages(items)
 	m.Paginator.Page = 0
 	m.cursor = 0
 }
