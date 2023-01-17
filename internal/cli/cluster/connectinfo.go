@@ -131,7 +131,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "connect-info",
-		Short: "Get connection string for your specified cluster",
+		Short: "Get connection string for the specified cluster",
 		Example: fmt.Sprintf(`  Get connection string in interactive mode:
   $ %[1]s connect-info
 
@@ -235,7 +235,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				if !contains(clientName, connectClientsList) {
-					return errors.New("Unsupported clients. Run \"ticloud cluster connect-info -h\" to check supported clients list")
+					return errors.New(fmt.Sprintf("Unsupported client. Run \"%[1]s cluster connect-info -h\" to check supported clients list", config.CliName))
 				}
 
 				operatingSystem, err = cmd.Flags().GetString(flag.OperatingSystem)
@@ -243,7 +243,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				if !contains(operatingSystem, operatingSystemListForHelp) {
-					return errors.New("Unsupported operating system. Run \"ticloud cluster connect-info -h\" to check supported operating systems list")
+					return errors.New(fmt.Sprintf("Unsupported operating system. Run \"%[1]s cluster connect-info -h\" to check supported operating systems list", config.CliName))
 				}
 			}
 
