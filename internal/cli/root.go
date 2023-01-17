@@ -155,7 +155,7 @@ func RootCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
 	rootCmd.AddCommand(dataimport.ImportCmd(h))
 
 	rootCmd.PersistentFlags().Bool(flag.NoColor, false, "Disable color output")
-	rootCmd.PersistentFlags().StringP(flag.Profile, flag.ProfileShort, "", "Profile to use from your configuration file.")
+	rootCmd.PersistentFlags().StringP(flag.Profile, flag.ProfileShort, "", "Profile to use from your configuration file")
 	return rootCmd
 }
 
