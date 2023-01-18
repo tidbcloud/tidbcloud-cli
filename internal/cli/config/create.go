@@ -61,11 +61,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	var createCmd = &cobra.Command{
 		Use:   "create",
-		Short: "Configure a profile to store access settings",
-		Example: fmt.Sprintf(`  To configure the tool to work with TiDB Cloud in interactive mode:
+		Short: "Configure a user profile to store settings",
+		Example: fmt.Sprintf(`  To configure a new user profile in interactive mode:
   $ %[1]s config create
 
-  To configure the tool to work with TiDB Cloud in non-interactive mode::
+  To configure a new user profile in non-interactive mode:
   $ %[1]s config create --profile-name <profile-name> --public-key <public-key> --private-key <private-key>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()

@@ -35,7 +35,7 @@ func SetCmd(h *internal.Helper) *cobra.Command {
 		Long: fmt.Sprintf(`Configure specific properties of the active profile.
 Available properties : %v.
 
-If use -P flag, the config in the specific profile will be set.
+If using -P flag, the config in the specific profile will be set.
 If not, the config in the active profile will be set`, prop.ProfileProperties()),
 		Example: fmt.Sprintf(`  Set the value of the public-key in active profile:
   $ %[1]s config set public-key <public-key>
