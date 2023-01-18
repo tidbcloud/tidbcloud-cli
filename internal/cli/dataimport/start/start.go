@@ -51,8 +51,8 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 		Short: "Start an import task",
 	}
 
-	startCmd.PersistentFlags().String(flag.Delimiter, "\"", "the delimiter used for quoting of CSV file")
-	startCmd.PersistentFlags().String(flag.Separator, ",", "the field separator of CSV file")
+	startCmd.PersistentFlags().String(flag.Delimiter, "\"", "The delimiter used for quoting of CSV file")
+	startCmd.PersistentFlags().String(flag.Separator, ",", "The field separator of CSV file")
 	startCmd.PersistentFlags().Bool(flag.TrimLastSeparator, false, "In CSV file whether to treat Separator as the line terminator and trim all trailing separators")
 	startCmd.PersistentFlags().Bool(flag.BackslashEscape, true, "In CSV file whether to parse backslash inside fields as escape characters")
 
