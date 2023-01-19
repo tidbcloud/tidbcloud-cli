@@ -57,7 +57,7 @@ const (
 	MysqlConnectorPythonForInteractive string = "MySQL Connector/Python"
 	MysqlConnectorPythonForHelp        string = "mysql_connector_python"
 	MysqlConnectorJavaID               string = "mysql_connector_java"
-	MysqlConnectorJavaForInteractive   string = "MySQL Connector/J"
+	MysqlConnectorJavaForInteractive   string = "MySQL Connector/Java"
 	MysqlConnectorJavaForHelp          string = "mysql_connector_java"
 	GoMysqlDriverID                    string = "go_mysql_driver"
 	GoMysqlDriverForInteractive        string = "Go MySQL Driver"
@@ -402,7 +402,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				if v, ok := clientsForHelpMap[clientNameForHelp]; ok {
+				if v, ok := clientsForHelpMap[strings.ToLower(clientNameForHelp)]; ok {
 					client = v
 				} else {
 					return errors.New(fmt.Sprintf("Unsupported client. Run \"%[1]s cluster connect-info -h\" to check supported clients list", config.CliName))
