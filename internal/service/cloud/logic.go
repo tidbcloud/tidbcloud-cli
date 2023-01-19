@@ -242,7 +242,8 @@ func GetSelectedConnectClient(connectClientList []string) (string, error) {
 	if err != nil {
 		return "", errors.Trace(err)
 	}
-	model.EnablePagination(6)
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
 	model.EnableFilter()
 	p := tea.NewProgram(model)
 	connectClientModel, err := p.StartReturningModel()

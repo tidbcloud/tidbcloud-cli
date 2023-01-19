@@ -28,9 +28,79 @@ import (
 
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 
-	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
+)
+
+// xxxForInteracive is used to display in interactive mode
+// xxxForHelp is used to display in help message and input in non-interactive mode
+const (
+	GeneralParameterID                 string = "standard_connection_parameter"
+	GeneralParameterForInteractive     string = "General Parameter"
+	GeneralParameterForHelp            string = "general_parameter"
+	MysqlCliID                         string = "mysql_cli"
+	MysqlCliForInteractive             string = "MySQL CLI"
+	MysqlCliForHelp                    string = "mysql_cli"
+	MyCliID                            string = "mycli"
+	MyCliForInteractive                string = "MyCLI"
+	MyCliForHelp                       string = "mycli"
+	LibMysqlClientID                   string = "libmysqlclient"
+	LibMysqlClientForInteractive       string = "libmysqlclient"
+	LibMysqlClientForHelp              string = "libmysqlclient"
+	MysqlClientID                      string = "mysqlclient"
+	MysqlClientForInteractive          string = "mysqlclient (Python)"
+	MysqlClientForHelp                 string = "python_mysqlclient"
+	PyMysqlID                          string = "pymysql"
+	PyMysqlForInteractive              string = "PyMySQL"
+	PyMysqlForHelp                     string = "pymysql"
+	MysqlConnectorPythonID             string = "mysql_connector_python"
+	MysqlConnectorPythonForInteractive string = "MySQL Connector/Python"
+	MysqlConnectorPythonForHelp        string = "mysql_connector_python"
+	MysqlConnectorJavaID               string = "mysql_connector_java"
+	MysqlConnectorJavaForInteractive   string = "MySQL Connector/J"
+	MysqlConnectorJavaForHelp          string = "mysql_connector_java"
+	GoMysqlDriverID                    string = "go_mysql_driver"
+	GoMysqlDriverForInteractive        string = "Go MySQL Driver"
+	GoMysqlDriverForHelp               string = "go_mysql_driver"
+	NodeMysql2ID                       string = "node_mysql_2"
+	NodeMysql2ForInteractive           string = "Node MySQL 2"
+	NodeMysql2ForHelp                  string = "node.js_mysql2"
+	Mysql2RubyID                       string = "mysql2_ruby"
+	Mysql2RubyForInteractive           string = "Mysql2 (Ruby)"
+	Mysql2RubyForHelp                  string = "ruby_mysql2"
+	MysqliID                           string = "mysqli"
+	MysqliForInteractive               string = "MySQLi (PHP)"
+	MysqliForHelp                      string = "php_mysqli"
+	MysqlRustID                        string = "mysql_rust"
+	MysqlRustForInteractive            string = "mysql (Rust)"
+	MysqlRustForHelp                   string = "rust_mysql"
+	MybatisID                          string = "mybatis"
+	MybatisForInteractive              string = "MyBatis"
+	MybatisForHelp                     string = "mybatis"
+	HibernateID                        string = "hibernate"
+	HibernateForInteractive            string = "Hibernate"
+	HibernateForHelp                   string = "hibernate"
+	SpringBootID                       string = "spring_boot"
+	SpringBootForInteractive           string = "Spring Boot"
+	SpringBootForHelp                  string = "spring_boot"
+	GormID                             string = "gorm"
+	GormForInteractive                 string = "GORM"
+	GormForHelp                        string = "gorm"
+	PrismaID                           string = "prisma"
+	PrismaForInteractive               string = "Prisma"
+	PrismaForHelp                      string = "prisma"
+	SequelizeID                        string = "sequelize"
+	SequelizeForInteractive            string = "Sequelize (mysql2)"
+	SequelizeForHelp                   string = "sequelize"
+	DjangoID                           string = "django"
+	DjangoForInteractive               string = "Django (django_tidb)"
+	DjangoForHelp                      string = "django"
+	SQLAlchemyID                       string = "sqlalchemy"
+	SqlAlchemyForInteractive           string = "SQLAlchemy (mysqlclient)"
+	SqlAlchemyForHelp                  string = "sqlalchemy"
+	ActiveRecordID                     string = "active_record"
+	ActiveRecordForInteractive         string = "Active Record"
+	ActiveRecordForHelp                string = "active_record"
 )
 
 type connectInfoOpts struct {
@@ -46,37 +116,134 @@ func (c connectInfoOpts) NonInteractiveFlags() []string {
 	}
 }
 
-// Display clients name orderly
+// Display clients name orderly in interactive mode
 var connectClientsList = []string{
 	// pure parameter
-	"Standard Connection Parameter",
+	GeneralParameterForInteractive,
 
 	// CLI
-	"MySQL CLI",
-	"MyCLI",
+	MysqlCliForInteractive,
+	MyCliForInteractive,
 
 	// driver
-	"libmysqlclient",
-	"mysqlclient",
-	"PyMySQL",
-	"MySQL Connector/Python",
-	"MySQL Connector/J",
-	"Go MySQL Driver",
-	"Node MySQL 2",
-	"Mysql2 (Ruby)",
-	"MySQLi",
-	"mysql (Rust)",
+	LibMysqlClientForInteractive,
+	MysqlClientForInteractive,
+	PyMysqlForInteractive,
+	MysqlConnectorPythonForInteractive,
+	MysqlConnectorJavaForInteractive,
+	GoMysqlDriverForInteractive,
+	NodeMysql2ForInteractive,
+	Mysql2RubyForInteractive,
+	MysqliForInteractive,
+	MysqlRustForInteractive,
 
 	// ORM
-	"MyBatis",
-	"Hibernate",
-	"Spring Boot",
-	"GORM",
-	"Prisma",
-	"Sequelize",
-	"Django",
-	"SQLAlchemy",
-	"Active Record",
+	MybatisForInteractive,
+	HibernateForInteractive,
+	SpringBootForInteractive,
+	GormForInteractive,
+	PrismaForInteractive,
+	SequelizeForInteractive,
+	DjangoForInteractive,
+	SqlAlchemyForInteractive,
+	ActiveRecordForInteractive,
+}
+
+// Display clients name orderly in help message
+var connectClientsListForHelp = []string{
+	// pure parameter
+	GeneralParameterForHelp,
+
+	// CLI
+	MysqlCliForHelp,
+	MyCliForHelp,
+
+	// driver
+	LibMysqlClientForHelp,
+	MysqlClientForHelp,
+	PyMysqlForHelp,
+	MysqlConnectorPythonForHelp,
+	MysqlConnectorJavaForHelp,
+	GoMysqlDriverForHelp,
+	NodeMysql2ForHelp,
+	Mysql2RubyForHelp,
+	MysqliForHelp,
+	MysqlRustForHelp,
+
+	// ORM
+	MybatisForHelp,
+	HibernateForHelp,
+	SpringBootForHelp,
+	GormForHelp,
+	PrismaForHelp,
+	SequelizeForHelp,
+	DjangoForHelp,
+	SqlAlchemyForHelp,
+	ActiveRecordForHelp,
+}
+
+var clientsForInteractiveMap = map[string]string{
+	// pure parameter
+	GeneralParameterForInteractive: GeneralParameterID,
+
+	// CLI
+	MysqlCliForInteractive: MysqlCliID,
+	MyCliForInteractive:    MyCliID,
+
+	// driver
+	LibMysqlClientForInteractive:       LibMysqlClientID,
+	MysqlClientForInteractive:          MysqlClientID,
+	PyMysqlForInteractive:              PyMysqlID,
+	MysqlConnectorPythonForInteractive: MysqlConnectorPythonID,
+	MysqlConnectorJavaForInteractive:   MysqlConnectorJavaID,
+	GoMysqlDriverForInteractive:        GoMysqlDriverID,
+	NodeMysql2ForInteractive:           NodeMysql2ID,
+	Mysql2RubyForInteractive:           Mysql2RubyID,
+	MysqliForInteractive:               MysqliID,
+	MysqlRustForInteractive:            MysqlRustID,
+
+	// ORM
+	MybatisForInteractive:      MybatisID,
+	HibernateForInteractive:    HibernateID,
+	SpringBootForInteractive:   SpringBootID,
+	GormForInteractive:         GormID,
+	PrismaForInteractive:       PrismaID,
+	SequelizeForInteractive:    SequelizeID,
+	DjangoForInteractive:       DjangoID,
+	SqlAlchemyForInteractive:   SQLAlchemyID,
+	ActiveRecordForInteractive: ActiveRecordID,
+}
+
+var clientsForHelpMap = map[string]string{
+	// pure parameter
+	GeneralParameterForHelp: GeneralParameterID,
+
+	// CLI
+	MysqlCliForHelp: MysqlCliID,
+	MyCliForHelp:    MyCliID,
+
+	// driver
+	LibMysqlClientForHelp:       LibMysqlClientID,
+	MysqlClientForHelp:          MysqlClientID,
+	PyMysqlForHelp:              PyMysqlID,
+	MysqlConnectorPythonForHelp: MysqlConnectorPythonID,
+	MysqlConnectorJavaForHelp:   MysqlConnectorJavaID,
+	GoMysqlDriverForHelp:        GoMysqlDriverID,
+	NodeMysql2ForHelp:           NodeMysql2ID,
+	Mysql2RubyForHelp:           Mysql2RubyID,
+	MysqliForHelp:               MysqliID,
+	MysqlRustForHelp:            MysqlRustID,
+
+	// ORM
+	MybatisForHelp:      MybatisID,
+	HibernateForHelp:    HibernateID,
+	SpringBootForHelp:   SpringBootID,
+	GormForHelp:         GormID,
+	PrismaForHelp:       PrismaID,
+	SequelizeForHelp:    SequelizeID,
+	DjangoForHelp:       DjangoID,
+	SqlAlchemyForHelp:   SQLAlchemyID,
+	ActiveRecordForHelp: ActiveRecordID,
 }
 
 // Display operating system orderly in interactive mode
@@ -133,10 +300,10 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 		Use:   "connect-info",
 		Short: "Get connection string for the specified cluster",
 		Example: fmt.Sprintf(`  Get connection string in interactive mode:
-  $ %[1]s connect-info
+  $ %[1]s cluster connect-info
 
   Get connection string in non-interactive mode:
-  $ %[1]s connect-info --project-id <project-id> --cluster-id <cluster-id> --client '<client-name>' --operating-system <operating-system>
+  $ %[1]s cluster connect-info --project-id <project-id> --cluster-id <cluster-id> --client <client-name> --operating-system <operating-system>
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -161,7 +328,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// flags
-			var projectID, clusterID, clientName, operatingSystem string
+			var projectID, clusterID, client, operatingSystem string
 
 			// Get TiDBCloudClient
 			d, err := h.Client()
@@ -189,10 +356,11 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cluster.ID
 
 				// Get client
-				clientName, err = cloud.GetSelectedConnectClient(connectClientsList)
+				clientNameForInteractive, err := cloud.GetSelectedConnectClient(connectClientsList)
 				if err != nil {
 					return err
 				}
+				client = clientsForInteractiveMap[clientNameForInteractive]
 
 				// Detect operating system
 				// TODO: detect linux operating system name
@@ -230,11 +398,13 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 
-				clientName, err = cmd.Flags().GetString(flag.ClientName)
+				clientNameForHelp, err := cmd.Flags().GetString(flag.ClientName)
 				if err != nil {
 					return err
 				}
-				if !contains(clientName, connectClientsList) {
+				if v, ok := clientsForHelpMap[clientNameForHelp]; ok {
+					client = v
+				} else {
 					return errors.New(fmt.Sprintf("Unsupported client. Run \"%[1]s cluster connect-info -h\" to check supported clients list", config.CliName))
 				}
 
@@ -269,11 +439,11 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			connectionString, err := generateConnectionString(connectInfo, clientName, host, defaultUser, port, clusterType, operatingSystem)
+			connectionString, err := generateConnectionString(connectInfo, client, host, defaultUser, port, clusterType, operatingSystem)
 			if err != nil {
 				return err
 			}
-			fmt.Fprintln(h.IOStreams.Out, color.BlueString("Connection string"))
+			fmt.Fprintln(h.IOStreams.Out)
 			fmt.Fprintln(h.IOStreams.Out, connectionString)
 
 			return nil
@@ -282,15 +452,23 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 
 	cmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	cmd.Flags().String(flag.ClientName, "", "Connected client. Supported clients: ["+strings.Join(connectClientsList, ", ")+"]")
-	cmd.Flags().String(flag.OperatingSystem, "", "Operating system name. Supported operating systems: ["+strings.Join(operatingSystemListForHelp, ", ")+"]")
+	cmd.Flags().String(flag.ClientName, "", fmt.Sprintf("Connected client. Supported clients: %q", connectClientsListForHelp))
+	cmd.Flags().String(flag.OperatingSystem, "", fmt.Sprintf("Operating system name. Supported operating systems: %q", operatingSystemListForHelp))
 
 	return cmd
 }
 
-func generateConnectionString(connectInfo *connectInfoModel.ConnectInfo, clientName string, host string, user string, port string, clusterType string, operatingSystem string) (string, error) {
+func generateConnectionString(connectInfo *connectInfoModel.ConnectInfo, client string, host string, user string, port string, clusterType string, operatingSystem string) (string, error) {
+	if client == GeneralParameterID {
+		return fmt.Sprintf(`Host:    %s
+Port:    %s
+User:    %s`,
+			host, port, user), nil
+	}
+
 	for _, clientData := range connectInfo.ClientData {
-		if strings.EqualFold(clientData.DisplayName, clientName) {
+		// find user chose client
+		if strings.EqualFold(clientData.ID, client) {
 			for _, content := range clientData.Content {
 				if strings.EqualFold(clusterType, content.Type) {
 					connectionString := content.ConnectionString
