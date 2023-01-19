@@ -137,9 +137,9 @@ func (suite *ConnectInfoSuite) TestConnectInfoArgs() {
 
 	projectID := "12345"
 	clusterID := "12345"
-	clientCLI := "MySQL CLI"
-	clientDriver := "mysqlclient"
-	clientParameter := "Standard Connection Parameter"
+	clientCLI := "mysql_cli"
+	clientDriver := "python_mysqlclient"
+	clientParameter := "general_parameter"
 	operatingSystem := "macos"
 
 	connectInfoBody := &connectInfoModel.ConnectInfo{}
@@ -171,12 +171,12 @@ func (suite *ConnectInfoSuite) TestConnectInfoArgs() {
 		{
 			name:         "get MySQl CLI connecting string",
 			args:         []string{"-p", projectID, "-c", clusterID, "--client", clientCLI, "--operating-system", operatingSystem},
-			stdoutString: "Connection string\nmysql -u '28cDWcUJJiewaQ7.root' -h gateway01.us-east-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/cert.pem -p${password}\n",
+			stdoutString: "\nmysql -u '28cDWcUJJiewaQ7.root' -h gateway01.us-east-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/cert.pem -p${password}\n",
 		},
 		{
 			name: "get mysqlclient connecting string",
 			args: []string{"-p", projectID, "-c", clusterID, "--client", clientDriver, "--operating-system", operatingSystem},
-			stdoutString: `Connection string
+			stdoutString: `
 host="gateway01.us-east-1.prod.aws.tidbcloud.com", 
 user="28cDWcUJJiewaQ7.root", 
 password="${password}", 
@@ -188,11 +188,10 @@ ssl={"ca": "/etc/ssl/cert.pem"}
 		{
 			name: "get standard connection parameter",
 			args: []string{"-p", projectID, "-c", clusterID, "--client", clientParameter, "--operating-system", operatingSystem},
-			stdoutString: `Connection string
-Host: gateway01.us-east-1.prod.aws.tidbcloud.com
-Username: 28cDWcUJJiewaQ7.root
-Port: 4000
-Password: ${password}
+			stdoutString: `
+Host:    gateway01.us-east-1.prod.aws.tidbcloud.com
+Port:    4000
+User:    28cDWcUJJiewaQ7.root
 `,
 		},
 		{
@@ -202,7 +201,7 @@ Password: ${password}
 		},
 		{
 			name: "with unsupported operating system",
-			args: []string{"-p", projectID, "-c", clusterID, "--client", "mysqlclient", "--operating-system", "Manjaro"},
+			args: []string{"-p", projectID, "-c", clusterID, "--client", "python_mysqlclient", "--operating-system", "Manjaro"},
 			err:  errors.New(fmt.Sprintf("Unsupported operating system. Run \"%[1]s cluster connect-info -h\" to check supported operating systems list", config.CliName)),
 		},
 	}
