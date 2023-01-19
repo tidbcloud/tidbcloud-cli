@@ -39,12 +39,12 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 	var force bool
 
 	var deleteCmd = &cobra.Command{
-		Use:   "delete <profileName>",
+		Use:   "delete <profile-name>",
 		Short: "Delete a profile",
 		Example: fmt.Sprintf(`  Delete the profile configuration:
-  $ %[1]s config delete <profileName>`, config.CliName),
+  $ %[1]s config delete <profile-name>`, config.CliName),
 		Aliases: []string{"rm"},
-		Args:    util.RequiredArgs("profileName"),
+		Args:    util.RequiredArgs("profile-name"),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Configuration needs to be deleted from toml, as viper doesn't support this yet.
 			// FIXME :: change when https://github.com/spf13/viper/pull/519 is merged.

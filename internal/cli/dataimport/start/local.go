@@ -69,17 +69,17 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var localCmd = &cobra.Command{
-		Use:   "local <filePath>",
+		Use:   "local <file-path>",
 		Short: "Import a local file to TiDB Cloud",
-		Args:  util.RequiredArgs("filePath"),
+		Args:  util.RequiredArgs("file-path"),
 		Example: fmt.Sprintf(`  Start an import task in interactive mode:
-  $ %[1]s import start local <filePath>
+  $ %[1]s import start local <file-path>
 
   Start an import task in non-interactive mode:
-  $ %[1]s import start local <filePath> --project-id <project-id> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>
+  $ %[1]s import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>
 	
-  Start an impor task with custom CSV format:
-  $ %[1]s import start local <filePath> --project-id <project-id> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
+  Start an import task with custom CSV format:
+  $ %[1]s import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
 `,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {

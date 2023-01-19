@@ -77,7 +77,7 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
   Start an import task in non-interactive mode:
   $ %[1]s import start s3 --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format <data-format> --source-url <source-url>
 
-  Start an impor task with custom CSV format:
+  Start an import task with custom CSV format:
   $ %[1]s import start s3 --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format CSV --source-url <source-url> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
 `,
 			config.CliName),
