@@ -69,17 +69,17 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var localCmd = &cobra.Command{
-		Use:   "local <filePath>",
+		Use:   "local <file-path>",
 		Short: "Import a local file to TiDB Cloud",
-		Args:  util.RequiredArgs("filePath"),
+		Args:  util.RequiredArgs("file-path"),
 		Example: fmt.Sprintf(`  Start an import task in interactive mode:
-  $ %[1]s import start local <filePath>
+  $ %[1]s import start local <file-path>
 
   Start an import task in non-interactive mode:
-  $ %[1]s import start local <filePath> --project-id <project-id> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>
+  $ %[1]s import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>
 	
-  Start an impor task with custom CSV format:
-  $ %[1]s import start local <filePath> --project-id <project-id> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
+  Start an import task with custom CSV format:
+  $ %[1]s import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
 `,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -176,7 +176,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cmd.Flag(flag.ClusterID).Value.String()
 				dataFormat = cmd.Flag(flag.DataFormat).Value.String()
 				if !util.ElemInSlice(opts.SupportedDataFormats(), dataFormat) {
-					return fmt.Errorf("data format %s is not supported, please use one of %v", dataFormat, opts.SupportedDataFormats())
+					return fmt.Errorf("data format %s is not supported, please use one of %q", dataFormat, opts.SupportedDataFormats())
 				}
 				targetDatabase = cmd.Flag(flag.TargetDatabase).Value.String()
 				targetTable = cmd.Flag(flag.TargetTable).Value.String()
@@ -281,7 +281,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 
 	localCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	localCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	localCmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %v", opts.SupportedDataFormats()))
+	localCmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %q", opts.SupportedDataFormats()))
 	localCmd.Flags().String(flag.TargetDatabase, "", "Target database to which import data")
 	localCmd.Flags().String(flag.TargetTable, "", "Target table to which import data")
 	return localCmd

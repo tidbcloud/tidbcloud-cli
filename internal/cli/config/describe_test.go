@@ -86,7 +86,7 @@ func (suite *DescribeConfigSuite) TestDescribeConfigArgs() {
 		{
 			name: "describe config with no args",
 			args: []string{},
-			err:  fmt.Errorf("missing argument <profileName> \n\nUsage:\n  describe <profileName> [flags]\n\nAliases:\n  describe, get\n\nExamples:\n  Return the profile configuration:\n  $ ticloud config describe <profileName>\n\nFlags:\n  -h, --help   help for describe\n"),
+			err:  fmt.Errorf("missing argument <profile-name> \n\nUsage:\n  describe <profile-name> [flags]\n\nAliases:\n  describe, get\n\nExamples:\n  Describe the profile configuration:\n  $ ticloud config describe <profile-name>\n\nFlags:\n  -h, --help   help for describe\n"),
 		},
 		{
 			name: "describe config with non-existed profile",

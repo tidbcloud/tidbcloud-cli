@@ -281,7 +281,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	createCmd.Flags().String(flag.ClusterName, "", "Name of the cluster to de created")
 	createCmd.Flags().String(flag.ClusterType, "", "Cluster type, only support \"SERVERLESS\" now")
-	createCmd.Flags().String(flag.CloudProvider, "", "Cloud provider, e.g. AWS")
+	createCmd.Flags().String(flag.CloudProvider, "", "Cloud provider, one of [\"AWS\"]")
 	createCmd.Flags().StringP(flag.Region, flag.RegionShort, "", "Cloud region")
 	createCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project, in which the cluster will be created")
 	createCmd.Flags().String(flag.RootPassword, "", "The root password of the cluster")

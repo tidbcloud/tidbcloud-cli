@@ -30,7 +30,6 @@ import (
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/emirpasic/gods/sets/hashset"
 	"github.com/juju/errors"
 )
 
@@ -75,14 +74,14 @@ func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error
 		}, nil
 	}
 
-	set := hashset.New()
+	var items = make([]interface{}, 0, len(projectItems))
 	for _, item := range projectItems {
-		set.Add(&Project{
+		items = append(items, &Project{
 			ID:   item.ID,
 			Name: item.Name,
 		})
 	}
-	model, err := ui.InitialSelectModel(set.Values(), "Choose the project:")
+	model, err := ui.InitialSelectModel(items, "Choose the project:")
 	if err != nil {
 		return nil, err
 	}
@@ -103,19 +102,19 @@ func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient
 	if err != nil {
 		return nil, err
 	}
-	set := hashset.New()
+
+	var items = make([]interface{}, 0, len(clusterItems))
 	for _, item := range clusterItems {
-		set.Add(&Cluster{
+		items = append(items, &Cluster{
 			ID:   *(item.ID),
 			Name: item.Name,
 		})
 	}
-	clusters := set.Values()
-	if len(clusters) == 0 {
+	if len(items) == 0 {
 		return nil, fmt.Errorf("no available clusters found")
 	}
 
-	model, err := ui.InitialSelectModel(clusters, "Choose the cluster")
+	model, err := ui.InitialSelectModel(items, "Choose the cluster")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -139,18 +138,18 @@ func GetSelectedImport(pID string, cID string, pageSize int64, client TiDBCloudC
 		return nil, err
 	}
 
-	set := hashset.New()
+	var items = make([]interface{}, 0, len(importItems))
 	for _, item := range importItems {
 		if len(statusFilter) != 0 && !util.ElemInSlice(statusFilter, *item.Status) {
 			continue
 		}
 
-		set.Add(&Import{
+		items = append(items, &Import{
 			ID:     item.ID,
 			Status: item.Status,
 		})
 	}
-	model, err := ui.InitialSelectModel(set.Values(), "Choose the import task:")
+	model, err := ui.InitialSelectModel(items, "Choose the import task:")
 	if err != nil {
 		return nil, err
 	}

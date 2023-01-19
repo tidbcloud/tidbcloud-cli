@@ -77,7 +77,7 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
   Start an import task in non-interactive mode:
   $ %[1]s import start s3 --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format <data-format> --source-url <source-url>
 
-  Start an impor task with custom CSV format:
+  Start an import task with custom CSV format:
   $ %[1]s import start s3 --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format CSV --source-url <source-url> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
 `,
 			config.CliName),
@@ -179,7 +179,7 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 				awsRoleArn = cmd.Flag(flag.AwsRoleArn).Value.String()
 				dataFormat = cmd.Flag(flag.DataFormat).Value.String()
 				if !util.ElemInSlice(opts.SupportedDataFormats(), dataFormat) {
-					return fmt.Errorf("data format %s is not supported, please use one of %v", dataFormat, opts.SupportedDataFormats())
+					return fmt.Errorf("data format %s is not supported, please use one of %q", dataFormat, opts.SupportedDataFormats())
 				}
 				sourceUrl = cmd.Flag(flag.SourceUrl).Value.String()
 
@@ -248,7 +248,7 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 	s3Cmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	s3Cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
 	s3Cmd.Flags().String(flag.AwsRoleArn, "", "AWS S3 IAM Role ARN")
-	s3Cmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %v", opts.SupportedDataFormats()))
+	s3Cmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %q", opts.SupportedDataFormats()))
 	s3Cmd.Flags().String(flag.SourceUrl, "", "The S3 path where the source data file is stored")
 	return s3Cmd
 }
