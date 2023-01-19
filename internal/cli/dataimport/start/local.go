@@ -176,7 +176,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cmd.Flag(flag.ClusterID).Value.String()
 				dataFormat = cmd.Flag(flag.DataFormat).Value.String()
 				if !util.ElemInSlice(opts.SupportedDataFormats(), dataFormat) {
-					return fmt.Errorf("data format %s is not supported, please use one of %v", dataFormat, opts.SupportedDataFormats())
+					return fmt.Errorf("data format %s is not supported, please use one of %q", dataFormat, opts.SupportedDataFormats())
 				}
 				targetDatabase = cmd.Flag(flag.TargetDatabase).Value.String()
 				targetTable = cmd.Flag(flag.TargetTable).Value.String()
@@ -281,7 +281,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 
 	localCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	localCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	localCmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %v", opts.SupportedDataFormats()))
+	localCmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %q", opts.SupportedDataFormats()))
 	localCmd.Flags().String(flag.TargetDatabase, "", "Target database to which import data")
 	localCmd.Flags().String(flag.TargetTable, "", "Target table to which import data")
 	return localCmd
