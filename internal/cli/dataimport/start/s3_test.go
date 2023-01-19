@@ -106,7 +106,7 @@ func (suite *S3ImportSuite) TestS3ImportArgs() {
 		{
 			name: "start import with unsupported data format",
 			args: []string{"--project-id", projectID, "--cluster-id", clusterID, "--aws-role-arn", awsRoleArn, "--data-format", "yaml", "--source-url", sourceUrl},
-			err:  fmt.Errorf("data format yaml is not supported, please use one of [CSV SqlFile Parquet AuroraSnapshot]"),
+			err:  fmt.Errorf("data format yaml is not supported, please use one of [\"CSV\" \"SqlFile\" \"Parquet\" \"AuroraSnapshot\"]"),
 		},
 		{
 			name:         "start import with shorthand flag",
