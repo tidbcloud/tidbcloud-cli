@@ -32,75 +32,75 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// xxxForInteracive is used to display in interactive mode
-// xxxForHelp is used to display in help message and input in non-interactive mode
+// xxxDisplayName is used to display in interactive mode
+// xxxInputName is used to input in non-interactive mode and display in help message
 const (
-	GeneralParameterID                 string = "standard_connection_parameter"
-	GeneralParameterForInteractive     string = "General Parameter"
-	GeneralParameterForHelp            string = "general_parameter"
-	MysqlCliID                         string = "mysql_cli"
-	MysqlCliForInteractive             string = "MySQL CLI"
-	MysqlCliForHelp                    string = "mysql_cli"
-	MyCliID                            string = "mycli"
-	MyCliForInteractive                string = "MyCLI"
-	MyCliForHelp                       string = "mycli"
-	LibMysqlClientID                   string = "libmysqlclient"
-	LibMysqlClientForInteractive       string = "libmysqlclient"
-	LibMysqlClientForHelp              string = "libmysqlclient"
-	MysqlClientID                      string = "mysqlclient"
-	MysqlClientForInteractive          string = "mysqlclient (Python)"
-	MysqlClientForHelp                 string = "python_mysqlclient"
-	PyMysqlID                          string = "pymysql"
-	PyMysqlForInteractive              string = "PyMySQL"
-	PyMysqlForHelp                     string = "pymysql"
-	MysqlConnectorPythonID             string = "mysql_connector_python"
-	MysqlConnectorPythonForInteractive string = "MySQL Connector/Python"
-	MysqlConnectorPythonForHelp        string = "mysql_connector_python"
-	MysqlConnectorJavaID               string = "mysql_connector_java"
-	MysqlConnectorJavaForInteractive   string = "MySQL Connector/Java"
-	MysqlConnectorJavaForHelp          string = "mysql_connector_java"
-	GoMysqlDriverID                    string = "go_mysql_driver"
-	GoMysqlDriverForInteractive        string = "Go MySQL Driver"
-	GoMysqlDriverForHelp               string = "go_mysql_driver"
-	NodeMysql2ID                       string = "node_mysql_2"
-	NodeMysql2ForInteractive           string = "Node MySQL 2"
-	NodeMysql2ForHelp                  string = "node.js_mysql2"
-	Mysql2RubyID                       string = "mysql2_ruby"
-	Mysql2RubyForInteractive           string = "Mysql2 (Ruby)"
-	Mysql2RubyForHelp                  string = "ruby_mysql2"
-	MysqliID                           string = "mysqli"
-	MysqliForInteractive               string = "MySQLi (PHP)"
-	MysqliForHelp                      string = "php_mysqli"
-	MysqlRustID                        string = "mysql_rust"
-	MysqlRustForInteractive            string = "mysql (Rust)"
-	MysqlRustForHelp                   string = "rust_mysql"
-	MybatisID                          string = "mybatis"
-	MybatisForInteractive              string = "MyBatis"
-	MybatisForHelp                     string = "mybatis"
-	HibernateID                        string = "hibernate"
-	HibernateForInteractive            string = "Hibernate"
-	HibernateForHelp                   string = "hibernate"
-	SpringBootID                       string = "spring_boot"
-	SpringBootForInteractive           string = "Spring Boot"
-	SpringBootForHelp                  string = "spring_boot"
-	GormID                             string = "gorm"
-	GormForInteractive                 string = "GORM"
-	GormForHelp                        string = "gorm"
-	PrismaID                           string = "prisma"
-	PrismaForInteractive               string = "Prisma"
-	PrismaForHelp                      string = "prisma"
-	SequelizeID                        string = "sequelize"
-	SequelizeForInteractive            string = "Sequelize (mysql2)"
-	SequelizeForHelp                   string = "sequelize"
-	DjangoID                           string = "django"
-	DjangoForInteractive               string = "Django (django_tidb)"
-	DjangoForHelp                      string = "django"
-	SQLAlchemyID                       string = "sqlalchemy"
-	SqlAlchemyForInteractive           string = "SQLAlchemy (mysqlclient)"
-	SqlAlchemyForHelp                  string = "sqlalchemy"
-	ActiveRecordID                     string = "active_record"
-	ActiveRecordForInteractive         string = "Active Record"
-	ActiveRecordForHelp                string = "active_record"
+	GeneralParameterID              string = "standard_connection_parameter"
+	GeneralParameterDisplayName     string = "General Parameter"
+	GeneralParameterInputName       string = "general_parameter"
+	MysqlCliID                      string = "mysql_cli"
+	MysqlCliDisplayName             string = "MySQL CLI"
+	MysqlCliInputName               string = "mysql_cli"
+	MyCliID                         string = "mycli"
+	MyCliDisplayName                string = "MyCLI"
+	MyCliInputName                  string = "mycli"
+	LibMysqlClientID                string = "libmysqlclient"
+	LibMysqlClientDisplayName       string = "libmysqlclient"
+	LibMysqlClientInputName         string = "libmysqlclient"
+	MysqlClientID                   string = "mysqlclient"
+	MysqlClientDisplayName          string = "mysqlclient (Python)"
+	MysqlClientInputName            string = "python_mysqlclient"
+	PyMysqlID                       string = "pymysql"
+	PyMysqlDisplayName              string = "PyMySQL"
+	PyMysqlInputName                string = "pymysql"
+	MysqlConnectorPythonID          string = "mysql_connector_python"
+	MysqlConnectorPythonDisplayName string = "MySQL Connector/Python"
+	MysqlConnectorPythonInputName   string = "mysql_connector_python"
+	MysqlConnectorJavaID            string = "mysql_connector_java"
+	MysqlConnectorJavaDisplayName   string = "MySQL Connector/Java"
+	MysqlConnectorJavaInputName     string = "mysql_connector_java"
+	GoMysqlDriverID                 string = "go_mysql_driver"
+	GoMysqlDriverDisplayName        string = "Go MySQL Driver"
+	GoMysqlDriverInputName          string = "go_mysql_driver"
+	NodeMysql2ID                    string = "node_mysql_2"
+	NodeMysql2DisplayName           string = "Node MySQL 2"
+	NodeMysql2InputName             string = "node.js_mysql2"
+	Mysql2RubyID                    string = "mysql2_ruby"
+	Mysql2RubyDisplayName           string = "Mysql2 (Ruby)"
+	Mysql2RubyInputName             string = "ruby_mysql2"
+	MysqliID                        string = "mysqli"
+	MysqliDisplayName               string = "MySQLi (PHP)"
+	MysqliInputName                 string = "php_mysqli"
+	MysqlRustID                     string = "mysql_rust"
+	MysqlRustDisplayName            string = "mysql (Rust)"
+	MysqlRustInputName              string = "rust_mysql"
+	MybatisID                       string = "mybatis"
+	MybatisDisplayName              string = "MyBatis"
+	MybatisInputName                string = "mybatis"
+	HibernateID                     string = "hibernate"
+	HibernateDisplayName            string = "Hibernate"
+	HibernateInputName              string = "hibernate"
+	SpringBootID                    string = "spring_boot"
+	SpringBootDisplayName           string = "Spring Boot"
+	SpringBootInputName             string = "spring_boot"
+	GormID                          string = "gorm"
+	GormDisplayName                 string = "GORM"
+	GormInputName                   string = "gorm"
+	PrismaID                        string = "prisma"
+	PrismaDisplayName               string = "Prisma"
+	PrismaInputName                 string = "prisma"
+	SequelizeID                     string = "sequelize"
+	SequelizeDisplayName            string = "Sequelize (mysql2)"
+	SequelizeInputName              string = "sequelize"
+	DjangoID                        string = "django"
+	DjangoDisplayName               string = "Django (django_tidb)"
+	DjangoInputName                 string = "django"
+	SQLAlchemyID                    string = "sqlalchemy"
+	SqlAlchemyDisplayName           string = "SQLAlchemy (mysqlclient)"
+	SqlAlchemyInputName             string = "sqlalchemy"
+	ActiveRecordID                  string = "active_record"
+	ActiveRecordDisplayName         string = "Active Record"
+	ActiveRecordInputName           string = "active_record"
 )
 
 type connectInfoOpts struct {
@@ -119,131 +119,131 @@ func (c connectInfoOpts) NonInteractiveFlags() []string {
 // Display clients name orderly in interactive mode
 var connectClientsList = []string{
 	// pure parameter
-	GeneralParameterForInteractive,
+	GeneralParameterDisplayName,
 
 	// CLI
-	MysqlCliForInteractive,
-	MyCliForInteractive,
+	MysqlCliDisplayName,
+	MyCliDisplayName,
 
 	// driver
-	LibMysqlClientForInteractive,
-	MysqlClientForInteractive,
-	PyMysqlForInteractive,
-	MysqlConnectorPythonForInteractive,
-	MysqlConnectorJavaForInteractive,
-	GoMysqlDriverForInteractive,
-	NodeMysql2ForInteractive,
-	Mysql2RubyForInteractive,
-	MysqliForInteractive,
-	MysqlRustForInteractive,
+	LibMysqlClientDisplayName,
+	MysqlClientDisplayName,
+	PyMysqlDisplayName,
+	MysqlConnectorPythonDisplayName,
+	MysqlConnectorJavaDisplayName,
+	GoMysqlDriverDisplayName,
+	NodeMysql2DisplayName,
+	Mysql2RubyDisplayName,
+	MysqliDisplayName,
+	MysqlRustDisplayName,
 
 	// ORM
-	MybatisForInteractive,
-	HibernateForInteractive,
-	SpringBootForInteractive,
-	GormForInteractive,
-	PrismaForInteractive,
-	SequelizeForInteractive,
-	DjangoForInteractive,
-	SqlAlchemyForInteractive,
-	ActiveRecordForInteractive,
+	MybatisDisplayName,
+	HibernateDisplayName,
+	SpringBootDisplayName,
+	GormDisplayName,
+	PrismaDisplayName,
+	SequelizeDisplayName,
+	DjangoDisplayName,
+	SqlAlchemyDisplayName,
+	ActiveRecordDisplayName,
 }
 
 // Display clients name orderly in help message
 var connectClientsListForHelp = []string{
 	// pure parameter
-	GeneralParameterForHelp,
+	GeneralParameterInputName,
 
 	// CLI
-	MysqlCliForHelp,
-	MyCliForHelp,
+	MysqlCliInputName,
+	MyCliInputName,
 
 	// driver
-	LibMysqlClientForHelp,
-	MysqlClientForHelp,
-	PyMysqlForHelp,
-	MysqlConnectorPythonForHelp,
-	MysqlConnectorJavaForHelp,
-	GoMysqlDriverForHelp,
-	NodeMysql2ForHelp,
-	Mysql2RubyForHelp,
-	MysqliForHelp,
-	MysqlRustForHelp,
+	LibMysqlClientInputName,
+	MysqlClientInputName,
+	PyMysqlInputName,
+	MysqlConnectorPythonInputName,
+	MysqlConnectorJavaInputName,
+	GoMysqlDriverInputName,
+	NodeMysql2InputName,
+	Mysql2RubyInputName,
+	MysqliInputName,
+	MysqlRustInputName,
 
 	// ORM
-	MybatisForHelp,
-	HibernateForHelp,
-	SpringBootForHelp,
-	GormForHelp,
-	PrismaForHelp,
-	SequelizeForHelp,
-	DjangoForHelp,
-	SqlAlchemyForHelp,
-	ActiveRecordForHelp,
+	MybatisInputName,
+	HibernateInputName,
+	SpringBootInputName,
+	GormInputName,
+	PrismaInputName,
+	SequelizeInputName,
+	DjangoInputName,
+	SqlAlchemyInputName,
+	ActiveRecordInputName,
 }
 
 var clientsForInteractiveMap = map[string]string{
 	// pure parameter
-	GeneralParameterForInteractive: GeneralParameterID,
+	GeneralParameterDisplayName: GeneralParameterID,
 
 	// CLI
-	MysqlCliForInteractive: MysqlCliID,
-	MyCliForInteractive:    MyCliID,
+	MysqlCliDisplayName: MysqlCliID,
+	MyCliDisplayName:    MyCliID,
 
 	// driver
-	LibMysqlClientForInteractive:       LibMysqlClientID,
-	MysqlClientForInteractive:          MysqlClientID,
-	PyMysqlForInteractive:              PyMysqlID,
-	MysqlConnectorPythonForInteractive: MysqlConnectorPythonID,
-	MysqlConnectorJavaForInteractive:   MysqlConnectorJavaID,
-	GoMysqlDriverForInteractive:        GoMysqlDriverID,
-	NodeMysql2ForInteractive:           NodeMysql2ID,
-	Mysql2RubyForInteractive:           Mysql2RubyID,
-	MysqliForInteractive:               MysqliID,
-	MysqlRustForInteractive:            MysqlRustID,
+	LibMysqlClientDisplayName:       LibMysqlClientID,
+	MysqlClientDisplayName:          MysqlClientID,
+	PyMysqlDisplayName:              PyMysqlID,
+	MysqlConnectorPythonDisplayName: MysqlConnectorPythonID,
+	MysqlConnectorJavaDisplayName:   MysqlConnectorJavaID,
+	GoMysqlDriverDisplayName:        GoMysqlDriverID,
+	NodeMysql2DisplayName:           NodeMysql2ID,
+	Mysql2RubyDisplayName:           Mysql2RubyID,
+	MysqliDisplayName:               MysqliID,
+	MysqlRustDisplayName:            MysqlRustID,
 
 	// ORM
-	MybatisForInteractive:      MybatisID,
-	HibernateForInteractive:    HibernateID,
-	SpringBootForInteractive:   SpringBootID,
-	GormForInteractive:         GormID,
-	PrismaForInteractive:       PrismaID,
-	SequelizeForInteractive:    SequelizeID,
-	DjangoForInteractive:       DjangoID,
-	SqlAlchemyForInteractive:   SQLAlchemyID,
-	ActiveRecordForInteractive: ActiveRecordID,
+	MybatisDisplayName:      MybatisID,
+	HibernateDisplayName:    HibernateID,
+	SpringBootDisplayName:   SpringBootID,
+	GormDisplayName:         GormID,
+	PrismaDisplayName:       PrismaID,
+	SequelizeDisplayName:    SequelizeID,
+	DjangoDisplayName:       DjangoID,
+	SqlAlchemyDisplayName:   SQLAlchemyID,
+	ActiveRecordDisplayName: ActiveRecordID,
 }
 
 var clientsForHelpMap = map[string]string{
 	// pure parameter
-	GeneralParameterForHelp: GeneralParameterID,
+	GeneralParameterInputName: GeneralParameterID,
 
 	// CLI
-	MysqlCliForHelp: MysqlCliID,
-	MyCliForHelp:    MyCliID,
+	MysqlCliInputName: MysqlCliID,
+	MyCliInputName:    MyCliID,
 
 	// driver
-	LibMysqlClientForHelp:       LibMysqlClientID,
-	MysqlClientForHelp:          MysqlClientID,
-	PyMysqlForHelp:              PyMysqlID,
-	MysqlConnectorPythonForHelp: MysqlConnectorPythonID,
-	MysqlConnectorJavaForHelp:   MysqlConnectorJavaID,
-	GoMysqlDriverForHelp:        GoMysqlDriverID,
-	NodeMysql2ForHelp:           NodeMysql2ID,
-	Mysql2RubyForHelp:           Mysql2RubyID,
-	MysqliForHelp:               MysqliID,
-	MysqlRustForHelp:            MysqlRustID,
+	LibMysqlClientInputName:       LibMysqlClientID,
+	MysqlClientInputName:          MysqlClientID,
+	PyMysqlInputName:              PyMysqlID,
+	MysqlConnectorPythonInputName: MysqlConnectorPythonID,
+	MysqlConnectorJavaInputName:   MysqlConnectorJavaID,
+	GoMysqlDriverInputName:        GoMysqlDriverID,
+	NodeMysql2InputName:           NodeMysql2ID,
+	Mysql2RubyInputName:           Mysql2RubyID,
+	MysqliInputName:               MysqliID,
+	MysqlRustInputName:            MysqlRustID,
 
 	// ORM
-	MybatisForHelp:      MybatisID,
-	HibernateForHelp:    HibernateID,
-	SpringBootForHelp:   SpringBootID,
-	GormForHelp:         GormID,
-	PrismaForHelp:       PrismaID,
-	SequelizeForHelp:    SequelizeID,
-	DjangoForHelp:       DjangoID,
-	SqlAlchemyForHelp:   SQLAlchemyID,
-	ActiveRecordForHelp: ActiveRecordID,
+	MybatisInputName:      MybatisID,
+	HibernateInputName:    HibernateID,
+	SpringBootInputName:   SpringBootID,
+	GormInputName:         GormID,
+	PrismaInputName:       PrismaID,
+	SequelizeInputName:    SequelizeID,
+	DjangoInputName:       DjangoID,
+	SqlAlchemyInputName:   SQLAlchemyID,
+	ActiveRecordInputName: ActiveRecordID,
 }
 
 // Display operating system orderly in interactive mode
