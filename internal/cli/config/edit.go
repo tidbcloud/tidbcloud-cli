@@ -17,9 +17,12 @@ package config
 import (
 	"fmt"
 	"os"
+	"runtime"
 
+	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 
+	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -28,13 +31,18 @@ import (
 
 const defaultEditor = "vi"
 
-func EditCmd() *cobra.Command {
+func EditCmd(h *internal.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:   "edit",
 		Short: "Open the config file with the default text editor",
 		Example: fmt.Sprintf(`  To open the config
   $ %[1]s config edit`, config.CliName),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if runtime.GOOS == "windows" {
+				fmt.Fprintln(h.IOStreams.Out, color.YellowString("Currently, opening config file is not supported in Windows.\nThe config file path is %s", viper.ConfigFileUsed()))
+				return nil
+			}
+
 			c := exec.Command(defaultEditor, viper.ConfigFileUsed()) //nolint:gosec
 			c.Stdin = os.Stdin
 			c.Stdout = os.Stdout
