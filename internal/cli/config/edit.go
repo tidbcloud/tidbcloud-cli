@@ -39,7 +39,7 @@ func EditCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s config edit`, config.CliName),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if runtime.GOOS == "windows" {
-				fmt.Fprintln(h.IOStreams.Out, color.GreenString("Currently, open config file is not supported in Windows.\nThe config file path is %s", viper.ConfigFileUsed()))
+				fmt.Fprintln(h.IOStreams.Out, color.YellowString("Currently, opening config file is not supported in Windows.\nThe config file path is %s", viper.ConfigFileUsed()))
 				return nil
 			}
 
