@@ -328,7 +328,7 @@ func waitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *string, uplo
 
 func spinnerWaitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *string, uploadFile *os.File, size int64) error {
 	task := func() tea.Msg {
-		errChan := make(chan error)
+		errChan := make(chan error, 1)
 
 		go func() {
 			err := d.PreSignedUrlUpload(url, uploadFile, size)
@@ -342,6 +342,7 @@ func spinnerWaitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *strin
 		}()
 
 		ticker := time.NewTicker(1 * time.Second)
+		defer ticker.Stop()
 		timer := time.After(2 * time.Minute)
 		for {
 			select {

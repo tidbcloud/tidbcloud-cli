@@ -104,7 +104,7 @@ func updateAndWaitReady(h *internal.Helper, newRelease *github.ReleaseInfo) erro
 
 func updateAndSpinnerWait(h *internal.Helper, newRelease *github.ReleaseInfo) error {
 	task := func() tea.Msg {
-		res := make(chan error)
+		res := make(chan error, 1)
 
 		go func() {
 			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
@@ -133,6 +133,7 @@ func updateAndSpinnerWait(h *internal.Helper, newRelease *github.ReleaseInfo) er
 		}()
 
 		ticker := time.NewTicker(1 * time.Second)
+		defer ticker.Stop()
 		for {
 			select {
 			case err := <-res:

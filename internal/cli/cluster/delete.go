@@ -156,6 +156,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			ticker := time.NewTicker(1 * time.Second)
+			defer ticker.Stop()
 			timer := time.After(2 * time.Minute)
 			for {
 				select {
