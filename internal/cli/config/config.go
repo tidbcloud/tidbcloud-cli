@@ -31,7 +31,7 @@ func ConfigCmd(h *internal.Helper) *cobra.Command {
 	configCmd.AddCommand(DeleteCmd(h))
 	configCmd.AddCommand(SetCmd(h))
 	configCmd.AddCommand(UseCmd(h))
-	configCmd.AddCommand(EditCmd())
+	configCmd.AddCommand(EditCmd(h))
 	configCmd.AddCommand(DescribeCmd(h))
 	return configCmd
 }
