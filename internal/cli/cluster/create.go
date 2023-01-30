@@ -294,9 +294,10 @@ func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, projectID s
 		return errors.Trace(err)
 	}
 	newClusterID := *createClusterResult.GetPayload().ID
-	ticker := time.NewTicker(1 * time.Second)
 
 	fmt.Fprintln(h.IOStreams.Out, "... Waiting for cluster to be ready")
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
 	timer := time.After(2 * time.Minute)
 	for {
 		select {
@@ -328,6 +329,7 @@ func CreateAndSpinnerWait(d cloud.TiDBCloudClient, projectID string, clusterDefB
 		newClusterID := *createClusterResult.GetPayload().ID
 
 		ticker := time.NewTicker(1 * time.Second)
+		defer ticker.Stop()
 		timer := time.After(2 * time.Minute)
 		for {
 			select {
