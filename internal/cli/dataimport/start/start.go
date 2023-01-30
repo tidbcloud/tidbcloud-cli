@@ -74,7 +74,7 @@ func waitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.C
 
 func spinnerWaitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.CreateImportParams) error {
 	task := func() tea.Msg {
-		errChan := make(chan error)
+		errChan := make(chan error, 1)
 
 		go func() {
 			res, err := d.CreateImport(params)
@@ -88,6 +88,7 @@ func spinnerWaitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *imp
 		}()
 
 		ticker := time.NewTicker(1 * time.Second)
+		defer ticker.Stop()
 		timer := time.After(2 * time.Minute)
 		for {
 			select {
