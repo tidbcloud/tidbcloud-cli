@@ -32,18 +32,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func UpdateCmd(h *internal.Helper, ver string) *cobra.Command {
+func UpdateCmd(h *internal.Helper) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "update",
 		Short: "Update the CLI to the latest version",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// If is managed by TiUP, we should disable the update command since binpath is different.
-			if h.IsUnderTiUP {
+			if config.IsUnderTiUP {
 				return errors.New("the CLI is managed by TiUP, please update it by `tiup update cloud`")
 			}
 
 			// When update CLI, we don't need to check the version again after command executes.
-			newRelease, err := github.CheckForUpdate(config.Repo, ver, false)
+			newRelease, err := github.CheckForUpdate(config.Repo, false)
 			// If we can't get the latest version, we should update the CLI assuming it's not the latest version.
 			if err != nil {
 				newRelease = &github.ReleaseInfo{

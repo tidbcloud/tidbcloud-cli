@@ -23,6 +23,7 @@ generate-mocks: ## Generate mock objects
 	@echo "==> Generating mock objects"
 	go install github.com/vektra/mockery/v2@latest
 	mockery --name TiDBCloudClient --recursive --output=internal/mock --outpkg mock --filename api_client.go
+	mockery --name EventsSender --recursive --output=internal/mock --outpkg mock --filename sender.go
 
 # Required to install go-swagger https://goswagger.io/install.html
 .PHONY: generate-import-client

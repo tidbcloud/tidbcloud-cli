@@ -21,16 +21,17 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
+	"tidbcloud-cli/internal/version"
 
 	"github.com/spf13/cobra"
 )
 
-func VersionCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
+func VersionCmd(h *internal.Helper) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:    "version",
 		Hidden: true,
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Fprintln(h.IOStreams.Out, Format(ver, commit, buildDate))
+			fmt.Fprintln(h.IOStreams.Out, Format(version.Version, version.Commit, version.Date))
 		},
 	}
 
@@ -39,7 +40,7 @@ func VersionCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Comman
 
 // Format formats a version string with the given information.
 func Format(ver, commit, buildDate string) string {
-	if ver == config.DevVersion && buildDate == "" && commit == "" {
+	if ver == version.DevVersion && buildDate == "" && commit == "" {
 		return fmt.Sprintf("%s version (built from source)", config.CliName)
 	}
 

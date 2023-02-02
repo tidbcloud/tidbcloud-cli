@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"tidbcloud-cli/internal/config"
+	ver "tidbcloud-cli/internal/version"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/hashicorp/go-version"
@@ -41,7 +42,7 @@ type StateEntry struct {
 // CheckForUpdate checks for updates and returns the latest release info if there is a newer version.
 // For checking after every command, we should use stateEntry to avoid checking too frequently.
 // For checking when using `update`, we should use forceCheck to ignore the stateEntry.
-func CheckForUpdate(repo, currentVersion string, withRateLimit bool) (*ReleaseInfo, error) {
+func CheckForUpdate(repo string, withRateLimit bool) (*ReleaseInfo, error) {
 	home, _ := os.UserHomeDir()
 	stateFilePath := filepath.Join(home, config.HomePath, "state.yml")
 	if withRateLimit {
@@ -63,7 +64,7 @@ func CheckForUpdate(repo, currentVersion string, withRateLimit bool) (*ReleaseIn
 		}
 	}
 
-	if versionGreaterThan(releaseInfo.Version, currentVersion) {
+	if versionGreaterThan(releaseInfo.Version, ver.Version) {
 		return releaseInfo, nil
 	}
 

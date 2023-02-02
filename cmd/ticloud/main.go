@@ -20,17 +20,10 @@ import (
 	"os/signal"
 
 	"tidbcloud-cli/internal/cli"
-	"tidbcloud-cli/internal/config"
-)
-
-var (
-	version = config.DevVersion
-	commit  string
-	date    string
 )
 
 func main() {
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
-	defer cancel()
-	cli.Execute(ctx, version, commit, date)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+	cli.Execute(ctx)
 }

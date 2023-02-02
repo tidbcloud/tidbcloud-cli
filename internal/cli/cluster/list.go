@@ -62,6 +62,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 			var pID string
 			if opts.interactive {
+				cmd.Annotations = map[string]string{"interactive": "true"}
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}

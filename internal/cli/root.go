@@ -30,10 +30,12 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/iostream"
+	"tidbcloud-cli/internal/log"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/service/github"
-	"tidbcloud-cli/internal/util"
+	"tidbcloud-cli/internal/telemetry"
+	ver "tidbcloud-cli/internal/version"
 
 	"github.com/fatih/color"
 	"github.com/juju/errors"
@@ -41,28 +43,16 @@ import (
 	"github.com/spf13/viper"
 )
 
-func Execute(ctx context.Context, ver, commit, buildDate string) {
-	c := &config.Config{
-		ActiveProfile: "",
-	}
-
-	var binpath string
-	if exepath, err := os.Executable(); err == nil {
-		binpath = exepath
-	}
-
-	isUnderTiUP := util.IsUnderTiUP(binpath)
-	config.SetCliName(isUnderTiUP)
-
+func Execute(ctx context.Context) {
 	h := &internal.Helper{
 		Client: func() (cloud.TiDBCloudClient, error) {
-			publicKey, privateKey := util.GetAccessKeys(c.ActiveProfile)
-			apiUrl := util.GetApiUrl(c.ActiveProfile)
+			publicKey, privateKey := config.GePublicKey(), config.GePrivateKey()
+			apiUrl := config.GetApiUrl()
 			// If the user has not set the api url, use the default one.
 			if apiUrl == "" {
 				apiUrl = cloud.DefaultApiUrl
 			}
-			delegate, err := cloud.NewClientDelegate(publicKey, privateKey, apiUrl, ver)
+			delegate, err := cloud.NewClientDelegate(publicKey, privateKey, apiUrl)
 			if err != nil {
 				return nil, err
 			}
@@ -70,39 +60,33 @@ func Execute(ctx context.Context, ver, commit, buildDate string) {
 		},
 		QueryPageSize: internal.DefaultPageSize,
 		IOStreams:     iostream.System(),
-		Config:        c,
-		IsUnderTiUP:   isUnderTiUP,
 	}
 
-	rootCmd := RootCmd(h, ver, commit, buildDate)
+	rootCmd := RootCmd(h)
 	initConfig()
 
-	err := rootCmd.ExecuteContext(ctx)
-	if err != nil {
+	ctx = telemetry.NewTelemetryContext(ctx)
+	if err := rootCmd.ExecuteContext(ctx); err != nil {
+		telemetry.FinishTrackingCommand(telemetry.TrackOptions{Err: err})
 		fmt.Fprintf(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
 		os.Exit(1)
 	}
 }
 
-func RootCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
+func RootCmd(h *internal.Helper) *cobra.Command {
 	updateMessageChan := make(chan *github.ReleaseInfo)
+	var debugMode bool
+
 	var rootCmd = &cobra.Command{
 		Use:   config.CliName,
 		Short: "CLI tool to manage TiDB Cloud",
 		Long:  fmt.Sprintf("%s is a CLI library for communicating with TiDB Cloud's API.", config.CliName),
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-			if shouldCheckNewRelease(cmd) {
-				go func() {
-					rel, _ := checkForUpdate(ver, h.IOStreams.CanPrompt)
-					updateMessageChan <- rel
-				}()
+			if debugMode {
+				log.InitLogger("DEBUG")
+			} else {
+				log.InitLogger("WARN")
 			}
-
-			var flagNoColor = cmd.Flags().Lookup(flag.NoColor)
-			if flagNoColor != nil && flagNoColor.Changed {
-				color.NoColor = true
-			}
-
 			profile, err := cmd.Flags().GetString(flag.Profile)
 			if err != nil {
 				return errors.Trace(err)
@@ -113,13 +97,27 @@ func RootCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
 					return errors.Trace(err)
 				}
 
-				h.Config.ActiveProfile = profile
+				config.SetActiveProfile(profile)
 			} else {
-				h.Config.ActiveProfile = viper.GetString(prop.CurProfile)
+				config.SetActiveProfile(viper.GetString(prop.CurProfile))
+			}
+
+			telemetry.StartTrackingCommand(cmd, args)
+
+			if shouldCheckNewRelease(cmd) {
+				go func() {
+					rel, _ := checkForUpdate(h.IOStreams.CanPrompt)
+					updateMessageChan <- rel
+				}()
+			}
+
+			var flagNoColor = cmd.Flags().Lookup(flag.NoColor)
+			if flagNoColor != nil && flagNoColor.Changed {
+				color.NoColor = true
 			}
 
 			if shouldCheckAuth(cmd) {
-				err := util.CheckAuth(h.Config.ActiveProfile)
+				err := config.CheckAuth()
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -132,16 +130,18 @@ func RootCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
 				if newRelease != nil {
 					fmt.Fprintf(h.IOStreams.Out, fmt.Sprintf("\n%s %s → %s\n",
 						color.YellowString("A new version of %s is available:", config.CliName),
-						color.CyanString(ver),
+						color.CyanString(ver.Version),
 						color.CyanString(newRelease.Version)))
 
-					if h.IsUnderTiUP {
+					if config.IsUnderTiUP {
 						fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use `tiup update cloud` to update to the latest version"))
 					} else {
 						fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use `ticloud update` to update to the latest version"))
 					}
 				}
 			}
+
+			telemetry.FinishTrackingCommand(telemetry.TrackOptions{})
 		},
 		SilenceUsage:  true,
 		SilenceErrors: true,
@@ -150,10 +150,11 @@ func RootCmd(h *internal.Helper, ver, commit, buildDate string) *cobra.Command {
 	rootCmd.AddCommand(cluster.ClusterCmd(h))
 	rootCmd.AddCommand(configCmd.ConfigCmd(h))
 	rootCmd.AddCommand(project.ProjectCmd(h))
-	rootCmd.AddCommand(version.VersionCmd(h, ver, commit, buildDate))
-	rootCmd.AddCommand(update.UpdateCmd(h, ver))
+	rootCmd.AddCommand(version.VersionCmd(h))
+	rootCmd.AddCommand(update.UpdateCmd(h))
 	rootCmd.AddCommand(dataimport.ImportCmd(h))
 
+	rootCmd.PersistentFlags().BoolVarP(&debugMode, flag.Debug, flag.DebugShort, false, "Enable debug mode")
 	rootCmd.PersistentFlags().Bool(flag.NoColor, false, "Disable color output")
 	rootCmd.PersistentFlags().StringP(flag.Profile, flag.ProfileShort, "", "Profile to use from your configuration file")
 	return rootCmd
@@ -187,12 +188,12 @@ func shouldCheckAuth(cmd *cobra.Command) bool {
 	return true
 }
 
-func checkForUpdate(currentVersion string, isTerminal bool) (*github.ReleaseInfo, error) {
-	if !isTerminal || currentVersion == config.DevVersion {
+func checkForUpdate(isTerminal bool) (*github.ReleaseInfo, error) {
+	if !isTerminal || ver.Version == ver.DevVersion {
 		return nil, nil
 	}
 
-	return github.CheckForUpdate(config.Repo, currentVersion, true)
+	return github.CheckForUpdate(config.Repo, true)
 }
 
 // initConfig reads in config file and ENV variables if set.
