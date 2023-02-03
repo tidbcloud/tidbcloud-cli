@@ -28,7 +28,6 @@ import (
 	"github.com/pingcap/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	"go.uber.org/zap"
 )
 
 const InteractiveMode = "interactive"
@@ -48,22 +47,6 @@ func WithInteractive(cmd *cobra.Command) eventOpt {
 		} else {
 			event.Properties[InteractiveMode] = false
 		}
-	}
-}
-
-func withHelpCommand(cmd *cobra.Command, args []string) eventOpt {
-	return func(event Event) {
-		if cmd.Name() != "help" {
-			return
-		}
-
-		helpCmd, _, err := cmd.Root().Find(args)
-		if err != nil {
-			log.Debug("telemetry: failed to find help command", zap.Error(err))
-			return
-		}
-
-		event.Properties["help_command"] = strings.ReplaceAll(helpCmd.CommandPath(), " ", "-")
 	}
 }
 

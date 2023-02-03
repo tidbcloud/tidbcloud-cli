@@ -31,7 +31,6 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
@@ -217,43 +216,6 @@ func (suite *EventSuite) TestWithError() {
 	a := require.New(suite.T())
 	a.Equal("ERROR", e.Properties["result"])
 	a.Equal("test", e.Properties["error"])
-}
-
-func (suite *EventSuite) TestWithHelpCommand() {
-	testCmd := &cobra.Command{
-		Use: "test",
-	}
-	rootCmd := &cobra.Command{
-		Use: "root",
-	}
-	rootCmd.AddCommand(testCmd)
-	rootCmd.InitDefaultHelpCmd()
-	helpCmd := rootCmd.Commands()[0]
-
-	args := []string{"test"}
-
-	e := newEvent(withHelpCommand(helpCmd, args))
-
-	assert.Equal(suite.T(), "root-test", e.Properties["help_command"])
-}
-
-func (suite *EventSuite) TestWithHelpCommand_NotFound() {
-	testCmd := &cobra.Command{
-		Use: "test",
-	}
-	rootCmd := &cobra.Command{
-		Use: "root",
-	}
-	rootCmd.AddCommand(testCmd)
-	rootCmd.InitDefaultHelpCmd()
-	helpCmd := rootCmd.Commands()[0]
-
-	args := []string{"test2"}
-
-	e := newEvent(withHelpCommand(helpCmd, args))
-
-	_, ok := e.Properties["help_command"]
-	assert.False(suite.T(), ok)
 }
 
 func TestEventSuite(t *testing.T) {

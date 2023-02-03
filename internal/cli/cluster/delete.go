@@ -23,6 +23,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/telemetry"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -90,7 +91,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			var projectID string
 			var clusterID string
 			if opts.interactive {
-				cmd.Annotations = map[string]string{"interactiveMode": "true"}
+				cmd.Annotations = map[string]string{telemetry.InteractiveMode: "true"}
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
