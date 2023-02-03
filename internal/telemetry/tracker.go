@@ -65,7 +65,7 @@ func newTracker(cmd *cobra.Command, args []string) (*tracker, error) {
 }
 
 func (t *tracker) defaultCommandOptions() []eventOpt {
-	return []eventOpt{withCommandPath(t.cmd), WithInteractive(t.cmd), withHelpCommand(t.cmd, t.args), withFlags(t.cmd), withVersion(), withOS(), withAuthMethod(), withProjectID(t.cmd), withTerminal(), withInstaller(t.installer)}
+	return []eventOpt{withCommandPath(t.cmd), WithInteractive(t.cmd), withFlags(t.cmd), withVersion(), withOS(), withAuthMethod(), withProjectID(t.cmd), withTerminal(), withInstaller(t.installer)}
 }
 
 func (t *tracker) trackCommand(data TrackOptions) error {
