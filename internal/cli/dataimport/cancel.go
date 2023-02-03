@@ -22,6 +22,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/telemetry"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
@@ -88,7 +89,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if opts.interactive {
-				cmd.Annotations = map[string]string{"interactive": "true"}
+				cmd.Annotations = map[string]string{telemetry.InteractiveMode: "true"}
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}

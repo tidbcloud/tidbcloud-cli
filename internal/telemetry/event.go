@@ -31,6 +31,8 @@ import (
 	"go.uber.org/zap"
 )
 
+const InteractiveMode = "interactive"
+
 type Event struct {
 	Timestamp  time.Time              `json:"timestamp"`
 	Source     string                 `json:"source"`
@@ -41,10 +43,10 @@ type eventOpt func(Event)
 
 func WithInteractive(cmd *cobra.Command) eventOpt {
 	return func(event Event) {
-		if cmd.Annotations["interactive"] == "true" {
-			event.Properties["interactive"] = true
+		if cmd.Annotations[InteractiveMode] == "true" {
+			event.Properties[InteractiveMode] = true
 		} else {
-			event.Properties["interactive"] = false
+			event.Properties[InteractiveMode] = false
 		}
 	}
 }

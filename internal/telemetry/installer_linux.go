@@ -29,6 +29,7 @@ func readInstaller() *string {
 		return &s
 	}
 
+	// Check for deb/rpm installer
 	if b, err := os.ReadFile("/etc/ticloud/installer"); err == nil {
 		s := string(b)
 		return &s

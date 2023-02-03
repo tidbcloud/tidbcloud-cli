@@ -19,6 +19,8 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/juju/errors"
+	"github.com/pingcap/log"
+	"go.uber.org/zap"
 )
 
 const url = "https://telemetry.pingca.com/api/v1/ticloud/report"
@@ -41,6 +43,7 @@ func NewSender() *Sender {
 }
 
 func (s *Sender) SendEvents(body interface{}) error {
+	log.Debug("sending telemetry events", zap.Any("body", body))
 	response, err := s.client.
 		R().SetBody(body).
 		Post(url)

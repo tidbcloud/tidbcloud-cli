@@ -49,6 +49,7 @@ func ValidateProfile(profileName string) error {
 func GetAllProfiles() ([]string, error) {
 	s := viper.AllSettings()
 	keys := make([]string, 0, len(s))
+	// Profile names and global properties are at the same level in the config file, filter out global properties.
 	for k := range s {
 		if !util.ElemInSlice(prop.GlobalProperties(), k) {
 			keys = append(keys, k)

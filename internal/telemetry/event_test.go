@@ -81,19 +81,19 @@ func (suite *EventSuite) TestWithInteractive() {
 
 	e := newEvent(WithInteractive(testCmd))
 	a := require.New(suite.T())
-	a.Equal(false, e.Properties["interactive"])
+	a.Equal(false, e.Properties[InteractiveMode])
 
 	testCmd = &cobra.Command{
 		Use: "test",
 		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Annotations = map[string]string{"interactive": "true"}
+			cmd.Annotations = map[string]string{InteractiveMode: "true"}
 		},
 	}
 
 	testCmd.SetArgs([]string{"t"})
 	cmd, _ := testCmd.ExecuteContextC(NewTelemetryContext(context.Background()))
 	e = newEvent(WithInteractive(cmd))
-	a.Equal(true, e.Properties["interactive"])
+	a.Equal(true, e.Properties[InteractiveMode])
 }
 
 func (suite *EventSuite) TestWithCommandPathAndAlias() {

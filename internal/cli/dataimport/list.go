@@ -23,6 +23,7 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/telemetry"
 	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
 	"github.com/dustin/go-humanize"
@@ -88,7 +89,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if opts.interactive {
-				cmd.Annotations = map[string]string{"interactive": "true"}
+				cmd.Annotations = map[string]string{telemetry.InteractiveMode: "true"}
 
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")

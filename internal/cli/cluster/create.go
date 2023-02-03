@@ -23,6 +23,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
@@ -110,7 +111,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			var rootPassword string
 			var projectID string
 			if opts.interactive {
-				cmd.Annotations = map[string]string{"interactive": "true"}
+				cmd.Annotations = map[string]string{telemetry.InteractiveMode: "true"}
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
