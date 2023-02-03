@@ -52,8 +52,9 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var cancelCmd = &cobra.Command{
-		Use:   "cancel",
-		Short: "Cancel a data import task",
+		Use:         "cancel",
+		Short:       "Cancel a data import task",
+		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Cancel an import task in interactive mode:
   $ %[1]s import cancel
 
@@ -89,7 +90,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if opts.interactive {
-				cmd.Annotations = map[string]string{telemetry.InteractiveMode: "true"}
+				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
@@ -122,6 +123,8 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cmd.Flag(flag.ClusterID).Value.String()
 				importID = cmd.Flag(flag.ImportID).Value.String()
 			}
+
+			cmd.Annotations[telemetry.ProjectID] = projectID
 
 			if !force {
 				if !h.IOStreams.CanPrompt {

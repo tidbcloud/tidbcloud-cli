@@ -24,7 +24,6 @@ import (
 	"time"
 
 	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/util"
 	"tidbcloud-cli/internal/version"
@@ -176,18 +175,18 @@ func (suite *EventSuite) TestWithAuthMethod_apiKey() {
 	a.Equal(e.Properties["auth_method"], "api_key")
 }
 
-func (suite *EventSuite) TestWithProjectID_Flag() {
+func (suite *EventSuite) TestWithProjectID() {
+	const projectID = "test"
 	cmd := &cobra.Command{
-		Use: "test-command",
+		Use:         "test-command",
+		Annotations: make(map[string]string),
 		Run: func(cmd *cobra.Command, args []string) {
 			time.Sleep(10 * time.Millisecond)
+			cmd.Annotations[ProjectID] = projectID
 		},
 	}
-
-	const projectID = "test"
-	var p string
-	cmd.Flags().StringVarP(&p, flag.ProjectID, "", "", "")
-	_ = cmd.ParseFlags([]string{"--" + flag.ProjectID, projectID})
+	cmd.SetArgs([]string{})
+	_ = cmd.ExecuteContext(NewTelemetryContext(context.Background()))
 
 	e := newEvent(withProjectID(cmd))
 

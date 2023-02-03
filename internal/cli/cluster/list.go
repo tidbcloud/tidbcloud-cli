@@ -39,8 +39,9 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var listCmd = &cobra.Command{
-		Use:   "list <project-id>",
-		Short: "List all clusters in a project",
+		Use:         "list <project-id>",
+		Short:       "List all clusters in a project",
+		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  List all clusters in the project(interactive mode):
   $ %[1]s cluster list
 
@@ -63,7 +64,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 			var pID string
 			if opts.interactive {
-				cmd.Annotations = map[string]string{telemetry.InteractiveMode: "true"}
+				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
@@ -77,6 +78,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			} else {
 				pID = args[0]
 			}
+
+			cmd.Annotations[telemetry.ProjectID] = pID
 
 			total, items, err := cloud.RetrieveClusters(pID, h.QueryPageSize, d)
 			if err != nil {

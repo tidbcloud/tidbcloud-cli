@@ -21,7 +21,6 @@ import (
 	"time"
 
 	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/version"
 
 	"github.com/mattn/go-isatty"
@@ -30,7 +29,10 @@ import (
 	"github.com/spf13/pflag"
 )
 
-const InteractiveMode = "interactive"
+const (
+	InteractiveMode = "interactive"
+	ProjectID       = "project-id"
+)
 
 type Event struct {
 	Timestamp  time.Time              `json:"timestamp"`
@@ -112,10 +114,8 @@ func withAuthMethod() eventOpt {
 
 func withProjectID(cmd *cobra.Command) eventOpt {
 	return func(event Event) {
-		fromFlag, _ := cmd.Flags().GetString(flag.ProjectID)
-
-		if fromFlag != "" {
-			event.Properties["project_id"] = fromFlag
+		if id, found := cmd.Annotations[ProjectID]; found == true {
+			event.Properties["project_id"] = id
 			return
 		}
 	}

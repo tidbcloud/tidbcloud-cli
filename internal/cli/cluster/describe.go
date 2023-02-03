@@ -46,9 +46,10 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var describeCmd = &cobra.Command{
-		Use:     "describe",
-		Short:   "Describe a cluster",
-		Aliases: []string{"get"},
+		Use:         "describe",
+		Short:       "Describe a cluster",
+		Aliases:     []string{"get"},
+		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Get the cluster info in interactive mode:
   $ %[1]s cluster describe
 
@@ -84,7 +85,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 			var projectID string
 			var clusterID string
 			if opts.interactive {
-				cmd.Annotations = map[string]string{telemetry.InteractiveMode: "true"}
+				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
@@ -115,6 +116,8 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				projectID = pID
 				clusterID = cID
 			}
+
+			cmd.Annotations[telemetry.ProjectID] = projectID
 
 			params := clusterApi.NewGetClusterParams().
 				WithProjectID(projectID).

@@ -53,8 +53,9 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 
 	var force bool
 	var deleteCmd = &cobra.Command{
-		Use:   "delete",
-		Short: "Delete a cluster from your project",
+		Use:         "delete",
+		Short:       "Delete a cluster from your project",
+		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Delete a cluster in interactive mode:
   $ %[1]s cluster delete
 
@@ -91,7 +92,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			var projectID string
 			var clusterID string
 			if opts.interactive {
-				cmd.Annotations = map[string]string{telemetry.InteractiveMode: "true"}
+				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
@@ -122,6 +123,8 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				projectID = pID
 				clusterID = cID
 			}
+
+			cmd.Annotations[telemetry.ProjectID] = projectID
 
 			if !force {
 				if !h.IOStreams.CanPrompt {
