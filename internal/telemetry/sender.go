@@ -23,7 +23,7 @@ import (
 	"go.uber.org/zap"
 )
 
-const url = "https://telemetry.pingca.com/api/v1/ticloud/report"
+const url = "https://telemetry.pingcap.com/api/v1/ticloud/report"
 
 type EventsSender interface {
 	SendEvents(body interface{}) error
