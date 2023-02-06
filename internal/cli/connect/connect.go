@@ -230,8 +230,10 @@ func ExecuteSqlDialog(clusterType, userName, host, port string) error {
 			return err
 		}
 		dsn = fmt.Sprintf("mysql://%s@%s:%s/test?tls=tidb", userName, host, port)
-	} else {
+	} else if clusterType == DEDICATED {
 		dsn = fmt.Sprintf("mysql://%s@%s:%s/test?tls=skip-verify", userName, host, port)
+	} else {
+		return fmt.Errorf("unsupproted cluster type: %s", clusterType)
 	}
 
 	dsn, err = h.Password(dsn)
