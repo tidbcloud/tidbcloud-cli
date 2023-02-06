@@ -114,7 +114,7 @@ func withAuthMethod() eventOpt {
 
 func withProjectID(cmd *cobra.Command) eventOpt {
 	return func(event Event) {
-		if id, found := cmd.Annotations[ProjectID]; found == true {
+		if id, found := cmd.Annotations[ProjectID]; found {
 			event.Properties["project_id"] = id
 			return
 		}
