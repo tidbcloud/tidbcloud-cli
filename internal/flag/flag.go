@@ -44,4 +44,6 @@ const (
 	TargetDatabase    string = "target-database"
 	TargetTable       string = "target-table"
 	TrimLastSeparator string = "trim-last-separator"
+	User              string = "user"
+	UserShort         string = "u"
 )
