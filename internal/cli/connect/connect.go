@@ -64,16 +64,16 @@ func ConnectCmd(h *internal.Helper) *cobra.Command {
 
 	var connectCmd = &cobra.Command{
 		Use:   "connect",
-		Short: "Connect a cluster",
-		Long: `Connect a cluster; the connection forces the ANSI SQL mode for the session.
+		Short: "Connect to a TiDB Cloud cluster",
+		Long: `Connect to a TiDB Cloud cluster; the connection forces the ANSI SQL mode for the session.
 You can get more information about the ANSI SQL mode from https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_ansi`,
-		Example: fmt.Sprintf(`  Connect to the cluster in interactive mode:
+		Example: fmt.Sprintf(`  Connect to the TiDB Cloud cluster in interactive mode:
   $ %[1]s connect
 
-  Use the default user to connect the cluster  in non-interactive mode:
+  Use the default user to connect to the TiDB Cloud cluster in non-interactive mode:
   $ %[1]s connect -p <project-id> -c <cluster-id>
 
-  Use a apecific user to connect the cluster in non-interactive mode:
+  Use a specific user to connect to the TiDB Cloud cluster in non-interactive mode:
   $ %[1]s connect -p <project-id> -c <cluster-id> -u <user-name>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -201,7 +201,7 @@ You can get more information about the ANSI SQL mode from https://dev.mysql.com/
 
 	connectCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The project ID of the cluster")
 	connectCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster")
-	connectCmd.Flags().StringP(flag.User, flag.UserShort, "", "User for login if not using the default user")
+	connectCmd.Flags().StringP(flag.User, flag.UserShort, "", "The user for login if not using the default user")
 	return connectCmd
 }
 
