@@ -15,6 +15,7 @@
 package telemetry
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/go-resty/resty/v2"
@@ -26,7 +27,7 @@ import (
 const url = "https://telemetry.pingcap.com/api/v1/ticloud/report"
 
 type EventsSender interface {
-	SendEvents(body interface{}) error
+	SendEvent(event interface{}) error
 }
 
 type Sender struct {
@@ -42,14 +43,14 @@ func NewSender() *Sender {
 	}
 }
 
-func (s *Sender) SendEvents(body interface{}) error {
-	log.Debug("sending telemetry events", zap.Any("body", body))
+func (s *Sender) SendEvent(event interface{}) error {
+	log.Debug("sending telemetry events", zap.Any("event", event))
 	response, err := s.client.
-		R().SetBody(body).
+		R().SetBody(event).
 		Post(url)
 
 	if err != nil {
-		return errors.Annotate(err, "failed to send telemetry events")
+		return fmt.Errorf("failed to send telemetry events: %w", err)
 	}
 
 	if !response.IsSuccess() {

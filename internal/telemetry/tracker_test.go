@@ -17,16 +17,10 @@ package telemetry
 import (
 	"context"
 	"errors"
-	"os"
-	"path"
-	"path/filepath"
 	"testing"
-	"time"
 
-	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/mock"
 
-	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	mockUtils "github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -46,12 +40,10 @@ func TestTrackCommand(t *testing.T) {
 	_ = cmd.ExecuteContext(NewTelemetryContext(context.Background()))
 
 	tracker := &tracker{
-		fs:               afero.NewMemMapFs(),
-		maxCacheFileSize: defaultMaxCacheFileSize,
-		sender:           mockSender,
-		cmd:              cmd,
+		sender: mockSender,
+		cmd:    cmd,
 	}
-	mockSender.On("SendEvents", mockUtils.Anything).Return(nil)
+	mockSender.On("SendEvent", mockUtils.Anything).Return(nil)
 
 	err := tracker.trackCommand(TrackOptions{})
 	mockSender.AssertExpectations(t)
@@ -62,8 +54,6 @@ func TestTrackCommandWithError(t *testing.T) {
 	mockSender := new(mock.EventsSender)
 
 	a := require.New(t)
-	cacheDir, err := os.MkdirTemp(os.TempDir(), config.CliName+"*")
-	a.NoError(err)
 
 	cmd := &cobra.Command{
 		Use: "test-command",
@@ -72,17 +62,14 @@ func TestTrackCommandWithError(t *testing.T) {
 		},
 	}
 	cmd.SetArgs([]string{})
-	err = cmd.ExecuteContext(NewTelemetryContext(context.Background()))
+	err := cmd.ExecuteContext(NewTelemetryContext(context.Background()))
 	a.Error(err)
 
 	tracker := &tracker{
-		fs:               afero.NewMemMapFs(),
-		maxCacheFileSize: defaultMaxCacheFileSize,
-		cacheDir:         cacheDir,
-		sender:           mockSender,
-		cmd:              cmd,
+		sender: mockSender,
+		cmd:    cmd,
 	}
-	mockSender.On("SendEvents", mockUtils.Anything).Return(nil)
+	mockSender.On("SendEvent", mockUtils.Anything).Return(nil)
 
 	err = tracker.trackCommand(TrackOptions{
 		Err: err,
@@ -95,9 +82,7 @@ func TestTrackCommandWithSendError(t *testing.T) {
 	mockSender := new(mock.EventsSender)
 
 	a := require.New(t)
-	cacheDir, err := os.MkdirTemp(os.TempDir(), config.CliName+"*")
-	a.NoError(err)
-	mockSender.On("SendEvents", mockUtils.Anything).Return(errors.New("test send error"))
+	mockSender.On("SendEvent", mockUtils.Anything).Return(errors.New("test send error"))
 
 	cmd := &cobra.Command{
 		Use: "test-command",
@@ -105,111 +90,17 @@ func TestTrackCommandWithSendError(t *testing.T) {
 		},
 	}
 	cmd.SetArgs([]string{})
-	err = cmd.ExecuteContext(NewTelemetryContext(context.Background()))
+	err := cmd.ExecuteContext(NewTelemetryContext(context.Background()))
 	a.NoError(err)
 
 	tracker := &tracker{
-		fs:               afero.NewMemMapFs(),
-		maxCacheFileSize: defaultMaxCacheFileSize,
-		cacheDir:         cacheDir,
-		sender:           mockSender,
-		cmd:              cmd,
+		sender: mockSender,
+		cmd:    cmd,
 	}
 
 	err = tracker.trackCommand(TrackOptions{
 		Err: err,
 	})
 	mockSender.AssertExpectations(t)
-	a.NoError(err)
-
-	// Verify that the file exists
-	filename := filepath.Join(cacheDir, cacheFilename)
-	info, statError := tracker.fs.Stat(filename)
-	a.NoError(statError)
-	// Verify the file name
-	a.Equal(info.Name(), cacheFilename)
-	// Verify that the file contains some data
-	var minExpectedSize int64 = 10
-	a.True(info.Size() > minExpectedSize)
-}
-
-func TestSave(t *testing.T) {
-	a := require.New(t)
-	cacheDir, err := os.MkdirTemp(os.TempDir(), config.CliName+"*")
-	a.NoError(err)
-
-	tracker := &tracker{
-		fs:               afero.NewMemMapFs(),
-		maxCacheFileSize: defaultMaxCacheFileSize,
-		cacheDir:         cacheDir,
-	}
-
-	var properties = map[string]interface{}{
-		"command": "mock-command",
-	}
-	var event = Event{
-		Timestamp:  time.Now(),
-		Source:     config.CliName,
-		Properties: properties,
-	}
-	a.NoError(tracker.save(event))
-	// Verify that the file exists
-	filename := path.Join(cacheDir, cacheFilename)
-	info, statError := tracker.fs.Stat(filename)
-	a.NoError(statError)
-	// Verify the file name
-	a.Equal(info.Name(), cacheFilename)
-	// Verify that the file contains some data
-	var minExpectedSize int64 = 10
-	a.True(info.Size() > minExpectedSize)
-}
-
-func TestSaveOverMaxCacheFileSize(t *testing.T) {
-	a := require.New(t)
-	cacheDir, err := os.MkdirTemp(os.TempDir(), config.CliName+"*")
-	a.NoError(err)
-
-	tracker := &tracker{
-		fs:               afero.NewMemMapFs(),
-		maxCacheFileSize: 10, // 10 bytes
-		cacheDir:         cacheDir,
-	}
-
-	var properties = map[string]interface{}{
-		"command": "mock-command",
-	}
-	var event = Event{
-		Timestamp:  time.Now(),
-		Source:     config.CliName,
-		Properties: properties,
-	}
-
-	// First save will work as the cache file will be new
-	a.NoError(tracker.save(event))
-	// Second save should fail as the file will be larger than 10 bytes
-	a.Error(tracker.save(event))
-}
-
-func TestOpenCacheFile(t *testing.T) {
-	a := require.New(t)
-	cacheDir, err := os.MkdirTemp(os.TempDir(), config.CliName+"*")
-	a.NoError(err)
-
-	tracker := &tracker{
-		fs:               afero.NewMemMapFs(),
-		maxCacheFileSize: 10, // 10 bytes
-		cacheDir:         cacheDir,
-	}
-
-	_, err = tracker.openCacheFile()
-	a.NoError(err)
-	// Verify that the file exists
-	filename := path.Join(cacheDir, cacheFilename)
-	info, statError := tracker.fs.Stat(filename)
-	a.NoError(statError)
-	// Verify the file name
-	a.Equal(info.Name(), cacheFilename)
-	// Verify that the file is empty
-	var expectedSize int64 // The nil value is zero
-	a.Equal(info.Size(), expectedSize)
+	a.Error(err)
 }
