@@ -54,7 +54,7 @@ func (suite *ProfileSuite) TearDownTest() {
 func (suite *ProfileSuite) TestTelemetryDefault() {
 	assert := require.New(suite.T())
 	version.Version = "v1.0.0"
-	assert.True(TelemetryEnabled(), "telemetry should be enabled by default in release version")
+	assert.False(TelemetryEnabled(), "telemetry should be disabled by default in release version")
 
 	version.Version = "dev"
 	assert.False(TelemetryEnabled(), "telemetry should be disabled in dev version")

@@ -76,8 +76,9 @@ func (p *Profile) TelemetryEnabled() bool {
 	}
 
 	key := fmt.Sprintf("%s.%s", p.name, prop.TelemetryEnabled)
+	// Telemetry is disabled by default.
 	if !viper.IsSet(key) {
-		return true
+		return false
 	}
 	return viper.GetBool(key)
 }

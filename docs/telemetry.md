@@ -1,6 +1,6 @@
 # Telemetry
 
-`ticloud`'s telemetry collects anonymous usage data to help improve the product. `ticloud` enables telemetry by default.
+`ticloud`'s telemetry collects anonymous usage data to help improve the product. `ticloud` disables telemetry by default.
 
 ## What telemetry data is collected
 
@@ -33,11 +33,11 @@ To view the full content of telemetry, use flag `--debug` when running `ticloud`
 [2023/02/03 10:02:36.932 +08:00] [DEBUG] [sender.go:46] ["sending telemetry events"] [body="[{\"timestamp\":\"2023-02-03T09:33:49.384304+08:00\",\"source\":\"ticloud\",\"properties\":{\"alias\":\"ls\",\"arch\":\"arm64\",\"auth_method\":\"api_key\",\"command\":\"ticloud-project-list\",\"duration\":871,\"flags\":[\"debug\"],\"git_commit\":\"dfdsfdsdfs\",\"interactive\":false,\"os\":\"darwin\",\"result\":\"SUCCESS\",\"terminal\":\"tty\",\"version\":\"v0.0.1\"}},{\"timestamp\":\"2023-02-03T10:02:36.93222+08:00\",\"source\":\"ticloud\",\"properties\":{\"alias\":\"ls\",\"arch\":\"arm64\",\"auth_method\":\"api_key\",\"command\":\"ticloud-project-list\",\"duration\":1077,\"flags\":[\"debug\",\"output\"],\"git_commit\":\"dfdsfdsdfs\",\"interactive\":false,\"os\":\"darwin\",\"result\":\"SUCCESS\",\"terminal\":\"tty\",\"version\":\"v0.0.1\"}}]"]
 ```
 
-## Disable Telemetry for the CLI
-To disable telemetry for the CLI, use the `ticloud config set` to set profile configuration:
+## Enable Telemetry for the CLI
+To enable telemetry for the CLI, use the `ticloud config set` to set profile configuration:
 
 ```shell
-ticloud config set telemetry-enabled false
+ticloud config set telemetry-enabled true
 ```
 
 > **Note:**
