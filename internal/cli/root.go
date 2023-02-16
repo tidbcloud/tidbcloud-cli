@@ -46,7 +46,7 @@ import (
 func Execute(ctx context.Context) {
 	h := &internal.Helper{
 		Client: func() (cloud.TiDBCloudClient, error) {
-			publicKey, privateKey := config.GePublicKey(), config.GePrivateKey()
+			publicKey, privateKey := config.GetPublicKey(), config.GetPrivateKey()
 			apiUrl := config.GetApiUrl()
 			// If the user has not set the api url, use the default one.
 			if apiUrl == "" {

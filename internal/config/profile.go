@@ -102,14 +102,14 @@ func (p *Profile) CheckAuth() error {
 	return nil
 }
 
-func GePublicKey() (publicKey string) { return activeProfile.GePublicKey() }
-func (p *Profile) GePublicKey() (publicKey string) {
+func GetPublicKey() (publicKey string) { return activeProfile.GetPublicKey() }
+func (p *Profile) GetPublicKey() (publicKey string) {
 	publicKey = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.PublicKey))
 	return
 }
 
-func GePrivateKey() (privateKey string) { return activeProfile.GePrivateKey() }
-func (p *Profile) GePrivateKey() (privateKey string) {
+func GetPrivateKey() (privateKey string) { return activeProfile.GetPrivateKey() }
+func (p *Profile) GetPrivateKey() (privateKey string) {
 	privateKey = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.PrivateKey))
 	return
 }
