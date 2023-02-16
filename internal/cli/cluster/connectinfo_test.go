@@ -90,8 +90,8 @@ const getConnectInfoResultStr = `{
             ]
         },
         {
-            "id": "standard_connection_parameter",
-            "display_name": "Standard Connection Parameter",
+            "id": "general",
+            "display_name": "General",
             "language": "",
             "content": [
                 {
@@ -139,7 +139,7 @@ func (suite *ConnectInfoSuite) TestConnectInfoArgs() {
 	clusterID := "12345"
 	clientCLI := "mysql_cli"
 	clientDriver := "python_mysqlclient"
-	clientParameter := "general_parameter"
+	clientParameter := "general"
 	operatingSystem := "macos"
 
 	connectInfoBody := &connectInfoModel.ConnectInfo{}
