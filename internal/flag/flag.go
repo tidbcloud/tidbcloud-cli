@@ -31,6 +31,7 @@ const (
 	NoColor           string = "no-color"
 	Output            string = "output"
 	OutputShort       string = "o"
+	Password          string = "password"
 	ProjectID         string = "project-id"
 	ProjectIDShort    string = "p"
 	ProfileName       string = "profile-name"
@@ -46,4 +47,6 @@ const (
 	TargetDatabase    string = "target-database"
 	TargetTable       string = "target-table"
 	TrimLastSeparator string = "trim-last-separator"
+	User              string = "user"
+	UserShort         string = "u"
 )

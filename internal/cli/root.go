@@ -23,6 +23,7 @@ import (
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/cli/cluster"
 	configCmd "tidbcloud-cli/internal/cli/config"
+	"tidbcloud-cli/internal/cli/connect"
 	"tidbcloud-cli/internal/cli/dataimport"
 	"tidbcloud-cli/internal/cli/project"
 	"tidbcloud-cli/internal/cli/update"
@@ -153,6 +154,7 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 	rootCmd.AddCommand(version.VersionCmd(h))
 	rootCmd.AddCommand(update.UpdateCmd(h))
 	rootCmd.AddCommand(dataimport.ImportCmd(h))
+	rootCmd.AddCommand(connect.ConnectCmd(h))
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, flag.Debug, flag.DebugShort, false, "Enable debug mode")
 	rootCmd.PersistentFlags().Bool(flag.NoColor, false, "Disable color output")
