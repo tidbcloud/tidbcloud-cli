@@ -22,6 +22,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/prop"
+	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 
@@ -60,8 +61,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var createCmd = &cobra.Command{
-		Use:   "create",
-		Short: "Configure a user profile to store settings",
+		Use:         "create",
+		Short:       "Configure a user profile to store settings",
+		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  To configure a new user profile in interactive mode:
   $ %[1]s config create
 
@@ -94,7 +96,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			var profileName string
 			var publicKey string
 			var privateKey string
-			if cmd.Flags().NFlag() == 0 {
+			if opts.interactive {
+				cmd.Annotations[telemetry.InteractiveMode] = "true"
+
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}

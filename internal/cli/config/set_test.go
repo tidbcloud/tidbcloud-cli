@@ -49,8 +49,8 @@ func (suite *SetConfigSuite) SetupTest() {
 	_ = viper.SafeWriteConfig()
 	suite.h = &internal.Helper{
 		IOStreams: iostream.Test(),
-		Config:    &config.Config{ActiveProfile: "test"},
 	}
+	config.SetActiveProfile("test")
 }
 
 func (suite *SetConfigSuite) TearDownTest() {
@@ -146,7 +146,7 @@ func (suite *SetConfigSuite) TestSetConfigArgs() {
 func (suite *SetConfigSuite) TestSetConfigWhenNoActiveProfile() {
 	assert := require.New(suite.T())
 
-	suite.h.Config.ActiveProfile = ""
+	config.SetActiveProfile("")
 
 	tests := []struct {
 		name         string

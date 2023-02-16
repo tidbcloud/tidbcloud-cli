@@ -23,6 +23,7 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/telemetry"
 	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
 	"github.com/dustin/go-humanize"
@@ -47,9 +48,10 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var listCmd = &cobra.Command{
-		Use:     "list",
-		Short:   "List data import tasks",
-		Aliases: []string{"ls"},
+		Use:         "list",
+		Short:       "List data import tasks",
+		Aliases:     []string{"ls"},
+		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  List import tasks in interactive mode:
   $ %[1]s import list
 
@@ -88,6 +90,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if opts.interactive {
+				cmd.Annotations[telemetry.InteractiveMode] = "true"
+
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
@@ -109,6 +113,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				projectID = cmd.Flag(flag.ProjectID).Value.String()
 				clusterID = cmd.Flag(flag.ClusterID).Value.String()
 			}
+
+			cmd.Annotations[telemetry.ProjectID] = projectID
 
 			total, importTasks, err := cloud.RetrieveImports(projectID, clusterID, h.QueryPageSize, d)
 			if err != nil {

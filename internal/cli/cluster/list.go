@@ -22,6 +22,7 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/telemetry"
 
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/juju/errors"
@@ -38,8 +39,9 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var listCmd = &cobra.Command{
-		Use:   "list <project-id>",
-		Short: "List all clusters in a project",
+		Use:         "list <project-id>",
+		Short:       "List all clusters in a project",
+		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  List all clusters in the project(interactive mode):
   $ %[1]s cluster list
 
@@ -62,6 +64,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 			var pID string
 			if opts.interactive {
+				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
@@ -75,6 +78,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			} else {
 				pID = args[0]
 			}
+
+			cmd.Annotations[telemetry.ProjectID] = pID
 
 			total, items, err := cloud.RetrieveClusters(pID, h.QueryPageSize, d)
 			if err != nil {

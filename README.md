@@ -82,6 +82,10 @@ ticloud config set api-url https://api.tidbcloud.com
 tiup cloud config set api-url https://api.tidbcloud.com
 ```
 
+### Telemetry
+
+See [here](/docs/telemetry.md)
+
 ## Roadmap
 
 There are many features we want to add to the CLI.
