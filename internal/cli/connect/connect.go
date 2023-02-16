@@ -31,6 +31,7 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
+	"github.com/fatih/color"
 	"github.com/go-sql-driver/mysql"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -107,6 +108,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			}
 
 			var projectID, clusterID, userName string
+			var pass *string
 			if opts.interactive {
 				// interactive mode
 				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
@@ -169,8 +171,15 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				if err != nil {
 					return errors.Trace(err)
 				}
-
 				userName = uName
+
+				if cmd.Flags().Changed(flag.Password) {
+					password, err := cmd.Flags().GetString(flag.Password)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					pass = &password
+				}
 			}
 
 			params := clusterApi.NewGetClusterParams().
@@ -182,6 +191,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			}
 			defaultUser := cluster.Payload.Status.ConnectionStrings.DefaultUser
 			host := cluster.Payload.Status.ConnectionStrings.Standard.Host
+			clusterName := cluster.Payload.Name
 			port := strconv.Itoa(int(cluster.Payload.Status.ConnectionStrings.Standard.Port))
 			clusterType := cluster.Payload.ClusterType
 			if userName == "" {
@@ -191,7 +201,13 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				clusterType = SERVERLESS
 			}
 
-			err = ExecuteSqlDialog(clusterType, userName, host, port)
+			// Set prompt style
+			err = env.Set("PROMPT1", "%n"+"@"+clusterName+"%/%R%#")
+			if err != nil {
+				return err
+			}
+
+			err = ExecuteSqlDialog(clusterType, userName, host, port, pass, h.IOStreams.Out)
 			if err != nil {
 				return err
 			}
@@ -201,11 +217,12 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 
 	connectCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The project ID of the cluster")
 	connectCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster")
+	connectCmd.Flags().String(flag.Password, "", "The password of the user")
 	connectCmd.Flags().StringP(flag.User, flag.UserShort, "", "A specific user for login if not using the default user")
 	return connectCmd
 }
 
-func ExecuteSqlDialog(clusterType, userName, host, port string) error {
+func ExecuteSqlDialog(clusterType, userName, host, port string, pass *string, out io.Writer) error {
 	u, err := user.Current()
 	if err != nil {
 		return fmt.Errorf("can't get current user: %s", err.Error())
@@ -220,31 +237,70 @@ func ExecuteSqlDialog(clusterType, userName, host, port string) error {
 	}
 	h := handler.New(l, u, wd, true)
 
+	fmt.Fprintln(out, color.GreenString("Current user: ")+color.HiGreenString(userName))
 	var dsn string
-	if clusterType == SERVERLESS {
-		err = mysql.RegisterTLSConfig("tidb", &tls.Config{
-			MinVersion: tls.VersionTLS12,
-			ServerName: host,
-		})
+	if pass == nil {
+		dsn, err = generateDsnWithoutPassword(clusterType, userName, host, port, h)
 		if err != nil {
 			return err
 		}
-		dsn = fmt.Sprintf("mysql://%s@%s:%s/test?tls=tidb", userName, host, port)
-	} else if clusterType == DEDICATED {
-		dsn = fmt.Sprintf("mysql://%s@%s:%s/test?tls=skip-verify", userName, host, port)
 	} else {
-		return fmt.Errorf("unsupproted cluster type: %s", clusterType)
+		dsn, err = generateDsnWithPassword(clusterType, userName, host, port, *pass)
+		if err != nil {
+			return err
+		}
 	}
 
-	dsn, err = h.Password(dsn)
-	if err != nil {
-		return err
-	}
 	if err = h.Open(context.TODO(), dsn); err != nil {
 		return fmt.Errorf("can't open connection to %s: %s", dsn, err.Error())
 	}
+
 	if err = h.Run(); err != io.EOF {
 		return err
 	}
 	return nil
+}
+
+func generateDsnWithPassword(clusterType string, userName string, host string, port string, pass string) (string, error) {
+	var dsn string
+	if clusterType == SERVERLESS {
+		err := mysql.RegisterTLSConfig("tidb", &tls.Config{
+			MinVersion: tls.VersionTLS12,
+			ServerName: host,
+		})
+		if err != nil {
+			return "", err
+		}
+		dsn = fmt.Sprintf("tidb://%s:%s@%s:%s/test?tls=tidb", userName, pass, host, port)
+	} else if clusterType == DEDICATED {
+		dsn = fmt.Sprintf("tidb://%s:%s@%s:%s/test?tls=skip-verify", userName, pass, host, port)
+	} else {
+		return "", fmt.Errorf("unsupproted cluster type: %s", clusterType)
+	}
+	return dsn, nil
+}
+
+func generateDsnWithoutPassword(clusterType string, userName string, host string, port string, h *handler.Handler) (string, error) {
+	var dsn string
+	if clusterType == SERVERLESS {
+		err := mysql.RegisterTLSConfig("tidb", &tls.Config{
+			MinVersion: tls.VersionTLS12,
+			ServerName: host,
+		})
+		if err != nil {
+			return "", err
+		}
+		dsn = fmt.Sprintf("tidb://%s@%s:%s/test?tls=tidb", userName, host, port)
+	} else if clusterType == DEDICATED {
+		dsn = fmt.Sprintf("tidb://%s@%s:%s/test?tls=skip-verify", userName, host, port)
+	} else {
+		return "", fmt.Errorf("unsupproted cluster type: %s", clusterType)
+	}
+
+	// Prompt for password
+	dsn, err := h.Password(dsn)
+	if err != nil {
+		return "", err
+	}
+	return dsn, nil
 }

@@ -29,6 +29,7 @@ const (
 	NoColor           string = "no-color"
 	Output            string = "output"
 	OutputShort       string = "o"
+	Password          string = "password"
 	ProjectID         string = "project-id"
 	ProjectIDShort    string = "p"
 	ProfileName       string = "profile-name"
