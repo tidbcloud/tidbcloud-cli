@@ -92,7 +92,7 @@ const (
 	SequelizeID                     string = "sequelize_mysql2"
 	SequelizeDisplayName            string = "Sequelize (mysql2)"
 	SequelizeInputName              string = "sequelize_mysql2"
-	DjangoID                        string = "django_django_tidb"
+	DjangoID                        string = "django_tidb"
 	DjangoDisplayName               string = "Django (django_tidb)"
 	DjangoInputName                 string = "django_tidb"
 	SQLAlchemyID                    string = "sqlalchemy_mysqlclient"
