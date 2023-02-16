@@ -23,6 +23,8 @@ const (
 	ClusterName       string = "cluster-name"
 	ClusterType       string = "cluster-type"
 	DataFormat        string = "data-format"
+	Debug             string = "debug"
+	DebugShort        string = "D"
 	Delimiter         string = "delimiter"
 	Force             string = "force"
 	ImportID          string = "import-id"

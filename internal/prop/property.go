@@ -21,10 +21,11 @@ import (
 )
 
 const (
-	PublicKey  string = "public-key"
-	PrivateKey string = "private-key"
-	CurProfile string = "current-profile"
-	ApiUrl     string = "api-url"
+	PublicKey        string = "public-key"
+	PrivateKey       string = "private-key"
+	CurProfile       string = "current-profile"
+	ApiUrl           string = "api-url"
+	TelemetryEnabled string = "telemetry-enabled"
 )
 
 func GlobalProperties() []string {
@@ -32,11 +33,11 @@ func GlobalProperties() []string {
 }
 
 func ProfileProperties() []string {
-	return []string{PublicKey, PrivateKey, ApiUrl}
+	return []string{PublicKey, PrivateKey, ApiUrl, TelemetryEnabled}
 }
 
 func Properties() []string {
-	return []string{PublicKey, PrivateKey, CurProfile, ApiUrl}
+	return []string{PublicKey, PrivateKey, CurProfile, ApiUrl, TelemetryEnabled}
 }
 
 func ValidateApiUrl(value string) (*url.URL, error) {

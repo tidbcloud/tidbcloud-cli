@@ -24,6 +24,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
@@ -69,9 +70,10 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var localCmd = &cobra.Command{
-		Use:   "local <file-path>",
-		Short: "Import a local file to TiDB Cloud",
-		Args:  util.RequiredArgs("file-path"),
+		Use:         "local <file-path>",
+		Short:       "Import a local file to TiDB Cloud",
+		Args:        util.RequiredArgs("file-path"),
+		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Start an import task in interactive mode:
   $ %[1]s import start local <file-path>
 
@@ -112,6 +114,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if opts.interactive {
+				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
@@ -199,6 +202,8 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 			}
+
+			cmd.Annotations[telemetry.ProjectID] = projectID
 
 			filePath := args[0]
 			uploadFile, err := os.Open(filePath)

@@ -15,7 +15,6 @@
 package internal
 
 import (
-	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/service/cloud"
 )
@@ -28,6 +27,4 @@ type Helper struct {
 	Client        func() (cloud.TiDBCloudClient, error)
 	QueryPageSize int64
 	IOStreams     *iostream.IOStreams
-	Config        *config.Config
-	IsUnderTiUP   bool
 }
