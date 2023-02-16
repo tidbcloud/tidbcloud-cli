@@ -74,6 +74,9 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
   Use the default user to connect to the TiDB Cloud cluster in non-interactive mode:
   $ %[1]s connect -p <project-id> -c <cluster-id>
 
+  Use the default user to connect to the TiDB Cloud cluster with password in non-interactive mode:
+  $ %[1]s connect -p <project-id> -c <cluster-id> --password <password> 
+
   Use a specific user to connect to the TiDB Cloud cluster in non-interactive mode:
   $ %[1]s connect -p <project-id> -c <cluster-id> -u <user-name>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -196,12 +199,13 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			clusterType := cluster.Payload.ClusterType
 			if userName == "" {
 				userName = defaultUser
+				fmt.Fprintln(h.IOStreams.Out, color.GreenString("Current user: ")+color.HiGreenString(userName))
 			}
 			if clusterType == DEVELOPER {
 				clusterType = SERVERLESS
 			}
 
-			// Set prompt style
+			// Set prompt style, see https://github.com/xo/usql/commit/d5db12eaa6fe48cd0a697831ad03d61611290576
 			err = env.Set("PROMPT1", "%n"+"@"+clusterName+"%/%R%#")
 			if err != nil {
 				return err
@@ -237,7 +241,6 @@ func ExecuteSqlDialog(clusterType, userName, host, port string, pass *string, ou
 	}
 	h := handler.New(l, u, wd, true)
 
-	fmt.Fprintln(out, color.GreenString("Current user: ")+color.HiGreenString(userName))
 	var dsn string
 	if pass == nil {
 		dsn, err = generateDsnWithoutPassword(clusterType, userName, host, port, h)
