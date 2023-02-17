@@ -17,6 +17,7 @@ package flag
 const (
 	AwsRoleArn        string = "aws-role-arn"
 	BackslashEscape   string = "backslash-escape"
+	ClientName        string = "client"
 	CloudProvider     string = "cloud-provider"
 	ClusterID         string = "cluster-id"
 	ClusterIDShort    string = "c"
@@ -29,6 +30,7 @@ const (
 	Force             string = "force"
 	ImportID          string = "import-id"
 	NoColor           string = "no-color"
+	OperatingSystem   string = "operating-system"
 	Output            string = "output"
 	OutputShort       string = "o"
 	Password          string = "password"

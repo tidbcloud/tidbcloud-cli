@@ -8,4 +8,5 @@ header:
   paths-ignore:
     - '**/mock/**'
     - 'pkg/tidbcloud/import/**'
+    - 'pkg/tidbcloud/connect_info/**'
   comment: on-failure

@@ -3,6 +3,7 @@
 package mock
 
 import (
+	connect_info_service "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
 	import_service "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 
 	cluster "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
@@ -191,6 +192,36 @@ func (_m *TiDBCloudClient) GetCluster(params *cluster.GetClusterParams, opts ...
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(*cluster.GetClusterParams, ...cluster.ClientOption) error); ok {
+		r1 = rf(params, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetConnectInfo provides a mock function with given fields: params, opts
+func (_m *TiDBCloudClient) GetConnectInfo(params *connect_info_service.GetInfoParams, opts ...connect_info_service.ClientOption) (*connect_info_service.GetInfoOK, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, params)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	var r0 *connect_info_service.GetInfoOK
+	if rf, ok := ret.Get(0).(func(*connect_info_service.GetInfoParams, ...connect_info_service.ClientOption) *connect_info_service.GetInfoOK); ok {
+		r0 = rf(params, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*connect_info_service.GetInfoOK)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*connect_info_service.GetInfoParams, ...connect_info_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)

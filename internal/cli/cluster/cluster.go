@@ -30,5 +30,6 @@ func ClusterCmd(h *internal.Helper) *cobra.Command {
 	clusterCmd.AddCommand(DeleteCmd(h))
 	clusterCmd.AddCommand(ListCmd(h))
 	clusterCmd.AddCommand(DescribeCmd(h))
+	clusterCmd.AddCommand(ConnectInfoCmd(h))
 	return clusterCmd
 }

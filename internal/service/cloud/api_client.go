@@ -22,6 +22,8 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/version"
+	connectInfoClient "tidbcloud-cli/pkg/tidbcloud/connect_info/client"
+	connectInfoOp "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
 	importClient "tidbcloud-cli/pkg/tidbcloud/import/client"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 
@@ -62,21 +64,25 @@ type TiDBCloudClient interface {
 	GenerateUploadURL(params *importOp.GenerateUploadURLParams, opts ...importOp.ClientOption) (*importOp.GenerateUploadURLOK, error)
 
 	PreSignedUrlUpload(url *string, uploadFile *os.File, size int64) error
+
+	GetConnectInfo(params *connectInfoOp.GetInfoParams, opts ...connectInfoOp.ClientOption) (*connectInfoOp.GetInfoOK, error)
 }
 
 type ClientDelegate struct {
 	c  *apiClient.GoTidbcloud
 	ic *importClient.TidbcloudImport
+	cc *connectInfoClient.TidbcloudConnectInfo
 }
 
 func NewClientDelegate(publicKey string, privateKey string, apiUrl string) (*ClientDelegate, error) {
-	c, ic, err := NewApiClient(publicKey, privateKey, apiUrl)
+	c, ic, cc, err := NewApiClient(publicKey, privateKey, apiUrl)
 	if err != nil {
 		return nil, err
 	}
 	return &ClientDelegate{
 		c:  c,
 		ic: ic,
+		cc: cc,
 	}, nil
 }
 
@@ -144,7 +150,11 @@ func (d *ClientDelegate) PreSignedUrlUpload(url *string, uploadFile *os.File, si
 	return nil
 }
 
-func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport, error) {
+func (d *ClientDelegate) GetConnectInfo(params *connectInfoOp.GetInfoParams, opts ...connectInfoOp.ClientOption) (*connectInfoOp.GetInfoOK, error) {
+	return d.cc.ConnectInfoService.GetInfo(params, opts...)
+}
+
+func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport, *connectInfoClient.TidbcloudConnectInfo, error) {
 	httpclient := &http.Client{
 		Transport: NewTransportWithAgent(&digest.Transport{
 			Username: publicKey,
@@ -155,11 +165,11 @@ func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClien
 	// Parse the URL
 	u, err := prop.ValidateApiUrl(apiUrl)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	transport := httpTransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpclient)
-	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), nil
+	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default), nil
 }
 
 // NewTransportWithAgent returns a new http.RoundTripper that add the User-Agent header,
