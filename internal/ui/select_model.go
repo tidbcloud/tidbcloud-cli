@@ -33,9 +33,9 @@ var (
 
 type SelectModel struct {
 	Hint           string
-	Choices        []interface{} // items on the to-do list
-	cursor         int           // which to-do list item our cursor is pointing at
-	Selected       int           // which to-do items are Selected
+	Choices        []interface{} // items to be selected, which need implement fmt.Stringer interface
+	cursor         int           // which item our cursor is pointing at
+	Selected       int           // which items are Selected
 	Interrupted    bool
 	showPagination bool
 	showFilter     bool
@@ -99,7 +99,7 @@ func buildFilterInput() textinput.Model {
 
 func defaultChoicesValueFunc() func(choice interface{}) string {
 	return func(choice interface{}) string {
-		return choice.(string)
+		return fmt.Sprintf("%s", choice)
 	}
 }
 

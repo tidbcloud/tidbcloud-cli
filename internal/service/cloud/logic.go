@@ -85,6 +85,10 @@ func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error
 	if err != nil {
 		return nil, err
 	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
 	p := tea.NewProgram(model)
 	projectModel, err := p.StartReturningModel()
 	if err != nil {
@@ -118,6 +122,10 @@ func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
 	p := tea.NewProgram(model)
 	clusterModel, err := p.StartReturningModel()
 	if err != nil {
@@ -153,6 +161,10 @@ func GetSelectedImport(pID string, cID string, pageSize int64, client TiDBCloudC
 	if err != nil {
 		return nil, err
 	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
 	p := tea.NewProgram(model)
 	importModel, err := p.StartReturningModel()
 	if err != nil {
