@@ -85,6 +85,10 @@ func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error
 	if err != nil {
 		return nil, err
 	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
 	p := tea.NewProgram(model)
 	projectModel, err := p.StartReturningModel()
 	if err != nil {
@@ -93,7 +97,7 @@ func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error
 	if m, _ := projectModel.(ui.SelectModel); m.Interrupted {
 		os.Exit(130)
 	}
-	res := projectModel.(ui.SelectModel).Choices[projectModel.(ui.SelectModel).Selected].(*Project)
+	res := projectModel.(ui.SelectModel).GetSelectedItem().(*Project)
 	return res, nil
 }
 
@@ -118,6 +122,10 @@ func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
 	p := tea.NewProgram(model)
 	clusterModel, err := p.StartReturningModel()
 	if err != nil {
@@ -126,7 +134,7 @@ func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient
 	if m, _ := clusterModel.(ui.SelectModel); m.Interrupted {
 		os.Exit(130)
 	}
-	cluster := clusterModel.(ui.SelectModel).Choices[clusterModel.(ui.SelectModel).Selected].(*Cluster)
+	cluster := clusterModel.(ui.SelectModel).GetSelectedItem().(*Cluster)
 	return cluster, nil
 }
 
@@ -153,6 +161,10 @@ func GetSelectedImport(pID string, cID string, pageSize int64, client TiDBCloudC
 	if err != nil {
 		return nil, err
 	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
 	p := tea.NewProgram(model)
 	importModel, err := p.StartReturningModel()
 	if err != nil {
@@ -161,7 +173,7 @@ func GetSelectedImport(pID string, cID string, pageSize int64, client TiDBCloudC
 	if m, _ := importModel.(ui.SelectModel); m.Interrupted {
 		os.Exit(130)
 	}
-	res := importModel.(ui.SelectModel).Choices[importModel.(ui.SelectModel).Selected].(*Import)
+	res := importModel.(ui.SelectModel).GetSelectedItem().(*Import)
 	return res, nil
 }
 
