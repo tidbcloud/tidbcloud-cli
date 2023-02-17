@@ -17,6 +17,8 @@ package ui
 import (
 	"fmt"
 
+	"github.com/charmbracelet/bubbles/help"
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/paginator"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -44,12 +46,65 @@ type SelectModel struct {
 	// VisibleChoices is part of Choices and is filtered by user input.
 	VisibleChoices []interface{}
 
+	helper      help.Model
+	keys        keyMap
 	Paginator   paginator.Model
 	FilterInput textinput.Model
 
 	// Function used to get value string from Choices item.
 	// Only use when enabling filter.
 	ChoiceValue func(choice interface{}) string
+}
+
+type keyMap struct {
+	Up     key.Binding
+	Down   key.Binding
+	Left   key.Binding
+	Right  key.Binding
+	Select key.Binding
+	Quit   key.Binding
+}
+
+// ShortHelp returns keybindings to be shown in the mini help view. It's part
+// of the key.Map interface.
+func (k keyMap) ShortHelp() []key.Binding {
+	return []key.Binding{k.Left, k.Right}
+}
+
+// FullHelp returns keybindings for the expanded help view. It's part of the
+// key.Map interface.
+func (k keyMap) FullHelp() [][]key.Binding {
+	return [][]key.Binding{
+		{k.Up, k.Down, k.Left, k.Right}, // first column
+		{k.Select, k.Quit},              // second column
+	}
+}
+
+var keys = keyMap{
+	Up: key.NewBinding(
+		key.WithKeys("up", "k"),
+		key.WithHelp("↑/k", "move up"),
+	),
+	Down: key.NewBinding(
+		key.WithKeys("down", "j"),
+		key.WithHelp("↓/j", "move down"),
+	),
+	Left: key.NewBinding(
+		key.WithKeys("left", "h"),
+		key.WithHelp("←/h", "prev page"),
+	),
+	Right: key.NewBinding(
+		key.WithKeys("right", "l"),
+		key.WithHelp("→/l", "next page"),
+	),
+	Select: key.NewBinding(
+		key.WithKeys("enter"),
+		key.WithHelp("enter", "select"),
+	),
+	Quit: key.NewBinding(
+		key.WithKeys("esc", "ctrl+c"),
+		key.WithHelp("esc", "quit"),
+	),
 }
 
 func InitialSelectModel(choices []interface{}, hint string) (*SelectModel, error) {
@@ -78,6 +133,8 @@ func InitialSelectModel(choices []interface{}, hint string) (*SelectModel, error
 		FilterInput:    f,
 		Paginator:      p,
 		ChoiceValue:    df,
+		keys:           keys,
+		helper:         help.New(),
 	}, nil
 }
 
@@ -115,34 +172,34 @@ func (m SelectModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 
 		// Cool, what was the actual key pressed?
-		switch msg.String() {
+		switch {
 
 		// These keys should exit the program.
-		case "ctrl+c", "esc":
+		case key.Matches(msg, m.keys.Quit):
 			m.Interrupted = true
 			return m, tea.Quit
 
 		// The "up" and "k" keys move the cursor up
-		case "up", "k":
+		case key.Matches(msg, m.keys.Up):
 			if m.cursor > 0 {
 				m.cursor--
 			}
 
 		// The "down" and "j" keys move the cursor down
-		case "down", "j":
+		case key.Matches(msg, m.keys.Down):
 			if m.cursor < m.ItemsOnPage()-1 {
 				m.cursor++
 			}
 
-		// The "pgup" and "left" keys skip to the pre page
-		case "pgup", "left":
+		// The "h" and "left" keys skip to the pre page
+		case key.Matches(msg, m.keys.Left):
 			if m.showPagination {
 				m.Paginator.PrevPage()
 				m.ResetCursor()
 			}
 
-		// The "pgdown" and "right" keys skip to the next page
-		case "pgdown", "right":
+		// The "j" and "right" keys skip to the next page
+		case key.Matches(msg, m.keys.Right):
 			if m.showPagination {
 				m.Paginator.NextPage()
 				m.ResetCursor()
@@ -150,7 +207,7 @@ func (m SelectModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		// The "enter" key and the spacebar (a literal space) toggle
 		// the selected state for the item that the cursor is pointing at.
-		case "enter":
+		case key.Matches(msg, m.keys.Select):
 			m.Selected = m.Index()
 			return m, tea.Quit
 		}
@@ -211,7 +268,8 @@ func (m SelectModel) View() string {
 
 	// Show paginator dot
 	if m.showPagination {
-		s += m.Paginator.View()
+		s += m.Paginator.View() + "\n"
+		s += m.helper.View(m.keys)
 	}
 
 	// Send the UI for rendering
