@@ -90,12 +90,12 @@ var keys = keyMap{
 		key.WithHelp("↓/j", "move down"),
 	),
 	Left: key.NewBinding(
-		key.WithKeys("left", "h"),
-		key.WithHelp("←/h", "prev page"),
+		key.WithKeys("left", "pgup"),
+		key.WithHelp("←/pgup", "prev page"),
 	),
 	Right: key.NewBinding(
-		key.WithKeys("right", "l"),
-		key.WithHelp("→/l", "next page"),
+		key.WithKeys("right", "pgdown"),
+		key.WithHelp("→/pgdown", "next page"),
 	),
 	Select: key.NewBinding(
 		key.WithKeys("enter"),
