@@ -247,7 +247,6 @@ func (m SelectModel) View() string {
 	var start, end int
 	if m.showPagination {
 		start, end = m.Paginator.GetSliceBounds(len(m.VisibleChoices))
-
 	} else {
 		start = 0
 		end = len(m.VisibleChoices)
@@ -268,8 +267,11 @@ func (m SelectModel) View() string {
 
 	// Show paginator dot
 	if m.showPagination {
-		s += m.Paginator.View() + "\n"
-		s += m.helper.View(m.keys)
+		// Only show when there are more than one page
+		if m.Paginator.TotalPages > 1 {
+			s += m.Paginator.View() + "\n"
+			s += m.helper.View(m.keys)
+		}
 	}
 
 	// Send the UI for rendering
