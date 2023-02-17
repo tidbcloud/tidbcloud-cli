@@ -22,6 +22,8 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/version"
+	connectInfoClient "tidbcloud-cli/pkg/tidbcloud/connect_info/client"
+	connectInfoOp "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
 	importClient "tidbcloud-cli/pkg/tidbcloud/import/client"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 
@@ -152,7 +154,7 @@ func (d *ClientDelegate) GetConnectInfo(params *connectInfoOp.GetInfoParams, opt
 	return d.cc.ConnectInfoService.GetInfo(params, opts...)
 }
 
-func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport, error) {
+func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport, *connectInfoClient.TidbcloudConnectInfo, error) {
 	httpclient := &http.Client{
 		Transport: NewTransportWithAgent(&digest.Transport{
 			Username: publicKey,
