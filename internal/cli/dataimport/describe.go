@@ -22,6 +22,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/telemetry"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
@@ -47,9 +48,10 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var describeCmd = &cobra.Command{
-		Use:     "describe",
-		Short:   "Describe a data import task",
-		Aliases: []string{"get"},
+		Use:         "describe",
+		Short:       "Describe a data import task",
+		Aliases:     []string{"get"},
+		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Describe an import task in interactive mode:
   $ %[1]s import describe
 
@@ -85,6 +87,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if opts.interactive {
+				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
@@ -113,6 +116,8 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cmd.Flag(flag.ClusterID).Value.String()
 				importID = cmd.Flag(flag.ImportID).Value.String()
 			}
+
+			cmd.Annotations[telemetry.ProjectID] = projectID
 
 			params := importOp.NewGetImportParams().WithProjectID(projectID).WithClusterID(clusterID).WithID(importID)
 			importTask, err := d.GetImport(params)

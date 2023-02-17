@@ -15,22 +15,19 @@
 package config
 
 import (
-	"fmt"
-	"sort"
+	"os"
 
-	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/util"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/spf13/viper"
 )
 
 const (
 	cliName       = "ticloud"
 	cliNameInTiUP = "cloud"
 	HomePath      = ".ticloud"
-	DevVersion    = "dev"
-	Repo          = "tidbcloud/tidbcloud-cli"
+
+	Repo = "tidbcloud/tidbcloud-cli"
 
 	Confirmed = "yes"
 )
@@ -39,42 +36,20 @@ var (
 	FocusedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
 	CursorStyle  = FocusedStyle.Copy()
 	CliName      = cliName
+	IsUnderTiUP  = false
 )
 
-type Config struct {
-	ActiveProfile string
-}
+func init() {
+	var binpath string
+	if exepath, err := os.Executable(); err == nil {
+		binpath = exepath
+	}
 
-func SetCliName(isUnderTiUP bool) {
-	if isUnderTiUP {
+	IsUnderTiUP = util.IsUnderTiUP(binpath)
+
+	if IsUnderTiUP {
 		CliName = cliNameInTiUP
 	} else {
 		CliName = cliName
 	}
-}
-
-func ValidateProfile(profileName string) error {
-	profiles, err := GetAllProfiles()
-	if err != nil {
-		return err
-	}
-
-	if !util.ElemInSlice(profiles, profileName) {
-		return fmt.Errorf("profile %s not found", profileName)
-	}
-
-	return nil
-}
-
-func GetAllProfiles() ([]string, error) {
-	s := viper.AllSettings()
-	keys := make([]string, 0, len(s))
-	for k := range s {
-		if !util.ElemInSlice(prop.GlobalProperties(), k) {
-			keys = append(keys, k)
-		}
-	}
-
-	sort.Strings(keys)
-	return keys, nil
 }

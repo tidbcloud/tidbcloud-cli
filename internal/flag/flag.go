@@ -24,6 +24,8 @@ const (
 	ClusterName       string = "cluster-name"
 	ClusterType       string = "cluster-type"
 	DataFormat        string = "data-format"
+	Debug             string = "debug"
+	DebugShort        string = "D"
 	Delimiter         string = "delimiter"
 	Force             string = "force"
 	ImportID          string = "import-id"
@@ -31,6 +33,7 @@ const (
 	OperatingSystem   string = "operating-system"
 	Output            string = "output"
 	OutputShort       string = "o"
+	Password          string = "password"
 	ProjectID         string = "project-id"
 	ProjectIDShort    string = "p"
 	ProfileName       string = "profile-name"
@@ -46,4 +49,6 @@ const (
 	TargetDatabase    string = "target-database"
 	TargetTable       string = "target-table"
 	TrimLastSeparator string = "trim-last-separator"
+	User              string = "user"
+	UserShort         string = "u"
 )

@@ -22,6 +22,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
@@ -69,8 +70,9 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var s3Cmd = &cobra.Command{
-		Use:   "s3",
-		Short: "Import files from Amazon S3 into TiDB Cloud",
+		Use:         "s3",
+		Short:       "Import files from Amazon S3 into TiDB Cloud",
+		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Start an import task in interactive mode:
   $ %[1]s import start s3
 
@@ -112,6 +114,7 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if opts.interactive {
+				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
@@ -201,6 +204,8 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 			}
+
+			cmd.Annotations[telemetry.ProjectID] = projectID
 
 			body := importOp.CreateImportBody{}
 			err = body.UnmarshalBinary([]byte(fmt.Sprintf(`{

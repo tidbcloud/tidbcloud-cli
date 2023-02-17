@@ -49,7 +49,7 @@ If not, the config in the active profile will be set`, prop.ProfileProperties())
 
 			var res string
 			if util.ElemInSlice(prop.ProfileProperties(), propertyName) {
-				curP := h.Config.ActiveProfile
+				curP := config.ActiveProfileName()
 				if curP == "" {
 					return fmt.Errorf("no profile is configured, please use `config create` to create a profile")
 				}

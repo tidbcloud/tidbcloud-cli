@@ -21,8 +21,7 @@ import (
 
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
-	connectInfoClient "tidbcloud-cli/pkg/tidbcloud/connect_info/client"
-	connectInfoOp "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
+	"tidbcloud-cli/internal/version"
 	importClient "tidbcloud-cli/pkg/tidbcloud/import/client"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 
@@ -73,8 +72,8 @@ type ClientDelegate struct {
 	cc *connectInfoClient.TidbcloudConnectInfo
 }
 
-func NewClientDelegate(publicKey string, privateKey string, apiUrl string, ver string) (*ClientDelegate, error) {
-	c, ic, cc, err := NewApiClient(publicKey, privateKey, apiUrl, ver)
+func NewClientDelegate(publicKey string, privateKey string, apiUrl string) (*ClientDelegate, error) {
+	c, ic, cc, err := NewApiClient(publicKey, privateKey, apiUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -153,12 +152,12 @@ func (d *ClientDelegate) GetConnectInfo(params *connectInfoOp.GetInfoParams, opt
 	return d.cc.ConnectInfoService.GetInfo(params, opts...)
 }
 
-func NewApiClient(publicKey string, privateKey string, apiUrl string, ver string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport, *connectInfoClient.TidbcloudConnectInfo, error) {
+func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport, error) {
 	httpclient := &http.Client{
 		Transport: NewTransportWithAgent(&digest.Transport{
 			Username: publicKey,
 			Password: privateKey,
-		}, fmt.Sprintf("%s/%s", config.CliName, ver)),
+		}, fmt.Sprintf("%s/%s", config.CliName, version.Version)),
 	}
 
 	// Parse the URL

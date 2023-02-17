@@ -7,7 +7,7 @@ builds:
   - <<: &build_defaults
       main: ./cmd/ticloud/main.go
       ldflags:
-        - -s -w -X main.version={{.Version}} -X main.commit={{.ShortCommit}} -X main.date={{.Date}}
+        - -s -w -X tidbcloud-cli/internal/version.Version={{.Version}} -X tidbcloud-cli/internal/version.Commit={{.ShortCommit}} -X tidbcloud-cli/internal/version.Date={{.Date}}
       flags:
         - -trimpath
       binary: "ticloud"
@@ -44,6 +44,15 @@ nfpms:
     license: Apache 2.0
     builds: [ linux ]
     formats: [ deb,rpm ]
+    contents:
+      - src: ./build/package/rpm/installer
+        dst: /etc/ticloud/installer
+        type: "config|noreplace"
+        packager: rpm
+      - src: ./build/package/deb/installer
+        dst: /etc/ticloud/installer
+        type: "config|noreplace"
+        packager: deb
 
 checksum:
   name_template: 'checksums.txt'
