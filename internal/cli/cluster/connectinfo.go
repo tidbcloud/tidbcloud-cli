@@ -107,13 +107,6 @@ type connectInfoOpts struct {
 	interactive bool
 }
 
-func (c connectInfoOpts) NonInteractiveRequiredFlags() []string {
-	return []string{
-		flag.ClusterID,
-		flag.ProjectID,
-	}
-}
-
 func (c connectInfoOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
@@ -303,15 +296,6 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 		interactive: true,
 	}
 
-	// Detect operating system
-	// TODO: detect linux operating system name
-	os := runtime.GOOS
-	if os == "windows" {
-		os = "Windows"
-	} else {
-		os = "macOS"
-	}
-
 	cmd := &cobra.Command{
 		Use:   "connect-info",
 		Short: "Get connection string for the specified cluster",
@@ -331,7 +315,6 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			// mark required flags in non-interactive mode
-			flags = opts.NonInteractiveRequiredFlags()
 			if !opts.interactive {
 				for _, fn := range flags {
 					err := cmd.MarkFlagRequired(fn)
@@ -379,9 +362,17 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 				}
 				client = clientsForInteractiveMap[clientNameForInteractive]
 
-				if os != "" && os != "linux" {
+				// Detect operating system
+				// TODO: detect linux operating system name
+				goOS := runtime.GOOS
+				if goOS == "darwin" {
+					goOS = "macOS"
+				} else if goOS == "windows" {
+					goOS = "Windows"
+				}
+				if goOS != "" && goOS != "linux" {
 					for id, value := range operatingSystemList {
-						if strings.Contains(value, os) {
+						if strings.Contains(value, goOS) {
 							operatingSystemValueWithFlag := operatingSystemList[id] + " (Detected)"
 							operatingSystemList = append([]string{operatingSystemValueWithFlag}, append(operatingSystemList[:id], operatingSystemList[id+1:]...)...)
 							break
@@ -461,8 +452,8 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 
 	cmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	cmd.Flags().String(flag.ClientName, MysqlCliInputName, strings.ReplaceAll(fmt.Sprintf("Connected client. Supported clients: %+q", connectClientsListForHelp), "\" \"", "\", \""))
-	cmd.Flags().String(flag.OperatingSystem, os, strings.ReplaceAll(fmt.Sprintf("Operating system name. Supported operating systems: %q", operatingSystemListForHelp), "\" \"", "\", \""))
+	cmd.Flags().String(flag.ClientName, "", strings.ReplaceAll(fmt.Sprintf("Connected client. Supported clients: %+q", connectClientsListForHelp), "\" \"", "\", \""))
+	cmd.Flags().String(flag.OperatingSystem, "", strings.ReplaceAll(fmt.Sprintf("Operating system name. Supported operating systems: %q", operatingSystemListForHelp), "\" \"", "\", \""))
 
 	return cmd
 }
