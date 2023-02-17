@@ -452,8 +452,8 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 
 	cmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	cmd.Flags().String(flag.ClientName, "", strings.ReplaceAll(fmt.Sprintf("Connected client. Supported clients: %+q", connectClientsListForHelp), "\" \"", "\", \""))
-	cmd.Flags().String(flag.OperatingSystem, "", strings.ReplaceAll(fmt.Sprintf("Operating system name. Supported operating systems: %q", operatingSystemListForHelp), "\" \"", "\", \""))
+	cmd.Flags().String(flag.ClientName, "", fmt.Sprintf("Connected client. Supported clients: %q", connectClientsListForHelp))
+	cmd.Flags().String(flag.OperatingSystem, "", fmt.Sprintf("Operating system name. Supported operating systems: %q", operatingSystemListForHelp))
 
 	return cmd
 }
