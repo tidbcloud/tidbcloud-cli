@@ -109,23 +109,33 @@ func updateAndSpinnerWait(h *internal.Helper, newRelease *github.ReleaseInfo) er
 		go func() {
 			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 			defer cancel()
-			out, err := exec.CommandContext(ctx, "curl", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh").Output()
+			c1 := exec.CommandContext(ctx, "curl", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh") //nolint:gosec
+			var stdout bytes.Buffer
+			var stderr bytes.Buffer
+			c1.Stdout = &stdout
+			c1.Stderr = &stderr
+
+			err := c1.Run()
 			if ctx.Err() == context.DeadlineExceeded {
 				res <- errors.New("timeout when download the install.sh script")
 				return
 			}
 			if err != nil {
-				res <- errors.Annotate(err, string(out))
+				res <- errors.Annotate(err, stderr.String())
 				return
 			}
 
-			out1, err := exec.CommandContext(ctx, "/bin/sh", "-c", string(out)).Output() //nolint:gosec
+			c2 := exec.CommandContext(ctx, "/bin/sh", "-c", stdout.String()) //nolint:gosec
+			stderr = bytes.Buffer{}
+			c2.Stderr = &stderr
+
+			err = c2.Run()
 			if ctx.Err() == context.DeadlineExceeded {
 				res <- errors.New("timeout when execute the install.sh script")
 				return
 			}
 			if err != nil {
-				res <- errors.Annotate(err, string(out1))
+				res <- errors.Annotate(err, stderr.String())
 				return
 			}
 
