@@ -73,7 +73,7 @@ func updateAndWaitReady(h *internal.Helper, newRelease *github.ReleaseInfo) erro
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 
-	c1 := exec.CommandContext(ctx, "curl", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh") //nolint:gosec
+	c1 := exec.CommandContext(ctx, "curl", "-sSL", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh") //nolint:gosec
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 	c1.Stdout = &stdout
@@ -109,7 +109,7 @@ func updateAndSpinnerWait(h *internal.Helper, newRelease *github.ReleaseInfo) er
 		go func() {
 			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 			defer cancel()
-			c1 := exec.CommandContext(ctx, "curl", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh") //nolint:gosec
+			c1 := exec.CommandContext(ctx, "curl", "-sSL", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh") //nolint:gosec
 			var stdout bytes.Buffer
 			var stderr bytes.Buffer
 			c1.Stdout = &stdout
