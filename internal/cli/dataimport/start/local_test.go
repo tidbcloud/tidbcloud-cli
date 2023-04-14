@@ -24,8 +24,6 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
 	mockTool "github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -93,7 +91,7 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 			UploadURL:   &uploadUrl,
 		},
 	}
-	suite.mockClient.On("GenerateUploadURL", importOp.NewGenerateUploadURLParams().WithProjectID(projectID).WithClusterID(clusterID).WithBody(importOp.GenerateUploadURLBody{
+	suite.mockClient.On("UploadLocalFile", importOp.NewGenerateUploadURLParams().WithProjectID(projectID).WithClusterID(clusterID).WithBody(importOp.GenerateUploadURLBody{
 		ContentLength: &size,
 		FileName:      &fN,
 	})).Return(uploadRes, nil)
@@ -119,7 +117,7 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 			}}`, dataFormat, fileName, targetDatabase, targetTable)))
 	assert.Nil(err)
 
-	suite.mockClient.On("CreateImport", importOp.NewCreateImportParams().
+	suite.mockClient.On("CreateImportTask", importOp.NewCreateImportParams().
 		WithProjectID(projectID).WithClusterID(clusterID).WithBody(reqBody)).
 		Return(result, nil)
 
@@ -201,7 +199,7 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 			UploadURL:   &uploadUrl,
 		},
 	}
-	suite.mockClient.On("GenerateUploadURL", importOp.NewGenerateUploadURLParams().WithProjectID(projectID).WithClusterID(clusterID).WithBody(importOp.GenerateUploadURLBody{
+	suite.mockClient.On("UploadLocalFile", importOp.NewGenerateUploadURLParams().WithProjectID(projectID).WithClusterID(clusterID).WithBody(importOp.GenerateUploadURLBody{
 		ContentLength: &size,
 		FileName:      &fN,
 	})).Return(uploadRes, nil)
@@ -227,7 +225,7 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 			}}`, dataFormat, fileName, targetDatabase, targetTable)))
 	assert.Nil(err)
 
-	suite.mockClient.On("CreateImport", importOp.NewCreateImportParams().
+	suite.mockClient.On("CreateImportTask", importOp.NewCreateImportParams().
 		WithProjectID(projectID).WithClusterID(clusterID).WithBody(reqBody)).
 		Return(result, nil)
 

@@ -23,9 +23,8 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
+	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/import_operations"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
@@ -105,7 +104,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				selectedImport, err := cloud.GetSelectedImport(projectID, clusterID, h.QueryPageSize, d, []importModel.OpenapiGetImportRespStatus{})
+				selectedImport, err := cloud.GetSelectedImport(projectID, clusterID, h.QueryPageSize, d, []string{})
 				if err != nil {
 					return err
 				}
@@ -119,8 +118,8 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 
 			cmd.Annotations[telemetry.ProjectID] = projectID
 
-			params := importOp.NewGetImportParams().WithProjectID(projectID).WithClusterID(clusterID).WithID(importID)
-			importTask, err := d.GetImport(params)
+			params := import_operations.NewGetImportTaskParams().WithProjectID(projectID).WithClusterID(clusterID).WithImportID(importID)
+			importTask, err := d.GetImportTask(params)
 			if err != nil {
 				return errors.Trace(err)
 			}

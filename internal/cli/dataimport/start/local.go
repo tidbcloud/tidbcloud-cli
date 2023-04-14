@@ -15,6 +15,8 @@
 package start
 
 import (
+	"bytes"
+	"compress/gzip"
 	"fmt"
 	"os"
 	"strconv"
@@ -27,12 +29,14 @@ import (
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
+	"github.com/alecthomas/units"
+	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/import_operations"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/dustin/go-humanize"
 	"github.com/fatih/color"
+	"github.com/go-openapi/strfmt"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
@@ -42,6 +46,8 @@ type localImportField int
 const (
 	databaseIdx localImportField = iota
 	tableIdx
+
+	maxFileSize = 50 * units.MiB
 )
 
 type LocalOpts struct {
@@ -60,7 +66,7 @@ func (c LocalOpts) NonInteractiveFlags() []string {
 
 func (c LocalOpts) SupportedDataFormats() []string {
 	return []string{
-		string(importModel.OpenapiDataFormatCSV),
+		import_operations.CreateImportTaskParamsBodySpecSourceFormatTypeCSV,
 	}
 }
 
@@ -81,7 +87,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>
 	
   Start an import task with custom CSV format:
-  $ %[1]s import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
+  $ %[1]s import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --backslash-escape=false --has-header-row=false
 `,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -106,8 +112,8 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var projectID, clusterID, dataFormat, targetDatabase, targetTable, separator, delimiter string
-			var backslashEscape, trimLastSeparator bool
+			var projectID, clusterID, dataFormat, targetDatabase, targetTable, quote, delimiter string
+			var backslashEscape, hasHeaderRow bool
 			d, err := h.Client()
 			if err != nil {
 				return err
@@ -169,7 +175,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 					return errors.New("Target table is required")
 				}
 
-				separator, delimiter, backslashEscape, trimLastSeparator, err = getCSVFormat()
+				quote, delimiter, backslashEscape, hasHeaderRow, err = getCSVFormat()
 				if err != nil {
 					return err
 				}
@@ -189,7 +195,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				separator, err = cmd.Flags().GetString(flag.Separator)
+				quote, err = cmd.Flags().GetString(flag.Quote)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -197,7 +203,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				trimLastSeparator, err = cmd.Flags().GetBool(flag.TrimLastSeparator)
+				hasHeaderRow, err = cmd.Flags().GetBool(flag.HasHeaderRow)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -216,65 +222,121 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			if stat.Size() > int64(maxFileSize) {
+				return fmt.Errorf("file size %s exceeds the maximum size %s", humanize.IBytes(uint64(stat.Size())), humanize.IBytes(uint64(maxFileSize)))
+			}
 			size := strconv.FormatInt(stat.Size(), 10)
-			name := stat.Name()
-			urlRes, err := d.GenerateUploadURL(importOp.NewGenerateUploadURLParams().WithProjectID(projectID).WithClusterID(clusterID).WithBody(importOp.GenerateUploadURLBody{
-				ContentLength: &size,
-				FileName:      &name,
+			fileName := stat.Name()
+			content := make([]byte, stat.Size())
+			_, err = uploadFile.Read(content)
+			if err != nil {
+				return err
+			}
+
+			encodeContent, err := gzipCompress(content)
+			if err != nil {
+				return err
+			}
+			baseContent := strfmt.Base64(encodeContent)
+			params := import_operations.NewUploadLocalFileParams().WithProjectID(projectID).WithClusterID(clusterID).WithBody(import_operations.UploadLocalFileBody{
+				LocalFileName: &fileName,
+				Payload: &import_operations.UploadLocalFileParamsBodyPayload{
+					Content:        &baseContent,
+					TotalSizeBytes: &size,
+				},
+			})
+
+			var stubID *string
+			if h.IOStreams.CanPrompt {
+				id, err := spinnerWaitUploadOp(h, d, params)
+				stubID = id
+				if err != nil {
+					return err
+				}
+			} else {
+				id, err := waitUploadOp(h, d, params)
+				stubID = id
+				if err != nil {
+					return err
+				}
+			}
+
+			dataSourceType := "LOCAL_FILE"
+			uri := fmt.Sprintf("file://%s/", *stubID)
+			previewImportData, err := d.PreviewImportData(import_operations.NewPreviewImportDataParams().WithProjectID(projectID).WithClusterID(clusterID).WithBody(import_operations.PreviewImportDataBody{
+				Spec: &import_operations.PreviewImportDataParamsBodySpec{
+					Source: &import_operations.PreviewImportDataParamsBodySpecSource{
+						Format: &import_operations.PreviewImportDataParamsBodySpecSourceFormat{
+							CsvConfig: &import_operations.PreviewImportDataParamsBodySpecSourceFormatCsvConfig{
+								BackslashEscape: &backslashEscape,
+								Delimiter:       &delimiter,
+								HasHeaderRow:    &hasHeaderRow,
+								Quote:           &quote,
+							},
+							Type: &dataFormat,
+						},
+						Type: &dataSourceType,
+						URI:  &uri,
+					},
+					Target: &import_operations.PreviewImportDataParamsBodySpecTarget{
+						Tables: []*import_operations.PreviewImportDataParamsBodySpecTargetTablesItems0{
+							{
+								DatabaseName:    &targetDatabase,
+								FileNamePattern: fileName,
+								TableName:       &targetTable,
+							},
+						},
+					},
+				},
 			}))
 			if err != nil {
 				return err
 			}
-			url := urlRes.Payload.UploadURL
+
+			tablePreview := previewImportData.Payload.TablePreviews[0]
+			createParams := import_operations.NewCreateImportTaskParams().WithProjectID(projectID).WithClusterID(clusterID).WithBody(import_operations.CreateImportTaskBody{
+				Options: &import_operations.CreateImportTaskParamsBodyOptions{
+					PreCreateTables: []*import_operations.CreateImportTaskParamsBodyOptionsPreCreateTablesItems0{
+						{
+							DatabaseName: tablePreview.DatabaseName,
+							Schema:       parseSchema(tablePreview.SchemaPreview),
+							TableName:    tablePreview.TableName,
+						},
+					},
+				},
+				Spec: &import_operations.CreateImportTaskParamsBodySpec{
+					Source: &import_operations.CreateImportTaskParamsBodySpecSource{
+						Format: &import_operations.CreateImportTaskParamsBodySpecSourceFormat{
+							CsvConfig: &import_operations.CreateImportTaskParamsBodySpecSourceFormatCsvConfig{
+								BackslashEscape: &backslashEscape,
+								Delimiter:       &delimiter,
+								HasHeaderRow:    &hasHeaderRow,
+								Quote:           &quote,
+							},
+							Type: &dataFormat,
+						},
+						Type: &dataSourceType,
+						URI:  &uri,
+					},
+					Target: &import_operations.CreateImportTaskParamsBodySpecTarget{
+						Tables: []*import_operations.CreateImportTaskParamsBodySpecTargetTablesItems0{
+							{
+								DatabaseName:    tablePreview.DatabaseName,
+								FileNamePattern: fileName,
+								TableName:       tablePreview.TableName,
+							},
+						},
+					},
+				},
+			})
 
 			if h.IOStreams.CanPrompt {
-				err := spinnerWaitUploadOp(h, d, url, uploadFile, stat.Size())
+				err := spinnerWaitStartOp(h, d, createParams)
 				if err != nil {
 					return err
 				}
 			} else {
-				err := waitUploadOp(h, d, url, uploadFile, stat.Size())
-				if err != nil {
-					return err
-				}
-			}
-
-			body := importOp.CreateImportBody{}
-			err = body.UnmarshalBinary([]byte(fmt.Sprintf(`{
-			"type": "LOCAL",
-			"data_format": "%s",
-			"file_name": "%s",
-			"csv_format": {
-                "separator": ",",
-				"delimiter": "\"",
-				"header": true,
-				"backslash_escape": true,
-				"null": "\\N",
-				"trim_last_separator": false,
-				"not_null": false
-			},
-			"target_table": {
-				"schema": "%s",
-				"table": "%s"
-			}}`, dataFormat, *urlRes.Payload.NewFileName, targetDatabase, targetTable)))
-			if err != nil {
-				return errors.Trace(err)
-			}
-
-			body.CsvFormat.Separator = separator
-			body.CsvFormat.Delimiter = delimiter
-			body.CsvFormat.BackslashEscape = backslashEscape
-			body.CsvFormat.TrimLastSeparator = trimLastSeparator
-
-			params := importOp.NewCreateImportParams().WithProjectID(projectID).WithClusterID(clusterID).
-				WithBody(body)
-			if h.IOStreams.CanPrompt {
-				err := spinnerWaitStartOp(h, d, params)
-				if err != nil {
-					return err
-				}
-			} else {
-				err := waitStartOp(h, d, params)
+				err := waitStartOp(h, d, createParams)
 				if err != nil {
 					return err
 				}
@@ -290,6 +352,40 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 	localCmd.Flags().String(flag.TargetDatabase, "", "Target database to which import data")
 	localCmd.Flags().String(flag.TargetTable, "", "Target table to which import data")
 	return localCmd
+}
+
+func gzipCompress(content []byte) ([]byte, error) {
+	// Compress the contents with gzip
+	var compressedContent bytes.Buffer
+	gzipWriter := gzip.NewWriter(&compressedContent)
+	if _, err := gzipWriter.Write(content); err != nil {
+		return nil, err
+	}
+	if err := gzipWriter.Close(); err != nil {
+		return nil, err
+	}
+
+	return compressedContent.Bytes(), nil
+}
+
+func parseSchema(schemaPreview *import_operations.PreviewImportDataOKBodyTablePreviewsItems0SchemaPreview) *import_operations.CreateImportTaskParamsBodyOptionsPreCreateTablesItems0Schema {
+	columns := make([]*import_operations.CreateImportTaskParamsBodyOptionsPreCreateTablesItems0SchemaColumnDefinitionsItems0, 0, len(schemaPreview.ColumnDefinitions))
+
+	for _, column := range schemaPreview.ColumnDefinitions {
+		columns = append(columns, &import_operations.CreateImportTaskParamsBodyOptionsPreCreateTablesItems0SchemaColumnDefinitionsItems0{
+			ColumnName: column.ColumnName,
+			ColumnType: column.ColumnType,
+		})
+	}
+
+	primaryKeys := make([]string, 0, len(schemaPreview.PrimaryKeyColumns))
+	for _, pk := range schemaPreview.PrimaryKeyColumns {
+		primaryKeys = append(primaryKeys, pk)
+	}
+	return &import_operations.CreateImportTaskParamsBodyOptionsPreCreateTablesItems0Schema{
+		ColumnDefinitions: columns,
+		PrimaryKeyColumns: primaryKeys,
+	}
 }
 
 func initialLocalInputModel() ui.TextInputModel {
@@ -320,23 +416,30 @@ func initialLocalInputModel() ui.TextInputModel {
 	return m
 }
 
-func waitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *string, uploadFile *os.File, size int64) error {
+func waitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, params *import_operations.UploadLocalFileParams) (*string, error) {
 	fmt.Fprintf(h.IOStreams.Out, "... Uploading file\n")
-	err := d.PreSignedUrlUpload(url, uploadFile, size)
+	res, err := d.UploadLocalFile(params)
 	if err != nil {
-		return err
+		return nil, err
+	}
+
+	if !res.IsSuccess() {
+		return nil, fmt.Errorf(res.Error())
 	}
 
 	fmt.Fprintln(h.IOStreams.Out, "File has been uploaded")
-	return nil
+	return res.GetPayload().UploadStubID, nil
 }
 
-func spinnerWaitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *string, uploadFile *os.File, size int64) error {
+func spinnerWaitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, params *import_operations.UploadLocalFileParams) (*string, error) {
+	var res *import_operations.UploadLocalFileOK
+
 	task := func() tea.Msg {
 		errChan := make(chan error, 1)
 
 		go func() {
-			err := d.PreSignedUrlUpload(url, uploadFile, size)
+			var err error
+			res, err = d.UploadLocalFile(params)
 			if err != nil {
 				errChan <- err
 				return
@@ -368,13 +471,13 @@ func spinnerWaitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *strin
 	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Uploading file"))
 	createModel, err := p.StartReturningModel()
 	if err != nil {
-		return errors.Trace(err)
+		return nil, errors.Trace(err)
 	}
 	if m, _ := createModel.(ui.SpinnerModel); m.Err != nil {
-		return m.Err
+		return nil, m.Err
 	} else {
 		fmt.Fprintf(h.IOStreams.Out, color.GreenString(m.Output))
 	}
 
-	return nil
+	return res.GetPayload().UploadStubID, nil
 }

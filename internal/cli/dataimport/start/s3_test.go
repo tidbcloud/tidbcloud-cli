@@ -24,8 +24,6 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -87,7 +85,7 @@ func (suite *S3ImportSuite) TestS3ImportArgs() {
 
 	projectID := "12345"
 	clusterID := "12345"
-	suite.mockClient.On("CreateImport", importOp.NewCreateImportParams().
+	suite.mockClient.On("CreateImportTask", importOp.NewCreateImportParams().
 		WithProjectID(projectID).WithClusterID(clusterID).WithBody(reqBody)).
 		Return(result, nil)
 
@@ -173,7 +171,7 @@ func (suite *S3ImportSuite) TestS3ImportCSVFormat() {
 
 	projectID := "12345"
 	clusterID := "12345"
-	suite.mockClient.On("CreateImport", importOp.NewCreateImportParams().
+	suite.mockClient.On("CreateImportTask", importOp.NewCreateImportParams().
 		WithProjectID(projectID).WithClusterID(clusterID).WithBody(reqBody)).
 		Return(result, nil)
 

@@ -25,10 +25,10 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/import_operations"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
@@ -39,10 +39,10 @@ import (
 type csvFormatField int
 
 const (
-	separatorIdx csvFormatField = iota
-	delimiterIdx
+	delimiterIdx csvFormatField = iota
+	quoteIdx
 	backslashEscapeIdx
-	trimLastSeparatorIdx
+	hasHeaderRowIdx
 )
 
 func StartCmd(h *internal.Helper) *cobra.Command {
@@ -51,19 +51,19 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 		Short: "Start an import task",
 	}
 
-	startCmd.PersistentFlags().String(flag.Delimiter, "\"", "The delimiter used for quoting of CSV file")
-	startCmd.PersistentFlags().String(flag.Separator, ",", "The field separator of CSV file")
-	startCmd.PersistentFlags().Bool(flag.TrimLastSeparator, false, "In CSV file whether to treat Separator as the line terminator and trim all trailing separators")
-	startCmd.PersistentFlags().Bool(flag.BackslashEscape, true, "In CSV file whether to parse backslash inside fields as escape characters")
+	startCmd.PersistentFlags().String(flag.Delimiter, ",", "The delimiter character used to separate fields in the CSV data")
+	startCmd.PersistentFlags().String(flag.Quote, "\"", "The character used to quote the fields in the CSV data")
+	startCmd.PersistentFlags().Bool(flag.HasHeaderRow, true, "In CSV file whether the CSV data has a header row, which is not part of the data")
+	startCmd.PersistentFlags().Bool(flag.BackslashEscape, true, "In CSV file whether to parse backslash(\\) inside fields as escape characters")
 
 	startCmd.AddCommand(LocalCmd(h))
 	startCmd.AddCommand(S3Cmd(h))
 	return startCmd
 }
 
-func waitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.CreateImportParams) error {
+func waitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *import_operations.CreateImportTaskParams) error {
 	fmt.Fprintf(h.IOStreams.Out, "... Starting the import task\n")
-	res, err := d.CreateImport(params)
+	res, err := d.CreateImportTask(params)
 	if err != nil {
 		return err
 	}
@@ -72,12 +72,12 @@ func waitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.C
 	return nil
 }
 
-func spinnerWaitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.CreateImportParams) error {
+func spinnerWaitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *import_operations.CreateImportTaskParams) error {
 	task := func() tea.Msg {
 		errChan := make(chan error, 1)
 
 		go func() {
-			res, err := d.CreateImport(params)
+			res, err := d.CreateImportTask(params)
 			if err != nil {
 				errChan <- err
 				return
@@ -118,9 +118,9 @@ func spinnerWaitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *imp
 	return nil
 }
 
-func getCSVFormat() (separator string, delimiter string, backslashEscape bool, trimLastSeparator bool, errToReturn error) {
-	separator, delimiter = ",", "\""
-	backslashEscape, trimLastSeparator = true, false
+func getCSVFormat() (delimiter string, quote string, backslashEscape bool, hasHeaderRow bool, errToReturn error) {
+	delimiter, quote = ",", "\""
+	backslashEscape, hasHeaderRow = true, true
 
 	needCustomCSV := false
 	prompt := &survey.Confirm{
@@ -149,13 +149,13 @@ func getCSVFormat() (separator string, delimiter string, backslashEscape bool, t
 		}
 
 		// If user input is blank, use the default value.
-		v := inputModel.(ui.TextInputModel).Inputs[separatorIdx].Value()
-		if len(v) > 0 {
-			separator = v
-		}
-		v = inputModel.(ui.TextInputModel).Inputs[delimiterIdx].Value()
+		v := inputModel.(ui.TextInputModel).Inputs[delimiterIdx].Value()
 		if len(v) > 0 {
 			delimiter = v
+		}
+		v = inputModel.(ui.TextInputModel).Inputs[quoteIdx].Value()
+		if len(v) > 0 {
+			quote = v
 		}
 		v = inputModel.(ui.TextInputModel).Inputs[backslashEscapeIdx].Value()
 		if len(v) > 0 {
@@ -165,9 +165,9 @@ func getCSVFormat() (separator string, delimiter string, backslashEscape bool, t
 				return
 			}
 		}
-		v = inputModel.(ui.TextInputModel).Inputs[trimLastSeparatorIdx].Value()
+		v = inputModel.(ui.TextInputModel).Inputs[hasHeaderRowIdx].Value()
 		if len(v) > 0 {
-			trimLastSeparator, err = strconv.ParseBool(v)
+			hasHeaderRow, err = strconv.ParseBool(v)
 			if err != nil {
 				errToReturn = errors.Annotate(err, "backslash escape must be true or false")
 				return
@@ -190,17 +190,17 @@ func initialCSVFormatInputModel() ui.TextInputModel {
 		f := csvFormatField(i)
 
 		switch f {
-		case separatorIdx:
-			t.Placeholder = "separator, default is ',', empty to use default"
+		case delimiterIdx:
+			t.Placeholder = "delimiter, default is ',', empty to use default"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
-		case delimiterIdx:
-			t.Placeholder = "delimiter, default is '\"', empty to use default"
+		case quoteIdx:
+			t.Placeholder = "quote, default is '\"', empty to use default"
 		case backslashEscapeIdx:
 			t.Placeholder = "backslashEscape, default is true, empty to use default"
-		case trimLastSeparatorIdx:
-			t.Placeholder = "trimLastSeparator, default is false, empty to use default"
+		case hasHeaderRowIdx:
+			t.Placeholder = "hasHeaderRow, default is false, empty to use default"
 		}
 
 		m.Inputs[i] = t

@@ -17,18 +17,16 @@ package cloud
 import (
 	"fmt"
 	"net/http"
-	"os"
 
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/version"
 	connectInfoClient "tidbcloud-cli/pkg/tidbcloud/connect_info/client"
 	connectInfoOp "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
-	importClient "tidbcloud-cli/pkg/tidbcloud/import/client"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 
 	apiClient "github.com/c4pt0r/go-tidbcloud-sdk-v1/client"
 	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
+	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/import_operations"
 	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 	httpTransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
@@ -53,35 +51,33 @@ type TiDBCloudClient interface {
 
 	ListProjects(params *project.ListProjectsParams, opts ...project.ClientOption) (*project.ListProjectsOK, error)
 
-	CancelImport(params *importOp.CancelImportParams, opts ...importOp.ClientOption) (*importOp.CancelImportOK, error)
+	UpdateImportTask(params *import_operations.UpdateImportTaskParams, opts ...import_operations.ClientOption) (*import_operations.UpdateImportTaskOK, error)
 
-	CreateImport(params *importOp.CreateImportParams, opts ...importOp.ClientOption) (*importOp.CreateImportOK, error)
+	CreateImportTask(params *import_operations.CreateImportTaskParams, opts ...import_operations.ClientOption) (*import_operations.CreateImportTaskOK, error)
 
-	GetImport(params *importOp.GetImportParams, opts ...importOp.ClientOption) (*importOp.GetImportOK, error)
+	GetImportTask(params *import_operations.GetImportTaskParams, opts ...import_operations.ClientOption) (*import_operations.GetImportTaskOK, error)
 
-	ListImports(params *importOp.ListImportsParams, opts ...importOp.ClientOption) (*importOp.ListImportsOK, error)
+	ListImportTasks(params *import_operations.ListImportTasksParams, opts ...import_operations.ClientOption) (*import_operations.ListImportTasksOK, error)
 
-	GenerateUploadURL(params *importOp.GenerateUploadURLParams, opts ...importOp.ClientOption) (*importOp.GenerateUploadURLOK, error)
+	UploadLocalFile(params *import_operations.UploadLocalFileParams, opts ...import_operations.ClientOption) (*import_operations.UploadLocalFileOK, error)
 
-	PreSignedUrlUpload(url *string, uploadFile *os.File, size int64) error
+	PreviewImportData(params *import_operations.PreviewImportDataParams, opts ...import_operations.ClientOption) (*import_operations.PreviewImportDataOK, error)
 
 	GetConnectInfo(params *connectInfoOp.GetInfoParams, opts ...connectInfoOp.ClientOption) (*connectInfoOp.GetInfoOK, error)
 }
 
 type ClientDelegate struct {
 	c  *apiClient.GoTidbcloud
-	ic *importClient.TidbcloudImport
 	cc *connectInfoClient.TidbcloudConnectInfo
 }
 
 func NewClientDelegate(publicKey string, privateKey string, apiUrl string) (*ClientDelegate, error) {
-	c, ic, cc, err := NewApiClient(publicKey, privateKey, apiUrl)
+	c, cc, err := NewApiClient(publicKey, privateKey, apiUrl)
 	if err != nil {
 		return nil, err
 	}
 	return &ClientDelegate{
 		c:  c,
-		ic: ic,
 		cc: cc,
 	}, nil
 }
@@ -110,51 +106,35 @@ func (d *ClientDelegate) ListProjects(params *project.ListProjectsParams, opts .
 	return d.c.Project.ListProjects(params, opts...)
 }
 
-func (d *ClientDelegate) CancelImport(params *importOp.CancelImportParams, opts ...importOp.ClientOption) (*importOp.CancelImportOK, error) {
-	return d.ic.ImportService.CancelImport(params, opts...)
+func (d *ClientDelegate) UpdateImportTask(params *import_operations.UpdateImportTaskParams, opts ...import_operations.ClientOption) (*import_operations.UpdateImportTaskOK, error) {
+	return d.c.ImportOperations.UpdateImportTask(params, opts...)
 }
 
-func (d *ClientDelegate) CreateImport(params *importOp.CreateImportParams, opts ...importOp.ClientOption) (*importOp.CreateImportOK, error) {
-	return d.ic.ImportService.CreateImport(params, opts...)
+func (d *ClientDelegate) CreateImportTask(params *import_operations.CreateImportTaskParams, opts ...import_operations.ClientOption) (*import_operations.CreateImportTaskOK, error) {
+	return d.c.ImportOperations.CreateImportTask(params, opts...)
 }
 
-func (d *ClientDelegate) GetImport(params *importOp.GetImportParams, opts ...importOp.ClientOption) (*importOp.GetImportOK, error) {
-	return d.ic.ImportService.GetImport(params, opts...)
+func (d *ClientDelegate) GetImportTask(params *import_operations.GetImportTaskParams, opts ...import_operations.ClientOption) (*import_operations.GetImportTaskOK, error) {
+	return d.c.ImportOperations.GetImportTask(params, opts...)
 }
 
-func (d *ClientDelegate) ListImports(params *importOp.ListImportsParams, opts ...importOp.ClientOption) (*importOp.ListImportsOK, error) {
-	return d.ic.ImportService.ListImports(params, opts...)
+func (d *ClientDelegate) ListImportTasks(params *import_operations.ListImportTasksParams, opts ...import_operations.ClientOption) (*import_operations.ListImportTasksOK, error) {
+	return d.c.ImportOperations.ListImportTasks(params, opts...)
 }
 
-func (d *ClientDelegate) GenerateUploadURL(params *importOp.GenerateUploadURLParams, opts ...importOp.ClientOption) (*importOp.GenerateUploadURLOK, error) {
-	return d.ic.ImportService.GenerateUploadURL(params, opts...)
+func (d *ClientDelegate) UploadLocalFile(params *import_operations.UploadLocalFileParams, opts ...import_operations.ClientOption) (*import_operations.UploadLocalFileOK, error) {
+	return d.c.ImportOperations.UploadLocalFile(params, opts...)
 }
 
-func (d *ClientDelegate) PreSignedUrlUpload(url *string, uploadFile *os.File, size int64) error {
-	request, err := http.NewRequest("PUT", *url, uploadFile)
-	if err != nil {
-		return err
-	}
-	request.ContentLength = size
-
-	putRes, err := http.DefaultClient.Do(request)
-	if err != nil {
-		return err
-	}
-	defer putRes.Body.Close()
-
-	if putRes.StatusCode != http.StatusOK {
-		return fmt.Errorf("upload file failed : %s, %s", putRes.Status, putRes.Body)
-	}
-
-	return nil
+func (d *ClientDelegate) PreviewImportData(params *import_operations.PreviewImportDataParams, opts ...import_operations.ClientOption) (*import_operations.PreviewImportDataOK, error) {
+	return d.c.ImportOperations.PreviewImportData(params, opts...)
 }
 
 func (d *ClientDelegate) GetConnectInfo(params *connectInfoOp.GetInfoParams, opts ...connectInfoOp.ClientOption) (*connectInfoOp.GetInfoOK, error) {
 	return d.cc.ConnectInfoService.GetInfo(params, opts...)
 }
 
-func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport, *connectInfoClient.TidbcloudConnectInfo, error) {
+func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClient.GoTidbcloud, *connectInfoClient.TidbcloudConnectInfo, error) {
 	httpclient := &http.Client{
 		Transport: NewTransportWithAgent(&digest.Transport{
 			Username: publicKey,
@@ -165,11 +145,11 @@ func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClien
 	// Parse the URL
 	u, err := prop.ValidateApiUrl(apiUrl)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 
 	transport := httpTransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpclient)
-	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default), nil
+	return apiClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default), nil
 }
 
 // NewTransportWithAgent returns a new http.RoundTripper that add the User-Agent header,

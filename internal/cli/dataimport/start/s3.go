@@ -25,9 +25,8 @@ import (
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
+	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/import_operations"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/juju/errors"
@@ -57,10 +56,10 @@ func (c S3Opts) NonInteractiveFlags() []string {
 
 func (c S3Opts) SupportedDataFormats() []string {
 	return []string{
-		string(importModel.OpenapiDataFormatCSV),
-		string(importModel.OpenapiDataFormatSQLFile),
-		string(importModel.OpenapiDataFormatParquet),
-		string(importModel.OpenapiDataFormatAuroraSnapshot),
+		import_operations.CreateImportTaskParamsBodySpecSourceFormatTypeCSV,
+		import_operations.CreateImportTaskParamsBodySpecSourceFormatTypeSQL,
+		import_operations.CreateImportTaskParamsBodySpecSourceFormatTypePARQUET,
+		import_operations.CreateImportTaskParamsBodySpecSourceFormatTypeAURORASNAPSHOT,
 	}
 }
 
@@ -105,8 +104,8 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var projectID, clusterID, awsRoleArn, dataFormat, sourceUrl, separator, delimiter string
-			var backslashEscape, trimLastSeparator bool
+			var projectID, clusterID, awsRoleArn, dataFormat, sourceUrl, delimiter, quote string
+			var backslashEscape, hasHeaderRow bool
 
 			d, err := h.Client()
 			if err != nil {
@@ -169,8 +168,8 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 					return errors.New("Source url is required")
 				}
 
-				if dataFormat == string(importModel.OpenapiDataFormatCSV) {
-					separator, delimiter, backslashEscape, trimLastSeparator, err = getCSVFormat()
+				if dataFormat == import_operations.CreateImportTaskParamsBodySpecSourceFormatTypeCSV {
+					delimiter, quote, backslashEscape, hasHeaderRow, err = getCSVFormat()
 					if err != nil {
 						return err
 					}
@@ -191,7 +190,7 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				separator, err = cmd.Flags().GetString(flag.Separator)
+				quote, err = cmd.Flags().GetString(flag.Quote)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -199,7 +198,7 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				trimLastSeparator, err = cmd.Flags().GetBool(flag.TrimLastSeparator)
+				hasHeaderRow, err = cmd.Flags().GetBool(flag.HasHeaderRow)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -207,40 +206,36 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 
 			cmd.Annotations[telemetry.ProjectID] = projectID
 
-			body := importOp.CreateImportBody{}
-			err = body.UnmarshalBinary([]byte(fmt.Sprintf(`{
-			"aws_role_arn": "%s",
-			"data_format": "%s",
-			"source_url": "%s",
-			"type": "S3",
-			"csv_format": {
-                "separator": ",",
-				"delimiter": "\"",
-				"header": true,
-				"backslash_escape": true,
-				"null": "\\N",
-				"trim_last_separator": false,
-				"not_null": false
-			}
-			}`, awsRoleArn, dataFormat, sourceUrl)))
-			if err != nil {
-				return errors.Trace(err)
-			}
-
-			body.CsvFormat.Separator = separator
-			body.CsvFormat.Delimiter = delimiter
-			body.CsvFormat.BackslashEscape = backslashEscape
-			body.CsvFormat.TrimLastSeparator = trimLastSeparator
-
-			params := importOp.NewCreateImportParams().WithProjectID(projectID).WithClusterID(clusterID).
-				WithBody(body)
+			sourceType := import_operations.CreateImportTaskParamsBodySpecSourceTypeS3
+			createParams := import_operations.NewCreateImportTaskParams().WithProjectID(projectID).WithClusterID(clusterID).WithBody(import_operations.CreateImportTaskBody{
+				Spec: &import_operations.CreateImportTaskParamsBodySpec{
+					Source: &import_operations.CreateImportTaskParamsBodySpecSource{
+						Format: &import_operations.CreateImportTaskParamsBodySpecSourceFormat{
+							CsvConfig: &import_operations.CreateImportTaskParamsBodySpecSourceFormatCsvConfig{
+								BackslashEscape: &backslashEscape,
+								Delimiter:       &delimiter,
+								HasHeaderRow:    &hasHeaderRow,
+								Quote:           &quote,
+							},
+							Type: &dataFormat,
+						},
+						Type: &sourceType,
+						URI:  &sourceUrl,
+					},
+					Target: &import_operations.CreateImportTaskParamsBodySpecTarget{
+						Tables: []*import_operations.CreateImportTaskParamsBodySpecTargetTablesItems0{
+							{},
+						},
+					},
+				},
+			})
 			if h.IOStreams.CanPrompt {
-				err := spinnerWaitStartOp(h, d, params)
+				err := spinnerWaitStartOp(h, d, createParams)
 				if err != nil {
 					return err
 				}
 			} else {
-				err := waitStartOp(h, d, params)
+				err := waitStartOp(h, d, createParams)
 				if err != nil {
 					return err
 				}

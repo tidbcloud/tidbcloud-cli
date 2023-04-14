@@ -25,8 +25,6 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -106,7 +104,7 @@ func (suite *DescribeImportSuite) TestDescribeImportArgs() {
 	projectID := "12345"
 	clusterID := "12345"
 	importID := "12345"
-	suite.mockClient.On("GetImport", importOp.NewGetImportParams().
+	suite.mockClient.On("GetImportTask", importOp.NewGetImportParams().
 		WithProjectID(projectID).WithClusterID(clusterID).WithID(importID)).
 		Return(result, nil)
 

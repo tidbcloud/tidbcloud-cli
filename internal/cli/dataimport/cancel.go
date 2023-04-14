@@ -23,11 +23,10 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/import_operations"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -108,11 +107,8 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				// Only task status is pending or importing can be canceled.
-				selectedImport, err := cloud.GetSelectedImport(projectID, clusterID, h.QueryPageSize, d, []importModel.OpenapiGetImportRespStatus{
-					importModel.OpenapiGetImportRespStatusPREPARING,
-					importModel.OpenapiGetImportRespStatusIMPORTING,
-				})
+				// Only task status is PREPARING or IMPORTING can be canceled.
+				selectedImport, err := cloud.GetSelectedImport(projectID, clusterID, h.QueryPageSize, d, []string{"PREPARING", "IMPORTING"})
 				if err != nil {
 					return err
 				}
@@ -152,8 +148,11 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := importOp.NewCancelImportParams().WithProjectID(projectID).WithClusterID(clusterID).WithID(importID)
-			_, err = d.CancelImport(params)
+			action := "CANCEL"
+			params := import_operations.NewUpdateImportTaskParams().WithProjectID(projectID).WithClusterID(clusterID).WithImportID(importID).WithBody(import_operations.UpdateImportTaskBody{
+				Action: &action,
+			})
+			_, err = d.UpdateImportTask(params)
 			if err != nil {
 				return errors.Trace(err)
 			}

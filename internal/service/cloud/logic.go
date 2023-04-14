@@ -18,16 +18,14 @@ import (
 	"fmt"
 	"math"
 	"os"
-	"strconv"
 
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	connectInfoApi "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
 	connectInfoModel "tidbcloud-cli/pkg/tidbcloud/connect_info/models"
-	importApi "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
+	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/import_operations"
 	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/juju/errors"
@@ -52,12 +50,12 @@ func (c Cluster) String() string {
 }
 
 type Import struct {
-	ID     string
-	Status *importModel.OpenapiGetImportRespStatus
+	ID    string
+	Phase string
 }
 
 func (i Import) String() string {
-	return fmt.Sprintf("%s(%s)", i.ID, *i.Status)
+	return fmt.Sprintf("%s(%s)", i.ID, i.Phase)
 }
 
 func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error) {
@@ -140,7 +138,7 @@ func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient
 
 // GetSelectedImport get the selected import task. statusFilter is used to filter the available options, only imports has status in statusFilter will be available.
 // statusFilter with no filter will mark all the import tasks as available options just like statusFilter with all status.
-func GetSelectedImport(pID string, cID string, pageSize int64, client TiDBCloudClient, statusFilter []importModel.OpenapiGetImportRespStatus) (*Import, error) {
+func GetSelectedImport(pID string, cID string, pageSize int64, client TiDBCloudClient, statusFilter []string) (*Import, error) {
 	_, importItems, err := RetrieveImports(pID, cID, pageSize, client)
 	if err != nil {
 		return nil, err
@@ -148,13 +146,13 @@ func GetSelectedImport(pID string, cID string, pageSize int64, client TiDBCloudC
 
 	var items = make([]interface{}, 0, len(importItems))
 	for _, item := range importItems {
-		if len(statusFilter) != 0 && !util.ElemInSlice(statusFilter, *item.Status) {
+		if len(statusFilter) != 0 && !util.ElemInSlice(statusFilter, *item.Status.Phase) {
 			continue
 		}
 
 		items = append(items, &Import{
-			ID:     item.ID,
-			Status: item.Status,
+			ID:    *item.Metadata.ID,
+			Phase: *item.Status.Phase,
 		})
 	}
 	model, err := ui.InitialSelectModel(items, "Choose the import task:")
@@ -215,22 +213,21 @@ func RetrieveClusters(pID string, pageSize int64, d TiDBCloudClient) (int64, []*
 	return total, items, nil
 }
 
-func RetrieveImports(pID string, cID string, pageSize int64, d TiDBCloudClient) (uint64, []*importModel.OpenapiGetImportResp, error) {
-	params := importApi.NewListImportsParams().WithProjectID(pID).WithClusterID(cID)
-	ps := int32(pageSize)
-	var total uint64 = math.MaxUint64
-	var page int32 = 1
-	var items []*importModel.OpenapiGetImportResp
+func RetrieveImports(pID string, cID string, pageSize int64, d TiDBCloudClient) (int64, []*import_operations.ListImportTasksOKBodyItemsItems0, error) {
+	params := import_operations.NewListImportTasksParams().WithProjectID(pID).WithClusterID(cID)
+	var total int64 = math.MaxInt64
+	var page int64 = 1
+	var items []*import_operations.ListImportTasksOKBodyItemsItems0
 	// loop to get all clusters
-	for uint64((page-1)*ps) < total {
-		imports, err := d.ListImports(params.WithPage(&page).WithPageSize(&ps))
+	for (page-1)*pageSize < total {
+		imports, err := d.ListImportTasks(params.WithPage(&page).WithPageSize(&pageSize))
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
 
-		total, _ = strconv.ParseUint(*imports.Payload.Total, 0, 64)
+		total = *imports.Payload.Total
 		page += 1
-		items = append(items, imports.Payload.Imports...)
+		items = append(items, imports.Payload.Items...)
 	}
 	return total, items, nil
 }

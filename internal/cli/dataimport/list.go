@@ -24,8 +24,8 @@ import (
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
-	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
+	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/import_operations"
 	"github.com/dustin/go-humanize"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -120,7 +120,6 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			totalStr := strconv.FormatUint(total, 10)
 
 			format, err := cmd.Flags().GetString(flag.Output)
 			if err != nil {
@@ -130,9 +129,9 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			// for terminal which can prompt, humanFormat is the default format.
 			// for other terminals, json format is the default format.
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				res := &importModel.OpenapiListImportsResp{
-					Imports: importTasks,
-					Total:   &totalStr,
+				res := &import_operations.ListImportTasksOKBody{
+					Items: importTasks,
+					Total: &total,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)
 				if err != nil {
@@ -141,31 +140,22 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			} else if format == output.HumanFormat {
 				columns := []output.Column{
 					"ID",
+					"Name",
 					"Type",
-					"Status",
-					"CreatedAt",
-					"Source",
+					"Phase",
 					"DataFormat",
 					"Size",
 				}
 
 				var rows []output.Row
 				for _, item := range importTasks {
-					var source string
-					if item.CreationDetails.Type != nil && *item.CreationDetails.Type == importModel.CreateImportReqImportTypeS3 {
-						source = item.CreationDetails.SourceURL
-					} else {
-						source = item.CreationDetails.FileName
-					}
-
 					rows = append(rows, output.Row{
-						item.ID,
-						string(*item.CreationDetails.Type),
-						string(*item.Status),
-						item.CreatedAt.String(),
-						source,
-						string(*item.DataFormat),
-						convertToStoreSize(*item.TotalSize),
+						*item.Metadata.ID,
+						item.Metadata.Name,
+						*item.Spec.Source.Type,
+						*item.Status.Phase,
+						*item.Spec.Source.Format.Type,
+						convertToStoreSize(item.Status.SourceTotalSizeBytes),
 					})
 				}
 

@@ -24,7 +24,6 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -59,7 +58,7 @@ func (suite *CancelImportSuite) TestCancelImportArgs() {
 	projectID := "12345"
 	clusterID := "12345"
 	importID := "12345"
-	suite.mockClient.On("CancelImport", importOp.NewCancelImportParams().
+	suite.mockClient.On("UpdateImportTask", importOp.NewCancelImportParams().
 		WithProjectID(projectID).WithClusterID(clusterID).WithID(importID)).
 		Return(result, nil)
 

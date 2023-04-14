@@ -26,12 +26,6 @@ generate-mocks: ## Generate mock objects
 	mockery --name EventsSender --recursive --output=internal/mock --outpkg mock --filename sender.go
 
 # Required to install go-swagger https://goswagger.io/install.html
-.PHONY: generate-import-client
-generate-import-client: ## Generate import client
-	@echo "==> Generating import client"
-	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
-	swagger generate client -f pkg/tidbcloud/import/import-api.json -A tidbcloud-import -t pkg/tidbcloud/import
-
 .PHONY: generate-connect-info-client
  generate-connect-info-client:
 	@echo "==> Generating connect info client"

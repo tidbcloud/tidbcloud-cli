@@ -26,8 +26,6 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -185,7 +183,7 @@ func (suite *ListImportSuite) TestListImportArgs() {
 	var page int32 = 1
 	var pageSize = int32(suite.h.QueryPageSize)
 
-	body := &importModel.OpenapiListImportsResp{}
+	body := &import_operations.
 	err := json.Unmarshal([]byte(listResultStr), body)
 	assert.Nil(err)
 	result := &importOp.ListImportsOK{
@@ -193,7 +191,7 @@ func (suite *ListImportSuite) TestListImportArgs() {
 	}
 	projectID := "12345"
 	clusterID := "12345"
-	suite.mockClient.On("ListImports", importOp.NewListImportsParams().
+	suite.mockClient.On("ListImportTasks", importOp.NewListImportsParams().
 		WithProjectID(projectID).WithClusterID(clusterID).WithPage(&page).WithPageSize(&pageSize)).
 		Return(result, nil)
 
@@ -259,10 +257,10 @@ func (suite *ListImportSuite) TestListImportWithMultiPages() {
 	}
 	projectID := "12345"
 	clusterID := "12345"
-	suite.mockClient.On("ListImports", importOp.NewListImportsParams().
+	suite.mockClient.On("ListImportTasks", importOp.NewListImportsParams().
 		WithProjectID(projectID).WithClusterID(clusterID).WithPage(&pageOne).WithPageSize(&pageSize)).
 		Return(result, nil)
-	suite.mockClient.On("ListImports", importOp.NewListImportsParams().
+	suite.mockClient.On("ListImportTasks", importOp.NewListImportsParams().
 		WithProjectID(projectID).WithClusterID(clusterID).WithPage(&pageTwo).WithPageSize(&pageSize)).
 		Return(result, nil)
 	cmd := ListCmd(suite.h)
