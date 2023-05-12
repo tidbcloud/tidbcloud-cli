@@ -204,7 +204,7 @@ func initConfig() {
 	home, err := os.UserHomeDir()
 	cobra.CheckErr(err)
 	path := home + "/" + config.HomePath
-	err = os.MkdirAll(path, 0700)
+	err = os.MkdirAll(path+"/.cache", 0700)
 	if err != nil {
 		color.Red("Failed to create home directory: %s", err)
 		os.Exit(1)
