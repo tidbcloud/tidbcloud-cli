@@ -27,6 +27,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/pingcap/errors"
 	"github.com/spf13/cobra"
+	exec "golang.org/x/sys/execabs"
 )
 
 const (
@@ -107,6 +108,10 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var projectID, clusterID, sourceHost, sourcePort, sourceUser, sourcePassword, sourceTable, sourceDatabase, userName, password, databaseName string
 			var skipCreateTable bool
+			err := CheckMySQLClient()
+			if err != nil {
+				return err
+			}
 
 			d, err := h.Client()
 			if err != nil {
@@ -561,4 +566,29 @@ func downloadCaFile(caFile string) error {
 	}
 
 	return nil
+}
+
+// CheckMySQLClient checks whether the 'mysql' client exists and is configured in $PATH
+func CheckMySQLClient() error {
+	_, err := exec.LookPath("mysql")
+	if err == nil {
+		return nil
+	}
+
+	msg := "couldn't find the 'mysql' command-line tool required to run this command."
+
+	switch runtime.GOOS {
+	case "darwin":
+		if HasHomebrew() {
+			return fmt.Errorf("%s\nTo install, run: brew install mysql-client", msg)
+		}
+	}
+
+	return fmt.Errorf("%s\nPlease install it and add to $PATH", msg)
+}
+
+// HasHomebrew check whether the user has installed brew
+func HasHomebrew() bool {
+	_, err := exec.LookPath("brew")
+	return err == nil
 }
