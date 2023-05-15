@@ -255,6 +255,10 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 	s3Cmd.Flags().String(flag.AwsRoleArn, "", "AWS S3 IAM Role ARN")
 	s3Cmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %q", opts.SupportedDataFormats()))
 	s3Cmd.Flags().String(flag.SourceUrl, "", "The S3 path where the source data file is stored")
+	s3Cmd.Flags().String(flag.Delimiter, "\"", "The delimiter used for quoting of CSV file")
+	s3Cmd.Flags().String(flag.Separator, ",", "The field separator of CSV file")
+	s3Cmd.Flags().Bool(flag.TrimLastSeparator, false, "In CSV file whether to treat Separator as the line terminator and trim all trailing separators")
+	s3Cmd.Flags().Bool(flag.BackslashEscape, true, "In CSV file whether to parse backslash inside fields as escape characters")
 	return s3Cmd
 }
 

@@ -53,9 +53,14 @@ func (c MysqlOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.ProjectID,
-		flag.AwsRoleArn,
-		flag.DataFormat,
-		flag.SourceUrl,
+		flag.Database,
+		flag.SourceHost,
+		flag.SourcePort,
+		flag.SourceDatabase,
+		flag.SourceTable,
+		flag.SourceUser,
+		flag.SourcePassword,
+		flag.Password,
 	}
 }
 
@@ -64,7 +69,7 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
 		interactive: true,
 	}
 
-	var MysqlCmd = &cobra.Command{
+	var mysqlCmd = &cobra.Command{
 		Use:         "mysql",
 		Short:       "Import from mysql into TiDB Cloud",
 		Annotations: make(map[string]string),
@@ -72,10 +77,10 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s import start mysql
 
   Start an import task in non-interactive mode:
-  $ %[1]s import start mysql --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format <data-format> --source-url <source-url>
+  $ %[1]s import start mysql --project-id <project-id> --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --database <database> --password <password>
 
-  Start an import task with custom CSV format:
-  $ %[1]s import start mysql --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format CSV --source-url <source-url> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
+  Start an import task with a specific user:
+  $ %[1]s import start mysql --project-id <project-id> --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --database <database> --password <password> --user <user>
 `,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -228,9 +233,59 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
 					}
 				}
 			} else {
-				// non-interactive mode
-				projectID = cmd.Flag(flag.ProjectID).Value.String()
-				clusterID = cmd.Flag(flag.ClusterID).Value.String()
+				// non-interactive mode, get values from flags
+				var err error
+				projectID, err = cmd.Flags().GetString(flag.ProjectID)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				sourceHost, err = cmd.Flags().GetString(flag.SourceHost)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				sourcePort, err = cmd.Flags().GetString(flag.SourcePort)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				sourceUser, err = cmd.Flags().GetString(flag.SourceUser)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				sourcePassword, err = cmd.Flags().GetString(flag.SourcePassword)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				sourceDatabase, err = cmd.Flags().GetString(flag.SourceDatabase)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				sourceTable, err = cmd.Flags().GetString(flag.SourceTable)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				password, err = cmd.Flags().GetString(flag.Password)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				skipCreateTable, err = cmd.Flags().GetBool(flag.SkipCreateTable)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				databaseName, err = cmd.Flags().GetString(flag.Database)
+				if err != nil {
+					return errors.Trace(err)
+				}
+
+				if cmd.Flags().Changed(flag.User) {
+					userName, err = cmd.Flags().GetString(flag.User)
+					if err != nil {
+						return errors.Trace(err)
+					}
+				}
 			}
 
 			cmd.Annotations[telemetry.ProjectID] = projectID
@@ -274,7 +329,9 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
 
 			// Resolve cluster information
 			// Get connect parameter
-			defaultUser := clusterInfo.Payload.Status.ConnectionStrings.DefaultUser
+			if userName == "" {
+				userName = clusterInfo.Payload.Status.ConnectionStrings.DefaultUser
+			}
 			host := clusterInfo.Payload.Status.ConnectionStrings.Standard.Host
 			port := strconv.Itoa(int(clusterInfo.Payload.Status.ConnectionStrings.Standard.Port))
 			clusterType := clusterInfo.Payload.ClusterType
@@ -289,8 +346,7 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			fmt.Println("OS" + goOS)
-			connectionString, err := util.GenerateConnectionString(connectInfo, util.MysqlCliID, host, defaultUser, port, clusterType, goOS)
+			connectionString, err := util.GenerateConnectionString(connectInfo, util.MysqlCliID, host, userName, port, clusterType, goOS)
 			if err != nil {
 				return err
 			}
@@ -314,9 +370,20 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	MysqlCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
-	MysqlCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	return MysqlCmd
+	mysqlCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
+	mysqlCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
+	mysqlCmd.Flags().String(flag.SourceHost, "", "The host of the source Mysql")
+	mysqlCmd.Flags().String(flag.SourcePort, "", "The port of the source Mysql")
+	mysqlCmd.Flags().String(flag.SourceUser, "", "The user to login source Mysql")
+	mysqlCmd.Flags().String(flag.SourcePassword, "", "The password to login source Mysql")
+	mysqlCmd.Flags().String(flag.SourceDatabase, "", "The database of the source Mysql")
+	mysqlCmd.Flags().String(flag.SourceTable, "", "The table to dump")
+	mysqlCmd.Flags().String(flag.Database, "", "The target database")
+	mysqlCmd.Flags().String(flag.User, "", "The user to login serverless cluster, default is <token>.root")
+	mysqlCmd.Flags().Bool(flag.SkipCreateTable, false, "Skip create table step")
+	mysqlCmd.Flags().String(flag.Password, "", "The password to login serverless cluster")
+
+	return mysqlCmd
 }
 
 func initialMysqlInputModel() ui.TextInputModel {

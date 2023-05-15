@@ -22,7 +22,6 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
@@ -50,11 +49,6 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 		Use:   "start",
 		Short: "Start an import task",
 	}
-
-	startCmd.PersistentFlags().String(flag.Delimiter, "\"", "The delimiter used for quoting of CSV file")
-	startCmd.PersistentFlags().String(flag.Separator, ",", "The field separator of CSV file")
-	startCmd.PersistentFlags().Bool(flag.TrimLastSeparator, false, "In CSV file whether to treat Separator as the line terminator and trim all trailing separators")
-	startCmd.PersistentFlags().Bool(flag.BackslashEscape, true, "In CSV file whether to parse backslash inside fields as escape characters")
 
 	startCmd.AddCommand(LocalCmd(h))
 	startCmd.AddCommand(S3Cmd(h))

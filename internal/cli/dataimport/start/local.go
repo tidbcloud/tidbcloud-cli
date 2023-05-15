@@ -289,6 +289,10 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 	localCmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %q", opts.SupportedDataFormats()))
 	localCmd.Flags().String(flag.TargetDatabase, "", "Target database to which import data")
 	localCmd.Flags().String(flag.TargetTable, "", "Target table to which import data")
+	localCmd.Flags().String(flag.Delimiter, "\"", "The delimiter used for quoting of CSV file")
+	localCmd.Flags().String(flag.Separator, ",", "The field separator of CSV file")
+	localCmd.Flags().Bool(flag.TrimLastSeparator, false, "In CSV file whether to treat Separator as the line terminator and trim all trailing separators")
+	localCmd.Flags().Bool(flag.BackslashEscape, true, "In CSV file whether to parse backslash inside fields as escape characters")
 	return localCmd
 }
 
