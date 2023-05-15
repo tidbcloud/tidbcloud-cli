@@ -46,11 +46,11 @@ const (
 	sourceTableIdx
 )
 
-type MysqlOpts struct {
+type MySQLOpts struct {
 	interactive bool
 }
 
-func (c MysqlOpts) NonInteractiveFlags() []string {
+func (c MySQLOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.ProjectID,
@@ -65,8 +65,8 @@ func (c MysqlOpts) NonInteractiveFlags() []string {
 	}
 }
 
-func MysqlCmd(h *internal.Helper) *cobra.Command {
-	opts := MysqlOpts{
+func MySQLCmd(h *internal.Helper) *cobra.Command {
+	opts := MySQLOpts{
 		interactive: true,
 	}
 
@@ -111,7 +111,7 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var projectID, clusterID, sourceHost, sourcePort, sourceUser, sourcePassword, sourceTable, sourceDatabase, userName, password, databaseName string
 			var skipCreateTable bool
-			err := h.MysqlHelper.CheckMySQLClient()
+			err := h.MySQLHelper.CheckMySQLClient()
 			if err != nil {
 				return err
 			}
@@ -129,7 +129,7 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
 
 				// interactive mode
 				// variables for input
-				p := tea.NewProgram(initialMysqlInputModel())
+				p := tea.NewProgram(initialMySQLInputModel())
 				inputModel, err := p.StartReturningModel()
 				if err != nil {
 					return errors.Trace(err)
@@ -151,9 +151,6 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
 					return errors.New("Source user is required")
 				}
 				sourcePassword = inputModel.(ui.TextInputModel).Inputs[sourcePasswordIdx].Value()
-				if len(sourcePassword) == 0 {
-					return errors.New("Source password is required")
-				}
 				sourceDatabase = inputModel.(ui.TextInputModel).Inputs[sourceDatabaseIdx].Value()
 				if len(sourceDatabase) == 0 {
 					return errors.New("Source database is required")
@@ -163,7 +160,6 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
 					return errors.New("Source table is required")
 				}
 
-				fmt.Fprintln(h.IOStreams.Out, "Please select the cluster to import:")
 				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
 				if err != nil {
 					return err
@@ -306,7 +302,7 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
 				sourcePort,
 				"-u",
 				sourceUser,
-				"-p" + sourcePassword,
+				"--password=" + fmt.Sprintf("'%s'", sourcePassword),
 				"--skip-add-drop-table",
 				"--skip-add-locks",
 				"--skip-triggers",
@@ -361,6 +357,7 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
 			connectionString = strings.Replace(connectionString, "${password}", password, -1)
 			connectionString = strings.Replace(connectionString, "-D test", fmt.Sprintf("-D %s", databaseName), -1)
 			fmt.Println(connectionString)
+			fmt.Println(strings.Join(argsMysqldump, " "))
 
 			if h.IOStreams.CanPrompt {
 				err := updateAndSpinnerWait(h, argsMysqldump, sqlCacheFile, connectionString)
@@ -395,7 +392,7 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
 	return mysqlCmd
 }
 
-func initialMysqlInputModel() ui.TextInputModel {
+func initialMySQLInputModel() ui.TextInputModel {
 	m := ui.TextInputModel{
 		Inputs: make([]textinput.Model, 6),
 	}
@@ -434,15 +431,15 @@ func initialMysqlInputModel() ui.TextInputModel {
 }
 
 func updateAndWaitReady(h *internal.Helper, args []string, sqlCacheFile string, connectionString string) error {
-	fmt.Fprintf(h.IOStreams.Out, "... Dumping data from source Mysql\n")
+	fmt.Fprintf(h.IOStreams.Out, "... Dumping data from source MySQL\n")
 
-	err := h.MysqlHelper.DumpFromMysql(args)
+	err := h.MySQLHelper.DumpFromMySQL(args)
 	if err != nil {
 		return err
 	}
 
 	fmt.Fprintf(h.IOStreams.Out, "... Importing data to serverless\n")
-	err = h.MysqlHelper.ImportToServerless(sqlCacheFile, connectionString)
+	err = h.MySQLHelper.ImportToServerless(sqlCacheFile, connectionString)
 	if err != nil {
 		return err
 	}
@@ -455,7 +452,7 @@ func updateAndSpinnerWait(h *internal.Helper, args []string, sqlCacheFile string
 		res := make(chan error, 1)
 
 		go func() {
-			err := h.MysqlHelper.DumpFromMysql(args)
+			err := h.MySQLHelper.DumpFromMySQL(args)
 			if err != nil {
 				res <- err
 			}
@@ -494,7 +491,7 @@ func updateAndSpinnerWait(h *internal.Helper, args []string, sqlCacheFile string
 		res := make(chan error, 1)
 
 		go func() {
-			err := h.MysqlHelper.ImportToServerless(sqlCacheFile, connectionString)
+			err := h.MySQLHelper.ImportToServerless(sqlCacheFile, connectionString)
 			if err != nil {
 				res <- err
 			}
@@ -545,10 +542,10 @@ func deleteSqlCacheFile(h *internal.Helper, sqlCacheFile string) {
 	}
 }
 
-type MysqlHelperImpl struct {
+type MySQLHelperImpl struct {
 }
 
-func (m *MysqlHelperImpl) DownloadCaFile(caFile string) error {
+func (m *MySQLHelperImpl) DownloadCaFile(caFile string) error {
 	// 下载文件的 URL
 	url := "https://letsencrypt.org/certs/isrgrootx1.pem"
 
@@ -576,7 +573,7 @@ func (m *MysqlHelperImpl) DownloadCaFile(caFile string) error {
 }
 
 // CheckMySQLClient checks whether the 'mysql' client exists and is configured in $PATH
-func (m *MysqlHelperImpl) CheckMySQLClient() error {
+func (m *MySQLHelperImpl) CheckMySQLClient() error {
 	_, err := exec.LookPath("mysql")
 	if err == nil {
 		return nil

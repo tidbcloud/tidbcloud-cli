@@ -110,34 +110,34 @@ const getConnectInfoResultStr = `{
 }
 `
 
-type MysqlImportSuite struct {
+type MySQLImportSuite struct {
 	suite.Suite
 	h          *internal.Helper
 	mockClient *mock.TiDBCloudClient
-	mockHelper *mock.MysqlHelper
+	mockHelper *mock.MySQLHelper
 }
 
-func (suite *MysqlImportSuite) SetupTest() {
+func (suite *MySQLImportSuite) SetupTest() {
 	if err := os.Setenv("NO_COLOR", "true"); err != nil {
 		suite.T().Error(err)
 	}
 
 	suite.mockClient = new(mock.TiDBCloudClient)
-	suite.mockHelper = new(mock.MysqlHelper)
+	suite.mockHelper = new(mock.MySQLHelper)
 	suite.h = &internal.Helper{
 		Client: func() (cloud.TiDBCloudClient, error) {
 			return suite.mockClient, nil
 		},
-		MysqlHelper: suite.mockHelper,
+		MySQLHelper: suite.mockHelper,
 		IOStreams:   iostream.Test(),
 	}
 }
 
-func (suite *MysqlImportSuite) TestMysqlImportArgs() {
+func (suite *MySQLImportSuite) TestMySQLImportArgs() {
 	assert := require.New(suite.T())
 	suite.mockHelper.On("CheckMySQLClient").Return(nil)
 	suite.mockHelper.On("DownloadCaFile", mockTool.Anything).Return(nil)
-	suite.mockHelper.On("DumpFromMysql", mockTool.Anything).Return(nil)
+	suite.mockHelper.On("DumpFromMySQL", mockTool.Anything).Return(nil)
 	suite.mockHelper.On("ImportToServerless", mockTool.Anything, mockTool.Anything).Return(nil)
 
 	sourceHost := "127.0.0.1"
@@ -192,7 +192,7 @@ func (suite *MysqlImportSuite) TestMysqlImportArgs() {
 
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
-			cmd := MysqlCmd(suite.h)
+			cmd := MySQLCmd(suite.h)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
@@ -206,6 +206,6 @@ func (suite *MysqlImportSuite) TestMysqlImportArgs() {
 	}
 }
 
-func TestMysqlImportSuite(t *testing.T) {
-	suite.Run(t, new(MysqlImportSuite))
+func TestMySQLImportSuite(t *testing.T) {
+	suite.Run(t, new(MySQLImportSuite))
 }

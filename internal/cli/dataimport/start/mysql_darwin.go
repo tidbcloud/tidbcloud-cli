@@ -11,7 +11,7 @@ import (
 	exec "golang.org/x/sys/execabs"
 )
 
-func (m *MysqlHelperImpl) DumpFromMysql(args []string) error {
+func (m *MySQLHelperImpl) DumpFromMySQL(args []string) error {
 	c1 := exec.Command("sh", "-c", strings.Join(args, " ")) //nolint:gosec
 	var stderr bytes.Buffer
 	c1.Stderr = &stderr
@@ -24,7 +24,7 @@ func (m *MysqlHelperImpl) DumpFromMysql(args []string) error {
 	return nil
 }
 
-func (m *MysqlHelperImpl) ImportToServerless(sqlCacheFile string, connectionString string) error {
+func (m *MySQLHelperImpl) ImportToServerless(sqlCacheFile string, connectionString string) error {
 	var stderr bytes.Buffer
 
 	c1 := exec.Command("sh", "-c", connectionString+" < "+sqlCacheFile) //nolint:gosec

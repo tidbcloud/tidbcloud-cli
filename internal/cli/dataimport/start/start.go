@@ -52,7 +52,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 
 	startCmd.AddCommand(LocalCmd(h))
 	startCmd.AddCommand(S3Cmd(h))
-	startCmd.AddCommand(MysqlCmd(h))
+	startCmd.AddCommand(MySQLCmd(h))
 	return startCmd
 }
 

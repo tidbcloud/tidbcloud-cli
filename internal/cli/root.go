@@ -61,7 +61,7 @@ func Execute(ctx context.Context) {
 			return delegate, nil
 		},
 		QueryPageSize: internal.DefaultPageSize,
-		MysqlHelper:   &start.MysqlHelperImpl{},
+		MySQLHelper:   &start.MySQLHelperImpl{},
 		IOStreams:     iostream.System(),
 	}
 
