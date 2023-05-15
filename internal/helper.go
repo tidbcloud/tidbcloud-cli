@@ -27,4 +27,12 @@ type Helper struct {
 	Client        func() (cloud.TiDBCloudClient, error)
 	QueryPageSize int64
 	IOStreams     *iostream.IOStreams
+	MysqlHelper   MysqlHelper
+}
+
+type MysqlHelper interface {
+	DownloadCaFile(caFile string) error
+	CheckMySQLClient() error
+	DumpFromMysql(args []string) error
+	ImportToServerless(sqlCacheFile string, connectionString string) error
 }

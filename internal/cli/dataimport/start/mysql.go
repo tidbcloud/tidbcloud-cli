@@ -111,8 +111,7 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var projectID, clusterID, sourceHost, sourcePort, sourceUser, sourcePassword, sourceTable, sourceDatabase, userName, password, databaseName string
 			var skipCreateTable bool
-			helper := &mysqlHelperImpl{}
-			err := helper.CheckMySQLClient()
+			err := h.MysqlHelper.CheckMySQLClient()
 			if err != nil {
 				return err
 			}
@@ -325,10 +324,6 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
 			argsMysqldump = append(argsMysqldump, sourceDatabase)
 			argsMysqldump = append(argsMysqldump, sourceTable)
 
-			goOS := runtime.GOOS
-			if goOS == "darwin" {
-				goOS = "macOS"
-			}
 			// Get cluster info
 			params := clusterApi.NewGetClusterParams().WithProjectID(projectID).WithClusterID(clusterID)
 			clusterInfo, err := d.GetCluster(params)
@@ -350,6 +345,10 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
 				clusterType = SERVERLESS
 			}
 
+			goOS := runtime.GOOS
+			if goOS == "darwin" {
+				goOS = "macOS"
+			}
 			// Get connection string
 			connectInfo, err := cloud.RetrieveConnectInfo(d)
 			if err != nil {
@@ -364,17 +363,18 @@ func MysqlCmd(h *internal.Helper) *cobra.Command {
 			fmt.Println(connectionString)
 
 			if h.IOStreams.CanPrompt {
-				err := updateAndSpinnerWait(h, helper, argsMysqldump, sqlCacheFile, connectionString)
+				err := updateAndSpinnerWait(h, argsMysqldump, sqlCacheFile, connectionString)
 				if err != nil {
 					return err
 				}
 			} else {
-				err := updateAndWaitReady(h, helper, argsMysqldump, sqlCacheFile, connectionString)
+				err := updateAndWaitReady(h, argsMysqldump, sqlCacheFile, connectionString)
 				if err != nil {
 					return err
 				}
 			}
 
+			fmt.Fprintln(h.IOStreams.Out, "Data has been imported successfully")
 			return nil
 		},
 	}
@@ -433,16 +433,16 @@ func initialMysqlInputModel() ui.TextInputModel {
 	return m
 }
 
-func updateAndWaitReady(h *internal.Helper, helper *mysqlHelperImpl, args []string, sqlCacheFile string, connectionString string) error {
+func updateAndWaitReady(h *internal.Helper, args []string, sqlCacheFile string, connectionString string) error {
 	fmt.Fprintf(h.IOStreams.Out, "... Dumping data from source Mysql\n")
 
-	err := helper.DumpFromMysql(args)
+	err := h.MysqlHelper.DumpFromMysql(args)
 	if err != nil {
 		return err
 	}
 
 	fmt.Fprintf(h.IOStreams.Out, "... Importing data to serverless\n")
-	err = helper.ImportToServerless(sqlCacheFile, connectionString)
+	err = h.MysqlHelper.ImportToServerless(sqlCacheFile, connectionString)
 	if err != nil {
 		return err
 	}
@@ -450,12 +450,12 @@ func updateAndWaitReady(h *internal.Helper, helper *mysqlHelperImpl, args []stri
 	return nil
 }
 
-func updateAndSpinnerWait(h *internal.Helper, helper *mysqlHelperImpl, args []string, sqlCacheFile string, connectionString string) error {
+func updateAndSpinnerWait(h *internal.Helper, args []string, sqlCacheFile string, connectionString string) error {
 	task := func() tea.Msg {
 		res := make(chan error, 1)
 
 		go func() {
-			err := helper.DumpFromMysql(args)
+			err := h.MysqlHelper.DumpFromMysql(args)
 			if err != nil {
 				res <- err
 			}
@@ -494,7 +494,7 @@ func updateAndSpinnerWait(h *internal.Helper, helper *mysqlHelperImpl, args []st
 		res := make(chan error, 1)
 
 		go func() {
-			err := helper.ImportToServerless(sqlCacheFile, connectionString)
+			err := h.MysqlHelper.ImportToServerless(sqlCacheFile, connectionString)
 			if err != nil {
 				res <- err
 			}
@@ -545,17 +545,10 @@ func deleteSqlCacheFile(h *internal.Helper, sqlCacheFile string) {
 	}
 }
 
-type MysqlHelper interface {
-	DownloadCaFile(caFile string) error
-	CheckMySQLClient() error
-	DumpFromMysql(args []string) error
-	ImportToServerless(sqlCacheFile string, connectionString string) error
+type MysqlHelperImpl struct {
 }
 
-type mysqlHelperImpl struct {
-}
-
-func (m *mysqlHelperImpl) DownloadCaFile(caFile string) error {
+func (m *MysqlHelperImpl) DownloadCaFile(caFile string) error {
 	// 下载文件的 URL
 	url := "https://letsencrypt.org/certs/isrgrootx1.pem"
 
@@ -583,7 +576,7 @@ func (m *mysqlHelperImpl) DownloadCaFile(caFile string) error {
 }
 
 // CheckMySQLClient checks whether the 'mysql' client exists and is configured in $PATH
-func (m *mysqlHelperImpl) CheckMySQLClient() error {
+func (m *MysqlHelperImpl) CheckMySQLClient() error {
 	_, err := exec.LookPath("mysql")
 	if err == nil {
 		return nil

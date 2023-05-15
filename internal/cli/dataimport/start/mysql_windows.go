@@ -16,7 +16,7 @@ import (
 	exec "golang.org/x/sys/execabs"
 )
 
-func (m *mysqlHelperImpl) DumpFromMysql(args []string) error {
+func (m *MysqlHelperImpl) DumpFromMysql(args []string) error {
 	fmt.Println(strings.Join(args, " "))
 	c1 := exec.Command("powershell", "/C", strings.Join(args, " ")) //nolint:gosec
 	var stderr bytes.Buffer
@@ -30,7 +30,7 @@ func (m *mysqlHelperImpl) DumpFromMysql(args []string) error {
 	return nil
 }
 
-func (m *mysqlHelperImpl) ImportToServerless(sqlCacheFile string, connectionString string) error {
+func (m *MysqlHelperImpl) ImportToServerless(sqlCacheFile string, connectionString string) error {
 	home, _ := os.UserHomeDir()
 	caFile := filepath.Join(home, config.HomePath, "isrgrootx1.pem")
 	_, err := os.Stat(caFile)
