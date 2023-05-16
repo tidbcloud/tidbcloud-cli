@@ -16,9 +16,8 @@ import (
 	exec "golang.org/x/sys/execabs"
 )
 
-func (m *MySQLHelperImpl) DumpFromMySQL(args []string) error {
-	fmt.Println(strings.Join(args, " "))
-	c1 := exec.Command("powershell", "/C", strings.Join(args, " ")) //nolint:gosec
+func (m *MySQLHelperImpl) DumpFromMySQL(arg string) error {
+	c1 := exec.Command("powershell", "/C", arg) //nolint:gosec
 	var stderr bytes.Buffer
 	c1.Stderr = &stderr
 

@@ -37,15 +37,29 @@ func (_m *MySQLHelper) DownloadCaFile(caFile string) error {
 	return r0
 }
 
-// DumpFromMySQL provides a mock function with given fields: args
-func (_m *MySQLHelper) DumpFromMySQL(args []string) error {
-	ret := _m.Called(args)
+// DumpFromMySQL provides a mock function with given fields: arg
+func (_m *MySQLHelper) DumpFromMySQL(arg string) error {
+	ret := _m.Called(arg)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func([]string) error); ok {
-		r0 = rf(args)
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(arg)
 	} else {
 		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// GenerateSqlCachePath provides a mock function with given fields:
+func (_m *MySQLHelper) GenerateSqlCachePath() string {
+	ret := _m.Called()
+
+	var r0 string
+	if rf, ok := ret.Get(0).(func() string); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(string)
 	}
 
 	return r0

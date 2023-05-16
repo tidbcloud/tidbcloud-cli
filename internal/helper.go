@@ -33,6 +33,7 @@ type Helper struct {
 type MySQLHelper interface {
 	DownloadCaFile(caFile string) error
 	CheckMySQLClient() error
-	DumpFromMySQL(args []string) error
+	DumpFromMySQL(arg string) error
 	ImportToServerless(sqlCacheFile string, connectionString string) error
+	GenerateSqlCachePath() string
 }

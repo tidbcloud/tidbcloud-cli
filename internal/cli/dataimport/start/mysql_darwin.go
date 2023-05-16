@@ -5,14 +5,13 @@ package start
 
 import (
 	"bytes"
-	"strings"
 
 	"github.com/pingcap/errors"
 	exec "golang.org/x/sys/execabs"
 )
 
-func (m *MySQLHelperImpl) DumpFromMySQL(args []string) error {
-	c1 := exec.Command("sh", "-c", strings.Join(args, " ")) //nolint:gosec
+func (m *MySQLHelperImpl) DumpFromMySQL(arg string) error {
+	c1 := exec.Command("sh", "-c", arg) //nolint:gosec
 	var stderr bytes.Buffer
 	c1.Stderr = &stderr
 

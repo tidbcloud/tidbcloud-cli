@@ -312,8 +312,7 @@ func MySQLCmd(h *internal.Helper) *cobra.Command {
 				argsMysqldump = append(argsMysqldump, "--no-create-info")
 			}
 
-			home, _ := os.UserHomeDir()
-			sqlCacheFile := filepath.Join(home, config.HomePath, ".cache", "dump-"+time.Now().Format("2006-01-02T15-04-05")+".sql")
+			sqlCacheFile := h.MySQLHelper.GenerateSqlCachePath()
 			defer deleteSqlCacheFile(h, sqlCacheFile)
 			argsMysqldump = append(argsMysqldump, "-r")
 			argsMysqldump = append(argsMysqldump, sqlCacheFile)
@@ -433,7 +432,7 @@ func initialMySQLInputModel() ui.TextInputModel {
 func updateAndWaitReady(h *internal.Helper, args []string, sqlCacheFile string, connectionString string) error {
 	fmt.Fprintf(h.IOStreams.Out, "... Dumping data from source MySQL\n")
 
-	err := h.MySQLHelper.DumpFromMySQL(args)
+	err := h.MySQLHelper.DumpFromMySQL(strings.Join(args, " "))
 	if err != nil {
 		return err
 	}
@@ -452,7 +451,7 @@ func updateAndSpinnerWait(h *internal.Helper, args []string, sqlCacheFile string
 		res := make(chan error, 1)
 
 		go func() {
-			err := h.MySQLHelper.DumpFromMySQL(args)
+			err := h.MySQLHelper.DumpFromMySQL(strings.Join(args, " "))
 			if err != nil {
 				res <- err
 			}
@@ -543,6 +542,12 @@ func deleteSqlCacheFile(h *internal.Helper, sqlCacheFile string) {
 }
 
 type MySQLHelperImpl struct {
+}
+
+func (m *MySQLHelperImpl) GenerateSqlCachePath() string {
+	home, _ := os.UserHomeDir()
+	sqlCacheFile := filepath.Join(home, config.HomePath, ".cache", "dump-"+time.Now().Format("2006-01-02T15-04-05")+".sql")
+	return sqlCacheFile
 }
 
 func (m *MySQLHelperImpl) DownloadCaFile(caFile string) error {
