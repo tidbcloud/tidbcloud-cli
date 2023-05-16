@@ -85,8 +85,10 @@ func MySQLCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var mysqlCmd = &cobra.Command{
-		Use:         "mysql",
-		Short:       "Import from mysql into TiDB Cloud",
+		Use:   "mysql",
+		Short: "Import from MySQL into TiDB Cloud serverless cluster",
+		Long: `This command dumps data from MySQL and imports it into TiDB Cloud serverless cluster. 
+It depends on 'mysql' command-line tool, please make sure you have installed it and add to path.`,
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Start an import task in interactive mode:
   $ %[1]s import start mysql
@@ -391,15 +393,15 @@ func MySQLCmd(h *internal.Helper) *cobra.Command {
 
 	mysqlCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	mysqlCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	mysqlCmd.Flags().String(flag.SourceHost, "", "The host of the source Mysql")
-	mysqlCmd.Flags().String(flag.SourcePort, "", "The port of the source Mysql")
-	mysqlCmd.Flags().String(flag.SourceUser, "", "The user to login source Mysql")
-	mysqlCmd.Flags().String(flag.SourcePassword, "", "The password to login source Mysql")
-	mysqlCmd.Flags().String(flag.SourceDatabase, "", "The database of the source Mysql")
+	mysqlCmd.Flags().String(flag.SourceHost, "", "The host of the source MySQL")
+	mysqlCmd.Flags().String(flag.SourcePort, "", "The port of the source MySQL")
+	mysqlCmd.Flags().String(flag.SourceUser, "", "The user to login source MySQL")
+	mysqlCmd.Flags().String(flag.SourcePassword, "", "The password to login source MySQL")
+	mysqlCmd.Flags().String(flag.SourceDatabase, "", "The database of the source MySQL")
 	mysqlCmd.Flags().String(flag.SourceTable, "", "The table to dump")
 	mysqlCmd.Flags().String(flag.Database, "", "The target database")
-	mysqlCmd.Flags().String(flag.User, "", "The user to login serverless cluster, default is <token>.root")
-	mysqlCmd.Flags().Bool(flag.SkipCreateTable, false, "Skip create table step")
+	mysqlCmd.Flags().String(flag.User, "", "The user to login serverless cluster, default is '<token>.root'")
+	mysqlCmd.Flags().Bool(flag.SkipCreateTable, false, "Skip create table step, default create table")
 	mysqlCmd.Flags().String(flag.Password, "", "The password to login serverless cluster")
 
 	return mysqlCmd
@@ -419,16 +421,16 @@ func initialMySQLInputModel() ui.TextInputModel {
 
 		switch f {
 		case sourceHostIdx:
-			t.Placeholder = "The host of the source Mysql"
+			t.Placeholder = "The host of the source MySQL"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
 		case sourcePortIdx:
-			t.Placeholder = "The port of the source Mysql"
+			t.Placeholder = "The port of the source MySQL"
 		case sourceUserIdx:
-			t.Placeholder = "The user to login source Mysql"
+			t.Placeholder = "The user to login source MySQL"
 		case sourcePasswordIdx:
-			t.Placeholder = "The password to login source Mysql"
+			t.Placeholder = "The password to login source MySQL"
 			t.EchoMode = textinput.EchoPassword
 			t.EchoCharacter = '•'
 		case sourceDatabaseIdx:
@@ -489,7 +491,7 @@ func updateAndSpinnerWait(h *internal.Helper, args []string, sqlCacheFile string
 		}
 	}
 
-	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Dumping data from source Mysql"))
+	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Dumping data from source MySQL"))
 	model, err := p.StartReturningModel()
 	if err != nil {
 		return errors.Trace(err)
