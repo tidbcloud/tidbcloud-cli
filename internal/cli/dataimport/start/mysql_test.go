@@ -31,7 +31,6 @@ import (
 	connectInfoModel "tidbcloud-cli/pkg/tidbcloud/connect_info/models"
 
 	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
-	mockTool "github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
@@ -166,8 +165,12 @@ func (suite *MySQLImportSuite) TestMySQLImportArgs() {
 		sourceDatabase,
 		sourceTable,
 	}
+
+	var caPath string
 	if runtime.GOOS != "darwin" {
-		suite.mockHelper.On("DownloadCaFile", mockTool.Anything).Return(nil)
+		caPath = "<path_to_ca_cert>"
+	} else {
+		caPath = "/etc/ssl/cert.pem"
 	}
 	suite.mockHelper.On("DumpFromMySQL", strings.Join(dumpArgs, " ")).Return(nil)
 
@@ -175,8 +178,8 @@ func (suite *MySQLImportSuite) TestMySQLImportArgs() {
 	targetPort := int32(4000)
 	targetUser := "root"
 	suite.mockHelper.On("ImportToServerless", cachePath,
-		fmt.Sprintf("mysql -u '%s' -h %s -P %d -D %s --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/cert.pem -p%s",
-			targetUser, targetHost, targetPort, database, password)).Return(nil)
+		fmt.Sprintf("mysql -u '%s' -h %s -P %d -D %s --ssl-mode=VERIFY_IDENTITY --ssl-ca=%s -p%s",
+			targetUser, targetHost, targetPort, database, caPath, password)).Return(nil)
 	suite.mockClient.On("GetCluster", cluster.NewGetClusterParams().
 		WithProjectID(projectID).WithClusterID(clusterID)).Return(&cluster.GetClusterOK{
 		Payload: &cluster.GetClusterOKBody{
@@ -264,8 +267,12 @@ func (suite *MySQLImportSuite) TestMySQLImportWithoutCreateTable() {
 		sourceDatabase,
 		sourceTable,
 	}
+
+	var caPath string
 	if runtime.GOOS != "darwin" {
-		suite.mockHelper.On("DownloadCaFile", mockTool.Anything).Return(nil)
+		caPath = "<path_to_ca_cert>"
+	} else {
+		caPath = "/etc/ssl/cert.pem"
 	}
 	suite.mockHelper.On("DumpFromMySQL", strings.Join(dumpArgs, " ")).Return(nil)
 
@@ -273,8 +280,8 @@ func (suite *MySQLImportSuite) TestMySQLImportWithoutCreateTable() {
 	targetPort := int32(4000)
 	targetUser := "admin"
 	suite.mockHelper.On("ImportToServerless", cachePath,
-		fmt.Sprintf("mysql -u '%s' -h %s -P %d -D %s --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/cert.pem -p%s",
-			targetUser, targetHost, targetPort, database, password)).Return(nil)
+		fmt.Sprintf("mysql -u '%s' -h %s -P %d -D %s --ssl-mode=VERIFY_IDENTITY --ssl-ca=%s -p%s",
+			targetUser, targetHost, targetPort, database, caPath, password)).Return(nil)
 	suite.mockClient.On("GetCluster", cluster.NewGetClusterParams().
 		WithProjectID(projectID).WithClusterID(clusterID)).Return(&cluster.GetClusterOK{
 		Payload: &cluster.GetClusterOKBody{
@@ -358,8 +365,11 @@ func (suite *MySQLImportSuite) TestMySQLImportWithSpecificUser() {
 		sourceDatabase,
 		sourceTable,
 	}
+	var caPath string
 	if runtime.GOOS != "darwin" {
-		suite.mockHelper.On("DownloadCaFile", mockTool.Anything).Return(nil)
+		caPath = "<path_to_ca_cert>"
+	} else {
+		caPath = "/etc/ssl/cert.pem"
 	}
 	suite.mockHelper.On("DumpFromMySQL", strings.Join(dumpArgs, " ")).Return(nil)
 
@@ -367,8 +377,8 @@ func (suite *MySQLImportSuite) TestMySQLImportWithSpecificUser() {
 	targetPort := int32(4000)
 	targetUser := "admin"
 	suite.mockHelper.On("ImportToServerless", cachePath,
-		fmt.Sprintf("mysql -u '%s' -h %s -P %d -D %s --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/cert.pem -p%s",
-			targetUser, targetHost, targetPort, database, password)).Return(nil)
+		fmt.Sprintf("mysql -u '%s' -h %s -P %d -D %s --ssl-mode=VERIFY_IDENTITY --ssl-ca=%s -p%s",
+			targetUser, targetHost, targetPort, database, caPath, password)).Return(nil)
 	suite.mockClient.On("GetCluster", cluster.NewGetClusterParams().
 		WithProjectID(projectID).WithClusterID(clusterID)).Return(&cluster.GetClusterOK{
 		Payload: &cluster.GetClusterOKBody{
