@@ -40,7 +40,9 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
 	"github.com/pingcap/errors"
+	"github.com/pingcap/log"
 	"github.com/spf13/cobra"
+	"go.uber.org/zap"
 	exec "golang.org/x/sys/execabs"
 )
 
@@ -90,6 +92,7 @@ func MySQLCmd(h *internal.Helper) *cobra.Command {
 		Long: `This command dumps data from MySQL and imports it into TiDB Cloud serverless cluster. 
 It depends on 'mysql' command-line tool, please make sure you have installed it and add to path.`,
 		Annotations: make(map[string]string),
+		Args:        cobra.NoArgs,
 		Example: fmt.Sprintf(`  Start an import task in interactive mode:
   $ %[1]s import start mysql
 
@@ -334,6 +337,7 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 			argsMysqldump = append(argsMysqldump, sqlCacheFile)
 			argsMysqldump = append(argsMysqldump, sourceDatabase)
 			argsMysqldump = append(argsMysqldump, sourceTable)
+			mysqlDumpCommand := strings.Join(argsMysqldump, " ")
 
 			// Get cluster info
 			params := clusterApi.NewGetClusterParams().WithProjectID(projectID).WithClusterID(clusterID)
@@ -371,16 +375,16 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 			}
 			connectionString = strings.Replace(connectionString, "${password}", password, -1)
 			connectionString = strings.Replace(connectionString, "-D test", fmt.Sprintf("-D %s", databaseName), -1)
-			fmt.Println(connectionString)
-			fmt.Println(strings.Join(argsMysqldump, " "))
+			log.Debug("Print dump command", zap.String("command", mysqlDumpCommand))
+			log.Debug("Print import command", zap.String("command", connectionString))
 
 			if h.IOStreams.CanPrompt {
-				err := updateAndSpinnerWait(h, argsMysqldump, sqlCacheFile, connectionString)
+				err := updateAndSpinnerWait(h, mysqlDumpCommand, sqlCacheFile, connectionString)
 				if err != nil {
 					return err
 				}
 			} else {
-				err := updateAndWaitReady(h, argsMysqldump, sqlCacheFile, connectionString)
+				err := updateAndWaitReady(h, mysqlDumpCommand, sqlCacheFile, connectionString)
 				if err != nil {
 					return err
 				}
@@ -445,10 +449,10 @@ func initialMySQLInputModel() ui.TextInputModel {
 	return m
 }
 
-func updateAndWaitReady(h *internal.Helper, args []string, sqlCacheFile string, connectionString string) error {
+func updateAndWaitReady(h *internal.Helper, mysqlDumpCommand string, sqlCacheFile string, connectionString string) error {
 	fmt.Fprintf(h.IOStreams.Out, "... Dumping data from source MySQL\n")
 
-	err := h.MySQLHelper.DumpFromMySQL(strings.Join(args, " "))
+	err := h.MySQLHelper.DumpFromMySQL(mysqlDumpCommand)
 	if err != nil {
 		return err
 	}
@@ -462,12 +466,12 @@ func updateAndWaitReady(h *internal.Helper, args []string, sqlCacheFile string, 
 	return nil
 }
 
-func updateAndSpinnerWait(h *internal.Helper, args []string, sqlCacheFile string, connectionString string) error {
+func updateAndSpinnerWait(h *internal.Helper, mysqlDumpCommand string, sqlCacheFile string, connectionString string) error {
 	task := func() tea.Msg {
 		res := make(chan error, 1)
 
 		go func() {
-			err := h.MySQLHelper.DumpFromMySQL(strings.Join(args, " "))
+			err := h.MySQLHelper.DumpFromMySQL(mysqlDumpCommand)
 			if err != nil {
 				res <- err
 			}
