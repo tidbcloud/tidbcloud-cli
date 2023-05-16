@@ -128,7 +128,6 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 		args         []string
 		err          error
 		stdoutString string
-		stderrString string
 	}{
 		{
 			name:         "start import success",
@@ -153,22 +152,20 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 		{
 			name: "start import without required file path",
 			args: []string{"-p", projectID, "-c", clusterID, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable},
-			err:  fmt.Errorf("missing argument <file-path> \n\nUsage:\n  start local <file-path> [flags]\n\nExamples:\n  Start an import task in interactive mode:\n  $ ticloud import start local <file-path>\n\n  Start an import task in non-interactive mode:\n  $ ticloud import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>\n\t\n  Start an import task with custom CSV format:\n  $ ticloud import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --separator \\\" --delimiter \\' --backslash-escape=false --trim-last-separator=true\n\n\nFlags:\n  -c, --cluster-id string        Cluster ID\n      --data-format string       Data format, one of [\"CSV\"]\n  -h, --help                     help for local\n  -p, --project-id string        Project ID\n      --target-database string   Target database to which import data\n      --target-table string      Target table to which import data\n\nGlobal Flags:\n      --backslash-escape      In CSV file whether to parse backslash inside fields as escape characters (default true)\n      --delimiter string      The delimiter used for quoting of CSV file (default \"\\\"\")\n      --separator string      The field separator of CSV file (default \",\")\n      --trim-last-separator   In CSV file whether to treat Separator as the line terminator and trim all trailing separators\n"),
+			err:  fmt.Errorf("missing argument <file-path> \n\nUsage:\n  local <file-path> [flags]\n\nExamples:\n  Start an import task in interactive mode:\n  $ ticloud import start local <file-path>\n\n  Start an import task in non-interactive mode:\n  $ ticloud import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>\n\t\n  Start an import task with custom CSV format:\n  $ ticloud import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --separator \\\" --delimiter \\' --backslash-escape=false --trim-last-separator=true\n\n\nFlags:\n      --backslash-escape         In CSV file whether to parse backslash inside fields as escape characters (default true)\n  -c, --cluster-id string        Cluster ID\n      --data-format string       Data format, one of [\"CSV\"]\n      --delimiter string         The delimiter used for quoting of CSV file (default \"\\\"\")\n  -h, --help                     help for local\n  -p, --project-id string        Project ID\n      --separator string         The field separator of CSV file (default \",\")\n      --target-database string   Target database to which import data\n      --target-table string      Target table to which import data\n      --trim-last-separator      In CSV file whether to treat Separator as the line terminator and trim all trailing separators\n"),
 		},
 	}
 
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
-			cmd := StartCmd(suite.h)
+			cmd := LocalCmd(suite.h)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
-			tt.args = append([]string{"local"}, tt.args...)
 			cmd.SetArgs(tt.args)
 			err = cmd.Execute()
 			assert.Equal(tt.err, err)
 
 			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
-			assert.Equal(tt.stderrString, suite.h.IOStreams.Err.(*bytes.Buffer).String())
 			if tt.err == nil {
 				suite.mockClient.AssertExpectations(suite.T())
 			}
