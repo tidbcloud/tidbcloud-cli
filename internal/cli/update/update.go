@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
 	"time"
 
@@ -37,6 +38,8 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 		Use:   "update",
 		Short: "Update the CLI to the latest version",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, cancel := context.WithCancel(cmd.Context())
+			defer cancel()
 			// If is managed by TiUP, we should disable the update command since binpath is different.
 			if config.IsUnderTiUP {
 				return errors.New("the CLI is managed by TiUP, please update it by `tiup update cloud`")
@@ -57,9 +60,9 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if h.IOStreams.CanPrompt {
-				return updateAndSpinnerWait(h, newRelease)
+				return updateAndSpinnerWait(ctx, h, newRelease)
 			} else {
-				return updateAndWaitReady(h, newRelease)
+				return updateAndWaitReady(ctx, h, newRelease)
 			}
 		},
 	}
@@ -67,10 +70,10 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 	return cmd
 }
 
-func updateAndWaitReady(h *internal.Helper, newRelease *github.ReleaseInfo) error {
+func updateAndWaitReady(ctx context.Context, h *internal.Helper, newRelease *github.ReleaseInfo) error {
 	fmt.Fprintf(h.IOStreams.Out, "... Updating the CLI to version %s\n", newRelease.Version)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+	ctx, cancel := context.WithTimeout(ctx, 1*time.Minute)
 	defer cancel()
 
 	c1 := exec.CommandContext(ctx, "curl", "-sSL", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh") //nolint:gosec
@@ -102,12 +105,12 @@ func updateAndWaitReady(h *internal.Helper, newRelease *github.ReleaseInfo) erro
 	return nil
 }
 
-func updateAndSpinnerWait(h *internal.Helper, newRelease *github.ReleaseInfo) error {
+func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, newRelease *github.ReleaseInfo) error {
 	task := func() tea.Msg {
 		res := make(chan error, 1)
 
 		go func() {
-			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
+			ctx, cancel := context.WithTimeout(ctx, 1*time.Minute)
 			defer cancel()
 			c1 := exec.CommandContext(ctx, "curl", "-sSL", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh") //nolint:gosec
 			var stdout bytes.Buffer
@@ -159,11 +162,14 @@ func updateAndSpinnerWait(h *internal.Helper, newRelease *github.ReleaseInfo) er
 	}
 
 	p := tea.NewProgram(ui.InitialSpinnerModel(task, fmt.Sprintf("Updating the CLI to version %s", newRelease.Version)))
-	createModel, err := p.StartReturningModel()
+	model, err := p.StartReturningModel()
 	if err != nil {
 		return errors.Trace(err)
 	}
-	if m, _ := createModel.(ui.SpinnerModel); m.Err != nil {
+	if m, _ := model.(ui.SpinnerModel); m.Interrupted {
+		os.Exit(130)
+	}
+	if m, _ := model.(ui.SpinnerModel); m.Err != nil {
 		return m.Err
 	} else {
 		fmt.Fprintln(h.IOStreams.Out, color.GreenString(m.Output))

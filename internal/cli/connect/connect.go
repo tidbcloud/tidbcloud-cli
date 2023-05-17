@@ -104,6 +104,8 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			if !h.IOStreams.CanPrompt {
 				return fmt.Errorf("the stdout is not a terminal")
 			}
+			ctx, cancel := context.WithCancel(cmd.Context())
+			defer cancel()
 
 			d, err := h.Client()
 			if err != nil {
@@ -211,7 +213,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				return err
 			}
 
-			err = ExecuteSqlDialog(clusterType, userName, host, port, pass, h.IOStreams.Out)
+			err = ExecuteSqlDialog(ctx, clusterType, userName, host, port, pass, h.IOStreams.Out)
 			if err != nil {
 				return err
 			}
@@ -226,7 +228,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 	return connectCmd
 }
 
-func ExecuteSqlDialog(clusterType, userName, host, port string, pass *string, out io.Writer) error {
+func ExecuteSqlDialog(ctx context.Context, clusterType, userName, host, port string, pass *string, out io.Writer) error {
 	u, err := user.Current()
 	if err != nil {
 		return fmt.Errorf("can't get current user: %s", err.Error())
@@ -254,7 +256,7 @@ func ExecuteSqlDialog(clusterType, userName, host, port string, pass *string, ou
 		}
 	}
 
-	if err = h.Open(context.TODO(), dsn); err != nil {
+	if err = h.Open(ctx, dsn); err != nil {
 		return fmt.Errorf("can't open connection to %s: %s", dsn, err.Error())
 	}
 

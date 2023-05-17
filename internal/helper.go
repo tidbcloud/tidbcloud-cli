@@ -15,6 +15,8 @@
 package internal
 
 import (
+	"context"
+
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/service/cloud"
 )
@@ -33,7 +35,7 @@ type Helper struct {
 type MySQLHelper interface {
 	DownloadCaFile(caFile string) error
 	CheckMySQLClient() error
-	DumpFromMySQL(arg string) error
-	ImportToServerless(sqlCacheFile string, connectionString string) error
+	DumpFromMySQL(ctx context.Context, arg string) error
+	ImportToServerless(ctx context.Context, sqlCacheFile string, connectionString string) error
 	GenerateSqlCachePath() string
 }

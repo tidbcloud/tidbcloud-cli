@@ -16,6 +16,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"tidbcloud-cli/internal"
@@ -109,7 +110,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if inputModel.(ui.TextInputModel).Interrupted {
-					return nil
+					os.Exit(130)
 				}
 
 				inputs := inputModel.(ui.TextInputModel).Inputs

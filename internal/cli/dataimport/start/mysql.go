@@ -15,6 +15,7 @@
 package start
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -128,6 +129,8 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx, cancel := context.WithCancel(cmd.Context())
+			defer cancel()
 			var projectID, clusterID, sourceHost, sourcePort, sourceUser, sourcePassword, sourceTable, sourceDatabase, userName, password, databaseName string
 			var skipCreateTable bool
 			err := h.MySQLHelper.CheckMySQLClient()
@@ -154,7 +157,7 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 					return errors.Trace(err)
 				}
 				if inputModel.(ui.TextInputModel).Interrupted {
-					return nil
+					os.Exit(130)
 				}
 
 				sourceHost = inputModel.(ui.TextInputModel).Inputs[sourceHostIdx].Value()
@@ -379,12 +382,12 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 			log.Debug("Print import command", zap.String("command", connectionString))
 
 			if h.IOStreams.CanPrompt {
-				err := updateAndSpinnerWait(h, mysqlDumpCommand, sqlCacheFile, connectionString)
+				err := updateAndSpinnerWait(ctx, h, mysqlDumpCommand, sqlCacheFile, connectionString)
 				if err != nil {
 					return err
 				}
 			} else {
-				err := updateAndWaitReady(h, mysqlDumpCommand, sqlCacheFile, connectionString)
+				err := updateAndWaitReady(ctx, h, mysqlDumpCommand, sqlCacheFile, connectionString)
 				if err != nil {
 					return err
 				}
@@ -449,16 +452,16 @@ func initialMySQLInputModel() ui.TextInputModel {
 	return m
 }
 
-func updateAndWaitReady(h *internal.Helper, mysqlDumpCommand string, sqlCacheFile string, connectionString string) error {
+func updateAndWaitReady(ctx context.Context, h *internal.Helper, mysqlDumpCommand string, sqlCacheFile string, connectionString string) error {
 	fmt.Fprintf(h.IOStreams.Out, "... Dumping data from source MySQL\n")
 
-	err := h.MySQLHelper.DumpFromMySQL(mysqlDumpCommand)
+	err := h.MySQLHelper.DumpFromMySQL(ctx, mysqlDumpCommand)
 	if err != nil {
 		return err
 	}
 
 	fmt.Fprintf(h.IOStreams.Out, "... Importing data to serverless\n")
-	err = h.MySQLHelper.ImportToServerless(sqlCacheFile, connectionString)
+	err = h.MySQLHelper.ImportToServerless(ctx, sqlCacheFile, connectionString)
 	if err != nil {
 		return err
 	}
@@ -466,12 +469,12 @@ func updateAndWaitReady(h *internal.Helper, mysqlDumpCommand string, sqlCacheFil
 	return nil
 }
 
-func updateAndSpinnerWait(h *internal.Helper, mysqlDumpCommand string, sqlCacheFile string, connectionString string) error {
+func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, mysqlDumpCommand string, sqlCacheFile string, connectionString string) error {
 	task := func() tea.Msg {
 		res := make(chan error, 1)
 
 		go func() {
-			err := h.MySQLHelper.DumpFromMySQL(mysqlDumpCommand)
+			err := h.MySQLHelper.DumpFromMySQL(ctx, mysqlDumpCommand)
 			if err != nil {
 				res <- err
 			}
@@ -500,6 +503,9 @@ func updateAndSpinnerWait(h *internal.Helper, mysqlDumpCommand string, sqlCacheF
 	if err != nil {
 		return errors.Trace(err)
 	}
+	if m, _ := model.(ui.SpinnerModel); m.Interrupted {
+		os.Exit(130)
+	}
 	if m, _ := model.(ui.SpinnerModel); m.Err != nil {
 		return m.Err
 	} else {
@@ -510,7 +516,7 @@ func updateAndSpinnerWait(h *internal.Helper, mysqlDumpCommand string, sqlCacheF
 		res := make(chan error, 1)
 
 		go func() {
-			err := h.MySQLHelper.ImportToServerless(sqlCacheFile, connectionString)
+			err := h.MySQLHelper.ImportToServerless(ctx, sqlCacheFile, connectionString)
 			if err != nil {
 				res <- err
 			}
@@ -538,6 +544,9 @@ func updateAndSpinnerWait(h *internal.Helper, mysqlDumpCommand string, sqlCacheF
 	model, err = p.StartReturningModel()
 	if err != nil {
 		return errors.Trace(err)
+	}
+	if m, _ := model.(ui.SpinnerModel); m.Interrupted {
+		os.Exit(130)
 	}
 	if m, _ := model.(ui.SpinnerModel); m.Err != nil {
 		return m.Err

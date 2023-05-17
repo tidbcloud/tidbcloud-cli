@@ -198,7 +198,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if inputModel.(ui.TextInputModel).Interrupted {
-					return nil
+					os.Exit(130)
 				}
 
 				clusterName = inputModel.(ui.TextInputModel).Inputs[clusterNameIdx].Value()
@@ -359,6 +359,9 @@ func CreateAndSpinnerWait(d cloud.TiDBCloudClient, projectID string, clusterDefB
 	createModel, err := p.StartReturningModel()
 	if err != nil {
 		return errors.Trace(err)
+	}
+	if m, _ := createModel.(ui.SpinnerModel); m.Interrupted {
+		os.Exit(130)
 	}
 	if m, _ := createModel.(ui.SpinnerModel); m.Err != nil {
 		return m.Err

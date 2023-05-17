@@ -102,11 +102,14 @@ func spinnerWaitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *imp
 	}
 
 	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Starting import task"))
-	createModel, err := p.StartReturningModel()
+	model, err := p.StartReturningModel()
 	if err != nil {
 		return errors.Trace(err)
 	}
-	if m, _ := createModel.(ui.SpinnerModel); m.Err != nil {
+	if m, _ := model.(ui.SpinnerModel); m.Interrupted {
+		os.Exit(130)
+	}
+	if m, _ := model.(ui.SpinnerModel); m.Err != nil {
 		return m.Err
 	}
 

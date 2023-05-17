@@ -157,7 +157,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if inputModel.(ui.TextInputModel).Interrupted {
-					return nil
+					os.Exit(130)
 				}
 
 				targetDatabase = inputModel.(ui.TextInputModel).Inputs[databaseIdx].Value()
@@ -370,11 +370,14 @@ func spinnerWaitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *strin
 	}
 
 	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Uploading file"))
-	createModel, err := p.StartReturningModel()
+	model, err := p.StartReturningModel()
 	if err != nil {
 		return errors.Trace(err)
 	}
-	if m, _ := createModel.(ui.SpinnerModel); m.Err != nil {
+	if m, _ := model.(ui.SpinnerModel); m.Interrupted {
+		os.Exit(130)
+	}
+	if m, _ := model.(ui.SpinnerModel); m.Err != nil {
 		return m.Err
 	} else {
 		fmt.Fprintf(h.IOStreams.Out, color.GreenString(m.Output))

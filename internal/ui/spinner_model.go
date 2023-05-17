@@ -25,12 +25,12 @@ import (
 type errMsg error
 
 type SpinnerModel struct {
-	Hint     string
-	spinner  spinner.Model
-	quitting bool
-	Err      error
-	Output   string
-	Task     tea.Cmd
+	Hint        string
+	spinner     spinner.Model
+	Interrupted bool
+	Err         error
+	Output      string
+	Task        tea.Cmd
 }
 
 type Result string
@@ -51,7 +51,7 @@ func (m SpinnerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "q", "esc", "ctrl+c":
-			m.quitting = true
+			m.Interrupted = true
 			return m, tea.Quit
 		default:
 			return m, nil
@@ -74,7 +74,7 @@ func (m SpinnerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m SpinnerModel) View() string {
 	str := color.New(color.FgYellow).Sprintf("%s %s", m.spinner.View(), color.BlueString(m.Hint)) + "\n"
-	if m.quitting {
+	if m.Interrupted {
 		return str + "\n"
 	}
 	return str

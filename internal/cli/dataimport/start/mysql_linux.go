@@ -19,6 +19,7 @@ package start
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -30,8 +31,8 @@ import (
 	exec "golang.org/x/sys/execabs"
 )
 
-func (m *MySQLHelperImpl) DumpFromMySQL(arg string) error {
-	c1 := exec.Command("sh", "-c", arg) //nolint:gosec
+func (m *MySQLHelperImpl) DumpFromMySQL(ctx context.Context, arg string) error {
+	c1 := exec.CommandContext(ctx, "sh", "-c", arg) //nolint:gosec
 	var stderr bytes.Buffer
 	c1.Stderr = &stderr
 
@@ -43,7 +44,7 @@ func (m *MySQLHelperImpl) DumpFromMySQL(arg string) error {
 	return nil
 }
 
-func (m *MySQLHelperImpl) ImportToServerless(sqlCacheFile string, connectionString string) error {
+func (m *MySQLHelperImpl) ImportToServerless(ctx context.Context, sqlCacheFile string, connectionString string) error {
 	home, _ := os.UserHomeDir()
 	caFile := filepath.Join(home, config.HomePath, "isrgrootx1.pem")
 	_, err := os.Stat(caFile)
@@ -55,10 +56,9 @@ func (m *MySQLHelperImpl) ImportToServerless(sqlCacheFile string, connectionStri
 	}
 
 	connectionString = strings.Replace(connectionString, "<path_to_ca_cert>", caFile, -1)
-	var stderr bytes.Buffer
 
-	c1 := exec.Command("sh", "-c", fmt.Sprintf("%s -e \"source %s\"", connectionString, sqlCacheFile)) //nolint:gosec
-	stderr = bytes.Buffer{}
+	c1 := exec.CommandContext(ctx, "sh", "-c", fmt.Sprintf("%s -e \"source %s\"", connectionString, sqlCacheFile)) //nolint:gosec
+	var stderr bytes.Buffer
 	c1.Stderr = &stderr
 
 	err = c1.Run()
