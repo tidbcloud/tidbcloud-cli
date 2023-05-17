@@ -17,8 +17,6 @@ package start
 import (
 	"context"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -157,7 +155,7 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 					return errors.Trace(err)
 				}
 				if inputModel.(ui.TextInputModel).Interrupted {
-					os.Exit(130)
+					return util.InterruptError
 				}
 
 				sourceHost = inputModel.(ui.TextInputModel).Inputs[sourceHostIdx].Value()
@@ -202,7 +200,7 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 				err = survey.AskOne(prompt, &useDefaultUser)
 				if err != nil {
 					if err == terminal.InterruptErr {
-						os.Exit(130)
+						return util.InterruptError
 					} else {
 						return err
 					}
@@ -215,7 +213,7 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 					err = survey.AskOne(input, &userName, survey.WithValidator(survey.Required))
 					if err != nil {
 						if err == terminal.InterruptErr {
-							os.Exit(130)
+							return util.InterruptError
 						} else {
 							return err
 						}
@@ -228,7 +226,7 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 				err = survey.AskOne(passInput, &password, survey.WithValidator(survey.Required))
 				if err != nil {
 					if err == terminal.InterruptErr {
-						os.Exit(130)
+						return util.InterruptError
 					} else {
 						return err
 					}
@@ -240,7 +238,7 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 				err = survey.AskOne(input, &databaseName, survey.WithValidator(survey.Required))
 				if err != nil {
 					if err == terminal.InterruptErr {
-						os.Exit(130)
+						return util.InterruptError
 					} else {
 						return err
 					}
@@ -253,7 +251,7 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 				err = survey.AskOne(prompt, &skipCreateTable)
 				if err != nil {
 					if err == terminal.InterruptErr {
-						os.Exit(130)
+						return util.InterruptError
 					} else {
 						return err
 					}
@@ -316,7 +314,7 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 
 			cmd.Annotations[telemetry.ProjectID] = projectID
 
-			argsMysqldump := []string{
+			mysqldumpCommand := []string{
 				"mysqldump",
 				"-h",
 				sourceHost,
@@ -324,23 +322,22 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 				sourcePort,
 				"-u",
 				sourceUser,
-				"--password=" + fmt.Sprintf("'%s'", sourcePassword),
+				"--password=" + sourcePassword,
 				"--skip-add-drop-table",
 				"--skip-add-locks",
 				"--skip-triggers",
 			}
 
 			if skipCreateTable {
-				argsMysqldump = append(argsMysqldump, "--no-create-info")
+				mysqldumpCommand = append(mysqldumpCommand, "--no-create-info")
 			}
 
 			sqlCacheFile := h.MySQLHelper.GenerateSqlCachePath()
 			defer deleteSqlCacheFile(h, sqlCacheFile)
-			argsMysqldump = append(argsMysqldump, "-r")
-			argsMysqldump = append(argsMysqldump, sqlCacheFile)
-			argsMysqldump = append(argsMysqldump, sourceDatabase)
-			argsMysqldump = append(argsMysqldump, sourceTable)
-			mysqlDumpCommand := strings.Join(argsMysqldump, " ")
+			mysqldumpCommand = append(mysqldumpCommand, "-r")
+			mysqldumpCommand = append(mysqldumpCommand, sqlCacheFile)
+			mysqldumpCommand = append(mysqldumpCommand, sourceDatabase)
+			mysqldumpCommand = append(mysqldumpCommand, sourceTable)
 
 			// Get cluster info
 			params := clusterApi.NewGetClusterParams().WithProjectID(projectID).WithClusterID(clusterID)
@@ -372,22 +369,35 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 			if err != nil {
 				return err
 			}
-			connectionString, err := util.GenerateConnectionString(connectInfo, util.MysqlCliID, host, userName, port, clusterType, goOS)
+			connectionString, err := util.GenerateConnectionString(connectInfo, util.MysqlCliID, host, userName, port, clusterType, goOS, util.GolangCommand)
 			if err != nil {
 				return err
 			}
 			connectionString = strings.Replace(connectionString, "${password}", password, -1)
 			connectionString = strings.Replace(connectionString, "-D test", fmt.Sprintf("-D %s", databaseName), -1)
-			log.Debug("Print dump command", zap.String("command", mysqlDumpCommand))
-			log.Debug("Print import command", zap.String("command", connectionString))
+			if runtime.GOOS != "darwin" {
+				home, _ := os.UserHomeDir()
+				caFile := filepath.Join(home, config.HomePath, "isrgrootx1.pem")
+				_, err := os.Stat(caFile)
+				if os.IsNotExist(err) {
+					err := h.MySQLHelper.DownloadCaFile(caFile)
+					if err != nil {
+						return err
+					}
+				}
+				connectionString = strings.Replace(connectionString, "<path_to_ca_cert>", caFile, -1)
+			}
+			importCommand := strings.Split(connectionString, " ")
+			log.Debug("Print dump command", zap.Any("command", mysqldumpCommand))
+			log.Debug("Print import command", zap.Any("command", importCommand))
 
 			if h.IOStreams.CanPrompt {
-				err := updateAndSpinnerWait(ctx, h, mysqlDumpCommand, sqlCacheFile, connectionString)
+				err := updateAndSpinnerWait(ctx, h, mysqldumpCommand, importCommand, sqlCacheFile)
 				if err != nil {
 					return err
 				}
 			} else {
-				err := updateAndWaitReady(ctx, h, mysqlDumpCommand, sqlCacheFile, connectionString)
+				err := updateAndWaitReady(ctx, h, mysqldumpCommand, importCommand, sqlCacheFile)
 				if err != nil {
 					return err
 				}
@@ -452,16 +462,18 @@ func initialMySQLInputModel() ui.TextInputModel {
 	return m
 }
 
-func updateAndWaitReady(ctx context.Context, h *internal.Helper, mysqlDumpCommand string, sqlCacheFile string, connectionString string) error {
+func updateAndWaitReady(ctx context.Context, h *internal.Helper, mysqlDumpCommand []string, importCommand []string, sqlCacheFile string) error {
 	fmt.Fprintf(h.IOStreams.Out, "... Dumping data from source MySQL\n")
 
-	err := h.MySQLHelper.DumpFromMySQL(ctx, mysqlDumpCommand)
+	c1 := exec.CommandContext(ctx, mysqlDumpCommand[0], mysqlDumpCommand[1:]...) //nolint:gosec
+	err := h.MySQLHelper.DumpFromMySQL(c1, sqlCacheFile)
 	if err != nil {
 		return err
 	}
 
 	fmt.Fprintf(h.IOStreams.Out, "... Importing data to serverless\n")
-	err = h.MySQLHelper.ImportToServerless(ctx, sqlCacheFile, connectionString)
+	c1 = exec.CommandContext(ctx, importCommand[0], importCommand[1:]...) //nolint:gosec
+	err = h.MySQLHelper.ImportToServerless(c1, sqlCacheFile)
 	if err != nil {
 		return err
 	}
@@ -469,12 +481,13 @@ func updateAndWaitReady(ctx context.Context, h *internal.Helper, mysqlDumpComman
 	return nil
 }
 
-func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, mysqlDumpCommand string, sqlCacheFile string, connectionString string) error {
+func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, mysqlDumpCommand []string, importCommand []string, sqlCacheFile string) error {
+	c1 := exec.CommandContext(ctx, mysqlDumpCommand[0], mysqlDumpCommand[1:]...) //nolint:gosec
 	task := func() tea.Msg {
 		res := make(chan error, 1)
 
 		go func() {
-			err := h.MySQLHelper.DumpFromMySQL(ctx, mysqlDumpCommand)
+			err := h.MySQLHelper.DumpFromMySQL(c1, sqlCacheFile)
 			if err != nil {
 				res <- err
 			}
@@ -504,7 +517,11 @@ func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, mysqlDumpComm
 		return errors.Trace(err)
 	}
 	if m, _ := model.(ui.SpinnerModel); m.Interrupted {
-		os.Exit(130)
+		err := c1.Process.Kill()
+		if err != nil {
+			fmt.Println(err)
+		}
+		return util.InterruptError
 	}
 	if m, _ := model.(ui.SpinnerModel); m.Err != nil {
 		return m.Err
@@ -512,11 +529,12 @@ func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, mysqlDumpComm
 		fmt.Fprintln(h.IOStreams.Out, color.GreenString(m.Output))
 	}
 
+	c1 = exec.CommandContext(ctx, importCommand[0], importCommand[1:]...) //nolint:gosec
 	task = func() tea.Msg {
 		res := make(chan error, 1)
 
 		go func() {
-			err := h.MySQLHelper.ImportToServerless(ctx, sqlCacheFile, connectionString)
+			err := h.MySQLHelper.ImportToServerless(c1, sqlCacheFile)
 			if err != nil {
 				res <- err
 			}
@@ -546,7 +564,11 @@ func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, mysqlDumpComm
 		return errors.Trace(err)
 	}
 	if m, _ := model.(ui.SpinnerModel); m.Interrupted {
-		os.Exit(130)
+		err := c1.Process.Kill()
+		if err != nil {
+			fmt.Println(err)
+		}
+		return util.InterruptError
 	}
 	if m, _ := model.(ui.SpinnerModel); m.Err != nil {
 		return m.Err
@@ -568,65 +590,4 @@ func deleteSqlCacheFile(h *internal.Helper, sqlCacheFile string) {
 	if err != nil {
 		fmt.Fprintf(h.IOStreams.Err, "Failed to remove cache file %s, error: %s", sqlCacheFile, err)
 	}
-}
-
-type MySQLHelperImpl struct {
-}
-
-func (m *MySQLHelperImpl) GenerateSqlCachePath() string {
-	home, _ := os.UserHomeDir()
-	sqlCacheFile := filepath.Join(home, config.HomePath, ".cache", "dump-"+time.Now().Format("2006-01-02T15-04-05")+".sql")
-	return sqlCacheFile
-}
-
-func (m *MySQLHelperImpl) DownloadCaFile(caFile string) error {
-	// 下载文件的 URL
-	url := "https://letsencrypt.org/certs/isrgrootx1.pem"
-
-	// 创建 HTTP 请求
-	resp, err := http.Get(url)
-	if err != nil {
-		return errors.Annotate(err, "Failed to download ca file")
-	}
-	defer resp.Body.Close()
-
-	// 创建文件并打开
-	file, err := os.Create(caFile)
-	if err != nil {
-		return errors.Annotate(err, "Failed to create ca file")
-	}
-	defer file.Close()
-
-	// 将 HTTP 响应体复制到文件
-	_, err = io.Copy(file, resp.Body)
-	if err != nil {
-		return errors.Annotate(err, "Failed to copy ca file")
-	}
-
-	return nil
-}
-
-// CheckMySQLClient checks whether the 'mysql' client exists and is configured in $PATH
-func (m *MySQLHelperImpl) CheckMySQLClient() error {
-	_, err := exec.LookPath("mysql")
-	if err == nil {
-		return nil
-	}
-
-	msg := "couldn't find the 'mysql' command-line tool required to run this command."
-
-	switch runtime.GOOS {
-	case "darwin":
-		if HasHomebrew() {
-			return fmt.Errorf("%s\nTo install, run: brew install mysql-client", msg)
-		}
-	}
-
-	return fmt.Errorf("%s\nPlease install it and add to $PATH", msg)
-}
-
-// HasHomebrew check whether the user has installed brew
-func HasHomebrew() bool {
-	_, err := exec.LookPath("brew")
-	return err == nil
 }

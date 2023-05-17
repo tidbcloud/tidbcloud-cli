@@ -18,7 +18,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"os"
 	"os/exec"
 	"time"
 
@@ -26,6 +25,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/service/github"
 	"tidbcloud-cli/internal/ui"
+	"tidbcloud-cli/internal/util"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
@@ -87,7 +87,8 @@ func updateAndWaitReady(ctx context.Context, h *internal.Helper, newRelease *git
 		return errors.New("timeout when download the install.sh script")
 	}
 	if err != nil {
-		return errors.Annotate(err, stderr.String())
+		fmt.Println(stderr.String())
+		return err
 	}
 
 	c2 := exec.CommandContext(ctx, "/bin/sh", "-c", stdout.String()) //nolint:gosec
@@ -99,7 +100,8 @@ func updateAndWaitReady(ctx context.Context, h *internal.Helper, newRelease *git
 		return errors.New("timeout when execute the install.sh script")
 	}
 	if err != nil {
-		return errors.Annotate(err, stderr.String())
+		fmt.Println(stderr.String())
+		return err
 	}
 
 	return nil
@@ -124,7 +126,8 @@ func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, newRelease *g
 				return
 			}
 			if err != nil {
-				res <- errors.Annotate(err, stderr.String())
+				fmt.Println(stderr.String())
+				res <- err
 				return
 			}
 
@@ -138,7 +141,8 @@ func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, newRelease *g
 				return
 			}
 			if err != nil {
-				res <- errors.Annotate(err, stderr.String())
+				fmt.Println(stderr.String())
+				res <- err
 				return
 			}
 
@@ -167,7 +171,7 @@ func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, newRelease *g
 		return errors.Trace(err)
 	}
 	if m, _ := model.(ui.SpinnerModel); m.Interrupted {
-		os.Exit(130)
+		return util.InterruptError
 	}
 	if m, _ := model.(ui.SpinnerModel); m.Err != nil {
 		return m.Err

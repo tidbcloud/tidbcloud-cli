@@ -16,13 +16,13 @@ package dataimport
 
 import (
 	"fmt"
-	"os"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
+	"tidbcloud-cli/internal/util"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
@@ -141,7 +141,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				err := survey.AskOne(prompt, &userInput)
 				if err != nil {
 					if err == terminal.InterruptErr {
-						os.Exit(130)
+						return util.InterruptError
 					} else {
 						return err
 					}

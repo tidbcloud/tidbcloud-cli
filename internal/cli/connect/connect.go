@@ -27,6 +27,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/util"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -136,7 +137,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				err = survey.AskOne(prompt, &useDefaultUser)
 				if err != nil {
 					if err == terminal.InterruptErr {
-						os.Exit(130)
+						return util.InterruptError
 					} else {
 						return err
 					}
@@ -150,7 +151,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 					err = survey.AskOne(input, &userInput, survey.WithValidator(survey.Required))
 					if err != nil {
 						if err == terminal.InterruptErr {
-							os.Exit(130)
+							return util.InterruptError
 						} else {
 							return err
 						}

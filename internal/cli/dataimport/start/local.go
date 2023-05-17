@@ -146,7 +146,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if m, _ := formatModel.(ui.SelectModel); m.Interrupted {
-					os.Exit(130)
+					return util.InterruptError
 				}
 				dataFormat = formatModel.(ui.SelectModel).Choices[formatModel.(ui.SelectModel).Selected].(string)
 
@@ -157,7 +157,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if inputModel.(ui.TextInputModel).Interrupted {
-					os.Exit(130)
+					return util.InterruptError
 				}
 
 				targetDatabase = inputModel.(ui.TextInputModel).Inputs[databaseIdx].Value()
@@ -375,7 +375,7 @@ func spinnerWaitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *strin
 		return errors.Trace(err)
 	}
 	if m, _ := model.(ui.SpinnerModel); m.Interrupted {
-		os.Exit(130)
+		return util.InterruptError
 	}
 	if m, _ := model.(ui.SpinnerModel); m.Err != nil {
 		return m.Err

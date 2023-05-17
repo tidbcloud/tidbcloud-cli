@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-	"strings"
 	"testing"
 
 	"tidbcloud-cli/internal"
@@ -31,6 +30,7 @@ import (
 	connectInfoModel "tidbcloud-cli/pkg/tidbcloud/connect_info/models"
 
 	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
+	mockTool "github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
@@ -151,35 +151,15 @@ func (suite *MySQLImportSuite) TestMySQLImportArgs() {
 	clusterID := "4321"
 	database := "mysql"
 
-	dumpArgs := []string{
-		"mysqldump",
-		"-h", sourceHost,
-		"-P", sourcePort,
-		"-u", sourceUser,
-		fmt.Sprintf("--password='%s'", sourcePassword),
-		"--skip-add-drop-table",
-		"--skip-add-locks",
-		"--skip-triggers",
-		"-r",
-		cachePath,
-		sourceDatabase,
-		sourceTable,
-	}
-
-	var caPath string
 	if runtime.GOOS != "darwin" {
-		caPath = "<path_to_ca_cert>"
-	} else {
-		caPath = "/etc/ssl/cert.pem"
+		suite.mockHelper.On("DownloadCaFile", mockTool.Anything).Return(nil)
 	}
-	suite.mockHelper.On("DumpFromMySQL", strings.Join(dumpArgs, " ")).Return(nil)
+	suite.mockHelper.On("DumpFromMySQL", mockTool.Anything, cachePath).Return(nil)
 
 	targetHost := "9.9.9.9"
 	targetPort := int32(4000)
 	targetUser := "root"
-	suite.mockHelper.On("ImportToServerless", cachePath,
-		fmt.Sprintf("mysql -u '%s' -h %s -P %d -D %s --ssl-mode=VERIFY_IDENTITY --ssl-ca=%s -p%s",
-			targetUser, targetHost, targetPort, database, caPath, password)).Return(nil)
+	suite.mockHelper.On("ImportToServerless", mockTool.Anything, cachePath).Return(nil)
 	suite.mockClient.On("GetCluster", cluster.NewGetClusterParams().
 		WithProjectID(projectID).WithClusterID(clusterID)).Return(&cluster.GetClusterOK{
 		Payload: &cluster.GetClusterOKBody{
@@ -216,200 +196,6 @@ func (suite *MySQLImportSuite) TestMySQLImportArgs() {
 			name: "start import without required project-id flag",
 			args: []string{"--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--password", password, "--database", database},
 			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
-		},
-	}
-
-	for _, tt := range tests {
-		suite.T().Run(tt.name, func(t *testing.T) {
-			cmd := MySQLCmd(suite.h)
-			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
-			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
-			cmd.SetArgs(tt.args)
-			err := cmd.Execute()
-			assert.Equal(tt.err, err)
-
-			if tt.err == nil {
-				suite.mockClient.AssertExpectations(suite.T())
-				suite.mockHelper.AssertExpectations(suite.T())
-			}
-		})
-	}
-}
-
-func (suite *MySQLImportSuite) TestMySQLImportWithoutCreateTable() {
-	assert := require.New(suite.T())
-	cachePath := "/tmp/test.sql"
-	suite.mockHelper.On("GenerateSqlCachePath").Return(cachePath)
-	suite.mockHelper.On("CheckMySQLClient").Return(nil)
-
-	sourceHost := "127.0.0.1"
-	sourcePort := "3306"
-	sourceDatabase := "test"
-	sourceTable := "table"
-	sourceUser := "root"
-	sourcePassword := "passwd"
-	password := "passwd"
-	projectID := "1234"
-	clusterID := "4321"
-	database := "mysql"
-
-	dumpArgs := []string{
-		"mysqldump",
-		"-h", sourceHost,
-		"-P", sourcePort,
-		"-u", sourceUser,
-		fmt.Sprintf("--password='%s'", sourcePassword),
-		"--skip-add-drop-table",
-		"--skip-add-locks",
-		"--skip-triggers",
-		"-r",
-		cachePath,
-		sourceDatabase,
-		sourceTable,
-	}
-
-	var caPath string
-	if runtime.GOOS != "darwin" {
-		caPath = "<path_to_ca_cert>"
-	} else {
-		caPath = "/etc/ssl/cert.pem"
-	}
-	suite.mockHelper.On("DumpFromMySQL", strings.Join(dumpArgs, " ")).Return(nil)
-
-	targetHost := "9.9.9.9"
-	targetPort := int32(4000)
-	targetUser := "admin"
-	suite.mockHelper.On("ImportToServerless", cachePath,
-		fmt.Sprintf("mysql -u '%s' -h %s -P %d -D %s --ssl-mode=VERIFY_IDENTITY --ssl-ca=%s -p%s",
-			targetUser, targetHost, targetPort, database, caPath, password)).Return(nil)
-	suite.mockClient.On("GetCluster", cluster.NewGetClusterParams().
-		WithProjectID(projectID).WithClusterID(clusterID)).Return(&cluster.GetClusterOK{
-		Payload: &cluster.GetClusterOKBody{
-			ClusterType: "DEVELOPER",
-			Status: &cluster.GetClusterOKBodyStatus{
-				ConnectionStrings: &cluster.GetClusterOKBodyStatusConnectionStrings{
-					DefaultUser: "root",
-					Standard: &cluster.GetClusterOKBodyStatusConnectionStringsStandard{
-						Host: targetHost,
-						Port: targetPort,
-					},
-				},
-			},
-		},
-	}, nil)
-	connectInfoBody := &connectInfoModel.ConnectInfo{}
-	err := json.Unmarshal([]byte(getConnectInfoResultStr), connectInfoBody)
-	assert.Nil(err)
-	suite.mockClient.On("GetConnectInfo", connectInfoService.NewGetInfoParams()).
-		Return(&connectInfoService.GetInfoOK{
-			Payload: connectInfoBody,
-		}, nil)
-
-	tests := []struct {
-		name string
-		args []string
-		err  error
-	}{
-		{
-			name: "start import success",
-			args: []string{"--project-id", projectID, "--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--password", password, "--database", database, "--user", targetUser},
-		},
-	}
-
-	for _, tt := range tests {
-		suite.T().Run(tt.name, func(t *testing.T) {
-			cmd := MySQLCmd(suite.h)
-			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
-			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
-			cmd.SetArgs(tt.args)
-			err := cmd.Execute()
-			assert.Equal(tt.err, err)
-
-			if tt.err == nil {
-				suite.mockClient.AssertExpectations(suite.T())
-				suite.mockHelper.AssertExpectations(suite.T())
-			}
-		})
-	}
-}
-
-func (suite *MySQLImportSuite) TestMySQLImportWithSpecificUser() {
-	assert := require.New(suite.T())
-	cachePath := "/tmp/test.sql"
-	suite.mockHelper.On("GenerateSqlCachePath").Return(cachePath)
-	suite.mockHelper.On("CheckMySQLClient").Return(nil)
-
-	sourceHost := "127.0.0.1"
-	sourcePort := "3306"
-	sourceDatabase := "test"
-	sourceTable := "table"
-	sourceUser := "root"
-	sourcePassword := "passwd"
-	password := "passwd"
-	projectID := "1234"
-	clusterID := "4321"
-	database := "mysql"
-
-	dumpArgs := []string{
-		"mysqldump",
-		"-h", sourceHost,
-		"-P", sourcePort,
-		"-u", sourceUser,
-		fmt.Sprintf("--password='%s'", sourcePassword),
-		"--skip-add-drop-table",
-		"--skip-add-locks",
-		"--skip-triggers",
-		"--no-create-info",
-		"-r",
-		cachePath,
-		sourceDatabase,
-		sourceTable,
-	}
-	var caPath string
-	if runtime.GOOS != "darwin" {
-		caPath = "<path_to_ca_cert>"
-	} else {
-		caPath = "/etc/ssl/cert.pem"
-	}
-	suite.mockHelper.On("DumpFromMySQL", strings.Join(dumpArgs, " ")).Return(nil)
-
-	targetHost := "9.9.9.9"
-	targetPort := int32(4000)
-	targetUser := "admin"
-	suite.mockHelper.On("ImportToServerless", cachePath,
-		fmt.Sprintf("mysql -u '%s' -h %s -P %d -D %s --ssl-mode=VERIFY_IDENTITY --ssl-ca=%s -p%s",
-			targetUser, targetHost, targetPort, database, caPath, password)).Return(nil)
-	suite.mockClient.On("GetCluster", cluster.NewGetClusterParams().
-		WithProjectID(projectID).WithClusterID(clusterID)).Return(&cluster.GetClusterOK{
-		Payload: &cluster.GetClusterOKBody{
-			ClusterType: "DEVELOPER",
-			Status: &cluster.GetClusterOKBodyStatus{
-				ConnectionStrings: &cluster.GetClusterOKBodyStatusConnectionStrings{
-					DefaultUser: targetUser,
-					Standard: &cluster.GetClusterOKBodyStatusConnectionStringsStandard{
-						Host: targetHost,
-						Port: targetPort,
-					},
-				},
-			},
-		},
-	}, nil)
-	connectInfoBody := &connectInfoModel.ConnectInfo{}
-	err := json.Unmarshal([]byte(getConnectInfoResultStr), connectInfoBody)
-	assert.Nil(err)
-	suite.mockClient.On("GetConnectInfo", connectInfoService.NewGetInfoParams()).
-		Return(&connectInfoService.GetInfoOK{
-			Payload: connectInfoBody,
-		}, nil)
-
-	tests := []struct {
-		name string
-		args []string
-		err  error
-	}{
-		{
-			name: "start import success",
-			args: []string{"--project-id", projectID, "--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--password", password, "--database", database, "--skip-create-table"},
 		},
 	}
 

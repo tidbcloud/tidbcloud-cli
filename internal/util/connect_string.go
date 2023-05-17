@@ -23,6 +23,13 @@ import (
 	"github.com/juju/errors"
 )
 
+type ConnectStringUsage string
+
+const (
+	GolangCommand = "golang"
+	Shell         = "shell"
+)
+
 // xxxDisplayName is used to display in interactive mode
 // xxxInputName is used to input in non-interactive mode and display in help message
 const (
@@ -109,7 +116,7 @@ var CaPath = map[string]string{
 	"others":   "<path_to_ca_cert>",
 }
 
-func GenerateConnectionString(connectInfo *models.ConnectInfo, client string, host string, user string, port string, clusterType string, operatingSystem string) (string, error) {
+func GenerateConnectionString(connectInfo *models.ConnectInfo, client string, host string, user string, port string, clusterType string, operatingSystem string, usage ConnectStringUsage) (string, error) {
 	if client == GeneralParameterID {
 		return fmt.Sprintf(`Host:    %s
 Port:    %s
@@ -124,7 +131,12 @@ User:    %s`,
 				if strings.EqualFold(clusterType, content.Type) {
 					connectionString := content.ConnectionString
 					connectionString = strings.Replace(connectionString, "${host}", host, -1)
-					connectionString = strings.Replace(connectionString, "${username}", user, -1)
+					if usage == GolangCommand {
+						connectionString = strings.Replace(connectionString, "'${username}'", user, -1)
+					} else {
+						connectionString = strings.Replace(connectionString, "${username}", user, -1)
+					}
+
 					connectionString = strings.Replace(connectionString, "${port}", port, -1)
 					caPath, exist := CaPath[strings.ToLower(operatingSystem)]
 					if exist {

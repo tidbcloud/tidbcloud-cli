@@ -354,7 +354,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			connectionString, err := util.GenerateConnectionString(connectInfo, client, host, defaultUser, port, clusterType, operatingSystem)
+			connectionString, err := util.GenerateConnectionString(connectInfo, client, host, defaultUser, port, clusterType, operatingSystem, util.Shell)
 			if err != nil {
 				return err
 			}

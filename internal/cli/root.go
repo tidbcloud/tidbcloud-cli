@@ -37,6 +37,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/service/github"
 	"tidbcloud-cli/internal/telemetry"
+	"tidbcloud-cli/internal/util"
 	ver "tidbcloud-cli/internal/version"
 
 	"github.com/fatih/color"
@@ -72,6 +73,9 @@ func Execute(ctx context.Context) {
 	if err := rootCmd.ExecuteContext(ctx); err != nil {
 		telemetry.FinishTrackingCommand(telemetry.TrackOptions{Err: err})
 		fmt.Fprintf(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
+		if errors.Is(err, util.InterruptError) {
+			os.Exit(130)
+		}
 		os.Exit(1)
 	}
 }

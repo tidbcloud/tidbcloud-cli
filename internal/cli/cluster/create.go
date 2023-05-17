@@ -16,7 +16,6 @@ package cluster
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"tidbcloud-cli/internal"
@@ -25,6 +24,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
+	"tidbcloud-cli/internal/util"
 
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -141,7 +141,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if m, _ := typeModel.(ui.SelectModel); m.Interrupted {
-					os.Exit(130)
+					return util.InterruptError
 				}
 				clusterType = typeModel.(ui.SelectModel).Choices[typeModel.(ui.SelectModel).Selected].(string)
 
@@ -160,7 +160,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if m, _ := providerModel.(ui.SelectModel); m.Interrupted {
-					os.Exit(130)
+					return util.InterruptError
 				}
 				cloudProvider = providerModel.(ui.SelectModel).Choices[providerModel.(ui.SelectModel).Selected].(string)
 
@@ -181,7 +181,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if m, _ := regionModel.(ui.SelectModel); m.Interrupted {
-					os.Exit(130)
+					return util.InterruptError
 				}
 				region = regionModel.(ui.SelectModel).Choices[regionModel.(ui.SelectModel).Selected].(string)
 
@@ -198,7 +198,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if inputModel.(ui.TextInputModel).Interrupted {
-					os.Exit(130)
+					return util.InterruptError
 				}
 
 				clusterName = inputModel.(ui.TextInputModel).Inputs[clusterNameIdx].Value()
@@ -361,7 +361,7 @@ func CreateAndSpinnerWait(d cloud.TiDBCloudClient, projectID string, clusterDefB
 		return errors.Trace(err)
 	}
 	if m, _ := createModel.(ui.SpinnerModel); m.Interrupted {
-		os.Exit(130)
+		return util.InterruptError
 	}
 	if m, _ := createModel.(ui.SpinnerModel); m.Err != nil {
 		return m.Err

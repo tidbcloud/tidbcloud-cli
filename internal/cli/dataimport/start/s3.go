@@ -16,7 +16,6 @@ package start
 
 import (
 	"fmt"
-	"os"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -146,7 +145,7 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if m, _ := formatModel.(ui.SelectModel); m.Interrupted {
-					os.Exit(130)
+					return util.InterruptError
 				}
 				dataFormat = formatModel.(ui.SelectModel).Choices[formatModel.(ui.SelectModel).Selected].(string)
 
@@ -157,7 +156,7 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if inputModel.(ui.TextInputModel).Interrupted {
-					os.Exit(130)
+					return util.InterruptError
 				}
 
 				awsRoleArn = inputModel.(ui.TextInputModel).Inputs[awsRoleArnIdx].Value()

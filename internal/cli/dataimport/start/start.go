@@ -16,7 +16,6 @@ package start
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"time"
 
@@ -24,6 +23,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
+	"tidbcloud-cli/internal/util"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 
 	"github.com/AlecAivazis/survey/v2"
@@ -107,7 +107,7 @@ func spinnerWaitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *imp
 		return errors.Trace(err)
 	}
 	if m, _ := model.(ui.SpinnerModel); m.Interrupted {
-		os.Exit(130)
+		return util.InterruptError
 	}
 	if m, _ := model.(ui.SpinnerModel); m.Err != nil {
 		return m.Err
@@ -127,7 +127,8 @@ func getCSVFormat() (separator string, delimiter string, backslashEscape bool, t
 	err := survey.AskOne(prompt, &needCustomCSV)
 	if err != nil {
 		if err == terminal.InterruptErr {
-			os.Exit(130)
+			errToReturn = util.InterruptError
+			return
 		} else {
 			errToReturn = err
 			return
@@ -143,7 +144,8 @@ func getCSVFormat() (separator string, delimiter string, backslashEscape bool, t
 			return
 		}
 		if inputModel.(ui.TextInputModel).Interrupted {
-			os.Exit(130)
+			errToReturn = util.InterruptError
+			return
 		}
 
 		// If user input is blank, use the default value.
