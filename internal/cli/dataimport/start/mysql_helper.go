@@ -36,29 +36,25 @@ type MySQLHelperImpl struct {
 
 func (m *MySQLHelperImpl) GenerateSqlCachePath() string {
 	home, _ := os.UserHomeDir()
-	sqlCacheFile := filepath.Join(home, config.HomePath, ".cache", "dump-"+time.Now().Format("2006-01-02T15-04-05")+".sql")
+	sqlCacheFile := filepath.Join(home, config.HomePath, "cache", "dump-"+time.Now().Format("2006-01-02T15-04-05")+".sql")
 	return sqlCacheFile
 }
 
 func (m *MySQLHelperImpl) DownloadCaFile(caFile string) error {
-	// 下载文件的 URL
 	url := "https://letsencrypt.org/certs/isrgrootx1.pem"
 
-	// 创建 HTTP 请求
 	resp, err := http.Get(url)
 	if err != nil {
 		return errors.Annotate(err, "Failed to download ca file")
 	}
 	defer resp.Body.Close()
 
-	// 创建文件并打开
 	file, err := os.Create(caFile)
 	if err != nil {
 		return errors.Annotate(err, "Failed to create ca file")
 	}
 	defer file.Close()
 
-	// 将 HTTP 响应体复制到文件
 	_, err = io.Copy(file, resp.Body)
 	if err != nil {
 		return errors.Annotate(err, "Failed to copy ca file")
@@ -103,13 +99,30 @@ func (m *MySQLHelperImpl) DumpFromMySQL(ctx context.Context, command []string, s
 	defer output.Close()
 	c1.Stdout = output
 
-	err = c1.Run()
+	err = c1.Start()
 	if err != nil {
-		fmt.Println(stderr.String())
 		return err
 	}
 
-	return nil
+	done := make(chan error, 1)
+	go func() {
+		done <- c1.Wait()
+	}()
+
+	select {
+	case <-ctx.Done():
+		if err := c1.Process.Kill(); err != nil {
+			return err
+		}
+		<-done
+		return ctx.Err()
+	case err := <-done:
+		if err != nil {
+			fmt.Println(stderr.String())
+			return err
+		}
+		return nil
+	}
 }
 
 func (m *MySQLHelperImpl) ImportToServerless(ctx context.Context, command []string, sqlCacheFile string) error {
@@ -123,11 +136,28 @@ func (m *MySQLHelperImpl) ImportToServerless(ctx context.Context, command []stri
 	defer input.Close()
 	c1.Stdin = input
 
-	err = c1.Run()
+	err = c1.Start()
 	if err != nil {
-		fmt.Println(stderr.String())
 		return err
 	}
 
-	return nil
+	done := make(chan error, 1)
+	go func() {
+		done <- c1.Wait()
+	}()
+
+	select {
+	case <-ctx.Done():
+		if err := c1.Process.Kill(); err != nil {
+			return err
+		}
+		<-done
+		return ctx.Err()
+	case err := <-done:
+		if err != nil {
+			fmt.Println(stderr.String())
+			return err
+		}
+		return nil
+	}
 }
