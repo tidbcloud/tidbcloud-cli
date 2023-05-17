@@ -15,10 +15,10 @@
 package internal
 
 import (
+	"context"
+
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/service/cloud"
-
-	exec "golang.org/x/sys/execabs"
 )
 
 const (
@@ -35,7 +35,7 @@ type Helper struct {
 type MySQLHelper interface {
 	DownloadCaFile(caFile string) error
 	CheckMySQLClient() error
-	DumpFromMySQL(command *exec.Cmd, sqlCacheFile string) error
-	ImportToServerless(c1 *exec.Cmd, sqlCacheFile string) error
+	DumpFromMySQL(ctx context.Context, command []string, sqlCacheFile string) error
+	ImportToServerless(ctx context.Context, command []string, sqlCacheFile string) error
 	GenerateSqlCachePath() string
 }

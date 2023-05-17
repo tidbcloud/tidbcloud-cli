@@ -42,7 +42,6 @@ import (
 	"github.com/pingcap/log"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
-	exec "golang.org/x/sys/execabs"
 )
 
 const (
@@ -465,15 +464,13 @@ func initialMySQLInputModel() ui.TextInputModel {
 func updateAndWaitReady(ctx context.Context, h *internal.Helper, mysqlDumpCommand []string, importCommand []string, sqlCacheFile string) error {
 	fmt.Fprintf(h.IOStreams.Out, "... Dumping data from source MySQL\n")
 
-	c1 := exec.CommandContext(ctx, mysqlDumpCommand[0], mysqlDumpCommand[1:]...) //nolint:gosec
-	err := h.MySQLHelper.DumpFromMySQL(c1, sqlCacheFile)
+	err := h.MySQLHelper.DumpFromMySQL(ctx, mysqlDumpCommand, sqlCacheFile)
 	if err != nil {
 		return err
 	}
 
 	fmt.Fprintf(h.IOStreams.Out, "... Importing data to serverless\n")
-	c1 = exec.CommandContext(ctx, importCommand[0], importCommand[1:]...) //nolint:gosec
-	err = h.MySQLHelper.ImportToServerless(c1, sqlCacheFile)
+	err = h.MySQLHelper.ImportToServerless(ctx, importCommand, sqlCacheFile)
 	if err != nil {
 		return err
 	}
@@ -482,12 +479,11 @@ func updateAndWaitReady(ctx context.Context, h *internal.Helper, mysqlDumpComman
 }
 
 func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, mysqlDumpCommand []string, importCommand []string, sqlCacheFile string) error {
-	c1 := exec.CommandContext(ctx, mysqlDumpCommand[0], mysqlDumpCommand[1:]...) //nolint:gosec
 	task := func() tea.Msg {
 		res := make(chan error, 1)
 
 		go func() {
-			err := h.MySQLHelper.DumpFromMySQL(c1, sqlCacheFile)
+			err := h.MySQLHelper.DumpFromMySQL(ctx, mysqlDumpCommand, sqlCacheFile)
 			if err != nil {
 				res <- err
 			}
@@ -517,10 +513,6 @@ func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, mysqlDumpComm
 		return errors.Trace(err)
 	}
 	if m, _ := model.(ui.SpinnerModel); m.Interrupted {
-		err := c1.Process.Kill()
-		if err != nil {
-			fmt.Println(err)
-		}
 		return util.InterruptError
 	}
 	if m, _ := model.(ui.SpinnerModel); m.Err != nil {
@@ -529,12 +521,11 @@ func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, mysqlDumpComm
 		fmt.Fprintln(h.IOStreams.Out, color.GreenString(m.Output))
 	}
 
-	c1 = exec.CommandContext(ctx, importCommand[0], importCommand[1:]...) //nolint:gosec
 	task = func() tea.Msg {
 		res := make(chan error, 1)
 
 		go func() {
-			err := h.MySQLHelper.ImportToServerless(c1, sqlCacheFile)
+			err := h.MySQLHelper.ImportToServerless(ctx, importCommand, sqlCacheFile)
 			if err != nil {
 				res <- err
 			}
@@ -564,10 +555,6 @@ func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, mysqlDumpComm
 		return errors.Trace(err)
 	}
 	if m, _ := model.(ui.SpinnerModel); m.Interrupted {
-		err := c1.Process.Kill()
-		if err != nil {
-			fmt.Println(err)
-		}
 		return util.InterruptError
 	}
 	if m, _ := model.(ui.SpinnerModel); m.Err != nil {

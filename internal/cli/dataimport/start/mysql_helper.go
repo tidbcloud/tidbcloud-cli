@@ -16,6 +16,7 @@ package start
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -91,7 +92,8 @@ func HasHomebrew() bool {
 	return err == nil
 }
 
-func (m *MySQLHelperImpl) DumpFromMySQL(c1 *exec.Cmd, sqlCacheFile string) error {
+func (m *MySQLHelperImpl) DumpFromMySQL(ctx context.Context, command []string, sqlCacheFile string) error {
+	c1 := exec.CommandContext(ctx, command[0], command[1:]...) //nolint:gosec
 	var stderr bytes.Buffer
 	c1.Stderr = &stderr
 	output, err := os.Create(sqlCacheFile)
@@ -110,7 +112,8 @@ func (m *MySQLHelperImpl) DumpFromMySQL(c1 *exec.Cmd, sqlCacheFile string) error
 	return nil
 }
 
-func (m *MySQLHelperImpl) ImportToServerless(c1 *exec.Cmd, sqlCacheFile string) error {
+func (m *MySQLHelperImpl) ImportToServerless(ctx context.Context, command []string, sqlCacheFile string) error {
+	c1 := exec.CommandContext(ctx, command[0], command[1:]...) //nolint:gosec
 	var stderr bytes.Buffer
 	c1.Stderr = &stderr
 	input, err := os.Open(sqlCacheFile)
