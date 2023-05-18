@@ -38,8 +38,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 		Use:   "update",
 		Short: "Update the CLI to the latest version",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, cancel := context.WithCancel(cmd.Context())
-			defer cancel()
+			ctx := cmd.Context()
 			// If is managed by TiUP, we should disable the update command since binpath is different.
 			if config.IsUnderTiUP {
 				return errors.New("the CLI is managed by TiUP, please update it by `tiup update cloud`")
@@ -112,16 +111,16 @@ func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, newRelease *g
 		res := make(chan error, 1)
 
 		go func() {
-			ctx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+			timeoutCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
 			defer cancel()
-			c1 := exec.CommandContext(ctx, "curl", "-sSL", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh") //nolint:gosec
+			c1 := exec.CommandContext(timeoutCtx, "curl", "-sSL", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh") //nolint:gosec
 			var stdout bytes.Buffer
 			var stderr bytes.Buffer
 			c1.Stdout = &stdout
 			c1.Stderr = &stderr
 
 			err := c1.Run()
-			if ctx.Err() == context.DeadlineExceeded {
+			if timeoutCtx.Err() == context.DeadlineExceeded {
 				res <- errors.New("timeout when download the install.sh script")
 				return
 			}
@@ -131,12 +130,12 @@ func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, newRelease *g
 				return
 			}
 
-			c2 := exec.CommandContext(ctx, "/bin/sh", "-c", stdout.String()) //nolint:gosec
+			c2 := exec.CommandContext(timeoutCtx, "/bin/sh", "-c", stdout.String()) //nolint:gosec
 			stderr = bytes.Buffer{}
 			c2.Stderr = &stderr
 
 			err = c2.Run()
-			if ctx.Err() == context.DeadlineExceeded {
+			if timeoutCtx.Err() == context.DeadlineExceeded {
 				res <- errors.New("timeout when execute the install.sh script")
 				return
 			}
@@ -159,6 +158,8 @@ func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, newRelease *g
 				} else {
 					return ui.Result("Update successfully!")
 				}
+			case <-ctx.Done():
+				return util.InterruptError
 			case <-ticker.C:
 				// continue
 			}

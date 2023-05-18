@@ -15,6 +15,7 @@
 package start
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strconv"
@@ -106,6 +107,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			var projectID, clusterID, dataFormat, targetDatabase, targetTable, separator, delimiter string
 			var backslashEscape, trimLastSeparator bool
 			d, err := h.Client()
@@ -228,7 +230,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 			url := urlRes.Payload.UploadURL
 
 			if h.IOStreams.CanPrompt {
-				err := spinnerWaitUploadOp(h, d, url, uploadFile, stat.Size())
+				err := spinnerWaitUploadOp(ctx, h, d, url, uploadFile, stat.Size())
 				if err != nil {
 					return err
 				}
@@ -269,7 +271,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 			params := importOp.NewCreateImportParams().WithProjectID(projectID).WithClusterID(clusterID).
 				WithBody(body)
 			if h.IOStreams.CanPrompt {
-				err := spinnerWaitStartOp(h, d, params)
+				err := spinnerWaitStartOp(ctx, h, d, params)
 				if err != nil {
 					return err
 				}
@@ -335,7 +337,7 @@ func waitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *string, uplo
 	return nil
 }
 
-func spinnerWaitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *string, uploadFile *os.File, size int64) error {
+func spinnerWaitUploadOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, url *string, uploadFile *os.File, size int64) error {
 	task := func() tea.Msg {
 		errChan := make(chan error, 1)
 
@@ -365,6 +367,8 @@ func spinnerWaitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *strin
 				} else {
 					return ui.Result("File has been uploaded")
 				}
+			case <-ctx.Done():
+				return util.InterruptError
 			}
 		}
 	}

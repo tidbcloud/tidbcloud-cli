@@ -104,6 +104,7 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			var projectID, clusterID, awsRoleArn, dataFormat, sourceUrl, separator, delimiter string
 			var backslashEscape, trimLastSeparator bool
 
@@ -234,7 +235,7 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 			params := importOp.NewCreateImportParams().WithProjectID(projectID).WithClusterID(clusterID).
 				WithBody(body)
 			if h.IOStreams.CanPrompt {
-				err := spinnerWaitStartOp(h, d, params)
+				err := spinnerWaitStartOp(ctx, h, d, params)
 				if err != nil {
 					return err
 				}

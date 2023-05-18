@@ -99,30 +99,12 @@ func (m *MySQLHelperImpl) DumpFromMySQL(ctx context.Context, command []string, s
 	defer output.Close()
 	c1.Stdout = output
 
-	err = c1.Start()
+	err = c1.Run()
 	if err != nil {
+		fmt.Println(stderr.String())
 		return err
 	}
-
-	done := make(chan error, 1)
-	go func() {
-		done <- c1.Wait()
-	}()
-
-	select {
-	case <-ctx.Done():
-		if err := c1.Process.Kill(); err != nil {
-			return err
-		}
-		<-done
-		return ctx.Err()
-	case err := <-done:
-		if err != nil {
-			fmt.Println(stderr.String())
-			return err
-		}
-		return nil
-	}
+	return nil
 }
 
 func (m *MySQLHelperImpl) ImportToServerless(ctx context.Context, command []string, sqlCacheFile string) error {
@@ -136,28 +118,10 @@ func (m *MySQLHelperImpl) ImportToServerless(ctx context.Context, command []stri
 	defer input.Close()
 	c1.Stdin = input
 
-	err = c1.Start()
+	err = c1.Run()
 	if err != nil {
+		fmt.Println(stderr.String())
 		return err
 	}
-
-	done := make(chan error, 1)
-	go func() {
-		done <- c1.Wait()
-	}()
-
-	select {
-	case <-ctx.Done():
-		if err := c1.Process.Kill(); err != nil {
-			return err
-		}
-		<-done
-		return ctx.Err()
-	case err := <-done:
-		if err != nil {
-			fmt.Println(stderr.String())
-			return err
-		}
-		return nil
-	}
+	return nil
 }

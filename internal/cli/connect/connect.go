@@ -105,8 +105,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			if !h.IOStreams.CanPrompt {
 				return fmt.Errorf("the stdout is not a terminal")
 			}
-			ctx, cancel := context.WithCancel(cmd.Context())
-			defer cancel()
+			ctx := cmd.Context()
 
 			d, err := h.Client()
 			if err != nil {

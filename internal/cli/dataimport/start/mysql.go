@@ -126,8 +126,7 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx, cancel := context.WithCancel(cmd.Context())
-			defer cancel()
+			ctx := cmd.Context()
 			var projectID, clusterID, sourceHost, sourcePort, sourceUser, sourcePassword, sourceTable, sourceDatabase, userName, password, databaseName string
 			var skipCreateTable bool
 			err := h.MySQLHelper.CheckMySQLClient()

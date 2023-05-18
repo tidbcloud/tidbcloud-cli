@@ -15,6 +15,7 @@
 package cluster
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -100,6 +101,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			d, err := h.Client()
 			if err != nil {
 				return err
@@ -269,7 +271,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if h.IOStreams.CanPrompt {
-				err := CreateAndSpinnerWait(d, projectID, clusterDefBody, h)
+				err := CreateAndSpinnerWait(ctx, d, projectID, clusterDefBody, h)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -324,7 +326,7 @@ func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, projectID s
 	}
 }
 
-func CreateAndSpinnerWait(d cloud.TiDBCloudClient, projectID string, clusterDefBody *clusterApi.CreateClusterBody, h *internal.Helper) error {
+func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, projectID string, clusterDefBody *clusterApi.CreateClusterBody, h *internal.Helper) error {
 	// use spinner to indicate that the cluster is being created
 	task := func() tea.Msg {
 		createClusterResult, err := d.CreateCluster(clusterApi.NewCreateClusterParams().WithProjectID(projectID).WithBody(*clusterDefBody))
@@ -351,6 +353,8 @@ func CreateAndSpinnerWait(d cloud.TiDBCloudClient, projectID string, clusterDefB
 				if s == "AVAILABLE" {
 					return ui.Result(fmt.Sprintf("Cluster %s is ready.", newClusterID))
 				}
+			case <-ctx.Done():
+				return util.InterruptError
 			}
 		}
 	}

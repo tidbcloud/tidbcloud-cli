@@ -15,6 +15,9 @@
 package ui
 
 import (
+	"os"
+	"syscall"
+
 	"github.com/charmbracelet/lipgloss"
 	"github.com/fatih/color"
 
@@ -50,9 +53,11 @@ func (m SpinnerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "esc", "ctrl+c":
+		case "ctrl+c":
+			pid := os.Getpid()
+			_ = syscall.Kill(pid, syscall.SIGINT)
 			m.Interrupted = true
-			return m, tea.Quit
+			return m, nil
 		default:
 			return m, nil
 		}

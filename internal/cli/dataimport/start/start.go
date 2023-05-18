@@ -15,6 +15,7 @@
 package start
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"time"
@@ -67,7 +68,7 @@ func waitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.C
 	return nil
 }
 
-func spinnerWaitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.CreateImportParams) error {
+func spinnerWaitStartOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.CreateImportParams) error {
 	task := func() tea.Msg {
 		errChan := make(chan error, 1)
 
@@ -97,6 +98,8 @@ func spinnerWaitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *imp
 				} else {
 					return ui.Result("")
 				}
+			case <-ctx.Done():
+				return util.InterruptError
 			}
 		}
 	}
