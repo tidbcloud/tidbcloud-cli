@@ -227,7 +227,10 @@ func RetrieveImports(pID string, cID string, pageSize int64, d TiDBCloudClient) 
 			return 0, nil, errors.Trace(err)
 		}
 
-		total, _ = strconv.ParseUint(*imports.Payload.Total, 0, 64)
+		total, err = strconv.ParseUint(*imports.Payload.Total, 0, 64)
+		if err != nil {
+			return 0, nil, errors.Annotate(err, " failed parse total import number.")
+		}
 		page += 1
 		items = append(items, imports.Payload.Imports...)
 	}

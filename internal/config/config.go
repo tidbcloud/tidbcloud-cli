@@ -27,8 +27,6 @@ const (
 	cliNameInTiUP = "cloud"
 	HomePath      = ".ticloud"
 
-	Repo = "tidbcloud/tidbcloud-cli"
-
 	Confirmed = "yes"
 )
 

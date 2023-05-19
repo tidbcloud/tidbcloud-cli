@@ -20,6 +20,8 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/fatih/color"
+	"github.com/pingcap/log"
+	"go.uber.org/zap"
 
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
@@ -54,8 +56,14 @@ func (m SpinnerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c":
-			p, _ := os.FindProcess(os.Getpid())
-			_ = p.Signal(syscall.SIGINT)
+			p, err := os.FindProcess(os.Getpid())
+			if err != nil {
+				log.Debug("failed to find current process when interrupted in spinner", zap.Error(err))
+			}
+			err = p.Signal(syscall.SIGINT)
+			if err != nil {
+				log.Debug("failed to send SIGINT to current process when interrupted in spinner", zap.Error(err))
+			}
 			m.Interrupted = true
 			return m, nil
 		default:

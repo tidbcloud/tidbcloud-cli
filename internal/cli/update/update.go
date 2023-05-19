@@ -30,7 +30,9 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
+	"github.com/pingcap/log"
 	"github.com/spf13/cobra"
+	"go.uber.org/zap"
 )
 
 func UpdateCmd(h *internal.Helper) *cobra.Command {
@@ -45,9 +47,10 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			// When update CLI, we don't need to check the version again after command executes.
-			newRelease, err := github.CheckForUpdate(config.Repo, false)
+			newRelease, err := github.CheckForUpdate(ctx, false)
 			// If we can't get the latest version, we should update the CLI assuming it's not the latest version.
 			if err != nil {
+				log.Debug("Failed to check for update, update the CLI assuming it's not the latest version", zap.Error(err))
 				newRelease = &github.ReleaseInfo{
 					Version: "latest",
 				}
