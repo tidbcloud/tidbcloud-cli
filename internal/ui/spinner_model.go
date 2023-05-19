@@ -15,6 +15,9 @@
 package ui
 
 import (
+	"os"
+	"syscall"
+
 	"github.com/charmbracelet/lipgloss"
 	"github.com/fatih/color"
 
@@ -25,12 +28,12 @@ import (
 type errMsg error
 
 type SpinnerModel struct {
-	Hint     string
-	spinner  spinner.Model
-	quitting bool
-	Err      error
-	Output   string
-	Task     tea.Cmd
+	Hint        string
+	spinner     spinner.Model
+	Interrupted bool
+	Err         error
+	Output      string
+	Task        tea.Cmd
 }
 
 type Result string
@@ -50,9 +53,11 @@ func (m SpinnerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q", "esc", "ctrl+c":
-			m.quitting = true
-			return m, tea.Quit
+		case "ctrl+c":
+			p, _ := os.FindProcess(os.Getpid())
+			_ = p.Signal(syscall.SIGINT)
+			m.Interrupted = true
+			return m, nil
 		default:
 			return m, nil
 		}
@@ -74,7 +79,7 @@ func (m SpinnerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m SpinnerModel) View() string {
 	str := color.New(color.FgYellow).Sprintf("%s %s", m.spinner.View(), color.BlueString(m.Hint)) + "\n"
-	if m.quitting {
+	if m.Interrupted {
 		return str + "\n"
 	}
 	return str

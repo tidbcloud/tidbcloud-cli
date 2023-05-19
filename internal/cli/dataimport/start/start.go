@@ -15,16 +15,16 @@
 package start
 
 import (
+	"context"
 	"fmt"
-	"os"
 	"strconv"
 	"time"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
+	"tidbcloud-cli/internal/util"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 
 	"github.com/AlecAivazis/survey/v2"
@@ -51,13 +51,9 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 		Short: "Start an import task",
 	}
 
-	startCmd.PersistentFlags().String(flag.Delimiter, "\"", "The delimiter used for quoting of CSV file")
-	startCmd.PersistentFlags().String(flag.Separator, ",", "The field separator of CSV file")
-	startCmd.PersistentFlags().Bool(flag.TrimLastSeparator, false, "In CSV file whether to treat Separator as the line terminator and trim all trailing separators")
-	startCmd.PersistentFlags().Bool(flag.BackslashEscape, true, "In CSV file whether to parse backslash inside fields as escape characters")
-
 	startCmd.AddCommand(LocalCmd(h))
 	startCmd.AddCommand(S3Cmd(h))
+	startCmd.AddCommand(MySQLCmd(h))
 	return startCmd
 }
 
@@ -72,7 +68,7 @@ func waitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.C
 	return nil
 }
 
-func spinnerWaitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.CreateImportParams) error {
+func spinnerWaitStartOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.CreateImportParams) error {
 	task := func() tea.Msg {
 		errChan := make(chan error, 1)
 
@@ -102,16 +98,21 @@ func spinnerWaitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *imp
 				} else {
 					return ui.Result("")
 				}
+			case <-ctx.Done():
+				return util.InterruptError
 			}
 		}
 	}
 
 	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Starting import task"))
-	createModel, err := p.StartReturningModel()
+	model, err := p.StartReturningModel()
 	if err != nil {
 		return errors.Trace(err)
 	}
-	if m, _ := createModel.(ui.SpinnerModel); m.Err != nil {
+	if m, _ := model.(ui.SpinnerModel); m.Interrupted {
+		return util.InterruptError
+	}
+	if m, _ := model.(ui.SpinnerModel); m.Err != nil {
 		return m.Err
 	}
 
@@ -129,7 +130,8 @@ func getCSVFormat() (separator string, delimiter string, backslashEscape bool, t
 	err := survey.AskOne(prompt, &needCustomCSV)
 	if err != nil {
 		if err == terminal.InterruptErr {
-			os.Exit(130)
+			errToReturn = util.InterruptError
+			return
 		} else {
 			errToReturn = err
 			return
@@ -145,7 +147,8 @@ func getCSVFormat() (separator string, delimiter string, backslashEscape bool, t
 			return
 		}
 		if inputModel.(ui.TextInputModel).Interrupted {
-			os.Exit(130)
+			errToReturn = util.InterruptError
+			return
 		}
 
 		// If user input is blank, use the default value.

@@ -17,7 +17,6 @@ package cloud
 import (
 	"fmt"
 	"math"
-	"os"
 	"strconv"
 
 	"tidbcloud-cli/internal/ui"
@@ -95,7 +94,7 @@ func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error
 		return nil, err
 	}
 	if m, _ := projectModel.(ui.SelectModel); m.Interrupted {
-		os.Exit(130)
+		return nil, util.InterruptError
 	}
 	res := projectModel.(ui.SelectModel).GetSelectedItem().(*Project)
 	return res, nil
@@ -132,7 +131,7 @@ func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient
 		return nil, errors.Trace(err)
 	}
 	if m, _ := clusterModel.(ui.SelectModel); m.Interrupted {
-		os.Exit(130)
+		return nil, util.InterruptError
 	}
 	cluster := clusterModel.(ui.SelectModel).GetSelectedItem().(*Cluster)
 	return cluster, nil
@@ -171,7 +170,7 @@ func GetSelectedImport(pID string, cID string, pageSize int64, client TiDBCloudC
 		return nil, err
 	}
 	if m, _ := importModel.(ui.SelectModel); m.Interrupted {
-		os.Exit(130)
+		return nil, util.InterruptError
 	}
 	res := importModel.(ui.SelectModel).GetSelectedItem().(*Import)
 	return res, nil
@@ -262,7 +261,7 @@ func GetSelectedConnectClient(connectClientList []string) (string, error) {
 		return "", errors.Trace(err)
 	}
 	if m, _ := connectClientModel.(ui.SelectModel); m.Interrupted {
-		os.Exit(130)
+		return "", util.InterruptError
 	}
 	connectClient := connectClientModel.(ui.SelectModel).GetSelectedItem().(string)
 	return connectClient, nil
@@ -283,7 +282,7 @@ func GetSelectedConnectOs(osList []string) (string, error) {
 		return "", errors.Trace(err)
 	}
 	if m, _ := connectClientModel.(ui.SelectModel); m.Interrupted {
-		os.Exit(130)
+		return "", util.InterruptError
 	}
 	operatingSystem := connectClientModel.(ui.SelectModel).GetSelectedItem().(string)
 	return operatingSystem, nil

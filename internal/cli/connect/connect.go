@@ -27,6 +27,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/util"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -104,6 +105,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			if !h.IOStreams.CanPrompt {
 				return fmt.Errorf("the stdout is not a terminal")
 			}
+			ctx := cmd.Context()
 
 			d, err := h.Client()
 			if err != nil {
@@ -134,7 +136,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				err = survey.AskOne(prompt, &useDefaultUser)
 				if err != nil {
 					if err == terminal.InterruptErr {
-						os.Exit(130)
+						return util.InterruptError
 					} else {
 						return err
 					}
@@ -148,7 +150,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 					err = survey.AskOne(input, &userInput, survey.WithValidator(survey.Required))
 					if err != nil {
 						if err == terminal.InterruptErr {
-							os.Exit(130)
+							return util.InterruptError
 						} else {
 							return err
 						}
@@ -211,7 +213,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				return err
 			}
 
-			err = ExecuteSqlDialog(clusterType, userName, host, port, pass, h.IOStreams.Out)
+			err = ExecuteSqlDialog(ctx, clusterType, userName, host, port, pass, h.IOStreams.Out)
 			if err != nil {
 				return err
 			}
@@ -226,7 +228,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 	return connectCmd
 }
 
-func ExecuteSqlDialog(clusterType, userName, host, port string, pass *string, out io.Writer) error {
+func ExecuteSqlDialog(ctx context.Context, clusterType, userName, host, port string, pass *string, out io.Writer) error {
 	u, err := user.Current()
 	if err != nil {
 		return fmt.Errorf("can't get current user: %s", err.Error())
@@ -254,7 +256,7 @@ func ExecuteSqlDialog(clusterType, userName, host, port string, pass *string, ou
 		}
 	}
 
-	if err = h.Open(context.TODO(), dsn); err != nil {
+	if err = h.Open(ctx, dsn); err != nil {
 		return fmt.Errorf("can't open connection to %s: %s", dsn, err.Error())
 	}
 

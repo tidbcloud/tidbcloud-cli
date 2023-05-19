@@ -15,8 +15,8 @@
 package cluster
 
 import (
+	"context"
 	"fmt"
-	"os"
 	"time"
 
 	"tidbcloud-cli/internal"
@@ -25,6 +25,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
+	"tidbcloud-cli/internal/util"
 
 	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/charmbracelet/bubbles/textinput"
@@ -100,6 +101,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			d, err := h.Client()
 			if err != nil {
 				return err
@@ -141,7 +143,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if m, _ := typeModel.(ui.SelectModel); m.Interrupted {
-					os.Exit(130)
+					return util.InterruptError
 				}
 				clusterType = typeModel.(ui.SelectModel).Choices[typeModel.(ui.SelectModel).Selected].(string)
 
@@ -160,7 +162,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if m, _ := providerModel.(ui.SelectModel); m.Interrupted {
-					os.Exit(130)
+					return util.InterruptError
 				}
 				cloudProvider = providerModel.(ui.SelectModel).Choices[providerModel.(ui.SelectModel).Selected].(string)
 
@@ -181,7 +183,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if m, _ := regionModel.(ui.SelectModel); m.Interrupted {
-					os.Exit(130)
+					return util.InterruptError
 				}
 				region = regionModel.(ui.SelectModel).Choices[regionModel.(ui.SelectModel).Selected].(string)
 
@@ -198,7 +200,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if inputModel.(ui.TextInputModel).Interrupted {
-					return nil
+					return util.InterruptError
 				}
 
 				clusterName = inputModel.(ui.TextInputModel).Inputs[clusterNameIdx].Value()
@@ -269,7 +271,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if h.IOStreams.CanPrompt {
-				err := CreateAndSpinnerWait(d, projectID, clusterDefBody, h)
+				err := CreateAndSpinnerWait(ctx, d, projectID, clusterDefBody, h)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -324,7 +326,7 @@ func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, projectID s
 	}
 }
 
-func CreateAndSpinnerWait(d cloud.TiDBCloudClient, projectID string, clusterDefBody *clusterApi.CreateClusterBody, h *internal.Helper) error {
+func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, projectID string, clusterDefBody *clusterApi.CreateClusterBody, h *internal.Helper) error {
 	// use spinner to indicate that the cluster is being created
 	task := func() tea.Msg {
 		createClusterResult, err := d.CreateCluster(clusterApi.NewCreateClusterParams().WithProjectID(projectID).WithBody(*clusterDefBody))
@@ -351,6 +353,8 @@ func CreateAndSpinnerWait(d cloud.TiDBCloudClient, projectID string, clusterDefB
 				if s == "AVAILABLE" {
 					return ui.Result(fmt.Sprintf("Cluster %s is ready.", newClusterID))
 				}
+			case <-ctx.Done():
+				return util.InterruptError
 			}
 		}
 	}
@@ -359,6 +363,9 @@ func CreateAndSpinnerWait(d cloud.TiDBCloudClient, projectID string, clusterDefB
 	createModel, err := p.StartReturningModel()
 	if err != nil {
 		return errors.Trace(err)
+	}
+	if m, _ := createModel.(ui.SpinnerModel); m.Interrupted {
+		return util.InterruptError
 	}
 	if m, _ := createModel.(ui.SpinnerModel); m.Err != nil {
 		return m.Err

@@ -109,7 +109,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if inputModel.(ui.TextInputModel).Interrupted {
-					return nil
+					return util.InterruptError
 				}
 
 				inputs := inputModel.(ui.TextInputModel).Inputs

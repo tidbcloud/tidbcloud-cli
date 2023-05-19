@@ -25,6 +25,7 @@ import (
 	configCmd "tidbcloud-cli/internal/cli/config"
 	"tidbcloud-cli/internal/cli/connect"
 	"tidbcloud-cli/internal/cli/dataimport"
+	"tidbcloud-cli/internal/cli/dataimport/start"
 	"tidbcloud-cli/internal/cli/project"
 	"tidbcloud-cli/internal/cli/update"
 	"tidbcloud-cli/internal/cli/version"
@@ -36,6 +37,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/service/github"
 	"tidbcloud-cli/internal/telemetry"
+	"tidbcloud-cli/internal/util"
 	ver "tidbcloud-cli/internal/version"
 
 	"github.com/fatih/color"
@@ -60,6 +62,7 @@ func Execute(ctx context.Context) {
 			return delegate, nil
 		},
 		QueryPageSize: internal.DefaultPageSize,
+		MySQLHelper:   &start.MySQLHelperImpl{},
 		IOStreams:     iostream.System(),
 	}
 
@@ -70,6 +73,9 @@ func Execute(ctx context.Context) {
 	if err := rootCmd.ExecuteContext(ctx); err != nil {
 		telemetry.FinishTrackingCommand(telemetry.TrackOptions{Err: err})
 		fmt.Fprintf(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
+		if errors.Is(err, util.InterruptError) {
+			os.Exit(130)
+		}
 		os.Exit(1)
 	}
 }
@@ -204,7 +210,7 @@ func initConfig() {
 	home, err := os.UserHomeDir()
 	cobra.CheckErr(err)
 	path := home + "/" + config.HomePath
-	err = os.MkdirAll(path, 0700)
+	err = os.MkdirAll(path+"/cache", 0700)
 	if err != nil {
 		color.Red("Failed to create home directory: %s", err)
 		os.Exit(1)

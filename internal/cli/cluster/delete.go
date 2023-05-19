@@ -16,7 +16,6 @@ package cluster
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"tidbcloud-cli/internal"
@@ -24,6 +23,7 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
+	"tidbcloud-cli/internal/util"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -141,7 +141,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				err := survey.AskOne(prompt, &userInput)
 				if err != nil {
 					if err == terminal.InterruptErr {
-						os.Exit(130)
+						return util.InterruptError
 					} else {
 						return err
 					}

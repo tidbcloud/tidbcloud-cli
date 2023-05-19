@@ -16,7 +16,6 @@ package start
 
 import (
 	"fmt"
-	"os"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -105,6 +104,7 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			var projectID, clusterID, awsRoleArn, dataFormat, sourceUrl, separator, delimiter string
 			var backslashEscape, trimLastSeparator bool
 
@@ -146,7 +146,7 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if m, _ := formatModel.(ui.SelectModel); m.Interrupted {
-					os.Exit(130)
+					return util.InterruptError
 				}
 				dataFormat = formatModel.(ui.SelectModel).Choices[formatModel.(ui.SelectModel).Selected].(string)
 
@@ -157,7 +157,7 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if inputModel.(ui.TextInputModel).Interrupted {
-					return nil
+					return util.InterruptError
 				}
 
 				awsRoleArn = inputModel.(ui.TextInputModel).Inputs[awsRoleArnIdx].Value()
@@ -235,7 +235,7 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 			params := importOp.NewCreateImportParams().WithProjectID(projectID).WithClusterID(clusterID).
 				WithBody(body)
 			if h.IOStreams.CanPrompt {
-				err := spinnerWaitStartOp(h, d, params)
+				err := spinnerWaitStartOp(ctx, h, d, params)
 				if err != nil {
 					return err
 				}
@@ -255,6 +255,10 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 	s3Cmd.Flags().String(flag.AwsRoleArn, "", "AWS S3 IAM Role ARN")
 	s3Cmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %q", opts.SupportedDataFormats()))
 	s3Cmd.Flags().String(flag.SourceUrl, "", "The S3 path where the source data file is stored")
+	s3Cmd.Flags().String(flag.Delimiter, "\"", "The delimiter used for quoting of CSV file")
+	s3Cmd.Flags().String(flag.Separator, ",", "The field separator of CSV file")
+	s3Cmd.Flags().Bool(flag.TrimLastSeparator, false, "In CSV file whether to treat Separator as the line terminator and trim all trailing separators")
+	s3Cmd.Flags().Bool(flag.BackslashEscape, true, "In CSV file whether to parse backslash inside fields as escape characters")
 	return s3Cmd
 }
 

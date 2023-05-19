@@ -24,6 +24,7 @@ require (
 	github.com/juju/errors v1.0.0
 	github.com/mattn/go-isatty v0.0.17
 	github.com/pelletier/go-toml v1.9.5
+	github.com/pingcap/errors v0.11.0
 	github.com/pingcap/log v1.1.0
 	github.com/rodaine/table v1.0.1
 	github.com/sahilm/fuzzy v0.1.0

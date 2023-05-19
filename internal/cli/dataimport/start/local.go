@@ -15,6 +15,7 @@
 package start
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strconv"
@@ -106,6 +107,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			var projectID, clusterID, dataFormat, targetDatabase, targetTable, separator, delimiter string
 			var backslashEscape, trimLastSeparator bool
 			d, err := h.Client()
@@ -146,7 +148,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if m, _ := formatModel.(ui.SelectModel); m.Interrupted {
-					os.Exit(130)
+					return util.InterruptError
 				}
 				dataFormat = formatModel.(ui.SelectModel).Choices[formatModel.(ui.SelectModel).Selected].(string)
 
@@ -157,7 +159,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if inputModel.(ui.TextInputModel).Interrupted {
-					return nil
+					return util.InterruptError
 				}
 
 				targetDatabase = inputModel.(ui.TextInputModel).Inputs[databaseIdx].Value()
@@ -228,7 +230,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 			url := urlRes.Payload.UploadURL
 
 			if h.IOStreams.CanPrompt {
-				err := spinnerWaitUploadOp(h, d, url, uploadFile, stat.Size())
+				err := spinnerWaitUploadOp(ctx, h, d, url, uploadFile, stat.Size())
 				if err != nil {
 					return err
 				}
@@ -269,7 +271,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 			params := importOp.NewCreateImportParams().WithProjectID(projectID).WithClusterID(clusterID).
 				WithBody(body)
 			if h.IOStreams.CanPrompt {
-				err := spinnerWaitStartOp(h, d, params)
+				err := spinnerWaitStartOp(ctx, h, d, params)
 				if err != nil {
 					return err
 				}
@@ -289,6 +291,10 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 	localCmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %q", opts.SupportedDataFormats()))
 	localCmd.Flags().String(flag.TargetDatabase, "", "Target database to which import data")
 	localCmd.Flags().String(flag.TargetTable, "", "Target table to which import data")
+	localCmd.Flags().String(flag.Delimiter, "\"", "The delimiter used for quoting of CSV file")
+	localCmd.Flags().String(flag.Separator, ",", "The field separator of CSV file")
+	localCmd.Flags().Bool(flag.TrimLastSeparator, false, "In CSV file whether to treat Separator as the line terminator and trim all trailing separators")
+	localCmd.Flags().Bool(flag.BackslashEscape, true, "In CSV file whether to parse backslash inside fields as escape characters")
 	return localCmd
 }
 
@@ -331,7 +337,7 @@ func waitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *string, uplo
 	return nil
 }
 
-func spinnerWaitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *string, uploadFile *os.File, size int64) error {
+func spinnerWaitUploadOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, url *string, uploadFile *os.File, size int64) error {
 	task := func() tea.Msg {
 		errChan := make(chan error, 1)
 
@@ -361,16 +367,21 @@ func spinnerWaitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *strin
 				} else {
 					return ui.Result("File has been uploaded")
 				}
+			case <-ctx.Done():
+				return util.InterruptError
 			}
 		}
 	}
 
 	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Uploading file"))
-	createModel, err := p.StartReturningModel()
+	model, err := p.StartReturningModel()
 	if err != nil {
 		return errors.Trace(err)
 	}
-	if m, _ := createModel.(ui.SpinnerModel); m.Err != nil {
+	if m, _ := model.(ui.SpinnerModel); m.Interrupted {
+		return util.InterruptError
+	}
+	if m, _ := model.(ui.SpinnerModel); m.Err != nil {
 		return m.Err
 	} else {
 		fmt.Fprintf(h.IOStreams.Out, color.GreenString(m.Output))

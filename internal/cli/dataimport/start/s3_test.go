@@ -96,7 +96,6 @@ func (suite *S3ImportSuite) TestS3ImportArgs() {
 		args         []string
 		err          error
 		stdoutString string
-		stderrString string
 	}{
 		{
 			name:         "start import success",
@@ -122,16 +121,14 @@ func (suite *S3ImportSuite) TestS3ImportArgs() {
 
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
-			cmd := StartCmd(suite.h)
+			cmd := S3Cmd(suite.h)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
-			tt.args = append([]string{"s3"}, tt.args...)
 			cmd.SetArgs(tt.args)
 			err = cmd.Execute()
 			assert.Equal(tt.err, err)
 
 			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
-			assert.Equal(tt.stderrString, suite.h.IOStreams.Err.(*bytes.Buffer).String())
 			if tt.err == nil {
 				suite.mockClient.AssertExpectations(suite.T())
 			}
