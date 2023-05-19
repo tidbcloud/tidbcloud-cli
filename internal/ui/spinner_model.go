@@ -54,8 +54,8 @@ func (m SpinnerModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c":
-			pid := os.Getpid()
-			_ = syscall.Kill(pid, syscall.SIGINT)
+			p, _ := os.FindProcess(os.Getpid())
+			_ = p.Signal(syscall.SIGINT)
 			m.Interrupted = true
 			return m, nil
 		default:
