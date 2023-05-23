@@ -42,8 +42,10 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/juju/errors"
+	logger "github.com/pingcap/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 )
 
 func Execute(ctx context.Context) {
@@ -113,7 +115,10 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 
 			if shouldCheckNewRelease(cmd) {
 				go func() {
-					rel, _ := checkForUpdate(h.IOStreams.CanPrompt)
+					rel, err := checkForUpdate(cmd.Context(), h.IOStreams.CanPrompt)
+					if err != nil {
+						logger.Debug("Error checking for new release", zap.Error(err))
+					}
 					updateMessageChan <- rel
 				}()
 			}
@@ -196,12 +201,13 @@ func shouldCheckAuth(cmd *cobra.Command) bool {
 	return true
 }
 
-func checkForUpdate(isTerminal bool) (*github.ReleaseInfo, error) {
+func checkForUpdate(ctx context.Context, isTerminal bool) (*github.ReleaseInfo, error) {
 	if !isTerminal || ver.Version == ver.DevVersion {
+		logger.Debug("Skip checking for new release", zap.Bool("isTerminal", isTerminal), zap.String("version", ver.Version))
 		return nil, nil
 	}
 
-	return github.CheckForUpdate(config.Repo, true)
+	return github.CheckForUpdate(ctx, true)
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -221,7 +227,14 @@ func initConfig() {
 	viper.SetConfigType("toml")
 	viper.SetConfigName("config")
 	viper.SetConfigPermissions(0600)
-	_ = viper.SafeWriteConfig()
+	err = viper.SafeWriteConfig()
+	if err != nil {
+		var existErr viper.ConfigFileAlreadyExistsError
+		if !errors.As(err, &existErr) {
+			color.Red("Failed to write config file: %s", err.Error())
+			os.Exit(1)
+		}
+	}
 
 	// After version 0.1.2, we replace underscore with hyphen in properties.
 	// In order to keep backward compatibility, we need to replace the old names to the new ones.

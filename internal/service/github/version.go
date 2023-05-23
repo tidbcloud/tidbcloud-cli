@@ -15,7 +15,8 @@
 package github
 
 import (
-	"fmt"
+	"bytes"
+	"context"
 	"os"
 	"path/filepath"
 	"time"
@@ -23,9 +24,9 @@ import (
 	"tidbcloud-cli/internal/config"
 	ver "tidbcloud-cli/internal/version"
 
-	"github.com/go-resty/resty/v2"
 	"github.com/hashicorp/go-version"
 	"github.com/juju/errors"
+	exec "golang.org/x/sys/execabs"
 	"gopkg.in/yaml.v3"
 )
 
@@ -42,8 +43,12 @@ type StateEntry struct {
 // CheckForUpdate checks for updates and returns the latest release info if there is a newer version.
 // For checking after every command, we should use stateEntry to avoid checking too frequently.
 // For checking when using `update`, we should use forceCheck to ignore the stateEntry.
-func CheckForUpdate(repo string, withRateLimit bool) (*ReleaseInfo, error) {
-	home, _ := os.UserHomeDir()
+func CheckForUpdate(ctx context.Context, withRateLimit bool) (*ReleaseInfo, error) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return nil, err
+	}
+
 	stateFilePath := filepath.Join(home, config.HomePath, "state.yml")
 	if withRateLimit {
 		stateEntry, _ := getStateEntry(stateFilePath)
@@ -52,16 +57,14 @@ func CheckForUpdate(repo string, withRateLimit bool) (*ReleaseInfo, error) {
 		}
 	}
 
-	releaseInfo, err := getLatestReleaseInfo(repo)
+	releaseInfo, err := getLatestReleaseInfo(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	if withRateLimit {
-		err = setStateEntry(stateFilePath, time.Now(), *releaseInfo)
-		if err != nil {
-			return nil, err
-		}
+	err = setStateEntry(stateFilePath, time.Now(), *releaseInfo)
+	if err != nil {
+		return nil, err
 	}
 
 	if versionGreaterThan(releaseInfo.Version, ver.Version) {
@@ -86,27 +89,29 @@ func getStateEntry(stateFilePath string) (*StateEntry, error) {
 	return &stateEntry, nil
 }
 
-func getLatestReleaseInfo(repo string) (*ReleaseInfo, error) {
-	client := resty.New()
-	client.SetTimeout(5 * time.Second)
-	response, err := client.
-		R().
-		Get(fmt.Sprintf("https://raw.githubusercontent.com/%s/main/latest-version", repo))
+func getLatestReleaseInfo(ctx context.Context) (*ReleaseInfo, error) {
+	ctx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+	defer cancel()
+
+	c1 := exec.CommandContext(ctx, "curl", "-sSL", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/latest-version") //nolint:gosec
+	var stdout bytes.Buffer
+	var stderr bytes.Buffer
+	c1.Stdout = &stdout
+	c1.Stderr = &stderr
+
+	err := c1.Run()
+	if ctx.Err() == context.DeadlineExceeded {
+		return nil, errors.New("timeout when get latest CLI version")
+	}
 	if err != nil {
-		return nil, errors.Trace(err)
+		return nil, errors.Annotate(err, stderr.String())
 	}
 
-	body := string(response.Body())
-	_, err = version.NewVersion(body)
+	_, err = version.NewVersion(stdout.String())
 	if err != nil {
 		return nil, err
 	}
-	latestRelease := ReleaseInfo{Version: body}
-	if response.IsSuccess() {
-		return &latestRelease, nil
-	} else {
-		return nil, errors.Errorf("failed to get latest release info: %s", response.Status()+" "+body)
-	}
+	return &ReleaseInfo{Version: stdout.String()}, nil
 }
 
 func setStateEntry(stateFilePath string, t time.Time, r ReleaseInfo) error {
