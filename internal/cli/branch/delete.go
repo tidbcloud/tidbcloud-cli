@@ -25,12 +25,13 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
 
+	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
+
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
-	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
 )
 
 const confirmed = "yes"

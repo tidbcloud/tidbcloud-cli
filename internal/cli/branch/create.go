@@ -17,7 +17,6 @@ package branch
 import (
 	"context"
 	"fmt"
-	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"time"
 
 	"tidbcloud-cli/internal"
@@ -27,13 +26,14 @@ import (
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 
+	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
+	branchModel "tidbcloud-cli/pkg/tidbcloud/branch/models"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
-	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
-	branchModel "tidbcloud-cli/pkg/tidbcloud/branch/models"
 )
 
 var createBranchField = map[string]int{
@@ -46,8 +46,7 @@ const (
 )
 
 type CreateOpts struct {
-	serverlessProviders []*clusterApi.ListProviderRegionsOKBodyItemsItems0
-	interactive         bool
+	interactive bool
 }
 
 func (c CreateOpts) NonInteractiveFlags() []string {

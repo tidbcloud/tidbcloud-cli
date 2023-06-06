@@ -80,6 +80,11 @@ func (o *ListBranchesOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the list branches o k response
+func (o *ListBranchesOK) Code() int {
+	return 200
+}
+
 func (o *ListBranchesOK) Error() string {
 	return fmt.Sprintf("[GET /api/v1beta/clusters/{cluster_id}/branches][%d] listBranchesOK  %+v", 200, o.Payload)
 }
@@ -122,11 +127,6 @@ type ListBranchesDefault struct {
 	Payload *models.GooglerpcStatus
 }
 
-// Code gets the status code for the list branches default response
-func (o *ListBranchesDefault) Code() int {
-	return o._statusCode
-}
-
 // IsSuccess returns true when this list branches default response has a 2xx status code
 func (o *ListBranchesDefault) IsSuccess() bool {
 	return o._statusCode/100 == 2
@@ -150,6 +150,11 @@ func (o *ListBranchesDefault) IsServerError() bool {
 // IsCode returns true when this list branches default response a status code equal to that given
 func (o *ListBranchesDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the list branches default response
+func (o *ListBranchesDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *ListBranchesDefault) Error() string {

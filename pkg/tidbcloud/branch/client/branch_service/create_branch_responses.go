@@ -84,6 +84,11 @@ func (o *CreateBranchOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the create branch o k response
+func (o *CreateBranchOK) Code() int {
+	return 200
+}
+
 func (o *CreateBranchOK) Error() string {
 	return fmt.Sprintf("[POST /api/v1beta/clusters/{cluster_id}/branches][%d] createBranchOK  %+v", 200, o.Payload)
 }
@@ -126,11 +131,6 @@ type CreateBranchDefault struct {
 	Payload *models.GooglerpcStatus
 }
 
-// Code gets the status code for the create branch default response
-func (o *CreateBranchDefault) Code() int {
-	return o._statusCode
-}
-
 // IsSuccess returns true when this create branch default response has a 2xx status code
 func (o *CreateBranchDefault) IsSuccess() bool {
 	return o._statusCode/100 == 2
@@ -154,6 +154,11 @@ func (o *CreateBranchDefault) IsServerError() bool {
 // IsCode returns true when this create branch default response a status code equal to that given
 func (o *CreateBranchDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the create branch default response
+func (o *CreateBranchDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *CreateBranchDefault) Error() string {

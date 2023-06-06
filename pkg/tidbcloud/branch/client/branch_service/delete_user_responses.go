@@ -80,6 +80,11 @@ func (o *DeleteUserOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the delete user o k response
+func (o *DeleteUserOK) Code() int {
+	return 200
+}
+
 func (o *DeleteUserOK) Error() string {
 	return fmt.Sprintf("[DELETE /api/internal/projects/{project_id}/clusters/{cluster_id}/branches/{branch_name}/users/{username}][%d] deleteUserOK  %+v", 200, o.Payload)
 }
@@ -120,11 +125,6 @@ type DeleteUserDefault struct {
 	Payload *models.GooglerpcStatus
 }
 
-// Code gets the status code for the delete user default response
-func (o *DeleteUserDefault) Code() int {
-	return o._statusCode
-}
-
 // IsSuccess returns true when this delete user default response has a 2xx status code
 func (o *DeleteUserDefault) IsSuccess() bool {
 	return o._statusCode/100 == 2
@@ -148,6 +148,11 @@ func (o *DeleteUserDefault) IsServerError() bool {
 // IsCode returns true when this delete user default response a status code equal to that given
 func (o *DeleteUserDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the delete user default response
+func (o *DeleteUserDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *DeleteUserDefault) Error() string {

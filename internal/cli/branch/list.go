@@ -23,9 +23,10 @@ import (
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
 
+	branchModel "tidbcloud-cli/pkg/tidbcloud/branch/models"
+
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
-	branchModel "tidbcloud-cli/pkg/tidbcloud/branch/models"
 )
 
 type ListOpts struct {

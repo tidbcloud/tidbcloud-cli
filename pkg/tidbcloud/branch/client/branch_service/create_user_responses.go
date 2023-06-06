@@ -80,6 +80,11 @@ func (o *CreateUserOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the create user o k response
+func (o *CreateUserOK) Code() int {
+	return 200
+}
+
 func (o *CreateUserOK) Error() string {
 	return fmt.Sprintf("[POST /api/internal/projects/{project_id}/clusters/{cluster_id}/branches/{branch_name}/users][%d] createUserOK  %+v", 200, o.Payload)
 }
@@ -122,11 +127,6 @@ type CreateUserDefault struct {
 	Payload *models.GooglerpcStatus
 }
 
-// Code gets the status code for the create user default response
-func (o *CreateUserDefault) Code() int {
-	return o._statusCode
-}
-
 // IsSuccess returns true when this create user default response has a 2xx status code
 func (o *CreateUserDefault) IsSuccess() bool {
 	return o._statusCode/100 == 2
@@ -150,6 +150,11 @@ func (o *CreateUserDefault) IsServerError() bool {
 // IsCode returns true when this create user default response a status code equal to that given
 func (o *CreateUserDefault) IsCode(code int) bool {
 	return o._statusCode == code
+}
+
+// Code gets the status code for the create user default response
+func (o *CreateUserDefault) Code() int {
+	return o._statusCode
 }
 
 func (o *CreateUserDefault) Error() string {

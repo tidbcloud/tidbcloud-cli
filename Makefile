@@ -44,7 +44,7 @@ addcopy: ## Add copyright to all files
 	@scripts/add-copy.sh
 
 .PHONY: generate-branch-client
- generate-connect-info-client:
+ generate-branch-client:
 	@echo "==> Generating branch client"
 	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
 	swagger generate client -f pkg/tidbcloud/branch/branch_openapi.swagger.json -A tidbcloud-branch -t pkg/tidbcloud/branch
