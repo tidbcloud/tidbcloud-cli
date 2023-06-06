@@ -71,7 +71,7 @@ type TiDBCloudClient interface {
 
 	GetBranch(params *branchOp.GetBranchParams, opts ...branchOp.ClientOption) (*branchOp.GetBranchOK, error)
 
-	ListBranch(params *branchOp.ListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.ListBranchesOK, error)
+	ListBranches(params *branchOp.ListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.ListBranchesOK, error)
 
 	CreateBranch(params *branchOp.CreateBranchParams, opts ...branchOp.ClientOption) (*branchOp.CreateBranchOK, error)
 
@@ -170,7 +170,7 @@ func (d *ClientDelegate) GetBranch(params *branchOp.GetBranchParams, opts ...bra
 	return d.bc.BranchService.GetBranch(params, opts...)
 }
 
-func (d *ClientDelegate) ListBranch(params *branchOp.ListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.ListBranchesOK, error) {
+func (d *ClientDelegate) ListBranches(params *branchOp.ListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.ListBranchesOK, error) {
 	return d.bc.BranchService.ListBranches(params, opts...)
 }
 

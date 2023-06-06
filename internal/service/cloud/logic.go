@@ -314,7 +314,7 @@ func RetrieveBranches(cID string, pageSize int64, d TiDBCloudClient) (int64, []*
 	var items []*branchModel.OpenapiBasicBranch
 	// loop to get all branches
 	for (page-1)*pageSize < total {
-		branches, err := d.ListBranch(params.WithPageToken(&page).WithPageSize(&pageSize))
+		branches, err := d.ListBranches(params.WithPageToken(&page).WithPageSize(&pageSize))
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}

@@ -386,8 +386,8 @@ func (_m *TiDBCloudClient) GetImport(params *import_service.GetImportParams, opt
 	return r0, r1
 }
 
-// ListBranch provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) ListBranch(params *branch_service.ListBranchesParams, opts ...branch_service.ClientOption) (*branch_service.ListBranchesOK, error) {
+// ListBranches provides a mock function with given fields: params, opts
+func (_m *TiDBCloudClient) ListBranches(params *branch_service.ListBranchesParams, opts ...branch_service.ClientOption) (*branch_service.ListBranchesOK, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]

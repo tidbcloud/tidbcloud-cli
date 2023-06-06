@@ -116,7 +116,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 
 			if !force {
 				if !h.IOStreams.CanPrompt {
-					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to delete the cluster")
+					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to delete the branch")
 				}
 
 				confirmationMessage := fmt.Sprintf("%s %s %s", color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to confirm:"))
