@@ -37,7 +37,7 @@ import (
 )
 
 var createBranchField = map[string]int{
-	flag.BranchName: 1,
+	flag.BranchName: 0,
 }
 
 const (
@@ -62,9 +62,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var createCmd = &cobra.Command{
-		Use:         "create",
-		Short:       "Create one branch in the specified cluster",
-		Annotations: make(map[string]string),
+		Use:   "create",
+		Short: "Create a branch in the specified cluster",
+		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Create a branch in interactive mode:
   $ %[1]s branch create
 

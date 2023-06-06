@@ -40,7 +40,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 	var listCmd = &cobra.Command{
 		Use:   "list <cluster-id>",
-		Short: "List all branches in a cluster",
+		Short: "List branches in the specified cluster",
 		Example: fmt.Sprintf(`  List all branches in the cluster(interactive mode):
   $ %[1]s branch list
 

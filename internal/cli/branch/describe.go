@@ -44,10 +44,10 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var describeCmd = &cobra.Command{
-		Use:         "describe",
-		Short:       "Describe a branch",
-		Aliases:     []string{"get"},
-		Annotations: make(map[string]string),
+		Use:     "describe",
+		Short:   "Describe a branch in the specified cluster",
+		Aliases: []string{"get"},
+		Args:    cobra.NoArgs,
 		Example: fmt.Sprintf(`  Get the branch info in interactive mode:
   $ %[1]s branch describe
 
@@ -60,6 +60,9 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				if f != nil && f.Changed {
 					opts.interactive = false
 				}
+			}
+			if len(args) > 0 {
+				opts.interactive = false
 			}
 			return nil
 		},
@@ -119,8 +122,8 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	describeCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The project ID of the cluster")
-	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster")
+	describeCmd.Flags().StringP(flag.BranchID, flag.BranchIDShort, "", "The ID of the branch to be deleted")
+	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the branch to be deleted")
 	describeCmd.MarkFlagsRequiredTogether(flag.BranchID, flag.ClusterID)
 	return describeCmd
 }

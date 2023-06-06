@@ -53,6 +53,10 @@ type Branch struct {
 	DisplayName string
 }
 
+func (b Branch) String() string {
+	return fmt.Sprintf("%s(%s)", b.DisplayName, b.ID)
+}
+
 func (c Cluster) String() string {
 	return fmt.Sprintf("%s(%s)", c.Name, c.ID)
 }

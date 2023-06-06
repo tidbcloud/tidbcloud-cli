@@ -54,9 +54,9 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 
 	var force bool
 	var deleteCmd = &cobra.Command{
-		Use:         "delete",
-		Short:       "Delete a branch in your cluster",
-		Annotations: make(map[string]string),
+		Use:   "delete",
+		Short: "Delete a branch in the specified cluster",
+		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Delete a branch in interactive mode:
   $ %[1]s branch delete
 
@@ -161,7 +161,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 					// TODO optimize the error in branch
 					if err != nil {
 						if strings.Contains(err.Error(), "failed to get branch") {
-							fmt.Fprintln(h.IOStreams.Out, color.GreenString("branch deleted"))
+							fmt.Fprintln(h.IOStreams.Out, color.GreenString("branch %s deleted", branchID))
 							return nil
 						}
 						return errors.Trace(err)
