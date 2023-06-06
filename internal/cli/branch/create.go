@@ -25,7 +25,6 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-
 	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
 	branchModel "tidbcloud-cli/pkg/tidbcloud/branch/models"
 

@@ -22,7 +22,6 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
-
 	branchModel "tidbcloud-cli/pkg/tidbcloud/branch/models"
 
 	"github.com/juju/errors"

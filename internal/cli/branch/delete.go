@@ -24,7 +24,6 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
-
 	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
 
 	"github.com/AlecAivazis/survey/v2"

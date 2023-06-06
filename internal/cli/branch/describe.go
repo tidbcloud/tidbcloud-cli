@@ -17,6 +17,7 @@ package branch
 import (
 	"encoding/json"
 	"fmt"
+
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"

@@ -25,11 +25,11 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
+	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
+	branchModel "tidbcloud-cli/pkg/tidbcloud/branch/models"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
-	branchModel "tidbcloud-cli/pkg/tidbcloud/branch/models"
 )
 
 const listResultStr = `{
