@@ -227,11 +227,11 @@ func (suite *MySQLImportSuite) TestMySQLImportArgs() {
 	}{
 		{
 			name: "start import success",
-			args: []string{"--project-id", projectID, "--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--password", password, "--database", database},
+			args: []string{"--project-id", projectID, "--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database},
 		},
 		{
 			name: "start import without required project-id flag",
-			args: []string{"--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--password", password, "--database", database},
+			args: []string{"--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database},
 			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
 		},
 	}
@@ -344,7 +344,7 @@ func (suite *MySQLImportSuite) TestMySQLImportWithoutCreateTable() {
 	}{
 		{
 			name: "start import success",
-			args: []string{"--project-id", projectID, "--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--password", password, "--database", database, "--user", targetUser},
+			args: []string{"--project-id", projectID, "--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database, "--target-user", targetUser},
 		},
 	}
 
@@ -456,7 +456,7 @@ func (suite *MySQLImportSuite) TestMySQLImportWithSpecificUser() {
 	}{
 		{
 			name: "start import success",
-			args: []string{"--project-id", projectID, "--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--password", password, "--database", database, "--skip-create-table"},
+			args: []string{"--project-id", projectID, "--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database, "--skip-create-table"},
 		},
 	}
 
