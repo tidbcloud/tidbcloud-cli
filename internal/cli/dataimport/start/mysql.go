@@ -68,14 +68,14 @@ func (c MySQLOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.ProjectID,
-		flag.Database,
+		flag.TargetDatabase,
 		flag.SourceHost,
 		flag.SourcePort,
 		flag.SourceDatabase,
 		flag.SourceTable,
 		flag.SourceUser,
 		flag.SourcePassword,
-		flag.Password,
+		flag.TargetPassword,
 	}
 }
 
@@ -94,14 +94,14 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 		Example: fmt.Sprintf(`  Start an import task in interactive mode:
   $ %[1]s import start mysql
 
-  Start an import task in non-interactive mode:
-  $ %[1]s import start mysql --project-id <project-id> --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --database <database> --password <password>
+  Start an import task in non-interactive mode (using the TiDB Serverless cluster default user '<username-prefix>.root'):
+  $ %[1]s import start mysql --project-id <project-id> --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --target-database <target-database> --target-password <target-password>
 
-  Start an import task with a specific user:
-  $ %[1]s import start mysql --project-id <project-id> --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --database <database> --password <password> --user <user>
+  Start an import task in non-interactive mode (using a specific user):
+  $ %[1]s import start mysql --project-id <project-id> --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --target-database <target-database> --target-password <target-password> --target-user <target-user>
 
-  Start an import task skipping create table:
-  $ %[1]s import start mysql --project-id <project-id> --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --database <database> --password <password> --skip-create-table	
+  Start an import task that skips creating the target table if it already exists in the target database:
+  $ %[1]s import start mysql --project-id <project-id> --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --target-database <target-database> --target-password <target-password> --skip-create-table
 `,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -289,7 +289,7 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 				if err != nil {
 					return errors.Trace(err)
 				}
-				password, err = cmd.Flags().GetString(flag.Password)
+				password, err = cmd.Flags().GetString(flag.TargetPassword)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -297,13 +297,13 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 				if err != nil {
 					return errors.Trace(err)
 				}
-				databaseName, err = cmd.Flags().GetString(flag.Database)
+				databaseName, err = cmd.Flags().GetString(flag.TargetDatabase)
 				if err != nil {
 					return errors.Trace(err)
 				}
 
-				if cmd.Flags().Changed(flag.User) {
-					userName, err = cmd.Flags().GetString(flag.User)
+				if cmd.Flags().Changed(flag.TargetUser) {
+					userName, err = cmd.Flags().GetString(flag.TargetUser)
 					if err != nil {
 						return errors.Trace(err)
 					}
@@ -408,16 +408,16 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 
 	mysqlCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	mysqlCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	mysqlCmd.Flags().String(flag.SourceHost, "", "The host of the source MySQL")
-	mysqlCmd.Flags().String(flag.SourcePort, "", "The port of the source MySQL")
-	mysqlCmd.Flags().String(flag.SourceUser, "", "The user to login source MySQL")
-	mysqlCmd.Flags().String(flag.SourcePassword, "", "The password to login source MySQL")
-	mysqlCmd.Flags().String(flag.SourceDatabase, "", "The database of the source MySQL")
-	mysqlCmd.Flags().String(flag.SourceTable, "", "The table to dump")
-	mysqlCmd.Flags().String(flag.Database, "", "The target database")
-	mysqlCmd.Flags().String(flag.User, "", "The user to login serverless cluster, default is '<token>.root'")
-	mysqlCmd.Flags().Bool(flag.SkipCreateTable, false, "Skip create table step, default create table")
-	mysqlCmd.Flags().String(flag.Password, "", "The password to login serverless cluster")
+	mysqlCmd.Flags().String(flag.SourceHost, "", "The host of the source MySQL instance")
+	mysqlCmd.Flags().String(flag.SourcePort, "", "The port of the source MySQL instance")
+	mysqlCmd.Flags().String(flag.SourceUser, "", "The user to log in to the source MySQL instance")
+	mysqlCmd.Flags().String(flag.SourcePassword, "", "The password of the source MySQL instance")
+	mysqlCmd.Flags().String(flag.SourceDatabase, "", "The name of the source MySQL database")
+	mysqlCmd.Flags().String(flag.SourceTable, "", "The source table name in the source MySQL database")
+	mysqlCmd.Flags().String(flag.TargetDatabase, "", "The target database name in TiDB Serverless cluster")
+	mysqlCmd.Flags().String(flag.TargetUser, "", "The user to log in to the target TiDB Serverless cluster, default is '<token>.root'")
+	mysqlCmd.Flags().Bool(flag.SkipCreateTable, false, "Skip creating the target table if it already exists in the target database")
+	mysqlCmd.Flags().String(flag.TargetPassword, "", "The password of the target TiDB Serverless cluster")
 
 	return mysqlCmd
 }
