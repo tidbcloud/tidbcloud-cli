@@ -213,7 +213,7 @@ func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, params *
 					return errors.Trace(err)
 				}
 				s := clusterResult.GetPayload().State
-				if *s == branchModel.OpenapiBranchStatusREADY {
+				if string(*s) == "READY" {
 					return ui.Result(fmt.Sprintf("Branch %s is ready.", newBranchID))
 				}
 			case <-ctx.Done():

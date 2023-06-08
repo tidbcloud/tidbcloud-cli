@@ -157,9 +157,8 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 					_, err := d.GetBranch(branchApi.NewGetBranchParams().
 						WithClusterID(clusterID).
 						WithBranchID(branchID))
-					// TODO optimize the error in branch
 					if err != nil {
-						if strings.Contains(err.Error(), "failed to get branch") {
+						if strings.Contains(err.Error(), "Branch not found") {
 							fmt.Fprintln(h.IOStreams.Out, color.GreenString("branch %s deleted", branchID))
 							return nil
 						}
