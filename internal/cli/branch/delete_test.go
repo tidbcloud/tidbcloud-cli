@@ -63,7 +63,7 @@ func (suite *DeleteBranchSuite) TestDeleteBranchArgs() {
 		Return(&branchApi.DeleteBranchOK{}, nil)
 	suite.mockClient.On("GetBranch", branchApi.NewGetBranchParams().
 		WithBranchID(branchID).WithClusterID(clusterID)).
-		Return(nil, errors.New("failed to get branch"))
+		Return(nil, errors.New("404"))
 
 	tests := []struct {
 		name         string
