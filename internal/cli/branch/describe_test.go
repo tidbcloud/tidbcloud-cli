@@ -93,7 +93,7 @@ func (suite *DescribeBranchSuite) SetupTest() {
 func (suite *DescribeBranchSuite) TestDescribeBranchArgs() {
 	assert := require.New(suite.T())
 
-	body := &branchModel.OpenapiGetBranchResp{}
+	body := &branchModel.OpenapiBranch{}
 	err := json.Unmarshal([]byte(getBranchResultStr), body)
 	assert.Nil(err)
 	result := &branchApi.GetBranchOK{

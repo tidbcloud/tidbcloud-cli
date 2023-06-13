@@ -72,7 +72,7 @@ func (suite *CreateBranchSuite) TestCreateBranchArgs() {
 			},
 		}, nil)
 
-	body := &branchModel.OpenapiGetBranchResp{}
+	body := &branchModel.OpenapiBranch{}
 	err := json.Unmarshal([]byte(getBranchResultStr), body)
 	assert.Nil(err)
 	result := &branchApi.GetBranchOK{
