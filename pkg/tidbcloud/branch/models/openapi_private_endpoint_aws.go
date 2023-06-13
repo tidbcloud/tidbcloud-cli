@@ -12,7 +12,7 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// OpenapiPrivateEndpointAws openapi private endpoint aws
+// OpenapiPrivateEndpointAws PrivateEndpointAws is the private endpoint of the branch on AWS.
 //
 // swagger:model openapiPrivateEndpointAws
 type OpenapiPrivateEndpointAws struct {
@@ -20,7 +20,7 @@ type OpenapiPrivateEndpointAws struct {
 	// availability zone
 	AvailabilityZone []string `json:"availability_zone"`
 
-	// service mame
+	// The service name of the branch on AWS.
 	ServiceMame string `json:"service_mame,omitempty"`
 }
 

@@ -21,117 +21,6 @@
     "application/json"
   ],
   "paths": {
-    "/api/internal/projects/{project_id}/clusters/{cluster_id}/branches/{branch_name}/users": {
-      "post": {
-        "summary": "Create a user.",
-        "operationId": "CreateUser",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/openapiCreateUserResp"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "project_id",
-            "description": "The ID of the project.",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "uint64"
-          },
-          {
-            "name": "cluster_id",
-            "description": "The ID of the cluster.",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "uint64"
-          },
-          {
-            "name": "branch_name",
-            "description": "The name of creating branch.",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "type": "object"
-            }
-          }
-        ],
-        "tags": [
-          "BranchService"
-        ]
-      }
-    },
-    "/api/internal/projects/{project_id}/clusters/{cluster_id}/branches/{branch_name}/users/{username}": {
-      "delete": {
-        "summary": "Delete a user.",
-        "operationId": "DeleteUser",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "type": "object",
-              "properties": {}
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "project_id",
-            "description": "The ID of the project.",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "uint64"
-          },
-          {
-            "name": "cluster_id",
-            "description": "The ID of the cluster.",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "format": "uint64"
-          },
-          {
-            "name": "branch_name",
-            "description": "The name of creating branch.",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "username",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "tags": [
-          "BranchService"
-        ]
-      }
-    },
     "/api/v1beta/clusters/{cluster_id}/branches": {
       "get": {
         "summary": "List all branches in the cluster.",
@@ -156,8 +45,7 @@
             "description": "The ID of the cluster.",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "uint64"
+            "type": "string"
           },
           {
             "name": "page_token",
@@ -205,8 +93,7 @@
             "description": "The ID of the cluster.",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "uint64"
+            "type": "string"
           },
           {
             "name": "body",
@@ -220,6 +107,7 @@
                   "description": "The name of creating branch. It must be 4-64 characters long."
                 }
               },
+              "description": "CreateBranchReq is the request message for CreateBranch.",
               "required": [
                 "display_name"
               ]
@@ -239,7 +127,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/openapiGetBranchResp"
+              "$ref": "#/definitions/openapiBranch"
             }
           },
           "default": {
@@ -255,8 +143,7 @@
             "description": "The ID of the cluster.",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "uint64"
+            "type": "string"
           },
           {
             "name": "branch_id",
@@ -294,8 +181,7 @@
             "description": "The ID of the cluster.",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "uint64"
+            "type": "string"
           },
           {
             "name": "branch_id",
@@ -355,7 +241,7 @@
           "description": "The ID of the parent branch."
         },
         "state": {
-          "$ref": "#/definitions/openapiBranchStatus",
+          "$ref": "#/definitions/openapiBranchState",
           "description": "The status of the branch."
         },
         "create_time": {
@@ -388,55 +274,7 @@
         "delete_time"
       ]
     },
-    "openapiBranchStatus": {
-      "type": "string",
-      "enum": [
-        "CREATING",
-        "READY",
-        "DELETING",
-        "MAINTENANCE"
-      ]
-    },
-    "openapiCreateBranchResp": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "example": "branch-SDUAOISD",
-          "description": "The ID of the branch."
-        }
-      },
-      "required": [
-        "id"
-      ]
-    },
-    "openapiCreateUserResp": {
-      "type": "object",
-      "properties": {
-        "username": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "username",
-        "password"
-      ]
-    },
-    "openapiEndpoints": {
-      "type": "object",
-      "properties": {
-        "public_endpoint": {
-          "$ref": "#/definitions/openapiPublicEndpoint"
-        },
-        "private_endpoint": {
-          "$ref": "#/definitions/openapiPrivateEndpoint"
-        }
-      }
-    },
-    "openapiGetBranchResp": {
+    "openapiBranch": {
       "type": "object",
       "properties": {
         "id": {
@@ -460,7 +298,7 @@
           "description": "The ID of the parent branch."
         },
         "state": {
-          "$ref": "#/definitions/openapiBranchStatus",
+          "$ref": "#/definitions/openapiBranchState",
           "description": "The status of the branch."
         },
         "endpoints": {
@@ -516,6 +354,43 @@
         "annotations"
       ]
     },
+    "openapiBranchState": {
+      "type": "string",
+      "enum": [
+        "CREATING",
+        "READY",
+        "DELETING",
+        "MAINTENANCE"
+      ]
+    },
+    "openapiCreateBranchResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "branch-SDUAOISD",
+          "description": "The ID of the branch."
+        }
+      },
+      "description": "CreateBranchResp is the response message for CreateBranch.",
+      "required": [
+        "id"
+      ]
+    },
+    "openapiEndpoints": {
+      "type": "object",
+      "properties": {
+        "public_endpoint": {
+          "$ref": "#/definitions/openapiPublicEndpoint",
+          "description": "The public endpoint of the branch."
+        },
+        "private_endpoint": {
+          "$ref": "#/definitions/openapiPrivateEndpoint",
+          "description": "The private endpoint of the branch."
+        }
+      },
+      "description": "Endpoints is the endpoint of the branch."
+    },
     "openapiListBranchesResp": {
       "type": "object",
       "properties": {
@@ -533,6 +408,7 @@
           "description": "The total number of branches in the cluster."
         }
       },
+      "description": "ListBranchesResp is the response of ListBranches.",
       "required": [
         "branches",
         "total"
@@ -542,28 +418,35 @@
       "type": "object",
       "properties": {
         "host": {
-          "type": "string"
+          "type": "string",
+          "description": "The host of the private endpoint."
         },
         "port": {
           "type": "integer",
-          "format": "int32"
+          "format": "int32",
+          "description": "The port of the private endpoint."
         },
         "disabled": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "The disabled of the private endpoint."
         },
         "aws": {
-          "$ref": "#/definitions/openapiPrivateEndpointAws"
+          "$ref": "#/definitions/openapiPrivateEndpointAws",
+          "description": "The provider of the private endpoint is AWS."
         },
         "gcp": {
-          "$ref": "#/definitions/openapiPrivateEndpointGcp"
+          "$ref": "#/definitions/openapiPrivateEndpointGcp",
+          "description": "The provider of the private endpoint is GCP."
         }
-      }
+      },
+      "description": "PrivateEndpoint is the private endpoint of the branch."
     },
     "openapiPrivateEndpointAws": {
       "type": "object",
       "properties": {
         "service_mame": {
-          "type": "string"
+          "type": "string",
+          "description": "The service name of the branch on AWS."
         },
         "availability_zone": {
           "type": "array",
@@ -571,47 +454,58 @@
             "type": "string"
           }
         }
-      }
+      },
+      "description": "PrivateEndpointAws is the private endpoint of the branch on AWS."
     },
     "openapiPrivateEndpointGcp": {
       "type": "object",
       "properties": {
         "target_service_attachment": {
-          "type": "string"
+          "type": "string",
+          "description": "The service name of the branch on GCP."
         }
-      }
+      },
+      "description": "PrivateEndpointGcp is the private endpoint of the branch on GCP."
     },
     "openapiPublicEndpoint": {
       "type": "object",
       "properties": {
         "host": {
-          "type": "string"
+          "type": "string",
+          "description": "The host of the public endpoint."
         },
         "port": {
           "type": "integer",
-          "format": "int32"
+          "format": "int32",
+          "description": "The port of the public endpoint."
         },
         "disabled": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "The disabled of the public endpoint."
         }
-      }
+      },
+      "description": "PublicEndpoint is the public endpoint of the branch."
     },
     "openapiUsages": {
       "type": "object",
       "properties": {
         "request_unit": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "description": "The request unit of the branch."
         },
         "row_storage": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "description": "The storage of the branch."
         },
         "column_storage": {
           "type": "string",
-          "format": "int64"
+          "format": "int64",
+          "description": "The column storage of the branch."
         }
-      }
+      },
+      "description": "Usages is the usages of the branch."
     },
     "protobufAny": {
       "type": "object",

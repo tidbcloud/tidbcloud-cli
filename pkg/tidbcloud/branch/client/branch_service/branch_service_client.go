@@ -6,6 +6,7 @@ package branch_service
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"fmt"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 )
@@ -30,11 +31,7 @@ type ClientOption func(*runtime.ClientOperation)
 type ClientService interface {
 	CreateBranch(params *CreateBranchParams, opts ...ClientOption) (*CreateBranchOK, error)
 
-	CreateUser(params *CreateUserParams, opts ...ClientOption) (*CreateUserOK, error)
-
 	DeleteBranch(params *DeleteBranchParams, opts ...ClientOption) (*DeleteBranchOK, error)
-
-	DeleteUser(params *DeleteUserParams, opts ...ClientOption) (*DeleteUserOK, error)
 
 	GetBranch(params *GetBranchParams, opts ...ClientOption) (*GetBranchOK, error)
 
@@ -81,43 +78,6 @@ func (a *Client) CreateBranch(params *CreateBranchParams, opts ...ClientOption) 
 }
 
 /*
-CreateUser creates a user
-*/
-func (a *Client) CreateUser(params *CreateUserParams, opts ...ClientOption) (*CreateUserOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewCreateUserParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "CreateUser",
-		Method:             "POST",
-		PathPattern:        "/api/internal/projects/{project_id}/clusters/{cluster_id}/branches/{branch_name}/users",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &CreateUserReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*CreateUserOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*CreateUserDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
 DeleteBranch deletes a branch
 */
 func (a *Client) DeleteBranch(params *DeleteBranchParams, opts ...ClientOption) (*DeleteBranchOK, error) {
@@ -155,43 +115,6 @@ func (a *Client) DeleteBranch(params *DeleteBranchParams, opts ...ClientOption) 
 }
 
 /*
-DeleteUser deletes a user
-*/
-func (a *Client) DeleteUser(params *DeleteUserParams, opts ...ClientOption) (*DeleteUserOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewDeleteUserParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "DeleteUser",
-		Method:             "DELETE",
-		PathPattern:        "/api/internal/projects/{project_id}/clusters/{cluster_id}/branches/{branch_name}/users/{username}",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"https"},
-		Params:             params,
-		Reader:             &DeleteUserReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*DeleteUserOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	unexpectedSuccess := result.(*DeleteUserDefault)
-	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
-}
-
-/*
 GetBranch gets a branch
 */
 func (a *Client) GetBranch(params *GetBranchParams, opts ...ClientOption) (*GetBranchOK, error) {
@@ -225,6 +148,7 @@ func (a *Client) GetBranch(params *GetBranchParams, opts ...ClientOption) (*GetB
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*GetBranchDefault)
+	println(fmt.Sprintf("unexpectedSuccess:"))
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

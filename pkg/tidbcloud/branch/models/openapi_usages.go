@@ -12,18 +12,18 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// OpenapiUsages openapi usages
+// OpenapiUsages Usages is the usages of the branch.
 //
 // swagger:model openapiUsages
 type OpenapiUsages struct {
 
-	// column storage
+	// The column storage of the branch.
 	ColumnStorage string `json:"column_storage,omitempty"`
 
-	// request unit
+	// The request unit of the branch.
 	RequestUnit string `json:"request_unit,omitempty"`
 
-	// row storage
+	// The storage of the branch.
 	RowStorage string `json:"row_storage,omitempty"`
 }
 

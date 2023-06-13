@@ -13,15 +13,15 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// OpenapiEndpoints openapi endpoints
+// OpenapiEndpoints Endpoints is the endpoint of the branch.
 //
 // swagger:model openapiEndpoints
 type OpenapiEndpoints struct {
 
-	// private endpoint
+	// The private endpoint of the branch.
 	PrivateEndpoint *OpenapiPrivateEndpoint `json:"private_endpoint,omitempty"`
 
-	// public endpoint
+	// The public endpoint of the branch.
 	PublicEndpoint *OpenapiPublicEndpoint `json:"public_endpoint,omitempty"`
 }
 
@@ -102,6 +102,11 @@ func (m *OpenapiEndpoints) ContextValidate(ctx context.Context, formats strfmt.R
 func (m *OpenapiEndpoints) contextValidatePrivateEndpoint(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.PrivateEndpoint != nil {
+
+		if swag.IsZero(m.PrivateEndpoint) { // not required
+			return nil
+		}
+
 		if err := m.PrivateEndpoint.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("private_endpoint")
@@ -118,6 +123,11 @@ func (m *OpenapiEndpoints) contextValidatePrivateEndpoint(ctx context.Context, f
 func (m *OpenapiEndpoints) contextValidatePublicEndpoint(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.PublicEndpoint != nil {
+
+		if swag.IsZero(m.PublicEndpoint) { // not required
+			return nil
+		}
+
 		if err := m.PublicEndpoint.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("public_endpoint")

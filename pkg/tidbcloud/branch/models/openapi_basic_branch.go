@@ -53,7 +53,7 @@ type OpenapiBasicBranch struct {
 
 	// The status of the branch.
 	// Required: true
-	State *OpenapiBranchStatus `json:"state"`
+	State *OpenapiBranchState `json:"state"`
 
 	// The update timestamp of the branch.
 	// Required: true
@@ -232,6 +232,7 @@ func (m *OpenapiBasicBranch) ContextValidate(ctx context.Context, formats strfmt
 func (m *OpenapiBasicBranch) contextValidateState(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.State != nil {
+
 		if err := m.State.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("state")

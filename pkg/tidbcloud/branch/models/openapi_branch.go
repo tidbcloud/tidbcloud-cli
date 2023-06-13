@@ -14,12 +14,12 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// OpenapiGetBranchResp BranchItem
+// OpenapiBranch BranchItem
 //
 // BranchItem is the information of branch.
 //
-// swagger:model openapiGetBranchResp
-type OpenapiGetBranchResp struct {
+// swagger:model openapiBranch
+type OpenapiBranch struct {
 
 	// The annotations of the branch.
 	// Required: true
@@ -61,7 +61,7 @@ type OpenapiGetBranchResp struct {
 
 	// The status of the branch.
 	// Required: true
-	State *OpenapiBranchStatus `json:"state"`
+	State *OpenapiBranchState `json:"state"`
 
 	// The update timestamp of the branch.
 	// Required: true
@@ -77,8 +77,8 @@ type OpenapiGetBranchResp struct {
 	UserPrefix *string `json:"user_prefix"`
 }
 
-// Validate validates this openapi get branch resp
-func (m *OpenapiGetBranchResp) Validate(formats strfmt.Registry) error {
+// Validate validates this openapi branch
+func (m *OpenapiBranch) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateAnnotations(formats); err != nil {
@@ -139,7 +139,7 @@ func (m *OpenapiGetBranchResp) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *OpenapiGetBranchResp) validateAnnotations(formats strfmt.Registry) error {
+func (m *OpenapiBranch) validateAnnotations(formats strfmt.Registry) error {
 
 	if err := validate.Required("annotations", "body", m.Annotations); err != nil {
 		return err
@@ -148,7 +148,7 @@ func (m *OpenapiGetBranchResp) validateAnnotations(formats strfmt.Registry) erro
 	return nil
 }
 
-func (m *OpenapiGetBranchResp) validateClusterID(formats strfmt.Registry) error {
+func (m *OpenapiBranch) validateClusterID(formats strfmt.Registry) error {
 
 	if err := validate.Required("cluster_id", "body", m.ClusterID); err != nil {
 		return err
@@ -157,7 +157,7 @@ func (m *OpenapiGetBranchResp) validateClusterID(formats strfmt.Registry) error 
 	return nil
 }
 
-func (m *OpenapiGetBranchResp) validateCreateTime(formats strfmt.Registry) error {
+func (m *OpenapiBranch) validateCreateTime(formats strfmt.Registry) error {
 
 	if err := validate.Required("create_time", "body", m.CreateTime); err != nil {
 		return err
@@ -170,7 +170,7 @@ func (m *OpenapiGetBranchResp) validateCreateTime(formats strfmt.Registry) error
 	return nil
 }
 
-func (m *OpenapiGetBranchResp) validateDeleteTime(formats strfmt.Registry) error {
+func (m *OpenapiBranch) validateDeleteTime(formats strfmt.Registry) error {
 
 	if err := validate.Required("delete_time", "body", m.DeleteTime); err != nil {
 		return err
@@ -183,7 +183,7 @@ func (m *OpenapiGetBranchResp) validateDeleteTime(formats strfmt.Registry) error
 	return nil
 }
 
-func (m *OpenapiGetBranchResp) validateDisplayName(formats strfmt.Registry) error {
+func (m *OpenapiBranch) validateDisplayName(formats strfmt.Registry) error {
 
 	if err := validate.Required("display_name", "body", m.DisplayName); err != nil {
 		return err
@@ -192,7 +192,7 @@ func (m *OpenapiGetBranchResp) validateDisplayName(formats strfmt.Registry) erro
 	return nil
 }
 
-func (m *OpenapiGetBranchResp) validateEndpoints(formats strfmt.Registry) error {
+func (m *OpenapiBranch) validateEndpoints(formats strfmt.Registry) error {
 
 	if err := validate.Required("endpoints", "body", m.Endpoints); err != nil {
 		return err
@@ -212,7 +212,7 @@ func (m *OpenapiGetBranchResp) validateEndpoints(formats strfmt.Registry) error 
 	return nil
 }
 
-func (m *OpenapiGetBranchResp) validateID(formats strfmt.Registry) error {
+func (m *OpenapiBranch) validateID(formats strfmt.Registry) error {
 
 	if err := validate.Required("id", "body", m.ID); err != nil {
 		return err
@@ -221,7 +221,7 @@ func (m *OpenapiGetBranchResp) validateID(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *OpenapiGetBranchResp) validateName(formats strfmt.Registry) error {
+func (m *OpenapiBranch) validateName(formats strfmt.Registry) error {
 
 	if err := validate.Required("name", "body", m.Name); err != nil {
 		return err
@@ -230,7 +230,7 @@ func (m *OpenapiGetBranchResp) validateName(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *OpenapiGetBranchResp) validateParentID(formats strfmt.Registry) error {
+func (m *OpenapiBranch) validateParentID(formats strfmt.Registry) error {
 
 	if err := validate.Required("parent_id", "body", m.ParentID); err != nil {
 		return err
@@ -239,7 +239,7 @@ func (m *OpenapiGetBranchResp) validateParentID(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *OpenapiGetBranchResp) validateState(formats strfmt.Registry) error {
+func (m *OpenapiBranch) validateState(formats strfmt.Registry) error {
 
 	if err := validate.Required("state", "body", m.State); err != nil {
 		return err
@@ -263,7 +263,7 @@ func (m *OpenapiGetBranchResp) validateState(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *OpenapiGetBranchResp) validateUpdateTime(formats strfmt.Registry) error {
+func (m *OpenapiBranch) validateUpdateTime(formats strfmt.Registry) error {
 
 	if err := validate.Required("update_time", "body", m.UpdateTime); err != nil {
 		return err
@@ -276,7 +276,7 @@ func (m *OpenapiGetBranchResp) validateUpdateTime(formats strfmt.Registry) error
 	return nil
 }
 
-func (m *OpenapiGetBranchResp) validateUsages(formats strfmt.Registry) error {
+func (m *OpenapiBranch) validateUsages(formats strfmt.Registry) error {
 
 	if err := validate.Required("usages", "body", m.Usages); err != nil {
 		return err
@@ -296,7 +296,7 @@ func (m *OpenapiGetBranchResp) validateUsages(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *OpenapiGetBranchResp) validateUserPrefix(formats strfmt.Registry) error {
+func (m *OpenapiBranch) validateUserPrefix(formats strfmt.Registry) error {
 
 	if err := validate.Required("user_prefix", "body", m.UserPrefix); err != nil {
 		return err
@@ -305,8 +305,8 @@ func (m *OpenapiGetBranchResp) validateUserPrefix(formats strfmt.Registry) error
 	return nil
 }
 
-// ContextValidate validate this openapi get branch resp based on the context it is used
-func (m *OpenapiGetBranchResp) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this openapi branch based on the context it is used
+func (m *OpenapiBranch) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateEndpoints(ctx, formats); err != nil {
@@ -327,9 +327,10 @@ func (m *OpenapiGetBranchResp) ContextValidate(ctx context.Context, formats strf
 	return nil
 }
 
-func (m *OpenapiGetBranchResp) contextValidateEndpoints(ctx context.Context, formats strfmt.Registry) error {
+func (m *OpenapiBranch) contextValidateEndpoints(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Endpoints != nil {
+
 		if err := m.Endpoints.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("endpoints")
@@ -343,9 +344,10 @@ func (m *OpenapiGetBranchResp) contextValidateEndpoints(ctx context.Context, for
 	return nil
 }
 
-func (m *OpenapiGetBranchResp) contextValidateState(ctx context.Context, formats strfmt.Registry) error {
+func (m *OpenapiBranch) contextValidateState(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.State != nil {
+
 		if err := m.State.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("state")
@@ -359,9 +361,10 @@ func (m *OpenapiGetBranchResp) contextValidateState(ctx context.Context, formats
 	return nil
 }
 
-func (m *OpenapiGetBranchResp) contextValidateUsages(ctx context.Context, formats strfmt.Registry) error {
+func (m *OpenapiBranch) contextValidateUsages(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Usages != nil {
+
 		if err := m.Usages.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("usages")
@@ -376,7 +379,7 @@ func (m *OpenapiGetBranchResp) contextValidateUsages(ctx context.Context, format
 }
 
 // MarshalBinary interface implementation
-func (m *OpenapiGetBranchResp) MarshalBinary() ([]byte, error) {
+func (m *OpenapiBranch) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -384,8 +387,8 @@ func (m *OpenapiGetBranchResp) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *OpenapiGetBranchResp) UnmarshalBinary(b []byte) error {
-	var res OpenapiGetBranchResp
+func (m *OpenapiBranch) UnmarshalBinary(b []byte) error {
+	var res OpenapiBranch
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

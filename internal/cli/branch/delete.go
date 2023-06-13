@@ -158,7 +158,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 						WithClusterID(clusterID).
 						WithBranchID(branchID))
 					if err != nil {
-						if strings.Contains(err.Error(), "Branch not found") {
+						if strings.Contains(err.Error(), "404") {
 							fmt.Fprintln(h.IOStreams.Out, color.GreenString("branch %s deleted", branchID))
 							return nil
 						}

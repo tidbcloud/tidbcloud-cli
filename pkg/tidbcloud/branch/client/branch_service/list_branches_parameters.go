@@ -65,8 +65,6 @@ type ListBranchesParams struct {
 	/* ClusterID.
 
 	   The ID of the cluster.
-
-	   Format: uint64
 	*/
 	ClusterID string
 

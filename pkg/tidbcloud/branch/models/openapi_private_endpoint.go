@@ -13,24 +13,24 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// OpenapiPrivateEndpoint openapi private endpoint
+// OpenapiPrivateEndpoint PrivateEndpoint is the private endpoint of the branch.
 //
 // swagger:model openapiPrivateEndpoint
 type OpenapiPrivateEndpoint struct {
 
-	// aws
+	// The provider of the private endpoint is AWS.
 	Aws *OpenapiPrivateEndpointAws `json:"aws,omitempty"`
 
-	// disabled
+	// The disabled of the private endpoint.
 	Disabled bool `json:"disabled,omitempty"`
 
-	// gcp
+	// The provider of the private endpoint is GCP.
 	Gcp *OpenapiPrivateEndpointGcp `json:"gcp,omitempty"`
 
-	// host
+	// The host of the private endpoint.
 	Host string `json:"host,omitempty"`
 
-	// port
+	// The port of the private endpoint.
 	Port int32 `json:"port,omitempty"`
 }
 
@@ -111,6 +111,11 @@ func (m *OpenapiPrivateEndpoint) ContextValidate(ctx context.Context, formats st
 func (m *OpenapiPrivateEndpoint) contextValidateAws(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Aws != nil {
+
+		if swag.IsZero(m.Aws) { // not required
+			return nil
+		}
+
 		if err := m.Aws.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("aws")
@@ -127,6 +132,11 @@ func (m *OpenapiPrivateEndpoint) contextValidateAws(ctx context.Context, formats
 func (m *OpenapiPrivateEndpoint) contextValidateGcp(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Gcp != nil {
+
+		if swag.IsZero(m.Gcp) { // not required
+			return nil
+		}
+
 		if err := m.Gcp.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
 				return ve.ValidateName("gcp")

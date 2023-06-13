@@ -12,18 +12,18 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// OpenapiPublicEndpoint openapi public endpoint
+// OpenapiPublicEndpoint PublicEndpoint is the public endpoint of the branch.
 //
 // swagger:model openapiPublicEndpoint
 type OpenapiPublicEndpoint struct {
 
-	// disabled
+	// The disabled of the public endpoint.
 	Disabled bool `json:"disabled,omitempty"`
 
-	// host
+	// The host of the public endpoint.
 	Host string `json:"host,omitempty"`
 
-	// port
+	// The port of the public endpoint.
 	Port int32 `json:"port,omitempty"`
 }
 

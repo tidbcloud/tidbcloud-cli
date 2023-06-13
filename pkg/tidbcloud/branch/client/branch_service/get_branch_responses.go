@@ -52,7 +52,7 @@ GetBranchOK describes a response with status code 200, with default header value
 A successful response.
 */
 type GetBranchOK struct {
-	Payload *models.OpenapiGetBranchResp
+	Payload *models.OpenapiBranch
 }
 
 // IsSuccess returns true when this get branch o k response has a 2xx status code
@@ -93,13 +93,13 @@ func (o *GetBranchOK) String() string {
 	return fmt.Sprintf("[GET /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] getBranchOK  %+v", 200, o.Payload)
 }
 
-func (o *GetBranchOK) GetPayload() *models.OpenapiGetBranchResp {
+func (o *GetBranchOK) GetPayload() *models.OpenapiBranch {
 	return o.Payload
 }
 
 func (o *GetBranchOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.OpenapiGetBranchResp)
+	o.Payload = new(models.OpenapiBranch)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

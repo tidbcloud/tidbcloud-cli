@@ -14,7 +14,7 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// OpenapiCreateBranchResp openapi create branch resp
+// OpenapiCreateBranchResp CreateBranchResp is the response message for CreateBranch.
 //
 // swagger:model openapiCreateBranchResp
 type OpenapiCreateBranchResp struct {

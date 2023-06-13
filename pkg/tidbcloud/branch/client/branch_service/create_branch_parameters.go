@@ -67,8 +67,6 @@ type CreateBranchParams struct {
 	/* ClusterID.
 
 	   The ID of the cluster.
-
-	   Format: uint64
 	*/
 	ClusterID string
 

@@ -12,12 +12,12 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// OpenapiPrivateEndpointGcp openapi private endpoint gcp
+// OpenapiPrivateEndpointGcp PrivateEndpointGcp is the private endpoint of the branch on GCP.
 //
 // swagger:model openapiPrivateEndpointGcp
 type OpenapiPrivateEndpointGcp struct {
 
-	// target service attachment
+	// The service name of the branch on GCP.
 	TargetServiceAttachment string `json:"target_service_attachment,omitempty"`
 }
 

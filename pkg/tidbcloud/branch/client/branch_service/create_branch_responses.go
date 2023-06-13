@@ -186,7 +186,7 @@ func (o *CreateBranchDefault) readResponse(response runtime.ClientResponse, cons
 }
 
 /*
-CreateBranchBody create branch body
+CreateBranchBody CreateBranchReq is the request message for CreateBranch.
 swagger:model CreateBranchBody
 */
 type CreateBranchBody struct {

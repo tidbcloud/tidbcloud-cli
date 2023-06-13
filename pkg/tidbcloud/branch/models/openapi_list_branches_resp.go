@@ -15,7 +15,7 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// OpenapiListBranchesResp openapi list branches resp
+// OpenapiListBranchesResp ListBranchesResp is the response of ListBranches.
 //
 // swagger:model openapiListBranchesResp
 type OpenapiListBranchesResp struct {
@@ -102,6 +102,11 @@ func (m *OpenapiListBranchesResp) contextValidateBranches(ctx context.Context, f
 	for i := 0; i < len(m.Branches); i++ {
 
 		if m.Branches[i] != nil {
+
+			if swag.IsZero(m.Branches[i]) { // not required
+				return nil
+			}
+
 			if err := m.Branches[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("branches" + "." + strconv.Itoa(i))
