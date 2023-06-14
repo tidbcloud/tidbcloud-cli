@@ -21,14 +21,15 @@ import (
 )
 
 func BranchCmd(h *internal.Helper) *cobra.Command {
-	var clusterCmd = &cobra.Command{
+	var branchCmd = &cobra.Command{
 		Use:   "branch",
 		Short: "Manage branches in your cluster",
 	}
 
-	clusterCmd.AddCommand(CreateCmd(h))
-	clusterCmd.AddCommand(DeleteCmd(h))
-	clusterCmd.AddCommand(ListCmd(h))
-	clusterCmd.AddCommand(DescribeCmd(h))
-	return clusterCmd
+	branchCmd.AddCommand(CreateCmd(h))
+	branchCmd.AddCommand(DeleteCmd(h))
+	branchCmd.AddCommand(ListCmd(h))
+	branchCmd.AddCommand(DescribeCmd(h))
+	branchCmd.AddCommand(ConnectInfoCmd(h))
+	return branchCmd
 }
