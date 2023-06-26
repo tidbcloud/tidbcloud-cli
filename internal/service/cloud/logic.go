@@ -230,6 +230,48 @@ func GetSelectedBranch(clusterID string, pageSize int64, client TiDBCloudClient)
 	return branch, nil
 }
 
+func GetSelectedBranchIfExist(clusterID string, pageSize int64, client TiDBCloudClient) (*Branch, error) {
+	_, branchItems, err := RetrieveBranches(clusterID, pageSize, client)
+	if err != nil {
+		return nil, err
+	}
+
+	var items = make([]interface{}, 0, len(branchItems)+1)
+	// Add main item
+	items = append(items, &Branch{
+		ID:          clusterID,
+		DisplayName: "main-The cluster you selected",
+	})
+	for _, item := range branchItems {
+		items = append(items, &Branch{
+			ID:          *item.ID,
+			DisplayName: *item.DisplayName,
+		})
+	}
+	if len(items) == 1 {
+		return nil, nil
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the branch")
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	bModel, err := p.StartReturningModel()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
+		return nil, util.InterruptError
+	}
+	branch := bModel.(ui.SelectModel).GetSelectedItem().(*Branch)
+	return branch, nil
+}
+
 // GetSelectedImport get the selected import task. statusFilter is used to filter the available options, only imports has status in statusFilter will be available.
 // statusFilter with no filter will mark all the import tasks as available options just like statusFilter with all status.
 func GetSelectedImport(pID string, cID string, pageSize int64, client TiDBCloudClient, statusFilter []importModel.OpenapiGetImportRespStatus) (*Import, error) {
