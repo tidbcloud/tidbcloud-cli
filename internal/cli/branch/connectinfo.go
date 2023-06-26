@@ -46,31 +46,6 @@ func (c connectInfoOpts) NonInteractiveFlags() []string {
 	}
 }
 
-// Display operating system orderly in interactive mode
-var operatingSystemList = []string{
-	"macOS/Alpine",
-	"CentOS/RedHat/Fedora",
-	"Debian/Ubuntu/Arch",
-	"Windows",
-	"OpenSUSE",
-	"Others",
-}
-
-// Display operating system orderly in help message
-var operatingSystemListForHelp = []string{
-	"macOS",
-	"Windows",
-	"Ubuntu",
-	"CentOS",
-	"RedHat",
-	"Fedora",
-	"Debian",
-	"Arch",
-	"OpenSUSE",
-	"Alpine",
-	"Others",
-}
-
 func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 	opts := connectInfoOpts{
 		interactive: true,
@@ -151,17 +126,18 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 					goOS = "Windows"
 				}
 				if goOS != "" && goOS != "linux" {
-					for id, value := range operatingSystemList {
+					for id, value := range clu.OperatingSystemList {
 						if strings.Contains(value, goOS) {
-							operatingSystemValueWithFlag := operatingSystemList[id] + " (Detected)"
-							operatingSystemList = append([]string{operatingSystemValueWithFlag}, append(operatingSystemList[:id], operatingSystemList[id+1:]...)...)
+							operatingSystemValueWithFlag := clu.OperatingSystemList[id] + " (Detected)"
+							clu.OperatingSystemList = append([]string{operatingSystemValueWithFlag},
+								append(clu.OperatingSystemList[:id], clu.OperatingSystemList[id+1:]...)...)
 							break
 						}
 					}
 				}
 
 				// Get operating system
-				operatingSystemCombination, err := cloud.GetSelectedConnectOs(operatingSystemList)
+				operatingSystemCombination, err := cloud.GetSelectedConnectOs(clu.OperatingSystemList)
 				if err != nil {
 					return err
 				}
@@ -192,7 +168,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				if !contains(operatingSystem, operatingSystemListForHelp) {
+				if !contains(operatingSystem, clu.OperatingSystemListForHelp) {
 					return errors.New(fmt.Sprintf("Unsupported operating system. Run \"%[1]s cluster connect-info -h\" to check supported operating systems list", config.CliName))
 				}
 			}
@@ -228,7 +204,8 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 	cmd.Flags().StringP(flag.BranchID, flag.BranchIDShort, "", "Branch ID")
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
 	cmd.Flags().String(flag.ClientName, "", fmt.Sprintf("Connected client. Supported clients: %q", clu.ConnectClientsListForHelp))
-	cmd.Flags().String(flag.OperatingSystem, "", fmt.Sprintf("Operating system name. Supported operating systems: %q", operatingSystemListForHelp))
+	cmd.Flags().String(flag.OperatingSystem, "", fmt.Sprintf("Operating system name. "+
+		"Supported operating systems: %q", clu.OperatingSystemListForHelp))
 
 	return cmd
 }
