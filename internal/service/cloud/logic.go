@@ -51,9 +51,13 @@ type Cluster struct {
 type Branch struct {
 	ID          string
 	DisplayName string
+	IsCluster   bool
 }
 
 func (b Branch) String() string {
+	if b.IsCluster {
+		return "main(the cluster)"
+	}
 	return fmt.Sprintf("%s(%s)", b.DisplayName, b.ID)
 }
 
@@ -204,6 +208,7 @@ func GetSelectedBranch(clusterID string, pageSize int64, client TiDBCloudClient)
 		items = append(items, &Branch{
 			ID:          *item.ID,
 			DisplayName: *item.DisplayName,
+			IsCluster:   false,
 		})
 	}
 	if len(items) == 0 {
@@ -240,12 +245,14 @@ func GetSelectedBranchIfExist(clusterID string, pageSize int64, client TiDBCloud
 	// Add main item
 	items = append(items, &Branch{
 		ID:          clusterID,
-		DisplayName: "main-The cluster you selected",
+		DisplayName: "main",
+		IsCluster:   true,
 	})
 	for _, item := range branchItems {
 		items = append(items, &Branch{
 			ID:          *item.ID,
 			DisplayName: *item.DisplayName,
+			IsCluster:   false,
 		})
 	}
 	if len(items) == 1 {
