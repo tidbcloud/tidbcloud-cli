@@ -20,11 +20,9 @@ import (
 	"fmt"
 	"os"
 	"testing"
-	"tidbcloud-cli/internal/config"
-
-	"github.com/juju/errors"
 
 	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
@@ -33,6 +31,7 @@ import (
 	connectInfoService "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
 	connectInfoModel "tidbcloud-cli/pkg/tidbcloud/connect_info/models"
 
+	"github.com/juju/errors"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
