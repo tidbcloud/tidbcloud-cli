@@ -171,7 +171,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				if !util.Contains(operatingSystem, clu.OperatingSystemListForHelp) {
+				if !clu.Contains(operatingSystem, clu.OperatingSystemListForHelp) {
 					return errors.New(fmt.Sprintf("Unsupported operating system. Run \"%[1]s cluster connect-info -h\" to check supported operating systems list", config.CliName))
 				}
 			}
