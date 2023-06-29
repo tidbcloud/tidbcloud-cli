@@ -15,7 +15,6 @@
 package cloud
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -171,7 +170,7 @@ func (d *ClientDelegate) GetBranch(params *branchOp.GetBranchParams, opts ...bra
 	r, err := d.bc.BranchService.GetBranch(params, opts...)
 	if err != nil {
 		errorPayload := err.(*branchOp.GetBranchDefault).Payload.Error
-		return nil, errors.New(fmt.Sprintf("[GET /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] GetBranch  %+v", errorPayload.Code, errorPayload.Message))
+		return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] GetBranch  %+v", errorPayload.Code, errorPayload.Message)
 	}
 	return r, err
 }
@@ -180,7 +179,7 @@ func (d *ClientDelegate) ListBranches(params *branchOp.ListBranchesParams, opts 
 	r, err := d.bc.BranchService.ListBranches(params, opts...)
 	if err != nil {
 		errorPayload := err.(*branchOp.ListBranchesDefault).Payload.Error
-		return nil, errors.New(fmt.Sprintf("[GET /api/v1beta/clusters/{cluster_id}/branches][%d] ListBranches  %+v", errorPayload.Code, errorPayload.Message))
+		return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches][%d] ListBranches  %+v", errorPayload.Code, errorPayload.Message)
 	}
 	return r, err
 }
@@ -189,7 +188,7 @@ func (d *ClientDelegate) CreateBranch(params *branchOp.CreateBranchParams, opts 
 	r, err := d.bc.BranchService.CreateBranch(params, opts...)
 	if err != nil {
 		errorPayload := err.(*branchOp.CreateBranchDefault).Payload.Error
-		return nil, errors.New(fmt.Sprintf("[POST /api/v1beta/clusters/{cluster_id}/branches][%d] CreateBranch  %+v", errorPayload.Code, errorPayload.Message))
+		return nil, fmt.Errorf("[POST /api/v1beta/clusters/{cluster_id}/branches][%d] CreateBranch  %+v", errorPayload.Code, errorPayload.Message)
 	}
 	return r, err
 }
@@ -198,7 +197,7 @@ func (d *ClientDelegate) DeleteBranch(params *branchOp.DeleteBranchParams, opts 
 	r, err := d.bc.BranchService.DeleteBranch(params, opts...)
 	if err != nil {
 		errorPayload := err.(*branchOp.DeleteBranchDefault).Payload.Error
-		return nil, errors.New(fmt.Sprintf("[DELETE /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] DeleteBranch  %+v", errorPayload.Code, errorPayload.Message))
+		return nil, fmt.Errorf("[DELETE /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] DeleteBranch  %+v", errorPayload.Code, errorPayload.Message)
 	}
 	return r, err
 }
