@@ -81,7 +81,11 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				cluster, err := cloud.GetSelectedClusterWithoutProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				if err != nil {
+					return err
+				}
+				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}

@@ -115,51 +115,6 @@ func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error
 	return res, nil
 }
 
-// GetSelectedClusterWithoutProject TODO delete it after new open api is ready
-func GetSelectedClusterWithoutProject(pageSize int64, client TiDBCloudClient) (*Cluster, error) {
-	_, projectItems, err := RetrieveProjects(pageSize, client)
-	if err != nil {
-		return nil, err
-	}
-
-	var items = make([]interface{}, 0)
-	for _, projectItems := range projectItems {
-		_, clusterItems, err := RetrieveClusters(projectItems.ID, pageSize, client)
-		if err != nil {
-			return nil, err
-		}
-		for _, item := range clusterItems {
-			items = append(items, &Cluster{
-				ID:   *(item.ID),
-				Name: item.Name,
-			})
-		}
-	}
-
-	if len(items) == 0 {
-		return nil, fmt.Errorf("no available clusters found")
-	}
-
-	model, err := ui.InitialSelectModel(items, "Choose the cluster")
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-	itemsPerPage := 6
-	model.EnablePagination(itemsPerPage)
-	model.EnableFilter()
-
-	p := tea.NewProgram(model)
-	clusterModel, err := p.StartReturningModel()
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-	if m, _ := clusterModel.(ui.SelectModel); m.Interrupted {
-		return nil, util.InterruptError
-	}
-	cluster := clusterModel.(ui.SelectModel).GetSelectedItem().(*Cluster)
-	return cluster, nil
-}
-
 func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient) (*Cluster, error) {
 	_, clusterItems, err := RetrieveClusters(projectID, pageSize, client)
 	if err != nil {

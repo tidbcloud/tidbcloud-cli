@@ -97,7 +97,11 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// Get cluster id
-				cluster, err := cloud.GetSelectedClusterWithoutProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				if err != nil {
+					return err
+				}
+				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
