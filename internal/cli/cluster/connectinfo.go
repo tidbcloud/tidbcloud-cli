@@ -328,7 +328,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				if !contains(operatingSystem, OperatingSystemListForHelp) {
+				if !util.Contains(operatingSystem, OperatingSystemListForHelp) {
 					return errors.New(fmt.Sprintf("Unsupported operating system. Run \"%[1]s cluster connect-info -h\" to check supported operating systems list", config.CliName))
 				}
 			}
@@ -373,13 +373,4 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 		"Supported operating systems: %q", OperatingSystemListForHelp))
 
 	return cmd
-}
-
-func contains(str string, vec []string) bool {
-	for _, v := range vec {
-		if strings.EqualFold(str, v) {
-			return true
-		}
-	}
-	return false
 }
