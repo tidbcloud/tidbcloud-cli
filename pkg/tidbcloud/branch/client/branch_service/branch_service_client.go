@@ -6,7 +6,6 @@ package branch_service
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"fmt"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
 )
@@ -148,7 +147,6 @@ func (a *Client) GetBranch(params *GetBranchParams, opts ...ClientOption) (*GetB
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*GetBranchDefault)
-	println(fmt.Sprintf("unexpectedSuccess:"))
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
