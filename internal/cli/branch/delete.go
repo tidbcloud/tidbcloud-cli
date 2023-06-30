@@ -54,7 +54,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 	var force bool
 	var deleteCmd = &cobra.Command{
 		Use:   "delete",
-		Short: "Delete a branch in the specified cluster",
+		Short: "Delete a branch in a specified serverless cluster",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Delete a branch in interactive mode:
   $ %[1]s branch delete

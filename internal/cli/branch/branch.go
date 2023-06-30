@@ -23,7 +23,7 @@ import (
 func BranchCmd(h *internal.Helper) *cobra.Command {
 	var branchCmd = &cobra.Command{
 		Use:   "branch",
-		Short: "Manage branches in your cluster",
+		Short: "Manage branches in your serverless cluster",
 	}
 
 	branchCmd.AddCommand(CreateCmd(h))

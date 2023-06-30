@@ -39,14 +39,14 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 	var listCmd = &cobra.Command{
 		Use:   "list <cluster-id>",
-		Short: "List branches in the specified cluster",
-		Example: fmt.Sprintf(`  List all branches in the cluster(interactive mode):
+		Short: "List branches in a specified serverless cluster",
+		Example: fmt.Sprintf(`  List all branches(interactive mode):
   $ %[1]s branch list
 
-  List the branches in the cluster(non-interactive mode):
+  List the branches(non-interactive mode):
   $ %[1]s branch list <cluster-id> 
 
-  List the branches in the cluster with json format:
+  List the branches with json format:
   $ %[1]s branch list <cluster-id> -o json`, config.CliName),
 		Aliases: []string{"ls"},
 		Args:    cobra.MaximumNArgs(1),

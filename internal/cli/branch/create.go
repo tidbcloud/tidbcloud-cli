@@ -62,7 +62,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	var createCmd = &cobra.Command{
 		Use:   "create",
-		Short: "Create a branch in the specified cluster",
+		Short: "Create a branch in a specified serverless cluster",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Create a branch in interactive mode:
   $ %[1]s branch create

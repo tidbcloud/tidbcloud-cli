@@ -46,7 +46,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 
 	var describeCmd = &cobra.Command{
 		Use:     "describe",
-		Short:   "Describe a branch in the specified cluster",
+		Short:   "Describe a branch in a specified serverless cluster",
 		Aliases: []string{"get"},
 		Args:    cobra.NoArgs,
 		Example: fmt.Sprintf(`  Get the branch info in interactive mode:
