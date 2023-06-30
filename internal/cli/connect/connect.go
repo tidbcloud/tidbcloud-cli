@@ -29,6 +29,7 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
+	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -41,7 +42,6 @@ import (
 	"github.com/xo/usql/env"
 	"github.com/xo/usql/handler"
 	"github.com/xo/usql/rline"
-	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
 )
 
 const (
