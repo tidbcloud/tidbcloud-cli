@@ -18,9 +18,6 @@ import (
 // swagger:model openapiEndpoints
 type OpenapiEndpoints struct {
 
-	// The private endpoint of the branch.
-	PrivateEndpoint *OpenapiPrivateEndpoint `json:"private_endpoint,omitempty"`
-
 	// The public endpoint of the branch.
 	PublicEndpoint *OpenapiPublicEndpoint `json:"public_endpoint,omitempty"`
 }
@@ -29,10 +26,6 @@ type OpenapiEndpoints struct {
 func (m *OpenapiEndpoints) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validatePrivateEndpoint(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.validatePublicEndpoint(formats); err != nil {
 		res = append(res, err)
 	}
@@ -40,25 +33,6 @@ func (m *OpenapiEndpoints) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *OpenapiEndpoints) validatePrivateEndpoint(formats strfmt.Registry) error {
-	if swag.IsZero(m.PrivateEndpoint) { // not required
-		return nil
-	}
-
-	if m.PrivateEndpoint != nil {
-		if err := m.PrivateEndpoint.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("private_endpoint")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("private_endpoint")
-			}
-			return err
-		}
-	}
-
 	return nil
 }
 
@@ -85,10 +59,6 @@ func (m *OpenapiEndpoints) validatePublicEndpoint(formats strfmt.Registry) error
 func (m *OpenapiEndpoints) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidatePrivateEndpoint(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidatePublicEndpoint(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -96,27 +66,6 @@ func (m *OpenapiEndpoints) ContextValidate(ctx context.Context, formats strfmt.R
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *OpenapiEndpoints) contextValidatePrivateEndpoint(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.PrivateEndpoint != nil {
-
-		if swag.IsZero(m.PrivateEndpoint) { // not required
-			return nil
-		}
-
-		if err := m.PrivateEndpoint.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("private_endpoint")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("private_endpoint")
-			}
-			return err
-		}
-	}
-
 	return nil
 }
 

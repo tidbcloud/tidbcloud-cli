@@ -388,10 +388,6 @@
         "public_endpoint": {
           "$ref": "#/definitions/openapiPublicEndpoint",
           "description": "The public endpoint of the branch."
-        },
-        "private_endpoint": {
-          "$ref": "#/definitions/openapiPrivateEndpoint",
-          "description": "The private endpoint of the branch."
         }
       },
       "description": "Endpoints is the endpoint of the branch."
@@ -418,59 +414,6 @@
         "branches",
         "total"
       ]
-    },
-    "openapiPrivateEndpoint": {
-      "type": "object",
-      "properties": {
-        "host": {
-          "type": "string",
-          "description": "The host of the private endpoint."
-        },
-        "port": {
-          "type": "integer",
-          "format": "int32",
-          "description": "The port of the private endpoint."
-        },
-        "disabled": {
-          "type": "boolean",
-          "description": "The disabled of the private endpoint."
-        },
-        "aws": {
-          "$ref": "#/definitions/openapiPrivateEndpointAws",
-          "description": "The provider of the private endpoint is AWS."
-        },
-        "gcp": {
-          "$ref": "#/definitions/openapiPrivateEndpointGcp",
-          "description": "The provider of the private endpoint is GCP."
-        }
-      },
-      "description": "PrivateEndpoint is the private endpoint of the branch."
-    },
-    "openapiPrivateEndpointAws": {
-      "type": "object",
-      "properties": {
-        "service_mame": {
-          "type": "string",
-          "description": "The service name of the branch on AWS."
-        },
-        "availability_zone": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      },
-      "description": "PrivateEndpointAws is the private endpoint of the branch on AWS."
-    },
-    "openapiPrivateEndpointGcp": {
-      "type": "object",
-      "properties": {
-        "target_service_attachment": {
-          "type": "string",
-          "description": "The service name of the branch on GCP."
-        }
-      },
-      "description": "PrivateEndpointGcp is the private endpoint of the branch on GCP."
     },
     "openapiPublicEndpoint": {
       "type": "object",
