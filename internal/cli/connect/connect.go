@@ -239,7 +239,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				}
 				host = branchInfo.Payload.Endpoints.PublicEndpoint.Host
 				port = strconv.Itoa(int(branchInfo.Payload.Endpoints.PublicEndpoint.Port))
-				name = *branchInfo.Payload.Name
+				name = *branchInfo.Payload.DisplayName
 				if userName == "" {
 					userName = fmt.Sprintf("%s.root", *branchInfo.Payload.UserPrefix)
 					fmt.Fprintln(h.IOStreams.Out, color.GreenString("Current user: ")+color.HiGreenString(userName))
