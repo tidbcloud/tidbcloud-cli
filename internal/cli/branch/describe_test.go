@@ -39,16 +39,6 @@ const getBranchResultStr = `{
   "delete_time": null,
   "display_name": "ru-test",
   "endpoints": {
-    "private_endpoint": {
-      "aws": {
-        "availability_zone": [
-          "use1-az1"
-        ],
-        "service_mame": "com.amazonaws.vpce.us-east-1.vpce-svc-03342995daf1bc4d4"
-      },
-      "host": "gateway01-privatelink.us-east-1.dev.shared.aws.tidbcloud.com",
-      "port": 4000
-    },
     "public_endpoint": {
       "host": "gateway01.us-east-1.dev.shared.aws.tidbcloud.com",
       "port": 4000
