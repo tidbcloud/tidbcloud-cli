@@ -43,6 +43,12 @@ generate-import-client: ## Generate import client
 addcopy: ## Add copyright to all files
 	@scripts/add-copy.sh
 
+.PHONY: generate-branch-client
+ generate-branch-client:
+	@echo "==> Generating branch client"
+	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
+	swagger generate client -f pkg/tidbcloud/branch/branch.swagger.json -A tidbcloud-branch -t pkg/tidbcloud/branch
+
 .PHONY: fmt
 fmt: ## Format changed go
 	@scripts/fmt.sh

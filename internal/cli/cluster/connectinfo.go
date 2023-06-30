@@ -46,7 +46,7 @@ func (c connectInfoOpts) NonInteractiveFlags() []string {
 }
 
 // Display clients name orderly in interactive mode
-var connectClientsList = []string{
+var ConnectClientsList = []string{
 	// pure parameter
 	util.GeneralParameterDisplayName,
 
@@ -79,7 +79,7 @@ var connectClientsList = []string{
 }
 
 // Display clients name orderly in help message
-var connectClientsListForHelp = []string{
+var ConnectClientsListForHelp = []string{
 	// pure parameter
 	util.GeneralParameterInputName,
 
@@ -111,7 +111,7 @@ var connectClientsListForHelp = []string{
 	util.ActiveRecordInputName,
 }
 
-var clientsForInteractiveMap = map[string]string{
+var ClientsForInteractiveMap = map[string]string{
 	// pure parameter
 	util.GeneralParameterDisplayName: util.GeneralParameterID,
 
@@ -143,7 +143,7 @@ var clientsForInteractiveMap = map[string]string{
 	util.ActiveRecordDisplayName: util.ActiveRecordID,
 }
 
-var clientsForHelpMap = map[string]string{
+var ClientsForHelpMap = map[string]string{
 	// pure parameter
 	util.GeneralParameterInputName: util.GeneralParameterID,
 
@@ -176,7 +176,7 @@ var clientsForHelpMap = map[string]string{
 }
 
 // Display operating system orderly in interactive mode
-var operatingSystemList = []string{
+var OperatingSystemList = []string{
 	"macOS/Alpine",
 	"CentOS/RedHat/Fedora",
 	"Debian/Ubuntu/Arch",
@@ -186,7 +186,7 @@ var operatingSystemList = []string{
 }
 
 // Display operating system orderly in help message
-var operatingSystemListForHelp = []string{
+var OperatingSystemListForHelp = []string{
 	"macOS",
 	"Windows",
 	"Ubuntu",
@@ -271,11 +271,11 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cluster.ID
 
 				// Get client
-				clientNameForInteractive, err := cloud.GetSelectedConnectClient(connectClientsList)
+				clientNameForInteractive, err := cloud.GetSelectedConnectClient(ConnectClientsList)
 				if err != nil {
 					return err
 				}
-				client = clientsForInteractiveMap[clientNameForInteractive]
+				client = ClientsForInteractiveMap[clientNameForInteractive]
 
 				// Detect operating system
 				// TODO: detect linux operating system name
@@ -286,17 +286,18 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 					goOS = "Windows"
 				}
 				if goOS != "" && goOS != "linux" {
-					for id, value := range operatingSystemList {
+					for id, value := range OperatingSystemList {
 						if strings.Contains(value, goOS) {
-							operatingSystemValueWithFlag := operatingSystemList[id] + " (Detected)"
-							operatingSystemList = append([]string{operatingSystemValueWithFlag}, append(operatingSystemList[:id], operatingSystemList[id+1:]...)...)
+							operatingSystemValueWithFlag := OperatingSystemList[id] + " (Detected)"
+							OperatingSystemList = append([]string{operatingSystemValueWithFlag},
+								append(OperatingSystemList[:id], OperatingSystemList[id+1:]...)...)
 							break
 						}
 					}
 				}
 
 				// Get operating system
-				operatingSystemCombination, err := cloud.GetSelectedConnectOs(operatingSystemList)
+				operatingSystemCombination, err := cloud.GetSelectedConnectOs(OperatingSystemList)
 				if err != nil {
 					return err
 				}
@@ -317,7 +318,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				if v, ok := clientsForHelpMap[strings.ToLower(clientNameForHelp)]; ok {
+				if v, ok := ClientsForHelpMap[strings.ToLower(clientNameForHelp)]; ok {
 					client = v
 				} else {
 					return errors.New(fmt.Sprintf("Unsupported client. Run \"%[1]s cluster connect-info -h\" to check supported clients list", config.CliName))
@@ -327,7 +328,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				if !contains(operatingSystem, operatingSystemListForHelp) {
+				if !Contains(operatingSystem, OperatingSystemListForHelp) {
 					return errors.New(fmt.Sprintf("Unsupported operating system. Run \"%[1]s cluster connect-info -h\" to check supported operating systems list", config.CliName))
 				}
 			}
@@ -367,13 +368,14 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 
 	cmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	cmd.Flags().String(flag.ClientName, "", fmt.Sprintf("Connected client. Supported clients: %q", connectClientsListForHelp))
-	cmd.Flags().String(flag.OperatingSystem, "", fmt.Sprintf("Operating system name. Supported operating systems: %q", operatingSystemListForHelp))
+	cmd.Flags().String(flag.ClientName, "", fmt.Sprintf("Connected client. Supported clients: %q", ConnectClientsListForHelp))
+	cmd.Flags().String(flag.OperatingSystem, "", fmt.Sprintf("Operating system name. "+
+		"Supported operating systems: %q", OperatingSystemListForHelp))
 
 	return cmd
 }
 
-func contains(str string, vec []string) bool {
+func Contains(str string, vec []string) bool {
 	for _, v := range vec {
 		if strings.EqualFold(str, v) {
 			return true

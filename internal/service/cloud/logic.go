@@ -21,6 +21,8 @@ import (
 
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
+	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
+	branchModel "tidbcloud-cli/pkg/tidbcloud/branch/models"
 	connectInfoApi "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
 	connectInfoModel "tidbcloud-cli/pkg/tidbcloud/connect_info/models"
 	importApi "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
@@ -44,6 +46,19 @@ func (p Project) String() string {
 type Cluster struct {
 	ID   string
 	Name string
+}
+
+type Branch struct {
+	ID          string
+	DisplayName string
+	IsCluster   bool
+}
+
+func (b Branch) String() string {
+	if b.IsCluster {
+		return "main(the cluster)"
+	}
+	return fmt.Sprintf("%s(%s)", b.DisplayName, b.ID)
 }
 
 func (c Cluster) String() string {
@@ -137,6 +152,88 @@ func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient
 	return cluster, nil
 }
 
+func GetSelectedBranch(clusterID string, pageSize int64, client TiDBCloudClient) (*Branch, error) {
+	_, branchItems, err := RetrieveBranches(clusterID, pageSize, client)
+	if err != nil {
+		return nil, err
+	}
+
+	var items = make([]interface{}, 0, len(branchItems))
+	for _, item := range branchItems {
+		items = append(items, &Branch{
+			ID:          *item.ID,
+			DisplayName: *item.DisplayName,
+			IsCluster:   false,
+		})
+	}
+	if len(items) == 0 {
+		return nil, fmt.Errorf("no available branches found")
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the branch")
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	bModel, err := p.StartReturningModel()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
+		return nil, util.InterruptError
+	}
+	branch := bModel.(ui.SelectModel).GetSelectedItem().(*Branch)
+	return branch, nil
+}
+
+func GetSelectedBranchIfExist(clusterID string, pageSize int64, client TiDBCloudClient) (*Branch, error) {
+	_, branchItems, err := RetrieveBranches(clusterID, pageSize, client)
+	if err != nil {
+		return nil, err
+	}
+
+	var items = make([]interface{}, 0, len(branchItems)+1)
+	// Add main item
+	items = append(items, &Branch{
+		ID:          clusterID,
+		DisplayName: "main",
+		IsCluster:   true,
+	})
+	for _, item := range branchItems {
+		items = append(items, &Branch{
+			ID:          *item.ID,
+			DisplayName: *item.DisplayName,
+			IsCluster:   false,
+		})
+	}
+	if len(items) == 1 {
+		return nil, nil
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the branch")
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	bModel, err := p.StartReturningModel()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
+		return nil, util.InterruptError
+	}
+	branch := bModel.(ui.SelectModel).GetSelectedItem().(*Branch)
+	return branch, nil
+}
+
 // GetSelectedImport get the selected import task. statusFilter is used to filter the available options, only imports has status in statusFilter will be available.
 // statusFilter with no filter will mark all the import tasks as available options just like statusFilter with all status.
 func GetSelectedImport(pID string, cID string, pageSize int64, client TiDBCloudClient, statusFilter []importModel.OpenapiGetImportRespStatus) (*Import, error) {
@@ -210,6 +307,25 @@ func RetrieveClusters(pID string, pageSize int64, d TiDBCloudClient) (int64, []*
 		total = *clusters.Payload.Total
 		page += 1
 		items = append(items, clusters.Payload.Items...)
+	}
+	return total, items, nil
+}
+
+func RetrieveBranches(cID string, pageSize int64, d TiDBCloudClient) (int64, []*branchModel.OpenapiBasicBranch, error) {
+	params := branchApi.NewListBranchesParams().WithClusterID(cID)
+	var total int64 = math.MaxInt64
+	var page int64 = 1
+	var items []*branchModel.OpenapiBasicBranch
+	// loop to get all branches
+	for (page-1)*pageSize < total {
+		branches, err := d.ListBranches(params.WithPageToken(&page).WithPageSize(&pageSize))
+		if err != nil {
+			return 0, nil, errors.Trace(err)
+		}
+
+		total = *branches.Payload.Total
+		page += 1
+		items = append(items, branches.Payload.Branches...)
 	}
 	return total, items, nil
 }

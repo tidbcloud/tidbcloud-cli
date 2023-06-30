@@ -22,6 +22,8 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/version"
+	branchClient "tidbcloud-cli/pkg/tidbcloud/branch/client"
+	branchOp "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
 	connectInfoClient "tidbcloud-cli/pkg/tidbcloud/connect_info/client"
 	connectInfoOp "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
 	importClient "tidbcloud-cli/pkg/tidbcloud/import/client"
@@ -66,16 +68,25 @@ type TiDBCloudClient interface {
 	PreSignedUrlUpload(url *string, uploadFile *os.File, size int64) error
 
 	GetConnectInfo(params *connectInfoOp.GetInfoParams, opts ...connectInfoOp.ClientOption) (*connectInfoOp.GetInfoOK, error)
+
+	GetBranch(params *branchOp.GetBranchParams, opts ...branchOp.ClientOption) (*branchOp.GetBranchOK, error)
+
+	ListBranches(params *branchOp.ListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.ListBranchesOK, error)
+
+	CreateBranch(params *branchOp.CreateBranchParams, opts ...branchOp.ClientOption) (*branchOp.CreateBranchOK, error)
+
+	DeleteBranch(params *branchOp.DeleteBranchParams, opts ...branchOp.ClientOption) (*branchOp.DeleteBranchOK, error)
 }
 
 type ClientDelegate struct {
 	c  *apiClient.GoTidbcloud
 	ic *importClient.TidbcloudImport
 	cc *connectInfoClient.TidbcloudConnectInfo
+	bc *branchClient.TidbcloudBranch
 }
 
 func NewClientDelegate(publicKey string, privateKey string, apiUrl string) (*ClientDelegate, error) {
-	c, ic, cc, err := NewApiClient(publicKey, privateKey, apiUrl)
+	c, ic, cc, bc, err := NewApiClient(publicKey, privateKey, apiUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -83,6 +94,7 @@ func NewClientDelegate(publicKey string, privateKey string, apiUrl string) (*Cli
 		c:  c,
 		ic: ic,
 		cc: cc,
+		bc: bc,
 	}, nil
 }
 
@@ -154,7 +166,43 @@ func (d *ClientDelegate) GetConnectInfo(params *connectInfoOp.GetInfoParams, opt
 	return d.cc.ConnectInfoService.GetInfo(params, opts...)
 }
 
-func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport, *connectInfoClient.TidbcloudConnectInfo, error) {
+func (d *ClientDelegate) GetBranch(params *branchOp.GetBranchParams, opts ...branchOp.ClientOption) (*branchOp.GetBranchOK, error) {
+	r, err := d.bc.BranchService.GetBranch(params, opts...)
+	if err != nil {
+		errorPayload := err.(*branchOp.GetBranchDefault).Payload.Error
+		return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] GetBranch  %+v", errorPayload.Code, errorPayload.Message)
+	}
+	return r, err
+}
+
+func (d *ClientDelegate) ListBranches(params *branchOp.ListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.ListBranchesOK, error) {
+	r, err := d.bc.BranchService.ListBranches(params, opts...)
+	if err != nil {
+		errorPayload := err.(*branchOp.ListBranchesDefault).Payload.Error
+		return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches][%d] ListBranches  %+v", errorPayload.Code, errorPayload.Message)
+	}
+	return r, err
+}
+
+func (d *ClientDelegate) CreateBranch(params *branchOp.CreateBranchParams, opts ...branchOp.ClientOption) (*branchOp.CreateBranchOK, error) {
+	r, err := d.bc.BranchService.CreateBranch(params, opts...)
+	if err != nil {
+		errorPayload := err.(*branchOp.CreateBranchDefault).Payload.Error
+		return nil, fmt.Errorf("[POST /api/v1beta/clusters/{cluster_id}/branches][%d] CreateBranch  %+v", errorPayload.Code, errorPayload.Message)
+	}
+	return r, err
+}
+
+func (d *ClientDelegate) DeleteBranch(params *branchOp.DeleteBranchParams, opts ...branchOp.ClientOption) (*branchOp.DeleteBranchOK, error) {
+	r, err := d.bc.BranchService.DeleteBranch(params, opts...)
+	if err != nil {
+		errorPayload := err.(*branchOp.DeleteBranchDefault).Payload.Error
+		return nil, fmt.Errorf("[DELETE /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] DeleteBranch  %+v", errorPayload.Code, errorPayload.Message)
+	}
+	return r, err
+}
+
+func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport, *connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudBranch, error) {
 	httpclient := &http.Client{
 		Transport: NewTransportWithAgent(&digest.Transport{
 			Username: publicKey,
@@ -165,11 +213,11 @@ func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClien
 	// Parse the URL
 	u, err := prop.ValidateApiUrl(apiUrl)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, nil, nil, nil, err
 	}
 
 	transport := httpTransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpclient)
-	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default), nil
+	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default), branchClient.New(transport, strfmt.Default), nil
 }
 
 // NewTransportWithAgent returns a new http.RoundTripper that add the User-Agent header,

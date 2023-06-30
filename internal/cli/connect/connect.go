@@ -22,12 +22,14 @@ import (
 	"os"
 	"os/user"
 	"strconv"
+	"strings"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
+	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -66,20 +68,24 @@ func ConnectCmd(h *internal.Helper) *cobra.Command {
 
 	var connectCmd = &cobra.Command{
 		Use:   "connect",
-		Short: "Connect to a TiDB Cloud cluster",
-		Long: `Connect to a TiDB Cloud cluster; 
+		Short: "Connect to TiDB Cloud",
+		Long: `Connect to TiDB Cloud; 
 the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_ansi) for the session.`,
-		Example: fmt.Sprintf(`  Connect to the TiDB Cloud cluster in interactive mode:
+		Example: fmt.Sprintf(`  Connect to the TiDB Cloud in interactive mode:
   $ %[1]s connect
 
   Use the default user to connect to the TiDB Cloud cluster in non-interactive mode:
   $ %[1]s connect -p <project-id> -c <cluster-id>
 
+  Use the default user to connect to the TiDB Cloud branch in non-interactive mode:
+  $ %[1]s connect -p <project-id> -c <cluster-id> -b <branch-id>
+
   Use the default user to connect to the TiDB Cloud cluster with password in non-interactive mode:
-  $ %[1]s connect -p <project-id> -c <cluster-id> --password <password> 
+  $ %[1]s connect -p <project-id> -c <cluster-id> --password <password>
 
   Use a specific user to connect to the TiDB Cloud cluster in non-interactive mode:
   $ %[1]s connect -p <project-id> -c <cluster-id> -u <user-name>`, config.CliName),
+
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {
@@ -112,7 +118,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				return err
 			}
 
-			var projectID, clusterID, userName string
+			var projectID, clusterID, branchID, userName string
 			var pass *string
 			if opts.interactive {
 				// interactive mode
@@ -127,6 +133,14 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 					return err
 				}
 				clusterID = cluster.ID
+
+				branch, err := cloud.GetSelectedBranchIfExist(clusterID, h.QueryPageSize, d)
+				if err != nil {
+					return err
+				}
+				if branch != nil {
+					branchID = branch.ID
+				}
 
 				useDefaultUser := false
 				prompt := &survey.Confirm{
@@ -168,10 +182,17 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				if err != nil {
 					return errors.Trace(err)
 				}
+
 				projectID = pID
 				clusterID = cID
 
 				// options flags
+				bID, err := cmd.Flags().GetString(flag.BranchID)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				branchID = bID
+
 				uName, err := cmd.Flags().GetString(flag.User)
 				if err != nil {
 					return errors.Trace(err)
@@ -187,28 +208,47 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				}
 			}
 
-			params := clusterApi.NewGetClusterParams().
-				WithProjectID(projectID).
-				WithClusterID(clusterID)
-			cluster, err := d.GetCluster(params)
-			if err != nil {
-				return errors.Trace(err)
-			}
-			defaultUser := cluster.Payload.Status.ConnectionStrings.DefaultUser
-			host := cluster.Payload.Status.ConnectionStrings.Standard.Host
-			clusterName := cluster.Payload.Name
-			port := strconv.Itoa(int(cluster.Payload.Status.ConnectionStrings.Standard.Port))
-			clusterType := cluster.Payload.ClusterType
-			if userName == "" {
-				userName = defaultUser
-				fmt.Fprintln(h.IOStreams.Out, color.GreenString("Current user: ")+color.HiGreenString(userName))
-			}
-			if clusterType == DEVELOPER {
+			var host, name, port, clusterType string
+			if !isBranch(branchID) {
+				// cluster
+				params := clusterApi.NewGetClusterParams().
+					WithProjectID(projectID).
+					WithClusterID(clusterID)
+				cluster, err := d.GetCluster(params)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				defaultUser := cluster.Payload.Status.ConnectionStrings.DefaultUser
+				host = cluster.Payload.Status.ConnectionStrings.Standard.Host
+				name = cluster.Payload.Name
+				port = strconv.Itoa(int(cluster.Payload.Status.ConnectionStrings.Standard.Port))
+				clusterType = cluster.Payload.ClusterType
+				if userName == "" {
+					userName = defaultUser
+					fmt.Fprintln(h.IOStreams.Out, color.GreenString("Current user: ")+color.HiGreenString(userName))
+				}
+				if clusterType == DEVELOPER {
+					clusterType = SERVERLESS
+				}
+			} else {
+				// branch
+				params := branchApi.NewGetBranchParams().WithClusterID(clusterID).WithBranchID(branchID)
+				branchInfo, err := d.GetBranch(params)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				host = branchInfo.Payload.Endpoints.PublicEndpoint.Host
+				port = strconv.Itoa(int(branchInfo.Payload.Endpoints.PublicEndpoint.Port))
+				name = *branchInfo.Payload.DisplayName
+				if userName == "" {
+					userName = fmt.Sprintf("%s.root", *branchInfo.Payload.UserPrefix)
+					fmt.Fprintln(h.IOStreams.Out, color.GreenString("Current user: ")+color.HiGreenString(userName))
+				}
 				clusterType = SERVERLESS
 			}
 
 			// Set prompt style, see https://github.com/xo/usql/commit/d5db12eaa6fe48cd0a697831ad03d61611290576
-			err = env.Set("PROMPT1", "%n"+"@"+clusterName+"%/%R%#")
+			err = env.Set("PROMPT1", "%n"+"@"+name+"%/%R%#")
 			if err != nil {
 				return err
 			}
@@ -217,12 +257,14 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			if err != nil {
 				return err
 			}
+
 			return nil
 		},
 	}
 
 	connectCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The project ID of the cluster")
 	connectCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster")
+	connectCmd.Flags().StringP(flag.BranchID, flag.BranchIDShort, "", "The ID of the branch")
 	connectCmd.Flags().String(flag.Password, "", "The password of the user")
 	connectCmd.Flags().StringP(flag.User, flag.UserShort, "", "A specific user for login if not using the default user")
 	return connectCmd
@@ -308,4 +350,8 @@ func generateDsnWithoutPassword(clusterType string, userName string, host string
 		return "", err
 	}
 	return dsn, nil
+}
+
+func isBranch(branchID string) bool {
+	return branchID != "" && strings.Contains(branchID, "bran-")
 }
