@@ -169,8 +169,14 @@ func (d *ClientDelegate) GetConnectInfo(params *connectInfoOp.GetInfoParams, opt
 func (d *ClientDelegate) GetBranch(params *branchOp.GetBranchParams, opts ...branchOp.ClientOption) (*branchOp.GetBranchOK, error) {
 	r, err := d.bc.BranchService.GetBranch(params, opts...)
 	if err != nil {
-		errorPayload := err.(*branchOp.GetBranchDefault).Payload.Error
-		return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] GetBranch  %+v", errorPayload.Code, errorPayload.Message)
+		if e, ok := err.(*branchOp.GetBranchDefault); ok {
+			if e.Payload == nil || e.Payload.Error == nil {
+				return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] GetBranch  %+v", e.Code, "unknown error")
+			}
+			return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] GetBranch  %+v", e.Code, e.Payload.Error.Message)
+		} else {
+			return nil, err
+		}
 	}
 	return r, err
 }
@@ -178,8 +184,14 @@ func (d *ClientDelegate) GetBranch(params *branchOp.GetBranchParams, opts ...bra
 func (d *ClientDelegate) ListBranches(params *branchOp.ListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.ListBranchesOK, error) {
 	r, err := d.bc.BranchService.ListBranches(params, opts...)
 	if err != nil {
-		errorPayload := err.(*branchOp.ListBranchesDefault).Payload.Error
-		return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches][%d] ListBranches  %+v", errorPayload.Code, errorPayload.Message)
+		if e, ok := err.(*branchOp.ListBranchesDefault); ok {
+			if e.Payload == nil || e.Payload.Error == nil {
+				return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches][%d] ListBranches  %+v", e.Code, "unknown error")
+			}
+			return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches][%d] ListBranches  %+v", e.Code, e.Payload.Error.Message)
+		} else {
+			return nil, err
+		}
 	}
 	return r, err
 }
@@ -187,8 +199,14 @@ func (d *ClientDelegate) ListBranches(params *branchOp.ListBranchesParams, opts 
 func (d *ClientDelegate) CreateBranch(params *branchOp.CreateBranchParams, opts ...branchOp.ClientOption) (*branchOp.CreateBranchOK, error) {
 	r, err := d.bc.BranchService.CreateBranch(params, opts...)
 	if err != nil {
-		errorPayload := err.(*branchOp.CreateBranchDefault).Payload.Error
-		return nil, fmt.Errorf("[POST /api/v1beta/clusters/{cluster_id}/branches][%d] CreateBranch  %+v", errorPayload.Code, errorPayload.Message)
+		if e, ok := err.(*branchOp.CreateBranchDefault); ok {
+			if e.Payload == nil || e.Payload.Error == nil {
+				return nil, fmt.Errorf("[POST /api/v1beta/clusters/{cluster_id}/branches][%d] CreateBranch  %+v", e.Code, "unknown error")
+			}
+			return nil, fmt.Errorf("[POST /api/v1beta/clusters/{cluster_id}/branches][%d] CreateBranch  %+v", e.Code, e.Payload.Error.Message)
+		} else {
+			return nil, err
+		}
 	}
 	return r, err
 }
@@ -196,8 +214,14 @@ func (d *ClientDelegate) CreateBranch(params *branchOp.CreateBranchParams, opts 
 func (d *ClientDelegate) DeleteBranch(params *branchOp.DeleteBranchParams, opts ...branchOp.ClientOption) (*branchOp.DeleteBranchOK, error) {
 	r, err := d.bc.BranchService.DeleteBranch(params, opts...)
 	if err != nil {
-		errorPayload := err.(*branchOp.DeleteBranchDefault).Payload.Error
-		return nil, fmt.Errorf("[DELETE /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] DeleteBranch  %+v", errorPayload.Code, errorPayload.Message)
+		if e, ok := err.(*branchOp.DeleteBranchDefault); ok {
+			if e.Payload == nil || e.Payload.Error == nil {
+				return nil, fmt.Errorf("[DELETE /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] DeleteBranch  %+v", e.Code, "unknown error")
+			}
+			return nil, fmt.Errorf("[DELETE /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] DeleteBranch  %+v", e.Code, e.Payload.Error.Message)
+		} else {
+			return nil, err
+		}
 	}
 	return r, err
 }
