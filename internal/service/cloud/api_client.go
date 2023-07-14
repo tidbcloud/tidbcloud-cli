@@ -171,9 +171,9 @@ func (d *ClientDelegate) GetBranch(params *branchOp.GetBranchParams, opts ...bra
 	if err != nil {
 		if e, ok := err.(*branchOp.GetBranchDefault); ok {
 			if e.Payload == nil || e.Payload.Error == nil {
-				return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] GetBranch  %+v", e.Code, "unknown error")
+				return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] GetBranch  %+v", e.Code(), "unknown error")
 			}
-			return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] GetBranch  %+v", e.Code, e.Payload.Error.Message)
+			return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] GetBranch  %+v", e.Payload.Error.Code, e.Payload.Error.Message)
 		} else {
 			return nil, err
 		}
@@ -186,9 +186,9 @@ func (d *ClientDelegate) ListBranches(params *branchOp.ListBranchesParams, opts 
 	if err != nil {
 		if e, ok := err.(*branchOp.ListBranchesDefault); ok {
 			if e.Payload == nil || e.Payload.Error == nil {
-				return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches][%d] ListBranches  %+v", e.Code, "unknown error")
+				return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches][%d] ListBranches  %+v", e.Code(), "unknown error")
 			}
-			return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches][%d] ListBranches  %+v", e.Code, e.Payload.Error.Message)
+			return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches][%d] ListBranches  %+v", e.Payload.Error.Code, e.Payload.Error.Message)
 		} else {
 			return nil, err
 		}
@@ -201,9 +201,9 @@ func (d *ClientDelegate) CreateBranch(params *branchOp.CreateBranchParams, opts 
 	if err != nil {
 		if e, ok := err.(*branchOp.CreateBranchDefault); ok {
 			if e.Payload == nil || e.Payload.Error == nil {
-				return nil, fmt.Errorf("[POST /api/v1beta/clusters/{cluster_id}/branches][%d] CreateBranch  %+v", e.Code, "unknown error")
+				return nil, fmt.Errorf("[POST /api/v1beta/clusters/{cluster_id}/branches][%d] CreateBranch  %+v", e.Code(), "unknown error")
 			}
-			return nil, fmt.Errorf("[POST /api/v1beta/clusters/{cluster_id}/branches][%d] CreateBranch  %+v", e.Code, e.Payload.Error.Message)
+			return nil, fmt.Errorf("[POST /api/v1beta/clusters/{cluster_id}/branches][%d] CreateBranch  %+v", e.Payload.Error.Code, e.Payload.Error.Message)
 		} else {
 			return nil, err
 		}
@@ -216,9 +216,9 @@ func (d *ClientDelegate) DeleteBranch(params *branchOp.DeleteBranchParams, opts 
 	if err != nil {
 		if e, ok := err.(*branchOp.DeleteBranchDefault); ok {
 			if e.Payload == nil || e.Payload.Error == nil {
-				return nil, fmt.Errorf("[DELETE /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] DeleteBranch  %+v", e.Code, "unknown error")
+				return nil, fmt.Errorf("[DELETE /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] DeleteBranch  %+v", e.Code(), "unknown error")
 			}
-			return nil, fmt.Errorf("[DELETE /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] DeleteBranch  %+v", e.Code, e.Payload.Error.Message)
+			return nil, fmt.Errorf("[DELETE /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] DeleteBranch  %+v", e.Payload.Error.Code, e.Payload.Error.Message)
 		} else {
 			return nil, err
 		}
