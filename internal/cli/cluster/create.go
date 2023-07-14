@@ -46,6 +46,8 @@ const (
 const (
 	serverlessType = "SERVERLESS"
 	developerType  = "DEVELOPER"
+	WaitInterval   = 5 * time.Second
+	WaitTimeout    = 2 * time.Minute
 )
 
 type CreateOpts struct {
@@ -303,9 +305,9 @@ func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, projectID s
 	newClusterID := *createClusterResult.GetPayload().ID
 
 	fmt.Fprintln(h.IOStreams.Out, "... Waiting for cluster to be ready")
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(WaitInterval)
 	defer ticker.Stop()
-	timer := time.After(2 * time.Minute)
+	timer := time.After(WaitTimeout)
 	for {
 		select {
 		case <-timer:
@@ -335,9 +337,9 @@ func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, projectI
 		}
 		newClusterID := *createClusterResult.GetPayload().ID
 
-		ticker := time.NewTicker(5 * time.Second)
+		ticker := time.NewTicker(WaitInterval)
 		defer ticker.Stop()
-		timer := time.After(2 * time.Minute)
+		timer := time.After(WaitTimeout)
 		for {
 			select {
 			case <-timer:
