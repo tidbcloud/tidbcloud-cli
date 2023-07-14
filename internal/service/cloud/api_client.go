@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/version"
