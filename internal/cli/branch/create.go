@@ -40,7 +40,7 @@ var createBranchField = map[string]int{
 }
 
 const (
-	WaitInterval = 10 * time.Second
+	WaitInterval = 5 * time.Second
 	WaitTimeout  = 5 * time.Minute
 )
 
