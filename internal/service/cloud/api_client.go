@@ -231,7 +231,8 @@ func parseBranchError(err error) error {
 		return nil
 	}
 
-	if e, ok := err.(*branchOp.DeleteBranchDefault); ok {
+	switch e := err.(type) {
+	case *branchOp.DeleteBranchDefault:
 		msg := "[DELETE /api/v1beta/clusters/{cluster_id}/branches/{branch_id}] DeleteBranch"
 		// return by api gateway
 		if e.Payload == nil || e.Payload.Error == nil {
@@ -239,9 +240,7 @@ func parseBranchError(err error) error {
 		}
 		// return by serverless-svc
 		return fmt.Errorf(msg+" [%d] %+v", e.Payload.Error.Code, e.Payload.Error.Message)
-	}
-
-	if e, ok := err.(*branchOp.GetBranchDefault); ok {
+	case *branchOp.GetBranchDefault:
 		msg := "[GET /api/v1beta/clusters/{cluster_id}/branches/{branch_id}] GetBranch"
 		// return by api gateway
 		if e.Payload == nil || e.Payload.Error == nil {
@@ -249,19 +248,7 @@ func parseBranchError(err error) error {
 		}
 		// return by serverless-svc
 		return fmt.Errorf(msg+" [%d] %+v", e.Payload.Error.Code, e.Payload.Error.Message)
-	}
-
-	if e, ok := err.(*branchOp.CreateBranchDefault); ok {
-		msg := "[POST /api/v1beta/clusters/{cluster_id}/branches] CreateBranch"
-		// return by api gateway
-		if e.Payload == nil || e.Payload.Error == nil {
-			return fmt.Errorf(msg+" [%d] unknown error", e.Code())
-		}
-		// return by serverless-svc
-		return fmt.Errorf(msg+" [%d] %+v", e.Payload.Error.Code, e.Payload.Error.Message)
-	}
-
-	if e, ok := err.(*branchOp.ListBranchesDefault); ok {
+	case *branchOp.ListBranchesDefault:
 		msg := "[GET /api/v1beta/clusters/{cluster_id}/branches] ListBranches"
 		// return by api gateway
 		if e.Payload == nil || e.Payload.Error == nil {
@@ -269,8 +256,15 @@ func parseBranchError(err error) error {
 		}
 		// return by serverless-svc
 		return fmt.Errorf(msg+" [%d] %+v", e.Payload.Error.Code, e.Payload.Error.Message)
+	case *branchOp.CreateBranchDefault:
+		msg := "[POST /api/v1beta/clusters/{cluster_id}/branches] CreateBranch"
+		// return by api gateway
+		if e.Payload == nil || e.Payload.Error == nil {
+			return fmt.Errorf(msg+" [%d] unknown error", e.Code())
+		}
+		// return by serverless-svc
+		return fmt.Errorf(msg+" [%d] %+v", e.Payload.Error.Code, e.Payload.Error.Message)
+	default:
+		return err
 	}
-
-	// any other unknown error
-	return err
 }
