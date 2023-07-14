@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/version"
@@ -168,65 +167,25 @@ func (d *ClientDelegate) GetConnectInfo(params *connectInfoOp.GetInfoParams, opt
 
 func (d *ClientDelegate) GetBranch(params *branchOp.GetBranchParams, opts ...branchOp.ClientOption) (*branchOp.GetBranchOK, error) {
 	r, err := d.bc.BranchService.GetBranch(params, opts...)
-	if err != nil {
-		if e, ok := err.(*branchOp.GetBranchDefault); ok {
-			// return by api gateway
-			if e.Payload == nil || e.Payload.Error == nil {
-				return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] GetBranch  %+v", e.Code(), "unknown error")
-			}
-			return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] GetBranch  %+v", e.Payload.Error.Code, e.Payload.Error.Message)
-		} else {
-			return nil, err
-		}
-	}
+	err = parseBranchError(err)
 	return r, err
 }
 
 func (d *ClientDelegate) ListBranches(params *branchOp.ListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.ListBranchesOK, error) {
 	r, err := d.bc.BranchService.ListBranches(params, opts...)
-	if err != nil {
-		if e, ok := err.(*branchOp.ListBranchesDefault); ok {
-			// return by api gateway
-			if e.Payload == nil || e.Payload.Error == nil {
-				return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches][%d] ListBranches  %+v", e.Code(), "unknown error")
-			}
-			return nil, fmt.Errorf("[GET /api/v1beta/clusters/{cluster_id}/branches][%d] ListBranches  %+v", e.Payload.Error.Code, e.Payload.Error.Message)
-		} else {
-			return nil, err
-		}
-	}
+	err = parseBranchError(err)
 	return r, err
 }
 
 func (d *ClientDelegate) CreateBranch(params *branchOp.CreateBranchParams, opts ...branchOp.ClientOption) (*branchOp.CreateBranchOK, error) {
 	r, err := d.bc.BranchService.CreateBranch(params, opts...)
-	if err != nil {
-		if e, ok := err.(*branchOp.CreateBranchDefault); ok {
-			// return by api gateway
-			if e.Payload == nil || e.Payload.Error == nil {
-				return nil, fmt.Errorf("[POST /api/v1beta/clusters/{cluster_id}/branches][%d] CreateBranch  %+v", e.Code(), "unknown error")
-			}
-			return nil, fmt.Errorf("[POST /api/v1beta/clusters/{cluster_id}/branches][%d] CreateBranch  %+v", e.Payload.Error.Code, e.Payload.Error.Message)
-		} else {
-			return nil, err
-		}
-	}
+	err = parseBranchError(err)
 	return r, err
 }
 
 func (d *ClientDelegate) DeleteBranch(params *branchOp.DeleteBranchParams, opts ...branchOp.ClientOption) (*branchOp.DeleteBranchOK, error) {
 	r, err := d.bc.BranchService.DeleteBranch(params, opts...)
-	if err != nil {
-		if e, ok := err.(*branchOp.DeleteBranchDefault); ok {
-			// return by api gateway
-			if e.Payload == nil || e.Payload.Error == nil {
-				return nil, fmt.Errorf("[DELETE /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] DeleteBranch  %+v", e.Code(), "unknown error")
-			}
-			return nil, fmt.Errorf("[DELETE /api/v1beta/clusters/{cluster_id}/branches/{branch_id}][%d] DeleteBranch  %+v", e.Payload.Error.Code, e.Payload.Error.Message)
-		} else {
-			return nil, err
-		}
-	}
+	err = parseBranchError(err)
 	return r, err
 }
 
@@ -265,4 +224,53 @@ type UserAgentTransport struct {
 func (ug *UserAgentTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	r.Header.Set(userAgent, ug.Agent)
 	return ug.inner.RoundTrip(r)
+}
+
+func parseBranchError(err error) error {
+	if err == nil {
+		return nil
+	}
+
+	if e, ok := err.(*branchOp.DeleteBranchDefault); ok {
+		msg := "[DELETE /api/v1beta/clusters/{cluster_id}/branches/{branch_id}] DeleteBranch"
+		// return by api gateway
+		if e.Payload == nil || e.Payload.Error == nil {
+			return fmt.Errorf(msg+" [%d] unknown error", e.Code())
+		}
+		// return by serverless-svc
+		return fmt.Errorf(msg+" [%d] %+v", e.Payload.Error.Code, e.Payload.Error.Message)
+	}
+
+	if e, ok := err.(*branchOp.GetBranchDefault); ok {
+		msg := "[GET /api/v1beta/clusters/{cluster_id}/branches/{branch_id}] GetBranch"
+		// return by api gateway
+		if e.Payload == nil || e.Payload.Error == nil {
+			return fmt.Errorf(msg+" [%d] unknown error", e.Code())
+		}
+		// return by serverless-svc
+		return fmt.Errorf(msg+" [%d] %+v", e.Payload.Error.Code, e.Payload.Error.Message)
+	}
+
+	if e, ok := err.(*branchOp.CreateBranchDefault); ok {
+		msg := "[POST /api/v1beta/clusters/{cluster_id}/branches] CreateBranch"
+		// return by api gateway
+		if e.Payload == nil || e.Payload.Error == nil {
+			return fmt.Errorf(msg+" [%d] unknown error", e.Code())
+		}
+		// return by serverless-svc
+		return fmt.Errorf(msg+" [%d] %+v", e.Payload.Error.Code, e.Payload.Error.Message)
+	}
+
+	if e, ok := err.(*branchOp.ListBranchesDefault); ok {
+		msg := "[GET /api/v1beta/clusters/{cluster_id}/branches] ListBranches"
+		// return by api gateway
+		if e.Payload == nil || e.Payload.Error == nil {
+			return fmt.Errorf(msg+" [%d] unknown error", e.Code())
+		}
+		// return by serverless-svc
+		return fmt.Errorf(msg+" [%d] %+v", e.Payload.Error.Code, e.Payload.Error.Message)
+	}
+
+	// any other unknown error
+	return err
 }
