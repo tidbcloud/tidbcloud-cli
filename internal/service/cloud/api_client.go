@@ -168,25 +168,21 @@ func (d *ClientDelegate) GetConnectInfo(params *connectInfoOp.GetInfoParams, opt
 
 func (d *ClientDelegate) GetBranch(params *branchOp.GetBranchParams, opts ...branchOp.ClientOption) (*branchOp.GetBranchOK, error) {
 	r, err := d.bc.BranchService.GetBranch(params, opts...)
-	err = parseBranchError(err)
 	return r, err
 }
 
 func (d *ClientDelegate) ListBranches(params *branchOp.ListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.ListBranchesOK, error) {
 	r, err := d.bc.BranchService.ListBranches(params, opts...)
-	err = parseBranchError(err)
 	return r, err
 }
 
 func (d *ClientDelegate) CreateBranch(params *branchOp.CreateBranchParams, opts ...branchOp.ClientOption) (*branchOp.CreateBranchOK, error) {
 	r, err := d.bc.BranchService.CreateBranch(params, opts...)
-	err = parseBranchError(err)
 	return r, err
 }
 
 func (d *ClientDelegate) DeleteBranch(params *branchOp.DeleteBranchParams, opts ...branchOp.ClientOption) (*branchOp.DeleteBranchOK, error) {
 	r, err := d.bc.BranchService.DeleteBranch(params, opts...)
-	err = parseBranchError(err)
 	return r, err
 }
 
@@ -225,47 +221,4 @@ type UserAgentTransport struct {
 func (ug *UserAgentTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	r.Header.Set(userAgent, ug.Agent)
 	return ug.inner.RoundTrip(r)
-}
-
-func parseBranchError(err error) error {
-	if err == nil {
-		return nil
-	}
-
-	switch e := err.(type) {
-	case *branchOp.DeleteBranchDefault:
-		msg := "[DELETE /api/v1beta/clusters/{cluster_id}/branches/{branch_id}] DeleteBranch"
-		// return by api gateway
-		if e.Payload == nil || e.Payload.Error == nil {
-			return fmt.Errorf(msg+" [%d] unknown error", e.Code())
-		}
-		// return by serverless-svc
-		return fmt.Errorf(msg+" [%d] %+v", e.Payload.Error.Code, e.Payload.Error.Message)
-	case *branchOp.GetBranchDefault:
-		msg := "[GET /api/v1beta/clusters/{cluster_id}/branches/{branch_id}] GetBranch"
-		// return by api gateway
-		if e.Payload == nil || e.Payload.Error == nil {
-			return fmt.Errorf(msg+" [%d] unknown error", e.Code())
-		}
-		// return by serverless-svc
-		return fmt.Errorf(msg+" [%d] %+v", e.Payload.Error.Code, e.Payload.Error.Message)
-	case *branchOp.ListBranchesDefault:
-		msg := "[GET /api/v1beta/clusters/{cluster_id}/branches] ListBranches"
-		// return by api gateway
-		if e.Payload == nil || e.Payload.Error == nil {
-			return fmt.Errorf(msg+" [%d] unknown error", e.Code())
-		}
-		// return by serverless-svc
-		return fmt.Errorf(msg+" [%d] %+v", e.Payload.Error.Code, e.Payload.Error.Message)
-	case *branchOp.CreateBranchDefault:
-		msg := "[POST /api/v1beta/clusters/{cluster_id}/branches] CreateBranch"
-		// return by api gateway
-		if e.Payload == nil || e.Payload.Error == nil {
-			return fmt.Errorf(msg+" [%d] unknown error", e.Code())
-		}
-		// return by serverless-svc
-		return fmt.Errorf(msg+" [%d] %+v", e.Payload.Error.Code, e.Payload.Error.Message)
-	default:
-		return err
-	}
 }

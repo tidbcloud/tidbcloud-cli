@@ -201,23 +201,18 @@
     "googlerpcStatus": {
       "type": "object",
       "properties": {
-        "error": {
-          "type": "object",
-          "properties": {
-            "code": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "message": {
-              "type": "string"
-            },
-            "details": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "$ref": "#/definitions/protobufAny"
-              }
-            }
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
           }
         }
       }
