@@ -311,7 +311,7 @@ func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, projectID s
 	for {
 		select {
 		case <-timer:
-			return errors.New("Timeout waiting for cluster to be ready, please check status on dashboard.")
+			return errors.New(fmt.Sprintf("Timeout waiting for cluster %s to be ready, please check status on dashboard.", newClusterID))
 		case <-ticker.C:
 			clusterResult, err := d.GetCluster(clusterApi.NewGetClusterParams().
 				WithClusterID(newClusterID).
@@ -343,7 +343,7 @@ func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, projectI
 		for {
 			select {
 			case <-timer:
-				return ui.Result("Timeout waiting for cluster to be ready, please check status on dashboard.")
+				return ui.Result(fmt.Sprintf("Timeout waiting for cluster %s to be ready, please check status on dashboard.", newClusterID))
 			case <-ticker.C:
 				clusterResult, err := d.GetCluster(clusterApi.NewGetClusterParams().
 					WithClusterID(newClusterID).
@@ -361,7 +361,7 @@ func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, projectI
 		}
 	}
 
-	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Waiting for cluster to be ready"))
+	p := tea.NewProgram(ui.InitialSpinnerModel(task, fmt.Sprintf("Waiting for cluster to be ready")))
 	createModel, err := p.StartReturningModel()
 	if err != nil {
 		return errors.Trace(err)

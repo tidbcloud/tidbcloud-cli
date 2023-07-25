@@ -177,7 +177,7 @@ func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, params *bra
 	for {
 		select {
 		case <-timer:
-			return errors.New("Timeout waiting for branch to be ready, please check status on dashboard.")
+			return errors.New(fmt.Sprintf("Timeout waiting for branch %s to be ready, please check status on dashboard.", newBranchID))
 		case <-ticker.C:
 			clusterResult, err := d.GetBranch(branchApi.NewGetBranchParams().
 				WithClusterID(params.ClusterID).
@@ -209,7 +209,7 @@ func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, params *
 		for {
 			select {
 			case <-timer:
-				return ui.Result("Timeout waiting for branch to be ready, please check status on dashboard.")
+				return ui.Result(fmt.Sprintf("Timeout waiting for branch %s to be ready, please check status on dashboard.", newBranchID))
 			case <-ticker.C:
 				clusterResult, err := d.GetBranch(branchApi.NewGetBranchParams().
 					WithClusterID(params.ClusterID).

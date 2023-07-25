@@ -156,7 +156,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			for {
 				select {
 				case <-timer:
-					return errors.New("timeout waiting for deleting branch, please check status on dashboard")
+					return errors.New(fmt.Sprintf("timeout waiting for deleting branch %s, please check status on dashboard", branchID))
 				case <-ticker.C:
 					_, err := d.GetBranch(branchApi.NewGetBranchParams().
 						WithClusterID(clusterID).

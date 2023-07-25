@@ -166,14 +166,14 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			for {
 				select {
 				case <-timer:
-					return errors.New("timeout waiting for deleting cluster, please check status on dashboard")
+					return errors.New(fmt.Sprintf("timeout waiting for deleting cluster %s, please check status on dashboard", clusterID))
 				case <-ticker.C:
 					_, err := d.GetCluster(clusterApi.NewGetClusterParams().
 						WithClusterID(clusterID).
 						WithProjectID(projectID))
 					if err != nil {
 						if _, ok := err.(*clusterApi.GetClusterNotFound); ok {
-							fmt.Fprintln(h.IOStreams.Out, color.GreenString("cluster deleted"))
+							fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("cluster %s deleted", clusterID)))
 							return nil
 						}
 						return errors.Trace(err)
