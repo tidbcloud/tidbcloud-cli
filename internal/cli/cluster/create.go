@@ -361,7 +361,7 @@ func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, projectI
 		}
 	}
 
-	p := tea.NewProgram(ui.InitialSpinnerModel(task, fmt.Sprintf("Waiting for cluster to be ready")))
+	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Waiting for cluster to be ready"))
 	createModel, err := p.StartReturningModel()
 	if err != nil {
 		return errors.Trace(err)
