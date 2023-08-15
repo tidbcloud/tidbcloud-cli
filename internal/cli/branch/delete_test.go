@@ -16,7 +16,6 @@ package branch
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"os"
 	"testing"
@@ -61,9 +60,6 @@ func (suite *DeleteBranchSuite) TestDeleteBranchArgs() {
 	suite.mockClient.On("DeleteBranch", branchApi.NewDeleteBranchParams().
 		WithBranchID(branchID).WithClusterID(clusterID)).
 		Return(&branchApi.DeleteBranchOK{}, nil)
-	suite.mockClient.On("GetBranch", branchApi.NewGetBranchParams().
-		WithBranchID(branchID).WithClusterID(clusterID)).
-		Return(nil, errors.New("404"))
 
 	tests := []struct {
 		name         string
