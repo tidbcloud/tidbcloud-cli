@@ -74,7 +74,7 @@ func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 		{
 			name:         "delete cluster success",
 			args:         []string{"--project-id", projectID, "--cluster-id", clusterID, "--force"},
-			stdoutString: "cluster deleted\n",
+			stdoutString: fmt.Sprintf("cluster %s deleted\n", clusterID),
 		},
 		{
 			name: "delete cluster without force",
@@ -84,7 +84,7 @@ func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 		{
 			name:         "delete cluster with output flag",
 			args:         []string{"-p", projectID, "-c", clusterID, "--force"},
-			stdoutString: "cluster deleted\n",
+			stdoutString: fmt.Sprintf("cluster %s deleted\n", clusterID),
 		},
 		{
 			name: "delete cluster without required project id",
