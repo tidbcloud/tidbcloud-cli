@@ -26,154 +26,131 @@ import (
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
 
-	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
 )
 
 const listResultStr = `{
-  "items": [
+  "clusters": [
     {
-      "cloud_provider": "AWS",
-      "cluster_type": "DEVELOPER",
-      "config": {
-        "components": {
-          "tidb": {
-            "node_quantity": 1,
-            "node_size": "Shared0"
+      "clusterId": "3779024",
+      "createTime": "2023-07-04T01:56:12.000Z",
+      "createdBy": "yuhang.shi@pingcap.com",
+      "displayName": "Cluster0",
+      "endpoints": {
+        "privateEndpoint": {
+          "aws": {
+            "availabilityZone": [
+              "use1-az1"
+            ],
+            "serviceName": "com.amazonaws.vpce.us-east-1.vpce-svc-03342995daf1bc4d4"
           },
-          "tiflash": {
-            "node_quantity": 1,
-            "node_size": "Shared0",
-            "storage_size_gib": 1
-          },
-          "tikv": {
-            "node_quantity": 1,
-            "node_size": "Shared0",
-            "storage_size_gib": 1
-          }
+          "host": "gateway01-privatelink.us-east-1.prod.aws.tidbcloud.com",
+          "port": 4000
         },
-        "port": 4000
+        "publicEndpoint": {
+          "host": "gateway01.us-east-1.prod.aws.tidbcloud.com",
+          "port": 4000
+        }
       },
-      "create_timestamp": "1668508515",
-      "id": "1379661944635994072",
-      "name": "sdfds",
-      "project_id": "1372813089189381287",
-      "region": "us-east-1",
-      "status": {
-        "cluster_status": "AVAILABLE",
-        "connection_strings": {
-          "default_user": "28cDWcUJJiewaQ7.root",
-          "standard": {
-            "host": "gateway01.us-east-1.prod.aws.tidbcloud.com",
-            "port": 4000
-          }
-        },
-        "node_map": {
-          "tidb": [],
-          "tiflash": [],
-          "tikv": []
-        },
-        "tidb_version": "v6.3.0"
-      }
+      "labels": {
+        "tidb.cloud/organization": "30018",
+        "tidb.cloud/project": "163469"
+      },
+      "name": "clusters/3779024",
+      "region": {
+        "displayName": "N. Virginia (us-east-1)",
+        "name": "regions/aws-us-east-1",
+        "provider": "AWS"
+      },
+      "state": "ACTIVE",
+      "updateTime": "2023-08-03T09:08:07.753Z",
+      "userPrefix": "4FNu72xBpLXjFnC",
+      "version": "v6.6.0"
     }
   ],
-  "total": 1
+  "totalSize": 1
 }
 `
 
 const listResultMultiPageStr = `{
-  "items": [
+  "clusters": [
     {
-      "cloud_provider": "AWS",
-      "cluster_type": "DEVELOPER",
-      "config": {
-        "components": {
-          "tidb": {
-            "node_quantity": 1,
-            "node_size": "Shared0"
+      "clusterId": "3779024",
+      "createTime": "2023-07-04T01:56:12.000Z",
+      "createdBy": "yuhang.shi@pingcap.com",
+      "displayName": "Cluster0",
+      "endpoints": {
+        "privateEndpoint": {
+          "aws": {
+            "availabilityZone": [
+              "use1-az1"
+            ],
+            "serviceName": "com.amazonaws.vpce.us-east-1.vpce-svc-03342995daf1bc4d4"
           },
-          "tiflash": {
-            "node_quantity": 1,
-            "node_size": "Shared0",
-            "storage_size_gib": 1
-          },
-          "tikv": {
-            "node_quantity": 1,
-            "node_size": "Shared0",
-            "storage_size_gib": 1
-          }
+          "host": "gateway01-privatelink.us-east-1.prod.aws.tidbcloud.com",
+          "port": 4000
         },
-        "port": 4000
+        "publicEndpoint": {
+          "host": "gateway01.us-east-1.prod.aws.tidbcloud.com",
+          "port": 4000
+        }
       },
-      "create_timestamp": "1668508515",
-      "id": "1379661944635994072",
-      "name": "sdfds",
-      "project_id": "1372813089189381287",
-      "region": "us-east-1",
-      "status": {
-        "cluster_status": "AVAILABLE",
-        "connection_strings": {
-          "default_user": "28cDWcUJJiewaQ7.root",
-          "standard": {
-            "host": "gateway01.us-east-1.prod.aws.tidbcloud.com",
-            "port": 4000
-          }
-        },
-        "node_map": {
-          "tidb": [],
-          "tiflash": [],
-          "tikv": []
-        },
-        "tidb_version": "v6.3.0"
-      }
+      "labels": {
+        "tidb.cloud/organization": "30018",
+        "tidb.cloud/project": "163469"
+      },
+      "name": "clusters/3779024",
+      "region": {
+        "displayName": "N. Virginia (us-east-1)",
+        "name": "regions/aws-us-east-1",
+        "provider": "AWS"
+      },
+      "state": "ACTIVE",
+      "updateTime": "2023-08-03T09:08:07.753Z",
+      "userPrefix": "4FNu72xBpLXjFnC",
+      "version": "v6.6.0"
     },
     {
-      "cloud_provider": "AWS",
-      "cluster_type": "DEVELOPER",
-      "config": {
-        "components": {
-          "tidb": {
-            "node_quantity": 1,
-            "node_size": "Shared0"
+      "clusterId": "3779024",
+      "createTime": "2023-07-04T01:56:12.000Z",
+      "createdBy": "yuhang.shi@pingcap.com",
+      "displayName": "Cluster0",
+      "endpoints": {
+        "privateEndpoint": {
+          "aws": {
+            "availabilityZone": [
+              "use1-az1"
+            ],
+            "serviceName": "com.amazonaws.vpce.us-east-1.vpce-svc-03342995daf1bc4d4"
           },
-          "tiflash": {
-            "node_quantity": 1,
-            "node_size": "Shared0",
-            "storage_size_gib": 1
-          },
-          "tikv": {
-            "node_quantity": 1,
-            "node_size": "Shared0",
-            "storage_size_gib": 1
-          }
+          "host": "gateway01-privatelink.us-east-1.prod.aws.tidbcloud.com",
+          "port": 4000
         },
-        "port": 4000
+        "publicEndpoint": {
+          "host": "gateway01.us-east-1.prod.aws.tidbcloud.com",
+          "port": 4000
+        }
       },
-      "create_timestamp": "1668508515",
-      "id": "1379661944635994072",
-      "name": "sdfds",
-      "project_id": "1372813089189381287",
-      "region": "us-east-1",
-      "status": {
-        "cluster_status": "AVAILABLE",
-        "connection_strings": {
-          "default_user": "28cDWcUJJiewaQ7.root",
-          "standard": {
-            "host": "gateway01.us-east-1.prod.aws.tidbcloud.com",
-            "port": 4000
-          }
-        },
-        "node_map": {
-          "tidb": [],
-          "tiflash": [],
-          "tikv": []
-        },
-        "tidb_version": "v6.3.0"
-      }
+      "labels": {
+        "tidb.cloud/organization": "30018",
+        "tidb.cloud/project": "163469"
+      },
+      "name": "clusters/3779024",
+      "region": {
+        "displayName": "N. Virginia (us-east-1)",
+        "name": "regions/aws-us-east-1",
+        "provider": "AWS"
+      },
+      "state": "ACTIVE",
+      "updateTime": "2023-08-03T09:08:07.753Z",
+      "userPrefix": "4FNu72xBpLXjFnC",
+      "version": "v6.6.0"
     }
   ],
-  "total": 2
+  "totalSize": 2
 }
 `
 
@@ -201,17 +178,18 @@ func (suite *ListClusterSuite) SetupTest() {
 
 func (suite *ListClusterSuite) TestListClusterArgs() {
 	assert := require.New(suite.T())
-	var page int64 = 1
+	var page string = "1"
 
-	body := &cluster.ListClustersOfProjectOKBody{}
+	body := &serverlessModel.V1ListClustersResponse{}
 	err := json.Unmarshal([]byte(listResultStr), body)
 	assert.Nil(err)
-	result := &cluster.ListClustersOfProjectOK{
+	result := &serverlessApi.ServerlessServiceListClustersOK{
 		Payload: body,
 	}
 	projectID := "12345"
-	suite.mockClient.On("ListClustersOfProject", cluster.NewListClustersOfProjectParams().
-		WithProjectID(projectID).WithPage(&page).WithPageSize(&suite.h.QueryPageSize)).
+	pageSize := int32(suite.h.QueryPageSize)
+	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
+		WithProjectID(&projectID).WithPageToken(&page).WithPageSize(&pageSize)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -258,22 +236,23 @@ func (suite *ListClusterSuite) TestListClusterArgs() {
 
 func (suite *ListClusterSuite) TestListClusterWithMultiPages() {
 	assert := require.New(suite.T())
-	var pageOne int64 = 1
-	var pageTwo int64 = 2
+	var pageOne = "1"
+	var pageTwo = "2"
 	suite.h.QueryPageSize = 1
+	pageSize := int32(suite.h.QueryPageSize)
 
-	body := &cluster.ListClustersOfProjectOKBody{}
-	err := json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"total": 1`, `"total": 2`)), body)
+	body := &serverlessModel.V1ListClustersResponse{}
+	err := json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"totalSize": 1`, `"totalSize": 2`)), body)
 	assert.Nil(err)
-	result := &cluster.ListClustersOfProjectOK{
+	result := &serverlessApi.ServerlessServiceListClustersOK{
 		Payload: body,
 	}
 	projectID := "12345"
-	suite.mockClient.On("ListClustersOfProject", cluster.NewListClustersOfProjectParams().
-		WithProjectID(projectID).WithPage(&pageOne).WithPageSize(&suite.h.QueryPageSize)).
+	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
+		WithProjectID(&projectID).WithPageToken(&pageOne).WithPageSize(&pageSize)).
 		Return(result, nil)
-	suite.mockClient.On("ListClustersOfProject", cluster.NewListClustersOfProjectParams().
-		WithProjectID(projectID).WithPage(&pageTwo).WithPageSize(&suite.h.QueryPageSize)).
+	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
+		WithProjectID(&projectID).WithPageToken(&pageTwo).WithPageSize(&pageSize)).
 		Return(result, nil)
 	cmd := ListCmd(suite.h)
 

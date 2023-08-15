@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,10 +54,10 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 		Use:   "connect-info",
 		Short: "Get connection string for the specified branch",
 		Example: fmt.Sprintf(`  Get connection string in interactive mode:
-  $ %[1]s branch connect-info
+ $ %[1]s branch connect-info
 
-  Get connection string in non-interactive mode:
-  $ %[1]s branch connect-info --cluster-id <cluster-id> --branch-id <branch-id> --client <client-name> --operating-system <operating-system>
+ Get connection string in non-interactive mode:
+ $ %[1]s branch connect-info --cluster-id <cluster-id> --branch-id <branch-id> --client <client-name> --operating-system <operating-system>
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()

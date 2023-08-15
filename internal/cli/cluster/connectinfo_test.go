@@ -22,7 +22,6 @@ import (
 	"testing"
 	"tidbcloud-cli/internal/config"
 
-	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/juju/errors"
 
 	"tidbcloud-cli/internal"
@@ -31,84 +30,86 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	connectInfoService "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
 	connectInfoModel "tidbcloud-cli/pkg/tidbcloud/connect_info/models"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
 
 const getConnectInfoResultStr = `{
-    "ca_path": {
-        "Alpine": "/etc/ssl/cert.pem",
-        "Arch": "/etc/ssl/certs/ca-certificates.crt",
-        "CentOS": "/etc/pki/tls/certs/ca-bundle.crt",
-        "Debian": "/etc/ssl/certs/ca-certificates.crt",
-        "Fedora": "/etc/pki/tls/certs/ca-bundle.crt",
-        "OpenSUSE": "/etc/ssl/ca-bundle.pem",
-        "RedHat": "/etc/pki/tls/certs/ca-bundle.crt",
-        "Ubuntu": "/etc/ssl/certs/ca-certificates.crt",
-        "Windows": "<path_to_ca_cert>",
-        "macOS": "/etc/ssl/cert.pem",
-        "others": "<path_to_ca_cert>"
-    },
-    "client_data": [
-        {
-            "id": "mysql_cli",
-            "display_name": "MySQL CLI",
-            "language": "shell",
-            "content": [
-                {
-                    "type": "serverless",
-                    "comment": "",
-                    "connection_string": "mysql -u '${username}' -h ${host} -P ${port} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=${ca_root_path} -p${password}",
-                    "connection_example": ""
-                },
-                {
-                    "type": "dedicated",
-                    "comment": "# version >= 5.7.11",
-                    "connection_string": "mysql -u '${username}' -h ${host} -P ${port} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=ca.pem -p${password}",
-                    "connection_example": ""
-                }
-            ]
-        },
-        {
-            "id": "mysqlclient",
-            "display_name": "mysqlclient",
-            "language": "python",
-            "content": [
-                {
-                    "type": "serverless",
-                    "comment": "# Be sure to replace the parameters in the following connection string.\n# Requires mysqlclient package ('pip3 install mysqlclient'). Please check https://pypi.org/project/mysqlclient/ for install guide.",
-                    "connection_string": "host=\"${host}\", \nuser=\"${username}\", \npassword=\"${password}\", \nport=${port}, \ndatabase=\"test\",  \nssl={\"ca\": \"${ca_root_path}\"}",
-                    "connection_example": "import MySQLdb\n\nconnection = MySQLdb.connect(\n  host=\"${host}\",\n  port=${port},\n  user=\"${username}\",\n  password=\"${password}\",\n  database=\"test\",\n  ssl={\n    \"ca\": \"${ca_root_path}\"\n  }\n)\n\nwith connection:\n  with connection.cursor() as cursor:\n    cursor.execute(\"SELECT DATABASE();\")\n    m = cursor.fetchone()\n    print(m[0])"
-                },
-                {
-                    "type": "dedicated",
-                    "comment": "# Be sure to replace the parameters in the following connection string.\n# Requires mysqlclient package ('pip3 install mysqlclient'). Please check https://pypi.org/project/mysqlclient/ for install guide.",
-                    "connection_string": "host=\"${host}\", \nuser=\"${username}\", \npassword=\"${password}\", \nport=${port}, \ndatabase=\"test\",  \nssl={\"ca\": \"ca.pem\"}",
-                    "connection_example": "import MySQLdb\n\nconnection = MySQLdb.connect(\n  host=\"${host}\",\n  port=${port},\n  user=\"${username}\",\n  password=\"${password}\",\n  database=\"test\",\n  ssl={\n    \"ca\": \"ca.pem\"\n  }\n)\n\nwith connection:\n  with connection.cursor() as cursor:\n    cursor.execute(\"SELECT DATABASE();\")\n    m = cursor.fetchone()\n    print(m[0])"
-                }
-            ]
-        },
-        {
-            "id": "general",
-            "display_name": "General",
-            "language": "",
-            "content": [
-                {
-                    "type": "serverless",
-                    "comment": "",
-                    "connection_string": "Host: ${host}\nUsername: ${username}\nPort: ${port}\nPassword: ${password}",
-                    "connection_example": ""
-                },
-                {
-                    "type": "dedicated",
-                    "comment": "",
-                    "connection_string": "Host: ${host}\nUsername: ${username}\nPort: ${port}\nPassword: ${password}",
-                    "connection_example": ""
-                }
-            ]
+   "ca_path": {
+       "Alpine": "/etc/ssl/cert.pem",
+       "Arch": "/etc/ssl/certs/ca-certificates.crt",
+       "CentOS": "/etc/pki/tls/certs/ca-bundle.crt",
+       "Debian": "/etc/ssl/certs/ca-certificates.crt",
+       "Fedora": "/etc/pki/tls/certs/ca-bundle.crt",
+       "OpenSUSE": "/etc/ssl/ca-bundle.pem",
+       "RedHat": "/etc/pki/tls/certs/ca-bundle.crt",
+       "Ubuntu": "/etc/ssl/certs/ca-certificates.crt",
+       "Windows": "<path_to_ca_cert>",
+       "macOS": "/etc/ssl/cert.pem",
+       "others": "<path_to_ca_cert>"
+   },
+   "client_data": [
+       {
+           "id": "mysql_cli",
+           "display_name": "MySQL CLI",
+           "language": "shell",
+           "content": [
+               {
+                   "type": "serverless",
+                   "comment": "",
+                   "connection_string": "mysql -u '${username}' -h ${host} -P ${port} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=${ca_root_path} -p${password}",
+                   "connection_example": ""
+               },
+               {
+                   "type": "dedicated",
+                   "comment": "# version >= 5.7.11",
+                   "connection_string": "mysql -u '${username}' -h ${host} -P ${port} -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=ca.pem -p${password}",
+                   "connection_example": ""
+               }
+           ]
+       },
+       {
+           "id": "mysqlclient",
+           "display_name": "mysqlclient",
+           "language": "python",
+           "content": [
+               {
+                   "type": "serverless",
+                   "comment": "# Be sure to replace the parameters in the following connection string.\n# Requires mysqlclient package ('pip3 install mysqlclient'). Please check https://pypi.org/project/mysqlclient/ for install guide.",
+                   "connection_string": "host=\"${host}\", \nuser=\"${username}\", \npassword=\"${password}\", \nport=${port}, \ndatabase=\"test\",  \nssl={\"ca\": \"${ca_root_path}\"}",
+                   "connection_example": "import MySQLdb\n\nconnection = MySQLdb.connect(\n  host=\"${host}\",\n  port=${port},\n  user=\"${username}\",\n  password=\"${password}\",\n  database=\"test\",\n  ssl={\n    \"ca\": \"${ca_root_path}\"\n  }\n)\n\nwith connection:\n  with connection.cursor() as cursor:\n    cursor.execute(\"SELECT DATABASE();\")\n    m = cursor.fetchone()\n    print(m[0])"
+               },
+               {
+                   "type": "dedicated",
+                   "comment": "# Be sure to replace the parameters in the following connection string.\n# Requires mysqlclient package ('pip3 install mysqlclient'). Please check https://pypi.org/project/mysqlclient/ for install guide.",
+                   "connection_string": "host=\"${host}\", \nuser=\"${username}\", \npassword=\"${password}\", \nport=${port}, \ndatabase=\"test\",  \nssl={\"ca\": \"ca.pem\"}",
+                   "connection_example": "import MySQLdb\n\nconnection = MySQLdb.connect(\n  host=\"${host}\",\n  port=${port},\n  user=\"${username}\",\n  password=\"${password}\",\n  database=\"test\",\n  ssl={\n    \"ca\": \"ca.pem\"\n  }\n)\n\nwith connection:\n  with connection.cursor() as cursor:\n    cursor.execute(\"SELECT DATABASE();\")\n    m = cursor.fetchone()\n    print(m[0])"
+               }
+           ]
+       },
+       {
+           "id": "general",
+           "display_name": "General",
+           "language": "",
+           "content": [
+               {
+                   "type": "serverless",
+                   "comment": "",
+                   "connection_string": "Host: ${host}\nUsername: ${username}\nPort: ${port}\nPassword: ${password}",
+                   "connection_example": ""
+               },
+               {
+                   "type": "dedicated",
+                   "comment": "",
+                   "connection_string": "Host: ${host}\nUsername: ${username}\nPort: ${port}\nPassword: ${password}",
+                   "connection_example": ""
+               }
+           ]
 		}
-    ]
+   ]
 }
 `
 
@@ -151,14 +152,14 @@ func (suite *ConnectInfoSuite) TestConnectInfoArgs() {
 	suite.mockClient.On("GetConnectInfo", connectInfoService.NewGetInfoParams()).
 		Return(getConnectInfoResult, nil)
 
-	clusterBody := &cluster.GetClusterOKBody{}
+	clusterBody := &serverlessModel.V1Cluster{}
 	err = json.Unmarshal([]byte(getClusterResultStr), clusterBody)
 	assert.Nil(err)
-	getClusterResult := &cluster.GetClusterOK{
+	getClusterResult := &serverlessApi.ServerlessServiceGetClusterOK{
 		Payload: clusterBody,
 	}
-	suite.mockClient.On("GetCluster", cluster.NewGetClusterParams().
-		WithProjectID(projectID).WithClusterID(clusterID)).
+	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
+		WithClusterID(clusterID)).
 		Return(getClusterResult, nil)
 
 	tests := []struct {

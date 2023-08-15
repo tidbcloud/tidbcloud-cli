@@ -24,9 +24,9 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 
-	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
 )
 
 type ListOpts struct {
@@ -43,13 +43,13 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		Short:       "List all clusters in a project",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  List all clusters in the project(interactive mode):
-  $ %[1]s cluster list
+ $ %[1]s cluster list
 
-  List the clusters in the project(non-interactive mode):
-  $ %[1]s cluster list <project-id> 
+ List the clusters in the project(non-interactive mode):
+ $ %[1]s cluster list <project-id>
 
-  List the clusters in the project with json format:
-  $ %[1]s cluster list <project-id> -o json`, config.CliName),
+ List the clusters in the project with json format:
+ $ %[1]s cluster list <project-id> -o json`, config.CliName),
 		Aliases: []string{"ls"},
 		PreRun: func(cmd *cobra.Command, args []string) {
 			if len(args) > 0 {
@@ -81,7 +81,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 			cmd.Annotations[telemetry.ProjectID] = pID
 
-			total, items, err := cloud.RetrieveClusters(pID, h.QueryPageSize, d)
+			total, items, err := cloud.RetrieveClusters(pID, int32(h.QueryPageSize), d)
 			if err != nil {
 				return err
 			}
@@ -94,9 +94,9 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			// for terminal which can prompt, humanFormat is the default format.
 			// for other terminals, json format is the default format.
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				res := &clusterApi.ListClustersOfProjectOKBody{
-					Items: items,
-					Total: &total,
+				res := &serverlessModel.V1ListClustersResponse{
+					Clusters:  items,
+					TotalSize: total,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)
 				if err != nil {
@@ -105,8 +105,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			} else if format == output.HumanFormat {
 				columns := []output.Column{
 					"ID",
-					"Name",
-					"Status",
+					"DisplayName",
+					"State",
 					"Version",
 					"Cloud",
 					"Region",
@@ -115,22 +115,14 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 				var rows []output.Row
 				for _, item := range items {
-					t := item.ClusterType
-					// Currently serverless is called "DEVELOPER" in the API.
-					// For better user experience, we change it to "SERVERLESS".
-					// But we still keep the original value in the json result.
-					if t == developerType {
-						t = serverlessType
-					}
-
 					rows = append(rows, output.Row{
-						*(item.ID),
-						item.Name,
-						item.Status.ClusterStatus,
-						item.Status.TidbVersion,
-						item.CloudProvider,
-						item.Region,
-						t,
+						item.ClusterID,
+						*item.DisplayName,
+						string(*item.State),
+						item.Version,
+						string(*item.Region.Provider),
+						item.Region.DisplayName,
+						serverlessType,
 					})
 				}
 

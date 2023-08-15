@@ -33,7 +33,6 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
-	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/fatih/color"
 	"github.com/go-sql-driver/mysql"
 	"github.com/juju/errors"
@@ -42,6 +41,7 @@ import (
 	"github.com/xo/usql/env"
 	"github.com/xo/usql/handler"
 	"github.com/xo/usql/rline"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
 )
 
 const (
@@ -211,24 +211,18 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			var host, name, port, clusterType string
 			if !isBranch(branchID) {
 				// cluster
-				params := clusterApi.NewGetClusterParams().
-					WithProjectID(projectID).
-					WithClusterID(clusterID)
+				params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID)
 				cluster, err := d.GetCluster(params)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				defaultUser := cluster.Payload.Status.ConnectionStrings.DefaultUser
-				host = cluster.Payload.Status.ConnectionStrings.Standard.Host
-				name = cluster.Payload.Name
-				port = strconv.Itoa(int(cluster.Payload.Status.ConnectionStrings.Standard.Port))
-				clusterType = cluster.Payload.ClusterType
+				defaultUser := cluster.Payload.UserPrefix
+				host = cluster.Payload.Endpoints.PublicEndpoint.Host
+				name = *cluster.Payload.DisplayName
+				port = strconv.Itoa(int(cluster.Payload.Endpoints.PublicEndpoint.Port))
 				if userName == "" {
 					userName = defaultUser
 					fmt.Fprintln(h.IOStreams.Out, color.GreenString("Current user: ")+color.HiGreenString(userName))
-				}
-				if clusterType == DEVELOPER {
-					clusterType = SERVERLESS
 				}
 			} else {
 				// branch

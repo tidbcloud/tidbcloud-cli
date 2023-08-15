@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,9 +24,9 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 
-	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
 )
 
 type DescribeOpts struct {
@@ -51,10 +51,10 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		Aliases:     []string{"get"},
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Get the cluster info in interactive mode:
-  $ %[1]s cluster describe
+ $ %[1]s cluster describe
 
-  Get the cluster info in non-interactive mode:
-  $ %[1]s cluster describe -p <project-id> -c <cluster-id>`, config.CliName),
+ Get the cluster info in non-interactive mode:
+ $ %[1]s cluster describe -p <project-id> -c <cluster-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {
@@ -119,9 +119,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 
 			cmd.Annotations[telemetry.ProjectID] = projectID
 
-			params := clusterApi.NewGetClusterParams().
-				WithProjectID(projectID).
-				WithClusterID(clusterID)
+			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID)
 			cluster, err := d.GetCluster(params)
 			if err != nil {
 				return errors.Trace(err)

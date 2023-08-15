@@ -16,6 +16,7 @@ package cluster
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"tidbcloud-cli/internal"
@@ -27,10 +28,10 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
-	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
 )
 
 const confirmed = "yes"
@@ -57,10 +58,10 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 		Short:       "Delete a cluster from your project",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Delete a cluster in interactive mode:
-  $ %[1]s cluster delete
+ $ %[1]s cluster delete
 
-  Delete a cluster in non-interactive mode:
-  $ %[1]s cluster delete -p <project-id> -c <cluster-id>`, config.CliName),
+ Delete a cluster in non-interactive mode:
+ $ %[1]s cluster delete -p <project-id> -c <cluster-id>`, config.CliName),
 		Aliases: []string{"rm"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -152,9 +153,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := clusterApi.NewDeleteClusterParams().
-				WithProjectID(projectID).
-				WithClusterID(clusterID)
+			params := serverlessApi.NewServerlessServiceDeleteClusterParams().WithClusterID(clusterID)
 			_, err = d.DeleteCluster(params)
 			if err != nil {
 				return errors.Trace(err)
@@ -168,11 +167,9 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				case <-timer:
 					return errors.New(fmt.Sprintf("timeout waiting for deleting cluster %s, please check status on dashboard", clusterID))
 				case <-ticker.C:
-					_, err := d.GetCluster(clusterApi.NewGetClusterParams().
-						WithClusterID(clusterID).
-						WithProjectID(projectID))
+					_, err := d.GetCluster(serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID))
 					if err != nil {
-						if _, ok := err.(*clusterApi.GetClusterNotFound); ok {
+						if strings.Contains(err.Error(), "404") {
 							fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("cluster %s deleted", clusterID)))
 							return nil
 						}

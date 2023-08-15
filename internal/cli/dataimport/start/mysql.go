@@ -34,7 +34,8 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
-	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
@@ -338,7 +339,7 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 			mysqldumpCommand = append(mysqldumpCommand, sourceTable)
 
 			// Get cluster info
-			params := clusterApi.NewGetClusterParams().WithProjectID(projectID).WithClusterID(clusterID)
+			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID)
 			clusterInfo, err := d.GetCluster(params)
 			if err != nil {
 				return err
@@ -347,16 +348,11 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 			// Resolve cluster information
 			// Get connect parameter
 			if userName == "" {
-				userName = clusterInfo.Payload.Status.ConnectionStrings.DefaultUser
+				userName = fmt.Sprintf("%s.root", clusterInfo.Payload.UserPrefix)
 			}
-			host := clusterInfo.Payload.Status.ConnectionStrings.Standard.Host
-			port := strconv.Itoa(int(clusterInfo.Payload.Status.ConnectionStrings.Standard.Port))
-			clusterType := clusterInfo.Payload.ClusterType
-			if clusterType != DEVELOPER {
-				return errors.New("Only serverless cluster is supported")
-			} else {
-				clusterType = SERVERLESS
-			}
+			host := clusterInfo.Payload.Endpoints.PublicEndpoint.Host
+			port := strconv.Itoa(int(clusterInfo.Payload.Endpoints.PublicEndpoint.Port))
+			clusterType := SERVERLESS
 
 			goOS := runtime.GOOS
 			if goOS == "darwin" {

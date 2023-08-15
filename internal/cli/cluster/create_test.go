@@ -26,9 +26,10 @@ import (
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
 
-	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
 )
 
 type CreateClusterSuite struct {
@@ -59,45 +60,34 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 	projectID := "12345"
 	clusterID := "12345"
 	clusterName := "test"
-	clusterType := "SERVERLESS"
-	cloudProvider := "AWS"
+	regionName := "regions/aws-us-west-1"
+	cloudProvider := "aws"
 	region := "us-west-1"
-	rootPassword := "123456"
-	clusterDefBody := &cluster.CreateClusterBody{}
+	clusterType := "SERVERLESS"
+	v1Cluster := &serverlessModel.V1Cluster{
+		DisplayName: &clusterName,
+		Region: &serverlessModel.TidbCloudApiserverlessv1Region{
+			Name: &regionName,
+		},
+		Labels: map[string]string{"tidb.cloud/project": projectID},
+	}
 
-	err := clusterDefBody.UnmarshalBinary([]byte(fmt.Sprintf(`{
-			"name": "%s",
-			"cluster_type": "%s",
-			"cloud_provider": "%s",
-			"region": "%s",
-			"config" : {
-				"root_password": "%s",
-				"ip_access_list": [
-					{
-						"CIDR": "0.0.0.0/0",
-						"description": "Allow All"
-					}
-				]
-			}
-			}`, clusterName, "DEVELOPER", cloudProvider, region, rootPassword)))
+	body := &serverlessModel.V1Cluster{}
+	err := json.Unmarshal([]byte(getClusterResultStr), body)
 	assert.Nil(err)
-
-	body := &cluster.GetClusterOKBody{}
-	err = json.Unmarshal([]byte(getClusterResultStr), body)
-	assert.Nil(err)
-	res := &cluster.GetClusterOK{
+	res := &serverlessApi.ServerlessServiceGetClusterOK{
 		Payload: body,
 	}
 
-	suite.mockClient.On("CreateCluster", cluster.NewCreateClusterParams().
-		WithProjectID(projectID).WithBody(*clusterDefBody)).
-		Return(&cluster.CreateClusterOK{
-			Payload: &cluster.CreateClusterOKBody{
-				ID: &clusterID,
+	suite.mockClient.On("CreateCluster", serverlessApi.NewServerlessServiceCreateClusterParams().
+		WithCluster(v1Cluster)).
+		Return(&serverlessApi.ServerlessServiceCreateClusterOK{
+			Payload: &serverlessModel.V1Cluster{
+				ClusterID: clusterID,
 			},
 		}, nil)
-	suite.mockClient.On("GetCluster", cluster.NewGetClusterParams().
-		WithProjectID(projectID).WithClusterID(clusterID)).
+	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
+		WithClusterID(clusterID)).
 		Return(res, nil)
 
 	tests := []struct {
@@ -109,17 +99,17 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 	}{
 		{
 			name:         "create cluster success",
-			args:         []string{"--project-id", projectID, "--cluster-name", clusterName, "--cluster-type", clusterType, "--cloud-provider", cloudProvider, "--region", region, "--root-password", rootPassword},
+			args:         []string{"--project-id", projectID, "--cluster-name", clusterName, "--cluster-type", clusterType, "--cloud-provider", cloudProvider, "--region", region},
 			stdoutString: "... Waiting for cluster to be ready\nCluster 12345 is ready.",
 		},
 		{
 			name:         "create cluster with shorthand flag",
-			args:         []string{"-p", projectID, "--cluster-name", clusterName, "--cluster-type", clusterType, "--cloud-provider", cloudProvider, "-r", region, "--root-password", rootPassword},
+			args:         []string{"-p", projectID, "--cluster-name", clusterName, "--cluster-type", clusterType, "--cloud-provider", cloudProvider, "-r", region},
 			stdoutString: "... Waiting for cluster to be ready\nCluster 12345 is ready.",
 		},
 		{
 			name: "without required project id",
-			args: []string{"--cluster-name", clusterName, "--cluster-type", clusterType, "--cloud-provider", cloudProvider, "-r", region, "--root-password", rootPassword},
+			args: []string{"--cluster-name", clusterName, "--cluster-type", clusterType, "--cloud-provider", cloudProvider, "-r", region},
 			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
 		},
 	}

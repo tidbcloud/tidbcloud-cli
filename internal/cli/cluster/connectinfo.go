@@ -26,7 +26,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
 
-	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -215,10 +215,10 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 		Use:   "connect-info",
 		Short: "Get connection string for the specified cluster",
 		Example: fmt.Sprintf(`  Get connection string in interactive mode:
-  $ %[1]s cluster connect-info
+$ %[1]s cluster connect-info
 
-  Get connection string in non-interactive mode:
-  $ %[1]s cluster connect-info --project-id <project-id> --cluster-id <cluster-id> --client <client-name> --operating-system <operating-system>
+Get connection string in non-interactive mode:
+$ %[1]s cluster connect-info --project-id <project-id> --cluster-id <cluster-id> --client <client-name> --operating-system <operating-system>
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -334,7 +334,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			// Get cluster info
-			params := clusterApi.NewGetClusterParams().WithProjectID(projectID).WithClusterID(clusterID)
+			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID)
 			clusterInfo, err := d.GetCluster(params)
 			if err != nil {
 				return err
@@ -342,13 +342,10 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 
 			// Resolve cluster information
 			// Get connect parameter
-			defaultUser := clusterInfo.Payload.Status.ConnectionStrings.DefaultUser
-			host := clusterInfo.Payload.Status.ConnectionStrings.Standard.Host
-			port := strconv.Itoa(int(clusterInfo.Payload.Status.ConnectionStrings.Standard.Port))
-			clusterType := clusterInfo.Payload.ClusterType
-			if clusterType == DEVELOPER {
-				clusterType = SERVERLESS
-			}
+			defaultUser := fmt.Sprintf("%s.root", clusterInfo.Payload.UserPrefix)
+			host := clusterInfo.Payload.Endpoints.PublicEndpoint.Host
+			port := strconv.Itoa(int(clusterInfo.Payload.Endpoints.PublicEndpoint.Port))
+			clusterType := SERVERLESS
 
 			// Get connection string
 			connectInfo, err := cloud.RetrieveConnectInfo(d)

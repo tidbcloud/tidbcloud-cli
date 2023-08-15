@@ -19,6 +19,9 @@ import (
 	"math"
 	"strconv"
 
+	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/juju/errors"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
@@ -27,11 +30,8 @@ import (
 	connectInfoModel "tidbcloud-cli/pkg/tidbcloud/connect_info/models"
 	importApi "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
-
-	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
-	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/juju/errors"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
 )
 
 type Project struct {
@@ -44,14 +44,25 @@ func (p Project) String() string {
 }
 
 type Cluster struct {
-	ID   string
-	Name string
+	ID          string
+	Name        string
+	DisplayName string
 }
 
 type Branch struct {
 	ID          string
 	DisplayName string
 	IsCluster   bool
+}
+
+type Region struct {
+	Name        string
+	DisplayName string
+	Provider    string
+}
+
+func (r Region) String() string {
+	return r.DisplayName
 }
 
 func (b Branch) String() string {
@@ -62,7 +73,7 @@ func (b Branch) String() string {
 }
 
 func (c Cluster) String() string {
-	return fmt.Sprintf("%s(%s)", c.Name, c.ID)
+	return fmt.Sprintf("%s(%s)", c.DisplayName, c.ID)
 }
 
 type Import struct {
@@ -116,7 +127,7 @@ func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error
 }
 
 func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient) (*Cluster, error) {
-	_, clusterItems, err := RetrieveClusters(projectID, pageSize, client)
+	_, clusterItems, err := RetrieveClusters(projectID, int32(pageSize), client)
 	if err != nil {
 		return nil, err
 	}
@@ -124,8 +135,8 @@ func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient
 	var items = make([]interface{}, 0, len(clusterItems))
 	for _, item := range clusterItems {
 		items = append(items, &Cluster{
-			ID:   *(item.ID),
-			Name: item.Name,
+			ID:          item.ClusterID,
+			DisplayName: *item.DisplayName,
 		})
 	}
 	if len(items) == 0 {
@@ -292,21 +303,22 @@ func RetrieveProjects(size int64, d TiDBCloudClient) (int64, []*projectApi.ListP
 	return total, items, nil
 }
 
-func RetrieveClusters(pID string, pageSize int64, d TiDBCloudClient) (int64, []*clusterApi.ListClustersOfProjectOKBodyItemsItems0, error) {
-	params := clusterApi.NewListClustersOfProjectParams().WithProjectID(pID)
-	var total int64 = math.MaxInt64
-	var page int64 = 1
-	var items []*clusterApi.ListClustersOfProjectOKBodyItemsItems0
-	// loop to get all clusters
+func RetrieveClusters(pID string, pageSize int32, d TiDBCloudClient) (int32, []*serverlessModel.V1Cluster, error) {
+	params := serverlessApi.NewServerlessServiceListClustersParams().WithProjectID(&pID)
+	var total int32 = math.MaxInt32
+	var page int32 = 1
+	var items []*serverlessModel.V1Cluster
+	// loop to get all clusters\
 	for (page-1)*pageSize < total {
-		clusters, err := d.ListClustersOfProject(params.WithPage(&page).WithPageSize(&pageSize))
+		// convert int32 to string
+		pageToken := strconv.Itoa(int(page))
+		clusters, err := d.ListClustersOfProject(params.WithPageToken(&pageToken).WithPageSize(&pageSize))
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
-
-		total = *clusters.Payload.Total
+		total = clusters.Payload.TotalSize
 		page += 1
-		items = append(items, clusters.Payload.Items...)
+		items = append(items, clusters.Payload.Clusters...)
 	}
 	return total, items, nil
 }

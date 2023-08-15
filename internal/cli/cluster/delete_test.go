@@ -16,6 +16,7 @@ package cluster
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"os"
 	"testing"
@@ -25,9 +26,9 @@ import (
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
 
-	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
 )
 
 type DeleteClusterSuite struct {
@@ -57,12 +58,12 @@ func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 
 	projectID := "12345"
 	clusterID := "12345"
-	suite.mockClient.On("DeleteCluster", cluster.NewDeleteClusterParams().
-		WithProjectID(projectID).WithClusterID(clusterID)).
-		Return(&cluster.DeleteClusterOK{}, nil)
-	suite.mockClient.On("GetCluster", cluster.NewGetClusterParams().
-		WithProjectID(projectID).WithClusterID(clusterID)).
-		Return(nil, &cluster.GetClusterNotFound{})
+	suite.mockClient.On("DeleteCluster", serverlessApi.NewServerlessServiceDeleteClusterParams().
+		WithClusterID(clusterID)).
+		Return(&serverlessApi.ServerlessServiceDeleteClusterOK{}, nil)
+	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
+		WithClusterID(clusterID)).
+		Return(nil, errors.New("404"))
 
 	tests := []struct {
 		name         string
