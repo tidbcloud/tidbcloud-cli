@@ -19,9 +19,6 @@ import (
 	"math"
 	"strconv"
 
-	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/juju/errors"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
@@ -32,6 +29,10 @@ import (
 	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
+
+	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/juju/errors"
 )
 
 type Project struct {

@@ -28,14 +28,15 @@ import (
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/emirpasic/gods/sets/hashset"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
 )
 
 type createClusterField int
@@ -236,9 +237,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 			if clusterType != serverlessType {
 				return errors.New("Currently only \"SERVERLESS\" cluster are supported to create in CLI")
-			} else {
-				// Currently serverless type is called \"DEVELOPER\" in API, but it will be changed to \"SERVERLESS\" soon.
-				clusterType = developerType
 			}
 
 			v1Cluster := &serverlessModel.V1Cluster{

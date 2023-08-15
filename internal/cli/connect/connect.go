@@ -31,6 +31,8 @@ import (
 	"tidbcloud-cli/internal/util"
 	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
 
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/fatih/color"
@@ -41,7 +43,6 @@ import (
 	"github.com/xo/usql/env"
 	"github.com/xo/usql/handler"
 	"github.com/xo/usql/rline"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
 )
 
 const (
@@ -173,7 +174,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				}
 			} else {
 				// non-interactive mode, get values from flags
-				pID, err := cmd.Flags().GetString(flag.ProjectID)
+				_, err := cmd.Flags().GetString(flag.ProjectID)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -183,7 +184,6 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 					return errors.Trace(err)
 				}
 
-				projectID = pID
 				clusterID = cID
 
 				// options flags

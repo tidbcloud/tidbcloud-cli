@@ -309,7 +309,7 @@ $ %[1]s cluster connect-info --project-id <project-id> --cluster-id <cluster-id>
 					return err
 				}
 
-				projectID, err = cmd.Flags().GetString(flag.ProjectID)
+				_, err = cmd.Flags().GetString(flag.ProjectID)
 				if err != nil {
 					return err
 				}

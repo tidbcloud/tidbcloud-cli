@@ -26,10 +26,11 @@ import (
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
 
-	"github.com/stretchr/testify/require"
-	"github.com/stretchr/testify/suite"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
+
+	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/suite"
 )
 
 type CreateClusterSuite struct {

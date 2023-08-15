@@ -24,9 +24,10 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
+
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
 )
 
 type ListOpts struct {
