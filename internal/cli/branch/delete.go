@@ -16,9 +16,6 @@ package branch
 
 import (
 	"fmt"
-	"strings"
-	"time"
-
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
@@ -149,27 +146,9 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
-
-			ticker := time.NewTicker(1 * time.Second)
-			defer ticker.Stop()
-			timer := time.After(2 * time.Minute)
-			for {
-				select {
-				case <-timer:
-					return errors.New("timeout waiting for deleting branch, please check status on dashboard")
-				case <-ticker.C:
-					_, err := d.GetBranch(branchApi.NewGetBranchParams().
-						WithClusterID(clusterID).
-						WithBranchID(branchID))
-					if err != nil {
-						if strings.Contains(err.Error(), "404") {
-							fmt.Fprintln(h.IOStreams.Out, color.GreenString("branch %s deleted", branchID))
-							return nil
-						}
-						return errors.Trace(err)
-					}
-				}
-			}
+			// print success for delete branch is a sync operation
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("branch %s deleted", branchID))
+			return nil
 		},
 	}
 
