@@ -47,7 +47,6 @@ import (
 
 const (
 	SERVERLESS = "SERVERLESS"
-	DEVELOPER  = "DEVELOPER"
 	DEDICATED  = "DEDICATED"
 )
 
@@ -58,7 +57,6 @@ type ConnectOpts struct {
 func (c ConnectOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.ProjectID,
 	}
 }
 
@@ -76,16 +74,16 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
   $ %[1]s connect
 
   Use the default user to connect to the TiDB Cloud cluster in non-interactive mode:
-  $ %[1]s connect -p <project-id> -c <cluster-id>
+  $ %[1]s connect -c <cluster-id>
 
   Use the default user to connect to the TiDB Cloud branch in non-interactive mode:
-  $ %[1]s connect -p <project-id> -c <cluster-id> -b <branch-id>
+  $ %[1]s connect -c <cluster-id> -b <branch-id>
 
   Use the default user to connect to the TiDB Cloud cluster with password in non-interactive mode:
-  $ %[1]s connect -p <project-id> -c <cluster-id> --password <password>
+  $ %[1]s connect -c <cluster-id> --password <password>
 
   Use a specific user to connect to the TiDB Cloud cluster in non-interactive mode:
-  $ %[1]s connect -p <project-id> -c <cluster-id> -u <user-name>`, config.CliName),
+  $ %[1]s connect -c <cluster-id> -u <user-name>`, config.CliName),
 
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -119,7 +117,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				return err
 			}
 
-			var projectID, clusterID, branchID, userName string
+			var clusterID, branchID, userName string
 			var pass *string
 			if opts.interactive {
 				// interactive mode
@@ -127,7 +125,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				if err != nil {
 					return err
 				}
-				projectID = project.ID
+				projectID := project.ID
 
 				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
 				if err != nil {
@@ -174,11 +172,6 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				}
 			} else {
 				// non-interactive mode, get values from flags
-				_, err := cmd.Flags().GetString(flag.ProjectID)
-				if err != nil {
-					return errors.Trace(err)
-				}
-
 				cID, err := cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
@@ -256,7 +249,6 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 		},
 	}
 
-	connectCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The project ID of the cluster")
 	connectCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster")
 	connectCmd.Flags().StringP(flag.BranchID, flag.BranchIDShort, "", "The ID of the branch")
 	connectCmd.Flags().String(flag.Password, "", "The password of the user")

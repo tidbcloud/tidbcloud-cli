@@ -17,6 +17,7 @@ package cluster
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -43,11 +44,11 @@ type createClusterField int
 
 const (
 	clusterNameIdx createClusterField = iota
+	spendingLimitIdx
 )
 
 const (
 	serverlessType = "SERVERLESS"
-	developerType  = "DEVELOPER"
 	WaitInterval   = 5 * time.Second
 	WaitTimeout    = 2 * time.Minute
 )
@@ -64,6 +65,15 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 		flag.CloudProvider,
 		flag.Region,
 		flag.ProjectID,
+	}
+}
+
+func (c CreateOpts) RequiredFlags() []string {
+	return []string{
+		flag.ClusterName,
+		flag.ClusterType,
+		flag.CloudProvider,
+		flag.Region,
 	}
 }
 
@@ -93,14 +103,13 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 			// mark required flags in non-interactive mode
 			if !opts.interactive {
-				for _, fn := range flags {
+				for _, fn := range opts.RequiredFlags() {
 					err := cmd.MarkFlagRequired(fn)
 					if err != nil {
 						return errors.Trace(err)
 					}
 				}
 			}
-
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -115,6 +124,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			var cloudProvider string
 			var region string
 			var projectID string
+			var spendingLimitMonthly int32
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
@@ -203,8 +213,18 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				clusterName = inputModel.(ui.TextInputModel).Inputs[clusterNameIdx].Value()
+				spendingLimitString := inputModel.(ui.TextInputModel).Inputs[spendingLimitIdx].Value()
 				if len(clusterName) == 0 {
 					return errors.New("cluster name is required")
+				}
+				if len(spendingLimitString) == 0 {
+					spendingLimitMonthly = 0
+				} else {
+					s, err := strconv.Atoi(spendingLimitString)
+					if err != nil {
+						return errors.New("monthly spending limit should be int type")
+					}
+					spendingLimitMonthly = int32(s)
 				}
 			} else {
 				// non-interactive mode, get values from flags
@@ -225,6 +245,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
+				spendingLimitMonthly, err = cmd.Flags().GetInt32(flag.SpendingLimitMonthly)
+				if err != nil {
+					return errors.Trace(err)
+				}
+
 				// generate region name
 				region = fmt.Sprintf("regions/%s-%s", strings.ToLower(cloudProvider), strings.ToLower(region))
 				projectID, err = cmd.Flags().GetString(flag.ProjectID)
@@ -244,7 +269,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				Region: &serverlessModel.TidbCloudApiserverlessv1Region{
 					Name: &region,
 				},
-				Labels: map[string]string{"tidb.cloud/project": projectID},
+			}
+			// optional fields
+			if projectID != "" {
+				v1Cluster.Labels = map[string]string{"tidb.cloud/project": projectID}
+			}
+			if spendingLimitMonthly != 0 {
+				v1Cluster.SpendingLimit = &serverlessModel.ClusterSpendingLimit{
+					Monthly: spendingLimitMonthly,
+				}
 			}
 
 			if h.IOStreams.CanPrompt {
@@ -267,7 +300,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.ClusterType, "", "Cluster type, only support \"SERVERLESS\" now")
 	createCmd.Flags().String(flag.CloudProvider, "", "Cloud provider, one of [\"AWS\"]")
 	createCmd.Flags().StringP(flag.Region, flag.RegionShort, "", "Cloud region")
-	createCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project, in which the cluster will be created")
+	createCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project, in which the cluster will be created (optional: default is the default project)")
+	createCmd.Flags().Int32(flag.SpendingLimitMonthly, 0, "The monthly spending limit of the cluster (optional)")
 	return createCmd
 }
 
@@ -351,7 +385,7 @@ func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, projectI
 
 func initialCreateInputModel() ui.TextInputModel {
 	m := ui.TextInputModel{
-		Inputs: make([]textinput.Model, 1),
+		Inputs: make([]textinput.Model, 2),
 	}
 
 	var t textinput.Model
@@ -367,8 +401,9 @@ func initialCreateInputModel() ui.TextInputModel {
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
+		case spendingLimitIdx:
+			t.Placeholder = "Spending Limit Monthly($), example: 10. Skip it by press 0 or enter"
 		}
-
 		m.Inputs[i] = t
 	}
 

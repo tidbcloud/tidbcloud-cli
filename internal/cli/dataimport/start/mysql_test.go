@@ -150,7 +150,6 @@ func (suite *MySQLImportSuite) TestMySQLImportArgs() {
 	sourceUser := "root"
 	sourcePassword := "passwd"
 	password := "passwd"
-	projectID := "1234"
 	clusterID := "4321"
 	database := "mysql"
 
@@ -226,12 +225,12 @@ func (suite *MySQLImportSuite) TestMySQLImportArgs() {
 	}{
 		{
 			name: "start import success",
-			args: []string{"--project-id", projectID, "--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database},
+			args: []string{"--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database},
 		},
 		{
-			name: "start import without required project-id flag",
-			args: []string{"--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database},
-			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
+			name: "start import without required cluster-id flag",
+			args: []string{"--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database},
+			err:  fmt.Errorf("required flag(s) \"cluster-id\" not set"),
 		},
 	}
 
@@ -265,7 +264,6 @@ func (suite *MySQLImportSuite) TestMySQLImportWithoutCreateTable() {
 	sourceUser := "root"
 	sourcePassword := "passwd"
 	password := "passwd"
-	projectID := "1234"
 	clusterID := "4321"
 	database := "mysql"
 
@@ -341,7 +339,7 @@ func (suite *MySQLImportSuite) TestMySQLImportWithoutCreateTable() {
 	}{
 		{
 			name: "start import success",
-			args: []string{"--project-id", projectID, "--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database, "--target-user", targetUser},
+			args: []string{"--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database, "--target-user", targetUser},
 		},
 	}
 
@@ -375,7 +373,6 @@ func (suite *MySQLImportSuite) TestMySQLImportWithSpecificUser() {
 	sourceUser := "root"
 	sourcePassword := "passwd"
 	password := "passwd"
-	projectID := "1234"
 	clusterID := "4321"
 	database := "mysql"
 
@@ -451,7 +448,7 @@ func (suite *MySQLImportSuite) TestMySQLImportWithSpecificUser() {
 	}{
 		{
 			name: "start import success",
-			args: []string{"--project-id", projectID, "--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database, "--skip-create-table"},
+			args: []string{"--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database, "--skip-create-table"},
 		},
 	}
 

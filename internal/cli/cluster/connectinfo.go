@@ -39,7 +39,6 @@ type connectInfoOpts struct {
 func (c connectInfoOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.ProjectID,
 		flag.ClientName,
 		flag.OperatingSystem,
 	}
@@ -200,10 +199,9 @@ var OperatingSystemListForHelp = []string{
 	"Others",
 }
 
-// Cluster type
+// SERVERLESS Cluster type
 const (
 	SERVERLESS = "SERVERLESS"
-	DEVELOPER  = "DEVELOPER"
 )
 
 func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
@@ -218,7 +216,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 $ %[1]s cluster connect-info
 
 Get connection string in non-interactive mode:
-$ %[1]s cluster connect-info --project-id <project-id> --cluster-id <cluster-id> --client <client-name> --operating-system <operating-system>
+$ %[1]s cluster connect-info --cluster-id <cluster-id> --client <client-name> --operating-system <operating-system>
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -243,7 +241,7 @@ $ %[1]s cluster connect-info --project-id <project-id> --cluster-id <cluster-id>
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// flags
-			var projectID, clusterID, client, operatingSystem string
+			var clusterID, client, operatingSystem string
 
 			// Get TiDBCloudClient
 			d, err := h.Client()
@@ -261,7 +259,7 @@ $ %[1]s cluster connect-info --project-id <project-id> --cluster-id <cluster-id>
 				if err != nil {
 					return err
 				}
-				projectID = project.ID
+				projectID := project.ID
 
 				// Get cluster id
 				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
@@ -305,11 +303,6 @@ $ %[1]s cluster connect-info --project-id <project-id> --cluster-id <cluster-id>
 
 			} else { // non-interactive mode
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
-				if err != nil {
-					return err
-				}
-
-				_, err = cmd.Flags().GetString(flag.ProjectID)
 				if err != nil {
 					return err
 				}
@@ -363,7 +356,6 @@ $ %[1]s cluster connect-info --project-id <project-id> --cluster-id <cluster-id>
 		},
 	}
 
-	cmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
 	cmd.Flags().String(flag.ClientName, "", fmt.Sprintf("Connected client. Supported clients: %q", ConnectClientsListForHelp))
 	cmd.Flags().String(flag.OperatingSystem, "", fmt.Sprintf("Operating system name. "+

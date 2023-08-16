@@ -37,7 +37,6 @@ type DescribeOpts struct {
 func (c DescribeOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.ProjectID,
 	}
 }
 
@@ -55,7 +54,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
  $ %[1]s cluster describe
 
  Get the cluster info in non-interactive mode:
- $ %[1]s cluster describe -p <project-id> -c <cluster-id>`, config.CliName),
+ $ %[1]s cluster describe -c <cluster-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {
@@ -83,7 +82,6 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			var projectID string
 			var clusterID string
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
@@ -96,7 +94,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				projectID = project.ID
+				projectID := project.ID
 
 				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
 				if err != nil {
@@ -104,22 +102,13 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 			} else {
-				// non-interactive mode, get values from flags
-				pID, err := cmd.Flags().GetString(flag.ProjectID)
-				if err != nil {
-					return errors.Trace(err)
-				}
-
+				// non-interactive mode does not need projectID
 				cID, err := cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				projectID = pID
 				clusterID = cID
 			}
-
-			cmd.Annotations[telemetry.ProjectID] = projectID
-
 			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID)
 			cluster, err := d.GetCluster(params)
 			if err != nil {
@@ -136,7 +125,6 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	describeCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The project ID of the cluster")
 	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster")
 	return describeCmd
 }

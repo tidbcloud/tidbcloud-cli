@@ -136,7 +136,6 @@ func (suite *ConnectInfoSuite) SetupTest() {
 func (suite *ConnectInfoSuite) TestConnectInfoArgs() {
 	assert := require.New(suite.T())
 
-	projectID := "12345"
 	clusterID := "12345"
 	clientCLI := "mysql_cli"
 	clientDriver := "python_mysqlclient"
@@ -171,12 +170,12 @@ func (suite *ConnectInfoSuite) TestConnectInfoArgs() {
 	}{
 		{
 			name:         "get MySQl CLI connecting string",
-			args:         []string{"-p", projectID, "-c", clusterID, "--client", clientCLI, "--operating-system", operatingSystem},
+			args:         []string{"-c", clusterID, "--client", clientCLI, "--operating-system", operatingSystem},
 			stdoutString: "\nmysql -u '28cDWcUJJiewaQ7.root' -h gateway01.us-east-1.prod.aws.tidbcloud.com -P 4000 -D test --ssl-mode=VERIFY_IDENTITY --ssl-ca=/etc/ssl/cert.pem -p${password}\n",
 		},
 		{
 			name: "get mysqlclient connecting string",
-			args: []string{"-p", projectID, "-c", clusterID, "--client", clientDriver, "--operating-system", operatingSystem},
+			args: []string{"-c", clusterID, "--client", clientDriver, "--operating-system", operatingSystem},
 			stdoutString: `
 host="gateway01.us-east-1.prod.aws.tidbcloud.com", 
 user="28cDWcUJJiewaQ7.root", 
@@ -188,7 +187,7 @@ ssl={"ca": "/etc/ssl/cert.pem"}
 		},
 		{
 			name: "get standard connection parameter",
-			args: []string{"-p", projectID, "-c", clusterID, "--client", clientParameter, "--operating-system", operatingSystem},
+			args: []string{"-c", clusterID, "--client", clientParameter, "--operating-system", operatingSystem},
 			stdoutString: `
 Host:    gateway01.us-east-1.prod.aws.tidbcloud.com
 Port:    4000
@@ -197,12 +196,12 @@ User:    28cDWcUJJiewaQ7.root
 		},
 		{
 			name: "with unsupported client name",
-			args: []string{"-p", projectID, "-c", clusterID, "--client", "JAVA", "--operating-system", operatingSystem},
+			args: []string{"-c", clusterID, "--client", "JAVA", "--operating-system", operatingSystem},
 			err:  errors.New(fmt.Sprintf("Unsupported client. Run \"%[1]s cluster connect-info -h\" to check supported clients list", config.CliName)),
 		},
 		{
 			name: "with unsupported operating system",
-			args: []string{"-p", projectID, "-c", clusterID, "--client", "python_mysqlclient", "--operating-system", "Manjaro"},
+			args: []string{"-c", clusterID, "--client", "python_mysqlclient", "--operating-system", "Manjaro"},
 			err:  errors.New(fmt.Sprintf("Unsupported operating system. Run \"%[1]s cluster connect-info -h\" to check supported operating systems list", config.CliName)),
 		},
 	}

@@ -57,7 +57,6 @@ func (suite *DeleteClusterSuite) SetupTest() {
 func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 	assert := require.New(suite.T())
 
-	projectID := "12345"
 	clusterID := "12345"
 	suite.mockClient.On("DeleteCluster", serverlessApi.NewServerlessServiceDeleteClusterParams().
 		WithClusterID(clusterID)).
@@ -75,23 +74,18 @@ func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 	}{
 		{
 			name:         "delete cluster success",
-			args:         []string{"--project-id", projectID, "--cluster-id", clusterID, "--force"},
+			args:         []string{"--cluster-id", clusterID, "--force"},
 			stdoutString: fmt.Sprintf("cluster %s deleted\n", clusterID),
 		},
 		{
 			name: "delete cluster without force",
-			args: []string{"--project-id", projectID, "--cluster-id", clusterID},
+			args: []string{"--cluster-id", clusterID},
 			err:  fmt.Errorf("the terminal doesn't support prompt, please run with --force to delete the cluster"),
 		},
 		{
 			name:         "delete cluster with output flag",
-			args:         []string{"-p", projectID, "-c", clusterID, "--force"},
+			args:         []string{"-c", clusterID, "--force"},
 			stdoutString: fmt.Sprintf("cluster %s deleted\n", clusterID),
-		},
-		{
-			name: "delete cluster without required project id",
-			args: []string{"-c", clusterID, "--force"},
-			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
 		},
 	}
 

@@ -44,7 +44,6 @@ type DeleteOpts struct {
 func (c DeleteOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.ProjectID,
 	}
 }
 
@@ -62,7 +61,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
  $ %[1]s cluster delete
 
  Delete a cluster in non-interactive mode:
- $ %[1]s cluster delete -p <project-id> -c <cluster-id>`, config.CliName),
+ $ %[1]s cluster delete -c <cluster-id>`, config.CliName),
 		Aliases: []string{"rm"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -91,7 +90,6 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			var projectID string
 			var clusterID string
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
@@ -104,7 +102,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				projectID = project.ID
+				projectID := project.ID
 
 				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
 				if err != nil {
@@ -112,21 +110,13 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 			} else {
-				// non-interactive mode, get values from flags
-				pID, err := cmd.Flags().GetString(flag.ProjectID)
-				if err != nil {
-					return errors.Trace(err)
-				}
-
+				// non-interactive mode doesn't need projectID
 				cID, err := cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				projectID = pID
 				clusterID = cID
 			}
-
-			cmd.Annotations[telemetry.ProjectID] = projectID
 
 			if !force {
 				if !h.IOStreams.CanPrompt {
@@ -182,7 +172,6 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a cluster without confirmation")
-	deleteCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The project ID of the cluster to be deleted")
 	deleteCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster to be deleted")
 	return deleteCmd
 }

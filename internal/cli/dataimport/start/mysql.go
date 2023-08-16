@@ -47,7 +47,6 @@ import (
 )
 
 const (
-	DEVELOPER  = "DEVELOPER"
 	SERVERLESS = "SERVERLESS"
 )
 
@@ -69,7 +68,6 @@ type MySQLOpts struct {
 func (c MySQLOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.ProjectID,
 		flag.TargetDatabase,
 		flag.SourceHost,
 		flag.SourcePort,
@@ -97,13 +95,13 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
   $ %[1]s import start mysql
 
   Start an import task in non-interactive mode (using the TiDB Serverless cluster default user '<username-prefix>.root'):
-  $ %[1]s import start mysql --project-id <project-id> --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --target-database <target-database> --target-password <target-password>
+  $ %[1]s import start mysql --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --target-database <target-database> --target-password <target-password>
 
   Start an import task in non-interactive mode (using a specific user):
-  $ %[1]s import start mysql --project-id <project-id> --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --target-database <target-database> --target-password <target-password> --target-user <target-user>
+  $ %[1]s import start mysql --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --target-database <target-database> --target-password <target-password> --target-user <target-user>
 
   Start an import task that skips creating the target table if it already exists in the target database:
-  $ %[1]s import start mysql --project-id <project-id> --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --target-database <target-database> --target-password <target-password> --skip-create-table
+  $ %[1]s import start mysql --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --target-database <target-database> --target-password <target-password> --skip-create-table
 `,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -129,7 +127,7 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			var projectID, clusterID, sourceHost, sourcePort, sourceUser, sourcePassword, sourceTable, sourceDatabase, userName, password, databaseName string
+			var clusterID, sourceHost, sourcePort, sourceUser, sourcePassword, sourceTable, sourceDatabase, userName, password, databaseName string
 			var skipCreateTable bool
 			err := h.MySQLHelper.CheckMySQLClient()
 			if err != nil {
@@ -184,7 +182,7 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 				if err != nil {
 					return err
 				}
-				projectID = project.ID
+				projectID := project.ID
 
 				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
 				if err != nil {
@@ -259,10 +257,6 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 			} else {
 				// non-interactive mode, get values from flags
 				var err error
-				projectID, err = cmd.Flags().GetString(flag.ProjectID)
-				if err != nil {
-					return errors.Trace(err)
-				}
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
@@ -311,8 +305,6 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 					}
 				}
 			}
-
-			cmd.Annotations[telemetry.ProjectID] = projectID
 
 			mysqldumpCommand := []string{
 				"mysqldump",
@@ -403,7 +395,6 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 		},
 	}
 
-	mysqlCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	mysqlCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
 	mysqlCmd.Flags().String(flag.SourceHost, "", "The host of the source MySQL instance")
 	mysqlCmd.Flags().String(flag.SourcePort, "", "The port of the source MySQL instance")
