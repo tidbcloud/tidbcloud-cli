@@ -25,6 +25,7 @@ const (
 	PrivateKey       string = "private-key"
 	CurProfile       string = "current-profile"
 	ApiUrl           string = "api-url"
+	NewApiUrl        string = "new-api-url"
 	TelemetryEnabled string = "telemetry-enabled"
 )
 

@@ -58,7 +58,10 @@ func Execute(ctx context.Context) {
 			if apiUrl == "" {
 				apiUrl = cloud.DefaultApiUrl
 			}
-			newApiUrl := cloud.DefaultNewApiUrl
+			newApiUrl := config.GetNewApiUrl()
+			if newApiUrl == "" {
+				newApiUrl = cloud.DefaultNewApiUrl
+			}
 			delegate, err := cloud.NewClientDelegate(publicKey, privateKey, apiUrl, newApiUrl)
 			if err != nil {
 				return nil, err

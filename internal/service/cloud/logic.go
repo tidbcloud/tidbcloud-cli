@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"tidbcloud-cli/internal/flag"
 
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
@@ -128,7 +129,7 @@ func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error
 }
 
 func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient) (*Cluster, error) {
-	_, clusterItems, err := RetrieveClusters(projectID, int32(pageSize), client)
+	_, clusterItems, err := RetrieveClusters(projectID, int32(pageSize), flag.BasicView, client)
 	if err != nil {
 		return nil, err
 	}
@@ -162,6 +163,31 @@ func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient
 	}
 	cluster := clusterModel.(ui.SelectModel).GetSelectedItem().(*Cluster)
 	return cluster, nil
+}
+
+func GetSelectedField(mutableFields []string) (string, error) {
+	var items = make([]interface{}, 0, len(mutableFields))
+	for _, item := range mutableFields {
+		items = append(items, item)
+	}
+	model, err := ui.InitialSelectModel(items, "Choose the field to update")
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	fieldModel, err := p.StartReturningModel()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := fieldModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	field := fieldModel.(ui.SelectModel).GetSelectedItem().(string)
+	return field, nil
 }
 
 func GetSelectedBranch(clusterID string, pageSize int64, client TiDBCloudClient) (*Branch, error) {
@@ -304,12 +330,19 @@ func RetrieveProjects(size int64, d TiDBCloudClient) (int64, []*projectApi.ListP
 	return total, items, nil
 }
 
-func RetrieveClusters(pID string, pageSize int32, d TiDBCloudClient) (int32, []*serverlessModel.V1Cluster, error) {
+func RetrieveClusters(pID string, pageSize int32, view string, d TiDBCloudClient) (int32, []*serverlessModel.V1Cluster, error) {
 	params := serverlessApi.NewServerlessServiceListClustersParams().WithProjectID(&pID)
+	if view != "" {
+		if view == flag.FullView {
+			params.WithView(&view)
+		} else if view != flag.BasicView {
+			return 0, nil, fmt.Errorf("invalid view: %s", view)
+		}
+	}
 	var total int32 = math.MaxInt32
 	var page int32 = 1
 	var items []*serverlessModel.V1Cluster
-	// loop to get all clusters\
+	// loop to get all clusters
 	for (page-1)*pageSize < total {
 		// convert int32 to string
 		pageToken := strconv.Itoa(int(page))

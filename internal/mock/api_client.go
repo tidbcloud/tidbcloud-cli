@@ -551,6 +551,39 @@ func (_m *TiDBCloudClient) ListProviderRegions(params *serverless_service.Server
 	return r0, r1
 }
 
+// PartialUpdateCluster provides a mock function with given fields: params, opts
+func (_m *TiDBCloudClient) PartialUpdateCluster(params *serverless_service.ServerlessServicePartialUpdateClusterParams, opts ...serverless_service.ClientOption) (*serverless_service.ServerlessServicePartialUpdateClusterOK, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, params)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	var r0 *serverless_service.ServerlessServicePartialUpdateClusterOK
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*serverless_service.ServerlessServicePartialUpdateClusterParams, ...serverless_service.ClientOption) (*serverless_service.ServerlessServicePartialUpdateClusterOK, error)); ok {
+		return rf(params, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(*serverless_service.ServerlessServicePartialUpdateClusterParams, ...serverless_service.ClientOption) *serverless_service.ServerlessServicePartialUpdateClusterOK); ok {
+		r0 = rf(params, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*serverless_service.ServerlessServicePartialUpdateClusterOK)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(*serverless_service.ServerlessServicePartialUpdateClusterParams, ...serverless_service.ClientOption) error); ok {
+		r1 = rf(params, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // PreSignedUrlUpload provides a mock function with given fields: url, uploadFile, size
 func (_m *TiDBCloudClient) PreSignedUrlUpload(url *string, uploadFile *os.File, size int64) error {
 	ret := _m.Called(url, uploadFile, size)

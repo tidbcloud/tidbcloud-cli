@@ -82,7 +82,12 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 			cmd.Annotations[telemetry.ProjectID] = pID
 
-			total, items, err := cloud.RetrieveClusters(pID, int32(h.QueryPageSize), d)
+			view, err := cmd.Flags().GetString(flag.View)
+			if err != nil {
+				return errors.Trace(err)
+			}
+
+			total, items, err := cloud.RetrieveClusters(pID, int32(h.QueryPageSize), view, d)
 			if err != nil {
 				return err
 			}
@@ -141,5 +146,6 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, "Output format, One of [\"human\" \"json\"], for the complete result, please use json format")
+	listCmd.Flags().StringP(flag.View, flag.ViewShort, flag.BasicView, "The view of cluster, One of [\"BASIC\" \"FULL\"]. Only works with json format")
 	return listCmd
 }

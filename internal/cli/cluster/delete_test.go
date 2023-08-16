@@ -16,7 +16,6 @@ package cluster
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"os"
 	"testing"
@@ -27,6 +26,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -58,12 +58,14 @@ func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 	assert := require.New(suite.T())
 
 	clusterID := "12345"
+	state := "DELETING"
 	suite.mockClient.On("DeleteCluster", serverlessApi.NewServerlessServiceDeleteClusterParams().
 		WithClusterID(clusterID)).
-		Return(&serverlessApi.ServerlessServiceDeleteClusterOK{}, nil)
-	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
-		WithClusterID(clusterID)).
-		Return(nil, errors.New("404"))
+		Return(&serverlessApi.ServerlessServiceDeleteClusterOK{
+			Payload: &serverlessModel.V1Cluster{
+				State: (*serverlessModel.ClusterState)(&state),
+			},
+		}, nil)
 
 	tests := []struct {
 		name         string

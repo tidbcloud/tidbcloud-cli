@@ -119,3 +119,9 @@ func (p *Profile) GetApiUrl() (apiUrl string) {
 	apiUrl = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.ApiUrl))
 	return
 }
+
+func GetNewApiUrl() (apiUrl string) { return activeProfile.GetNewApiUrl() }
+func (p *Profile) GetNewApiUrl() (newApiUrl string) {
+	newApiUrl = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.NewApiUrl))
+	return
+}

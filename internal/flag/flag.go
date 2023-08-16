@@ -64,5 +64,14 @@ const (
 	TrimLastSeparator    string = "trim-last-separator"
 	User                 string = "user"
 	UserShort            string = "u"
+	View                 string = "view"
+	ViewShort            string = "v"
 	SpendingLimitMonthly string = "spending-limit-monthly"
+	UpdateField          string = "field"
+	UpdateValue          string = "value"
+)
+
+const (
+	BasicView string = "BASIC"
+	FullView  string = "FULL"
 )

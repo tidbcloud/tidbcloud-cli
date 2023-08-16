@@ -16,9 +16,6 @@ package cluster
 
 import (
 	"fmt"
-	"strings"
-	"time"
-
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
@@ -55,7 +52,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 	var force bool
 	var deleteCmd = &cobra.Command{
 		Use:         "delete",
-		Short:       "Delete a cluster from your project",
+		Short:       "Delete a cluster",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Delete a cluster in interactive mode:
  $ %[1]s cluster delete
@@ -145,28 +142,15 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			params := serverlessApi.NewServerlessServiceDeleteClusterParams().WithClusterID(clusterID)
-			_, err = d.DeleteCluster(params)
+			cluster, err := d.DeleteCluster(params)
 			if err != nil {
 				return errors.Trace(err)
 			}
-
-			ticker := time.NewTicker(1 * time.Second)
-			defer ticker.Stop()
-			timer := time.After(2 * time.Minute)
-			for {
-				select {
-				case <-timer:
-					return errors.New(fmt.Sprintf("timeout waiting for deleting cluster %s, please check status on dashboard", clusterID))
-				case <-ticker.C:
-					_, err := d.GetCluster(serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID))
-					if err != nil {
-						if strings.Contains(err.Error(), "404") {
-							fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("cluster %s deleted", clusterID)))
-							return nil
-						}
-						return errors.Trace(err)
-					}
-				}
+			if *cluster.Payload.State == "DELETING" || *cluster.Payload.State == "DELETED" {
+				fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("cluster %s deleted", clusterID)))
+				return nil
+			} else {
+				return errors.New(fmt.Sprintf("delete cluster %s failed, please check status on dashboard", clusterID))
 			}
 		},
 	}

@@ -23,7 +23,7 @@ import (
 func ClusterCmd(h *internal.Helper) *cobra.Command {
 	var clusterCmd = &cobra.Command{
 		Use:   "cluster",
-		Short: "Manage clusters for your project",
+		Short: "Manage your clusters",
 	}
 
 	clusterCmd.AddCommand(CreateCmd(h))
@@ -31,5 +31,6 @@ func ClusterCmd(h *internal.Helper) *cobra.Command {
 	clusterCmd.AddCommand(ListCmd(h))
 	clusterCmd.AddCommand(DescribeCmd(h))
 	clusterCmd.AddCommand(ConnectInfoCmd(h))
+	clusterCmd.AddCommand(UpdateCmd(h))
 	return clusterCmd
 }

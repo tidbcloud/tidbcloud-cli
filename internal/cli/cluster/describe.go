@@ -109,7 +109,19 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cID
 			}
+
+			view, err := cmd.Flags().GetString(flag.View)
+			if err != nil {
+				return errors.Trace(err)
+			}
+
 			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID)
+			if view == flag.BasicView {
+				params.WithView(&view)
+			} else if view != flag.FullView {
+				return errors.Errorf("invalid view: %s", view)
+			}
+
 			cluster, err := d.GetCluster(params)
 			if err != nil {
 				return errors.Trace(err)
@@ -126,5 +138,6 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster")
+	describeCmd.Flags().StringP(flag.View, flag.ViewShort, flag.FullView, "The view of cluster, One of [\"BASIC\" \"FULL\"]")
 	return describeCmd
 }

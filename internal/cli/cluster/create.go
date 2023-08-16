@@ -17,6 +17,7 @@ package cluster
 import (
 	"context"
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -84,7 +85,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	var createCmd = &cobra.Command{
 		Use:         "create",
-		Short:       "Create one cluster in the specified project",
+		Short:       "Create one cluster",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Create a cluster in interactive mode:
   $ %[1]s cluster create
@@ -224,7 +225,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if err != nil {
 						return errors.New("monthly spending limit should be int type")
 					}
-					spendingLimitMonthly = int32(s)
+					if s > math.MaxInt32 || s < math.MinInt32 {
+						return errors.New("monthly spending limit out of range")
+					}
+					spendingLimitMonthly = int32(s) //nolint:gosec // will not overflow
 				}
 			} else {
 				// non-interactive mode, get values from flags
@@ -300,7 +304,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.ClusterType, "", "Cluster type, only support \"SERVERLESS\" now")
 	createCmd.Flags().String(flag.CloudProvider, "", "Cloud provider, one of [\"AWS\"]")
 	createCmd.Flags().StringP(flag.Region, flag.RegionShort, "", "Cloud region")
-	createCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project, in which the cluster will be created (optional: default is the default project)")
+	createCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project, in which the cluster will be created (optional: default \"default project\")")
 	createCmd.Flags().Int32(flag.SpendingLimitMonthly, 0, "The monthly spending limit of the cluster (optional)")
 	return createCmd
 }
