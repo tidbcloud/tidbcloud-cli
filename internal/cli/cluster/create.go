@@ -90,6 +90,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		Example: fmt.Sprintf(`  Create a cluster in interactive mode:
   $ %[1]s cluster create
 
+  Create a cluster of the default ptoject in non-interactive mode:
+  $ %[1]s cluster create --cluster-name <cluster-name> --cloud-provider <cloud-provider> -r <region> --cluster-type <cluster-type>
+
   Create a cluster in non-interactive mode:
   $ %[1]s cluster create --project-id <project-id> --cluster-name <cluster-name> --cloud-provider <cloud-provider> -r <region> --cluster-type <cluster-type>`,
 			config.CliName),

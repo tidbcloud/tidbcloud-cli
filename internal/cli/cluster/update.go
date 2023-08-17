@@ -24,6 +24,8 @@ import (
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 
+	"github.com/fatih/color"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 
@@ -67,7 +69,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 		Example: fmt.Sprintf(`  Update a cluster in interactive mode:
  $ %[1]s cluster update
 
- Delete a cluster in non-interactive mode:
+ Update a cluster in non-interactive mode:
  $ %[1]s cluster update -c <cluster-id> --field <fieldName> --value <newValue>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -145,20 +147,21 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 			}
 			body, err := generateUpdateBody(fieldName, newValue)
 			if err != nil {
-				return errors.Trace(err)
+				return err
 			}
 			params := serverlessApi.NewServerlessServicePartialUpdateClusterParams().WithClusterClusterID(clusterID).WithBody(*body)
 			_, err = d.PartialUpdateCluster(params)
 			if err != nil {
 				return errors.Trace(err)
 			}
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("cluster %s updated", clusterID)))
 			return nil
 		},
 	}
 
 	updateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster to be deleted")
-	updateCmd.Flags().String(flag.UpdateField, "", "The field you want to update, e.g. \"displayName\"")
-	updateCmd.Flags().String(flag.UpdateValue, "", "The value you want to update of the cluster, e.g. \"newName\"")
+	updateCmd.Flags().String(flag.UpdateField, "", "The field you want to update. Support [\"displayName\"] now")
+	updateCmd.Flags().String(flag.UpdateValue, "", "The value you want to update of the field, e.g. \"newName\"")
 	updateCmd.MarkFlagsRequiredTogether(flag.UpdateField, flag.UpdateValue)
 
 	return updateCmd
@@ -200,5 +203,5 @@ func generateUpdateBody(field, value string) (*serverlessApi.ServerlessServicePa
 		body.Cluster.DisplayName = value
 		return body, nil
 	}
-	return nil, errors.Errorf("unsupported update field %s", field)
+	return nil, fmt.Errorf("unsupported update field %s", field)
 }

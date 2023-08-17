@@ -53,8 +53,14 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		Example: fmt.Sprintf(`  Get the cluster info in interactive mode:
  $ %[1]s cluster describe
 
+ Get the Basic cluster info in interactive mode:
+ $ %[1]s cluster describe -v BASIC
+
  Get the cluster info in non-interactive mode:
- $ %[1]s cluster describe -c <cluster-id>`, config.CliName),
+ $ %[1]s cluster describe -c <cluster-id>
+
+ Get the Basic cluster info in non-interactive mode:
+ $ %[1]s cluster describe -c <cluster-id> -v BASIC`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {
