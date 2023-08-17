@@ -18,8 +18,6 @@ import (
 	"fmt"
 	"math"
 	"strconv"
-	"tidbcloud-cli/internal/flag"
-
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
@@ -129,7 +127,7 @@ func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error
 }
 
 func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient) (*Cluster, error) {
-	_, clusterItems, err := RetrieveClusters(projectID, int32(pageSize), flag.BasicView, client)
+	_, clusterItems, err := RetrieveClusters(projectID, int32(pageSize), client)
 	if err != nil {
 		return nil, err
 	}
@@ -330,15 +328,8 @@ func RetrieveProjects(size int64, d TiDBCloudClient) (int64, []*projectApi.ListP
 	return total, items, nil
 }
 
-func RetrieveClusters(pID string, pageSize int32, view string, d TiDBCloudClient) (int32, []*serverlessModel.V1Cluster, error) {
+func RetrieveClusters(pID string, pageSize int32, d TiDBCloudClient) (int32, []*serverlessModel.V1Cluster, error) {
 	params := serverlessApi.NewServerlessServiceListClustersParams().WithProjectID(&pID)
-	if view != "" {
-		if view == flag.FullView {
-			params.WithView(&view)
-		} else if view != flag.BasicView {
-			return 0, nil, fmt.Errorf("invalid view: %s", view)
-		}
-	}
 	var total int32 = math.MaxInt32
 	var page int32 = 1
 	var items []*serverlessModel.V1Cluster
