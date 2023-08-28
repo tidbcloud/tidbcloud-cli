@@ -1,6 +1,6 @@
 module tidbcloud-cli
 
-go 1.19
+go 1.21
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6
@@ -17,7 +17,7 @@ require (
 	github.com/go-openapi/swag v0.22.3
 	github.com/go-openapi/validate v0.22.0
 	github.com/go-resty/resty/v2 v2.7.0
-	github.com/go-sql-driver/mysql v1.7.0
+	github.com/go-sql-driver/mysql v1.7.2-0.20230809113539-7cf548287682
 	github.com/google/go-github/v49 v49.0.0
 	github.com/hashicorp/go-version v1.6.0
 	github.com/icholy/digest v0.1.22
