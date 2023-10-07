@@ -66,7 +66,7 @@ type ServerlessServicePartialUpdateClusterParams struct {
 
 	/* ClusterClusterID.
 
-	   Output only. The system-generated ID of the resource.
+	   Output_only. The unique ID of the cluster.
 	*/
 	ClusterClusterID string
 

@@ -14,16 +14,19 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// EndpointsPublic Message for Public Endpoint for this cluster.
+// EndpointsPublic Message for public endpoint to connect to the cluster.
 //
 // swagger:model EndpointsPublic
 type EndpointsPublic struct {
 
-	// Output Only. Host name of Public Endpoint
+	// Optional. Whether the public endpoint is disabled.
+	Disabled bool `json:"disabled,omitempty"`
+
+	// Output_only. The hostname of the public endpoint.
 	// Read Only: true
 	Host string `json:"host,omitempty"`
 
-	// Output Only. Port of Public Endpoint
+	// Output_only. The port of the public endpoint.
 	// Read Only: true
 	Port int32 `json:"port,omitempty"`
 }

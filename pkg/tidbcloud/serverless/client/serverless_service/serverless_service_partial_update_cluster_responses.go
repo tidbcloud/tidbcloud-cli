@@ -90,11 +90,11 @@ func (o *ServerlessServicePartialUpdateClusterOK) Code() int {
 }
 
 func (o *ServerlessServicePartialUpdateClusterOK) Error() string {
-	return fmt.Sprintf("[PATCH /v1/clusters/{cluster.clusterId}][%d] serverlessServicePartialUpdateClusterOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[PATCH /clusters/{cluster.clusterId}][%d] serverlessServicePartialUpdateClusterOK  %+v", 200, o.Payload)
 }
 
 func (o *ServerlessServicePartialUpdateClusterOK) String() string {
-	return fmt.Sprintf("[PATCH /v1/clusters/{cluster.clusterId}][%d] serverlessServicePartialUpdateClusterOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[PATCH /clusters/{cluster.clusterId}][%d] serverlessServicePartialUpdateClusterOK  %+v", 200, o.Payload)
 }
 
 func (o *ServerlessServicePartialUpdateClusterOK) GetPayload() *models.V1Cluster {
@@ -162,11 +162,11 @@ func (o *ServerlessServicePartialUpdateClusterDefault) Code() int {
 }
 
 func (o *ServerlessServicePartialUpdateClusterDefault) Error() string {
-	return fmt.Sprintf("[PATCH /v1/clusters/{cluster.clusterId}][%d] ServerlessService_PartialUpdateCluster default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[PATCH /clusters/{cluster.clusterId}][%d] ServerlessService_PartialUpdateCluster default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ServerlessServicePartialUpdateClusterDefault) String() string {
-	return fmt.Sprintf("[PATCH /v1/clusters/{cluster.clusterId}][%d] ServerlessService_PartialUpdateCluster default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[PATCH /clusters/{cluster.clusterId}][%d] ServerlessService_PartialUpdateCluster default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ServerlessServicePartialUpdateClusterDefault) GetPayload() *models.RPCStatus {
@@ -186,7 +186,7 @@ func (o *ServerlessServicePartialUpdateClusterDefault) readResponse(response run
 }
 
 /*
-ServerlessServicePartialUpdateClusterBody Message for updating a Cluster
+ServerlessServicePartialUpdateClusterBody Message for requesting a partial update on a TiDB Serverless cluster.
 swagger:model ServerlessServicePartialUpdateClusterBody
 */
 type ServerlessServicePartialUpdateClusterBody struct {
@@ -194,11 +194,9 @@ type ServerlessServicePartialUpdateClusterBody struct {
 	// cluster
 	Cluster *ServerlessServicePartialUpdateClusterParamsBodyCluster `json:"cluster,omitempty"`
 
-	// Optional. Field mask is used to specify the fields to be overwritten in the
-	// Cluster resource by the update.
-	// The fields specified in the update_mask are relative to the resource, not
-	// the full request. A field will be overwritten if it is in the mask.
-	UpdateMask string `json:"updateMask,omitempty"`
+	// Required. The update mask indicating which fields are to be updated.
+	// Required: true
+	UpdateMask *string `json:"updateMask"`
 }
 
 // Validate validates this serverless service partial update cluster body
@@ -206,6 +204,10 @@ func (o *ServerlessServicePartialUpdateClusterBody) Validate(formats strfmt.Regi
 	var res []error
 
 	if err := o.validateCluster(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := o.validateUpdateMask(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -229,6 +231,15 @@ func (o *ServerlessServicePartialUpdateClusterBody) validateCluster(formats strf
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (o *ServerlessServicePartialUpdateClusterBody) validateUpdateMask(formats strfmt.Registry) error {
+
+	if err := validate.Required("body"+"."+"updateMask", "body", o.UpdateMask); err != nil {
+		return err
 	}
 
 	return nil
@@ -288,69 +299,68 @@ func (o *ServerlessServicePartialUpdateClusterBody) UnmarshalBinary(b []byte) er
 }
 
 /*
-ServerlessServicePartialUpdateClusterParamsBodyCluster Required. The resource being updated
+ServerlessServicePartialUpdateClusterParamsBodyCluster Required. The cluster to be updated.
+//
+// Required. The cluster to be updated.
 swagger:model ServerlessServicePartialUpdateClusterParamsBodyCluster
 */
 type ServerlessServicePartialUpdateClusterParamsBodyCluster struct {
 
-	// Optional. The annotations for this cluster.
+	// Optional. The annotations for the cluster.
 	Annotations map[string]string `json:"annotations,omitempty"`
 
-	// Optional.  The automated backup policy for this cluster.
-	// If no policy is provided then the default policy will be used. If backups
-	// are supported for the cluster, the default policy takes one backup a day.
+	// Optional. Automated backup policy to set on the cluster.
 	AutomatedBackupPolicy *models.V1ClusterAutomatedBackupPolicy `json:"automatedBackupPolicy,omitempty"`
 
-	// Output only. Create timestamp
+	// Output_only. Timestamp when the cluster was created.
 	// Read Only: true
 	// Format: date-time
 	CreateTime strfmt.DateTime `json:"createTime,omitempty"`
 
-	// Output only. The creator of the cluster.
+	// Output_only. The email of the creator of the cluster.
 	// Read Only: true
 	CreatedBy string `json:"createdBy,omitempty"`
 
-	// Required. User-settable and human-readable display name for the Cluster.
+	// Required. User friendly display name of the cluster.
 	DisplayName string `json:"displayName,omitempty"`
 
-	// Optional. The Endpoints for this cluster.
+	// Optional. Encryption settings for the cluster.
+	EncryptionConfig *models.V1ClusterEncryptionConfig `json:"encryptionConfig,omitempty"`
+
+	// Optional. The endpoints for connecting to the cluster.
 	Endpoints *models.V1ClusterEndpoints `json:"endpoints,omitempty"`
 
-	// Optional. The labels for this cluster.
+	// Optional. The labels for the cluster.
 	Labels map[string]string `json:"labels,omitempty"`
 
-	// Required. The name of the resource. For the required format, see the
-	// comment on the Cluster.name field.
+	// Output_only. The unique name of the cluster.
 	// Read Only: true
 	Name string `json:"name,omitempty"`
 
-	// Required. The Region for the Cluster.
+	// Required. Region where the cluster will be created.
 	Region *models.TidbCloudApiserverlessv1Region `json:"region,omitempty"`
 
-	// Output only.  Spend Limit for this cluster.
-	// Read Only: true
+	// Optional. The spending limit for the cluster.
 	SpendingLimit *models.ClusterSpendingLimit `json:"spendingLimit,omitempty"`
 
-	// Optional. The state for this cluster.
+	// Output_only. The current state of the cluster.
 	// Read Only: true
 	State *models.ClusterState `json:"state,omitempty"`
 
-	// Output only. Update timestamp
+	// Output_only. Timestamp when the cluster was last updated.
 	// Read Only: true
 	// Format: date-time
 	UpdateTime strfmt.DateTime `json:"updateTime,omitempty"`
 
-	// Output only. Usage metrics for this cluster.
+	// Output_only. Usage details of the cluster.
 	// Read Only: true
 	Usage *models.ClusterUsage `json:"usage,omitempty"`
 
-	// Output only. User name prefix for this cluster. For each TiDB Serverless cluster,
-	// TiDB Cloud generates a unique prefix to distinguish it from other clusters.
-	// Whenever you use or set a database user name, you must include the prefix in the user name.
+	// Output_only. The unique prefix in SQL user name.
 	// Read Only: true
 	UserPrefix string `json:"userPrefix,omitempty"`
 
-	// Output only. Version for this cluster.
+	// Output_only. The TiDB version of the cluster.
 	// Read Only: true
 	Version string `json:"version,omitempty"`
 }
@@ -364,6 +374,10 @@ func (o *ServerlessServicePartialUpdateClusterParamsBodyCluster) Validate(format
 	}
 
 	if err := o.validateCreateTime(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := o.validateEncryptionConfig(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -423,6 +437,25 @@ func (o *ServerlessServicePartialUpdateClusterParamsBodyCluster) validateCreateT
 
 	if err := validate.FormatOf("body"+"."+"cluster"+"."+"createTime", "body", "date-time", o.CreateTime.String(), formats); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (o *ServerlessServicePartialUpdateClusterParamsBodyCluster) validateEncryptionConfig(formats strfmt.Registry) error {
+	if swag.IsZero(o.EncryptionConfig) { // not required
+		return nil
+	}
+
+	if o.EncryptionConfig != nil {
+		if err := o.EncryptionConfig.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("body" + "." + "cluster" + "." + "encryptionConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("body" + "." + "cluster" + "." + "encryptionConfig")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -551,6 +584,10 @@ func (o *ServerlessServicePartialUpdateClusterParamsBodyCluster) ContextValidate
 		res = append(res, err)
 	}
 
+	if err := o.contextValidateEncryptionConfig(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := o.contextValidateEndpoints(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -627,6 +664,27 @@ func (o *ServerlessServicePartialUpdateClusterParamsBodyCluster) contextValidate
 
 	if err := validate.ReadOnly(ctx, "body"+"."+"cluster"+"."+"createdBy", "body", string(o.CreatedBy)); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (o *ServerlessServicePartialUpdateClusterParamsBodyCluster) contextValidateEncryptionConfig(ctx context.Context, formats strfmt.Registry) error {
+
+	if o.EncryptionConfig != nil {
+
+		if swag.IsZero(o.EncryptionConfig) { // not required
+			return nil
+		}
+
+		if err := o.EncryptionConfig.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("body" + "." + "cluster" + "." + "encryptionConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("body" + "." + "cluster" + "." + "encryptionConfig")
+			}
+			return err
+		}
 	}
 
 	return nil

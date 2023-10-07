@@ -1,14 +1,17 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "tidb_cloud_api/serverless/v1/serverless.proto",
-    "version": "2.0"
+    "title": "TiDB Cloud Serverless Open API",
+    "description": "TiDB Cloud Serverless Open API",
+    "version": "v1beta1"
   },
   "tags": [
     {
       "name": "ServerlessService"
     }
   ],
+  "host": "serverless.tidbapi.com",
+  "basePath": "/v1beta1",
   "schemes": [
     "https"
   ],
@@ -19,9 +22,9 @@
     "application/json"
   ],
   "paths": {
-    "/v1/clusters": {
+    "/clusters": {
       "get": {
-        "summary": "Lists information about clusters.\nNote that ListClusters action will only return basic information for each\ncluster. If user needs detailed information, suggest to use GetCluster.",
+        "summary": "Provides a list of TiDB Serverless clusters in a project.",
         "operationId": "ServerlessService_ListClusters",
         "responses": {
           "200": {
@@ -40,7 +43,7 @@
         "parameters": [
           {
             "name": "pageSize",
-            "description": "Optional. Requested page size. Server may return fewer items than\nrequested. If unspecified, server will pick an appropriate default.",
+            "description": "Optional. The maximum number of clusters to return.",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -48,46 +51,32 @@
           },
           {
             "name": "pageToken",
-            "description": "A token identifying a page of results the server should return.",
+            "description": "Optional. The page token from the previous response for pagination.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "description": "Optional. The filter expression to filter clusters.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "orderBy",
+            "description": "Optional. The order by expression for sorting clusters.",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
             "name": "projectId",
-            "description": "Optional. The ID of the project to which the clusters belong.",
+            "description": "Optional. The project ID to list clusters for.",
             "in": "query",
             "required": false,
             "type": "string",
             "format": "uint64"
-          },
-          {
-            "name": "filter",
-            "description": "Optional. Filtering results",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "skip",
-            "description": "Optional. Skip results",
-            "in": "query",
-            "required": false,
-            "type": "integer",
-            "format": "int32"
-          },
-          {
-            "name": "view",
-            "description": "Optional. The view of the cluster to return. ListClusters action will\nonly return basic information for each cluster.\n\n - CLUSTER_VIEW_UNSPECIFIED: CLUSTER_VIEW_UNSPECIFIED Not specified, equivalent to BASIC.\n - BASIC: Server responses for ListCluster and Delete Cluster actions.\n - FULL: FULL response contains all detailed information for a Cluster.",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "enum": [
-              "CLUSTER_VIEW_UNSPECIFIED",
-              "BASIC",
-              "FULL"
-            ],
-            "default": "CLUSTER_VIEW_UNSPECIFIED"
           }
         ],
         "tags": [
@@ -95,7 +84,7 @@
         ]
       },
       "post": {
-        "summary": "Creates a serverless cluster.\nNote that user can specify the project ID to which the new cluster belongs.\nIf user do not specify the project ID, the new cluster will be created\nin the project with earliest creation time.",
+        "summary": "Creates a new TiDB Serverless cluster.",
         "operationId": "ServerlessService_CreateCluster",
         "responses": {
           "200": {
@@ -114,7 +103,7 @@
         "parameters": [
           {
             "name": "cluster",
-            "description": "Required. The resource being created",
+            "description": "Required. The cluster to be created.",
             "in": "body",
             "required": true,
             "schema": {
@@ -130,9 +119,9 @@
         ]
       }
     },
-    "/v1/clusters/{cluster.clusterId}": {
+    "/clusters/{cluster.clusterId}": {
       "patch": {
-        "summary": "Partially updates a cluster. This method can modify all root fields of a cluster.\nNote that updating multiple fields in a single API call is not permitted.",
+        "summary": "Partially updates a specific TiDB Serverless cluster.",
         "operationId": "ServerlessService_PartialUpdateCluster",
         "responses": {
           "200": {
@@ -151,7 +140,7 @@
         "parameters": [
           {
             "name": "cluster.clusterId",
-            "description": "Output only. The system-generated ID of the resource.",
+            "description": "Output_only. The unique ID of the cluster.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -168,93 +157,98 @@
                   "properties": {
                     "name": {
                       "type": "string",
-                      "description": "Required. The name of the resource. For the required format, see the\ncomment on the Cluster.name field.",
+                      "description": "Output_only. The unique name of the cluster.",
                       "readOnly": true
                     },
                     "displayName": {
                       "type": "string",
-                      "description": "Required. User-settable and human-readable display name for the Cluster."
+                      "description": "Required. User friendly display name of the cluster."
                     },
                     "region": {
                       "$ref": "#/definitions/tidb_cloud_apiserverlessv1Region",
-                      "description": "Required. The Region for the Cluster."
+                      "description": "Required. Region where the cluster will be created."
                     },
                     "spendingLimit": {
                       "$ref": "#/definitions/ClusterSpendingLimit",
-                      "description": "Output only.  Spend Limit for this cluster.",
-                      "readOnly": true
+                      "description": "Optional. The spending limit for the cluster."
                     },
                     "version": {
                       "type": "string",
-                      "description": "Output only. Version for this cluster.",
+                      "description": "Output_only. The TiDB version of the cluster.",
                       "readOnly": true
                     },
                     "createdBy": {
                       "type": "string",
-                      "description": "Output only. The creator of the cluster.",
+                      "description": "Output_only. The email of the creator of the cluster.",
                       "readOnly": true
                     },
                     "automatedBackupPolicy": {
                       "$ref": "#/definitions/v1ClusterAutomatedBackupPolicy",
-                      "description": "Optional.  The automated backup policy for this cluster.\nIf no policy is provided then the default policy will be used. If backups\nare supported for the cluster, the default policy takes one backup a day."
+                      "description": "Optional. Automated backup policy to set on the cluster."
                     },
                     "userPrefix": {
                       "type": "string",
-                      "description": "Output only. User name prefix for this cluster. For each TiDB Serverless cluster,\nTiDB Cloud generates a unique prefix to distinguish it from other clusters.\nWhenever you use or set a database user name, you must include the prefix in the user name.",
+                      "description": "Output_only. The unique prefix in SQL user name.",
                       "readOnly": true
                     },
                     "endpoints": {
                       "$ref": "#/definitions/v1ClusterEndpoints",
-                      "description": "Optional. The Endpoints for this cluster."
+                      "description": "Optional. The endpoints for connecting to the cluster."
                     },
                     "state": {
                       "$ref": "#/definitions/ClusterState",
-                      "description": "Optional. The state for this cluster.",
+                      "description": "Output_only. The current state of the cluster.",
                       "readOnly": true
                     },
                     "usage": {
                       "$ref": "#/definitions/ClusterUsage",
-                      "description": "Output only. Usage metrics for this cluster.",
+                      "description": "Output_only. Usage details of the cluster.",
                       "readOnly": true
+                    },
+                    "encryptionConfig": {
+                      "$ref": "#/definitions/v1ClusterEncryptionConfig",
+                      "description": "Optional. Encryption settings for the cluster."
                     },
                     "labels": {
                       "type": "object",
                       "additionalProperties": {
                         "type": "string"
                       },
-                      "description": "Optional. The labels for this cluster."
+                      "description": "Optional. The labels for the cluster."
                     },
                     "annotations": {
                       "type": "object",
                       "additionalProperties": {
                         "type": "string"
                       },
-                      "description": "Optional. The annotations for this cluster."
+                      "description": "Optional. The annotations for the cluster."
                     },
                     "createTime": {
                       "type": "string",
                       "format": "date-time",
-                      "title": "Output only. Create timestamp",
+                      "description": "Output_only. Timestamp when the cluster was created.",
                       "readOnly": true
                     },
                     "updateTime": {
                       "type": "string",
                       "format": "date-time",
-                      "title": "Output only. Update timestamp",
+                      "description": "Output_only. Timestamp when the cluster was last updated.",
                       "readOnly": true
                     }
                   },
-                  "title": "Required. The resource being updated"
+                  "description": "Required. The cluster to be updated.",
+                  "title": "Required. The cluster to be updated."
                 },
                 "updateMask": {
                   "type": "string",
-                  "description": "Optional. Field mask is used to specify the fields to be overwritten in the\nCluster resource by the update.\nThe fields specified in the update_mask are relative to the resource, not\nthe full request. A field will be overwritten if it is in the mask."
+                  "description": "Required. The update mask indicating which fields are to be updated."
                 }
               },
-              "title": "Message for updating a Cluster",
+              "description": "Message for requesting a partial update on a TiDB Serverless cluster.",
               "required": [
                 "displayName",
-                "region"
+                "region",
+                "updateMask"
               ]
             }
           }
@@ -264,9 +258,9 @@
         ]
       }
     },
-    "/v1/clusters/{clusterId}": {
+    "/clusters/{clusterId}": {
       "get": {
-        "summary": "Gets information about a cluster.",
+        "summary": "Retrieves details of a specific TiDB Serverless cluster.",
         "operationId": "ServerlessService_GetCluster",
         "responses": {
           "200": {
@@ -285,14 +279,14 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required. The cluster_id of the resource. For the required format, see the\ncomment on the Cluster.cluster_id field.",
+            "description": "Required. The ID of the cluster to be retrieved.",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "view",
-            "description": "Optional. The view of the cluster to return. Returns all default fields if\nnot set.\n\n - CLUSTER_VIEW_UNSPECIFIED: CLUSTER_VIEW_UNSPECIFIED Not specified, equivalent to BASIC.\n - BASIC: Server responses for ListCluster and Delete Cluster actions.\n - FULL: FULL response contains all detailed information for a Cluster.",
+            "description": "Optional. The level of detail to return for the cluster.\n\n - CLUSTER_VIEW_UNSPECIFIED: The server default is used if unspecified.\n - BASIC: Only basic information about the cluster is returned.\n - FULL: All details about the cluster are returned.",
             "in": "query",
             "required": false,
             "type": "string",
@@ -309,7 +303,7 @@
         ]
       },
       "delete": {
-        "summary": "Delete a cluster.",
+        "summary": "Deletes a specific TiDB Serverless cluster.",
         "operationId": "ServerlessService_DeleteCluster",
         "responses": {
           "200": {
@@ -328,7 +322,7 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required. The cluster_id of the resource. For the required format, see the\ncomment on the Cluster.cluster_id field.",
+            "description": "Required. The ID of the cluster to be deleted.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -339,9 +333,9 @@
         ]
       }
     },
-    "/v1/clusters/{clusterId}/password": {
+    "/clusters/{clusterId}/password": {
       "put": {
-        "summary": "Changes the root user password of a cluster.",
+        "summary": "Changes the root password of a specific TiDB Serverless cluster.",
         "operationId": "ServerlessService_ChangeRootPassword",
         "responses": {
           "200": {
@@ -360,7 +354,7 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required. The cluster_id of the resource. For the required format, see the\ncomment on the Cluster.cluster_id field.",
+            "description": "Required. The ID of the cluster for which the password is to be changed.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -374,10 +368,10 @@
               "properties": {
                 "password": {
                   "type": "string",
-                  "description": "Required. The new password for the cluster."
+                  "description": "Required. The new root password for the cluster."
                 }
               },
-              "title": "Message for requesting change root user password",
+              "description": "Message for requesting to change the root password of a TiDB Serverless cluster.",
               "required": [
                 "password"
               ]
@@ -389,9 +383,9 @@
         ]
       }
     },
-    "/v1/regions": {
+    "/regions": {
       "get": {
-        "summary": "Lists information about the supported regions for this service.",
+        "summary": "Provides a list of available regions for TiDB Serverless clusters.",
         "operationId": "ServerlessService_ListRegions",
         "responses": {
           "200": {
@@ -420,10 +414,10 @@
         "monthly": {
           "type": "integer",
           "format": "int32",
-          "title": "Required. Monthly Spend Limit"
+          "description": "Optional. Maximum monthly spending limit in USD cents."
         }
       },
-      "description": "Message for Spend Limit for this cluster."
+      "description": "Message for spending limit configuration."
     },
     "ClusterState": {
       "type": "string",
@@ -437,8 +431,7 @@
         "DELETED"
       ],
       "default": "STATE_UNSPECIFIED",
-      "description": "- STATE_UNSPECIFIED: The state of the cluster is unknown.\n - CREATING: The cluster is being created.\n - DELETING: The cluster is being deleted.\n - ACTIVE: The cluster is active and running.\n - RESTORING: The cluster is being restored.\n - MAINTENANCE: The cluster is under maintenance.\n - DELETED: The cluster is deleted.",
-      "title": "Cluster State"
+      "description": "Enum for current state of a cluster.\n\n - STATE_UNSPECIFIED: Unspecified state.\n - CREATING: Cluster is being created.\n - DELETING: Cluster is being deleted.\n - ACTIVE: Cluster is active for use.\n - RESTORING: Cluster data is being restored.\n - MAINTENANCE: Cluster is under maintenance.\n - DELETED: Cluster has been deleted."
     },
     "ClusterUsage": {
       "type": "object",
@@ -446,36 +439,36 @@
         "requestUnit": {
           "type": "string",
           "format": "int64",
-          "description": "Output Only. The latest value of Request Unit Metric for this cluster.",
+          "description": "Output_only. The Request Units used in this month.",
           "readOnly": true
         },
-        "rowStorage": {
+        "rowBasedStorage": {
           "type": "number",
           "format": "double",
-          "description": "Output Only. The latest value of Row Storage Metric for this cluster.",
+          "description": "Output_only. The storage used on row-based storage in bytes.",
           "readOnly": true
         },
         "columnarStorage": {
           "type": "number",
           "format": "double",
-          "description": "Output Only. The latest value of Columnar Storage Metric for this cluster.",
+          "description": "Output_only. The storage used on column-based storage in bytes.",
           "readOnly": true
         }
       },
-      "description": "Message for usage metrics for this cluster."
+      "description": "Message for usage statistics of a cluster."
     },
     "EndpointsPrivate": {
       "type": "object",
       "properties": {
         "host": {
           "type": "string",
-          "description": "Output Only. Host Name of Public Endpoint.",
+          "description": "Output_only. The hostname of the private endpoint.",
           "readOnly": true
         },
         "port": {
           "type": "integer",
           "format": "int32",
-          "description": "Output Only. Port of Public Endpoint.",
+          "description": "Output_only. The port of the private endpoint.",
           "readOnly": true
         },
         "aws": {
@@ -487,31 +480,35 @@
           "readOnly": true
         }
       },
-      "description": "Message for Private Endpoint for this cluster."
+      "description": "Message for private endpoint to securely connect to the cluster."
     },
     "EndpointsPublic": {
       "type": "object",
       "properties": {
         "host": {
           "type": "string",
-          "title": "Output Only. Host name of Public Endpoint",
+          "description": "Output_only. The hostname of the public endpoint.",
           "readOnly": true
         },
         "port": {
           "type": "integer",
           "format": "int32",
-          "title": "Output Only. Port of Public Endpoint",
+          "description": "Output_only. The port of the public endpoint.",
           "readOnly": true
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "Optional. Whether the public endpoint is disabled."
         }
       },
-      "description": "Message for Public Endpoint for this cluster."
+      "description": "Message for public endpoint to connect to the cluster."
     },
     "PrivateAWS": {
       "type": "object",
       "properties": {
         "serviceName": {
           "type": "string",
-          "title": "Output Only. Service Name for Private Link Service.\n(-- api-linter: core::0122::name-suffix=disabled --)",
+          "description": "Output_only. The AWS service name for private access.",
           "readOnly": true
         },
         "availabilityZone": {
@@ -519,22 +516,22 @@
           "items": {
             "type": "string"
           },
-          "description": "Output Only. Availability Zone for Private Link Service.",
+          "description": "Output_only. The availability zones that the service is available in.",
           "readOnly": true
         }
       },
-      "description": "Message for AWS Private Link Service."
+      "description": "Message for AWS PrivateLink information."
     },
     "PrivateGCP": {
       "type": "object",
       "properties": {
         "targetServiceAccount": {
           "type": "string",
-          "description": "Output Only. Target Service Account for Private Link Service.",
+          "description": "Output_only. The target GCP service account for private access.",
           "readOnly": true
         }
       },
-      "description": "Message for GCP Private Link Service."
+      "description": "Message for GCP Private Service information."
     },
     "protobufAny": {
       "type": "object",
@@ -569,115 +566,118 @@
       "properties": {
         "name": {
           "type": "string",
-          "description": "Required. The name of the Region."
+          "description": "Required. Immutable. The unique name of the region."
         },
         "displayName": {
           "type": "string",
-          "description": "Output only. The display name of the Region.",
+          "description": "Output_only. Immutable. User-friendly display name of the region.",
           "readOnly": true
         },
         "provider": {
           "$ref": "#/definitions/v1RegionCloudProvider",
-          "description": "Output only. The Cloud Provider of the Region.",
+          "description": "Output_only. Immutable. The cloud provider for the region.",
           "readOnly": true
         }
       },
-      "title": "Message for Region",
+      "description": "Message for describing a region for deploying TiDB Serverless clusters.",
       "required": [
         "name"
       ]
     },
     "v1ChangeRootPasswordResponse": {
       "type": "object",
-      "title": "Message for response to change root user password"
+      "description": "Responses message to the request for changing the root password of a TiDB Serverless cluster."
     },
     "v1Cluster": {
       "type": "object",
       "properties": {
         "name": {
           "type": "string",
-          "description": "Required. The name of the resource. For the required format, see the\ncomment on the Cluster.name field.",
+          "description": "Output_only. The unique name of the cluster.",
           "readOnly": true
         },
         "clusterId": {
           "type": "string",
-          "description": "Output only. The system-generated ID of the resource.",
+          "description": "Output_only. The unique ID of the cluster.",
           "readOnly": true
         },
         "displayName": {
           "type": "string",
-          "description": "Required. User-settable and human-readable display name for the Cluster."
+          "description": "Required. User friendly display name of the cluster."
         },
         "region": {
           "$ref": "#/definitions/tidb_cloud_apiserverlessv1Region",
-          "description": "Required. The Region for the Cluster."
+          "description": "Required. Region where the cluster will be created."
         },
         "spendingLimit": {
           "$ref": "#/definitions/ClusterSpendingLimit",
-          "description": "Output only.  Spend Limit for this cluster.",
-          "readOnly": true
+          "description": "Optional. The spending limit for the cluster."
         },
         "version": {
           "type": "string",
-          "description": "Output only. Version for this cluster.",
+          "description": "Output_only. The TiDB version of the cluster.",
           "readOnly": true
         },
         "createdBy": {
           "type": "string",
-          "description": "Output only. The creator of the cluster.",
+          "description": "Output_only. The email of the creator of the cluster.",
           "readOnly": true
         },
         "automatedBackupPolicy": {
           "$ref": "#/definitions/v1ClusterAutomatedBackupPolicy",
-          "description": "Optional.  The automated backup policy for this cluster.\nIf no policy is provided then the default policy will be used. If backups\nare supported for the cluster, the default policy takes one backup a day."
+          "description": "Optional. Automated backup policy to set on the cluster."
         },
         "userPrefix": {
           "type": "string",
-          "description": "Output only. User name prefix for this cluster. For each TiDB Serverless cluster,\nTiDB Cloud generates a unique prefix to distinguish it from other clusters.\nWhenever you use or set a database user name, you must include the prefix in the user name.",
+          "description": "Output_only. The unique prefix in SQL user name.",
           "readOnly": true
         },
         "endpoints": {
           "$ref": "#/definitions/v1ClusterEndpoints",
-          "description": "Optional. The Endpoints for this cluster."
+          "description": "Optional. The endpoints for connecting to the cluster."
         },
         "state": {
           "$ref": "#/definitions/ClusterState",
-          "description": "Optional. The state for this cluster.",
+          "description": "Output_only. The current state of the cluster.",
           "readOnly": true
         },
         "usage": {
           "$ref": "#/definitions/ClusterUsage",
-          "description": "Output only. Usage metrics for this cluster.",
+          "description": "Output_only. Usage details of the cluster.",
           "readOnly": true
+        },
+        "encryptionConfig": {
+          "$ref": "#/definitions/v1ClusterEncryptionConfig",
+          "description": "Optional. Encryption settings for the cluster."
         },
         "labels": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
           },
-          "description": "Optional. The labels for this cluster."
+          "description": "Optional. The labels for the cluster."
         },
         "annotations": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
           },
-          "description": "Optional. The annotations for this cluster."
+          "description": "Optional. The annotations for the cluster."
         },
         "createTime": {
           "type": "string",
           "format": "date-time",
-          "title": "Output only. Create timestamp",
+          "description": "Output_only. Timestamp when the cluster was created.",
           "readOnly": true
         },
         "updateTime": {
           "type": "string",
           "format": "date-time",
-          "title": "Output only. Update timestamp",
+          "description": "Output_only. Timestamp when the cluster was last updated.",
           "readOnly": true
         }
       },
-      "title": "Message for Cluster",
+      "description": "Message for a serverless TiDB cluster resource.",
       "required": [
         "displayName",
         "region"
@@ -688,29 +688,40 @@
       "properties": {
         "startTime": {
           "type": "string",
-          "description": "Optional. Start time of daily backup for this cluster."
+          "description": "Optional. Cron expression for when automated backups should start."
         },
         "retentionDays": {
           "type": "integer",
           "format": "int32",
-          "description": "Optional. Backup Retention days for this cluster."
+          "description": "Optional. Number of days to retain automated backups."
         }
       },
-      "description": "Message for the automated backup policy for this cluster."
+      "description": "Message for automated backup configuration for a cluster."
+    },
+    "v1ClusterEncryptionConfig": {
+      "type": "object",
+      "properties": {
+        "enhancedEncryptionEnabled": {
+          "type": "boolean",
+          "description": "Optional. Whether enhanced encryption for cluster data is enabled."
+        }
+      },
+      "description": "Message for encryption settings for a cluster."
     },
     "v1ClusterEndpoints": {
       "type": "object",
       "properties": {
         "publicEndpoint": {
           "$ref": "#/definitions/EndpointsPublic",
-          "description": "Optional . Public Endpoint for this cluster."
+          "description": "Optional. Public endpoint to connect to the cluster."
         },
         "privateEndpoint": {
           "$ref": "#/definitions/EndpointsPrivate",
-          "description": "Optional . Private Endpoint for this cluster."
+          "description": "Output_only. Private endpoint to securely connect to the cluster.",
+          "readOnly": true
         }
       },
-      "description": "Message for the Endpoints for this cluster."
+      "description": "Message for endpoint information for connecting to a cluster."
     },
     "v1ClusterView": {
       "type": "string",
@@ -720,7 +731,7 @@
         "FULL"
       ],
       "default": "CLUSTER_VIEW_UNSPECIFIED",
-      "description": "View on Cluster. Pass this enum to RPCs that returns an Cluster message to\ncontrol which subsets of fields to get.\n\n - CLUSTER_VIEW_UNSPECIFIED: CLUSTER_VIEW_UNSPECIFIED Not specified, equivalent to BASIC.\n - BASIC: Server responses for ListCluster and Delete Cluster actions.\n - FULL: FULL response contains all detailed information for a Cluster."
+      "description": "Enum for the different types of detail view to be returned for a TiDB Serverless cluster.\n\n - CLUSTER_VIEW_UNSPECIFIED: The server default is used if unspecified.\n - BASIC: Only basic information about the cluster is returned.\n - FULL: All details about the cluster are returned."
     },
     "v1ListClustersResponse": {
       "type": "object",
@@ -731,19 +742,19 @@
             "type": "object",
             "$ref": "#/definitions/v1Cluster"
           },
-          "title": "The list of Clusters"
+          "description": "A list of clusters."
         },
         "nextPageToken": {
           "type": "string",
-          "description": "A token identifying a page of results the server should return."
+          "description": "Token provided to retrieve the next page of results."
         },
         "totalSize": {
           "type": "integer",
           "format": "int32",
-          "title": "Total number of Clusters"
+          "description": "Total number of available clusters."
         }
       },
-      "title": "Message for response to listing Clusters"
+      "description": "Responses message to the request for listing of TiDB Serverless clusters."
     },
     "v1ListRegionsResponse": {
       "type": "object",
@@ -754,10 +765,10 @@
             "type": "object",
             "$ref": "#/definitions/tidb_cloud_apiserverlessv1Region"
           },
-          "title": "The list of Region"
+          "description": "A list of available regions."
         }
       },
-      "title": "Message for response to listing Regions"
+      "description": "Responses message to the request for listing of available regions in TiDB Serverless."
     },
     "v1RegionCloudProvider": {
       "type": "string",
@@ -767,7 +778,7 @@
         "GCP"
       ],
       "default": "CLOUD_PROVIDER_UNSPECIFIED",
-      "description": "Cloud Provider for this Region.\n\n - CLOUD_PROVIDER_UNSPECIFIED: The Cloud Provider is unknown.\n - AWS: The Cloud Provider is AWS.\n - GCP: The Cloud Provider is GCP."
+      "description": "Enum for cloud providers for the region.\n\n - CLOUD_PROVIDER_UNSPECIFIED: Unspecified cloud provider.\n - AWS: Amazon Web Services.\n - GCP: Google Cloud Platform."
     }
   }
 }

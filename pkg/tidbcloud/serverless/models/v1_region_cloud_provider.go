@@ -14,11 +14,11 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// V1RegionCloudProvider Cloud Provider for this Region.
+// V1RegionCloudProvider Enum for cloud providers for the region.
 //
-//   - CLOUD_PROVIDER_UNSPECIFIED: The Cloud Provider is unknown.
-//   - AWS: The Cloud Provider is AWS.
-//   - GCP: The Cloud Provider is GCP.
+//   - CLOUD_PROVIDER_UNSPECIFIED: Unspecified cloud provider.
+//   - AWS: Amazon Web Services.
+//   - GCP: Google Cloud Platform.
 //
 // swagger:model v1RegionCloudProvider
 type V1RegionCloudProvider string

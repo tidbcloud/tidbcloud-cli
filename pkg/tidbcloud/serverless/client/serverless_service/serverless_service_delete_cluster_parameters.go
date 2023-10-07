@@ -63,8 +63,7 @@ type ServerlessServiceDeleteClusterParams struct {
 
 	/* ClusterID.
 
-	     Required. The cluster_id of the resource. For the required format, see the
-	comment on the Cluster.cluster_id field.
+	   Required. The ID of the cluster to be deleted.
 	*/
 	ClusterID string
 

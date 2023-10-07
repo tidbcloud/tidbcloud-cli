@@ -14,75 +14,72 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// V1Cluster Message for Cluster
+// V1Cluster Message for a serverless TiDB cluster resource.
 //
 // swagger:model v1Cluster
 type V1Cluster struct {
 
-	// Optional. The annotations for this cluster.
+	// Optional. The annotations for the cluster.
 	Annotations map[string]string `json:"annotations,omitempty"`
 
-	// Optional.  The automated backup policy for this cluster.
-	// If no policy is provided then the default policy will be used. If backups
-	// are supported for the cluster, the default policy takes one backup a day.
+	// Optional. Automated backup policy to set on the cluster.
 	AutomatedBackupPolicy *V1ClusterAutomatedBackupPolicy `json:"automatedBackupPolicy,omitempty"`
 
-	// Output only. The system-generated ID of the resource.
+	// Output_only. The unique ID of the cluster.
 	// Read Only: true
 	ClusterID string `json:"clusterId,omitempty"`
 
-	// Output only. Create timestamp
+	// Output_only. Timestamp when the cluster was created.
 	// Read Only: true
 	// Format: date-time
 	CreateTime strfmt.DateTime `json:"createTime,omitempty"`
 
-	// Output only. The creator of the cluster.
+	// Output_only. The email of the creator of the cluster.
 	// Read Only: true
 	CreatedBy string `json:"createdBy,omitempty"`
 
-	// Required. User-settable and human-readable display name for the Cluster.
+	// Required. User friendly display name of the cluster.
 	// Required: true
 	DisplayName *string `json:"displayName"`
 
-	// Optional. The Endpoints for this cluster.
+	// Optional. Encryption settings for the cluster.
+	EncryptionConfig *V1ClusterEncryptionConfig `json:"encryptionConfig,omitempty"`
+
+	// Optional. The endpoints for connecting to the cluster.
 	Endpoints *V1ClusterEndpoints `json:"endpoints,omitempty"`
 
-	// Optional. The labels for this cluster.
+	// Optional. The labels for the cluster.
 	Labels map[string]string `json:"labels,omitempty"`
 
-	// Required. The name of the resource. For the required format, see the
-	// comment on the Cluster.name field.
+	// Output_only. The unique name of the cluster.
 	// Read Only: true
 	Name string `json:"name,omitempty"`
 
-	// Required. The Region for the Cluster.
+	// Required. Region where the cluster will be created.
 	// Required: true
 	Region *TidbCloudApiserverlessv1Region `json:"region"`
 
-	// Output only.  Spend Limit for this cluster.
-	// Read Only: true
+	// Optional. The spending limit for the cluster.
 	SpendingLimit *ClusterSpendingLimit `json:"spendingLimit,omitempty"`
 
-	// Optional. The state for this cluster.
+	// Output_only. The current state of the cluster.
 	// Read Only: true
 	State *ClusterState `json:"state,omitempty"`
 
-	// Output only. Update timestamp
+	// Output_only. Timestamp when the cluster was last updated.
 	// Read Only: true
 	// Format: date-time
 	UpdateTime strfmt.DateTime `json:"updateTime,omitempty"`
 
-	// Output only. Usage metrics for this cluster.
+	// Output_only. Usage details of the cluster.
 	// Read Only: true
 	Usage *ClusterUsage `json:"usage,omitempty"`
 
-	// Output only. User name prefix for this cluster. For each TiDB Serverless cluster,
-	// TiDB Cloud generates a unique prefix to distinguish it from other clusters.
-	// Whenever you use or set a database user name, you must include the prefix in the user name.
+	// Output_only. The unique prefix in SQL user name.
 	// Read Only: true
 	UserPrefix string `json:"userPrefix,omitempty"`
 
-	// Output only. Version for this cluster.
+	// Output_only. The TiDB version of the cluster.
 	// Read Only: true
 	Version string `json:"version,omitempty"`
 }
@@ -100,6 +97,10 @@ func (m *V1Cluster) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateDisplayName(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateEncryptionConfig(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -168,6 +169,25 @@ func (m *V1Cluster) validateDisplayName(formats strfmt.Registry) error {
 
 	if err := validate.Required("displayName", "body", m.DisplayName); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *V1Cluster) validateEncryptionConfig(formats strfmt.Registry) error {
+	if swag.IsZero(m.EncryptionConfig) { // not required
+		return nil
+	}
+
+	if m.EncryptionConfig != nil {
+		if err := m.EncryptionConfig.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("encryptionConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("encryptionConfig")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -301,6 +321,10 @@ func (m *V1Cluster) ContextValidate(ctx context.Context, formats strfmt.Registry
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateEncryptionConfig(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateEndpoints(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -386,6 +410,27 @@ func (m *V1Cluster) contextValidateCreatedBy(ctx context.Context, formats strfmt
 
 	if err := validate.ReadOnly(ctx, "createdBy", "body", string(m.CreatedBy)); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (m *V1Cluster) contextValidateEncryptionConfig(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.EncryptionConfig != nil {
+
+		if swag.IsZero(m.EncryptionConfig) { // not required
+			return nil
+		}
+
+		if err := m.EncryptionConfig.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("encryptionConfig")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("encryptionConfig")
+			}
+			return err
+		}
 	}
 
 	return nil

@@ -64,53 +64,37 @@ type ServerlessServiceListClustersParams struct {
 
 	/* Filter.
 
-	   Optional. Filtering results
+	   Optional. The filter expression to filter clusters.
 	*/
 	Filter *string
 
+	/* OrderBy.
+
+	   Optional. The order by expression for sorting clusters.
+	*/
+	OrderBy *string
+
 	/* PageSize.
 
-	     Optional. Requested page size. Server may return fewer items than
-	requested. If unspecified, server will pick an appropriate default.
+	   Optional. The maximum number of clusters to return.
 
-	     Format: int32
+	   Format: int32
 	*/
 	PageSize *int32
 
 	/* PageToken.
 
-	   A token identifying a page of results the server should return.
+	   Optional. The page token from the previous response for pagination.
 	*/
 	PageToken *string
 
 	/* ProjectID.
 
-	   Optional. The ID of the project to which the clusters belong.
+	   Optional. The project ID to list clusters for.
 
 	   Format: uint64
 	*/
 	ProjectID *string
-
-	/* Skip.
-
-	   Optional. Skip results
-
-	   Format: int32
-	*/
-	Skip *int32
-
-	/* View.
-
-	     Optional. The view of the cluster to return. ListClusters action will
-	only return basic information for each cluster.
-
-	 - CLUSTER_VIEW_UNSPECIFIED: CLUSTER_VIEW_UNSPECIFIED Not specified, equivalent to BASIC.
-	 - BASIC: Server responses for ListCluster and Delete Cluster actions.
-	 - FULL: FULL response contains all detailed information for a Cluster.
-
-	     Default: "CLUSTER_VIEW_UNSPECIFIED"
-	*/
-	View *string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -129,18 +113,7 @@ func (o *ServerlessServiceListClustersParams) WithDefaults() *ServerlessServiceL
 //
 // All values with no default are reset to their zero value.
 func (o *ServerlessServiceListClustersParams) SetDefaults() {
-	var (
-		viewDefault = string("CLUSTER_VIEW_UNSPECIFIED")
-	)
-
-	val := ServerlessServiceListClustersParams{
-		View: &viewDefault,
-	}
-
-	val.timeout = o.timeout
-	val.Context = o.Context
-	val.HTTPClient = o.HTTPClient
-	*o = val
+	// no default values defined for this parameter
 }
 
 // WithTimeout adds the timeout to the serverless service list clusters params
@@ -187,6 +160,17 @@ func (o *ServerlessServiceListClustersParams) SetFilter(filter *string) {
 	o.Filter = filter
 }
 
+// WithOrderBy adds the orderBy to the serverless service list clusters params
+func (o *ServerlessServiceListClustersParams) WithOrderBy(orderBy *string) *ServerlessServiceListClustersParams {
+	o.SetOrderBy(orderBy)
+	return o
+}
+
+// SetOrderBy adds the orderBy to the serverless service list clusters params
+func (o *ServerlessServiceListClustersParams) SetOrderBy(orderBy *string) {
+	o.OrderBy = orderBy
+}
+
 // WithPageSize adds the pageSize to the serverless service list clusters params
 func (o *ServerlessServiceListClustersParams) WithPageSize(pageSize *int32) *ServerlessServiceListClustersParams {
 	o.SetPageSize(pageSize)
@@ -220,28 +204,6 @@ func (o *ServerlessServiceListClustersParams) SetProjectID(projectID *string) {
 	o.ProjectID = projectID
 }
 
-// WithSkip adds the skip to the serverless service list clusters params
-func (o *ServerlessServiceListClustersParams) WithSkip(skip *int32) *ServerlessServiceListClustersParams {
-	o.SetSkip(skip)
-	return o
-}
-
-// SetSkip adds the skip to the serverless service list clusters params
-func (o *ServerlessServiceListClustersParams) SetSkip(skip *int32) {
-	o.Skip = skip
-}
-
-// WithView adds the view to the serverless service list clusters params
-func (o *ServerlessServiceListClustersParams) WithView(view *string) *ServerlessServiceListClustersParams {
-	o.SetView(view)
-	return o
-}
-
-// SetView adds the view to the serverless service list clusters params
-func (o *ServerlessServiceListClustersParams) SetView(view *string) {
-	o.View = view
-}
-
 // WriteToRequest writes these params to a swagger request
 func (o *ServerlessServiceListClustersParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -262,6 +224,23 @@ func (o *ServerlessServiceListClustersParams) WriteToRequest(r runtime.ClientReq
 		if qFilter != "" {
 
 			if err := r.SetQueryParam("filter", qFilter); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.OrderBy != nil {
+
+		// query param orderBy
+		var qrOrderBy string
+
+		if o.OrderBy != nil {
+			qrOrderBy = *o.OrderBy
+		}
+		qOrderBy := qrOrderBy
+		if qOrderBy != "" {
+
+			if err := r.SetQueryParam("orderBy", qOrderBy); err != nil {
 				return err
 			}
 		}
@@ -313,40 +292,6 @@ func (o *ServerlessServiceListClustersParams) WriteToRequest(r runtime.ClientReq
 		if qProjectID != "" {
 
 			if err := r.SetQueryParam("projectId", qProjectID); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.Skip != nil {
-
-		// query param skip
-		var qrSkip int32
-
-		if o.Skip != nil {
-			qrSkip = *o.Skip
-		}
-		qSkip := swag.FormatInt32(qrSkip)
-		if qSkip != "" {
-
-			if err := r.SetQueryParam("skip", qSkip); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.View != nil {
-
-		// query param view
-		var qrView string
-
-		if o.View != nil {
-			qrView = *o.View
-		}
-		qView := qrView
-		if qView != "" {
-
-			if err := r.SetQueryParam("view", qView); err != nil {
 				return err
 			}
 		}

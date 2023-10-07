@@ -86,11 +86,11 @@ func (o *ServerlessServiceGetClusterOK) Code() int {
 }
 
 func (o *ServerlessServiceGetClusterOK) Error() string {
-	return fmt.Sprintf("[GET /v1/clusters/{clusterId}][%d] serverlessServiceGetClusterOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /clusters/{clusterId}][%d] serverlessServiceGetClusterOK  %+v", 200, o.Payload)
 }
 
 func (o *ServerlessServiceGetClusterOK) String() string {
-	return fmt.Sprintf("[GET /v1/clusters/{clusterId}][%d] serverlessServiceGetClusterOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /clusters/{clusterId}][%d] serverlessServiceGetClusterOK  %+v", 200, o.Payload)
 }
 
 func (o *ServerlessServiceGetClusterOK) GetPayload() *models.V1Cluster {
@@ -158,11 +158,11 @@ func (o *ServerlessServiceGetClusterDefault) Code() int {
 }
 
 func (o *ServerlessServiceGetClusterDefault) Error() string {
-	return fmt.Sprintf("[GET /v1/clusters/{clusterId}][%d] ServerlessService_GetCluster default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[GET /clusters/{clusterId}][%d] ServerlessService_GetCluster default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ServerlessServiceGetClusterDefault) String() string {
-	return fmt.Sprintf("[GET /v1/clusters/{clusterId}][%d] ServerlessService_GetCluster default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[GET /clusters/{clusterId}][%d] ServerlessService_GetCluster default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ServerlessServiceGetClusterDefault) GetPayload() *models.RPCStatus {

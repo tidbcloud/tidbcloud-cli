@@ -14,18 +14,18 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// V1ListClustersResponse Message for response to listing Clusters
+// V1ListClustersResponse Responses message to the request for listing of TiDB Serverless clusters.
 //
 // swagger:model v1ListClustersResponse
 type V1ListClustersResponse struct {
 
-	// The list of Clusters
+	// A list of clusters.
 	Clusters []*V1Cluster `json:"clusters"`
 
-	// A token identifying a page of results the server should return.
+	// Token provided to retrieve the next page of results.
 	NextPageToken string `json:"nextPageToken,omitempty"`
 
-	// Total number of Clusters
+	// Total number of available clusters.
 	TotalSize int32 `json:"totalSize,omitempty"`
 }
 

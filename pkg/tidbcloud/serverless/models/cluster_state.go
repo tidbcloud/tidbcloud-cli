@@ -14,15 +14,15 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// ClusterState Cluster State
+// ClusterState Enum for current state of a cluster.
 //
-// - STATE_UNSPECIFIED: The state of the cluster is unknown.
-//   - CREATING: The cluster is being created.
-//   - DELETING: The cluster is being deleted.
-//   - ACTIVE: The cluster is active and running.
-//   - RESTORING: The cluster is being restored.
-//   - MAINTENANCE: The cluster is under maintenance.
-//   - DELETED: The cluster is deleted.
+//   - STATE_UNSPECIFIED: Unspecified state.
+//   - CREATING: Cluster is being created.
+//   - DELETING: Cluster is being deleted.
+//   - ACTIVE: Cluster is active for use.
+//   - RESTORING: Cluster data is being restored.
+//   - MAINTENANCE: Cluster is under maintenance.
+//   - DELETED: Cluster has been deleted.
 //
 // swagger:model ClusterState
 type ClusterState string

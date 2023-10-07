@@ -14,17 +14,16 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// PrivateAWS Message for AWS Private Link Service.
+// PrivateAWS Message for AWS PrivateLink information.
 //
 // swagger:model PrivateAWS
 type PrivateAWS struct {
 
-	// Output Only. Availability Zone for Private Link Service.
+	// Output_only. The availability zones that the service is available in.
 	// Read Only: true
 	AvailabilityZone []string `json:"availabilityZone"`
 
-	// Output Only. Service Name for Private Link Service.
-	// (-- api-linter: core::0122::name-suffix=disabled --)
+	// Output_only. The AWS service name for private access.
 	// Read Only: true
 	ServiceName string `json:"serviceName,omitempty"`
 }

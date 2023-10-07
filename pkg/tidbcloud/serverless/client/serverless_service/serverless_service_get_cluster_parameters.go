@@ -63,21 +63,19 @@ type ServerlessServiceGetClusterParams struct {
 
 	/* ClusterID.
 
-	     Required. The cluster_id of the resource. For the required format, see the
-	comment on the Cluster.cluster_id field.
+	   Required. The ID of the cluster to be retrieved.
 	*/
 	ClusterID string
 
 	/* View.
 
-	     Optional. The view of the cluster to return. Returns all default fields if
-	not set.
+	    Optional. The level of detail to return for the cluster.
 
-	 - CLUSTER_VIEW_UNSPECIFIED: CLUSTER_VIEW_UNSPECIFIED Not specified, equivalent to BASIC.
-	 - BASIC: Server responses for ListCluster and Delete Cluster actions.
-	 - FULL: FULL response contains all detailed information for a Cluster.
+	- CLUSTER_VIEW_UNSPECIFIED: The server default is used if unspecified.
+	- BASIC: Only basic information about the cluster is returned.
+	- FULL: All details about the cluster are returned.
 
-	     Default: "CLUSTER_VIEW_UNSPECIFIED"
+	    Default: "CLUSTER_VIEW_UNSPECIFIED"
 	*/
 	View *string
 

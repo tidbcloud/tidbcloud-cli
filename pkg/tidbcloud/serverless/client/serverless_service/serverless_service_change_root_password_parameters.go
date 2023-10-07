@@ -66,8 +66,7 @@ type ServerlessServiceChangeRootPasswordParams struct {
 
 	/* ClusterID.
 
-	     Required. The cluster_id of the resource. For the required format, see the
-	comment on the Cluster.cluster_id field.
+	   Required. The ID of the cluster for which the password is to be changed.
 	*/
 	ClusterID string
 

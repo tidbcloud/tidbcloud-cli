@@ -14,12 +14,12 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// PrivateGCP Message for GCP Private Link Service.
+// PrivateGCP Message for GCP Private Service information.
 //
 // swagger:model PrivateGCP
 type PrivateGCP struct {
 
-	// Output Only. Target Service Account for Private Link Service.
+	// Output_only. The target GCP service account for private access.
 	// Read Only: true
 	TargetServiceAccount string `json:"targetServiceAccount,omitempty"`
 }

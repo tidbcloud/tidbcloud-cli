@@ -14,22 +14,22 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// ClusterUsage Message for usage metrics for this cluster.
+// ClusterUsage Message for usage statistics of a cluster.
 //
 // swagger:model ClusterUsage
 type ClusterUsage struct {
 
-	// Output Only. The latest value of Columnar Storage Metric for this cluster.
+	// Output_only. The storage used on column-based storage in bytes.
 	// Read Only: true
 	ColumnarStorage float64 `json:"columnarStorage,omitempty"`
 
-	// Output Only. The latest value of Request Unit Metric for this cluster.
+	// Output_only. The Request Units used in this month.
 	// Read Only: true
 	RequestUnit string `json:"requestUnit,omitempty"`
 
-	// Output Only. The latest value of Row Storage Metric for this cluster.
+	// Output_only. The storage used on row-based storage in bytes.
 	// Read Only: true
-	RowStorage float64 `json:"rowStorage,omitempty"`
+	RowBasedStorage float64 `json:"rowBasedStorage,omitempty"`
 }
 
 // Validate validates this cluster usage
@@ -49,7 +49,7 @@ func (m *ClusterUsage) ContextValidate(ctx context.Context, formats strfmt.Regis
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateRowStorage(ctx, formats); err != nil {
+	if err := m.contextValidateRowBasedStorage(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -77,9 +77,9 @@ func (m *ClusterUsage) contextValidateRequestUnit(ctx context.Context, formats s
 	return nil
 }
 
-func (m *ClusterUsage) contextValidateRowStorage(ctx context.Context, formats strfmt.Registry) error {
+func (m *ClusterUsage) contextValidateRowBasedStorage(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "rowStorage", "body", float64(m.RowStorage)); err != nil {
+	if err := validate.ReadOnly(ctx, "rowBasedStorage", "body", float64(m.RowBasedStorage)); err != nil {
 		return err
 	}
 

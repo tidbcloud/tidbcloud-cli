@@ -86,11 +86,11 @@ func (o *ServerlessServiceListRegionsOK) Code() int {
 }
 
 func (o *ServerlessServiceListRegionsOK) Error() string {
-	return fmt.Sprintf("[GET /v1/regions][%d] serverlessServiceListRegionsOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /regions][%d] serverlessServiceListRegionsOK  %+v", 200, o.Payload)
 }
 
 func (o *ServerlessServiceListRegionsOK) String() string {
-	return fmt.Sprintf("[GET /v1/regions][%d] serverlessServiceListRegionsOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /regions][%d] serverlessServiceListRegionsOK  %+v", 200, o.Payload)
 }
 
 func (o *ServerlessServiceListRegionsOK) GetPayload() *models.V1ListRegionsResponse {
@@ -158,11 +158,11 @@ func (o *ServerlessServiceListRegionsDefault) Code() int {
 }
 
 func (o *ServerlessServiceListRegionsDefault) Error() string {
-	return fmt.Sprintf("[GET /v1/regions][%d] ServerlessService_ListRegions default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[GET /regions][%d] ServerlessService_ListRegions default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ServerlessServiceListRegionsDefault) String() string {
-	return fmt.Sprintf("[GET /v1/regions][%d] ServerlessService_ListRegions default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[GET /regions][%d] ServerlessService_ListRegions default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ServerlessServiceListRegionsDefault) GetPayload() *models.RPCStatus {

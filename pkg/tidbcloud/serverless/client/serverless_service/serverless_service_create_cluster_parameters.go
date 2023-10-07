@@ -65,7 +65,7 @@ type ServerlessServiceCreateClusterParams struct {
 
 	/* Cluster.
 
-	   Required. The resource being created
+	   Required. The cluster to be created.
 	*/
 	Cluster *models.V1Cluster
 

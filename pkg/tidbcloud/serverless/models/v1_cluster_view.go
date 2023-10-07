@@ -14,12 +14,11 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// V1ClusterView View on Cluster. Pass this enum to RPCs that returns an Cluster message to
-// control which subsets of fields to get.
+// V1ClusterView Enum for the different types of detail view to be returned for a TiDB Serverless cluster.
 //
-//   - CLUSTER_VIEW_UNSPECIFIED: CLUSTER_VIEW_UNSPECIFIED Not specified, equivalent to BASIC.
-//   - BASIC: Server responses for ListCluster and Delete Cluster actions.
-//   - FULL: FULL response contains all detailed information for a Cluster.
+//   - CLUSTER_VIEW_UNSPECIFIED: The server default is used if unspecified.
+//   - BASIC: Only basic information about the cluster is returned.
+//   - FULL: All details about the cluster are returned.
 //
 // swagger:model v1ClusterView
 type V1ClusterView string

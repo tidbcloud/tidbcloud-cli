@@ -86,11 +86,11 @@ func (o *ServerlessServiceListClustersOK) Code() int {
 }
 
 func (o *ServerlessServiceListClustersOK) Error() string {
-	return fmt.Sprintf("[GET /v1/clusters][%d] serverlessServiceListClustersOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /clusters][%d] serverlessServiceListClustersOK  %+v", 200, o.Payload)
 }
 
 func (o *ServerlessServiceListClustersOK) String() string {
-	return fmt.Sprintf("[GET /v1/clusters][%d] serverlessServiceListClustersOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /clusters][%d] serverlessServiceListClustersOK  %+v", 200, o.Payload)
 }
 
 func (o *ServerlessServiceListClustersOK) GetPayload() *models.V1ListClustersResponse {
@@ -158,11 +158,11 @@ func (o *ServerlessServiceListClustersDefault) Code() int {
 }
 
 func (o *ServerlessServiceListClustersDefault) Error() string {
-	return fmt.Sprintf("[GET /v1/clusters][%d] ServerlessService_ListClusters default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[GET /clusters][%d] ServerlessService_ListClusters default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ServerlessServiceListClustersDefault) String() string {
-	return fmt.Sprintf("[GET /v1/clusters][%d] ServerlessService_ListClusters default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[GET /clusters][%d] ServerlessService_ListClusters default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ServerlessServiceListClustersDefault) GetPayload() *models.RPCStatus {

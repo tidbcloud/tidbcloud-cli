@@ -13,15 +13,16 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// V1ClusterEndpoints Message for the Endpoints for this cluster.
+// V1ClusterEndpoints Message for endpoint information for connecting to a cluster.
 //
 // swagger:model v1ClusterEndpoints
 type V1ClusterEndpoints struct {
 
-	// Optional . Private Endpoint for this cluster.
+	// Output_only. Private endpoint to securely connect to the cluster.
+	// Read Only: true
 	PrivateEndpoint *EndpointsPrivate `json:"privateEndpoint,omitempty"`
 
-	// Optional . Public Endpoint for this cluster.
+	// Optional. Public endpoint to connect to the cluster.
 	PublicEndpoint *EndpointsPublic `json:"publicEndpoint,omitempty"`
 }
 

@@ -46,7 +46,7 @@ type ClientService interface {
 }
 
 /*
-ServerlessServiceChangeRootPassword changes the root user password of a cluster
+ServerlessServiceChangeRootPassword changes the root password of a specific ti d b serverless cluster
 */
 func (a *Client) ServerlessServiceChangeRootPassword(params *ServerlessServiceChangeRootPasswordParams, opts ...ClientOption) (*ServerlessServiceChangeRootPasswordOK, error) {
 	// TODO: Validate the params before sending
@@ -56,7 +56,7 @@ func (a *Client) ServerlessServiceChangeRootPassword(params *ServerlessServiceCh
 	op := &runtime.ClientOperation{
 		ID:                 "ServerlessService_ChangeRootPassword",
 		Method:             "PUT",
-		PathPattern:        "/v1/clusters/{clusterId}/password",
+		PathPattern:        "/clusters/{clusterId}/password",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},
@@ -83,7 +83,7 @@ func (a *Client) ServerlessServiceChangeRootPassword(params *ServerlessServiceCh
 }
 
 /*
-ServerlessServiceCreateCluster creates a serverless cluster note that user can specify the project ID to which the new cluster belongs if user do not specify the project ID the new cluster will be created in the project with earliest creation time
+ServerlessServiceCreateCluster creates a new ti d b serverless cluster
 */
 func (a *Client) ServerlessServiceCreateCluster(params *ServerlessServiceCreateClusterParams, opts ...ClientOption) (*ServerlessServiceCreateClusterOK, error) {
 	// TODO: Validate the params before sending
@@ -93,7 +93,7 @@ func (a *Client) ServerlessServiceCreateCluster(params *ServerlessServiceCreateC
 	op := &runtime.ClientOperation{
 		ID:                 "ServerlessService_CreateCluster",
 		Method:             "POST",
-		PathPattern:        "/v1/clusters",
+		PathPattern:        "/clusters",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},
@@ -120,7 +120,7 @@ func (a *Client) ServerlessServiceCreateCluster(params *ServerlessServiceCreateC
 }
 
 /*
-ServerlessServiceDeleteCluster deletes a cluster
+ServerlessServiceDeleteCluster deletes a specific ti d b serverless cluster
 */
 func (a *Client) ServerlessServiceDeleteCluster(params *ServerlessServiceDeleteClusterParams, opts ...ClientOption) (*ServerlessServiceDeleteClusterOK, error) {
 	// TODO: Validate the params before sending
@@ -130,7 +130,7 @@ func (a *Client) ServerlessServiceDeleteCluster(params *ServerlessServiceDeleteC
 	op := &runtime.ClientOperation{
 		ID:                 "ServerlessService_DeleteCluster",
 		Method:             "DELETE",
-		PathPattern:        "/v1/clusters/{clusterId}",
+		PathPattern:        "/clusters/{clusterId}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},
@@ -157,7 +157,7 @@ func (a *Client) ServerlessServiceDeleteCluster(params *ServerlessServiceDeleteC
 }
 
 /*
-ServerlessServiceGetCluster gets information about a cluster
+ServerlessServiceGetCluster retrieves details of a specific ti d b serverless cluster
 */
 func (a *Client) ServerlessServiceGetCluster(params *ServerlessServiceGetClusterParams, opts ...ClientOption) (*ServerlessServiceGetClusterOK, error) {
 	// TODO: Validate the params before sending
@@ -167,7 +167,7 @@ func (a *Client) ServerlessServiceGetCluster(params *ServerlessServiceGetCluster
 	op := &runtime.ClientOperation{
 		ID:                 "ServerlessService_GetCluster",
 		Method:             "GET",
-		PathPattern:        "/v1/clusters/{clusterId}",
+		PathPattern:        "/clusters/{clusterId}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},
@@ -194,7 +194,7 @@ func (a *Client) ServerlessServiceGetCluster(params *ServerlessServiceGetCluster
 }
 
 /*
-ServerlessServiceListClusters lists information about clusters note that list clusters action will only return basic information for each cluster if user needs detailed information suggest to use get cluster
+ServerlessServiceListClusters provides a list of ti d b serverless clusters in a project
 */
 func (a *Client) ServerlessServiceListClusters(params *ServerlessServiceListClustersParams, opts ...ClientOption) (*ServerlessServiceListClustersOK, error) {
 	// TODO: Validate the params before sending
@@ -204,7 +204,7 @@ func (a *Client) ServerlessServiceListClusters(params *ServerlessServiceListClus
 	op := &runtime.ClientOperation{
 		ID:                 "ServerlessService_ListClusters",
 		Method:             "GET",
-		PathPattern:        "/v1/clusters",
+		PathPattern:        "/clusters",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},
@@ -231,7 +231,7 @@ func (a *Client) ServerlessServiceListClusters(params *ServerlessServiceListClus
 }
 
 /*
-ServerlessServiceListRegions lists information about the supported regions for this service
+ServerlessServiceListRegions provides a list of available regions for ti d b serverless clusters
 */
 func (a *Client) ServerlessServiceListRegions(params *ServerlessServiceListRegionsParams, opts ...ClientOption) (*ServerlessServiceListRegionsOK, error) {
 	// TODO: Validate the params before sending
@@ -241,7 +241,7 @@ func (a *Client) ServerlessServiceListRegions(params *ServerlessServiceListRegio
 	op := &runtime.ClientOperation{
 		ID:                 "ServerlessService_ListRegions",
 		Method:             "GET",
-		PathPattern:        "/v1/regions",
+		PathPattern:        "/regions",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},
@@ -268,7 +268,7 @@ func (a *Client) ServerlessServiceListRegions(params *ServerlessServiceListRegio
 }
 
 /*
-ServerlessServicePartialUpdateCluster partiallies updates a cluster this method can modify all root fields of a cluster note that updating multiple fields in a single API call is not permitted
+ServerlessServicePartialUpdateCluster partiallies updates a specific ti d b serverless cluster
 */
 func (a *Client) ServerlessServicePartialUpdateCluster(params *ServerlessServicePartialUpdateClusterParams, opts ...ClientOption) (*ServerlessServicePartialUpdateClusterOK, error) {
 	// TODO: Validate the params before sending
@@ -278,7 +278,7 @@ func (a *Client) ServerlessServicePartialUpdateCluster(params *ServerlessService
 	op := &runtime.ClientOperation{
 		ID:                 "ServerlessService_PartialUpdateCluster",
 		Method:             "PATCH",
-		PathPattern:        "/v1/clusters/{cluster.clusterId}",
+		PathPattern:        "/clusters/{cluster.clusterId}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},

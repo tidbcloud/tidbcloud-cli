@@ -86,11 +86,11 @@ func (o *ServerlessServiceCreateClusterOK) Code() int {
 }
 
 func (o *ServerlessServiceCreateClusterOK) Error() string {
-	return fmt.Sprintf("[POST /v1/clusters][%d] serverlessServiceCreateClusterOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /clusters][%d] serverlessServiceCreateClusterOK  %+v", 200, o.Payload)
 }
 
 func (o *ServerlessServiceCreateClusterOK) String() string {
-	return fmt.Sprintf("[POST /v1/clusters][%d] serverlessServiceCreateClusterOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /clusters][%d] serverlessServiceCreateClusterOK  %+v", 200, o.Payload)
 }
 
 func (o *ServerlessServiceCreateClusterOK) GetPayload() *models.V1Cluster {
@@ -158,11 +158,11 @@ func (o *ServerlessServiceCreateClusterDefault) Code() int {
 }
 
 func (o *ServerlessServiceCreateClusterDefault) Error() string {
-	return fmt.Sprintf("[POST /v1/clusters][%d] ServerlessService_CreateCluster default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[POST /clusters][%d] ServerlessService_CreateCluster default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ServerlessServiceCreateClusterDefault) String() string {
-	return fmt.Sprintf("[POST /v1/clusters][%d] ServerlessService_CreateCluster default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[POST /clusters][%d] ServerlessService_CreateCluster default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ServerlessServiceCreateClusterDefault) GetPayload() *models.RPCStatus {

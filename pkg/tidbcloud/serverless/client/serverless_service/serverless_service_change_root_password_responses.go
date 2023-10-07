@@ -90,11 +90,11 @@ func (o *ServerlessServiceChangeRootPasswordOK) Code() int {
 }
 
 func (o *ServerlessServiceChangeRootPasswordOK) Error() string {
-	return fmt.Sprintf("[PUT /v1/clusters/{clusterId}/password][%d] serverlessServiceChangeRootPasswordOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[PUT /clusters/{clusterId}/password][%d] serverlessServiceChangeRootPasswordOK  %+v", 200, o.Payload)
 }
 
 func (o *ServerlessServiceChangeRootPasswordOK) String() string {
-	return fmt.Sprintf("[PUT /v1/clusters/{clusterId}/password][%d] serverlessServiceChangeRootPasswordOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[PUT /clusters/{clusterId}/password][%d] serverlessServiceChangeRootPasswordOK  %+v", 200, o.Payload)
 }
 
 func (o *ServerlessServiceChangeRootPasswordOK) GetPayload() models.V1ChangeRootPasswordResponse {
@@ -160,11 +160,11 @@ func (o *ServerlessServiceChangeRootPasswordDefault) Code() int {
 }
 
 func (o *ServerlessServiceChangeRootPasswordDefault) Error() string {
-	return fmt.Sprintf("[PUT /v1/clusters/{clusterId}/password][%d] ServerlessService_ChangeRootPassword default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[PUT /clusters/{clusterId}/password][%d] ServerlessService_ChangeRootPassword default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ServerlessServiceChangeRootPasswordDefault) String() string {
-	return fmt.Sprintf("[PUT /v1/clusters/{clusterId}/password][%d] ServerlessService_ChangeRootPassword default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[PUT /clusters/{clusterId}/password][%d] ServerlessService_ChangeRootPassword default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ServerlessServiceChangeRootPasswordDefault) GetPayload() *models.RPCStatus {
@@ -184,12 +184,12 @@ func (o *ServerlessServiceChangeRootPasswordDefault) readResponse(response runti
 }
 
 /*
-ServerlessServiceChangeRootPasswordBody Message for requesting change root user password
+ServerlessServiceChangeRootPasswordBody Message for requesting to change the root password of a TiDB Serverless cluster.
 swagger:model ServerlessServiceChangeRootPasswordBody
 */
 type ServerlessServiceChangeRootPasswordBody struct {
 
-	// Required. The new password for the cluster.
+	// Required. The new root password for the cluster.
 	// Required: true
 	Password *string `json:"password"`
 }

@@ -14,20 +14,20 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// TidbCloudApiserverlessv1Region Message for Region
+// TidbCloudApiserverlessv1Region Message for describing a region for deploying TiDB Serverless clusters.
 //
 // swagger:model tidb_cloud_apiserverlessv1Region
 type TidbCloudApiserverlessv1Region struct {
 
-	// Output only. The display name of the Region.
+	// Output_only. Immutable. User-friendly display name of the region.
 	// Read Only: true
 	DisplayName string `json:"displayName,omitempty"`
 
-	// Required. The name of the Region.
+	// Required. Immutable. The unique name of the region.
 	// Required: true
 	Name *string `json:"name"`
 
-	// Output only. The Cloud Provider of the Region.
+	// Output_only. Immutable. The cloud provider for the region.
 	// Read Only: true
 	Provider *V1RegionCloudProvider `json:"provider,omitempty"`
 }

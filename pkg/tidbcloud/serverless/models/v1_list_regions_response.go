@@ -14,12 +14,12 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// V1ListRegionsResponse Message for response to listing Regions
+// V1ListRegionsResponse Responses message to the request for listing of available regions in TiDB Serverless.
 //
 // swagger:model v1ListRegionsResponse
 type V1ListRegionsResponse struct {
 
-	// The list of Region
+	// A list of available regions.
 	Regions []*TidbCloudApiserverlessv1Region `json:"regions"`
 }
 

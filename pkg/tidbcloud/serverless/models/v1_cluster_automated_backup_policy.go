@@ -12,15 +12,15 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// V1ClusterAutomatedBackupPolicy Message for the automated backup policy for this cluster.
+// V1ClusterAutomatedBackupPolicy Message for automated backup configuration for a cluster.
 //
 // swagger:model v1ClusterAutomatedBackupPolicy
 type V1ClusterAutomatedBackupPolicy struct {
 
-	// Optional. Backup Retention days for this cluster.
+	// Optional. Number of days to retain automated backups.
 	RetentionDays int32 `json:"retentionDays,omitempty"`
 
-	// Optional. Start time of daily backup for this cluster.
+	// Optional. Cron expression for when automated backups should start.
 	StartTime string `json:"startTime,omitempty"`
 }
 

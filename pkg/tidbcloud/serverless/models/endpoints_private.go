@@ -14,7 +14,7 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// EndpointsPrivate Message for Private Endpoint for this cluster.
+// EndpointsPrivate Message for private endpoint to securely connect to the cluster.
 //
 // swagger:model EndpointsPrivate
 type EndpointsPrivate struct {
@@ -27,11 +27,11 @@ type EndpointsPrivate struct {
 	// Read Only: true
 	Gcp *PrivateGCP `json:"gcp,omitempty"`
 
-	// Output Only. Host Name of Public Endpoint.
+	// Output_only. The hostname of the private endpoint.
 	// Read Only: true
 	Host string `json:"host,omitempty"`
 
-	// Output Only. Port of Public Endpoint.
+	// Output_only. The port of the private endpoint.
 	// Read Only: true
 	Port int32 `json:"port,omitempty"`
 }

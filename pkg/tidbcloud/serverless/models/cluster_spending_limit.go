@@ -12,12 +12,12 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// ClusterSpendingLimit Message for Spend Limit for this cluster.
+// ClusterSpendingLimit Message for spending limit configuration.
 //
 // swagger:model ClusterSpendingLimit
 type ClusterSpendingLimit struct {
 
-	// Required. Monthly Spend Limit
+	// Optional. Maximum monthly spending limit in USD cents.
 	Monthly int32 `json:"monthly,omitempty"`
 }
 

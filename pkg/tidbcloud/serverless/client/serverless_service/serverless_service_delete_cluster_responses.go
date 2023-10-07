@@ -86,11 +86,11 @@ func (o *ServerlessServiceDeleteClusterOK) Code() int {
 }
 
 func (o *ServerlessServiceDeleteClusterOK) Error() string {
-	return fmt.Sprintf("[DELETE /v1/clusters/{clusterId}][%d] serverlessServiceDeleteClusterOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[DELETE /clusters/{clusterId}][%d] serverlessServiceDeleteClusterOK  %+v", 200, o.Payload)
 }
 
 func (o *ServerlessServiceDeleteClusterOK) String() string {
-	return fmt.Sprintf("[DELETE /v1/clusters/{clusterId}][%d] serverlessServiceDeleteClusterOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[DELETE /clusters/{clusterId}][%d] serverlessServiceDeleteClusterOK  %+v", 200, o.Payload)
 }
 
 func (o *ServerlessServiceDeleteClusterOK) GetPayload() *models.V1Cluster {
@@ -158,11 +158,11 @@ func (o *ServerlessServiceDeleteClusterDefault) Code() int {
 }
 
 func (o *ServerlessServiceDeleteClusterDefault) Error() string {
-	return fmt.Sprintf("[DELETE /v1/clusters/{clusterId}][%d] ServerlessService_DeleteCluster default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[DELETE /clusters/{clusterId}][%d] ServerlessService_DeleteCluster default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ServerlessServiceDeleteClusterDefault) String() string {
-	return fmt.Sprintf("[DELETE /v1/clusters/{clusterId}][%d] ServerlessService_DeleteCluster default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[DELETE /clusters/{clusterId}][%d] ServerlessService_DeleteCluster default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ServerlessServiceDeleteClusterDefault) GetPayload() *models.RPCStatus {
