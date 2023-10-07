@@ -40,7 +40,7 @@ import (
 
 const (
 	DefaultApiUrl    = "https://api.tidbcloud.com"
-	DefaultNewApiUrl = "https://serverless.dev.tidbapis.com"
+	DefaultNewApiUrl = "https://serverless.tidbapi.com"
 	userAgent        = "User-Agent"
 )
 
@@ -221,7 +221,7 @@ func NewApiClient(publicKey string, privateKey string, apiUrl string, newApiUrl 
 	if err != nil {
 		return nil, nil, nil, nil, nil, err
 	}
-	newTransport := httpTransport.NewWithClient(newU.Host, newU.Path, []string{newU.Scheme}, httpclient)
+	newTransport := httpTransport.NewWithClient(newU.Host, serverlessClient.DefaultBasePath, []string{newU.Scheme}, httpclient)
 
 	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default),
 		branchClient.New(transport, strfmt.Default), serverlessClient.New(newTransport, strfmt.Default), nil
