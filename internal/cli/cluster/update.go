@@ -195,7 +195,7 @@ func GetUpdateClusterInput() (tea.Model, error) {
 func generateUpdateBody(field, value string) (*serverlessApi.ServerlessServicePartialUpdateClusterBody, error) {
 	body := &serverlessApi.ServerlessServicePartialUpdateClusterBody{
 		Cluster:    &serverlessApi.ServerlessServicePartialUpdateClusterParamsBodyCluster{},
-		UpdateMask: field,
+		UpdateMask: &field,
 	}
 
 	switch field {
