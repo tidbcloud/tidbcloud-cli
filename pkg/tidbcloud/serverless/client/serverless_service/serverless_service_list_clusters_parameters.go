@@ -88,14 +88,6 @@ type ServerlessServiceListClustersParams struct {
 	*/
 	PageToken *string
 
-	/* ProjectID.
-
-	   Optional. The project ID to list clusters for.
-
-	   Format: uint64
-	*/
-	ProjectID *string
-
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -193,17 +185,6 @@ func (o *ServerlessServiceListClustersParams) SetPageToken(pageToken *string) {
 	o.PageToken = pageToken
 }
 
-// WithProjectID adds the projectID to the serverless service list clusters params
-func (o *ServerlessServiceListClustersParams) WithProjectID(projectID *string) *ServerlessServiceListClustersParams {
-	o.SetProjectID(projectID)
-	return o
-}
-
-// SetProjectID adds the projectId to the serverless service list clusters params
-func (o *ServerlessServiceListClustersParams) SetProjectID(projectID *string) {
-	o.ProjectID = projectID
-}
-
 // WriteToRequest writes these params to a swagger request
 func (o *ServerlessServiceListClustersParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -275,23 +256,6 @@ func (o *ServerlessServiceListClustersParams) WriteToRequest(r runtime.ClientReq
 		if qPageToken != "" {
 
 			if err := r.SetQueryParam("pageToken", qPageToken); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.ProjectID != nil {
-
-		// query param projectId
-		var qrProjectID string
-
-		if o.ProjectID != nil {
-			qrProjectID = *o.ProjectID
-		}
-		qProjectID := qrProjectID
-		if qProjectID != "" {
-
-			if err := r.SetQueryParam("projectId", qProjectID); err != nil {
 				return err
 			}
 		}

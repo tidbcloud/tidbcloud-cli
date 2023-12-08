@@ -52,7 +52,7 @@ ServerlessServiceCreateClusterOK describes a response with status code 200, with
 A successful response.
 */
 type ServerlessServiceCreateClusterOK struct {
-	Payload *models.V1Cluster
+	Payload *models.TidbCloudOpenApiserverlessv1beta1Cluster
 }
 
 // IsSuccess returns true when this serverless service create cluster o k response has a 2xx status code
@@ -93,13 +93,13 @@ func (o *ServerlessServiceCreateClusterOK) String() string {
 	return fmt.Sprintf("[POST /clusters][%d] serverlessServiceCreateClusterOK  %+v", 200, o.Payload)
 }
 
-func (o *ServerlessServiceCreateClusterOK) GetPayload() *models.V1Cluster {
+func (o *ServerlessServiceCreateClusterOK) GetPayload() *models.TidbCloudOpenApiserverlessv1beta1Cluster {
 	return o.Payload
 }
 
 func (o *ServerlessServiceCreateClusterOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.V1Cluster)
+	o.Payload = new(models.TidbCloudOpenApiserverlessv1beta1Cluster)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
@@ -124,7 +124,7 @@ An unexpected error response.
 type ServerlessServiceCreateClusterDefault struct {
 	_statusCode int
 
-	Payload *models.RPCStatus
+	Payload *models.GooglerpcStatus
 }
 
 // IsSuccess returns true when this serverless service create cluster default response has a 2xx status code
@@ -165,13 +165,13 @@ func (o *ServerlessServiceCreateClusterDefault) String() string {
 	return fmt.Sprintf("[POST /clusters][%d] ServerlessService_CreateCluster default  %+v", o._statusCode, o.Payload)
 }
 
-func (o *ServerlessServiceCreateClusterDefault) GetPayload() *models.RPCStatus {
+func (o *ServerlessServiceCreateClusterDefault) GetPayload() *models.GooglerpcStatus {
 	return o.Payload
 }
 
 func (o *ServerlessServiceCreateClusterDefault) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.RPCStatus)
+	o.Payload = new(models.GooglerpcStatus)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

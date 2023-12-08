@@ -56,7 +56,7 @@ ServerlessServicePartialUpdateClusterOK describes a response with status code 20
 A successful response.
 */
 type ServerlessServicePartialUpdateClusterOK struct {
-	Payload *models.V1Cluster
+	Payload *models.TidbCloudOpenApiserverlessv1beta1Cluster
 }
 
 // IsSuccess returns true when this serverless service partial update cluster o k response has a 2xx status code
@@ -97,13 +97,13 @@ func (o *ServerlessServicePartialUpdateClusterOK) String() string {
 	return fmt.Sprintf("[PATCH /clusters/{cluster.clusterId}][%d] serverlessServicePartialUpdateClusterOK  %+v", 200, o.Payload)
 }
 
-func (o *ServerlessServicePartialUpdateClusterOK) GetPayload() *models.V1Cluster {
+func (o *ServerlessServicePartialUpdateClusterOK) GetPayload() *models.TidbCloudOpenApiserverlessv1beta1Cluster {
 	return o.Payload
 }
 
 func (o *ServerlessServicePartialUpdateClusterOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.V1Cluster)
+	o.Payload = new(models.TidbCloudOpenApiserverlessv1beta1Cluster)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
@@ -128,7 +128,7 @@ An unexpected error response.
 type ServerlessServicePartialUpdateClusterDefault struct {
 	_statusCode int
 
-	Payload *models.RPCStatus
+	Payload *models.GooglerpcStatus
 }
 
 // IsSuccess returns true when this serverless service partial update cluster default response has a 2xx status code
@@ -169,13 +169,13 @@ func (o *ServerlessServicePartialUpdateClusterDefault) String() string {
 	return fmt.Sprintf("[PATCH /clusters/{cluster.clusterId}][%d] ServerlessService_PartialUpdateCluster default  %+v", o._statusCode, o.Payload)
 }
 
-func (o *ServerlessServicePartialUpdateClusterDefault) GetPayload() *models.RPCStatus {
+func (o *ServerlessServicePartialUpdateClusterDefault) GetPayload() *models.GooglerpcStatus {
 	return o.Payload
 }
 
 func (o *ServerlessServicePartialUpdateClusterDefault) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.RPCStatus)
+	o.Payload = new(models.GooglerpcStatus)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
@@ -310,7 +310,7 @@ type ServerlessServicePartialUpdateClusterParamsBodyCluster struct {
 	Annotations map[string]string `json:"annotations,omitempty"`
 
 	// Optional. Automated backup policy to set on the cluster.
-	AutomatedBackupPolicy *models.V1ClusterAutomatedBackupPolicy `json:"automatedBackupPolicy,omitempty"`
+	AutomatedBackupPolicy *models.V1beta1ClusterAutomatedBackupPolicy `json:"automatedBackupPolicy,omitempty"`
 
 	// Output_only. Timestamp when the cluster was created.
 	// Read Only: true
@@ -325,10 +325,10 @@ type ServerlessServicePartialUpdateClusterParamsBodyCluster struct {
 	DisplayName string `json:"displayName,omitempty"`
 
 	// Optional. Encryption settings for the cluster.
-	EncryptionConfig *models.V1ClusterEncryptionConfig `json:"encryptionConfig,omitempty"`
+	EncryptionConfig *models.V1beta1ClusterEncryptionConfig `json:"encryptionConfig,omitempty"`
 
 	// Optional. The endpoints for connecting to the cluster.
-	Endpoints *models.V1ClusterEndpoints `json:"endpoints,omitempty"`
+	Endpoints *models.V1beta1ClusterEndpoints `json:"endpoints,omitempty"`
 
 	// Optional. The labels for the cluster.
 	Labels map[string]string `json:"labels,omitempty"`
@@ -338,14 +338,14 @@ type ServerlessServicePartialUpdateClusterParamsBodyCluster struct {
 	Name string `json:"name,omitempty"`
 
 	// Required. Region where the cluster will be created.
-	Region *models.TidbCloudApiserverlessv1Region `json:"region,omitempty"`
+	Region *models.TidbCloudOpenApiserverlessv1beta1Region `json:"region,omitempty"`
 
 	// Optional. The spending limit for the cluster.
 	SpendingLimit *models.ClusterSpendingLimit `json:"spendingLimit,omitempty"`
 
 	// Output_only. The current state of the cluster.
 	// Read Only: true
-	State *models.ClusterState `json:"state,omitempty"`
+	State *models.TidbCloudOpenApiserverlessv1beta1ClusterState `json:"state,omitempty"`
 
 	// Output_only. Timestamp when the cluster was last updated.
 	// Read Only: true

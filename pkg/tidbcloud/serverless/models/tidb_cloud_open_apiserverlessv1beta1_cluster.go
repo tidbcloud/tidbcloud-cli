@@ -14,16 +14,16 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// V1Cluster Message for a serverless TiDB cluster resource.
+// TidbCloudOpenApiserverlessv1beta1Cluster Message for a serverless TiDB cluster resource.
 //
-// swagger:model v1Cluster
-type V1Cluster struct {
+// swagger:model tidb_cloud_open_apiserverlessv1beta1Cluster
+type TidbCloudOpenApiserverlessv1beta1Cluster struct {
 
 	// Optional. The annotations for the cluster.
 	Annotations map[string]string `json:"annotations,omitempty"`
 
 	// Optional. Automated backup policy to set on the cluster.
-	AutomatedBackupPolicy *V1ClusterAutomatedBackupPolicy `json:"automatedBackupPolicy,omitempty"`
+	AutomatedBackupPolicy *V1beta1ClusterAutomatedBackupPolicy `json:"automatedBackupPolicy,omitempty"`
 
 	// Output_only. The unique ID of the cluster.
 	// Read Only: true
@@ -43,10 +43,10 @@ type V1Cluster struct {
 	DisplayName *string `json:"displayName"`
 
 	// Optional. Encryption settings for the cluster.
-	EncryptionConfig *V1ClusterEncryptionConfig `json:"encryptionConfig,omitempty"`
+	EncryptionConfig *V1beta1ClusterEncryptionConfig `json:"encryptionConfig,omitempty"`
 
 	// Optional. The endpoints for connecting to the cluster.
-	Endpoints *V1ClusterEndpoints `json:"endpoints,omitempty"`
+	Endpoints *V1beta1ClusterEndpoints `json:"endpoints,omitempty"`
 
 	// Optional. The labels for the cluster.
 	Labels map[string]string `json:"labels,omitempty"`
@@ -57,14 +57,14 @@ type V1Cluster struct {
 
 	// Required. Region where the cluster will be created.
 	// Required: true
-	Region *TidbCloudApiserverlessv1Region `json:"region"`
+	Region *TidbCloudOpenApiserverlessv1beta1Region `json:"region"`
 
 	// Optional. The spending limit for the cluster.
 	SpendingLimit *ClusterSpendingLimit `json:"spendingLimit,omitempty"`
 
 	// Output_only. The current state of the cluster.
 	// Read Only: true
-	State *ClusterState `json:"state,omitempty"`
+	State *TidbCloudOpenApiserverlessv1beta1ClusterState `json:"state,omitempty"`
 
 	// Output_only. Timestamp when the cluster was last updated.
 	// Read Only: true
@@ -84,8 +84,8 @@ type V1Cluster struct {
 	Version string `json:"version,omitempty"`
 }
 
-// Validate validates this v1 cluster
-func (m *V1Cluster) Validate(formats strfmt.Registry) error {
+// Validate validates this tidb cloud open apiserverlessv1beta1 cluster
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateAutomatedBackupPolicy(formats); err != nil {
@@ -134,7 +134,7 @@ func (m *V1Cluster) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1Cluster) validateAutomatedBackupPolicy(formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) validateAutomatedBackupPolicy(formats strfmt.Registry) error {
 	if swag.IsZero(m.AutomatedBackupPolicy) { // not required
 		return nil
 	}
@@ -153,7 +153,7 @@ func (m *V1Cluster) validateAutomatedBackupPolicy(formats strfmt.Registry) error
 	return nil
 }
 
-func (m *V1Cluster) validateCreateTime(formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) validateCreateTime(formats strfmt.Registry) error {
 	if swag.IsZero(m.CreateTime) { // not required
 		return nil
 	}
@@ -165,7 +165,7 @@ func (m *V1Cluster) validateCreateTime(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1Cluster) validateDisplayName(formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) validateDisplayName(formats strfmt.Registry) error {
 
 	if err := validate.Required("displayName", "body", m.DisplayName); err != nil {
 		return err
@@ -174,7 +174,7 @@ func (m *V1Cluster) validateDisplayName(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1Cluster) validateEncryptionConfig(formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) validateEncryptionConfig(formats strfmt.Registry) error {
 	if swag.IsZero(m.EncryptionConfig) { // not required
 		return nil
 	}
@@ -193,7 +193,7 @@ func (m *V1Cluster) validateEncryptionConfig(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1Cluster) validateEndpoints(formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) validateEndpoints(formats strfmt.Registry) error {
 	if swag.IsZero(m.Endpoints) { // not required
 		return nil
 	}
@@ -212,7 +212,7 @@ func (m *V1Cluster) validateEndpoints(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1Cluster) validateRegion(formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) validateRegion(formats strfmt.Registry) error {
 
 	if err := validate.Required("region", "body", m.Region); err != nil {
 		return err
@@ -232,7 +232,7 @@ func (m *V1Cluster) validateRegion(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1Cluster) validateSpendingLimit(formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) validateSpendingLimit(formats strfmt.Registry) error {
 	if swag.IsZero(m.SpendingLimit) { // not required
 		return nil
 	}
@@ -251,7 +251,7 @@ func (m *V1Cluster) validateSpendingLimit(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1Cluster) validateState(formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) validateState(formats strfmt.Registry) error {
 	if swag.IsZero(m.State) { // not required
 		return nil
 	}
@@ -270,7 +270,7 @@ func (m *V1Cluster) validateState(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1Cluster) validateUpdateTime(formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) validateUpdateTime(formats strfmt.Registry) error {
 	if swag.IsZero(m.UpdateTime) { // not required
 		return nil
 	}
@@ -282,7 +282,7 @@ func (m *V1Cluster) validateUpdateTime(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1Cluster) validateUsage(formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) validateUsage(formats strfmt.Registry) error {
 	if swag.IsZero(m.Usage) { // not required
 		return nil
 	}
@@ -301,8 +301,8 @@ func (m *V1Cluster) validateUsage(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this v1 cluster based on the context it is used
-func (m *V1Cluster) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this tidb cloud open apiserverlessv1beta1 cluster based on the context it is used
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateAutomatedBackupPolicy(ctx, formats); err != nil {
@@ -367,7 +367,7 @@ func (m *V1Cluster) ContextValidate(ctx context.Context, formats strfmt.Registry
 	return nil
 }
 
-func (m *V1Cluster) contextValidateAutomatedBackupPolicy(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) contextValidateAutomatedBackupPolicy(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.AutomatedBackupPolicy != nil {
 
@@ -388,7 +388,7 @@ func (m *V1Cluster) contextValidateAutomatedBackupPolicy(ctx context.Context, fo
 	return nil
 }
 
-func (m *V1Cluster) contextValidateClusterID(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) contextValidateClusterID(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "clusterId", "body", string(m.ClusterID)); err != nil {
 		return err
@@ -397,7 +397,7 @@ func (m *V1Cluster) contextValidateClusterID(ctx context.Context, formats strfmt
 	return nil
 }
 
-func (m *V1Cluster) contextValidateCreateTime(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) contextValidateCreateTime(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "createTime", "body", strfmt.DateTime(m.CreateTime)); err != nil {
 		return err
@@ -406,7 +406,7 @@ func (m *V1Cluster) contextValidateCreateTime(ctx context.Context, formats strfm
 	return nil
 }
 
-func (m *V1Cluster) contextValidateCreatedBy(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) contextValidateCreatedBy(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "createdBy", "body", string(m.CreatedBy)); err != nil {
 		return err
@@ -415,7 +415,7 @@ func (m *V1Cluster) contextValidateCreatedBy(ctx context.Context, formats strfmt
 	return nil
 }
 
-func (m *V1Cluster) contextValidateEncryptionConfig(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) contextValidateEncryptionConfig(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.EncryptionConfig != nil {
 
@@ -436,7 +436,7 @@ func (m *V1Cluster) contextValidateEncryptionConfig(ctx context.Context, formats
 	return nil
 }
 
-func (m *V1Cluster) contextValidateEndpoints(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) contextValidateEndpoints(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Endpoints != nil {
 
@@ -457,7 +457,7 @@ func (m *V1Cluster) contextValidateEndpoints(ctx context.Context, formats strfmt
 	return nil
 }
 
-func (m *V1Cluster) contextValidateName(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) contextValidateName(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "name", "body", string(m.Name)); err != nil {
 		return err
@@ -466,7 +466,7 @@ func (m *V1Cluster) contextValidateName(ctx context.Context, formats strfmt.Regi
 	return nil
 }
 
-func (m *V1Cluster) contextValidateRegion(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) contextValidateRegion(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Region != nil {
 
@@ -483,7 +483,7 @@ func (m *V1Cluster) contextValidateRegion(ctx context.Context, formats strfmt.Re
 	return nil
 }
 
-func (m *V1Cluster) contextValidateSpendingLimit(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) contextValidateSpendingLimit(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.SpendingLimit != nil {
 
@@ -504,7 +504,7 @@ func (m *V1Cluster) contextValidateSpendingLimit(ctx context.Context, formats st
 	return nil
 }
 
-func (m *V1Cluster) contextValidateState(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) contextValidateState(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.State != nil {
 
@@ -525,7 +525,7 @@ func (m *V1Cluster) contextValidateState(ctx context.Context, formats strfmt.Reg
 	return nil
 }
 
-func (m *V1Cluster) contextValidateUpdateTime(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) contextValidateUpdateTime(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "updateTime", "body", strfmt.DateTime(m.UpdateTime)); err != nil {
 		return err
@@ -534,7 +534,7 @@ func (m *V1Cluster) contextValidateUpdateTime(ctx context.Context, formats strfm
 	return nil
 }
 
-func (m *V1Cluster) contextValidateUsage(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) contextValidateUsage(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Usage != nil {
 
@@ -555,7 +555,7 @@ func (m *V1Cluster) contextValidateUsage(ctx context.Context, formats strfmt.Reg
 	return nil
 }
 
-func (m *V1Cluster) contextValidateUserPrefix(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) contextValidateUserPrefix(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "userPrefix", "body", string(m.UserPrefix)); err != nil {
 		return err
@@ -564,7 +564,7 @@ func (m *V1Cluster) contextValidateUserPrefix(ctx context.Context, formats strfm
 	return nil
 }
 
-func (m *V1Cluster) contextValidateVersion(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) contextValidateVersion(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "version", "body", string(m.Version)); err != nil {
 		return err
@@ -574,7 +574,7 @@ func (m *V1Cluster) contextValidateVersion(ctx context.Context, formats strfmt.R
 }
 
 // MarshalBinary interface implementation
-func (m *V1Cluster) MarshalBinary() ([]byte, error) {
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -582,8 +582,8 @@ func (m *V1Cluster) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1Cluster) UnmarshalBinary(b []byte) error {
-	var res V1Cluster
+func (m *TidbCloudOpenApiserverlessv1beta1Cluster) UnmarshalBinary(b []byte) error {
+	var res TidbCloudOpenApiserverlessv1beta1Cluster
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

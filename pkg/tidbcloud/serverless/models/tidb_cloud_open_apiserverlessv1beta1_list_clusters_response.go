@@ -14,23 +14,23 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// V1ListClustersResponse Responses message to the request for listing of TiDB Serverless clusters.
+// TidbCloudOpenApiserverlessv1beta1ListClustersResponse Responses message to the request for listing of TiDB Serverless clusters.
 //
-// swagger:model v1ListClustersResponse
-type V1ListClustersResponse struct {
+// swagger:model tidb_cloud_open_apiserverlessv1beta1ListClustersResponse
+type TidbCloudOpenApiserverlessv1beta1ListClustersResponse struct {
 
 	// A list of clusters.
-	Clusters []*V1Cluster `json:"clusters"`
+	Clusters []*TidbCloudOpenApiserverlessv1beta1Cluster `json:"clusters"`
 
 	// Token provided to retrieve the next page of results.
 	NextPageToken string `json:"nextPageToken,omitempty"`
 
 	// Total number of available clusters.
-	TotalSize int32 `json:"totalSize,omitempty"`
+	TotalSize int64 `json:"totalSize,omitempty"`
 }
 
-// Validate validates this v1 list clusters response
-func (m *V1ListClustersResponse) Validate(formats strfmt.Registry) error {
+// Validate validates this tidb cloud open apiserverlessv1beta1 list clusters response
+func (m *TidbCloudOpenApiserverlessv1beta1ListClustersResponse) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateClusters(formats); err != nil {
@@ -43,7 +43,7 @@ func (m *V1ListClustersResponse) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1ListClustersResponse) validateClusters(formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1ListClustersResponse) validateClusters(formats strfmt.Registry) error {
 	if swag.IsZero(m.Clusters) { // not required
 		return nil
 	}
@@ -69,8 +69,8 @@ func (m *V1ListClustersResponse) validateClusters(formats strfmt.Registry) error
 	return nil
 }
 
-// ContextValidate validate this v1 list clusters response based on the context it is used
-func (m *V1ListClustersResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this tidb cloud open apiserverlessv1beta1 list clusters response based on the context it is used
+func (m *TidbCloudOpenApiserverlessv1beta1ListClustersResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateClusters(ctx, formats); err != nil {
@@ -83,7 +83,7 @@ func (m *V1ListClustersResponse) ContextValidate(ctx context.Context, formats st
 	return nil
 }
 
-func (m *V1ListClustersResponse) contextValidateClusters(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1ListClustersResponse) contextValidateClusters(ctx context.Context, formats strfmt.Registry) error {
 
 	for i := 0; i < len(m.Clusters); i++ {
 
@@ -109,7 +109,7 @@ func (m *V1ListClustersResponse) contextValidateClusters(ctx context.Context, fo
 }
 
 // MarshalBinary interface implementation
-func (m *V1ListClustersResponse) MarshalBinary() ([]byte, error) {
+func (m *TidbCloudOpenApiserverlessv1beta1ListClustersResponse) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -117,8 +117,8 @@ func (m *V1ListClustersResponse) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1ListClustersResponse) UnmarshalBinary(b []byte) error {
-	var res V1ListClustersResponse
+func (m *TidbCloudOpenApiserverlessv1beta1ListClustersResponse) UnmarshalBinary(b []byte) error {
+	var res TidbCloudOpenApiserverlessv1beta1ListClustersResponse
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

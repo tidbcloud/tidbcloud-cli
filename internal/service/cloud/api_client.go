@@ -39,9 +39,9 @@ import (
 )
 
 const (
-	DefaultApiUrl    = "https://api.tidbcloud.com"
-	DefaultNewApiUrl = "https://serverless.tidbapi.com"
-	userAgent        = "User-Agent"
+	DefaultApiUrl           = apiClient.DefaultHost
+	DefaultServerlessApiUrl = serverlessClient.DefaultHost
+	userAgent               = "User-Agent"
 )
 
 type TiDBCloudClient interface {
@@ -90,8 +90,8 @@ type ClientDelegate struct {
 	sc *serverlessClient.TidbcloudServerless
 }
 
-func NewClientDelegate(publicKey string, privateKey string, apiUrl string, newApiUrl string) (*ClientDelegate, error) {
-	c, ic, cc, bc, sc, err := NewApiClient(publicKey, privateKey, apiUrl, newApiUrl)
+func NewClientDelegate(publicKey string, privateKey string, apiUrl string, serverlessApiUrl string) (*ClientDelegate, error) {
+	c, ic, cc, bc, sc, err := NewApiClient(publicKey, privateKey, apiUrl, serverlessApiUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -200,7 +200,7 @@ func (d *ClientDelegate) DeleteBranch(params *branchOp.DeleteBranchParams, opts 
 	return r, err
 }
 
-func NewApiClient(publicKey string, privateKey string, apiUrl string, newApiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport,
+func NewApiClient(publicKey string, privateKey string, apiUrl string, serverlessApiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport,
 	*connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudBranch, *serverlessClient.TidbcloudServerless, error) {
 	httpclient := &http.Client{
 		Transport: NewTransportWithAgent(&digest.Transport{
@@ -209,19 +209,19 @@ func NewApiClient(publicKey string, privateKey string, apiUrl string, newApiUrl 
 		}, fmt.Sprintf("%s/%s", config.CliName, version.Version)),
 	}
 
-	// Parse the URL
+	// v1beta api
 	u, err := prop.ValidateApiUrl(apiUrl)
 	if err != nil {
 		return nil, nil, nil, nil, nil, err
 	}
 	transport := httpTransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpclient)
 
-	// new api
-	newU, err := prop.ValidateApiUrl(newApiUrl)
+	// serverless api
+	serverlessUrl, err := prop.ValidateApiUrl(serverlessApiUrl)
 	if err != nil {
 		return nil, nil, nil, nil, nil, err
 	}
-	newTransport := httpTransport.NewWithClient(newU.Host, serverlessClient.DefaultBasePath, []string{newU.Scheme}, httpclient)
+	newTransport := httpTransport.NewWithClient(serverlessUrl.Host, serverlessClient.DefaultBasePath, []string{serverlessUrl.Scheme}, httpclient)
 
 	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default),
 		branchClient.New(transport, strfmt.Default), serverlessClient.New(newTransport, strfmt.Default), nil

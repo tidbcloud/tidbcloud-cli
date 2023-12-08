@@ -14,17 +14,17 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// V1ListRegionsResponse Responses message to the request for listing of available regions in TiDB Serverless.
+// TidbCloudOpenApiserverlessv1beta1ListRegionsResponse Responses message to the request for listing of available regions in TiDB Serverless.
 //
-// swagger:model v1ListRegionsResponse
-type V1ListRegionsResponse struct {
+// swagger:model tidb_cloud_open_apiserverlessv1beta1ListRegionsResponse
+type TidbCloudOpenApiserverlessv1beta1ListRegionsResponse struct {
 
 	// A list of available regions.
-	Regions []*TidbCloudApiserverlessv1Region `json:"regions"`
+	Regions []*TidbCloudOpenApiserverlessv1beta1Region `json:"regions"`
 }
 
-// Validate validates this v1 list regions response
-func (m *V1ListRegionsResponse) Validate(formats strfmt.Registry) error {
+// Validate validates this tidb cloud open apiserverlessv1beta1 list regions response
+func (m *TidbCloudOpenApiserverlessv1beta1ListRegionsResponse) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateRegions(formats); err != nil {
@@ -37,7 +37,7 @@ func (m *V1ListRegionsResponse) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1ListRegionsResponse) validateRegions(formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1ListRegionsResponse) validateRegions(formats strfmt.Registry) error {
 	if swag.IsZero(m.Regions) { // not required
 		return nil
 	}
@@ -63,8 +63,8 @@ func (m *V1ListRegionsResponse) validateRegions(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this v1 list regions response based on the context it is used
-func (m *V1ListRegionsResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this tidb cloud open apiserverlessv1beta1 list regions response based on the context it is used
+func (m *TidbCloudOpenApiserverlessv1beta1ListRegionsResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateRegions(ctx, formats); err != nil {
@@ -77,7 +77,7 @@ func (m *V1ListRegionsResponse) ContextValidate(ctx context.Context, formats str
 	return nil
 }
 
-func (m *V1ListRegionsResponse) contextValidateRegions(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1ListRegionsResponse) contextValidateRegions(ctx context.Context, formats strfmt.Registry) error {
 
 	for i := 0; i < len(m.Regions); i++ {
 
@@ -103,7 +103,7 @@ func (m *V1ListRegionsResponse) contextValidateRegions(ctx context.Context, form
 }
 
 // MarshalBinary interface implementation
-func (m *V1ListRegionsResponse) MarshalBinary() ([]byte, error) {
+func (m *TidbCloudOpenApiserverlessv1beta1ListRegionsResponse) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -111,8 +111,8 @@ func (m *V1ListRegionsResponse) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1ListRegionsResponse) UnmarshalBinary(b []byte) error {
-	var res V1ListRegionsResponse
+func (m *TidbCloudOpenApiserverlessv1beta1ListRegionsResponse) UnmarshalBinary(b []byte) error {
+	var res TidbCloudOpenApiserverlessv1beta1ListRegionsResponse
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

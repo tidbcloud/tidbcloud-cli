@@ -30,13 +30,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ListClustersResponse"
+              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1ListClustersResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/googlerpcStatus"
             }
           }
         },
@@ -69,14 +69,6 @@
             "in": "query",
             "required": false,
             "type": "string"
-          },
-          {
-            "name": "projectId",
-            "description": "Optional. The project ID to list clusters for.",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "format": "uint64"
           }
         ],
         "tags": [
@@ -90,13 +82,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1Cluster"
+              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/googlerpcStatus"
             }
           }
         },
@@ -107,7 +99,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1Cluster",
+              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster",
               "required": [
                 "cluster"
               ]
@@ -127,13 +119,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1Cluster"
+              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/googlerpcStatus"
             }
           }
         },
@@ -165,7 +157,7 @@
                       "description": "Required. User friendly display name of the cluster."
                     },
                     "region": {
-                      "$ref": "#/definitions/tidb_cloud_apiserverlessv1Region",
+                      "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Region",
                       "description": "Required. Region where the cluster will be created."
                     },
                     "spendingLimit": {
@@ -183,7 +175,7 @@
                       "readOnly": true
                     },
                     "automatedBackupPolicy": {
-                      "$ref": "#/definitions/v1ClusterAutomatedBackupPolicy",
+                      "$ref": "#/definitions/v1beta1ClusterAutomatedBackupPolicy",
                       "description": "Optional. Automated backup policy to set on the cluster."
                     },
                     "userPrefix": {
@@ -192,11 +184,11 @@
                       "readOnly": true
                     },
                     "endpoints": {
-                      "$ref": "#/definitions/v1ClusterEndpoints",
+                      "$ref": "#/definitions/v1beta1ClusterEndpoints",
                       "description": "Optional. The endpoints for connecting to the cluster."
                     },
                     "state": {
-                      "$ref": "#/definitions/ClusterState",
+                      "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1ClusterState",
                       "description": "Output_only. The current state of the cluster.",
                       "readOnly": true
                     },
@@ -206,7 +198,7 @@
                       "readOnly": true
                     },
                     "encryptionConfig": {
-                      "$ref": "#/definitions/v1ClusterEncryptionConfig",
+                      "$ref": "#/definitions/v1beta1ClusterEncryptionConfig",
                       "description": "Optional. Encryption settings for the cluster."
                     },
                     "labels": {
@@ -266,13 +258,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1Cluster"
+              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/googlerpcStatus"
             }
           }
         },
@@ -309,13 +301,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1Cluster"
+              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/googlerpcStatus"
             }
           }
         },
@@ -341,13 +333,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ChangeRootPasswordResponse"
+              "$ref": "#/definitions/v1beta1ChangeRootPasswordResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/googlerpcStatus"
             }
           }
         },
@@ -391,13 +383,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1ListRegionsResponse"
+              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1ListRegionsResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/googlerpcStatus"
             }
           }
         },
@@ -418,20 +410,6 @@
         }
       },
       "description": "Message for spending limit configuration."
-    },
-    "ClusterState": {
-      "type": "string",
-      "enum": [
-        "STATE_UNSPECIFIED",
-        "CREATING",
-        "DELETING",
-        "ACTIVE",
-        "RESTORING",
-        "MAINTENANCE",
-        "DELETED"
-      ],
-      "default": "STATE_UNSPECIFIED",
-      "description": "Enum for current state of a cluster.\n\n - STATE_UNSPECIFIED: Unspecified state.\n - CREATING: Cluster is being created.\n - DELETING: Cluster is being deleted.\n - ACTIVE: Cluster is active for use.\n - RESTORING: Cluster data is being restored.\n - MAINTENANCE: Cluster is under maintenance.\n - DELETED: Cluster has been deleted."
     },
     "ClusterUsage": {
       "type": "object",
@@ -525,24 +503,15 @@
     "PrivateGCP": {
       "type": "object",
       "properties": {
-        "targetServiceAccount": {
+        "serviceAttachmentName": {
           "type": "string",
-          "description": "Output_only. The target GCP service account for private access.",
+          "description": "Output_only. The target GCP service attachment name for private access.",
           "readOnly": true
         }
       },
       "description": "Message for GCP Private Service information."
     },
-    "protobufAny": {
-      "type": "object",
-      "properties": {
-        "@type": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": {}
-    },
-    "rpcStatus": {
+    "googlerpcStatus": {
       "type": "object",
       "properties": {
         "code": {
@@ -561,34 +530,16 @@
         }
       }
     },
-    "tidb_cloud_apiserverlessv1Region": {
+    "protobufAny": {
       "type": "object",
       "properties": {
-        "name": {
-          "type": "string",
-          "description": "Required. Immutable. The unique name of the region."
-        },
-        "displayName": {
-          "type": "string",
-          "description": "Output_only. Immutable. User-friendly display name of the region.",
-          "readOnly": true
-        },
-        "provider": {
-          "$ref": "#/definitions/v1RegionCloudProvider",
-          "description": "Output_only. Immutable. The cloud provider for the region.",
-          "readOnly": true
+        "@type": {
+          "type": "string"
         }
       },
-      "description": "Message for describing a region for deploying TiDB Serverless clusters.",
-      "required": [
-        "name"
-      ]
+      "additionalProperties": {}
     },
-    "v1ChangeRootPasswordResponse": {
-      "type": "object",
-      "description": "Responses message to the request for changing the root password of a TiDB Serverless cluster."
-    },
-    "v1Cluster": {
+    "tidb_cloud_open_apiserverlessv1beta1Cluster": {
       "type": "object",
       "properties": {
         "name": {
@@ -606,7 +557,7 @@
           "description": "Required. User friendly display name of the cluster."
         },
         "region": {
-          "$ref": "#/definitions/tidb_cloud_apiserverlessv1Region",
+          "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Region",
           "description": "Required. Region where the cluster will be created."
         },
         "spendingLimit": {
@@ -624,7 +575,7 @@
           "readOnly": true
         },
         "automatedBackupPolicy": {
-          "$ref": "#/definitions/v1ClusterAutomatedBackupPolicy",
+          "$ref": "#/definitions/v1beta1ClusterAutomatedBackupPolicy",
           "description": "Optional. Automated backup policy to set on the cluster."
         },
         "userPrefix": {
@@ -633,11 +584,11 @@
           "readOnly": true
         },
         "endpoints": {
-          "$ref": "#/definitions/v1ClusterEndpoints",
+          "$ref": "#/definitions/v1beta1ClusterEndpoints",
           "description": "Optional. The endpoints for connecting to the cluster."
         },
         "state": {
-          "$ref": "#/definitions/ClusterState",
+          "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1ClusterState",
           "description": "Output_only. The current state of the cluster.",
           "readOnly": true
         },
@@ -647,7 +598,7 @@
           "readOnly": true
         },
         "encryptionConfig": {
-          "$ref": "#/definitions/v1ClusterEncryptionConfig",
+          "$ref": "#/definitions/v1beta1ClusterEncryptionConfig",
           "description": "Optional. Encryption settings for the cluster."
         },
         "labels": {
@@ -683,7 +634,85 @@
         "region"
       ]
     },
-    "v1ClusterAutomatedBackupPolicy": {
+    "tidb_cloud_open_apiserverlessv1beta1ClusterState": {
+      "type": "string",
+      "enum": [
+        "STATE_UNSPECIFIED",
+        "CREATING",
+        "DELETING",
+        "ACTIVE",
+        "RESTORING",
+        "MAINTENANCE",
+        "DELETED"
+      ],
+      "default": "STATE_UNSPECIFIED",
+      "description": "Enum for current state of a cluster.\n\n - STATE_UNSPECIFIED: Unspecified state.\n - CREATING: Cluster is being created.\n - DELETING: Cluster is being deleted.\n - ACTIVE: Cluster is active for use.\n - RESTORING: Cluster data is being restored.\n - MAINTENANCE: Cluster is under maintenance.\n - DELETED: Cluster has been deleted."
+    },
+    "tidb_cloud_open_apiserverlessv1beta1ListClustersResponse": {
+      "type": "object",
+      "properties": {
+        "clusters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
+          },
+          "description": "A list of clusters."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Token provided to retrieve the next page of results."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Total number of available clusters."
+        }
+      },
+      "description": "Responses message to the request for listing of TiDB Serverless clusters."
+    },
+    "tidb_cloud_open_apiserverlessv1beta1ListRegionsResponse": {
+      "type": "object",
+      "properties": {
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Region"
+          },
+          "description": "A list of available regions."
+        }
+      },
+      "description": "Responses message to the request for listing of available regions in TiDB Serverless."
+    },
+    "tidb_cloud_open_apiserverlessv1beta1Region": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Required. Immutable. The unique name of the region."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Output_only. Immutable. User-friendly display name of the region.",
+          "readOnly": true
+        },
+        "provider": {
+          "$ref": "#/definitions/v1beta1RegionCloudProvider",
+          "description": "Output_only. Immutable. The cloud provider for the region.",
+          "readOnly": true
+        }
+      },
+      "description": "Message for describing a region for deploying TiDB Serverless clusters.",
+      "required": [
+        "name"
+      ]
+    },
+    "v1beta1ChangeRootPasswordResponse": {
+      "type": "object",
+      "description": "Responses message to the request for changing the root password of a TiDB Serverless cluster."
+    },
+    "v1beta1ClusterAutomatedBackupPolicy": {
       "type": "object",
       "properties": {
         "startTime": {
@@ -698,7 +727,7 @@
       },
       "description": "Message for automated backup configuration for a cluster."
     },
-    "v1ClusterEncryptionConfig": {
+    "v1beta1ClusterEncryptionConfig": {
       "type": "object",
       "properties": {
         "enhancedEncryptionEnabled": {
@@ -708,7 +737,7 @@
       },
       "description": "Message for encryption settings for a cluster."
     },
-    "v1ClusterEndpoints": {
+    "v1beta1ClusterEndpoints": {
       "type": "object",
       "properties": {
         "publicEndpoint": {
@@ -723,7 +752,7 @@
       },
       "description": "Message for endpoint information for connecting to a cluster."
     },
-    "v1ClusterView": {
+    "v1beta1ClusterView": {
       "type": "string",
       "enum": [
         "CLUSTER_VIEW_UNSPECIFIED",
@@ -733,44 +762,7 @@
       "default": "CLUSTER_VIEW_UNSPECIFIED",
       "description": "Enum for the different types of detail view to be returned for a TiDB Serverless cluster.\n\n - CLUSTER_VIEW_UNSPECIFIED: The server default is used if unspecified.\n - BASIC: Only basic information about the cluster is returned.\n - FULL: All details about the cluster are returned."
     },
-    "v1ListClustersResponse": {
-      "type": "object",
-      "properties": {
-        "clusters": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1Cluster"
-          },
-          "description": "A list of clusters."
-        },
-        "nextPageToken": {
-          "type": "string",
-          "description": "Token provided to retrieve the next page of results."
-        },
-        "totalSize": {
-          "type": "integer",
-          "format": "int32",
-          "description": "Total number of available clusters."
-        }
-      },
-      "description": "Responses message to the request for listing of TiDB Serverless clusters."
-    },
-    "v1ListRegionsResponse": {
-      "type": "object",
-      "properties": {
-        "regions": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/tidb_cloud_apiserverlessv1Region"
-          },
-          "description": "A list of available regions."
-        }
-      },
-      "description": "Responses message to the request for listing of available regions in TiDB Serverless."
-    },
-    "v1RegionCloudProvider": {
+    "v1beta1RegionCloudProvider": {
       "type": "string",
       "enum": [
         "CLOUD_PROVIDER_UNSPECIFIED",

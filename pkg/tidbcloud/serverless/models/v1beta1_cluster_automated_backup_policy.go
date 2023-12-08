@@ -12,10 +12,10 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// V1ClusterAutomatedBackupPolicy Message for automated backup configuration for a cluster.
+// V1beta1ClusterAutomatedBackupPolicy Message for automated backup configuration for a cluster.
 //
-// swagger:model v1ClusterAutomatedBackupPolicy
-type V1ClusterAutomatedBackupPolicy struct {
+// swagger:model v1beta1ClusterAutomatedBackupPolicy
+type V1beta1ClusterAutomatedBackupPolicy struct {
 
 	// Optional. Number of days to retain automated backups.
 	RetentionDays int32 `json:"retentionDays,omitempty"`
@@ -24,18 +24,18 @@ type V1ClusterAutomatedBackupPolicy struct {
 	StartTime string `json:"startTime,omitempty"`
 }
 
-// Validate validates this v1 cluster automated backup policy
-func (m *V1ClusterAutomatedBackupPolicy) Validate(formats strfmt.Registry) error {
+// Validate validates this v1beta1 cluster automated backup policy
+func (m *V1beta1ClusterAutomatedBackupPolicy) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this v1 cluster automated backup policy based on context it is used
-func (m *V1ClusterAutomatedBackupPolicy) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this v1beta1 cluster automated backup policy based on context it is used
+func (m *V1beta1ClusterAutomatedBackupPolicy) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *V1ClusterAutomatedBackupPolicy) MarshalBinary() ([]byte, error) {
+func (m *V1beta1ClusterAutomatedBackupPolicy) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -43,8 +43,8 @@ func (m *V1ClusterAutomatedBackupPolicy) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1ClusterAutomatedBackupPolicy) UnmarshalBinary(b []byte) error {
-	var res V1ClusterAutomatedBackupPolicy
+func (m *V1beta1ClusterAutomatedBackupPolicy) UnmarshalBinary(b []byte) error {
+	var res V1beta1ClusterAutomatedBackupPolicy
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

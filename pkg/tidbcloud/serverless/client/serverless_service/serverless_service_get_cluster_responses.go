@@ -52,7 +52,7 @@ ServerlessServiceGetClusterOK describes a response with status code 200, with de
 A successful response.
 */
 type ServerlessServiceGetClusterOK struct {
-	Payload *models.V1Cluster
+	Payload *models.TidbCloudOpenApiserverlessv1beta1Cluster
 }
 
 // IsSuccess returns true when this serverless service get cluster o k response has a 2xx status code
@@ -93,13 +93,13 @@ func (o *ServerlessServiceGetClusterOK) String() string {
 	return fmt.Sprintf("[GET /clusters/{clusterId}][%d] serverlessServiceGetClusterOK  %+v", 200, o.Payload)
 }
 
-func (o *ServerlessServiceGetClusterOK) GetPayload() *models.V1Cluster {
+func (o *ServerlessServiceGetClusterOK) GetPayload() *models.TidbCloudOpenApiserverlessv1beta1Cluster {
 	return o.Payload
 }
 
 func (o *ServerlessServiceGetClusterOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.V1Cluster)
+	o.Payload = new(models.TidbCloudOpenApiserverlessv1beta1Cluster)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
@@ -124,7 +124,7 @@ An unexpected error response.
 type ServerlessServiceGetClusterDefault struct {
 	_statusCode int
 
-	Payload *models.RPCStatus
+	Payload *models.GooglerpcStatus
 }
 
 // IsSuccess returns true when this serverless service get cluster default response has a 2xx status code
@@ -165,13 +165,13 @@ func (o *ServerlessServiceGetClusterDefault) String() string {
 	return fmt.Sprintf("[GET /clusters/{clusterId}][%d] ServerlessService_GetCluster default  %+v", o._statusCode, o.Payload)
 }
 
-func (o *ServerlessServiceGetClusterDefault) GetPayload() *models.RPCStatus {
+func (o *ServerlessServiceGetClusterDefault) GetPayload() *models.GooglerpcStatus {
 	return o.Payload
 }
 
 func (o *ServerlessServiceGetClusterDefault) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.RPCStatus)
+	o.Payload = new(models.GooglerpcStatus)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

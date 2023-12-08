@@ -14,10 +14,10 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// TidbCloudApiserverlessv1Region Message for describing a region for deploying TiDB Serverless clusters.
+// TidbCloudOpenApiserverlessv1beta1Region Message for describing a region for deploying TiDB Serverless clusters.
 //
-// swagger:model tidb_cloud_apiserverlessv1Region
-type TidbCloudApiserverlessv1Region struct {
+// swagger:model tidb_cloud_open_apiserverlessv1beta1Region
+type TidbCloudOpenApiserverlessv1beta1Region struct {
 
 	// Output_only. Immutable. User-friendly display name of the region.
 	// Read Only: true
@@ -29,11 +29,11 @@ type TidbCloudApiserverlessv1Region struct {
 
 	// Output_only. Immutable. The cloud provider for the region.
 	// Read Only: true
-	Provider *V1RegionCloudProvider `json:"provider,omitempty"`
+	Provider *V1beta1RegionCloudProvider `json:"provider,omitempty"`
 }
 
-// Validate validates this tidb cloud apiserverlessv1 region
-func (m *TidbCloudApiserverlessv1Region) Validate(formats strfmt.Registry) error {
+// Validate validates this tidb cloud open apiserverlessv1beta1 region
+func (m *TidbCloudOpenApiserverlessv1beta1Region) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateName(formats); err != nil {
@@ -50,7 +50,7 @@ func (m *TidbCloudApiserverlessv1Region) Validate(formats strfmt.Registry) error
 	return nil
 }
 
-func (m *TidbCloudApiserverlessv1Region) validateName(formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Region) validateName(formats strfmt.Registry) error {
 
 	if err := validate.Required("name", "body", m.Name); err != nil {
 		return err
@@ -59,7 +59,7 @@ func (m *TidbCloudApiserverlessv1Region) validateName(formats strfmt.Registry) e
 	return nil
 }
 
-func (m *TidbCloudApiserverlessv1Region) validateProvider(formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Region) validateProvider(formats strfmt.Registry) error {
 	if swag.IsZero(m.Provider) { // not required
 		return nil
 	}
@@ -78,8 +78,8 @@ func (m *TidbCloudApiserverlessv1Region) validateProvider(formats strfmt.Registr
 	return nil
 }
 
-// ContextValidate validate this tidb cloud apiserverlessv1 region based on the context it is used
-func (m *TidbCloudApiserverlessv1Region) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this tidb cloud open apiserverlessv1beta1 region based on the context it is used
+func (m *TidbCloudOpenApiserverlessv1beta1Region) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateDisplayName(ctx, formats); err != nil {
@@ -96,7 +96,7 @@ func (m *TidbCloudApiserverlessv1Region) ContextValidate(ctx context.Context, fo
 	return nil
 }
 
-func (m *TidbCloudApiserverlessv1Region) contextValidateDisplayName(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Region) contextValidateDisplayName(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "displayName", "body", string(m.DisplayName)); err != nil {
 		return err
@@ -105,7 +105,7 @@ func (m *TidbCloudApiserverlessv1Region) contextValidateDisplayName(ctx context.
 	return nil
 }
 
-func (m *TidbCloudApiserverlessv1Region) contextValidateProvider(ctx context.Context, formats strfmt.Registry) error {
+func (m *TidbCloudOpenApiserverlessv1beta1Region) contextValidateProvider(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Provider != nil {
 
@@ -127,7 +127,7 @@ func (m *TidbCloudApiserverlessv1Region) contextValidateProvider(ctx context.Con
 }
 
 // MarshalBinary interface implementation
-func (m *TidbCloudApiserverlessv1Region) MarshalBinary() ([]byte, error) {
+func (m *TidbCloudOpenApiserverlessv1beta1Region) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -135,8 +135,8 @@ func (m *TidbCloudApiserverlessv1Region) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *TidbCloudApiserverlessv1Region) UnmarshalBinary(b []byte) error {
-	var res TidbCloudApiserverlessv1Region
+func (m *TidbCloudOpenApiserverlessv1beta1Region) UnmarshalBinary(b []byte) error {
+	var res TidbCloudOpenApiserverlessv1beta1Region
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

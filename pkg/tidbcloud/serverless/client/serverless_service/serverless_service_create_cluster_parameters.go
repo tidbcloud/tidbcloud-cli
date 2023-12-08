@@ -67,7 +67,7 @@ type ServerlessServiceCreateClusterParams struct {
 
 	   Required. The cluster to be created.
 	*/
-	Cluster *models.V1Cluster
+	Cluster *models.TidbCloudOpenApiserverlessv1beta1Cluster
 
 	timeout    time.Duration
 	Context    context.Context
@@ -123,13 +123,13 @@ func (o *ServerlessServiceCreateClusterParams) SetHTTPClient(client *http.Client
 }
 
 // WithCluster adds the cluster to the serverless service create cluster params
-func (o *ServerlessServiceCreateClusterParams) WithCluster(cluster *models.V1Cluster) *ServerlessServiceCreateClusterParams {
+func (o *ServerlessServiceCreateClusterParams) WithCluster(cluster *models.TidbCloudOpenApiserverlessv1beta1Cluster) *ServerlessServiceCreateClusterParams {
 	o.SetCluster(cluster)
 	return o
 }
 
 // SetCluster adds the cluster to the serverless service create cluster params
-func (o *ServerlessServiceCreateClusterParams) SetCluster(cluster *models.V1Cluster) {
+func (o *ServerlessServiceCreateClusterParams) SetCluster(cluster *models.TidbCloudOpenApiserverlessv1beta1Cluster) {
 	o.Cluster = cluster
 }
 

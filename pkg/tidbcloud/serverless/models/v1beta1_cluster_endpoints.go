@@ -13,10 +13,10 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// V1ClusterEndpoints Message for endpoint information for connecting to a cluster.
+// V1beta1ClusterEndpoints Message for endpoint information for connecting to a cluster.
 //
-// swagger:model v1ClusterEndpoints
-type V1ClusterEndpoints struct {
+// swagger:model v1beta1ClusterEndpoints
+type V1beta1ClusterEndpoints struct {
 
 	// Output_only. Private endpoint to securely connect to the cluster.
 	// Read Only: true
@@ -26,8 +26,8 @@ type V1ClusterEndpoints struct {
 	PublicEndpoint *EndpointsPublic `json:"publicEndpoint,omitempty"`
 }
 
-// Validate validates this v1 cluster endpoints
-func (m *V1ClusterEndpoints) Validate(formats strfmt.Registry) error {
+// Validate validates this v1beta1 cluster endpoints
+func (m *V1beta1ClusterEndpoints) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validatePrivateEndpoint(formats); err != nil {
@@ -44,7 +44,7 @@ func (m *V1ClusterEndpoints) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1ClusterEndpoints) validatePrivateEndpoint(formats strfmt.Registry) error {
+func (m *V1beta1ClusterEndpoints) validatePrivateEndpoint(formats strfmt.Registry) error {
 	if swag.IsZero(m.PrivateEndpoint) { // not required
 		return nil
 	}
@@ -63,7 +63,7 @@ func (m *V1ClusterEndpoints) validatePrivateEndpoint(formats strfmt.Registry) er
 	return nil
 }
 
-func (m *V1ClusterEndpoints) validatePublicEndpoint(formats strfmt.Registry) error {
+func (m *V1beta1ClusterEndpoints) validatePublicEndpoint(formats strfmt.Registry) error {
 	if swag.IsZero(m.PublicEndpoint) { // not required
 		return nil
 	}
@@ -82,8 +82,8 @@ func (m *V1ClusterEndpoints) validatePublicEndpoint(formats strfmt.Registry) err
 	return nil
 }
 
-// ContextValidate validate this v1 cluster endpoints based on the context it is used
-func (m *V1ClusterEndpoints) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this v1beta1 cluster endpoints based on the context it is used
+func (m *V1beta1ClusterEndpoints) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidatePrivateEndpoint(ctx, formats); err != nil {
@@ -100,7 +100,7 @@ func (m *V1ClusterEndpoints) ContextValidate(ctx context.Context, formats strfmt
 	return nil
 }
 
-func (m *V1ClusterEndpoints) contextValidatePrivateEndpoint(ctx context.Context, formats strfmt.Registry) error {
+func (m *V1beta1ClusterEndpoints) contextValidatePrivateEndpoint(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.PrivateEndpoint != nil {
 
@@ -121,7 +121,7 @@ func (m *V1ClusterEndpoints) contextValidatePrivateEndpoint(ctx context.Context,
 	return nil
 }
 
-func (m *V1ClusterEndpoints) contextValidatePublicEndpoint(ctx context.Context, formats strfmt.Registry) error {
+func (m *V1beta1ClusterEndpoints) contextValidatePublicEndpoint(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.PublicEndpoint != nil {
 
@@ -143,7 +143,7 @@ func (m *V1ClusterEndpoints) contextValidatePublicEndpoint(ctx context.Context, 
 }
 
 // MarshalBinary interface implementation
-func (m *V1ClusterEndpoints) MarshalBinary() ([]byte, error) {
+func (m *V1beta1ClusterEndpoints) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -151,8 +151,8 @@ func (m *V1ClusterEndpoints) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1ClusterEndpoints) UnmarshalBinary(b []byte) error {
-	var res V1ClusterEndpoints
+func (m *V1beta1ClusterEndpoints) UnmarshalBinary(b []byte) error {
+	var res V1beta1ClusterEndpoints
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

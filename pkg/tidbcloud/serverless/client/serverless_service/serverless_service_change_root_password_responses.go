@@ -56,7 +56,7 @@ ServerlessServiceChangeRootPasswordOK describes a response with status code 200,
 A successful response.
 */
 type ServerlessServiceChangeRootPasswordOK struct {
-	Payload models.V1ChangeRootPasswordResponse
+	Payload models.V1beta1ChangeRootPasswordResponse
 }
 
 // IsSuccess returns true when this serverless service change root password o k response has a 2xx status code
@@ -97,7 +97,7 @@ func (o *ServerlessServiceChangeRootPasswordOK) String() string {
 	return fmt.Sprintf("[PUT /clusters/{clusterId}/password][%d] serverlessServiceChangeRootPasswordOK  %+v", 200, o.Payload)
 }
 
-func (o *ServerlessServiceChangeRootPasswordOK) GetPayload() models.V1ChangeRootPasswordResponse {
+func (o *ServerlessServiceChangeRootPasswordOK) GetPayload() models.V1beta1ChangeRootPasswordResponse {
 	return o.Payload
 }
 
@@ -126,7 +126,7 @@ An unexpected error response.
 type ServerlessServiceChangeRootPasswordDefault struct {
 	_statusCode int
 
-	Payload *models.RPCStatus
+	Payload *models.GooglerpcStatus
 }
 
 // IsSuccess returns true when this serverless service change root password default response has a 2xx status code
@@ -167,13 +167,13 @@ func (o *ServerlessServiceChangeRootPasswordDefault) String() string {
 	return fmt.Sprintf("[PUT /clusters/{clusterId}/password][%d] ServerlessService_ChangeRootPassword default  %+v", o._statusCode, o.Payload)
 }
 
-func (o *ServerlessServiceChangeRootPasswordDefault) GetPayload() *models.RPCStatus {
+func (o *ServerlessServiceChangeRootPasswordDefault) GetPayload() *models.GooglerpcStatus {
 	return o.Payload
 }
 
 func (o *ServerlessServiceChangeRootPasswordDefault) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.RPCStatus)
+	o.Payload = new(models.GooglerpcStatus)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
