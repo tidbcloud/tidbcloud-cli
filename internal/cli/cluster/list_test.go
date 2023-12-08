@@ -17,6 +17,7 @@ package cluster
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -189,8 +190,9 @@ func (suite *ListClusterSuite) TestListClusterArgs() {
 	}
 	projectID := "12345"
 	pageSize := int32(suite.h.QueryPageSize)
+	filter := fmt.Sprintf("projectId=%s", projectID)
 	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
-		WithPageToken(&page).WithPageSize(&pageSize)).
+		WithPageToken(&page).WithPageSize(&pageSize).WithFilter(&filter)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -249,11 +251,12 @@ func (suite *ListClusterSuite) TestListClusterWithMultiPages() {
 		Payload: body,
 	}
 	projectID := "12345"
+	filter := fmt.Sprintf("projectId=%s", projectID)
 	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
-		WithPageToken(&pageOne).WithPageSize(&pageSize)).
+		WithPageToken(&pageOne).WithPageSize(&pageSize).WithFilter(&filter)).
 		Return(result, nil)
 	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
-		WithPageToken(&pageTwo).WithPageSize(&pageSize)).
+		WithPageToken(&pageTwo).WithPageSize(&pageSize).WithFilter(&filter)).
 		Return(result, nil)
 	cmd := ListCmd(suite.h)
 

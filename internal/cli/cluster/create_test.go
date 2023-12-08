@@ -63,7 +63,6 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 	regionName := "regions/aws-us-west-1"
 	cloudProvider := "AWS"
 	region := "us-west-1"
-	clusterType := "SERVERLESS"
 	v1Cluster := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 		DisplayName: &clusterName,
 		Region: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Region{
@@ -99,12 +98,12 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 	}{
 		{
 			name:         "create cluster success",
-			args:         []string{"--project-id", projectID, "--cluster-name", clusterName, "--cluster-type", clusterType, "--cloud-provider", cloudProvider, "--region", region},
+			args:         []string{"--project-id", projectID, "--cluster-name", clusterName, "--cloud-provider", cloudProvider, "--region", region},
 			stdoutString: "... Waiting for cluster to be ready\nCluster 12345 is ready.",
 		},
 		{
 			name:         "create cluster with shorthand flag",
-			args:         []string{"-p", projectID, "--cluster-name", clusterName, "--cluster-type", clusterType, "--cloud-provider", cloudProvider, "-r", region},
+			args:         []string{"-p", projectID, "--cluster-name", clusterName, "--cloud-provider", cloudProvider, "-r", region},
 			stdoutString: "... Waiting for cluster to be ready\nCluster 12345 is ready.",
 		},
 	}
@@ -135,7 +134,6 @@ func (suite *CreateClusterSuite) TestCreateClusterWithoutProject() {
 	regionName := "regions/aws-us-west-1"
 	cloudProvider := "AWS"
 	region := "us-west-1"
-	clusterType := "SERVERLESS"
 
 	v1ClusterWithoutProject := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 		DisplayName: &clusterName,
@@ -171,7 +169,7 @@ func (suite *CreateClusterSuite) TestCreateClusterWithoutProject() {
 	}{
 		{
 			name:         "without project id",
-			args:         []string{"--cluster-name", clusterName, "--cluster-type", clusterType, "--cloud-provider", cloudProvider, "-r", region},
+			args:         []string{"--cluster-name", clusterName, "--cloud-provider", cloudProvider, "-r", region},
 			stdoutString: "... Waiting for cluster to be ready\nCluster 12345 is ready.",
 		},
 	}

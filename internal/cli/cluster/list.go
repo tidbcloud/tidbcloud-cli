@@ -155,5 +155,6 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, "Output format, One of [\"human\" \"json\"], for the complete result, please use json format")
+	listCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project")
 	return listCmd
 }
