@@ -39,8 +39,8 @@ import (
 )
 
 const (
-	DefaultApiUrl           = apiClient.DefaultHost
-	DefaultServerlessApiUrl = serverlessClient.DefaultHost
+	DefaultApiUrl           = "https://" + apiClient.DefaultHost
+	DefaultServerlessApiUrl = "https://" + serverlessClient.DefaultHost
 	userAgent               = "User-Agent"
 )
 
