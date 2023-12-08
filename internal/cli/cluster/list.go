@@ -34,6 +34,12 @@ type ListOpts struct {
 	interactive bool
 }
 
+func (c ListOpts) NonInteractiveFlags() []string {
+	return []string{
+		flag.ProjectID,
+	}
+}
+
 func ListCmd(h *internal.Helper) *cobra.Command {
 	opts := ListOpts{
 		interactive: true,
@@ -41,20 +47,24 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 	var listCmd = &cobra.Command{
 		Use:         "list <project-id>",
-		Short:       "List all clusters in a project",
+		Short:       "List all serverless clusters in a project",
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  List all clusters in the project(interactive mode):
- $ %[1]s cluster list
+		Example: fmt.Sprintf(`  List all serverless clusters in the project(interactive mode):
+ $ %[1]s serverless list
 
- List the clusters in the project(non-interactive mode):
- $ %[1]s cluster list <project-id>
+ List the serverless clusters in the project(non-interactive mode):
+ $ %[1]s serverless list -p <project-id>
 
- List the clusters in the project with json format:
- $ %[1]s cluster list <project-id> -o json`, config.CliName),
+ List the serverless clusters in the project with json format:
+ $ %[1]s serverless list -p <project-id> -o json`, config.CliName),
 		Aliases: []string{"ls"},
 		PreRun: func(cmd *cobra.Command, args []string) {
-			if len(args) > 0 {
-				opts.interactive = false
+			flags := opts.NonInteractiveFlags()
+			for _, fn := range flags {
+				f := cmd.Flags().Lookup(fn)
+				if f != nil && f.Changed {
+					opts.interactive = false
+				}
 			}
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -77,12 +87,16 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				}
 				pID = project.ID
 			} else {
-				pID = args[0]
+				// non-interactive mode does not need projectID
+				pID, err = cmd.Flags().GetString(flag.ProjectID)
+				if err != nil {
+					return errors.Trace(err)
+				}
 			}
 
 			cmd.Annotations[telemetry.ProjectID] = pID
 
-			total, items, err := cloud.RetrieveClusters(pID, int32(h.QueryPageSize), d)
+			total, items, err := cloud.RetrieveClusters(pID, h.QueryPageSize, d)
 			if err != nil {
 				return err
 			}
@@ -95,7 +109,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			// for terminal which can prompt, humanFormat is the default format.
 			// for other terminals, json format is the default format.
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				res := &serverlessModel.V1ListClustersResponse{
+				res := &serverlessModel.TidbCloudOpenApiserverlessv1beta1ListClustersResponse{
 					Clusters:  items,
 					TotalSize: total,
 				}

@@ -181,7 +181,7 @@ func (suite *ListClusterSuite) TestListClusterArgs() {
 	assert := require.New(suite.T())
 	var page string = "1"
 
-	body := &serverlessModel.V1ListClustersResponse{}
+	body := &serverlessModel.TidbCloudOpenApiserverlessv1beta1ListClustersResponse{}
 	err := json.Unmarshal([]byte(listResultStr), body)
 	assert.Nil(err)
 	result := &serverlessApi.ServerlessServiceListClustersOK{
@@ -190,7 +190,7 @@ func (suite *ListClusterSuite) TestListClusterArgs() {
 	projectID := "12345"
 	pageSize := int32(suite.h.QueryPageSize)
 	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
-		WithProjectID(&projectID).WithPageToken(&page).WithPageSize(&pageSize)).
+		WithPageToken(&page).WithPageSize(&pageSize)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -242,7 +242,7 @@ func (suite *ListClusterSuite) TestListClusterWithMultiPages() {
 	suite.h.QueryPageSize = 1
 	pageSize := int32(suite.h.QueryPageSize)
 
-	body := &serverlessModel.V1ListClustersResponse{}
+	body := &serverlessModel.TidbCloudOpenApiserverlessv1beta1ListClustersResponse{}
 	err := json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"totalSize": 1`, `"totalSize": 2`)), body)
 	assert.Nil(err)
 	result := &serverlessApi.ServerlessServiceListClustersOK{
@@ -250,10 +250,10 @@ func (suite *ListClusterSuite) TestListClusterWithMultiPages() {
 	}
 	projectID := "12345"
 	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
-		WithProjectID(&projectID).WithPageToken(&pageOne).WithPageSize(&pageSize)).
+		WithPageToken(&pageOne).WithPageSize(&pageSize)).
 		Return(result, nil)
 	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
-		WithProjectID(&projectID).WithPageToken(&pageTwo).WithPageSize(&pageSize)).
+		WithPageToken(&pageTwo).WithPageSize(&pageSize)).
 		Return(result, nil)
 	cmd := ListCmd(suite.h)
 

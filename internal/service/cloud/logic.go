@@ -127,7 +127,7 @@ func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error
 }
 
 func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient) (*Cluster, error) {
-	_, clusterItems, err := RetrieveClusters(projectID, int32(pageSize), client)
+	_, clusterItems, err := RetrieveClusters(projectID, pageSize, client)
 	if err != nil {
 		return nil, err
 	}
@@ -328,16 +328,21 @@ func RetrieveProjects(size int64, d TiDBCloudClient) (int64, []*projectApi.ListP
 	return total, items, nil
 }
 
-func RetrieveClusters(pID string, pageSize int32, d TiDBCloudClient) (int32, []*serverlessModel.V1Cluster, error) {
-	params := serverlessApi.NewServerlessServiceListClustersParams().WithProjectID(&pID)
-	var total int32 = math.MaxInt32
-	var page int32 = 1
-	var items []*serverlessModel.V1Cluster
+func RetrieveClusters(pID string, pageSize int64, d TiDBCloudClient) (int64, []*serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+	params := serverlessApi.NewServerlessServiceListClustersParams()
+	if pID != "" {
+		projectFilter := fmt.Sprintf("projectId=%s", pID)
+		params.WithFilter(&projectFilter)
+	}
+	var total int64 = math.MaxInt64
+	var page int64 = 1
+	pageSizeInt32 := int32(pageSize)
+	var items []*serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster
 	// loop to get all clusters
 	for (page-1)*pageSize < total {
 		// convert int32 to string
 		pageToken := strconv.Itoa(int(page))
-		clusters, err := d.ListClustersOfProject(params.WithPageToken(&pageToken).WithPageSize(&pageSize))
+		clusters, err := d.ListClustersOfProject(params.WithPageToken(&pageToken).WithPageSize(&pageSizeInt32))
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}

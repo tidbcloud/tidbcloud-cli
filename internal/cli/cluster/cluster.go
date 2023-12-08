@@ -22,8 +22,8 @@ import (
 
 func ClusterCmd(h *internal.Helper) *cobra.Command {
 	var clusterCmd = &cobra.Command{
-		Use:   "cluster",
-		Short: "Manage your clusters",
+		Use:   "serverless",
+		Short: "Manage your TiDB Serverless clusters",
 	}
 
 	clusterCmd.AddCommand(CreateCmd(h))

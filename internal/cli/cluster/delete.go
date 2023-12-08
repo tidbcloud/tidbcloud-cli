@@ -52,13 +52,13 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 	var force bool
 	var deleteCmd = &cobra.Command{
 		Use:         "delete",
-		Short:       "Delete a cluster",
+		Short:       "Delete a serverless cluster",
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Delete a cluster in interactive mode:
- $ %[1]s cluster delete
+		Example: fmt.Sprintf(`  Delete a serverless cluster in interactive mode:
+ $ %[1]s serverless delete
 
- Delete a cluster in non-interactive mode:
- $ %[1]s cluster delete -c <cluster-id>`, config.CliName),
+ Delete a serverless cluster in non-interactive mode:
+ $ %[1]s serverless delete -c <cluster-id>`, config.CliName),
 		Aliases: []string{"rm"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()

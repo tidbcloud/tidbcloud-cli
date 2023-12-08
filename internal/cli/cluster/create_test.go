@@ -64,15 +64,15 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 	cloudProvider := "AWS"
 	region := "us-west-1"
 	clusterType := "SERVERLESS"
-	v1Cluster := &serverlessModel.V1Cluster{
+	v1Cluster := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 		DisplayName: &clusterName,
-		Region: &serverlessModel.TidbCloudApiserverlessv1Region{
+		Region: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Region{
 			Name: &regionName,
 		},
 		Labels: map[string]string{"tidb.cloud/project": projectID},
 	}
 
-	body := &serverlessModel.V1Cluster{}
+	body := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{}
 	err := json.Unmarshal([]byte(getClusterResultStr), body)
 	assert.Nil(err)
 	res := &serverlessApi.ServerlessServiceGetClusterOK{
@@ -82,7 +82,7 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 	suite.mockClient.On("CreateCluster", serverlessApi.NewServerlessServiceCreateClusterParams().
 		WithCluster(v1Cluster)).
 		Return(&serverlessApi.ServerlessServiceCreateClusterOK{
-			Payload: &serverlessModel.V1Cluster{
+			Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 				ClusterID: clusterID,
 			},
 		}, nil)
@@ -137,14 +137,14 @@ func (suite *CreateClusterSuite) TestCreateClusterWithoutProject() {
 	region := "us-west-1"
 	clusterType := "SERVERLESS"
 
-	v1ClusterWithoutProject := &serverlessModel.V1Cluster{
+	v1ClusterWithoutProject := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 		DisplayName: &clusterName,
-		Region: &serverlessModel.TidbCloudApiserverlessv1Region{
+		Region: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Region{
 			Name: &regionName,
 		},
 	}
 
-	body := &serverlessModel.V1Cluster{}
+	body := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{}
 	err := json.Unmarshal([]byte(getClusterResultStr), body)
 	assert.Nil(err)
 	res := &serverlessApi.ServerlessServiceGetClusterOK{
@@ -154,7 +154,7 @@ func (suite *CreateClusterSuite) TestCreateClusterWithoutProject() {
 	suite.mockClient.On("CreateCluster", serverlessApi.NewServerlessServiceCreateClusterParams().
 		WithCluster(v1ClusterWithoutProject)).
 		Return(&serverlessApi.ServerlessServiceCreateClusterOK{
-			Payload: &serverlessModel.V1Cluster{
+			Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 				ClusterID: clusterID,
 			},
 		}, nil)

@@ -55,7 +55,7 @@ const (
 )
 
 type CreateOpts struct {
-	serverlessProviders []*serverlessModel.TidbCloudApiserverlessv1Region
+	serverlessProviders []*serverlessModel.TidbCloudOpenApiserverlessv1beta1Region
 	interactive         bool
 }
 
@@ -72,7 +72,6 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 func (c CreateOpts) RequiredFlags() []string {
 	return []string{
 		flag.ClusterName,
-		flag.ClusterType,
 		flag.CloudProvider,
 		flag.Region,
 	}
@@ -85,16 +84,16 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	var createCmd = &cobra.Command{
 		Use:         "create",
-		Short:       "Create one cluster",
+		Short:       "Create one serverless cluster",
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Create a cluster in interactive mode:
-  $ %[1]s cluster create
+		Example: fmt.Sprintf(`  Create a serverless cluster in interactive mode:
+  $ %[1]s serverless create
 
-  Create a cluster of the default ptoject in non-interactive mode:
-  $ %[1]s cluster create --cluster-name <cluster-name> --cloud-provider <cloud-provider> -r <region> --cluster-type <cluster-type>
+  Create a serverless cluster of the default ptoject in non-interactive mode:
+  $ %[1]s serverless create --cluster-name <cluster-name> --cloud-provider <cloud-provider> -r <region>
 
-  Create a cluster in non-interactive mode:
-  $ %[1]s cluster create --project-id <project-id> --cluster-name <cluster-name> --cloud-provider <cloud-provider> -r <region> --cluster-type <cluster-type>`,
+  Create a serverless cluster in non-interactive mode:
+  $ %[1]s serverless create --project-id <project-id> --cluster-name <cluster-name> --cloud-provider <cloud-provider> -r <region>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -124,7 +123,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			var clusterName string
-			var clusterType string
 			var cloudProvider string
 			var region string
 			var projectID string
@@ -142,30 +140,16 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 				opts.serverlessProviders = regions.Payload.Regions
 
-				model, err := ui.InitialSelectModel([]interface{}{serverlessType}, "Choose the cluster type:")
+				// distinct cloud providers
+				providers := hashset.New()
+				for _, provider := range opts.serverlessProviders {
+					providers.Add(string(*provider.Provider))
+				}
+				model, err := ui.InitialSelectModel(providers.Values(), "Choose the cloud provider:")
 				if err != nil {
 					return err
 				}
 				p := tea.NewProgram(model)
-				typeModel, err := p.StartReturningModel()
-				if err != nil {
-					return errors.Trace(err)
-				}
-				if m, _ := typeModel.(ui.SelectModel); m.Interrupted {
-					return util.InterruptError
-				}
-				clusterType = typeModel.(ui.SelectModel).Choices[typeModel.(ui.SelectModel).Selected].(string)
-
-				// distinct cloud providers
-				set := hashset.New()
-				for _, provider := range opts.serverlessProviders {
-					set.Add(string(*provider.Provider))
-				}
-				model, err = ui.InitialSelectModel(set.Values(), "Choose the cloud provider:")
-				if err != nil {
-					return err
-				}
-				p = tea.NewProgram(model)
 				providerModel, err := p.StartReturningModel()
 				if err != nil {
 					return errors.Trace(err)
@@ -176,17 +160,17 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				cloudProvider = providerModel.(ui.SelectModel).Choices[providerModel.(ui.SelectModel).Selected].(string)
 
 				// filter out regions for the selected cloud provider
-				set = hashset.New()
+				regionSet := hashset.New()
 				for _, provider := range opts.serverlessProviders {
 					if string(*provider.Provider) == cloudProvider {
-						set.Add(cloud.Region{
+						regionSet.Add(cloud.Region{
 							Name:        *provider.Name,
 							DisplayName: provider.DisplayName,
 							Provider:    string(*provider.Provider),
 						})
 					}
 				}
-				model, err = ui.InitialSelectModel(set.Values(), "Choose the cloud region:")
+				model, err = ui.InitialSelectModel(regionSet.Values(), "Choose the cloud region:")
 				if err != nil {
 					return err
 				}
@@ -240,10 +224,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				clusterType, err = cmd.Flags().GetString(flag.ClusterType)
-				if err != nil {
-					return errors.Trace(err)
-				}
 				cloudProvider, err = cmd.Flags().GetString(flag.CloudProvider)
 				if err != nil {
 					return errors.Trace(err)
@@ -267,13 +247,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 			cmd.Annotations[telemetry.ProjectID] = projectID
 
-			if clusterType != serverlessType {
-				return errors.New("Currently only \"SERVERLESS\" cluster are supported to create in CLI")
-			}
-
-			v1Cluster := &serverlessModel.V1Cluster{
+			v1Cluster := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 				DisplayName: &clusterName,
-				Region: &serverlessModel.TidbCloudApiserverlessv1Region{
+				Region: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Region{
 					Name: &region,
 				},
 			}
@@ -288,12 +264,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if h.IOStreams.CanPrompt {
-				err := CreateAndSpinnerWait(ctx, d, projectID, v1Cluster, h)
+				err := CreateAndSpinnerWait(ctx, d, v1Cluster, h)
 				if err != nil {
 					return errors.Trace(err)
 				}
 			} else {
-				err := CreateAndWaitReady(h, d, projectID, v1Cluster)
+				err := CreateAndWaitReady(h, d, v1Cluster)
 				if err != nil {
 					return err
 				}
@@ -304,7 +280,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	createCmd.Flags().String(flag.ClusterName, "", "Name of the cluster to de created")
-	createCmd.Flags().String(flag.ClusterType, "", "Cluster type, only support \"SERVERLESS\" now")
 	createCmd.Flags().String(flag.CloudProvider, "", "Cloud provider, one of [\"AWS\"]")
 	createCmd.Flags().StringP(flag.Region, flag.RegionShort, "", "Cloud region")
 	createCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project, in which the cluster will be created (optional: default \"default project\")")
@@ -312,7 +287,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	return createCmd
 }
 
-func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, projectID string, v1Cluster *serverlessModel.V1Cluster) error {
+func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, v1Cluster *serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster) error {
 	createClusterResult, err := d.CreateCluster(serverlessApi.NewServerlessServiceCreateClusterParams().WithCluster(v1Cluster))
 	if err != nil {
 		return errors.Trace(err)
@@ -342,7 +317,7 @@ func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, projectID s
 	}
 }
 
-func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, projectID string, v1Cluster *serverlessModel.V1Cluster, h *internal.Helper) error {
+func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, v1Cluster *serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster, h *internal.Helper) error {
 	// use spinner to indicate that the cluster is being created
 	task := func() tea.Msg {
 		createClusterResult, err := d.CreateCluster(serverlessApi.NewServerlessServiceCreateClusterParams().WithCluster(v1Cluster))

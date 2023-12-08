@@ -200,8 +200,8 @@ func (suite *MySQLImportSuite) TestMySQLImportArgs() {
 	suite.mockHelper.On("ImportToServerless", mockTool.Anything, importArgs, cachePath).Return(nil)
 	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
 		WithClusterID(clusterID)).Return(&serverlessApi.ServerlessServiceGetClusterOK{
-		Payload: &serverlessModel.V1Cluster{
-			Endpoints: &serverlessModel.V1ClusterEndpoints{
+		Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
+			Endpoints: &serverlessModel.V1beta1ClusterEndpoints{
 				PublicEndpoint: &serverlessModel.EndpointsPublic{
 					Host: targetHost,
 					Port: targetPort,
@@ -314,8 +314,8 @@ func (suite *MySQLImportSuite) TestMySQLImportWithoutCreateTable() {
 	suite.mockHelper.On("ImportToServerless", mockTool.Anything, importArgs, cachePath).Return(nil)
 	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
 		WithClusterID(clusterID)).Return(&serverlessApi.ServerlessServiceGetClusterOK{
-		Payload: &serverlessModel.V1Cluster{
-			Endpoints: &serverlessModel.V1ClusterEndpoints{
+		Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
+			Endpoints: &serverlessModel.V1beta1ClusterEndpoints{
 				PublicEndpoint: &serverlessModel.EndpointsPublic{
 					Host: targetHost,
 					Port: targetPort,
@@ -423,8 +423,8 @@ func (suite *MySQLImportSuite) TestMySQLImportWithSpecificUser() {
 	suite.mockHelper.On("ImportToServerless", mockTool.Anything, importArgs, cachePath).Return(nil)
 	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
 		WithClusterID(clusterID)).Return(&serverlessApi.ServerlessServiceGetClusterOK{
-		Payload: &serverlessModel.V1Cluster{
-			Endpoints: &serverlessModel.V1ClusterEndpoints{
+		Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
+			Endpoints: &serverlessModel.V1beta1ClusterEndpoints{
 				PublicEndpoint: &serverlessModel.EndpointsPublic{
 					Host: targetHost,
 					Port: targetPort,

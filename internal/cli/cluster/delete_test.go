@@ -62,8 +62,8 @@ func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 	suite.mockClient.On("DeleteCluster", serverlessApi.NewServerlessServiceDeleteClusterParams().
 		WithClusterID(clusterID)).
 		Return(&serverlessApi.ServerlessServiceDeleteClusterOK{
-			Payload: &serverlessModel.V1Cluster{
-				State: (*serverlessModel.ClusterState)(&state),
+			Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
+				State: (*serverlessModel.TidbCloudOpenApiserverlessv1beta1ClusterState)(&state),
 			},
 		}, nil)
 

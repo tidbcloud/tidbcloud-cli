@@ -151,7 +151,7 @@ func (suite *ConnectInfoSuite) TestConnectInfoArgs() {
 	suite.mockClient.On("GetConnectInfo", connectInfoService.NewGetInfoParams()).
 		Return(getConnectInfoResult, nil)
 
-	clusterBody := &serverlessModel.V1Cluster{}
+	clusterBody := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{}
 	err = json.Unmarshal([]byte(getClusterResultStr), clusterBody)
 	assert.Nil(err)
 	getClusterResult := &serverlessApi.ServerlessServiceGetClusterOK{

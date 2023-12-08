@@ -106,7 +106,7 @@ func (suite *DescribeClusterSuite) SetupTest() {
 func (suite *DescribeClusterSuite) TestDescribeClusterArgs() {
 	assert := require.New(suite.T())
 
-	body := &serverlessModel.V1Cluster{}
+	body := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{}
 	err := json.Unmarshal([]byte(getClusterResultStr), body)
 	assert.Nil(err)
 	result := &serverlessApi.ServerlessServiceGetClusterOK{

@@ -47,20 +47,20 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 
 	var describeCmd = &cobra.Command{
 		Use:         "describe",
-		Short:       "Describe a cluster",
+		Short:       "Describe a serverless cluster",
 		Aliases:     []string{"get"},
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Get the cluster info in interactive mode:
- $ %[1]s cluster describe
+		Example: fmt.Sprintf(`  Get the serverless cluster info in interactive mode:
+ $ %[1]s serverless describe
 
- Get the Basic cluster info in interactive mode:
- $ %[1]s cluster describe -v BASIC
+ Get the Basic serverless cluster info in interactive mode:
+ $ %[1]s serverless describe -v BASIC
 
- Get the cluster info in non-interactive mode:
- $ %[1]s cluster describe -c <cluster-id>
+ Get the serverless cluster info in non-interactive mode:
+ $ %[1]s serverless describe -c <cluster-id>
 
- Get the Basic cluster info in non-interactive mode:
- $ %[1]s cluster describe -c <cluster-id> -v BASIC`, config.CliName),
+ Get the Basic serverless cluster info in non-interactive mode:
+ $ %[1]s serverless describe -c <cluster-id> -v BASIC`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {

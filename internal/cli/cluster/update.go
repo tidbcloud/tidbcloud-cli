@@ -66,11 +66,11 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 		Use:         "update",
 		Short:       "Update a cluster",
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Update a cluster in interactive mode:
- $ %[1]s cluster update
+		Example: fmt.Sprintf(`  Update a serverless cluster in interactive mode:
+ $ %[1]s serverless update
 
- Update a cluster in non-interactive mode:
- $ %[1]s cluster update -c <cluster-id> --field <fieldName> --value <newValue>`, config.CliName),
+ Update a serverless cluster in non-interactive mode:
+ $ %[1]s serverless update -c <cluster-id> --field <fieldName> --value <newValue>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {
