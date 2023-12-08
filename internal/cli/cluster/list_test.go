@@ -202,17 +202,17 @@ func (suite *ListClusterSuite) TestListClusterArgs() {
 	}{
 		{
 			name:         "list clusters with default format(json when without tty)",
-			args:         []string{projectID},
+			args:         []string{"--project-id", projectID},
 			stdoutString: listResultStr,
 		},
 		{
 			name:         "list clusters with output flag",
-			args:         []string{projectID, "--output", "json"},
+			args:         []string{"--project-id", projectID, "--output", "json"},
 			stdoutString: listResultStr,
 		},
 		{
 			name:         "list clusters with output shorthand flag",
-			args:         []string{projectID, "-o", "json"},
+			args:         []string{"--project-id", projectID, "-o", "json"},
 			stdoutString: listResultStr,
 		},
 	}
@@ -265,7 +265,7 @@ func (suite *ListClusterSuite) TestListClusterWithMultiPages() {
 	}{
 		{
 			name:         "query with multi pages",
-			args:         []string{projectID, "--output", "json"},
+			args:         []string{"--project-id", projectID, "--output", "json"},
 			stdoutString: listResultMultiPageStr,
 		},
 	}
