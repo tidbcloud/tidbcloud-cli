@@ -60,9 +60,10 @@ func (suite *DescribeClusterSuite) TestUpdateClusterArgs() {
 	cluster := &serverlessApi.ServerlessServicePartialUpdateClusterParamsBodyCluster{
 		DisplayName: displayName,
 	}
+	mask := "displayName"
 	body := serverlessApi.ServerlessServicePartialUpdateClusterBody{
 		Cluster:    cluster,
-		UpdateMask: "displayName",
+		UpdateMask: &mask,
 	}
 
 	clusterID := "12345"
