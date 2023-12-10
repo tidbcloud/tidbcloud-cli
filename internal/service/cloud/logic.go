@@ -334,23 +334,26 @@ func RetrieveClusters(pID string, pageSize int64, d TiDBCloudClient) (int64, []*
 		projectFilter := fmt.Sprintf("projectId=%s", pID)
 		params.WithFilter(&projectFilter)
 	}
-	var total int64 = math.MaxInt64
-	var page int64 = 1
 	pageSizeInt32 := int32(pageSize)
+	var pageToken string
 	var items []*serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster
-	// loop to get all clusters
-	for (page-1)*pageSize < total {
-		// convert int32 to string
-		pageToken := strconv.Itoa(int(page))
-		clusters, err := d.ListClustersOfProject(params.WithPageToken(&pageToken).WithPageSize(&pageSizeInt32))
+	clusters, err := d.ListClustersOfProject(params.WithPageSize(&pageSizeInt32))
+	if err != nil {
+		return 0, nil, errors.Trace(err)
+	}
+	items = append(items, clusters.Payload.Clusters...)
+	for true {
+		pageToken = clusters.Payload.NextPageToken
+		if pageToken == "" {
+			break
+		}
+		clusters, err = d.ListClustersOfProject(params.WithPageToken(&pageToken).WithPageSize(&pageSizeInt32))
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
-		total = clusters.Payload.TotalSize
-		page += 1
 		items = append(items, clusters.Payload.Clusters...)
 	}
-	return total, items, nil
+	return int64(len(items)), items, nil
 }
 
 func RetrieveBranches(cID string, pageSize int64, d TiDBCloudClient) (int64, []*branchModel.OpenapiBasicBranch, error) {
