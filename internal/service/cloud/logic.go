@@ -342,7 +342,7 @@ func RetrieveClusters(pID string, pageSize int64, d TiDBCloudClient) (int64, []*
 		return 0, nil, errors.Trace(err)
 	}
 	items = append(items, clusters.Payload.Clusters...)
-	for true {
+	for {
 		pageToken = clusters.Payload.NextPageToken
 		if pageToken == "" {
 			break
