@@ -180,7 +180,6 @@ func (suite *ListClusterSuite) SetupTest() {
 
 func (suite *ListClusterSuite) TestListClusterArgs() {
 	assert := require.New(suite.T())
-	var page string = "1"
 
 	body := &serverlessModel.TidbCloudOpenApiserverlessv1beta1ListClustersResponse{}
 	err := json.Unmarshal([]byte(listResultStr), body)
@@ -192,7 +191,7 @@ func (suite *ListClusterSuite) TestListClusterArgs() {
 	pageSize := int32(suite.h.QueryPageSize)
 	filter := fmt.Sprintf("projectId=%s", projectID)
 	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
-		WithPageToken(&page).WithPageSize(&pageSize).WithFilter(&filter)).
+		WithPageSize(&pageSize).WithFilter(&filter)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -239,25 +238,31 @@ func (suite *ListClusterSuite) TestListClusterArgs() {
 
 func (suite *ListClusterSuite) TestListClusterWithMultiPages() {
 	assert := require.New(suite.T())
-	var pageOne = "1"
-	var pageTwo = "2"
 	suite.h.QueryPageSize = 1
 	pageSize := int32(suite.h.QueryPageSize)
-
+	pageToken := "2"
 	body := &serverlessModel.TidbCloudOpenApiserverlessv1beta1ListClustersResponse{}
 	err := json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"totalSize": 1`, `"totalSize": 2`)), body)
 	assert.Nil(err)
+	body.NextPageToken = pageToken
 	result := &serverlessApi.ServerlessServiceListClustersOK{
 		Payload: body,
 	}
 	projectID := "12345"
 	filter := fmt.Sprintf("projectId=%s", projectID)
 	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
-		WithPageToken(&pageOne).WithPageSize(&pageSize).WithFilter(&filter)).
+		WithPageSize(&pageSize).WithFilter(&filter)).
 		Return(result, nil)
+
+	body2 := &serverlessModel.TidbCloudOpenApiserverlessv1beta1ListClustersResponse{}
+	err = json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"totalSize": 1`, `"totalSize": 2`)), body2)
+	assert.Nil(err)
+	result2 := &serverlessApi.ServerlessServiceListClustersOK{
+		Payload: body2,
+	}
 	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
-		WithPageToken(&pageTwo).WithPageSize(&pageSize).WithFilter(&filter)).
-		Return(result, nil)
+		WithPageToken(&pageToken).WithPageSize(&pageSize).WithFilter(&filter)).
+		Return(result2, nil)
 	cmd := ListCmd(suite.h)
 
 	tests := []struct {

@@ -50,7 +50,12 @@ func (c UpdateOpts) NonInteractiveFlags() []string {
 type mutableField string
 
 const (
-	DisplayName mutableField = "displayName"
+	DisplayName               mutableField = "displayName"
+	SpendingLimit             mutableField = "spending_limit"
+	BackupPolicy              mutableField = "automated_backup_policy"
+	BackupPolicy_Schedule     mutableField = "automated_backup_policy.schedule"
+	BackupPolicy_RetentionDay mutableField = "automated_backup_policy.retention_days"
+	PublicEndpoint_Disabled   mutableField = "endpoints.public_endpoint.disabled"
 )
 
 var mutableFields = []string{
@@ -198,6 +203,7 @@ func generateUpdateBody(field, value string) (*serverlessApi.ServerlessServicePa
 		UpdateMask: &field,
 	}
 
+	// see https://github.com/tidbcloud/tidb-management-service/blob/db4bc490ae574584523fadf4be9025a91e82c223/tidb-mgmt-service/internal/serverless/cluster/service/update.go#L98
 	switch field {
 	case string(DisplayName):
 		body.Cluster.DisplayName = value
