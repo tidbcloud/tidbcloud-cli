@@ -60,8 +60,11 @@ func SpendingLimitCmd(h *internal.Helper) *cobra.Command {
 		Use:         "spending-limit",
 		Short:       "Set spending limit for serverless cluster",
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  List spending limit for serverless clusters:
- $ %[1]s serverless spending-limit`, config.CliName),
+		Example: fmt.Sprintf(`  List spending limit for serverless clusters in interactive mode:
+ 	$ %[1]s serverless spending-limit
+
+	List spending limit for serverless clusters in non-interactive mode:
+	$ %[1]s serverless spending-limit -c <cluster-id> --monthly <spending-limit-monthly>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {

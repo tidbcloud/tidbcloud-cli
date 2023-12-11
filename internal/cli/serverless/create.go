@@ -84,7 +84,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	var createCmd = &cobra.Command{
 		Use:         "create",
-		Short:       "Create one serverless cluster",
+		Short:       "Create a serverless cluster",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Create a serverless cluster in interactive mode:
   $ %[1]s serverless create
