@@ -70,7 +70,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 
 	var updateCmd = &cobra.Command{
 		Use:         "update",
-		Short:       "Update a cluster",
+		Short:       "Update a serverless cluster",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Update a serverless cluster in interactive mode:
  $ %[1]s serverless update
