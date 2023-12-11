@@ -17,12 +17,13 @@ package serverless
 import (
 	"encoding/json"
 	"fmt"
+
+	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/config"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
 )
 
 func RegionsCmd(h *internal.Helper) *cobra.Command {

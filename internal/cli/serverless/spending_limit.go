@@ -16,10 +16,10 @@ package serverless
 
 import (
 	"fmt"
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/fatih/color"
 	"strconv"
+
+	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
@@ -27,10 +27,11 @@ import (
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
 
+	"github.com/charmbracelet/bubbles/textinput"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
 )
 
 type SpendingLimitOpts struct {
