@@ -16,6 +16,7 @@ package serverless
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"testing"
@@ -53,7 +54,7 @@ func (suite *UpdateClusterSuite) SetupTest() {
 	}
 }
 
-func (suite *DescribeClusterSuite) TestUpdateClusterArgs() {
+func (suite *UpdateClusterSuite) TestUpdateClusterArgs() {
 	assert := require.New(suite.T())
 
 	displayName := "update_name"
@@ -80,13 +81,60 @@ func (suite *DescribeClusterSuite) TestUpdateClusterArgs() {
 	}{
 		{
 			name:         "update displayName success",
-			args:         []string{"--cluster-id", clusterID, "--field", "displayName", "--value", displayName},
+			args:         []string{"--cluster-id", clusterID, "--cluster-name", displayName},
 			stdoutString: fmt.Sprintf("cluster %s updated\n", clusterID),
 		},
+	}
+
+	for _, tt := range tests {
+		suite.T().Run(tt.name, func(t *testing.T) {
+			cmd := UpdateCmd(suite.h)
+			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
+			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
+			cmd.SetArgs(tt.args)
+			err := cmd.Execute()
+			assert.Equal(tt.err, err)
+
+			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
+			assert.Equal(tt.stderrString, suite.h.IOStreams.Err.(*bytes.Buffer).String())
+			if tt.err == nil {
+				suite.mockClient.AssertExpectations(suite.T())
+			}
+		})
+	}
+}
+
+func (suite *UpdateClusterSuite) TestUpdateLabels() {
+	assert := require.New(suite.T())
+
+	labels := "{\"labels\":\"values\"}"
+	mask := "labels"
+
+	labelsMap := make(map[string]string)
+	_ = json.Unmarshal([]byte(labels), &labelsMap)
+	cluster := &serverlessApi.ServerlessServicePartialUpdateClusterParamsBodyCluster{
+		Labels: labelsMap,
+	}
+	body := serverlessApi.ServerlessServicePartialUpdateClusterBody{
+		Cluster:    cluster,
+		UpdateMask: &mask,
+	}
+	clusterID := "12345"
+	suite.mockClient.On("PartialUpdateCluster", serverlessApi.NewServerlessServicePartialUpdateClusterParams().
+		WithClusterClusterID(clusterID).WithBody(body)).
+		Return(&serverlessApi.ServerlessServicePartialUpdateClusterOK{}, nil)
+
+	tests := []struct {
+		name         string
+		args         []string
+		err          error
+		stdoutString string
+		stderrString string
+	}{
 		{
-			name: "update unsupported field",
-			args: []string{"-c", clusterID, "--field", "state", "--value", "running"},
-			err:  fmt.Errorf("unsupported update field state"),
+			name:         "update labels success",
+			args:         []string{"-c", clusterID, "--labels", "{\"labels\":\"values\"}"},
+			stdoutString: fmt.Sprintf("cluster %s updated\n", clusterID),
 		},
 	}
 
