@@ -15,6 +15,7 @@
 package serverless
 
 import (
+	"encoding/json"
 	"fmt"
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -42,24 +43,24 @@ type UpdateOpts struct {
 func (c UpdateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.UpdateField,
-		flag.UpdateValue,
+		flag.ClusterName,
+		flag.ServerlessAnnotations,
+		flag.ServerlessLabels,
 	}
 }
 
 type mutableField string
 
 const (
-	DisplayName               mutableField = "displayName"
-	SpendingLimit             mutableField = "spending_limit"
-	BackupPolicy              mutableField = "automated_backup_policy"
-	BackupPolicy_Schedule     mutableField = "automated_backup_policy.schedule"
-	BackupPolicy_RetentionDay mutableField = "automated_backup_policy.retention_days"
-	PublicEndpoint_Disabled   mutableField = "endpoints.public_endpoint.disabled"
+	DisplayName mutableField = "displayName"
+	Annotations mutableField = "annotations"
+	Labels      mutableField = "labels"
 )
 
 var mutableFields = []string{
 	string(DisplayName),
+	string(Labels),
+	string(Annotations),
 }
 
 func UpdateCmd(h *internal.Helper) *cobra.Command {
@@ -74,8 +75,11 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 		Example: fmt.Sprintf(`  Update a serverless cluster in interactive mode:
  $ %[1]s serverless update
 
- Update a serverless cluster in non-interactive mode:
- $ %[1]s serverless update -c <cluster-id> --field <fieldName> --value <newValue>`, config.CliName),
+ Update displayName of serverless cluster in non-interactive mode:
+ $ %[1]s serverless update -c <cluster-id> --cluster-name newClusterName, 
+ 
+  Update labels of serverless cluster in non-interactive mode:
+ $ %[1]s serverless update -c <cluster-id> --labels "{\"label\":\"value2\"}"`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {
@@ -87,14 +91,12 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 
 			// mark required flags in non-interactive mode
 			if !opts.interactive {
-				for _, fn := range flags {
-					err := cmd.MarkFlagRequired(fn)
-					if err != nil {
-						return errors.Trace(err)
-					}
+				err := cmd.MarkFlagRequired(flag.ClusterID)
+				if err != nil {
+					return err
 				}
+				cmd.MarkFlagsMutuallyExclusive(flag.ClusterName, flag.ServerlessAnnotations, flag.ServerlessLabels)
 			}
-
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -105,7 +107,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 
 			var clusterID string
 			var fieldName string
-			var newValue string
+			var displayName, labels, annotations string
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
@@ -134,26 +136,64 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				newValue = inputModel.(ui.TextInputModel).Inputs[0].Value()
+				fidleValue := inputModel.(ui.TextInputModel).Inputs[0].Value()
+
+				switch fieldName {
+				case string(DisplayName):
+					displayName = fidleValue
+				case string(Annotations):
+					annotations = fidleValue
+				case string(Labels):
+					labels = fidleValue
+				default:
+					return errors.Errorf("invalid field %s", fieldName)
+				}
+
 			} else {
 				cID, err := cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
 				}
 				clusterID = cID
-				fieldName, err = cmd.Flags().GetString(flag.UpdateField)
+				displayName, err = cmd.Flags().GetString(flag.ClusterName)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				newValue, err = cmd.Flags().GetString(flag.UpdateValue)
+				labels, err = cmd.Flags().GetString(flag.ServerlessLabels)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				annotations, err = cmd.Flags().GetString(flag.ServerlessAnnotations)
 				if err != nil {
 					return errors.Trace(err)
 				}
 			}
-			body, err := generateUpdateBody(fieldName, newValue)
-			if err != nil {
-				return err
+
+			body := &serverlessApi.ServerlessServicePartialUpdateClusterBody{
+				Cluster: &serverlessApi.ServerlessServicePartialUpdateClusterParamsBodyCluster{},
 			}
+			if displayName != "" {
+				body.Cluster.DisplayName = displayName
+				fieldName = string(DisplayName)
+			}
+			if labels != "" {
+				labelsMap, err := stringToMap(labels)
+				if err != nil {
+					return errors.Errorf("invalid labels %s", labels)
+				}
+				body.Cluster.Labels = labelsMap
+				fieldName = string(Labels)
+			}
+			if annotations != "" {
+				annotationsMap, err := stringToMap(annotations)
+				if err != nil {
+					return errors.Errorf("invalid annotations %s", annotations)
+				}
+				body.Cluster.Annotations = annotationsMap
+				fieldName = string(Annotations)
+			}
+			body.UpdateMask = &fieldName
+
 			params := serverlessApi.NewServerlessServicePartialUpdateClusterParams().WithClusterClusterID(clusterID).WithBody(*body)
 			_, err = d.PartialUpdateCluster(params)
 			if err != nil {
@@ -164,16 +204,14 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	updateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster to be deleted")
-	updateCmd.Flags().String(flag.UpdateField, "", "The field you want to update. Support [\"displayName\"] now")
-	updateCmd.Flags().String(flag.UpdateValue, "", "The value you want to update of the field, e.g. \"newName\"")
-	updateCmd.MarkFlagsRequiredTogether(flag.UpdateField, flag.UpdateValue)
-
+	updateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the serverless cluster to be deleted")
+	updateCmd.Flags().String(flag.ClusterName, "", "The name of the serverless cluster")
+	updateCmd.Flags().String(flag.ServerlessLabels, "", "The label of the serverless cluster.\nInteractive example: {\"label1\":\"value1\",\"label1\":\"value1\"}\nNonInteractive example: \"{\\\"label1\\\":\\\"value1\\\",\\\"label2\\\":\\\"value2\\\"}\"")
+	updateCmd.Flags().String(flag.ServerlessAnnotations, "", "The annotations of the serverless cluster.\nInteractive example: {\"annotation1\":\"value1\",\"annotation2\":\"value2\"}\nNonInteractive example: \"{\\\"annotation1\\\":\\\"value1\\\",\\\"annotation2\\\":\\\"value2\\\"}\"")
 	return updateCmd
 }
 
 func GetUpdateClusterInput() (tea.Model, error) {
-
 	m := ui.TextInputModel{
 		Inputs: make([]textinput.Model, 1),
 	}
@@ -197,17 +235,14 @@ func GetUpdateClusterInput() (tea.Model, error) {
 	return inputModel, nil
 }
 
-func generateUpdateBody(field, value string) (*serverlessApi.ServerlessServicePartialUpdateClusterBody, error) {
-	body := &serverlessApi.ServerlessServicePartialUpdateClusterBody{
-		Cluster:    &serverlessApi.ServerlessServicePartialUpdateClusterParamsBodyCluster{},
-		UpdateMask: &field,
+func stringToMap(s string) (map[string]string, error) {
+	if s == "" {
+		return nil, nil
 	}
-
-	// see https://github.com/tidbcloud/tidb-management-service/blob/db4bc490ae574584523fadf4be9025a91e82c223/tidb-mgmt-service/internal/serverless/cluster/service/update.go#L98
-	switch field {
-	case string(DisplayName):
-		body.Cluster.DisplayName = value
-		return body, nil
+	m := make(map[string]string)
+	err := json.Unmarshal([]byte(s), &m)
+	if err != nil {
+		return nil, err
 	}
-	return nil, fmt.Errorf("unsupported update field %s", field)
+	return m, nil
 }

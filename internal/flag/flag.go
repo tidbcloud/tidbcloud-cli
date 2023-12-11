@@ -69,7 +69,7 @@ const (
 	SpendingLimitMonthly  string = "spending-limit-monthly"
 	UpdateField           string = "field"
 	UpdateValue           string = "value"
-	ServerlessLabel       string = "label"
+	ServerlessLabels      string = "labels"
 	ServerlessAnnotations string = "annotations"
 	Monthly               string = "monthly"
 )
