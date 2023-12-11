@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,54 +12,55 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cluster
+package serverless
 
 import (
+	"encoding/json"
 	"fmt"
+
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
-	"tidbcloud-cli/internal/util"
 
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
 
-	"github.com/AlecAivazis/survey/v2"
-	"github.com/AlecAivazis/survey/v2/terminal"
-	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
 
-const confirmed = "yes"
-
-type DeleteOpts struct {
+type DescribeOpts struct {
 	interactive bool
 }
 
-func (c DeleteOpts) NonInteractiveFlags() []string {
+func (c DescribeOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
 	}
 }
 
-func DeleteCmd(h *internal.Helper) *cobra.Command {
-	opts := DeleteOpts{
+func DescribeCmd(h *internal.Helper) *cobra.Command {
+	opts := DescribeOpts{
 		interactive: true,
 	}
 
-	var force bool
-	var deleteCmd = &cobra.Command{
-		Use:         "delete",
-		Short:       "Delete a serverless cluster",
+	var describeCmd = &cobra.Command{
+		Use:         "describe",
+		Short:       "Describe a serverless cluster",
+		Aliases:     []string{"get"},
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Delete a serverless cluster in interactive mode:
- $ %[1]s serverless delete
+		Example: fmt.Sprintf(`  Get the serverless cluster info in interactive mode:
+ $ %[1]s serverless describe
 
- Delete a serverless cluster in non-interactive mode:
- $ %[1]s serverless delete -c <cluster-id>`, config.CliName),
-		Aliases: []string{"rm"},
+ Get the Basic serverless cluster info in interactive mode:
+ $ %[1]s serverless describe -v BASIC
+
+ Get the serverless cluster info in non-interactive mode:
+ $ %[1]s serverless describe -c <cluster-id>
+
+ Get the Basic serverless cluster info in non-interactive mode:
+ $ %[1]s serverless describe -c <cluster-id> -v BASIC`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {
@@ -107,7 +108,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 			} else {
-				// non-interactive mode doesn't need projectID
+				// non-interactive mode does not need projectID
 				cID, err := cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
@@ -115,47 +116,34 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cID
 			}
 
-			if !force {
-				if !h.IOStreams.CanPrompt {
-					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to delete the cluster")
-				}
-
-				confirmationMessage := fmt.Sprintf("%s %s %s", color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to confirm:"))
-
-				prompt := &survey.Input{
-					Message: confirmationMessage,
-				}
-
-				var userInput string
-				err := survey.AskOne(prompt, &userInput)
-				if err != nil {
-					if err == terminal.InterruptErr {
-						return util.InterruptError
-					} else {
-						return err
-					}
-				}
-
-				if userInput != confirmed {
-					return errors.New("incorrect confirm string entered, skipping database deletion")
-				}
-			}
-
-			params := serverlessApi.NewServerlessServiceDeleteClusterParams().WithClusterID(clusterID)
-			cluster, err := d.DeleteCluster(params)
+			view, err := cmd.Flags().GetString(flag.View)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			if *cluster.Payload.State == "DELETING" || *cluster.Payload.State == "DELETED" {
-				fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("cluster %s deleted", clusterID)))
-				return nil
-			} else {
-				return errors.New(fmt.Sprintf("delete cluster %s failed, please check status on dashboard", clusterID))
+
+			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID)
+			if view == flag.BasicView {
+				params.WithView(&view)
+			} else if view != flag.FullView {
+				return errors.Errorf("invalid view: %s", view)
 			}
+
+			cluster, err := d.GetCluster(params)
+			if err != nil {
+				return errors.Trace(err)
+			}
+
+			v, err := json.MarshalIndent(cluster.Payload, "", "  ")
+			if err != nil {
+				return errors.Trace(err)
+			}
+
+			fmt.Fprintln(h.IOStreams.Out, string(v))
+			return nil
 		},
 	}
 
-	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a cluster without confirmation")
-	deleteCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster to be deleted")
-	return deleteCmd
+	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster")
+	describeCmd.Flags().StringP(flag.View, flag.ViewShort, flag.FullView, "The view of cluster, One of [\"BASIC\" \"FULL\"]")
+	return describeCmd
 }

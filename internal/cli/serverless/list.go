@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cluster
+package serverless
 
 import (
 	"fmt"
@@ -46,7 +46,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var listCmd = &cobra.Command{
-		Use:         "list <project-id>",
+		Use:         "list",
 		Short:       "List all serverless clusters in a project",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  List all serverless clusters in the project(interactive mode):

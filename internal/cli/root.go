@@ -20,9 +20,9 @@ import (
 	"os"
 	"strings"
 	"tidbcloud-cli/internal/cli/branch"
+	"tidbcloud-cli/internal/cli/serverless"
 
 	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/cli/cluster"
 	configCmd "tidbcloud-cli/internal/cli/config"
 	"tidbcloud-cli/internal/cli/connect"
 	"tidbcloud-cli/internal/cli/dataimport"
@@ -164,7 +164,7 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 		SilenceErrors: true,
 	}
 
-	rootCmd.AddCommand(cluster.ClusterCmd(h))
+	rootCmd.AddCommand(serverless.Cmd(h))
 	rootCmd.AddCommand(configCmd.ConfigCmd(h))
 	rootCmd.AddCommand(project.ProjectCmd(h))
 	rootCmd.AddCommand(version.VersionCmd(h))

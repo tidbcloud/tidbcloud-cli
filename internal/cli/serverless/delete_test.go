@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cluster
+package serverless
 
 import (
 	"bytes"
@@ -26,18 +26,19 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
 
-type UpdateClusterSuite struct {
+type DeleteClusterSuite struct {
 	suite.Suite
 	h          *internal.Helper
 	mockClient *mock.TiDBCloudClient
 }
 
-func (suite *UpdateClusterSuite) SetupTest() {
+func (suite *DeleteClusterSuite) SetupTest() {
 	if err := os.Setenv("NO_COLOR", "true"); err != nil {
 		suite.T().Error(err)
 	}
@@ -53,23 +54,18 @@ func (suite *UpdateClusterSuite) SetupTest() {
 	}
 }
 
-func (suite *DescribeClusterSuite) TestUpdateClusterArgs() {
+func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 	assert := require.New(suite.T())
 
-	displayName := "update_name"
-	cluster := &serverlessApi.ServerlessServicePartialUpdateClusterParamsBodyCluster{
-		DisplayName: displayName,
-	}
-	mask := "displayName"
-	body := serverlessApi.ServerlessServicePartialUpdateClusterBody{
-		Cluster:    cluster,
-		UpdateMask: &mask,
-	}
-
 	clusterID := "12345"
-	suite.mockClient.On("PartialUpdateCluster", serverlessApi.NewServerlessServicePartialUpdateClusterParams().
-		WithClusterClusterID(clusterID).WithBody(body)).
-		Return(&serverlessApi.ServerlessServicePartialUpdateClusterOK{}, nil)
+	state := "DELETING"
+	suite.mockClient.On("DeleteCluster", serverlessApi.NewServerlessServiceDeleteClusterParams().
+		WithClusterID(clusterID)).
+		Return(&serverlessApi.ServerlessServiceDeleteClusterOK{
+			Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
+				State: (*serverlessModel.TidbCloudOpenApiserverlessv1beta1ClusterState)(&state),
+			},
+		}, nil)
 
 	tests := []struct {
 		name         string
@@ -79,20 +75,25 @@ func (suite *DescribeClusterSuite) TestUpdateClusterArgs() {
 		stderrString string
 	}{
 		{
-			name:         "update displayName success",
-			args:         []string{"--cluster-id", clusterID, "--field", "displayName", "--value", displayName},
-			stdoutString: fmt.Sprintf("cluster %s updated\n", clusterID),
+			name:         "delete cluster success",
+			args:         []string{"--cluster-id", clusterID, "--force"},
+			stdoutString: fmt.Sprintf("cluster %s deleted\n", clusterID),
 		},
 		{
-			name: "update unsupported field",
-			args: []string{"-c", clusterID, "--field", "state", "--value", "running"},
-			err:  fmt.Errorf("unsupported update field state"),
+			name: "delete cluster without force",
+			args: []string{"--cluster-id", clusterID},
+			err:  fmt.Errorf("the terminal doesn't support prompt, please run with --force to delete the cluster"),
+		},
+		{
+			name:         "delete cluster with output flag",
+			args:         []string{"-c", clusterID, "--force"},
+			stdoutString: fmt.Sprintf("cluster %s deleted\n", clusterID),
 		},
 	}
 
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
-			cmd := UpdateCmd(suite.h)
+			cmd := DeleteCmd(suite.h)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
@@ -108,6 +109,6 @@ func (suite *DescribeClusterSuite) TestUpdateClusterArgs() {
 	}
 }
 
-func TestUpdateClusterSuite(t *testing.T) {
-	suite.Run(t, new(UpdateClusterSuite))
+func TestDeleteClusterSuite(t *testing.T) {
+	suite.Run(t, new(DeleteClusterSuite))
 }

@@ -21,7 +21,7 @@ import (
 	"strings"
 
 	"tidbcloud-cli/internal"
-	clu "tidbcloud-cli/internal/cli/cluster"
+	clu "tidbcloud-cli/internal/cli/serverless"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"

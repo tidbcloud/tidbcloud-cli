@@ -188,6 +188,31 @@ func GetSelectedField(mutableFields []string) (string, error) {
 	return field, nil
 }
 
+func GetSpendingLimitField(mutableFields []string) (string, error) {
+	var items = make([]interface{}, 0, len(mutableFields))
+	for _, item := range mutableFields {
+		items = append(items, item)
+	}
+	model, err := ui.InitialSelectModel(items, "Choose the type of spending limit")
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	fieldModel, err := p.StartReturningModel()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := fieldModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	field := fieldModel.(ui.SelectModel).GetSelectedItem().(string)
+	return field, nil
+}
+
 func GetSelectedBranch(clusterID string, pageSize int64, client TiDBCloudClient) (*Branch, error) {
 	_, branchItems, err := RetrieveBranches(clusterID, pageSize, client)
 	if err != nil {
