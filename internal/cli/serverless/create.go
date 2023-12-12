@@ -247,6 +247,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 			cmd.Annotations[telemetry.ProjectID] = projectID
 
+			// check clusterName
+			err = checkClusterName(clusterName)
+			if err != nil {
+				return errors.Trace(err)
+			}
+
 			v1Cluster := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 				DisplayName: &clusterName,
 				Region: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Region{
@@ -384,10 +390,24 @@ func initialCreateInputModel() ui.TextInputModel {
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
 		case spendingLimitIdx:
-			t.Placeholder = "Spending Limit Monthly($), example: 10. Skip it by press 0 or enter"
+			t.Placeholder = "Spending Limit Monthly($), e.g., 10. Skip it by press 0 or enter"
 		}
 		m.Inputs[i] = t
 	}
 
 	return m
+}
+
+func checkClusterName(name string) error {
+	if len(name) < 4 || len(name) > 64 || !isNumber(name[0]) && !isLetter(name[0]) || !isNumber(name[len(name)-1]) && !isLetter(name[len(name)-1]) {
+		return errors.New("Cluster name must be 4~64 characters that can only include numbers, lowercase or uppercase letters, and hyphens. The first and last character must be a letter or number.")
+	}
+	return nil
+}
+func isNumber(s byte) bool {
+	return s >= '0' && s <= '9'
+}
+
+func isLetter(s byte) bool {
+	return s >= 'a' && s <= 'z' || s >= 'A' && s <= 'Z'
 }
