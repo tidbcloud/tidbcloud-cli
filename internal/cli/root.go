@@ -58,11 +58,11 @@ func Execute(ctx context.Context) {
 			if apiUrl == "" {
 				apiUrl = cloud.DefaultApiUrl
 			}
-			serverlessApiUrl := config.GetNewApiUrl()
-			if serverlessApiUrl == "" {
-				serverlessApiUrl = cloud.DefaultServerlessApiUrl
+			serverlessEndpoint := config.GetServerlessEndpoint()
+			if serverlessEndpoint == "" {
+				serverlessEndpoint = cloud.DefaultServerlessEndpoint
 			}
-			delegate, err := cloud.NewClientDelegate(publicKey, privateKey, apiUrl, serverlessApiUrl)
+			delegate, err := cloud.NewClientDelegate(publicKey, privateKey, apiUrl, serverlessEndpoint)
 			if err != nil {
 				return nil, err
 			}

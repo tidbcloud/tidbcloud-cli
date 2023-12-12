@@ -21,12 +21,12 @@ import (
 )
 
 const (
-	PublicKey        string = "public-key"
-	PrivateKey       string = "private-key"
-	CurProfile       string = "current-profile"
-	ApiUrl           string = "api-url"
-	NewApiUrl        string = "new-api-url"
-	TelemetryEnabled string = "telemetry-enabled"
+	PublicKey          string = "public-key"
+	PrivateKey         string = "private-key"
+	CurProfile         string = "current-profile"
+	ApiUrl             string = "api-url"
+	ServerlessEndpoint string = "serverless-endpoint"
+	TelemetryEnabled   string = "telemetry-enabled"
 )
 
 func GlobalProperties() []string {

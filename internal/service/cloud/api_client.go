@@ -39,9 +39,9 @@ import (
 )
 
 const (
-	DefaultApiUrl           = "https://" + apiClient.DefaultHost
-	DefaultServerlessApiUrl = "https://" + serverlessClient.DefaultHost
-	userAgent               = "User-Agent"
+	DefaultApiUrl             = "https://" + apiClient.DefaultHost
+	DefaultServerlessEndpoint = "https://" + serverlessClient.DefaultHost
+	userAgent                 = "User-Agent"
 )
 
 type TiDBCloudClient interface {
