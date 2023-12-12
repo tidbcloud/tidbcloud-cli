@@ -1,0 +1,111 @@
+{
+    "schemes": [
+        "http"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "title": "PingChat Swagger API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "paths": {
+        "/ecosystem/api/internal/pingchat/chat": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "operationId": "Chat",
+                "parameters": [
+                    {
+                        "description": "chat information",
+                        "name": "chatInfo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/pingchat.ChatInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "$ref": "#/definitions/pingchat.ChatResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {}
+                    },
+                    "default": {
+                        "description": "other error",
+                        "schema": {}
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "pingchat.ChatInfo": {
+            "type": "object",
+            "properties": {
+                "messages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/pingchat.ChatMessage"
+                    }
+                }
+            }
+        },
+        "pingchat.ChatMessage": {
+            "type": "object",
+            "required": [
+                "content",
+                "role"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string",
+                    "enum": [
+                        "user",
+                        "assistant"
+                    ]
+                }
+            }
+        },
+        "pingchat.ChatResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "links": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/pingchat.Link"
+                    }
+                }
+            }
+        },
+        "pingchat.Link": {
+            "type": "object",
+            "properties": {
+                "link": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

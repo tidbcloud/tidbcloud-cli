@@ -28,6 +28,8 @@ import (
 	connectInfoOp "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
 	importClient "tidbcloud-cli/pkg/tidbcloud/import/client"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
+	pingchatClient "tidbcloud-cli/pkg/tidbcloud/pingchat/client"
+	pingchatOp "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
 
 	apiClient "github.com/c4pt0r/go-tidbcloud-sdk-v1/client"
 	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
@@ -76,6 +78,8 @@ type TiDBCloudClient interface {
 	CreateBranch(params *branchOp.CreateBranchParams, opts ...branchOp.ClientOption) (*branchOp.CreateBranchOK, error)
 
 	DeleteBranch(params *branchOp.DeleteBranchParams, opts ...branchOp.ClientOption) (*branchOp.DeleteBranchOK, error)
+
+	Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.ClientOption) (*pingchatOp.ChatOK, error)
 }
 
 type ClientDelegate struct {
@@ -83,10 +87,11 @@ type ClientDelegate struct {
 	ic *importClient.TidbcloudImport
 	cc *connectInfoClient.TidbcloudConnectInfo
 	bc *branchClient.TidbcloudBranch
+	pc *pingchatClient.TidbcloudPingchat
 }
 
 func NewClientDelegate(publicKey string, privateKey string, apiUrl string) (*ClientDelegate, error) {
-	c, ic, cc, bc, err := NewApiClient(publicKey, privateKey, apiUrl)
+	c, ic, cc, bc, pc, err := NewApiClient(publicKey, privateKey, apiUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -95,6 +100,7 @@ func NewClientDelegate(publicKey string, privateKey string, apiUrl string) (*Cli
 		ic: ic,
 		cc: cc,
 		bc: bc,
+		pc: pc,
 	}, nil
 }
 
@@ -190,7 +196,12 @@ func (d *ClientDelegate) DeleteBranch(params *branchOp.DeleteBranchParams, opts 
 	return r, err
 }
 
-func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport, *connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudBranch, error) {
+func (d *ClientDelegate) Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.ClientOption) (*pingchatOp.ChatOK, error) {
+	return d.pc.Operations.Chat(params, opts...)
+}
+
+func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport,
+	*connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudBranch, *pingchatClient.TidbcloudPingchat, error) {
 	httpclient := &http.Client{
 		Transport: NewTransportWithAgent(&digest.Transport{
 			Username: publicKey,
@@ -201,11 +212,12 @@ func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClien
 	// Parse the URL
 	u, err := prop.ValidateApiUrl(apiUrl)
 	if err != nil {
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, err
 	}
 
 	transport := httpTransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpclient)
-	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default), branchClient.New(transport, strfmt.Default), nil
+	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default),
+		branchClient.New(transport, strfmt.Default), pingchatClient.New(transport, strfmt.Default), nil
 }
 
 // NewTransportWithAgent returns a new http.RoundTripper that add the User-Agent header,
