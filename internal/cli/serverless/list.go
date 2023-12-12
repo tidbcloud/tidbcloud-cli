@@ -23,8 +23,7 @@ import (
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
-
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -47,7 +46,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 	var listCmd = &cobra.Command{
 		Use:         "list",
-		Short:       "List all serverless clusters in a project",
+		Short:       "List all serverless clusters",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  List all serverless clusters in interactive mode):
  $ %[1]s serverless list
@@ -87,7 +86,6 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				}
 				pID = project.ID
 			} else {
-				// non-interactive mode does not need projectID
 				pID, err = cmd.Flags().GetString(flag.ProjectID)
 				if err != nil {
 					return errors.Trace(err)

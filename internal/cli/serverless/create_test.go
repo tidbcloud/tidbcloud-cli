@@ -24,9 +24,8 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -61,8 +60,6 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 	clusterID := "12345"
 	clusterName := "test"
 	regionName := "regions/aws-us-west-1"
-	cloudProvider := "AWS"
-	region := "us-west-1"
 	v1Cluster := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 		DisplayName: &clusterName,
 		Region: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Region{
@@ -98,12 +95,12 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 	}{
 		{
 			name:         "create cluster success",
-			args:         []string{"--project-id", projectID, "--cluster-name", clusterName, "--cloud-provider", cloudProvider, "--region", region},
+			args:         []string{"--project-id", projectID, "--display-name", clusterName, "--region", regionName},
 			stdoutString: "... Waiting for cluster to be ready\nCluster 12345 is ready.",
 		},
 		{
 			name:         "create cluster with shorthand flag",
-			args:         []string{"-p", projectID, "--cluster-name", clusterName, "--cloud-provider", cloudProvider, "-r", region},
+			args:         []string{"-p", projectID, "-n", clusterName, "-r", regionName},
 			stdoutString: "... Waiting for cluster to be ready\nCluster 12345 is ready.",
 		},
 	}
@@ -132,8 +129,6 @@ func (suite *CreateClusterSuite) TestCreateClusterWithoutProject() {
 	clusterID := "12345"
 	clusterName := "test"
 	regionName := "regions/aws-us-west-1"
-	cloudProvider := "AWS"
-	region := "us-west-1"
 
 	v1ClusterWithoutProject := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 		DisplayName: &clusterName,
@@ -169,7 +164,7 @@ func (suite *CreateClusterSuite) TestCreateClusterWithoutProject() {
 	}{
 		{
 			name:         "without project id",
-			args:         []string{"--cluster-name", clusterName, "--cloud-provider", cloudProvider, "-r", region},
+			args:         []string{"--display-name", clusterName, "-r", regionName},
 			stdoutString: "... Waiting for cluster to be ready\nCluster 12345 is ready.",
 		},
 	}

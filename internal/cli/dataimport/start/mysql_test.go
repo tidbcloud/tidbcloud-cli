@@ -22,6 +22,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"testing"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -30,8 +32,6 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	connectInfoService "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
 	connectInfoModel "tidbcloud-cli/pkg/tidbcloud/connect_info/models"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
 
 	mockTool "github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -198,11 +198,11 @@ func (suite *MySQLImportSuite) TestMySQLImportArgs() {
 		"-p" + password,
 	}
 	suite.mockHelper.On("ImportToServerless", mockTool.Anything, importArgs, cachePath).Return(nil)
-	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
-		WithClusterID(clusterID)).Return(&serverlessApi.ServerlessServiceGetClusterOK{
-		Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
-			Endpoints: &serverlessModel.V1beta1ClusterEndpoints{
-				PublicEndpoint: &serverlessModel.EndpointsPublic{
+	suite.mockClient.On("GetCluster", serverless_service.NewServerlessServiceGetClusterParams().
+		WithClusterID(clusterID)).Return(&serverless_service.ServerlessServiceGetClusterOK{
+		Payload: &models.TidbCloudOpenApiserverlessv1beta1Cluster{
+			Endpoints: &models.V1beta1ClusterEndpoints{
+				PublicEndpoint: &models.EndpointsPublic{
 					Host: targetHost,
 					Port: targetPort,
 				},
@@ -312,11 +312,11 @@ func (suite *MySQLImportSuite) TestMySQLImportWithoutCreateTable() {
 		"-p" + password,
 	}
 	suite.mockHelper.On("ImportToServerless", mockTool.Anything, importArgs, cachePath).Return(nil)
-	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
-		WithClusterID(clusterID)).Return(&serverlessApi.ServerlessServiceGetClusterOK{
-		Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
-			Endpoints: &serverlessModel.V1beta1ClusterEndpoints{
-				PublicEndpoint: &serverlessModel.EndpointsPublic{
+	suite.mockClient.On("GetCluster", serverless_service.NewServerlessServiceGetClusterParams().
+		WithClusterID(clusterID)).Return(&serverless_service.ServerlessServiceGetClusterOK{
+		Payload: &models.TidbCloudOpenApiserverlessv1beta1Cluster{
+			Endpoints: &models.V1beta1ClusterEndpoints{
+				PublicEndpoint: &models.EndpointsPublic{
 					Host: targetHost,
 					Port: targetPort,
 				},
@@ -421,11 +421,11 @@ func (suite *MySQLImportSuite) TestMySQLImportWithSpecificUser() {
 		"-p" + password,
 	}
 	suite.mockHelper.On("ImportToServerless", mockTool.Anything, importArgs, cachePath).Return(nil)
-	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
-		WithClusterID(clusterID)).Return(&serverlessApi.ServerlessServiceGetClusterOK{
-		Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
-			Endpoints: &serverlessModel.V1beta1ClusterEndpoints{
-				PublicEndpoint: &serverlessModel.EndpointsPublic{
+	suite.mockClient.On("GetCluster", serverless_service.NewServerlessServiceGetClusterParams().
+		WithClusterID(clusterID)).Return(&serverless_service.ServerlessServiceGetClusterOK{
+		Payload: &models.TidbCloudOpenApiserverlessv1beta1Cluster{
+			Endpoints: &models.V1beta1ClusterEndpoints{
+				PublicEndpoint: &models.EndpointsPublic{
 					Host: targetHost,
 					Port: targetPort,
 				},

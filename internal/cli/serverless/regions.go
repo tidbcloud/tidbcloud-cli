@@ -20,7 +20,7 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"

@@ -25,8 +25,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -81,7 +80,7 @@ func (suite *UpdateClusterSuite) TestUpdateClusterArgs() {
 	}{
 		{
 			name:         "update displayName success",
-			args:         []string{"--cluster-id", clusterID, "--cluster-name", displayName},
+			args:         []string{"--cluster-id", clusterID, "--display-name", displayName},
 			stdoutString: fmt.Sprintf("cluster %s updated\n", clusterID),
 		},
 	}
