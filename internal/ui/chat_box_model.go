@@ -83,7 +83,8 @@ func (m ChatBoxModel) Update(msg bubbletea.Msg) (bubbletea.Model, bubbletea.Cmd)
 		case bubbletea.KeyCtrlC:
 			m.Interrupted = true
 			return m, bubbletea.Quit
-
+		case bubbletea.KeyEsc:
+			return m, bubbletea.Quit
 		case bubbletea.KeyCtrlS:
 			inputMessage := m.textarea.Value()
 
@@ -188,7 +189,7 @@ func (m ChatBoxModel) RenderChatLog() string {
 }
 
 func (m ChatBoxModel) View() string {
-	helpMessage := helpMessageStyle("Press Ctrl+S to send message")
+	helpMessage := helpMessageStyle("Press Ctrl+S to send message (esc to quit)")
 
 	if m.isLoading {
 		return m.viewport.View()
