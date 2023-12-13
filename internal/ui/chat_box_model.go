@@ -110,7 +110,6 @@ func (m ChatBoxModel) Update(msg bubbletea.Msg) (bubbletea.Model, bubbletea.Cmd)
 	switch msg := msg.(type) {
 	case bubbletea.KeyMsg:
 		switch msg.Type {
-
 		case bubbletea.KeyCtrlC:
 			m.Interrupted = true
 			return m, bubbletea.Quit
@@ -118,7 +117,6 @@ func (m ChatBoxModel) Update(msg bubbletea.Msg) (bubbletea.Model, bubbletea.Cmd)
 			return m, bubbletea.Quit
 		case bubbletea.KeyCtrlS:
 			inputMessage := m.textarea.Value()
-
 			// trim whitespace
 			inputMessage = strings.TrimSpace(inputMessage)
 
@@ -207,7 +205,6 @@ func (m ChatBoxModel) RenderChatLog() string {
 	)
 
 	chatLogString := ""
-
 	for _, message := range m.chatLog {
 		// Due to a bug in the formatting of Chinese characters (see https://github.com/charmbracelet/glamour/pull/249),
 		// glamour cannot correctly word-wrap Chinese characters. Therefore, we need to wrap the string before rendering it.
