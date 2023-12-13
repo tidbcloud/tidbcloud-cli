@@ -140,7 +140,7 @@ func AICmd(h *internal.Helper) *cobra.Command {
 					return m.Err
 				}
 			} else {
-				question, err := cmd.Flags().GetString(flag.Query)
+				query, err := cmd.Flags().GetString(flag.Query)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -149,7 +149,7 @@ func AICmd(h *internal.Helper) *cobra.Command {
 				chat, err := client.Chat(param.WithChatInfo(&models.PingchatChatInfo{
 					Messages: []*models.PingchatChatMessage{
 						{
-							Content: &question,
+							Content: &query,
 							Role:    &role,
 						},
 					},
