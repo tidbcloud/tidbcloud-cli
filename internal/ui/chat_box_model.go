@@ -191,6 +191,8 @@ func (m ChatBoxModel) RenderChatLog() string {
 	chatLogString := ""
 
 	for _, message := range m.chatLog {
+		// Due to a bug in the formatting of Chinese characters (see https://github.com/charmbracelet/glamour/pull/249),
+		// glamour cannot correctly word-wrap Chinese characters. Therefore, we need to wrap the string before rendering it.
 		s := util.String(message.Content, maxWidth)
 		out, _ := r.Render(s)
 

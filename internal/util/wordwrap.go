@@ -22,6 +22,9 @@ import (
 	"github.com/muesli/reflow/ansi"
 )
 
+// This file is copied from https://github.com/muesli/reflow/blob/master/wordwrap/wordwrap.go
+// and modified to support Chinese characters. Refer to the comments marked with @xuanyu66 for the modifications.
+
 var (
 	defaultBreakpoints = []rune{'-'}
 	defaultNewline     = []rune{'\n'}
