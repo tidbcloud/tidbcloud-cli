@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cluster
+package serverless
 
 import (
 	"fmt"
@@ -24,7 +24,8 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 
-	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
+
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
@@ -33,27 +34,37 @@ type ListOpts struct {
 	interactive bool
 }
 
+func (c ListOpts) NonInteractiveFlags() []string {
+	return []string{
+		flag.ProjectID,
+	}
+}
+
 func ListCmd(h *internal.Helper) *cobra.Command {
 	opts := ListOpts{
 		interactive: true,
 	}
 
 	var listCmd = &cobra.Command{
-		Use:         "list <project-id>",
-		Short:       "List all clusters in a project",
+		Use:         "list",
+		Short:       "List all serverless clusters in a project",
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  List all clusters in the project(interactive mode):
-  $ %[1]s cluster list
+		Example: fmt.Sprintf(`  List all serverless clusters in interactive mode):
+ $ %[1]s serverless list
 
-  List the clusters in the project(non-interactive mode):
-  $ %[1]s cluster list <project-id> 
+ List the serverless clusters in non-interactive mode:
+ $ %[1]s serverless list -p <project-id>
 
-  List the clusters in the project with json format:
-  $ %[1]s cluster list <project-id> -o json`, config.CliName),
+ List the serverless clusters in non-interactive mode:
+ $ %[1]s serverless list -p <project-id> -o json`, config.CliName),
 		Aliases: []string{"ls"},
 		PreRun: func(cmd *cobra.Command, args []string) {
-			if len(args) > 0 {
-				opts.interactive = false
+			flags := opts.NonInteractiveFlags()
+			for _, fn := range flags {
+				f := cmd.Flags().Lookup(fn)
+				if f != nil && f.Changed {
+					opts.interactive = false
+				}
 			}
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -76,7 +87,11 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				}
 				pID = project.ID
 			} else {
-				pID = args[0]
+				// non-interactive mode does not need projectID
+				pID, err = cmd.Flags().GetString(flag.ProjectID)
+				if err != nil {
+					return errors.Trace(err)
+				}
 			}
 
 			cmd.Annotations[telemetry.ProjectID] = pID
@@ -94,9 +109,9 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			// for terminal which can prompt, humanFormat is the default format.
 			// for other terminals, json format is the default format.
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				res := &clusterApi.ListClustersOfProjectOKBody{
-					Items: items,
-					Total: &total,
+				res := &serverlessModel.TidbCloudOpenApiserverlessv1beta1ListClustersResponse{
+					Clusters:  items,
+					TotalSize: total,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)
 				if err != nil {
@@ -105,8 +120,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			} else if format == output.HumanFormat {
 				columns := []output.Column{
 					"ID",
-					"Name",
-					"Status",
+					"DisplayName",
+					"State",
 					"Version",
 					"Cloud",
 					"Region",
@@ -115,22 +130,14 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 				var rows []output.Row
 				for _, item := range items {
-					t := item.ClusterType
-					// Currently serverless is called "DEVELOPER" in the API.
-					// For better user experience, we change it to "SERVERLESS".
-					// But we still keep the original value in the json result.
-					if t == developerType {
-						t = serverlessType
-					}
-
 					rows = append(rows, output.Row{
-						*(item.ID),
-						item.Name,
-						item.Status.ClusterStatus,
-						item.Status.TidbVersion,
-						item.CloudProvider,
-						item.Region,
-						t,
+						item.ClusterID,
+						*item.DisplayName,
+						string(*item.State),
+						item.Version,
+						string(*item.Region.Provider),
+						item.Region.DisplayName,
+						serverlessType,
 					})
 				}
 
@@ -148,5 +155,6 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, "Output format, One of [\"human\" \"json\"], for the complete result, please use json format")
+	listCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project")
 	return listCmd
 }

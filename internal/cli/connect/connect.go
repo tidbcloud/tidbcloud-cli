@@ -31,9 +31,10 @@ import (
 	"tidbcloud-cli/internal/util"
 	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
 
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
-	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/fatih/color"
 	"github.com/go-sql-driver/mysql"
 	"github.com/juju/errors"
@@ -46,7 +47,6 @@ import (
 
 const (
 	SERVERLESS = "SERVERLESS"
-	DEVELOPER  = "DEVELOPER"
 	DEDICATED  = "DEDICATED"
 )
 
@@ -57,7 +57,6 @@ type ConnectOpts struct {
 func (c ConnectOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.ProjectID,
 	}
 }
 
@@ -75,16 +74,16 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
   $ %[1]s connect
 
   Use the default user to connect to the TiDB Cloud cluster in non-interactive mode:
-  $ %[1]s connect -p <project-id> -c <cluster-id>
+  $ %[1]s connect -c <cluster-id>
 
   Use the default user to connect to the TiDB Cloud branch in non-interactive mode:
-  $ %[1]s connect -p <project-id> -c <cluster-id> -b <branch-id>
+  $ %[1]s connect -c <cluster-id> -b <branch-id>
 
   Use the default user to connect to the TiDB Cloud cluster with password in non-interactive mode:
-  $ %[1]s connect -p <project-id> -c <cluster-id> --password <password>
+  $ %[1]s connect -c <cluster-id> --password <password>
 
   Use a specific user to connect to the TiDB Cloud cluster in non-interactive mode:
-  $ %[1]s connect -p <project-id> -c <cluster-id> -u <user-name>`, config.CliName),
+  $ %[1]s connect -c <cluster-id> -u <user-name>`, config.CliName),
 
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -118,7 +117,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				return err
 			}
 
-			var projectID, clusterID, branchID, userName string
+			var clusterID, branchID, userName string
 			var pass *string
 			if opts.interactive {
 				// interactive mode
@@ -126,7 +125,7 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				if err != nil {
 					return err
 				}
-				projectID = project.ID
+				projectID := project.ID
 
 				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
 				if err != nil {
@@ -173,17 +172,11 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				}
 			} else {
 				// non-interactive mode, get values from flags
-				pID, err := cmd.Flags().GetString(flag.ProjectID)
-				if err != nil {
-					return errors.Trace(err)
-				}
-
 				cID, err := cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
 				}
 
-				projectID = pID
 				clusterID = cID
 
 				// options flags
@@ -211,24 +204,18 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			var host, name, port, clusterType string
 			if !isBranch(branchID) {
 				// cluster
-				params := clusterApi.NewGetClusterParams().
-					WithProjectID(projectID).
-					WithClusterID(clusterID)
+				params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID)
 				cluster, err := d.GetCluster(params)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				defaultUser := cluster.Payload.Status.ConnectionStrings.DefaultUser
-				host = cluster.Payload.Status.ConnectionStrings.Standard.Host
-				name = cluster.Payload.Name
-				port = strconv.Itoa(int(cluster.Payload.Status.ConnectionStrings.Standard.Port))
-				clusterType = cluster.Payload.ClusterType
+				defaultUser := cluster.Payload.UserPrefix
+				host = cluster.Payload.Endpoints.PublicEndpoint.Host
+				name = *cluster.Payload.DisplayName
+				port = strconv.Itoa(int(cluster.Payload.Endpoints.PublicEndpoint.Port))
 				if userName == "" {
 					userName = defaultUser
 					fmt.Fprintln(h.IOStreams.Out, color.GreenString("Current user: ")+color.HiGreenString(userName))
-				}
-				if clusterType == DEVELOPER {
-					clusterType = SERVERLESS
 				}
 			} else {
 				// branch
@@ -262,7 +249,6 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 		},
 	}
 
-	connectCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The project ID of the cluster")
 	connectCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster")
 	connectCmd.Flags().StringP(flag.BranchID, flag.BranchIDShort, "", "The ID of the branch")
 	connectCmd.Flags().String(flag.Password, "", "The password of the user")

@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cluster
+package serverless
 
 import (
 	"encoding/json"
@@ -24,7 +24,8 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 
-	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
@@ -36,7 +37,6 @@ type DescribeOpts struct {
 func (c DescribeOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.ProjectID,
 	}
 }
 
@@ -47,14 +47,20 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 
 	var describeCmd = &cobra.Command{
 		Use:         "describe",
-		Short:       "Describe a cluster",
+		Short:       "Describe a serverless cluster",
 		Aliases:     []string{"get"},
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Get the cluster info in interactive mode:
-  $ %[1]s cluster describe
+		Example: fmt.Sprintf(`  Get the serverless cluster info in interactive mode:
+ $ %[1]s serverless describe
 
-  Get the cluster info in non-interactive mode:
-  $ %[1]s cluster describe -p <project-id> -c <cluster-id>`, config.CliName),
+ Get the Basic serverless cluster info in interactive mode:
+ $ %[1]s serverless describe -v BASIC
+
+ Get the serverless cluster info in non-interactive mode:
+ $ %[1]s serverless describe -c <cluster-id>
+
+ Get the Basic serverless cluster info in non-interactive mode:
+ $ %[1]s serverless describe -c <cluster-id> -v BASIC`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {
@@ -82,7 +88,6 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			var projectID string
 			var clusterID string
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
@@ -95,7 +100,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				projectID = project.ID
+				projectID := project.ID
 
 				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
 				if err != nil {
@@ -103,25 +108,26 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 			} else {
-				// non-interactive mode, get values from flags
-				pID, err := cmd.Flags().GetString(flag.ProjectID)
-				if err != nil {
-					return errors.Trace(err)
-				}
-
+				// non-interactive mode does not need projectID
 				cID, err := cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				projectID = pID
 				clusterID = cID
 			}
 
-			cmd.Annotations[telemetry.ProjectID] = projectID
+			view, err := cmd.Flags().GetString(flag.View)
+			if err != nil {
+				return errors.Trace(err)
+			}
 
-			params := clusterApi.NewGetClusterParams().
-				WithProjectID(projectID).
-				WithClusterID(clusterID)
+			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID)
+			if view == flag.BasicView {
+				params.WithView(&view)
+			} else if view != flag.FullView {
+				return errors.Errorf("invalid view: %s", view)
+			}
+
 			cluster, err := d.GetCluster(params)
 			if err != nil {
 				return errors.Trace(err)
@@ -137,7 +143,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	describeCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The project ID of the cluster")
 	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster")
+	describeCmd.Flags().StringP(flag.View, flag.ViewShort, flag.FullView, "The view of cluster, One of [\"BASIC\" \"FULL\"]")
 	return describeCmd
 }
