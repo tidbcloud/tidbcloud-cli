@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"math"
 	"strconv"
-
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	branchApi "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
@@ -27,8 +26,9 @@ import (
 	connectInfoModel "tidbcloud-cli/pkg/tidbcloud/connect_info/models"
 	importApi "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
 
-	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/juju/errors"
@@ -44,14 +44,25 @@ func (p Project) String() string {
 }
 
 type Cluster struct {
-	ID   string
-	Name string
+	ID          string
+	Name        string
+	DisplayName string
 }
 
 type Branch struct {
 	ID          string
 	DisplayName string
 	IsCluster   bool
+}
+
+type Region struct {
+	Name        string
+	DisplayName string
+	Provider    string
+}
+
+func (r Region) String() string {
+	return r.DisplayName
 }
 
 func (b Branch) String() string {
@@ -62,7 +73,7 @@ func (b Branch) String() string {
 }
 
 func (c Cluster) String() string {
-	return fmt.Sprintf("%s(%s)", c.Name, c.ID)
+	return fmt.Sprintf("%s(%s)", c.DisplayName, c.ID)
 }
 
 type Import struct {
@@ -124,8 +135,8 @@ func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient
 	var items = make([]interface{}, 0, len(clusterItems))
 	for _, item := range clusterItems {
 		items = append(items, &Cluster{
-			ID:   *(item.ID),
-			Name: item.Name,
+			ID:          item.ClusterID,
+			DisplayName: *item.DisplayName,
 		})
 	}
 	if len(items) == 0 {
@@ -150,6 +161,56 @@ func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient
 	}
 	cluster := clusterModel.(ui.SelectModel).GetSelectedItem().(*Cluster)
 	return cluster, nil
+}
+
+func GetSelectedField(mutableFields []string) (string, error) {
+	var items = make([]interface{}, 0, len(mutableFields))
+	for _, item := range mutableFields {
+		items = append(items, item)
+	}
+	model, err := ui.InitialSelectModel(items, "Choose the field to update")
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	fieldModel, err := p.StartReturningModel()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := fieldModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	field := fieldModel.(ui.SelectModel).GetSelectedItem().(string)
+	return field, nil
+}
+
+func GetSpendingLimitField(mutableFields []string) (string, error) {
+	var items = make([]interface{}, 0, len(mutableFields))
+	for _, item := range mutableFields {
+		items = append(items, item)
+	}
+	model, err := ui.InitialSelectModel(items, "Choose the type of spending limit")
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	fieldModel, err := p.StartReturningModel()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := fieldModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	field := fieldModel.(ui.SelectModel).GetSelectedItem().(string)
+	return field, nil
 }
 
 func GetSelectedBranch(clusterID string, pageSize int64, client TiDBCloudClient) (*Branch, error) {
@@ -292,23 +353,32 @@ func RetrieveProjects(size int64, d TiDBCloudClient) (int64, []*projectApi.ListP
 	return total, items, nil
 }
 
-func RetrieveClusters(pID string, pageSize int64, d TiDBCloudClient) (int64, []*clusterApi.ListClustersOfProjectOKBodyItemsItems0, error) {
-	params := clusterApi.NewListClustersOfProjectParams().WithProjectID(pID)
-	var total int64 = math.MaxInt64
-	var page int64 = 1
-	var items []*clusterApi.ListClustersOfProjectOKBodyItemsItems0
-	// loop to get all clusters
-	for (page-1)*pageSize < total {
-		clusters, err := d.ListClustersOfProject(params.WithPage(&page).WithPageSize(&pageSize))
+func RetrieveClusters(pID string, pageSize int64, d TiDBCloudClient) (int64, []*serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+	params := serverlessApi.NewServerlessServiceListClustersParams()
+	if pID != "" {
+		projectFilter := fmt.Sprintf("projectId=%s", pID)
+		params.WithFilter(&projectFilter)
+	}
+	pageSizeInt32 := int32(pageSize)
+	var pageToken string
+	var items []*serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster
+	clusters, err := d.ListClustersOfProject(params.WithPageSize(&pageSizeInt32))
+	if err != nil {
+		return 0, nil, errors.Trace(err)
+	}
+	items = append(items, clusters.Payload.Clusters...)
+	for {
+		pageToken = clusters.Payload.NextPageToken
+		if pageToken == "" {
+			break
+		}
+		clusters, err = d.ListClustersOfProject(params.WithPageToken(&pageToken).WithPageSize(&pageSizeInt32))
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
-
-		total = *clusters.Payload.Total
-		page += 1
-		items = append(items, clusters.Payload.Items...)
+		items = append(items, clusters.Payload.Clusters...)
 	}
-	return total, items, nil
+	return int64(len(items)), items, nil
 }
 
 func RetrieveBranches(cID string, pageSize int64, d TiDBCloudClient) (int64, []*branchModel.OpenapiBasicBranch, error) {

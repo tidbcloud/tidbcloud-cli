@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cluster
+package serverless
 
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"os"
 	"testing"
 
@@ -26,54 +25,59 @@ import (
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
 
-	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
+
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
 
 const getClusterResultStr = `{
-  "cloud_provider": "AWS",
-  "cluster_type": "DEVELOPER",
-  "config": {
-    "components": {
-      "tidb": {
-        "node_quantity": 1,
-        "node_size": "Shared0"
-      },
-      "tiflash": {
-        "node_quantity": 1,
-        "node_size": "Shared0",
-        "storage_size_gib": 1
-      },
-      "tikv": {
-        "node_quantity": 1,
-        "node_size": "Shared0",
-        "storage_size_gib": 1
-      }
-    },
-    "port": 4000
+  "annotations": {
+    "tidb.cloud/has-set-password": "false"
   },
-  "create_timestamp": "1668508515",
-  "id": "1379661944635994072",
-  "name": "sdfds",
-  "project_id": "1372813089189381287",
-  "region": "us-east-1",
-  "status": {
-    "cluster_status": "AVAILABLE",
-    "connection_strings": {
-      "default_user": "28cDWcUJJiewaQ7.root",
-      "standard": {
-        "host": "gateway01.us-east-1.prod.aws.tidbcloud.com",
-        "port": 4000
-      }
+  "automatedBackupPolicy": {
+    "retentionDays": 31,
+    "startTime": "15:00"
+  },
+  "clusterId": "10058425682284910921",
+  "createTime": "2023-08-15T10:08:21.911Z",
+  "createdBy": "yuhang.shi@pingcap.com",
+  "displayName": "Cluster0",
+  "endpoints": {
+    "privateEndpoint": {
+      "aws": {
+        "availabilityZone": [
+          "use1-az1"
+        ],
+        "serviceName": "com.amazonaws.vpce.us-east-1.vpce-svc-03342995daf1bc4d4"
+      },
+      "host": "gateway01-privatelink.us-east-1.prod.aws.tidbcloud.com",
+      "port": 4000
     },
-    "node_map": {
-      "tidb": [],
-      "tiflash": [],
-      "tikv": []
-    },
-    "tidb_version": "v6.3.0"
-  }
+    "publicEndpoint": {
+      "host": "gateway01.us-east-1.prod.aws.tidbcloud.com",
+      "port": 4000
+    }
+  },
+  "labels": {
+    "tidb.cloud/organization": "30018",
+    "tidb.cloud/project": "163469"
+  },
+  "name": "clusters/10058425682284910921",
+  "region": {
+    "displayName": "N. Virginia (us-east-1)",
+    "name": "regions/aws-us-east-1",
+    "provider": "AWS"
+  },
+  "spendingLimit": {},
+  "state": "ACTIVE",
+  "updateTime": "2023-08-15T10:08:21.911Z",
+  "usage": {
+    "requestUnit": "0"
+  },
+  "userPrefix": "28cDWcUJJiewaQ7",
+  "version": "v6.6.0"
 }
 `
 
@@ -102,16 +106,15 @@ func (suite *DescribeClusterSuite) SetupTest() {
 func (suite *DescribeClusterSuite) TestDescribeClusterArgs() {
 	assert := require.New(suite.T())
 
-	body := &cluster.GetClusterOKBody{}
+	body := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{}
 	err := json.Unmarshal([]byte(getClusterResultStr), body)
 	assert.Nil(err)
-	result := &cluster.GetClusterOK{
+	result := &serverlessApi.ServerlessServiceGetClusterOK{
 		Payload: body,
 	}
-	projectID := "12345"
 	clusterID := "12345"
-	suite.mockClient.On("GetCluster", cluster.NewGetClusterParams().
-		WithProjectID(projectID).WithClusterID(clusterID)).
+	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
+		WithClusterID(clusterID)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -123,18 +126,13 @@ func (suite *DescribeClusterSuite) TestDescribeClusterArgs() {
 	}{
 		{
 			name:         "describe cluster success",
-			args:         []string{"--project-id", projectID, "--cluster-id", clusterID},
+			args:         []string{"--cluster-id", clusterID},
 			stdoutString: getClusterResultStr,
 		},
 		{
 			name:         "describe cluster with shorthand flag",
-			args:         []string{"-p", projectID, "-c", clusterID},
+			args:         []string{"-c", clusterID},
 			stdoutString: getClusterResultStr,
-		},
-		{
-			name: "describe cluster without required project id",
-			args: []string{"-c", clusterID},
-			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
 		},
 	}
 

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cluster
+package serverless
 
 import (
 	"fmt"
@@ -26,7 +26,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
 
-	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -39,7 +39,6 @@ type connectInfoOpts struct {
 func (c connectInfoOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.ProjectID,
 		flag.ClientName,
 		flag.OperatingSystem,
 	}
@@ -200,10 +199,9 @@ var OperatingSystemListForHelp = []string{
 	"Others",
 }
 
-// Cluster type
+// SERVERLESS Cluster type
 const (
 	SERVERLESS = "SERVERLESS"
-	DEVELOPER  = "DEVELOPER"
 )
 
 func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
@@ -213,12 +211,12 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "connect-info",
-		Short: "Get connection string for the specified cluster",
+		Short: "Get connection string for the specified serverless cluster",
 		Example: fmt.Sprintf(`  Get connection string in interactive mode:
-  $ %[1]s cluster connect-info
+$ %[1]s serverless connect-info
 
-  Get connection string in non-interactive mode:
-  $ %[1]s cluster connect-info --project-id <project-id> --cluster-id <cluster-id> --client <client-name> --operating-system <operating-system>
+Get connection string in non-interactive mode:
+$ %[1]s serverless connect-info --cluster-id <cluster-id> --client <client-name> --operating-system <operating-system>
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -243,7 +241,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// flags
-			var projectID, clusterID, client, operatingSystem string
+			var clusterID, client, operatingSystem string
 
 			// Get TiDBCloudClient
 			d, err := h.Client()
@@ -261,7 +259,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				projectID = project.ID
+				projectID := project.ID
 
 				// Get cluster id
 				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
@@ -309,11 +307,6 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 
-				projectID, err = cmd.Flags().GetString(flag.ProjectID)
-				if err != nil {
-					return err
-				}
-
 				clientNameForHelp, err := cmd.Flags().GetString(flag.ClientName)
 				if err != nil {
 					return err
@@ -334,7 +327,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			// Get cluster info
-			params := clusterApi.NewGetClusterParams().WithProjectID(projectID).WithClusterID(clusterID)
+			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID)
 			clusterInfo, err := d.GetCluster(params)
 			if err != nil {
 				return err
@@ -342,13 +335,10 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 
 			// Resolve cluster information
 			// Get connect parameter
-			defaultUser := clusterInfo.Payload.Status.ConnectionStrings.DefaultUser
-			host := clusterInfo.Payload.Status.ConnectionStrings.Standard.Host
-			port := strconv.Itoa(int(clusterInfo.Payload.Status.ConnectionStrings.Standard.Port))
-			clusterType := clusterInfo.Payload.ClusterType
-			if clusterType == DEVELOPER {
-				clusterType = SERVERLESS
-			}
+			defaultUser := fmt.Sprintf("%s.root", clusterInfo.Payload.UserPrefix)
+			host := clusterInfo.Payload.Endpoints.PublicEndpoint.Host
+			port := strconv.Itoa(int(clusterInfo.Payload.Endpoints.PublicEndpoint.Port))
+			clusterType := SERVERLESS
 
 			// Get connection string
 			connectInfo, err := cloud.RetrieveConnectInfo(d)
@@ -366,7 +356,6 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
 	cmd.Flags().String(flag.ClientName, "", fmt.Sprintf("Connected client. Supported clients: %q", ConnectClientsListForHelp))
 	cmd.Flags().String(flag.OperatingSystem, "", fmt.Sprintf("Operating system name. "+

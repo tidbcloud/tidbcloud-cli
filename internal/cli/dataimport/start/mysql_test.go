@@ -30,8 +30,9 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	connectInfoService "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
 	connectInfoModel "tidbcloud-cli/pkg/tidbcloud/connect_info/models"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
 
-	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	mockTool "github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -149,7 +150,6 @@ func (suite *MySQLImportSuite) TestMySQLImportArgs() {
 	sourceUser := "root"
 	sourcePassword := "passwd"
 	password := "passwd"
-	projectID := "1234"
 	clusterID := "4321"
 	database := "mysql"
 
@@ -180,7 +180,8 @@ func (suite *MySQLImportSuite) TestMySQLImportArgs() {
 
 	targetHost := "9.9.9.9"
 	targetPort := int32(4000)
-	targetUser := "root"
+	userPrefix := "abc"
+	targetUser := "abc.root"
 
 	importArgs := []string{
 		"mysql",
@@ -197,19 +198,16 @@ func (suite *MySQLImportSuite) TestMySQLImportArgs() {
 		"-p" + password,
 	}
 	suite.mockHelper.On("ImportToServerless", mockTool.Anything, importArgs, cachePath).Return(nil)
-	suite.mockClient.On("GetCluster", cluster.NewGetClusterParams().
-		WithProjectID(projectID).WithClusterID(clusterID)).Return(&cluster.GetClusterOK{
-		Payload: &cluster.GetClusterOKBody{
-			ClusterType: "DEVELOPER",
-			Status: &cluster.GetClusterOKBodyStatus{
-				ConnectionStrings: &cluster.GetClusterOKBodyStatusConnectionStrings{
-					DefaultUser: targetUser,
-					Standard: &cluster.GetClusterOKBodyStatusConnectionStringsStandard{
-						Host: targetHost,
-						Port: targetPort,
-					},
+	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
+		WithClusterID(clusterID)).Return(&serverlessApi.ServerlessServiceGetClusterOK{
+		Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
+			Endpoints: &serverlessModel.V1beta1ClusterEndpoints{
+				PublicEndpoint: &serverlessModel.EndpointsPublic{
+					Host: targetHost,
+					Port: targetPort,
 				},
 			},
+			UserPrefix: userPrefix,
 		},
 	}, nil)
 	connectInfoBody := &connectInfoModel.ConnectInfo{}
@@ -227,12 +225,12 @@ func (suite *MySQLImportSuite) TestMySQLImportArgs() {
 	}{
 		{
 			name: "start import success",
-			args: []string{"--project-id", projectID, "--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database},
+			args: []string{"--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database},
 		},
 		{
-			name: "start import without required project-id flag",
-			args: []string{"--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database},
-			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
+			name: "start import without required cluster-id flag",
+			args: []string{"--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database},
+			err:  fmt.Errorf("required flag(s) \"cluster-id\" not set"),
 		},
 	}
 
@@ -266,7 +264,6 @@ func (suite *MySQLImportSuite) TestMySQLImportWithoutCreateTable() {
 	sourceUser := "root"
 	sourcePassword := "passwd"
 	password := "passwd"
-	projectID := "1234"
 	clusterID := "4321"
 	database := "mysql"
 
@@ -297,7 +294,8 @@ func (suite *MySQLImportSuite) TestMySQLImportWithoutCreateTable() {
 
 	targetHost := "9.9.9.9"
 	targetPort := int32(4000)
-	targetUser := "root"
+	userPrefix := "abc"
+	targetUser := "abc.root"
 
 	importArgs := []string{
 		"mysql",
@@ -314,19 +312,16 @@ func (suite *MySQLImportSuite) TestMySQLImportWithoutCreateTable() {
 		"-p" + password,
 	}
 	suite.mockHelper.On("ImportToServerless", mockTool.Anything, importArgs, cachePath).Return(nil)
-	suite.mockClient.On("GetCluster", cluster.NewGetClusterParams().
-		WithProjectID(projectID).WithClusterID(clusterID)).Return(&cluster.GetClusterOK{
-		Payload: &cluster.GetClusterOKBody{
-			ClusterType: "DEVELOPER",
-			Status: &cluster.GetClusterOKBodyStatus{
-				ConnectionStrings: &cluster.GetClusterOKBodyStatusConnectionStrings{
-					DefaultUser: "root",
-					Standard: &cluster.GetClusterOKBodyStatusConnectionStringsStandard{
-						Host: targetHost,
-						Port: targetPort,
-					},
+	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
+		WithClusterID(clusterID)).Return(&serverlessApi.ServerlessServiceGetClusterOK{
+		Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
+			Endpoints: &serverlessModel.V1beta1ClusterEndpoints{
+				PublicEndpoint: &serverlessModel.EndpointsPublic{
+					Host: targetHost,
+					Port: targetPort,
 				},
 			},
+			UserPrefix: userPrefix,
 		},
 	}, nil)
 	connectInfoBody := &connectInfoModel.ConnectInfo{}
@@ -344,7 +339,7 @@ func (suite *MySQLImportSuite) TestMySQLImportWithoutCreateTable() {
 	}{
 		{
 			name: "start import success",
-			args: []string{"--project-id", projectID, "--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database, "--target-user", targetUser},
+			args: []string{"--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database, "--target-user", targetUser},
 		},
 	}
 
@@ -378,7 +373,6 @@ func (suite *MySQLImportSuite) TestMySQLImportWithSpecificUser() {
 	sourceUser := "root"
 	sourcePassword := "passwd"
 	password := "passwd"
-	projectID := "1234"
 	clusterID := "4321"
 	database := "mysql"
 
@@ -409,7 +403,8 @@ func (suite *MySQLImportSuite) TestMySQLImportWithSpecificUser() {
 
 	targetHost := "9.9.9.9"
 	targetPort := int32(4000)
-	targetUser := "root"
+	userPrefix := "abc"
+	targetUser := "abc.root"
 
 	importArgs := []string{
 		"mysql",
@@ -426,19 +421,16 @@ func (suite *MySQLImportSuite) TestMySQLImportWithSpecificUser() {
 		"-p" + password,
 	}
 	suite.mockHelper.On("ImportToServerless", mockTool.Anything, importArgs, cachePath).Return(nil)
-	suite.mockClient.On("GetCluster", cluster.NewGetClusterParams().
-		WithProjectID(projectID).WithClusterID(clusterID)).Return(&cluster.GetClusterOK{
-		Payload: &cluster.GetClusterOKBody{
-			ClusterType: "DEVELOPER",
-			Status: &cluster.GetClusterOKBodyStatus{
-				ConnectionStrings: &cluster.GetClusterOKBodyStatusConnectionStrings{
-					DefaultUser: targetUser,
-					Standard: &cluster.GetClusterOKBodyStatusConnectionStringsStandard{
-						Host: targetHost,
-						Port: targetPort,
-					},
+	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
+		WithClusterID(clusterID)).Return(&serverlessApi.ServerlessServiceGetClusterOK{
+		Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
+			Endpoints: &serverlessModel.V1beta1ClusterEndpoints{
+				PublicEndpoint: &serverlessModel.EndpointsPublic{
+					Host: targetHost,
+					Port: targetPort,
 				},
 			},
+			UserPrefix: userPrefix,
 		},
 	}, nil)
 	connectInfoBody := &connectInfoModel.ConnectInfo{}
@@ -456,7 +448,7 @@ func (suite *MySQLImportSuite) TestMySQLImportWithSpecificUser() {
 	}{
 		{
 			name: "start import success",
-			args: []string{"--project-id", projectID, "--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database, "--skip-create-table"},
+			args: []string{"--cluster-id", clusterID, "--source-host", sourceHost, "--source-port", sourcePort, "--source-database", sourceDatabase, "--source-table", sourceTable, "--source-user", sourceUser, "--source-password", sourcePassword, "--target-password", password, "--target-database", database, "--skip-create-table"},
 		},
 	}
 

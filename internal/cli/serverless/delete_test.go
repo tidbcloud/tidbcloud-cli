@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cluster
+package serverless
 
 import (
 	"bytes"
@@ -25,7 +25,9 @@ import (
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
 
-	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
+
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
@@ -55,14 +57,15 @@ func (suite *DeleteClusterSuite) SetupTest() {
 func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 	assert := require.New(suite.T())
 
-	projectID := "12345"
 	clusterID := "12345"
-	suite.mockClient.On("DeleteCluster", cluster.NewDeleteClusterParams().
-		WithProjectID(projectID).WithClusterID(clusterID)).
-		Return(&cluster.DeleteClusterOK{}, nil)
-	suite.mockClient.On("GetCluster", cluster.NewGetClusterParams().
-		WithProjectID(projectID).WithClusterID(clusterID)).
-		Return(nil, &cluster.GetClusterNotFound{})
+	state := "DELETING"
+	suite.mockClient.On("DeleteCluster", serverlessApi.NewServerlessServiceDeleteClusterParams().
+		WithClusterID(clusterID)).
+		Return(&serverlessApi.ServerlessServiceDeleteClusterOK{
+			Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
+				State: (*serverlessModel.TidbCloudOpenApiserverlessv1beta1ClusterState)(&state),
+			},
+		}, nil)
 
 	tests := []struct {
 		name         string
@@ -73,23 +76,18 @@ func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 	}{
 		{
 			name:         "delete cluster success",
-			args:         []string{"--project-id", projectID, "--cluster-id", clusterID, "--force"},
+			args:         []string{"--cluster-id", clusterID, "--force"},
 			stdoutString: fmt.Sprintf("cluster %s deleted\n", clusterID),
 		},
 		{
 			name: "delete cluster without force",
-			args: []string{"--project-id", projectID, "--cluster-id", clusterID},
+			args: []string{"--cluster-id", clusterID},
 			err:  fmt.Errorf("the terminal doesn't support prompt, please run with --force to delete the cluster"),
 		},
 		{
 			name:         "delete cluster with output flag",
-			args:         []string{"-p", projectID, "-c", clusterID, "--force"},
+			args:         []string{"-c", clusterID, "--force"},
 			stdoutString: fmt.Sprintf("cluster %s deleted\n", clusterID),
-		},
-		{
-			name: "delete cluster without required project id",
-			args: []string{"-c", clusterID, "--force"},
-			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
 		},
 	}
 

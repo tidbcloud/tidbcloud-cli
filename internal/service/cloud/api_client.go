@@ -30,9 +30,10 @@ import (
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 	pingchatClient "tidbcloud-cli/pkg/tidbcloud/pingchat/client"
 	pingchatOp "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
+	serverlessClient "tidbcloud-cli/pkg/tidbcloud/serverless/client"
+	serverlessOp "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
 
 	apiClient "github.com/c4pt0r/go-tidbcloud-sdk-v1/client"
-	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 	httpTransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
@@ -40,20 +41,23 @@ import (
 )
 
 const (
-	DefaultApiUrl = "https://api.tidbcloud.com"
-	userAgent     = "User-Agent"
+	DefaultApiUrl             = "https://" + apiClient.DefaultHost
+	DefaultServerlessEndpoint = "https://" + serverlessClient.DefaultHost
+	userAgent                 = "User-Agent"
 )
 
 type TiDBCloudClient interface {
-	CreateCluster(params *cluster.CreateClusterParams, opts ...cluster.ClientOption) (*cluster.CreateClusterOK, error)
+	CreateCluster(params *serverlessOp.ServerlessServiceCreateClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceCreateClusterOK, error)
 
-	DeleteCluster(params *cluster.DeleteClusterParams, opts ...cluster.ClientOption) (*cluster.DeleteClusterOK, error)
+	DeleteCluster(params *serverlessOp.ServerlessServiceDeleteClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceDeleteClusterOK, error)
 
-	GetCluster(params *cluster.GetClusterParams, opts ...cluster.ClientOption) (*cluster.GetClusterOK, error)
+	GetCluster(params *serverlessOp.ServerlessServiceGetClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceGetClusterOK, error)
 
-	ListClustersOfProject(params *cluster.ListClustersOfProjectParams, opts ...cluster.ClientOption) (*cluster.ListClustersOfProjectOK, error)
+	ListClustersOfProject(params *serverlessOp.ServerlessServiceListClustersParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListClustersOK, error)
 
-	ListProviderRegions(params *cluster.ListProviderRegionsParams, opts ...cluster.ClientOption) (*cluster.ListProviderRegionsOK, error)
+	PartialUpdateCluster(params *serverlessOp.ServerlessServicePartialUpdateClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServicePartialUpdateClusterOK, error)
+
+	ListProviderRegions(params *serverlessOp.ServerlessServiceListRegionsParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListRegionsOK, error)
 
 	ListProjects(params *project.ListProjectsParams, opts ...project.ClientOption) (*project.ListProjectsOK, error)
 
@@ -88,10 +92,11 @@ type ClientDelegate struct {
 	cc *connectInfoClient.TidbcloudConnectInfo
 	bc *branchClient.TidbcloudBranch
 	pc *pingchatClient.TidbcloudPingchat
+	sc *serverlessClient.TidbcloudServerless
 }
 
-func NewClientDelegate(publicKey string, privateKey string, apiUrl string) (*ClientDelegate, error) {
-	c, ic, cc, bc, pc, err := NewApiClient(publicKey, privateKey, apiUrl)
+func NewClientDelegate(publicKey string, privateKey string, apiUrl string, serverlessApiUrl string) (*ClientDelegate, error) {
+	c, ic, cc, bc, sc, pc, err := NewApiClient(publicKey, privateKey, apiUrl, serverlessApiUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -100,28 +105,33 @@ func NewClientDelegate(publicKey string, privateKey string, apiUrl string) (*Cli
 		ic: ic,
 		cc: cc,
 		bc: bc,
+		sc: sc,
 		pc: pc,
 	}, nil
 }
 
-func (d *ClientDelegate) CreateCluster(params *cluster.CreateClusterParams, opts ...cluster.ClientOption) (*cluster.CreateClusterOK, error) {
-	return d.c.Cluster.CreateCluster(params, opts...)
+func (d *ClientDelegate) CreateCluster(params *serverlessOp.ServerlessServiceCreateClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceCreateClusterOK, error) {
+	return d.sc.ServerlessService.ServerlessServiceCreateCluster(params, opts...)
 }
 
-func (d *ClientDelegate) DeleteCluster(params *cluster.DeleteClusterParams, opts ...cluster.ClientOption) (*cluster.DeleteClusterOK, error) {
-	return d.c.Cluster.DeleteCluster(params, opts...)
+func (d *ClientDelegate) DeleteCluster(params *serverlessOp.ServerlessServiceDeleteClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceDeleteClusterOK, error) {
+	return d.sc.ServerlessService.ServerlessServiceDeleteCluster(params, opts...)
 }
 
-func (d *ClientDelegate) GetCluster(params *cluster.GetClusterParams, opts ...cluster.ClientOption) (*cluster.GetClusterOK, error) {
-	return d.c.Cluster.GetCluster(params, opts...)
+func (d *ClientDelegate) GetCluster(params *serverlessOp.ServerlessServiceGetClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceGetClusterOK, error) {
+	return d.sc.ServerlessService.ServerlessServiceGetCluster(params, opts...)
 }
 
-func (d *ClientDelegate) ListProviderRegions(params *cluster.ListProviderRegionsParams, opts ...cluster.ClientOption) (*cluster.ListProviderRegionsOK, error) {
-	return d.c.Cluster.ListProviderRegions(params, opts...)
+func (d *ClientDelegate) ListProviderRegions(params *serverlessOp.ServerlessServiceListRegionsParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListRegionsOK, error) {
+	return d.sc.ServerlessService.ServerlessServiceListRegions(params, opts...)
 }
 
-func (d *ClientDelegate) ListClustersOfProject(params *cluster.ListClustersOfProjectParams, opts ...cluster.ClientOption) (*cluster.ListClustersOfProjectOK, error) {
-	return d.c.Cluster.ListClustersOfProject(params, opts...)
+func (d *ClientDelegate) ListClustersOfProject(params *serverlessOp.ServerlessServiceListClustersParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListClustersOK, error) {
+	return d.sc.ServerlessService.ServerlessServiceListClusters(params, opts...)
+}
+
+func (d *ClientDelegate) PartialUpdateCluster(params *serverlessOp.ServerlessServicePartialUpdateClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServicePartialUpdateClusterOK, error) {
+	return d.sc.ServerlessService.ServerlessServicePartialUpdateCluster(params, opts...)
 }
 
 func (d *ClientDelegate) ListProjects(params *project.ListProjectsParams, opts ...project.ClientOption) (*project.ListProjectsOK, error) {
@@ -200,8 +210,8 @@ func (d *ClientDelegate) Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.
 	return d.pc.Operations.Chat(params, opts...)
 }
 
-func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport,
-	*connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudBranch, *pingchatClient.TidbcloudPingchat, error) {
+func NewApiClient(publicKey string, privateKey string, apiUrl string, serverlessApiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport,
+	*connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudBranch, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, error) {
 	httpclient := &http.Client{
 		Transport: NewTransportWithAgent(&digest.Transport{
 			Username: publicKey,
@@ -209,15 +219,22 @@ func NewApiClient(publicKey string, privateKey string, apiUrl string) (*apiClien
 		}, fmt.Sprintf("%s/%s", config.CliName, version.Version)),
 	}
 
-	// Parse the URL
+	// v1beta api
 	u, err := prop.ValidateApiUrl(apiUrl)
 	if err != nil {
-		return nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, err
 	}
-
 	transport := httpTransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpclient)
+
+	// serverless api
+	serverlessUrl, err := prop.ValidateApiUrl(serverlessApiUrl)
+	if err != nil {
+		return nil, nil, nil, nil, nil, nil, err
+	}
+	newTransport := httpTransport.NewWithClient(serverlessUrl.Host, serverlessClient.DefaultBasePath, []string{serverlessUrl.Scheme}, httpclient)
+
 	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default),
-		branchClient.New(transport, strfmt.Default), pingchatClient.New(transport, strfmt.Default), nil
+		branchClient.New(transport, strfmt.Default), serverlessClient.New(newTransport, strfmt.Default), pingchatClient.New(transport, strfmt.Default), nil
 }
 
 // NewTransportWithAgent returns a new http.RoundTripper that add the User-Agent header,

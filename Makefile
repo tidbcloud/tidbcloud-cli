@@ -55,6 +55,12 @@ addcopy: ## Add copyright to all files
 	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
 	swagger generate client -f pkg/tidbcloud/branch/branch.swagger.json -A tidbcloud-branch -t pkg/tidbcloud/branch
 
+.PHONY: generate-serverless-client
+ generate-serverless-client:
+	@echo "==> Generating serverless client"
+	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
+	swagger generate client -f pkg/tidbcloud/serverless/serverless.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/serverless
+
 .PHONY: fmt
 fmt: ## Format changed go
 	@scripts/fmt.sh

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cluster
+package serverless
 
 import (
 	"tidbcloud-cli/internal"
@@ -20,16 +20,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func ClusterCmd(h *internal.Helper) *cobra.Command {
-	var clusterCmd = &cobra.Command{
-		Use:   "cluster",
-		Short: "Manage clusters for your project",
+func Cmd(h *internal.Helper) *cobra.Command {
+	var serverlessCmd = &cobra.Command{
+		Use:   "serverless",
+		Short: "Manage your TiDB Serverless clusters",
 	}
 
-	clusterCmd.AddCommand(CreateCmd(h))
-	clusterCmd.AddCommand(DeleteCmd(h))
-	clusterCmd.AddCommand(ListCmd(h))
-	clusterCmd.AddCommand(DescribeCmd(h))
-	clusterCmd.AddCommand(ConnectInfoCmd(h))
-	return clusterCmd
+	serverlessCmd.AddCommand(CreateCmd(h))
+	serverlessCmd.AddCommand(DeleteCmd(h))
+	serverlessCmd.AddCommand(ListCmd(h))
+	serverlessCmd.AddCommand(DescribeCmd(h))
+	serverlessCmd.AddCommand(ConnectInfoCmd(h))
+	serverlessCmd.AddCommand(UpdateCmd(h))
+	serverlessCmd.AddCommand(RegionsCmd(h))
+	serverlessCmd.AddCommand(SpendingLimitCmd(h))
+	return serverlessCmd
 }

@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cluster
+package serverless
 
 import (
 	"fmt"
-	"time"
-
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
@@ -25,9 +23,10 @@ import (
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/util"
 
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
-	clusterApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/cluster"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -42,7 +41,6 @@ type DeleteOpts struct {
 func (c DeleteOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.ProjectID,
 	}
 }
 
@@ -54,13 +52,13 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 	var force bool
 	var deleteCmd = &cobra.Command{
 		Use:         "delete",
-		Short:       "Delete a cluster from your project",
+		Short:       "Delete a serverless cluster",
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Delete a cluster in interactive mode:
-  $ %[1]s cluster delete
+		Example: fmt.Sprintf(`  Delete a serverless cluster in interactive mode:
+ $ %[1]s serverless delete
 
-  Delete a cluster in non-interactive mode:
-  $ %[1]s cluster delete -p <project-id> -c <cluster-id>`, config.CliName),
+ Delete a serverless cluster in non-interactive mode:
+ $ %[1]s serverless delete -c <cluster-id>`, config.CliName),
 		Aliases: []string{"rm"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -89,7 +87,6 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			var projectID string
 			var clusterID string
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
@@ -102,7 +99,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				projectID = project.ID
+				projectID := project.ID
 
 				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
 				if err != nil {
@@ -110,21 +107,13 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 			} else {
-				// non-interactive mode, get values from flags
-				pID, err := cmd.Flags().GetString(flag.ProjectID)
-				if err != nil {
-					return errors.Trace(err)
-				}
-
+				// non-interactive mode doesn't need projectID
 				cID, err := cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				projectID = pID
 				clusterID = cID
 			}
-
-			cmd.Annotations[telemetry.ProjectID] = projectID
 
 			if !force {
 				if !h.IOStreams.CanPrompt {
@@ -152,39 +141,21 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := clusterApi.NewDeleteClusterParams().
-				WithProjectID(projectID).
-				WithClusterID(clusterID)
-			_, err = d.DeleteCluster(params)
+			params := serverlessApi.NewServerlessServiceDeleteClusterParams().WithClusterID(clusterID)
+			cluster, err := d.DeleteCluster(params)
 			if err != nil {
 				return errors.Trace(err)
 			}
-
-			ticker := time.NewTicker(1 * time.Second)
-			defer ticker.Stop()
-			timer := time.After(2 * time.Minute)
-			for {
-				select {
-				case <-timer:
-					return errors.New(fmt.Sprintf("timeout waiting for deleting cluster %s, please check status on dashboard", clusterID))
-				case <-ticker.C:
-					_, err := d.GetCluster(clusterApi.NewGetClusterParams().
-						WithClusterID(clusterID).
-						WithProjectID(projectID))
-					if err != nil {
-						if _, ok := err.(*clusterApi.GetClusterNotFound); ok {
-							fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("cluster %s deleted", clusterID)))
-							return nil
-						}
-						return errors.Trace(err)
-					}
-				}
+			if *cluster.Payload.State == "DELETING" || *cluster.Payload.State == "DELETED" {
+				fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("cluster %s deleted", clusterID)))
+				return nil
+			} else {
+				return errors.New(fmt.Sprintf("delete cluster %s failed, please check status on dashboard", clusterID))
 			}
 		},
 	}
 
 	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a cluster without confirmation")
-	deleteCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The project ID of the cluster to be deleted")
 	deleteCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster to be deleted")
 	return deleteCmd
 }

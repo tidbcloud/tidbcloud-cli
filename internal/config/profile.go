@@ -119,3 +119,9 @@ func (p *Profile) GetApiUrl() (apiUrl string) {
 	apiUrl = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.ApiUrl))
 	return
 }
+
+func GetServerlessEndpoint() (apiUrl string) { return activeProfile.GetServerlessEndpoint() }
+func (p *Profile) GetServerlessEndpoint() (newApiUrl string) {
+	newApiUrl = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.ServerlessEndpoint))
+	return
+}
