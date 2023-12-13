@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package chatbot
+package ai
 
 import (
 	"bytes"
@@ -33,13 +33,13 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type ChatBotSuite struct {
+type AISuite struct {
 	suite.Suite
 	h          *internal.Helper
 	mockClient *mock.TiDBCloudClient
 }
 
-func (suite *ChatBotSuite) SetupTest() {
+func (suite *AISuite) SetupTest() {
 	if err := os.Setenv("NO_COLOR", "true"); err != nil {
 		suite.T().Error(err)
 	}
@@ -53,7 +53,7 @@ func (suite *ChatBotSuite) SetupTest() {
 	}
 }
 
-func (suite *ChatBotSuite) TestChatBotArgs() {
+func (suite *AISuite) TestAIArgs() {
 	assert := require.New(suite.T())
 
 	links := []*models.PingchatLink{
@@ -80,7 +80,7 @@ func (suite *ChatBotSuite) TestChatBotArgs() {
 	}{
 		{
 			name:         "chat success",
-			args:         []string{"--question", "hello"},
+			args:         []string{"--query", "hello"},
 			stdoutString: string(res) + "\n",
 		},
 		{
@@ -97,7 +97,7 @@ func (suite *ChatBotSuite) TestChatBotArgs() {
 
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
-			cmd := ChatBotCmd(suite.h)
+			cmd := AICmd(suite.h)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
@@ -113,6 +113,6 @@ func (suite *ChatBotSuite) TestChatBotArgs() {
 	}
 }
 
-func TestChatBotSuite(t *testing.T) {
-	suite.Run(t, new(ChatBotSuite))
+func TestAISuite(t *testing.T) {
+	suite.Run(t, new(AISuite))
 }

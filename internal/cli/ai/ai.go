@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package chatbot
+package ai
 
 import (
 	"encoding/json"
@@ -31,30 +31,30 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type ChatBotOpts struct {
+type AIOpts struct {
 	interactive bool
 }
 
-func (o ChatBotOpts) NonInteractiveFlags() []string {
+func (o AIOpts) NonInteractiveFlags() []string {
 	return []string{
-		flag.Question,
+		flag.Query,
 	}
 }
 
-func ChatBotCmd(h *internal.Helper) *cobra.Command {
-	opts := ChatBotOpts{
+func AICmd(h *internal.Helper) *cobra.Command {
+	opts := AIOpts{
 		interactive: true,
 	}
 
 	cmd := &cobra.Command{
-		Use:         "chat-bot",
+		Use:         "ai",
 		Short:       "Chat with TiDB Bot",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Chat with TiDB Bot in interactive mode:
-  $ %[1]s chat-bot
+  $ %[1]s ai
 
   Chat with TiDB Bot in non-interactive mode:
-  $ %[1]s chat-bot -q "How to create a cluster?"`,
+  $ %[1]s ai -q "How to create a cluster?"`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -140,7 +140,7 @@ func ChatBotCmd(h *internal.Helper) *cobra.Command {
 					return m.Err
 				}
 			} else {
-				question, err := cmd.Flags().GetString(flag.Question)
+				question, err := cmd.Flags().GetString(flag.Query)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -170,7 +170,7 @@ func ChatBotCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringP(flag.Question, flag.QuestionShort, "", "The question to ask TiDB Bot")
+	cmd.Flags().StringP(flag.Query, flag.QueryShort, "", "The query to chat with TiDB Bot")
 	return cmd
 }
 

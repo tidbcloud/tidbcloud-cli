@@ -33,6 +33,8 @@ type Role string
 const (
 	RoleUser Role = "user"
 	RoleBot  Role = "bot"
+
+	LoadingPrompt = "AI generating"
 )
 
 type ChatMessage struct {
@@ -126,7 +128,7 @@ func (m ChatBoxModel) Update(msg bubbletea.Msg) (bubbletea.Model, bubbletea.Cmd)
 					Content: inputMessage,
 				}, ChatMessage{
 					Role:    RoleBot,
-					Content: "Thinking",
+					Content: LoadingPrompt,
 				})
 				m.viewport.SetContent(m.RenderChatLog())
 				m.textarea.Reset()
@@ -159,7 +161,7 @@ func (m ChatBoxModel) Update(msg bubbletea.Msg) (bubbletea.Model, bubbletea.Cmd)
 			m.tickNumber = (m.tickNumber + 1) % 4
 			m.chatLog[len(m.chatLog)-1] = ChatMessage{
 				Role:    RoleBot,
-				Content: fmt.Sprintf("Thinking%s", generateDots(m.tickNumber%4)),
+				Content: fmt.Sprintf("%s%s", LoadingPrompt, generateDots(m.tickNumber%4)),
 			}
 			m.viewport.SetContent(m.RenderChatLog())
 		}

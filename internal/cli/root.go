@@ -20,8 +20,8 @@ import (
 	"os"
 	"strings"
 
+	"tidbcloud-cli/internal/cli/ai"
 	"tidbcloud-cli/internal/cli/branch"
-	"tidbcloud-cli/internal/cli/chatbot"
 	"tidbcloud-cli/internal/cli/serverless"
 	"tidbcloud-cli/internal/cli/upgrade"
 
@@ -174,7 +174,7 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 	rootCmd.AddCommand(dataimport.ImportCmd(h))
 	rootCmd.AddCommand(connect.ConnectCmd(h))
 	rootCmd.AddCommand(branch.BranchCmd(h))
-	rootCmd.AddCommand(chatbot.ChatBotCmd(h))
+	rootCmd.AddCommand(ai.AICmd(h))
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, flag.Debug, flag.DebugShort, false, "Enable debug mode")
 	rootCmd.PersistentFlags().Bool(flag.NoColor, false, "Disable color output")
