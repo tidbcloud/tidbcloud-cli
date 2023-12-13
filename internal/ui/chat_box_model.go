@@ -49,6 +49,7 @@ type ChatBoxModel struct {
 	textarea textarea.Model
 	viewport viewport.Model
 
+	tickNumber  int
 	ready       bool
 	isLoading   bool
 	sendMsgFunc func(messages []ChatMessage) bubbletea.Msg
@@ -79,13 +80,20 @@ func InitialChatBoxModel(sendMsgFunc func(messages []ChatMessage) bubbletea.Msg,
 		textarea:    ta,
 		isLoading:   false,
 		botName:     botName,
+		tickNumber:  0,
 	}
 }
 
 func (m ChatBoxModel) Init() bubbletea.Cmd {
 	return bubbletea.Batch(
-		textarea.Blink,
+		tick(), // tick
 	)
+}
+
+func tick() bubbletea.Cmd {
+	return bubbletea.Every(time.Second/2, func(t time.Time) bubbletea.Msg {
+		return TickMsg(t)
+	})
 }
 
 func (m ChatBoxModel) Update(msg bubbletea.Msg) (bubbletea.Model, bubbletea.Cmd) {
@@ -120,7 +128,7 @@ func (m ChatBoxModel) Update(msg bubbletea.Msg) (bubbletea.Model, bubbletea.Cmd)
 					Content: inputMessage,
 				}, ChatMessage{
 					Role:    RoleBot,
-					Content: "Thinking...",
+					Content: "Thinking",
 				})
 				m.viewport.SetContent(m.RenderChatLog())
 				m.textarea.Reset()
@@ -148,6 +156,16 @@ func (m ChatBoxModel) Update(msg bubbletea.Msg) (bubbletea.Model, bubbletea.Cmd)
 
 		m.textarea.SetWidth(msg.Width)
 		m.viewport.SetContent(m.RenderChatLog())
+	case TickMsg:
+		if m.isLoading {
+			m.tickNumber = (m.tickNumber + 1) % 4
+			m.chatLog[len(m.chatLog)-1] = ChatMessage{
+				Role:    RoleBot,
+				Content: fmt.Sprintf("Thinking%s", generateDots(m.tickNumber%4)),
+			}
+			m.viewport.SetContent(m.RenderChatLog())
+		}
+		nextCmd = tick()
 	case EndSendingMsg:
 		m.isLoading = false
 		if msg.Err != nil {
@@ -222,4 +240,8 @@ func (m ChatBoxModel) View() string {
 			helpMessage,
 		)
 	}
+}
+
+func generateDots(n int) string {
+	return strings.Repeat(".", n)
 }
