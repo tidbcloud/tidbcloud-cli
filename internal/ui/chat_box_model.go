@@ -20,7 +20,6 @@ import (
 	"time"
 
 	"tidbcloud-cli/internal/util"
-	"tidbcloud-cli/pkg/tidbcloud/pingchat/models"
 
 	"github.com/charmbracelet/bubbles/textarea"
 	"github.com/charmbracelet/bubbles/viewport"
@@ -29,8 +28,15 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+type Role string
+
+const (
+	RoleUser Role = "user"
+	RoleBot  Role = "bot"
+)
+
 type ChatMessage struct {
-	Role    string
+	Role    Role
 	Content string
 }
 
@@ -38,6 +44,7 @@ type ChatBoxModel struct {
 	Interrupted bool
 	Err         error
 
+	botName  string
 	chatLog  []ChatMessage
 	textarea textarea.Model
 	viewport viewport.Model
@@ -54,13 +61,14 @@ type EndSendingMsg struct {
 	Msg ChatMessage
 }
 
-func InitialChatBoxModel(sendMsgFunc func(messages []ChatMessage) bubbletea.Msg) ChatBoxModel {
+func InitialChatBoxModel(sendMsgFunc func(messages []ChatMessage) bubbletea.Msg, botName string) ChatBoxModel {
 	var chatLog []ChatMessage
 
 	ta := textarea.New()
 	ta.Placeholder = "Type your message here..."
 	ta.Focus()
-	ta.CharLimit = 500
+	// no limit
+	ta.CharLimit = 0
 	ta.ShowLineNumbers = false
 	ta.Prompt = "┃ "
 	ta.SetHeight(5)
@@ -70,6 +78,7 @@ func InitialChatBoxModel(sendMsgFunc func(messages []ChatMessage) bubbletea.Msg)
 		chatLog:     chatLog,
 		textarea:    ta,
 		isLoading:   false,
+		botName:     botName,
 	}
 }
 
@@ -107,10 +116,10 @@ func (m ChatBoxModel) Update(msg bubbletea.Msg) (bubbletea.Model, bubbletea.Cmd)
 
 			if len(inputMessage) > 0 {
 				m.chatLog = append(m.chatLog, ChatMessage{
-					Role:    "user",
+					Role:    RoleUser,
 					Content: inputMessage,
 				}, ChatMessage{
-					Role:    "ai",
+					Role:    RoleBot,
 					Content: "Thinking...",
 				})
 				m.viewport.SetContent(m.RenderChatLog())
@@ -139,10 +148,6 @@ func (m ChatBoxModel) Update(msg bubbletea.Msg) (bubbletea.Model, bubbletea.Cmd)
 
 		m.textarea.SetWidth(msg.Width)
 		m.viewport.SetContent(m.RenderChatLog())
-	case ChatMessage:
-		m.chatLog = append(m.chatLog, msg)
-		m.viewport.SetContent(m.RenderChatLog())
-		m.viewport.GotoBottom()
 	case EndSendingMsg:
 		m.isLoading = false
 		if msg.Err != nil {
@@ -161,7 +166,7 @@ func (m ChatBoxModel) sendMessage(prompt string) bubbletea.Cmd {
 	return func() bubbletea.Msg {
 		msg := ChatMessage{
 			Content: prompt,
-			Role:    models.PingchatChatMessageRoleUser,
+			Role:    RoleUser,
 		}
 		return m.sendMsgFunc([]ChatMessage{
 			msg,
@@ -170,7 +175,7 @@ func (m ChatBoxModel) sendMessage(prompt string) bubbletea.Cmd {
 }
 
 var chatUserTextStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("5")).Align(lipgloss.Left).Width(6).Render
-var chatAITextStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("2")).Align(lipgloss.Left).Width(12).Render
+var chatAITextStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("2")).Align(lipgloss.Left).Width(20).Render
 var helpMessageStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("240")).Align(lipgloss.Left).Render
 
 func (m ChatBoxModel) RenderChatLog() string {
@@ -190,10 +195,10 @@ func (m ChatBoxModel) RenderChatLog() string {
 		out, _ := r.Render(s)
 
 		var who string
-		if message.Role == "user" {
+		if message.Role == RoleUser {
 			who = chatUserTextStyle("You:")
 		} else {
-			who = chatAITextStyle("TiDB Bot:")
+			who = chatAITextStyle(m.botName + ":")
 		}
 
 		chatLogString += fmt.Sprintf("%s\n%s", who, out)

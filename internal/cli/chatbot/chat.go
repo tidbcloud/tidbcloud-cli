@@ -89,7 +89,12 @@ func ChatBotCmd(h *internal.Helper) *cobra.Command {
 					msgs := make([]*models.PingchatChatMessage, 0, len(messages))
 					for _, message := range messages {
 						content := message.Content
-						role := message.Role
+						role, err := convertRole(message.Role)
+						if err != nil {
+							return ui.EndSendingMsg{
+								Err: err,
+							}
+						}
 						msg := models.PingchatChatMessage{
 							Content: &content,
 							Role:    &role,
@@ -113,13 +118,13 @@ func ChatBotCmd(h *internal.Helper) *cobra.Command {
 
 					return ui.EndSendingMsg{
 						Msg: ui.ChatMessage{
-							Role:    models.PingchatChatMessageRoleAssistant,
+							Role:    ui.RoleBot,
 							Content: content,
 						},
 					}
 				}
 
-				model := ui.InitialChatBoxModel(task)
+				model := ui.InitialChatBoxModel(task, "TiDB Bot")
 				p := tea.NewProgram(model,
 					tea.WithAltScreen(),       // use the full size of the terminal in its "alternate screen buffer"
 					tea.WithMouseCellMotion(), // turn on mouse support we can track the mouse wheel
@@ -167,4 +172,15 @@ func ChatBotCmd(h *internal.Helper) *cobra.Command {
 
 	cmd.Flags().StringP(flag.Question, flag.QuestionShort, "", "The question to ask TiDB Bot")
 	return cmd
+}
+
+func convertRole(role ui.Role) (string, error) {
+	switch role {
+	case ui.RoleUser:
+		return models.PingchatChatMessageRoleUser, nil
+	case ui.RoleBot:
+		return models.PingchatChatMessageRoleAssistant, nil
+	default:
+		return "", errors.New("unknown chat role")
+	}
 }
