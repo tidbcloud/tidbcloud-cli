@@ -13,6 +13,7 @@
     "paths": {
         "/ecosystem/api/internal/pingchat/chat": {
             "post": {
+                "description": "Chat with PingChat",
                 "produces": [
                     "application/json"
                 ],
@@ -37,15 +38,21 @@
                     },
                     "400": {
                         "description": "error",
-                        "schema": {}
+                        "schema": {
+                            "type": "object"
+                        }
                     },
                     "500": {
                         "description": "error",
-                        "schema": {}
+                        "schema": {
+                            "type": "object"
+                        }
                     },
                     "default": {
                         "description": "other error",
-                        "schema": {}
+                        "schema": {
+                            "type": "object"
+                        }
                     }
                 }
             }
@@ -54,8 +61,27 @@
     "definitions": {
         "pingchat.ChatInfo": {
             "type": "object",
+            "required": [
+                "messages"
+            ],
             "properties": {
+                "domain": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "tidb",
+                            "tidbcloud",
+                            "asktug",
+                            "blog",
+                            "community",
+                            "knowledge-base-cn",
+                            "kb"
+                        ]
+                    }
+                },
                 "messages": {
+                    "description": "https://pkg.go.dev/gopkg.in/bluesuncorp/validator.v9#hdr-Dive",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/pingchat.ChatMessage"
@@ -71,9 +97,11 @@
             ],
             "properties": {
                 "content": {
+                    "description": "Dialogue content",
                     "type": "string"
                 },
                 "role": {
+                    "description": "User's input as \"user\", AI assistant's reply as \"assistant\", see https://github.com/gin-gonic/gin/issues/3234.",
                     "type": "string",
                     "enum": [
                         "user",
@@ -89,6 +117,7 @@
                     "type": "string"
                 },
                 "links": {
+                    "description": "Reference Document Links",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/pingchat.Link"

@@ -112,6 +112,7 @@ func AICmd(h *internal.Helper) *cobra.Command {
 					}
 					chat, err := client.Chat(param.WithChatInfo(&models.PingchatChatInfo{
 						Messages: msgs,
+						Domain:   []string{"tidbcloud"},
 					}))
 
 					if err != nil {
@@ -165,6 +166,7 @@ func AICmd(h *internal.Helper) *cobra.Command {
 							Role:    &role,
 						},
 					},
+					Domain: []string{"tidbcloud"},
 				}))
 
 				if err != nil {
