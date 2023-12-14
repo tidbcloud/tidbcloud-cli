@@ -26,12 +26,12 @@ import (
 	connectInfoOp "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
 	importClient "tidbcloud-cli/pkg/tidbcloud/import/client"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
+	pingchatClient "tidbcloud-cli/pkg/tidbcloud/pingchat/client"
+	pingchatOp "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
 	branchClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client"
 	branchOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 	serverlessClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
-	pingchatClient "tidbcloud-cli/pkg/tidbcloud/pingchat/client"
-	pingchatOp "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
+	serverlessOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 
 	apiClient "github.com/c4pt0r/go-tidbcloud-sdk-v1/client"
 	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
@@ -47,17 +47,17 @@ const (
 )
 
 type TiDBCloudClient interface {
-	CreateCluster(params *serverless_service.ServerlessServiceCreateClusterParams, opts ...serverless_service.ClientOption) (*serverless_service.ServerlessServiceCreateClusterOK, error)
+	CreateCluster(params *serverlessOp.ServerlessServiceCreateClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceCreateClusterOK, error)
 
-	DeleteCluster(params *serverless_service.ServerlessServiceDeleteClusterParams, opts ...serverless_service.ClientOption) (*serverless_service.ServerlessServiceDeleteClusterOK, error)
+	DeleteCluster(params *serverlessOp.ServerlessServiceDeleteClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceDeleteClusterOK, error)
 
-	GetCluster(params *serverless_service.ServerlessServiceGetClusterParams, opts ...serverless_service.ClientOption) (*serverless_service.ServerlessServiceGetClusterOK, error)
+	GetCluster(params *serverlessOp.ServerlessServiceGetClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceGetClusterOK, error)
 
-	ListClustersOfProject(params *serverless_service.ServerlessServiceListClustersParams, opts ...serverless_service.ClientOption) (*serverless_service.ServerlessServiceListClustersOK, error)
+	ListClustersOfProject(params *serverlessOp.ServerlessServiceListClustersParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListClustersOK, error)
 
-	PartialUpdateCluster(params *serverless_service.ServerlessServicePartialUpdateClusterParams, opts ...serverless_service.ClientOption) (*serverless_service.ServerlessServicePartialUpdateClusterOK, error)
+	PartialUpdateCluster(params *serverlessOp.ServerlessServicePartialUpdateClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServicePartialUpdateClusterOK, error)
 
-	ListProviderRegions(params *serverless_service.ServerlessServiceListRegionsParams, opts ...serverless_service.ClientOption) (*serverless_service.ServerlessServiceListRegionsOK, error)
+	ListProviderRegions(params *serverlessOp.ServerlessServiceListRegionsParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListRegionsOK, error)
 
 	ListProjects(params *project.ListProjectsParams, opts ...project.ClientOption) (*project.ListProjectsOK, error)
 
@@ -110,27 +110,27 @@ func NewClientDelegate(publicKey string, privateKey string, apiUrl string, serve
 	}, nil
 }
 
-func (d *ClientDelegate) CreateCluster(params *serverless_service.ServerlessServiceCreateClusterParams, opts ...serverless_service.ClientOption) (*serverless_service.ServerlessServiceCreateClusterOK, error) {
+func (d *ClientDelegate) CreateCluster(params *serverlessOp.ServerlessServiceCreateClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceCreateClusterOK, error) {
 	return d.sc.ServerlessService.ServerlessServiceCreateCluster(params, opts...)
 }
 
-func (d *ClientDelegate) DeleteCluster(params *serverless_service.ServerlessServiceDeleteClusterParams, opts ...serverless_service.ClientOption) (*serverless_service.ServerlessServiceDeleteClusterOK, error) {
+func (d *ClientDelegate) DeleteCluster(params *serverlessOp.ServerlessServiceDeleteClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceDeleteClusterOK, error) {
 	return d.sc.ServerlessService.ServerlessServiceDeleteCluster(params, opts...)
 }
 
-func (d *ClientDelegate) GetCluster(params *serverless_service.ServerlessServiceGetClusterParams, opts ...serverless_service.ClientOption) (*serverless_service.ServerlessServiceGetClusterOK, error) {
+func (d *ClientDelegate) GetCluster(params *serverlessOp.ServerlessServiceGetClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceGetClusterOK, error) {
 	return d.sc.ServerlessService.ServerlessServiceGetCluster(params, opts...)
 }
 
-func (d *ClientDelegate) ListProviderRegions(params *serverless_service.ServerlessServiceListRegionsParams, opts ...serverless_service.ClientOption) (*serverless_service.ServerlessServiceListRegionsOK, error) {
+func (d *ClientDelegate) ListProviderRegions(params *serverlessOp.ServerlessServiceListRegionsParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListRegionsOK, error) {
 	return d.sc.ServerlessService.ServerlessServiceListRegions(params, opts...)
 }
 
-func (d *ClientDelegate) ListClustersOfProject(params *serverless_service.ServerlessServiceListClustersParams, opts ...serverless_service.ClientOption) (*serverless_service.ServerlessServiceListClustersOK, error) {
+func (d *ClientDelegate) ListClustersOfProject(params *serverlessOp.ServerlessServiceListClustersParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListClustersOK, error) {
 	return d.sc.ServerlessService.ServerlessServiceListClusters(params, opts...)
 }
 
-func (d *ClientDelegate) PartialUpdateCluster(params *serverless_service.ServerlessServicePartialUpdateClusterParams, opts ...serverless_service.ClientOption) (*serverless_service.ServerlessServicePartialUpdateClusterOK, error) {
+func (d *ClientDelegate) PartialUpdateCluster(params *serverlessOp.ServerlessServicePartialUpdateClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServicePartialUpdateClusterOK, error) {
 	return d.sc.ServerlessService.ServerlessServicePartialUpdateCluster(params, opts...)
 }
 
@@ -207,7 +207,7 @@ func (d *ClientDelegate) Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.
 }
 
 func NewApiClient(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport,
-	*connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless,*pingchatClient.TidbcloudPingchat, error) {
+	*connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, error) {
 	httpclient := &http.Client{
 		Transport: NewTransportWithAgent(&digest.Transport{
 			Username: publicKey,
