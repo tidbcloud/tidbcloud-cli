@@ -184,7 +184,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 	listCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	listCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, "Output format. One of [\"human\" \"json\"]. For the complete result, please use json format.")
+	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format.")
 	return listCmd
 }
 
