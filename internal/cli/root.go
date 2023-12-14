@@ -20,17 +20,14 @@ import (
 	"os"
 	"strings"
 
-	"tidbcloud-cli/internal/cli/ai"
-	"tidbcloud-cli/internal/cli/branch"
-	"tidbcloud-cli/internal/cli/serverless"
-	"tidbcloud-cli/internal/cli/upgrade"
-
 	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/cli/ai"
 	configCmd "tidbcloud-cli/internal/cli/config"
-	"tidbcloud-cli/internal/cli/connect"
 	"tidbcloud-cli/internal/cli/dataimport"
 	"tidbcloud-cli/internal/cli/dataimport/start"
 	"tidbcloud-cli/internal/cli/project"
+	"tidbcloud-cli/internal/cli/serverless"
+	"tidbcloud-cli/internal/cli/upgrade"
 	"tidbcloud-cli/internal/cli/version"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
@@ -172,8 +169,6 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 	rootCmd.AddCommand(version.VersionCmd(h))
 	rootCmd.AddCommand(upgrade.Cmd(h))
 	rootCmd.AddCommand(dataimport.ImportCmd(h))
-	rootCmd.AddCommand(connect.ConnectCmd(h))
-	rootCmd.AddCommand(branch.BranchCmd(h))
 	rootCmd.AddCommand(ai.AICmd(h))
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, flag.Debug, flag.DebugShort, false, "Enable debug mode")

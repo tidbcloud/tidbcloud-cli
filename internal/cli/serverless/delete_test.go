@@ -24,9 +24,8 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"

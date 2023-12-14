@@ -20,16 +20,15 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/juju/errors"
+	"github.com/spf13/cobra"
+
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
-
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
-
-	"github.com/juju/errors"
-	"github.com/spf13/cobra"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 )
 
 type connectInfoOpts struct {
@@ -44,166 +43,6 @@ func (c connectInfoOpts) NonInteractiveFlags() []string {
 	}
 }
 
-// Display clients name orderly in interactive mode
-var ConnectClientsList = []string{
-	// pure parameter
-	util.GeneralParameterDisplayName,
-
-	// CLI
-	util.MysqlCliDisplayName,
-	util.MyCliDisplayName,
-
-	// driver
-	util.LibMysqlClientDisplayName,
-	util.MysqlClientDisplayName,
-	util.PyMysqlDisplayName,
-	util.MysqlConnectorPythonDisplayName,
-	util.MysqlConnectorJavaDisplayName,
-	util.GoMysqlDriverDisplayName,
-	util.NodeMysql2DisplayName,
-	util.Mysql2RubyDisplayName,
-	util.MysqliDisplayName,
-	util.MysqlRustDisplayName,
-
-	// ORM
-	util.MybatisDisplayName,
-	util.HibernateDisplayName,
-	util.SpringBootDisplayName,
-	util.GormDisplayName,
-	util.PrismaDisplayName,
-	util.SequelizeDisplayName,
-	util.DjangoDisplayName,
-	util.SqlAlchemyDisplayName,
-	util.ActiveRecordDisplayName,
-}
-
-// Display clients name orderly in help message
-var ConnectClientsListForHelp = []string{
-	// pure parameter
-	util.GeneralParameterInputName,
-
-	// CLI
-	util.MysqlCliInputName,
-	util.MyCliInputName,
-
-	// driver
-	util.LibMysqlClientInputName,
-	util.MysqlClientInputName,
-	util.PyMysqlInputName,
-	util.MysqlConnectorPythonInputName,
-	util.MysqlConnectorJavaInputName,
-	util.GoMysqlDriverInputName,
-	util.NodeMysql2InputName,
-	util.Mysql2RubyInputName,
-	util.MysqliInputName,
-	util.MysqlRustInputName,
-
-	// ORM
-	util.MybatisInputName,
-	util.HibernateInputName,
-	util.SpringBootInputName,
-	util.GormInputName,
-	util.PrismaInputName,
-	util.SequelizeInputName,
-	util.DjangoInputName,
-	util.SqlAlchemyInputName,
-	util.ActiveRecordInputName,
-}
-
-var ClientsForInteractiveMap = map[string]string{
-	// pure parameter
-	util.GeneralParameterDisplayName: util.GeneralParameterID,
-
-	// CLI
-	util.MysqlCliDisplayName: util.MysqlCliID,
-	util.MyCliDisplayName:    util.MyCliID,
-
-	// driver
-	util.LibMysqlClientDisplayName:       util.LibMysqlClientID,
-	util.MysqlClientDisplayName:          util.MysqlClientID,
-	util.PyMysqlDisplayName:              util.PyMysqlID,
-	util.MysqlConnectorPythonDisplayName: util.MysqlConnectorPythonID,
-	util.MysqlConnectorJavaDisplayName:   util.MysqlConnectorJavaID,
-	util.GoMysqlDriverDisplayName:        util.GoMysqlDriverID,
-	util.NodeMysql2DisplayName:           util.NodeMysql2ID,
-	util.Mysql2RubyDisplayName:           util.Mysql2RubyID,
-	util.MysqliDisplayName:               util.MysqliID,
-	util.MysqlRustDisplayName:            util.MysqlRustID,
-
-	// ORM
-	util.MybatisDisplayName:      util.MybatisID,
-	util.HibernateDisplayName:    util.HibernateID,
-	util.SpringBootDisplayName:   util.SpringBootID,
-	util.GormDisplayName:         util.GormID,
-	util.PrismaDisplayName:       util.PrismaID,
-	util.SequelizeDisplayName:    util.SequelizeID,
-	util.DjangoDisplayName:       util.DjangoID,
-	util.SqlAlchemyDisplayName:   util.SQLAlchemyID,
-	util.ActiveRecordDisplayName: util.ActiveRecordID,
-}
-
-var ClientsForHelpMap = map[string]string{
-	// pure parameter
-	util.GeneralParameterInputName: util.GeneralParameterID,
-
-	// CLI
-	util.MysqlCliInputName: util.MysqlCliID,
-	util.MyCliInputName:    util.MyCliID,
-
-	// driver
-	util.LibMysqlClientInputName:       util.LibMysqlClientID,
-	util.MysqlClientInputName:          util.MysqlClientID,
-	util.PyMysqlInputName:              util.PyMysqlID,
-	util.MysqlConnectorPythonInputName: util.MysqlConnectorPythonID,
-	util.MysqlConnectorJavaInputName:   util.MysqlConnectorJavaID,
-	util.GoMysqlDriverInputName:        util.GoMysqlDriverID,
-	util.NodeMysql2InputName:           util.NodeMysql2ID,
-	util.Mysql2RubyInputName:           util.Mysql2RubyID,
-	util.MysqliInputName:               util.MysqliID,
-	util.MysqlRustInputName:            util.MysqlRustID,
-
-	// ORM
-	util.MybatisInputName:      util.MybatisID,
-	util.HibernateInputName:    util.HibernateID,
-	util.SpringBootInputName:   util.SpringBootID,
-	util.GormInputName:         util.GormID,
-	util.PrismaInputName:       util.PrismaID,
-	util.SequelizeInputName:    util.SequelizeID,
-	util.DjangoInputName:       util.DjangoID,
-	util.SqlAlchemyInputName:   util.SQLAlchemyID,
-	util.ActiveRecordInputName: util.ActiveRecordID,
-}
-
-// Display operating system orderly in interactive mode
-var OperatingSystemList = []string{
-	"macOS/Alpine",
-	"CentOS/RedHat/Fedora",
-	"Debian/Ubuntu/Arch",
-	"Windows",
-	"OpenSUSE",
-	"Others",
-}
-
-// Display operating system orderly in help message
-var OperatingSystemListForHelp = []string{
-	"macOS",
-	"Windows",
-	"Ubuntu",
-	"CentOS",
-	"RedHat",
-	"Fedora",
-	"Debian",
-	"Arch",
-	"OpenSUSE",
-	"Alpine",
-	"Others",
-}
-
-// SERVERLESS Cluster type
-const (
-	SERVERLESS = "SERVERLESS"
-)
-
 func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 	opts := connectInfoOpts{
 		interactive: true,
@@ -211,7 +50,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "connect-info",
-		Short: "Get connection string for the specified serverless cluster",
+		Short: "Get connection string for a specified serverless cluster",
 		Example: fmt.Sprintf(`  Get connection string in interactive mode:
 $ %[1]s serverless connect-info
 
@@ -269,11 +108,11 @@ $ %[1]s serverless connect-info --cluster-id <cluster-id> --client <client-name>
 				clusterID = cluster.ID
 
 				// Get client
-				clientNameForInteractive, err := cloud.GetSelectedConnectClient(ConnectClientsList)
+				clientNameForInteractive, err := cloud.GetSelectedConnectClient(util.ConnectClientsList)
 				if err != nil {
 					return err
 				}
-				client = ClientsForInteractiveMap[clientNameForInteractive]
+				client = util.ClientsForInteractiveMap[clientNameForInteractive]
 
 				// Detect operating system
 				// TODO: detect linux operating system name
@@ -283,19 +122,19 @@ $ %[1]s serverless connect-info --cluster-id <cluster-id> --client <client-name>
 				} else if goOS == "windows" {
 					goOS = "Windows"
 				}
+				operatingSystems := util.OperatingSystemList
 				if goOS != "" && goOS != "linux" {
-					for id, value := range OperatingSystemList {
+					for id, value := range operatingSystems {
 						if strings.Contains(value, goOS) {
-							operatingSystemValueWithFlag := OperatingSystemList[id] + " (Detected)"
-							OperatingSystemList = append([]string{operatingSystemValueWithFlag},
-								append(OperatingSystemList[:id], OperatingSystemList[id+1:]...)...)
+							operatingSystems[id] = value + " (Detected)"
+							operatingSystems[0], operatingSystems[id] = operatingSystems[id], operatingSystems[0]
 							break
 						}
 					}
 				}
 
 				// Get operating system
-				operatingSystemCombination, err := cloud.GetSelectedConnectOs(OperatingSystemList)
+				operatingSystemCombination, err := cloud.GetSelectedConnectOs(operatingSystems)
 				if err != nil {
 					return err
 				}
@@ -311,7 +150,7 @@ $ %[1]s serverless connect-info --cluster-id <cluster-id> --client <client-name>
 				if err != nil {
 					return err
 				}
-				if v, ok := ClientsForHelpMap[strings.ToLower(clientNameForHelp)]; ok {
+				if v, ok := util.ClientsForHelpMap[strings.ToLower(clientNameForHelp)]; ok {
 					client = v
 				} else {
 					return errors.New(fmt.Sprintf("Unsupported client. Run \"%[1]s cluster connect-info -h\" to check supported clients list", config.CliName))
@@ -321,7 +160,7 @@ $ %[1]s serverless connect-info --cluster-id <cluster-id> --client <client-name>
 				if err != nil {
 					return err
 				}
-				if !Contains(operatingSystem, OperatingSystemListForHelp) {
+				if !util.Contains(operatingSystem, util.OperatingSystemListForHelp) {
 					return errors.New(fmt.Sprintf("Unsupported operating system. Run \"%[1]s cluster connect-info -h\" to check supported operating systems list", config.CliName))
 				}
 			}
@@ -338,7 +177,7 @@ $ %[1]s serverless connect-info --cluster-id <cluster-id> --client <client-name>
 			defaultUser := fmt.Sprintf("%s.root", clusterInfo.Payload.UserPrefix)
 			host := clusterInfo.Payload.Endpoints.PublicEndpoint.Host
 			port := strconv.Itoa(int(clusterInfo.Payload.Endpoints.PublicEndpoint.Port))
-			clusterType := SERVERLESS
+			clusterType := util.SERVERLESS
 
 			// Get connection string
 			connectInfo, err := cloud.RetrieveConnectInfo(d)
@@ -356,19 +195,10 @@ $ %[1]s serverless connect-info --cluster-id <cluster-id> --client <client-name>
 		},
 	}
 
-	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	cmd.Flags().String(flag.ClientName, "", fmt.Sprintf("Connected client. Supported clients: %q", ConnectClientsListForHelp))
+	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the Cluster")
+	cmd.Flags().String(flag.ClientName, "", fmt.Sprintf("Connected client. Supported clients: %q", util.ConnectClientsListForHelp))
 	cmd.Flags().String(flag.OperatingSystem, "", fmt.Sprintf("Operating system name. "+
-		"Supported operating systems: %q", OperatingSystemListForHelp))
+		"Supported operating systems: %q", util.OperatingSystemListForHelp))
 
 	return cmd
-}
-
-func Contains(str string, vec []string) bool {
-	for _, v := range vec {
-		if strings.EqualFold(str, v) {
-			return true
-		}
-	}
-	return false
 }

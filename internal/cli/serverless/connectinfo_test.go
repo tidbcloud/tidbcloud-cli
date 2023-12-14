@@ -20,19 +20,19 @@ import (
 	"fmt"
 	"os"
 	"testing"
-	"tidbcloud-cli/internal/config"
 
-	"github.com/juju/errors"
+	"tidbcloud-cli/internal/config"
+	connectInfoService "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
+	connectInfoModel "tidbcloud-cli/pkg/tidbcloud/connect_info/models"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	connectInfoService "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
-	connectInfoModel "tidbcloud-cli/pkg/tidbcloud/connect_info/models"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
 
+	"github.com/juju/errors"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )

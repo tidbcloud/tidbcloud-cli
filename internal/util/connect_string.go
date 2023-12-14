@@ -116,6 +116,161 @@ var CaPath = map[string]string{
 	"others":   "<path_to_ca_cert>",
 }
 
+// Display clients name orderly in interactive mode
+var ConnectClientsList = []string{
+	// pure parameter
+	GeneralParameterDisplayName,
+
+	// CLI
+	MysqlCliDisplayName,
+	MyCliDisplayName,
+
+	// driver
+	LibMysqlClientDisplayName,
+	MysqlClientDisplayName,
+	PyMysqlDisplayName,
+	MysqlConnectorPythonDisplayName,
+	MysqlConnectorJavaDisplayName,
+	GoMysqlDriverDisplayName,
+	NodeMysql2DisplayName,
+	Mysql2RubyDisplayName,
+	MysqliDisplayName,
+	MysqlRustDisplayName,
+
+	// ORM
+	MybatisDisplayName,
+	HibernateDisplayName,
+	SpringBootDisplayName,
+	GormDisplayName,
+	PrismaDisplayName,
+	SequelizeDisplayName,
+	DjangoDisplayName,
+	SqlAlchemyDisplayName,
+	ActiveRecordDisplayName,
+}
+
+// Display clients name orderly in help message
+var ConnectClientsListForHelp = []string{
+	// pure parameter
+	GeneralParameterInputName,
+
+	// CLI
+	MysqlCliInputName,
+	MyCliInputName,
+
+	// driver
+	LibMysqlClientInputName,
+	MysqlClientInputName,
+	PyMysqlInputName,
+	MysqlConnectorPythonInputName,
+	MysqlConnectorJavaInputName,
+	GoMysqlDriverInputName,
+	NodeMysql2InputName,
+	Mysql2RubyInputName,
+	MysqliInputName,
+	MysqlRustInputName,
+
+	// ORM
+	MybatisInputName,
+	HibernateInputName,
+	SpringBootInputName,
+	GormInputName,
+	PrismaInputName,
+	SequelizeInputName,
+	DjangoInputName,
+	SqlAlchemyInputName,
+	ActiveRecordInputName,
+}
+
+var ClientsForInteractiveMap = map[string]string{
+	// pure parameter
+	GeneralParameterDisplayName: GeneralParameterID,
+
+	// CLI
+	MysqlCliDisplayName: MysqlCliID,
+	MyCliDisplayName:    MyCliID,
+
+	// driver
+	LibMysqlClientDisplayName:       LibMysqlClientID,
+	MysqlClientDisplayName:          MysqlClientID,
+	PyMysqlDisplayName:              PyMysqlID,
+	MysqlConnectorPythonDisplayName: MysqlConnectorPythonID,
+	MysqlConnectorJavaDisplayName:   MysqlConnectorJavaID,
+	GoMysqlDriverDisplayName:        GoMysqlDriverID,
+	NodeMysql2DisplayName:           NodeMysql2ID,
+	Mysql2RubyDisplayName:           Mysql2RubyID,
+	MysqliDisplayName:               MysqliID,
+	MysqlRustDisplayName:            MysqlRustID,
+
+	// ORM
+	MybatisDisplayName:      MybatisID,
+	HibernateDisplayName:    HibernateID,
+	SpringBootDisplayName:   SpringBootID,
+	GormDisplayName:         GormID,
+	PrismaDisplayName:       PrismaID,
+	SequelizeDisplayName:    SequelizeID,
+	DjangoDisplayName:       DjangoID,
+	SqlAlchemyDisplayName:   SQLAlchemyID,
+	ActiveRecordDisplayName: ActiveRecordID,
+}
+
+var ClientsForHelpMap = map[string]string{
+	// pure parameter
+	GeneralParameterInputName: GeneralParameterID,
+
+	// CLI
+	MysqlCliInputName: MysqlCliID,
+	MyCliInputName:    MyCliID,
+
+	// driver
+	LibMysqlClientInputName:       LibMysqlClientID,
+	MysqlClientInputName:          MysqlClientID,
+	PyMysqlInputName:              PyMysqlID,
+	MysqlConnectorPythonInputName: MysqlConnectorPythonID,
+	MysqlConnectorJavaInputName:   MysqlConnectorJavaID,
+	GoMysqlDriverInputName:        GoMysqlDriverID,
+	NodeMysql2InputName:           NodeMysql2ID,
+	Mysql2RubyInputName:           Mysql2RubyID,
+	MysqliInputName:               MysqliID,
+	MysqlRustInputName:            MysqlRustID,
+
+	// ORM
+	MybatisInputName:      MybatisID,
+	HibernateInputName:    HibernateID,
+	SpringBootInputName:   SpringBootID,
+	GormInputName:         GormID,
+	PrismaInputName:       PrismaID,
+	SequelizeInputName:    SequelizeID,
+	DjangoInputName:       DjangoID,
+	SqlAlchemyInputName:   SQLAlchemyID,
+	ActiveRecordInputName: ActiveRecordID,
+}
+
+// Display operating system orderly in interactive mode
+var OperatingSystemList = []string{
+	"macOS/Alpine",
+	"CentOS/RedHat/Fedora",
+	"Debian/Ubuntu/Arch",
+	"Windows",
+	"OpenSUSE",
+	"Others",
+}
+
+// Display operating system orderly in help message
+var OperatingSystemListForHelp = []string{
+	"macOS",
+	"Windows",
+	"Ubuntu",
+	"CentOS",
+	"RedHat",
+	"Fedora",
+	"Debian",
+	"Arch",
+	"OpenSUSE",
+	"Alpine",
+	"Others",
+}
+
 func GenerateConnectionString(connectInfo *models.ConnectInfo, client string, host string, user string, port string, clusterType string, operatingSystem string, usage ConnectStringUsage) (string, error) {
 	if client == GeneralParameterID {
 		return fmt.Sprintf(`Host:    %s
@@ -150,4 +305,13 @@ User:    %s`,
 		}
 	}
 	return "", errors.New("failed to generate connection string")
+}
+
+func Contains(str string, vec []string) bool {
+	for _, v := range vec {
+		if strings.EqualFold(str, v) {
+			return true
+		}
+	}
+	return false
 }

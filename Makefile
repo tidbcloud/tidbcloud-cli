@@ -49,17 +49,14 @@ generate-pingchat-client: ## Generate PingChat client
 addcopy: ## Add copyright to all files
 	@scripts/add-copy.sh
 
-.PHONY: generate-branch-client
- generate-branch-client:
+.PHONY: generate-v1beta1-client
+ generate-v1beta1-client:
+	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
 	@echo "==> Generating branch client"
-	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
-	swagger generate client -f pkg/tidbcloud/branch/branch.swagger.json -A tidbcloud-branch -t pkg/tidbcloud/branch
-
-.PHONY: generate-serverless-client
- generate-serverless-client:
+	swagger generate client -f pkg/tidbcloud/v1beta1/branch/branch.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/branch
 	@echo "==> Generating serverless client"
-	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
-	swagger generate client -f pkg/tidbcloud/serverless/serverless.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/serverless
+	swagger generate client -f pkg/tidbcloud/v1beta1/serverless/serverless.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless
+
 
 .PHONY: fmt
 fmt: ## Format changed go

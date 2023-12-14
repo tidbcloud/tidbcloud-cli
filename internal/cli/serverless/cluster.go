@@ -16,6 +16,7 @@ package serverless
 
 import (
 	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/cli/serverless/branch"
 
 	"github.com/spf13/cobra"
 )
@@ -34,5 +35,7 @@ func Cmd(h *internal.Helper) *cobra.Command {
 	serverlessCmd.AddCommand(UpdateCmd(h))
 	serverlessCmd.AddCommand(RegionsCmd(h))
 	serverlessCmd.AddCommand(SpendingLimitCmd(h))
+	serverlessCmd.AddCommand(ConnectCmd(h))
+	serverlessCmd.AddCommand(branch.Cmd(h))
 	return serverlessCmd
 }
