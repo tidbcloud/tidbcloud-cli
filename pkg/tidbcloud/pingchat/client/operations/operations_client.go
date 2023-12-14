@@ -34,7 +34,7 @@ type ClientService interface {
 }
 
 /*
-Chat chat API
+Chat Chat with PingChat
 */
 func (a *Client) Chat(params *ChatParams, opts ...ClientOption) (*ChatOK, error) {
 	// TODO: Validate the params before sending

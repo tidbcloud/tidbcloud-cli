@@ -24,7 +24,7 @@ type PingchatChatMessage struct {
 	// Required: true
 	Content *string `json:"content"`
 
-	// User's input as "user", AI assistant's reply as "assistant"
+	// User's input as "user", AI assistant's reply as "assistant", see https://github.com/gin-gonic/gin/issues/3234.
 	// Required: true
 	// Enum: [user assistant]
 	Role *string `json:"role"`
