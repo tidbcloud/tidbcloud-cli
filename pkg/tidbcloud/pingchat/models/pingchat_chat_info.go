@@ -12,6 +12,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // PingchatChatInfo pingchat chat info
@@ -19,7 +20,8 @@ import (
 // swagger:model pingchat.ChatInfo
 type PingchatChatInfo struct {
 
-	// messages
+	// https://pkg.go.dev/gopkg.in/bluesuncorp/validator.v9#hdr-Dive
+	// Required: true
 	Messages []*PingchatChatMessage `json:"messages"`
 }
 
@@ -38,8 +40,9 @@ func (m *PingchatChatInfo) Validate(formats strfmt.Registry) error {
 }
 
 func (m *PingchatChatInfo) validateMessages(formats strfmt.Registry) error {
-	if swag.IsZero(m.Messages) { // not required
-		return nil
+
+	if err := validate.Required("messages", "body", m.Messages); err != nil {
+		return err
 	}
 
 	for i := 0; i < len(m.Messages); i++ {

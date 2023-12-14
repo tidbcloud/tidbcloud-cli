@@ -14,8 +14,26 @@ on:
       - go.sum
 
 jobs:
-  golangci:
+  # https://github.com/golangci/golangci-lint-action/issues/23
+  lint:
     name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.21
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3.3.0
+        with:
+          version: v1.55.2
+
+  golangci:
+    name: golangci
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -49,9 +67,3 @@ jobs:
           assert-nothing-changed go fmt ./...
           assert-nothing-changed go mod tidy
           exit $STATUS
-    
-
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3.3.0
-        with:
-          version: v1.52.2
