@@ -74,10 +74,10 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
  $ %[1]s serverless update
 
  Update displayName of serverless cluster in non-interactive mode:
- $ %[1]s serverless update -c <cluster-id> --display-name newClusterName, 
+ $ %[1]s serverless update -c <cluster-id> --display-name <new-cluster-mame>
  
-  Update labels of serverless cluster in non-interactive mode:
- $ %[1]s serverless update -c <cluster-id> --labels "{\"label\":\"value2\"}"`, config.CliName),
+ Update labels of serverless cluster in non-interactive mode:
+ $ %[1]s serverless update -c <cluster-id> --labels "{\"label1\":\"value1\"}"`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {
@@ -204,7 +204,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 
 	updateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster to be updated")
 	updateCmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "The displayName of the cluster")
-	updateCmd.Flags().String(flag.ServerlessLabels, "", "The label of the cluster.\nInteractive example: {\"label1\":\"value1\",\"label1\":\"value1\"}\nNonInteractive example: \"{\\\"label1\\\":\\\"value1\\\",\\\"label2\\\":\\\"value2\\\"}\"")
+	updateCmd.Flags().String(flag.ServerlessLabels, "", "The label of the cluster.\nInteractive example: {\"label1\":\"value1\",\"label2\":\"value2\"}\nNonInteractive example: \"{\\\"label1\\\":\\\"value1\\\",\\\"label2\\\":\\\"value2\\\"}\"")
 	updateCmd.Flags().String(flag.ServerlessAnnotations, "", "The annotations of the cluster.\nInteractive example: {\"annotation1\":\"value1\",\"annotation2\":\"value2\"}\nNonInteractive example: \"{\\\"annotation1\\\":\\\"value1\\\",\\\"annotation2\\\":\\\"value2\\\"}\"")
 	return updateCmd
 }

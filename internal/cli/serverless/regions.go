@@ -15,8 +15,9 @@
 package serverless
 
 import (
-	"encoding/json"
 	"fmt"
+	"tidbcloud-cli/internal/flag"
+	"tidbcloud-cli/internal/output"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -39,18 +40,46 @@ func RegionsCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			regions, err := d.ListProviderRegions(serverlessApi.NewServerlessServiceListRegionsParams())
-			if err != nil {
-				return errors.Trace(err)
-			}
-			v, err := json.MarshalIndent(regions.Payload, "", "  ")
+			format, err := cmd.Flags().GetString(flag.Output)
 			if err != nil {
 				return errors.Trace(err)
 			}
 
-			fmt.Fprintln(h.IOStreams.Out, string(v))
+			regions, err := d.ListProviderRegions(serverlessApi.NewServerlessServiceListRegionsParams())
+			if err != nil {
+				return errors.Trace(err)
+			}
+
+			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
+				err = output.PrintJson(h.IOStreams.Out, regions.Payload.Regions)
+				if err != nil {
+					return errors.Trace(err)
+				}
+			} else if format == output.HumanFormat {
+				columns := []output.Column{
+					"Name",
+					"DisplayName",
+					"Provider",
+				}
+
+				var rows []output.Row
+				for _, item := range regions.Payload.Regions {
+					rows = append(rows, output.Row{
+						*item.Name,
+						item.DisplayName,
+						string(*item.Provider),
+					})
+				}
+				err = output.PrintHumanTable(h.IOStreams.Out, columns, rows)
+				if err != nil {
+					return errors.Trace(err)
+				}
+			} else {
+				return fmt.Errorf("unsupported output format: %s", format)
+			}
 			return nil
 		},
 	}
+	regionsCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, "Output format, One of [\"human\" \"json\"]")
 	return regionsCmd
 }
