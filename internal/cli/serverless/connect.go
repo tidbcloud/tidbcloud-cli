@@ -1,0 +1,203 @@
+// Copyright 2023 PingCAP, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package serverless
+
+import (
+	"fmt"
+	"strconv"
+
+	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/config"
+	"tidbcloud-cli/internal/flag"
+	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/util"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/fatih/color"
+	"github.com/juju/errors"
+	"github.com/spf13/cobra"
+	_ "github.com/xo/usql/drivers/mysql"
+	"github.com/xo/usql/env"
+)
+
+type ConnectOpts struct {
+	interactive bool
+}
+
+func (c ConnectOpts) NonInteractiveFlags() []string {
+	return []string{
+		flag.ClusterID,
+	}
+}
+
+func ConnectCmd(h *internal.Helper) *cobra.Command {
+	opts := ConnectOpts{
+		interactive: true,
+	}
+
+	var connectCmd = &cobra.Command{
+		Use:   "shell",
+		Short: "Connect to a serverless cluster",
+		Long: `Connect to a serverless cluster
+The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_ansi) for the session.`,
+		Example: fmt.Sprintf(`  Connect to a serverless cluster in interactive mode:
+  $ %[1]s serverless shell
+
+  Use the default user to connect to a serverless cluster in non-interactive mode:
+  $ %[1]s serverless shell -c <cluster-id>
+
+  Use the default user to connect to a serverless cluster with password in non-interactive mode:
+  $ %[1]s serverless shell -c <cluster-id> --password <password>
+
+  Use a specific user to connect to a serverless cluster in non-interactive mode:
+  $ %[1]s connect -c <cluster-id> -u <user-name> --password <password>`, config.CliName),
+
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			flags := opts.NonInteractiveFlags()
+			for _, fn := range flags {
+				f := cmd.Flags().Lookup(fn)
+				if f != nil && f.Changed {
+					opts.interactive = false
+				}
+			}
+
+			// mark required flags in non-interactive mode
+			if !opts.interactive {
+				for _, fn := range flags {
+					err := cmd.MarkFlagRequired(fn)
+					if err != nil {
+						return errors.Trace(err)
+					}
+				}
+			}
+
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if !h.IOStreams.CanPrompt {
+				return fmt.Errorf("the stdout is not a terminal")
+			}
+			ctx := cmd.Context()
+
+			d, err := h.Client()
+			if err != nil {
+				return err
+			}
+
+			var clusterID, userName string
+			var pass *string
+			if opts.interactive {
+				// interactive mode
+				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				if err != nil {
+					return err
+				}
+				projectID := project.ID
+
+				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
+				if err != nil {
+					return err
+				}
+				clusterID = cluster.ID
+
+				useDefaultUser := false
+				prompt := &survey.Confirm{
+					Message: "Use the default user?",
+					Default: true,
+				}
+				err = survey.AskOne(prompt, &useDefaultUser)
+				if err != nil {
+					if err == terminal.InterruptErr {
+						return util.InterruptError
+					} else {
+						return err
+					}
+				}
+
+				var userInput string
+				if !useDefaultUser {
+					input := &survey.Input{
+						Message: "Please input the user name:",
+					}
+					err = survey.AskOne(input, &userInput, survey.WithValidator(survey.Required))
+					if err != nil {
+						if err == terminal.InterruptErr {
+							return util.InterruptError
+						} else {
+							return err
+						}
+					}
+					userName = userInput
+				}
+			} else {
+				// non-interactive mode, get values from flags
+				cID, err := cmd.Flags().GetString(flag.ClusterID)
+				if err != nil {
+					return errors.Trace(err)
+				}
+
+				clusterID = cID
+
+				uName, err := cmd.Flags().GetString(flag.User)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				userName = uName
+
+				if cmd.Flags().Changed(flag.Password) {
+					password, err := cmd.Flags().GetString(flag.Password)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					pass = &password
+				}
+			}
+
+			var host, name, port string
+			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID)
+			cluster, err := d.GetCluster(params)
+			if err != nil {
+				return errors.Trace(err)
+			}
+			host = cluster.Payload.Endpoints.PublicEndpoint.Host
+			name = *cluster.Payload.DisplayName
+			port = strconv.Itoa(int(cluster.Payload.Endpoints.PublicEndpoint.Port))
+			if userName == "" {
+				userName = cluster.Payload.UserPrefix + ".root"
+				fmt.Fprintln(h.IOStreams.Out, color.GreenString("Current user: ")+color.HiGreenString(userName))
+			}
+
+			// Set prompt style, see https://github.com/xo/usql/commit/d5db12eaa6fe48cd0a697831ad03d61611290576
+			err = env.Set("PROMPT1", "%n"+"@"+name+"%/%R%#")
+			if err != nil {
+				return err
+			}
+
+			err = util.ExecuteSqlDialog(ctx, util.SERVERLESS, userName, host, port, pass, h.IOStreams.Out)
+			if err != nil {
+				return err
+			}
+
+			return nil
+		},
+	}
+
+	connectCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster")
+	connectCmd.Flags().String(flag.Password, "", "The password of the user")
+	connectCmd.Flags().StringP(flag.User, flag.UserShort, "", "A specific user for login if not using the default user")
+	return connectCmd
+}

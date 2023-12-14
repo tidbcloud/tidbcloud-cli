@@ -24,8 +24,8 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -58,7 +58,7 @@ func SpendingLimitCmd(h *internal.Helper) *cobra.Command {
 
 	var spendingLimitCmd = &cobra.Command{
 		Use:         "spending-limit",
-		Short:       "Set spending limit for serverless cluster",
+		Short:       "Set spending limit for a serverless cluster",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  List spending limit for serverless clusters in interactive mode:
  	$ %[1]s serverless spending-limit
@@ -140,28 +140,30 @@ func SpendingLimitCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
+			if monthly <= 0 {
+				return errors.Errorf("invalid monthly spending limit %d", monthly)
+			}
+
 			body := &serverlessApi.ServerlessServicePartialUpdateClusterBody{
 				Cluster: &serverlessApi.ServerlessServicePartialUpdateClusterParamsBodyCluster{
 					SpendingLimit: &serverlessModel.ClusterSpendingLimit{},
 				},
 			}
-			if monthly != 0 {
-				body.UpdateMask = &SpendingLimitMonthlyMask
-				body.Cluster.SpendingLimit.Monthly = monthly
-			}
-
+			body.UpdateMask = &SpendingLimitMonthlyMask
+			body.Cluster.SpendingLimit.Monthly = monthly
 			params := serverlessApi.NewServerlessServicePartialUpdateClusterParams().WithClusterClusterID(clusterID).WithBody(*body)
 			_, err = d.PartialUpdateCluster(params)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("set spending limit success"))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("set spending limit to %d cents success", monthly)))
+
 			return nil
 		},
 	}
 
 	spendingLimitCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster")
-	spendingLimitCmd.Flags().Int32(flag.Monthly, 0, "monthly spending limit for serverless cluster")
+	spendingLimitCmd.Flags().Int32(flag.Monthly, 0, "Maximum monthly spending limit in USD cents")
 	return spendingLimitCmd
 }
 

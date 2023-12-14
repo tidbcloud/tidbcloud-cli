@@ -37,7 +37,8 @@ const (
 )
 
 var (
-	re = regexp.MustCompile(regexPattern)
+	re     = regexp.MustCompile(regexPattern)
+	domain = []string{"tidbcloud"}
 )
 
 type AIOpts struct {
@@ -112,7 +113,7 @@ func AICmd(h *internal.Helper) *cobra.Command {
 					}
 					chat, err := client.Chat(param.WithChatInfo(&models.PingchatChatInfo{
 						Messages: msgs,
-						Domain:   []string{"tidbcloud"},
+						Domain:   domain,
 					}))
 
 					if err != nil {
@@ -166,7 +167,7 @@ func AICmd(h *internal.Helper) *cobra.Command {
 							Role:    &role,
 						},
 					},
-					Domain: []string{"tidbcloud"},
+					Domain: domain,
 				}))
 
 				if err != nil {

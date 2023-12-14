@@ -23,8 +23,7 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
-
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -53,14 +52,8 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		Example: fmt.Sprintf(`  Get the serverless cluster info in interactive mode:
  $ %[1]s serverless describe
 
- Get the Basic serverless cluster info in interactive mode:
- $ %[1]s serverless describe -v BASIC
-
- Get the serverless cluster info in non-interactive mode:
- $ %[1]s serverless describe -c <cluster-id>
-
  Get the Basic serverless cluster info in non-interactive mode:
- $ %[1]s serverless describe -c <cluster-id> -v BASIC`, config.CliName),
+ $ %[1]s serverless describe -c <cluster-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {
@@ -116,17 +109,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cID
 			}
 
-			view, err := cmd.Flags().GetString(flag.View)
-			if err != nil {
-				return errors.Trace(err)
-			}
-
 			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID)
-			if view == flag.BasicView {
-				params.WithView(&view)
-			} else if view != flag.FullView {
-				return errors.Errorf("invalid view: %s", view)
-			}
 
 			cluster, err := d.GetCluster(params)
 			if err != nil {
@@ -144,6 +127,5 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster")
-	describeCmd.Flags().StringP(flag.View, flag.ViewShort, flag.FullView, "The view of cluster, One of [\"BASIC\" \"FULL\"]")
 	return describeCmd
 }

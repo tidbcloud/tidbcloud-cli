@@ -22,16 +22,16 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/version"
-	branchClient "tidbcloud-cli/pkg/tidbcloud/branch/client"
-	branchOp "tidbcloud-cli/pkg/tidbcloud/branch/client/branch_service"
 	connectInfoClient "tidbcloud-cli/pkg/tidbcloud/connect_info/client"
 	connectInfoOp "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
 	importClient "tidbcloud-cli/pkg/tidbcloud/import/client"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 	pingchatClient "tidbcloud-cli/pkg/tidbcloud/pingchat/client"
 	pingchatOp "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
-	serverlessClient "tidbcloud-cli/pkg/tidbcloud/serverless/client"
-	serverlessOp "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
+	branchClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client"
+	branchOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
+	serverlessClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client"
+	serverlessOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 
 	apiClient "github.com/c4pt0r/go-tidbcloud-sdk-v1/client"
 	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
@@ -75,13 +75,13 @@ type TiDBCloudClient interface {
 
 	GetConnectInfo(params *connectInfoOp.GetInfoParams, opts ...connectInfoOp.ClientOption) (*connectInfoOp.GetInfoOK, error)
 
-	GetBranch(params *branchOp.GetBranchParams, opts ...branchOp.ClientOption) (*branchOp.GetBranchOK, error)
+	GetBranch(params *branchOp.BranchServiceGetBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceGetBranchOK, error)
 
-	ListBranches(params *branchOp.ListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.ListBranchesOK, error)
+	ListBranches(params *branchOp.BranchServiceListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceListBranchesOK, error)
 
-	CreateBranch(params *branchOp.CreateBranchParams, opts ...branchOp.ClientOption) (*branchOp.CreateBranchOK, error)
+	CreateBranch(params *branchOp.BranchServiceCreateBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceCreateBranchOK, error)
 
-	DeleteBranch(params *branchOp.DeleteBranchParams, opts ...branchOp.ClientOption) (*branchOp.DeleteBranchOK, error)
+	DeleteBranch(params *branchOp.BranchServiceDeleteBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceDeleteBranchOK, error)
 
 	Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.ClientOption) (*pingchatOp.ChatOK, error)
 }
@@ -90,13 +90,13 @@ type ClientDelegate struct {
 	c  *apiClient.GoTidbcloud
 	ic *importClient.TidbcloudImport
 	cc *connectInfoClient.TidbcloudConnectInfo
-	bc *branchClient.TidbcloudBranch
+	bc *branchClient.TidbcloudServerless
 	pc *pingchatClient.TidbcloudPingchat
 	sc *serverlessClient.TidbcloudServerless
 }
 
-func NewClientDelegate(publicKey string, privateKey string, apiUrl string, serverlessApiUrl string) (*ClientDelegate, error) {
-	c, ic, cc, bc, sc, pc, err := NewApiClient(publicKey, privateKey, apiUrl, serverlessApiUrl)
+func NewClientDelegate(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string) (*ClientDelegate, error) {
+	c, ic, cc, bc, sc, pc, err := NewApiClient(publicKey, privateKey, apiUrl, serverlessEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -182,27 +182,23 @@ func (d *ClientDelegate) GetConnectInfo(params *connectInfoOp.GetInfoParams, opt
 	return d.cc.ConnectInfoService.GetInfo(params, opts...)
 }
 
-func (d *ClientDelegate) GetBranch(params *branchOp.GetBranchParams, opts ...branchOp.ClientOption) (*branchOp.GetBranchOK, error) {
-	r, err := d.bc.BranchService.GetBranch(params, opts...)
-	err = parseBranchError(err)
+func (d *ClientDelegate) GetBranch(params *branchOp.BranchServiceGetBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceGetBranchOK, error) {
+	r, err := d.bc.BranchService.BranchServiceGetBranch(params, opts...)
 	return r, err
 }
 
-func (d *ClientDelegate) ListBranches(params *branchOp.ListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.ListBranchesOK, error) {
-	r, err := d.bc.BranchService.ListBranches(params, opts...)
-	err = parseBranchError(err)
+func (d *ClientDelegate) ListBranches(params *branchOp.BranchServiceListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceListBranchesOK, error) {
+	r, err := d.bc.BranchService.BranchServiceListBranches(params, opts...)
 	return r, err
 }
 
-func (d *ClientDelegate) CreateBranch(params *branchOp.CreateBranchParams, opts ...branchOp.ClientOption) (*branchOp.CreateBranchOK, error) {
-	r, err := d.bc.BranchService.CreateBranch(params, opts...)
-	err = parseBranchError(err)
+func (d *ClientDelegate) CreateBranch(params *branchOp.BranchServiceCreateBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceCreateBranchOK, error) {
+	r, err := d.bc.BranchService.BranchServiceCreateBranch(params, opts...)
 	return r, err
 }
 
-func (d *ClientDelegate) DeleteBranch(params *branchOp.DeleteBranchParams, opts ...branchOp.ClientOption) (*branchOp.DeleteBranchOK, error) {
-	r, err := d.bc.BranchService.DeleteBranch(params, opts...)
-	err = parseBranchError(err)
+func (d *ClientDelegate) DeleteBranch(params *branchOp.BranchServiceDeleteBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceDeleteBranchOK, error) {
+	r, err := d.bc.BranchService.BranchServiceDeleteBranch(params, opts...)
 	return r, err
 }
 
@@ -210,8 +206,8 @@ func (d *ClientDelegate) Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.
 	return d.pc.Operations.Chat(params, opts...)
 }
 
-func NewApiClient(publicKey string, privateKey string, apiUrl string, serverlessApiUrl string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport,
-	*connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudBranch, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, error) {
+func NewApiClient(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport,
+	*connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, error) {
 	httpclient := &http.Client{
 		Transport: NewTransportWithAgent(&digest.Transport{
 			Username: publicKey,
@@ -226,15 +222,16 @@ func NewApiClient(publicKey string, privateKey string, apiUrl string, serverless
 	}
 	transport := httpTransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpclient)
 
-	// serverless api
-	serverlessUrl, err := prop.ValidateApiUrl(serverlessApiUrl)
+	// v1beta1 api
+	serverlessURL, err := prop.ValidateApiUrl(serverlessEndpoint)
 	if err != nil {
 		return nil, nil, nil, nil, nil, nil, err
 	}
-	newTransport := httpTransport.NewWithClient(serverlessUrl.Host, serverlessClient.DefaultBasePath, []string{serverlessUrl.Scheme}, httpclient)
+	serverlessTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
+	branchTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 
 	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default),
-		branchClient.New(transport, strfmt.Default), serverlessClient.New(newTransport, strfmt.Default), pingchatClient.New(transport, strfmt.Default), nil
+		branchClient.New(branchTransport, strfmt.Default), serverlessClient.New(serverlessTransport, strfmt.Default), pingchatClient.New(transport, strfmt.Default), nil
 }
 
 // NewTransportWithAgent returns a new http.RoundTripper that add the User-Agent header,
@@ -254,47 +251,4 @@ type UserAgentTransport struct {
 func (ug *UserAgentTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	r.Header.Set(userAgent, ug.Agent)
 	return ug.inner.RoundTrip(r)
-}
-
-func parseBranchError(err error) error {
-	if err == nil {
-		return nil
-	}
-
-	switch e := err.(type) {
-	case *branchOp.DeleteBranchDefault:
-		msg := "[DELETE /api/v1beta/clusters/{cluster_id}/branches/{branch_id}] DeleteBranch"
-		// return by api gateway
-		if e.Payload == nil || e.Payload.Error == nil {
-			return fmt.Errorf(msg+" [%d] unknown error", e.Code())
-		}
-		// return by serverless-svc
-		return fmt.Errorf(msg+" [%d] %+v", e.Payload.Error.Code, e.Payload.Error.Message)
-	case *branchOp.GetBranchDefault:
-		msg := "[GET /api/v1beta/clusters/{cluster_id}/branches/{branch_id}] GetBranch"
-		// return by api gateway
-		if e.Payload == nil || e.Payload.Error == nil {
-			return fmt.Errorf(msg+" [%d] unknown error", e.Code())
-		}
-		// return by serverless-svc
-		return fmt.Errorf(msg+" [%d] %+v", e.Payload.Error.Code, e.Payload.Error.Message)
-	case *branchOp.ListBranchesDefault:
-		msg := "[GET /api/v1beta/clusters/{cluster_id}/branches] ListBranches"
-		// return by api gateway
-		if e.Payload == nil || e.Payload.Error == nil {
-			return fmt.Errorf(msg+" [%d] unknown error", e.Code())
-		}
-		// return by serverless-svc
-		return fmt.Errorf(msg+" [%d] %+v", e.Payload.Error.Code, e.Payload.Error.Message)
-	case *branchOp.CreateBranchDefault:
-		msg := "[POST /api/v1beta/clusters/{cluster_id}/branches] CreateBranch"
-		// return by api gateway
-		if e.Payload == nil || e.Payload.Error == nil {
-			return fmt.Errorf(msg+" [%d] unknown error", e.Code())
-		}
-		// return by serverless-svc
-		return fmt.Errorf(msg+" [%d] %+v", e.Payload.Error.Code, e.Payload.Error.Message)
-	default:
-		return err
-	}
 }

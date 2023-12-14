@@ -34,7 +34,7 @@ func GlobalProperties() []string {
 }
 
 func ProfileProperties() []string {
-	return []string{PublicKey, PrivateKey, ApiUrl, TelemetryEnabled}
+	return []string{PublicKey, PrivateKey, ApiUrl, ServerlessEndpoint, TelemetryEnabled}
 }
 
 func Properties() []string {

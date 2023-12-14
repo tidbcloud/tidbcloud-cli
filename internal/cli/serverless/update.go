@@ -17,6 +17,7 @@ package serverless
 import (
 	"encoding/json"
 	"fmt"
+
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
@@ -24,14 +25,11 @@ import (
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-
-	"github.com/fatih/color"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
-
+	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
@@ -43,7 +41,7 @@ type UpdateOpts struct {
 func (c UpdateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.ClusterName,
+		flag.DisplayName,
 		flag.ServerlessAnnotations,
 		flag.ServerlessLabels,
 	}
@@ -76,10 +74,10 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
  $ %[1]s serverless update
 
  Update displayName of serverless cluster in non-interactive mode:
- $ %[1]s serverless update -c <cluster-id> --cluster-name newClusterName, 
+ $ %[1]s serverless update -c <cluster-id> --display-name <new-cluster-mame>
  
-  Update labels of serverless cluster in non-interactive mode:
- $ %[1]s serverless update -c <cluster-id> --labels "{\"label\":\"value2\"}"`, config.CliName),
+ Update labels of serverless cluster in non-interactive mode:
+ $ %[1]s serverless update -c <cluster-id> --labels "{\"label1\":\"value1\"}"`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {
@@ -95,7 +93,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				cmd.MarkFlagsMutuallyExclusive(flag.ClusterName, flag.ServerlessAnnotations, flag.ServerlessLabels)
+				cmd.MarkFlagsMutuallyExclusive(flag.DisplayName, flag.ServerlessAnnotations, flag.ServerlessLabels)
 			}
 			return nil
 		},
@@ -155,7 +153,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				clusterID = cID
-				displayName, err = cmd.Flags().GetString(flag.ClusterName)
+				displayName, err = cmd.Flags().GetString(flag.DisplayName)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -204,10 +202,10 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	updateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the serverless cluster to be deleted")
-	updateCmd.Flags().String(flag.ClusterName, "", "The name of the serverless cluster")
-	updateCmd.Flags().String(flag.ServerlessLabels, "", "The label of the serverless cluster.\nInteractive example: {\"label1\":\"value1\",\"label1\":\"value1\"}\nNonInteractive example: \"{\\\"label1\\\":\\\"value1\\\",\\\"label2\\\":\\\"value2\\\"}\"")
-	updateCmd.Flags().String(flag.ServerlessAnnotations, "", "The annotations of the serverless cluster.\nInteractive example: {\"annotation1\":\"value1\",\"annotation2\":\"value2\"}\nNonInteractive example: \"{\\\"annotation1\\\":\\\"value1\\\",\\\"annotation2\\\":\\\"value2\\\"}\"")
+	updateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster to be updated")
+	updateCmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "The displayName of the cluster")
+	updateCmd.Flags().String(flag.ServerlessLabels, "", "The label of the cluster.\nInteractive example: {\"label1\":\"value1\",\"label2\":\"value2\"}\nNonInteractive example: \"{\\\"label1\\\":\\\"value1\\\",\\\"label2\\\":\\\"value2\\\"}\"")
+	updateCmd.Flags().String(flag.ServerlessAnnotations, "", "The annotations of the cluster.\nInteractive example: {\"annotation1\":\"value1\",\"annotation2\":\"value2\"}\nNonInteractive example: \"{\\\"annotation1\\\":\\\"value1\\\",\\\"annotation2\\\":\\\"value2\\\"}\"")
 	return updateCmd
 }
 
