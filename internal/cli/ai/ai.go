@@ -17,6 +17,7 @@ package ai
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -29,6 +30,14 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/pingcap/errors"
 	"github.com/spf13/cobra"
+)
+
+const (
+	regexPattern = `\[\^(\d+)\]`
+)
+
+var (
+	re = regexp.MustCompile(regexPattern)
 )
 
 type AIOpts struct {
@@ -112,9 +121,12 @@ func AICmd(h *internal.Helper) *cobra.Command {
 					}
 
 					content := chat.Payload.Content + "\n\n"
-					for _, link := range chat.Payload.Links {
-						content = fmt.Sprintf("%s[%s](%s)\n", content, link.Title, link.Link)
+					for i, link := range chat.Payload.Links {
+						content = fmt.Sprintf("%s[%d] [%s](%s)\n", content, i+1, link.Title, link.Link)
 					}
+
+					// Replace occurrences of [^\d+] with [\d+] for better user comprehension.
+					content = re.ReplaceAllString(content, "[$1]")
 
 					return ui.EndSendingMsg{
 						Msg: ui.ChatMessage{
