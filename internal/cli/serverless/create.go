@@ -19,7 +19,6 @@ import (
 	"fmt"
 	"math"
 	"strconv"
-	"strings"
 	"time"
 
 	"tidbcloud-cli/internal"
@@ -29,9 +28,8 @@ import (
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/serverless/client/serverless_service"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/serverless/models"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -61,9 +59,8 @@ type CreateOpts struct {
 
 func (c CreateOpts) NonInteractiveFlags() []string {
 	return []string{
-		flag.ClusterName,
+		flag.DisplayName,
 		flag.ClusterType,
-		flag.CloudProvider,
 		flag.Region,
 		flag.ProjectID,
 	}
@@ -71,8 +68,7 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 
 func (c CreateOpts) RequiredFlags() []string {
 	return []string{
-		flag.ClusterName,
-		flag.CloudProvider,
+		flag.DisplayName,
 		flag.Region,
 	}
 }
@@ -90,10 +86,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless create
 
   Create a serverless cluster of the default ptoject in non-interactive mode:
-  $ %[1]s serverless create --cluster-name <cluster-name> --cloud-provider <cloud-provider> -r <region>
+  $ %[1]s serverless create --display-name <cluster-name> --region <region>
 
   Create a serverless cluster in non-interactive mode:
-  $ %[1]s serverless create --project-id <project-id> --cluster-name <cluster-name> --cloud-provider <cloud-provider> -r <region>`,
+  $ %[1]s serverless create --project-id <project-id> --display-name <cluster-name> --region <region>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -220,11 +216,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			} else {
 				// non-interactive mode, get values from flags
 				var err error
-				clusterName, err = cmd.Flags().GetString(flag.ClusterName)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				cloudProvider, err = cmd.Flags().GetString(flag.CloudProvider)
+				clusterName, err = cmd.Flags().GetString(flag.DisplayName)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -236,9 +228,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-
-				// generate region name
-				region = fmt.Sprintf("regions/%s-%s", strings.ToLower(cloudProvider), strings.ToLower(region))
 				projectID, err = cmd.Flags().GetString(flag.ProjectID)
 				if err != nil {
 					return errors.Trace(err)
@@ -285,11 +274,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	createCmd.Flags().String(flag.ClusterName, "", "Name of the cluster to de created")
-	createCmd.Flags().String(flag.CloudProvider, "", "Cloud provider, one of [\"AWS\"]")
-	createCmd.Flags().StringP(flag.Region, flag.RegionShort, "", "Cloud region")
+	createCmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "DisplayName of the cluster to de created")
+	createCmd.Flags().StringP(flag.Region, flag.RegionShort, "", "The name of cloud region. You can use \"ticloud serverless regions\" to see all regions")
 	createCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project, in which the cluster will be created (optional: default \"default project\")")
-	createCmd.Flags().Int32(flag.SpendingLimitMonthly, 0, "The monthly spending limit of the cluster (optional)")
+	createCmd.Flags().Int32(flag.SpendingLimitMonthly, 0, "Maximum monthly spending limit in USD cents (optional)")
 	return createCmd
 }
 
@@ -385,7 +373,7 @@ func initialCreateInputModel() ui.TextInputModel {
 
 		switch f {
 		case clusterNameIdx:
-			t.Placeholder = "Cluster Name"
+			t.Placeholder = "Display Name"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
