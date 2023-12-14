@@ -20,11 +20,11 @@ import (
 // swagger:model pingchat.ChatMessage
 type PingchatChatMessage struct {
 
-	// content
+	// Dialogue content
 	// Required: true
 	Content *string `json:"content"`
 
-	// role
+	// User's input as "user", AI assistant's reply as "assistant"
 	// Required: true
 	// Enum: [user assistant]
 	Role *string `json:"role"`
