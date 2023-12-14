@@ -45,6 +45,8 @@ const (
 	ProfileShort          string = "P"
 	PublicKey             string = "public-key"
 	PrivateKey            string = "private-key"
+	Query                 string = "query"
+	QueryShort            string = "q"
 	Region                string = "region"
 	RegionShort           string = "r"
 	RootPassword          string = "root-password"

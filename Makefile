@@ -39,6 +39,12 @@ generate-import-client: ## Generate import client
 	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
 	swagger generate client -f pkg/tidbcloud/connect_info/connect-info-api.json -A tidbcloud-connect-info -t pkg/tidbcloud/connect_info
 
+.PHONY: generate-pingchat-client
+generate-pingchat-client: ## Generate PingChat client
+	@echo "==> Generating PingChat client"
+	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
+	swagger generate client -f pkg/tidbcloud/pingchat/pingchat_swagger.json -A tidbcloud-pingchat -t pkg/tidbcloud/pingchat
+
 .PHONY: addcopy
 addcopy: ## Add copyright to all files
 	@scripts/add-copy.sh
