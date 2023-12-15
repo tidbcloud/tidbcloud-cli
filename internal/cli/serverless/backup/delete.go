@@ -63,8 +63,8 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 		Example: fmt.Sprintf(`  Delete a backup in interactive mode:
   $ %[1]s serverless backup delete
 
-  Delete a branch in non-interactive mode:
-  $ %[1]s serverless backup delete -c <cluster-id> --backup-id <backup-id>`, config.CliName),
+  Delete a backup in non-interactive mode:
+  $ %[1]s serverless backup delete --backup-id <backup-id>`, config.CliName),
 		Aliases: []string{"rm"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			err := opts.MarkInteractive(cmd)

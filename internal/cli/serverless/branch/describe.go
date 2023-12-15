@@ -70,10 +70,10 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		Short:   "Describe a branch",
 		Aliases: []string{"get"},
 		Args:    cobra.NoArgs,
-		Example: fmt.Sprintf(`  Get the branch info in interactive mode:
+		Example: fmt.Sprintf(`  Get a branch in interactive mode:
   $ %[1]s serverless branch describe
 
-  Get the branch info with Basic view in non-interactive mode:
+  Get a branch in non-interactive mode:
   $ %[1]s serverless branch describe -c <cluster-id> -b <branch-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			err := opts.MarkInteractive(cmd)

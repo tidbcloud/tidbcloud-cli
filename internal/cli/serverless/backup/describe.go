@@ -52,14 +52,14 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 
 	var describeCmd = &cobra.Command{
 		Use:     "describe",
-		Short:   "Describe serverless cluster backup",
+		Short:   "Describe a serverless cluster backup",
 		Aliases: []string{"get"},
 		Args:    cobra.NoArgs,
-		Example: fmt.Sprintf(`  Get the backup info in interactive mode:
+		Example: fmt.Sprintf(`  Get the backup in interactive mode:
   $ %[1]s serverless backup describe
 
-  Get the backup info with Basic view in non-interactive mode:
-  $ %[1]s serverless backup describe -c <cluster-id> --backup-id <backup-id>`, config.CliName),
+  Get the backup in non-interactive mode:
+  $ %[1]s serverless backup describe --backup-id <backup-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			err := opts.MarkInteractive(cmd)
 			if err != nil {
@@ -98,17 +98,10 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				backupID = backup.ID
 			} else {
 				// non-interactive mode, get values from flags
-				bID, err := cmd.Flags().GetString(flag.BackupID)
+				backupID, err = cmd.Flags().GetString(flag.BackupID)
 				if err != nil {
 					return errors.Trace(err)
 				}
-
-				cID, err := cmd.Flags().GetString(flag.ClusterID)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				backupID = bID
-				clusterID = cID
 			}
 
 			params := brAPI.NewBackupRestoreServiceGetBackupParams().WithBackupID(backupID)

@@ -71,6 +71,15 @@ type ServerlessBackup struct {
 	CreateTime strfmt.DateTime
 }
 
+func (c ServerlessBackup) String() string {
+	return fmt.Sprintf("%s(%s)", c.CreateTime, c.ID)
+}
+
+const (
+	RestoreModeSnapshot    = "snapshot"
+	RestoreModePointInTime = "point-in-time"
+)
+
 func (r Region) String() string {
 	return r.DisplayName
 }
@@ -297,6 +306,30 @@ func GetSelectedServerlessBackup(clusterID string, pageSize int32, client TiDBCl
 	}
 	backup := bModel.(ui.SelectModel).GetSelectedItem().(*ServerlessBackup)
 	return backup, nil
+}
+
+func GetSelectedRestoreMode() (string, error) {
+	items := []interface{}{
+		RestoreModeSnapshot,
+		RestoreModePointInTime,
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the restore mode")
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+
+	model.EnableFilter()
+	p := tea.NewProgram(model)
+	bModel, err := p.Run()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	restoreMode := bModel.(ui.SelectModel).GetSelectedItem().(string)
+	return restoreMode, nil
 }
 
 // GetSelectedImport get the selected import task. statusFilter is used to filter the available options, only imports has status in statusFilter will be available.

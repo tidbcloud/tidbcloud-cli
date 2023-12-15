@@ -50,13 +50,12 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "connect-info",
-		Short: "Get connection string for a specified serverless cluster",
+		Short: "Get connection string for a serverless cluster",
 		Example: fmt.Sprintf(`  Get connection string in interactive mode:
-$ %[1]s serverless connect-info
+  $ %[1]s serverless connect-info
 
-Get connection string in non-interactive mode:
-$ %[1]s serverless connect-info --cluster-id <cluster-id> --client <client-name> --operating-system <operating-system>
-`, config.CliName),
+  Get connection string in non-interactive mode:
+  $ %[1]s serverless connect-info --cluster-id <cluster-id> --client <client-name> --operating-system <operating-system>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {
