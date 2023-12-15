@@ -2,17 +2,21 @@ package serverless
 
 import (
 	"fmt"
-	"github.com/fatih/color"
-	"github.com/go-openapi/strfmt"
-	"github.com/juju/errors"
-	"tidbcloud-cli/internal/service/cloud"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
+	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/ui"
+	"tidbcloud-cli/internal/util"
 	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 	brModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/models"
 
+	"github.com/charmbracelet/bubbles/textinput"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/fatih/color"
+	"github.com/go-openapi/strfmt"
+	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -38,13 +42,13 @@ func (c *RestoreOpts) MarkInteractive(cmd *cobra.Command) error {
 		}
 	}
 	// Mark flags
-	err := cmd.MarkFlagRequired(flag.RestoreMode)
-	if err != nil {
-		return err
+	if !c.interactive {
+		cmd.MarkFlagsMutuallyExclusive(flag.BackupID, flag.ClusterID)
+		cmd.MarkFlagsMutuallyExclusive(flag.BackupID, flag.BackupTime)
+		if !cmd.Flags().Changed(flag.BackupID) {
+			cmd.MarkFlagsRequiredTogether(flag.ClusterID, flag.BackupTime)
+		}
 	}
-	cmd.MarkFlagsMutuallyExclusive(flag.ClusterID, flag.BranchID)
-	cmd.MarkFlagsMutuallyExclusive(flag.ClusterID, flag.BackupTime)
-	cmd.MarkFlagsRequiredTogether(flag.ClusterID, flag.BackupTime)
 	return nil
 }
 
@@ -112,7 +116,12 @@ func RestoreCmd(h *internal.Helper) *cobra.Command {
 						return err
 					}
 					clusterID = cluster.ID
-
+					// variables for input
+					inputModel, err := GetRestoreInput()
+					if err != nil {
+						return err
+					}
+					backupTimeStr = inputModel.(ui.TextInputModel).Inputs[0].Value()
 				} else {
 					return errors.New("invalid restore mode")
 				}
@@ -125,34 +134,62 @@ func RestoreCmd(h *internal.Helper) *cobra.Command {
 				backupTimeStr, err = cmd.Flags().GetString(flag.BackupTime)
 			}
 
-			var backupTime strfmt.DateTime
-			if backupTimeStr != "" {
-				_, err := strfmt.ParseDateTime(backupTimeStr)
-				if err != nil {
-					return errors.Trace(err)
-				}
-			}
-
-			params := brApi.NewBackupRestoreServiceRestoreParams().WithBody(&brModel.V1beta1RestoreRequest{
-				Snapshot: &brModel.RestoreRequestSnapshot{
+			params := brApi.NewBackupRestoreServiceRestoreParams().WithBody(&brModel.V1beta1RestoreRequest{})
+			if backupID != "" {
+				params.Body.Snapshot = &brModel.RestoreRequestSnapshot{
 					BackupID: backupID,
-				},
-				PointInTime: &brModel.RestoreRequestPointInTime{
+				}
+			} else {
+				if backupTimeStr == "" {
+					return errors.New("backup time is required in point-in-time mode")
+				}
+				var backupTime strfmt.DateTime
+				backupTime, err = strfmt.ParseDateTime(backupTimeStr)
+				if err != nil {
+					return errors.New(fmt.Sprintf("invalid backup time %s. Please input the backup time with the 2006-01-02T15:04:05Z formate", backupTimeStr))
+				}
+				println(backupTime.String())
+				params.Body.PointInTime = &brModel.RestoreRequestPointInTime{
 					ClusterID:  clusterID,
 					BackupTime: backupTime,
-				},
-			})
+				}
+			}
 			resp, err := d.Restore(params)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("restore to clsuter %s, use \"ticloud serverless get -c %s\" to check the cluster status", *resp.Payload.ClusterID, *resp.Payload.ClusterID)))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("restore to clsuter %s, use \"ticloud serverless get -c %s\" to check the restore process", *resp.Payload.ClusterID, *resp.Payload.ClusterID)))
 			return nil
 		},
 	}
 
-	restoreCmd.Flags().String(flag.BackupID, "", "The ID of the backup, used with Snapshot restore mode.")
-	restoreCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of cluster, used with PointInTime restore mode. Please specify the --backup-time together.")
-	restoreCmd.Flags().String(flag.BackupTime, "", "The time to restore to (e.g. 2023-12-13T07:00:00Z), used with PointInTime restore mode. Please specify the --cluster-id together.")
+	restoreCmd.Flags().String(flag.BackupID, "", "The ID of the backup. Used in snapshot restore mode.")
+	restoreCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of cluster. Used in point-in-time restore mode. Please specify the --backup-time together.")
+	restoreCmd.Flags().String(flag.BackupTime, "", "The time to restore to (e.g. 2023-12-13T07:00:00Z). Used with point-in-time restore mode. Please specify the --cluster-id together.")
 	return restoreCmd
+}
+
+func initialCreateBranchInputModel() ui.TextInputModel {
+	m := ui.TextInputModel{
+		Inputs: make([]textinput.Model, 1),
+	}
+	backupTime := textinput.New()
+	backupTime.Placeholder = "Backup Time. e.g., 2023-12-13T07:00:00Z"
+	backupTime.Focus()
+	backupTime.PromptStyle = config.FocusedStyle
+	backupTime.TextStyle = config.FocusedStyle
+	m.Inputs[0] = backupTime
+	return m
+}
+
+func GetRestoreInput() (tea.Model, error) {
+	p := tea.NewProgram(initialCreateBranchInputModel())
+	inputModel, err := p.Run()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if inputModel.(ui.TextInputModel).Interrupted {
+		return nil, util.InterruptError
+	}
+	return inputModel, nil
 }
