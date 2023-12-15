@@ -22,7 +22,7 @@ type PingchatChatResponse struct {
 	// content
 	Content string `json:"content,omitempty"`
 
-	// links
+	// Reference Document Links
 	Links []*PingchatLink `json:"links"`
 }
 
