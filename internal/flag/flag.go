@@ -73,16 +73,10 @@ const (
 	ServerlessAnnotations string = "annotations"
 	Monthly               string = "monthly"
 	BackupID              string = "backup-id"
-	RestoreMode           string = "restore-mode"
 	BackupTime            string = "backup-time"
 )
 
 const (
 	BasicView string = "BASIC"
 	FullView  string = "FULL"
-)
-
-const (
-	RestoreModeSnapshot    string = "Snapshot"
-	RestoreModePointInTime string = "PointInTime"
 )

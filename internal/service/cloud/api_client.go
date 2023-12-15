@@ -19,11 +19,6 @@ import (
 	"net/http"
 	"os"
 
-	apiClient "github.com/c4pt0r/go-tidbcloud-sdk-v1/client"
-	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
-	httpTransport "github.com/go-openapi/runtime/client"
-	"github.com/go-openapi/strfmt"
-	"github.com/icholy/digest"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/version"
@@ -39,6 +34,12 @@ import (
 	serverlessOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 	brClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client"
 	brOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
+
+	apiClient "github.com/c4pt0r/go-tidbcloud-sdk-v1/client"
+	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
+	httpTransport "github.com/go-openapi/runtime/client"
+	"github.com/go-openapi/strfmt"
+	"github.com/icholy/digest"
 )
 
 const (

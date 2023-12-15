@@ -16,7 +16,6 @@ package cloud
 
 import (
 	"fmt"
-	"github.com/go-openapi/strfmt"
 	"math"
 	"strconv"
 
@@ -35,6 +34,7 @@ import (
 
 	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/go-openapi/strfmt"
 	"github.com/juju/errors"
 )
 
