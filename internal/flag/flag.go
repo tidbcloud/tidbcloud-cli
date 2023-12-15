@@ -72,6 +72,7 @@ const (
 	ServerlessLabels      string = "labels"
 	ServerlessAnnotations string = "annotations"
 	Monthly               string = "monthly"
+	BackupID              string = "backup-id"
 )
 
 const (
