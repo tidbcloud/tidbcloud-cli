@@ -20,10 +20,14 @@ import (
 	"os/signal"
 
 	"tidbcloud-cli/internal/cli"
+
+	"github.com/spf13/cobra"
 )
 
 func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
+
+	cobra.EnableCommandSorting = false
 	cli.Execute(ctx)
 }
