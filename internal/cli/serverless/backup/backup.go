@@ -26,8 +26,8 @@ func Cmd(h *internal.Helper) *cobra.Command {
 		Short: "Manage serverless cluster backups",
 	}
 
-	branchCmd.AddCommand(DeleteCmd(h))
 	branchCmd.AddCommand(ListCmd(h))
 	branchCmd.AddCommand(DescribeCmd(h))
+	branchCmd.AddCommand(DeleteCmd(h))
 	return branchCmd
 }
