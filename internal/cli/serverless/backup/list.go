@@ -112,7 +112,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
 				res := &brModel.V1beta1ListBackupsResponse{
 					Backups:   items,
-					TotalSize: int32(total),
+					TotalSize: total,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)
 				if err != nil {

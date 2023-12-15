@@ -26,7 +26,7 @@ type V1beta1ListBackupsResponse struct {
 	NextPageToken string `json:"nextPageToken,omitempty"`
 
 	// Total number of backups.
-	TotalSize int32 `json:"totalSize,omitempty"`
+	TotalSize int64 `json:"totalSize,omitempty"`
 }
 
 // Validate validates this v1beta1 list backups response
