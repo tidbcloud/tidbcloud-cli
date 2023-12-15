@@ -165,11 +165,11 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 
 	rootCmd.AddCommand(serverless.Cmd(h))
 	rootCmd.AddCommand(configCmd.ConfigCmd(h))
-	rootCmd.AddCommand(project.ProjectCmd(h))
+	rootCmd.AddCommand(ai.AICmd(h))
+	rootCmd.AddCommand(dataimport.ImportCmd(h))
 	rootCmd.AddCommand(version.VersionCmd(h))
 	rootCmd.AddCommand(upgrade.Cmd(h))
-	rootCmd.AddCommand(dataimport.ImportCmd(h))
-	rootCmd.AddCommand(ai.AICmd(h))
+	rootCmd.AddCommand(project.ProjectCmd(h))
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, flag.Debug, flag.DebugShort, false, "Enable debug mode")
 	rootCmd.PersistentFlags().Bool(flag.NoColor, false, "Disable color output")
