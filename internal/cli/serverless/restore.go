@@ -145,7 +145,13 @@ func RestoreCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				backupID, err = cmd.Flags().GetString(flag.BackupID)
+				if err != nil {
+					return errors.Trace(err)
+				}
 				backupTimeStr, err = cmd.Flags().GetString(flag.BackupTime)
+				if err != nil {
+					return errors.Trace(err)
+				}
 			}
 
 			params := brApi.NewBackupRestoreServiceRestoreParams().WithBody(&brModel.V1beta1RestoreRequest{})
@@ -162,7 +168,6 @@ func RestoreCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.New(fmt.Sprintf("invalid backup time %s. Please input the backup time with the 2006-01-02T15:04:05Z formate", backupTimeStr))
 				}
-				println(backupTime.String())
 				params.Body.PointInTime = &brModel.RestoreRequestPointInTime{
 					ClusterID:  clusterID,
 					BackupTime: backupTime,

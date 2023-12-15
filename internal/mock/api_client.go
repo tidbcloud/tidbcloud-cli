@@ -4,6 +4,7 @@ package mock
 
 import (
 	branch_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
+	backup_restore_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 
 	connect_info_service "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
 
@@ -210,6 +211,43 @@ func (_m *TiDBCloudClient) CreateImport(params *import_service.CreateImportParam
 	return r0, r1
 }
 
+// DeleteBackup provides a mock function with given fields: params, opts
+func (_m *TiDBCloudClient) DeleteBackup(params *backup_restore_service.BackupRestoreServiceDeleteBackupParams, opts ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceDeleteBackupOK, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, params)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteBackup")
+	}
+
+	var r0 *backup_restore_service.BackupRestoreServiceDeleteBackupOK
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*backup_restore_service.BackupRestoreServiceDeleteBackupParams, ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceDeleteBackupOK, error)); ok {
+		return rf(params, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(*backup_restore_service.BackupRestoreServiceDeleteBackupParams, ...backup_restore_service.ClientOption) *backup_restore_service.BackupRestoreServiceDeleteBackupOK); ok {
+		r0 = rf(params, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*backup_restore_service.BackupRestoreServiceDeleteBackupOK)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(*backup_restore_service.BackupRestoreServiceDeleteBackupParams, ...backup_restore_service.ClientOption) error); ok {
+		r1 = rf(params, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // DeleteBranch provides a mock function with given fields: params, opts
 func (_m *TiDBCloudClient) DeleteBranch(params *branch_service.BranchServiceDeleteBranchParams, opts ...branch_service.ClientOption) (*branch_service.BranchServiceDeleteBranchOK, error) {
 	_va := make([]interface{}, len(opts))
@@ -313,6 +351,43 @@ func (_m *TiDBCloudClient) GenerateUploadURL(params *import_service.GenerateUplo
 	}
 
 	if rf, ok := ret.Get(1).(func(*import_service.GenerateUploadURLParams, ...import_service.ClientOption) error); ok {
+		r1 = rf(params, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetBackup provides a mock function with given fields: params, opts
+func (_m *TiDBCloudClient) GetBackup(params *backup_restore_service.BackupRestoreServiceGetBackupParams, opts ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceGetBackupOK, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, params)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetBackup")
+	}
+
+	var r0 *backup_restore_service.BackupRestoreServiceGetBackupOK
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*backup_restore_service.BackupRestoreServiceGetBackupParams, ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceGetBackupOK, error)); ok {
+		return rf(params, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(*backup_restore_service.BackupRestoreServiceGetBackupParams, ...backup_restore_service.ClientOption) *backup_restore_service.BackupRestoreServiceGetBackupOK); ok {
+		r0 = rf(params, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*backup_restore_service.BackupRestoreServiceGetBackupOK)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(*backup_restore_service.BackupRestoreServiceGetBackupParams, ...backup_restore_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -461,6 +536,43 @@ func (_m *TiDBCloudClient) GetImport(params *import_service.GetImportParams, opt
 	}
 
 	if rf, ok := ret.Get(1).(func(*import_service.GetImportParams, ...import_service.ClientOption) error); ok {
+		r1 = rf(params, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ListBackups provides a mock function with given fields: params, opts
+func (_m *TiDBCloudClient) ListBackups(params *backup_restore_service.BackupRestoreServiceListBackupsParams, opts ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceListBackupsOK, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, params)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListBackups")
+	}
+
+	var r0 *backup_restore_service.BackupRestoreServiceListBackupsOK
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*backup_restore_service.BackupRestoreServiceListBackupsParams, ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceListBackupsOK, error)); ok {
+		return rf(params, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(*backup_restore_service.BackupRestoreServiceListBackupsParams, ...backup_restore_service.ClientOption) *backup_restore_service.BackupRestoreServiceListBackupsOK); ok {
+		r0 = rf(params, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*backup_restore_service.BackupRestoreServiceListBackupsOK)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(*backup_restore_service.BackupRestoreServiceListBackupsParams, ...backup_restore_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -707,6 +819,43 @@ func (_m *TiDBCloudClient) PreSignedUrlUpload(url *string, uploadFile *os.File, 
 	}
 
 	return r0
+}
+
+// Restore provides a mock function with given fields: params, opts
+func (_m *TiDBCloudClient) Restore(params *backup_restore_service.BackupRestoreServiceRestoreParams, opts ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceRestoreOK, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, params)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Restore")
+	}
+
+	var r0 *backup_restore_service.BackupRestoreServiceRestoreOK
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*backup_restore_service.BackupRestoreServiceRestoreParams, ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceRestoreOK, error)); ok {
+		return rf(params, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(*backup_restore_service.BackupRestoreServiceRestoreParams, ...backup_restore_service.ClientOption) *backup_restore_service.BackupRestoreServiceRestoreOK); ok {
+		r0 = rf(params, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*backup_restore_service.BackupRestoreServiceRestoreOK)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(*backup_restore_service.BackupRestoreServiceRestoreParams, ...backup_restore_service.ClientOption) error); ok {
+		r1 = rf(params, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // NewTiDBCloudClient creates a new instance of TiDBCloudClient. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
