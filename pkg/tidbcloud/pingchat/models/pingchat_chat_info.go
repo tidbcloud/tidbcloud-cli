@@ -7,6 +7,7 @@ package models
 
 import (
 	"context"
+	"encoding/json"
 	"strconv"
 
 	"github.com/go-openapi/errors"
@@ -20,6 +21,9 @@ import (
 // swagger:model pingchat.ChatInfo
 type PingchatChatInfo struct {
 
+	// domain
+	Domain []string `json:"domain"`
+
 	// https://pkg.go.dev/gopkg.in/bluesuncorp/validator.v9#hdr-Dive
 	// Required: true
 	Messages []*PingchatChatMessage `json:"messages"`
@@ -29,6 +33,10 @@ type PingchatChatInfo struct {
 func (m *PingchatChatInfo) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateDomain(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateMessages(formats); err != nil {
 		res = append(res, err)
 	}
@@ -36,6 +44,42 @@ func (m *PingchatChatInfo) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+var pingchatChatInfoDomainItemsEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["tidb","tidbcloud","asktug","blog","community","knowledge-base-cn","kb"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		pingchatChatInfoDomainItemsEnum = append(pingchatChatInfoDomainItemsEnum, v)
+	}
+}
+
+func (m *PingchatChatInfo) validateDomainItemsEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, pingchatChatInfoDomainItemsEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *PingchatChatInfo) validateDomain(formats strfmt.Registry) error {
+	if swag.IsZero(m.Domain) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.Domain); i++ {
+
+		// value enum
+		if err := m.validateDomainItemsEnum("domain"+"."+strconv.Itoa(i), "body", m.Domain[i]); err != nil {
+			return err
+		}
+
+	}
+
 	return nil
 }
 
