@@ -97,6 +97,11 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			if debugMode {
 				log.InitLogger("DEBUG")
+				// enable debug for go-openapi
+				err := os.Setenv("SWAGGER_DEBUG", "1")
+				if err != nil {
+					return err
+				}
 			} else {
 				log.InitLogger("WARN")
 			}
