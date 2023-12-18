@@ -29,9 +29,12 @@ import (
 	branchModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/models"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
+	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
+	brModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/models"
 
 	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/go-openapi/strfmt"
 	"github.com/juju/errors"
 )
 
@@ -61,6 +64,21 @@ type Region struct {
 	DisplayName string
 	Provider    string
 }
+
+type ServerlessBackup struct {
+	ID         string
+	Name       string
+	CreateTime strfmt.DateTime
+}
+
+func (c ServerlessBackup) String() string {
+	return fmt.Sprintf("%s(%s)", c.CreateTime, c.ID)
+}
+
+const (
+	RestoreModeSnapshot    = "snapshot"
+	RestoreModePointInTime = "point-in-time"
+)
 
 func (r Region) String() string {
 	return r.DisplayName
@@ -252,6 +270,68 @@ func GetSelectedBranch(clusterID string, pageSize int64, client TiDBCloudClient)
 	return branch, nil
 }
 
+func GetSelectedServerlessBackup(clusterID string, pageSize int32, client TiDBCloudClient) (*ServerlessBackup, error) {
+	_, backupItems, err := RetrieveServerlessBackups(clusterID, pageSize, client)
+	if err != nil {
+		return nil, err
+	}
+
+	var items = make([]interface{}, 0, len(backupItems))
+	for _, item := range backupItems {
+		items = append(items, &ServerlessBackup{
+			ID:         item.BackupID,
+			Name:       item.Name,
+			CreateTime: item.CreateTime,
+		})
+	}
+	if len(items) == 0 {
+		return nil, fmt.Errorf("no available backups found")
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the backup")
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	bModel, err := p.Run()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
+		return nil, util.InterruptError
+	}
+	backup := bModel.(ui.SelectModel).GetSelectedItem().(*ServerlessBackup)
+	return backup, nil
+}
+
+func GetSelectedRestoreMode() (string, error) {
+	items := []interface{}{
+		RestoreModeSnapshot,
+		RestoreModePointInTime,
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the restore mode")
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+
+	model.EnableFilter()
+	p := tea.NewProgram(model)
+	bModel, err := p.Run()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	restoreMode := bModel.(ui.SelectModel).GetSelectedItem().(string)
+	return restoreMode, nil
+}
+
 // GetSelectedImport get the selected import task. statusFilter is used to filter the available options, only imports has status in statusFilter will be available.
 // statusFilter with no filter will mark all the import tasks as available options just like statusFilter with all status.
 func GetSelectedImport(pID string, cID string, pageSize int64, client TiDBCloudClient, statusFilter []importModel.OpenapiGetImportRespStatus) (*Import, error) {
@@ -360,6 +440,31 @@ func RetrieveBranches(cID string, pageSize int64, d TiDBCloudClient) (int64, []*
 			return 0, nil, errors.Trace(err)
 		}
 		items = append(items, branches.Payload.Branches...)
+	}
+	return int64(len(items)), items, nil
+}
+
+func RetrieveServerlessBackups(cID string, pageSize int32, d TiDBCloudClient) (int64, []*brModel.V1beta1Backup, error) {
+	var items []*brModel.V1beta1Backup
+	var pageToken string
+
+	params := brApi.NewBackupRestoreServiceListBackupsParams().WithClusterID(cID)
+	backups, err := d.ListBackups(params.WithPageSize(&pageSize))
+	if err != nil {
+		return 0, nil, errors.Trace(err)
+	}
+	items = append(items, backups.Payload.Backups...)
+	// loop to get all backups
+	for {
+		pageToken = backups.Payload.NextPageToken
+		if pageToken == "" {
+			break
+		}
+		backups, err = d.ListBackups(params.WithPageSize(&pageSize).WithPageToken(&pageToken))
+		if err != nil {
+			return 0, nil, errors.Trace(err)
+		}
+		items = append(items, backups.Payload.Backups...)
 	}
 	return int64(len(items)), items, nil
 }

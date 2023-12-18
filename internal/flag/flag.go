@@ -72,9 +72,13 @@ const (
 	ServerlessLabels      string = "labels"
 	ServerlessAnnotations string = "annotations"
 	Monthly               string = "monthly"
+	BackupID              string = "backup-id"
+	BackupTime            string = "backup-time"
 )
 
 const (
 	BasicView string = "BASIC"
 	FullView  string = "FULL"
 )
+
+const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format"

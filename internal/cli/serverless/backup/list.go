@@ -1,4 +1,4 @@
-// Copyright 2022 PingCAP, Inc.
+// Copyright 2023 PingCAP, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package serverless
+package backup
 
 import (
 	"fmt"
@@ -22,8 +22,7 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/internal/telemetry"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
+	brModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/models"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -35,8 +34,29 @@ type ListOpts struct {
 
 func (c ListOpts) NonInteractiveFlags() []string {
 	return []string{
-		flag.ProjectID,
+		flag.ClusterID,
 	}
+}
+
+func (c *ListOpts) MarkInteractive(cmd *cobra.Command) error {
+	flags := c.NonInteractiveFlags()
+	for _, fn := range flags {
+		f := cmd.Flags().Lookup(fn)
+		if f != nil && f.Changed {
+			c.interactive = false
+			break
+		}
+	}
+	// Mark required flags
+	if !c.interactive {
+		for _, fn := range flags {
+			err := cmd.MarkFlagRequired(fn)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func ListCmd(h *internal.Helper) *cobra.Command {
@@ -45,26 +65,23 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var listCmd = &cobra.Command{
-		Use:         "list",
-		Short:       "List all serverless clusters",
-		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  List all serverless clusters in interactive mode):
-  $ %[1]s serverless list
+		Use:   "list",
+		Short: "List serverless cluster backups",
+		Example: fmt.Sprintf(`  List the backups in interactive mode:
+  $ %[1]s serverless backup list
 
-  List all serverless clusters in non-interactive mode:
-  $ %[1]s serverless list -p <project-id>
+  List the backups in non-interactive mode:
+  $ %[1]s serverless backup list -c <cluster-id> 
 
-  List all serverless clusters in non-interactive mode:
-  $ %[1]s serverless list -p <project-id> -o json`, config.CliName),
+  List the backups with json format in non-interactive mode:
+  $ %[1]s serverless backup list -c <cluster-id> -o json`, config.CliName),
 		Aliases: []string{"ls"},
-		PreRun: func(cmd *cobra.Command, args []string) {
-			flags := opts.NonInteractiveFlags()
-			for _, fn := range flags {
-				f := cmd.Flags().Lookup(fn)
-				if f != nil && f.Changed {
-					opts.interactive = false
-				}
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			err := opts.MarkInteractive(cmd)
+			if err != nil {
+				return errors.Trace(err)
 			}
+			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			d, err := h.Client()
@@ -72,29 +89,29 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			var pID string
+			var clusterID string
 			if opts.interactive {
-				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
 
-				// interactive mode
 				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				pID = project.ID
+				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
+				if err != nil {
+					return err
+				}
+				clusterID = cluster.ID
 			} else {
-				pID, err = cmd.Flags().GetString(flag.ProjectID)
+				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
 				}
 			}
 
-			cmd.Annotations[telemetry.ProjectID] = pID
-
-			total, items, err := cloud.RetrieveClusters(pID, h.QueryPageSize, d)
+			total, items, err := cloud.RetrieveServerlessBackups(clusterID, int32(h.QueryPageSize), d)
 			if err != nil {
 				return err
 			}
@@ -107,8 +124,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			// for terminal which can prompt, humanFormat is the default format.
 			// for other terminals, json format is the default format.
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				res := &serverlessModel.TidbCloudOpenApiserverlessv1beta1ListClustersResponse{
-					Clusters:  items,
+				res := &brModel.V1beta1ListBackupsResponse{
+					Backups:   items,
 					TotalSize: total,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)
@@ -118,24 +135,16 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			} else if format == output.HumanFormat {
 				columns := []output.Column{
 					"ID",
-					"DisplayName",
-					"State",
-					"Version",
-					"Cloud",
-					"Region",
-					"Type",
+					"ClusterID",
+					"CreateTime",
 				}
 
 				var rows []output.Row
 				for _, item := range items {
 					rows = append(rows, output.Row{
-						item.ClusterID,
-						*item.DisplayName,
-						string(*item.State),
-						item.Version,
-						string(*item.Region.Provider),
-						item.Region.DisplayName,
-						serverlessType,
+						item.BackupID,
+						*item.ClusterID,
+						item.CreateTime.String(),
 					})
 				}
 
@@ -147,12 +156,11 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			} else {
 				return fmt.Errorf("unsupported output format: %s", format)
 			}
-
 			return nil
 		},
 	}
 
+	listCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the backup to be listed.")
 	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, flag.OutputHelp)
-	listCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project")
 	return listCmd
 }

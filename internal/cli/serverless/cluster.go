@@ -16,6 +16,7 @@ package serverless
 
 import (
 	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/cli/serverless/backup"
 	"tidbcloud-cli/internal/cli/serverless/branch"
 
 	"github.com/spf13/cobra"
@@ -24,18 +25,20 @@ import (
 func Cmd(h *internal.Helper) *cobra.Command {
 	var serverlessCmd = &cobra.Command{
 		Use:   "serverless",
-		Short: "Manage your TiDB Serverless clusters",
+		Short: "Manage TiDB Serverless clusters",
 	}
 
 	serverlessCmd.AddCommand(CreateCmd(h))
-	serverlessCmd.AddCommand(DeleteCmd(h))
 	serverlessCmd.AddCommand(ListCmd(h))
 	serverlessCmd.AddCommand(DescribeCmd(h))
-	serverlessCmd.AddCommand(ConnectInfoCmd(h))
-	serverlessCmd.AddCommand(UpdateCmd(h))
-	serverlessCmd.AddCommand(RegionsCmd(h))
-	serverlessCmd.AddCommand(SpendingLimitCmd(h))
-	serverlessCmd.AddCommand(ConnectCmd(h))
+	serverlessCmd.AddCommand(DeleteCmd(h))
 	serverlessCmd.AddCommand(branch.Cmd(h))
+	serverlessCmd.AddCommand(backup.Cmd(h))
+	serverlessCmd.AddCommand(RegionsCmd(h))
+	serverlessCmd.AddCommand(ConnectCmd(h))
+	serverlessCmd.AddCommand(RestoreCmd(h))
+	serverlessCmd.AddCommand(UpdateCmd(h))
+	serverlessCmd.AddCommand(ConnectInfoCmd(h))
+	serverlessCmd.AddCommand(SpendingLimitCmd(h))
 	return serverlessCmd
 }

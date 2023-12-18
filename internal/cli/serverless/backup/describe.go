@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package branch
+package backup
 
 import (
-	"encoding/json"
 	"fmt"
+	"tidbcloud-cli/internal/output"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
-	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
+	brAPI "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
+
+	"github.com/spf13/cobra"
 
 	"github.com/juju/errors"
-	"github.com/spf13/cobra"
 )
 
 type DescribeOpts struct {
@@ -34,8 +35,7 @@ type DescribeOpts struct {
 
 func (c DescribeOpts) NonInteractiveFlags() []string {
 	return []string{
-		flag.ClusterID,
-		flag.BranchID,
+		flag.BackupID,
 	}
 }
 
@@ -67,14 +67,14 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 
 	var describeCmd = &cobra.Command{
 		Use:     "describe",
-		Short:   "Describe a branch",
+		Short:   "Describe a serverless cluster backup",
 		Aliases: []string{"get"},
 		Args:    cobra.NoArgs,
-		Example: fmt.Sprintf(`  Get a branch in interactive mode:
-  $ %[1]s serverless branch describe
+		Example: fmt.Sprintf(`  Get the backup in interactive mode:
+  $ %[1]s serverless backup describe
 
-  Get a branch in non-interactive mode:
-  $ %[1]s serverless branch describe -c <cluster-id> -b <branch-id>`, config.CliName),
+  Get the backup in non-interactive mode:
+  $ %[1]s serverless backup describe --backup-id <backup-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			err := opts.MarkInteractive(cmd)
 			if err != nil {
@@ -88,7 +88,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			var branchID string
+			var backupID string
 			var clusterID string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
@@ -106,48 +106,36 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				branch, err := cloud.GetSelectedBranch(clusterID, h.QueryPageSize, d)
+				backup, err := cloud.GetSelectedServerlessBackup(clusterID, int32(h.QueryPageSize), d)
 				if err != nil {
 					return err
 				}
-				branchID = branch.ID
+				backupID = backup.ID
 			} else {
 				// non-interactive mode, get values from flags
-				bID, err := cmd.Flags().GetString(flag.BranchID)
+				backupID, err = cmd.Flags().GetString(flag.BackupID)
 				if err != nil {
 					return errors.Trace(err)
 				}
-
-				cID, err := cmd.Flags().GetString(flag.ClusterID)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				branchID = bID
-				clusterID = cID
 			}
 
-			params := branchApi.NewBranchServiceGetBranchParams().
-				WithClusterID(clusterID).WithBranchID(branchID)
+			params := brAPI.NewBackupRestoreServiceGetBackupParams().WithBackupID(backupID)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			branch, err := d.GetBranch(params)
+			backup, err := d.GetBackup(params)
+			if err != nil {
+				return errors.Trace(err)
+			}
+			err = output.PrintJson(h.IOStreams.Out, backup.Payload)
 			if err != nil {
 				return errors.Trace(err)
 			}
 
-			v, err := json.MarshalIndent(branch.Payload, "", "  ")
-			if err != nil {
-				return errors.Trace(err)
-			}
-
-			fmt.Fprintln(h.IOStreams.Out, string(v))
 			return nil
 		},
 	}
 
-	describeCmd.Flags().StringP(flag.BranchID, flag.BranchIDShort, "", "The ID of the branch to be described")
-	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the branch to be described")
-	describeCmd.MarkFlagsRequiredTogether(flag.BranchID, flag.ClusterID)
+	describeCmd.Flags().String(flag.BackupID, "", "The ID of the backup to be described")
 	return describeCmd
 }
