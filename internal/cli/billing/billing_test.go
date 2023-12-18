@@ -18,15 +18,16 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-
-	"github.com/stretchr/testify/require"
-	"github.com/stretchr/testify/suite"
 	"testing"
+
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
 	biApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/billing/client/billing"
+
+	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/suite"
 )
 
 type BillingSuite struct {
