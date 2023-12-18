@@ -3,8 +3,10 @@
 package mock
 
 import (
-	branch_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
+	billing "tidbcloud-cli/pkg/tidbcloud/v1beta1/billing/client/billing"
 	backup_restore_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
+
+	branch_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 
 	connect_info_service "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
 
@@ -388,6 +390,43 @@ func (_m *TiDBCloudClient) GetBackup(params *backup_restore_service.BackupRestor
 	}
 
 	if rf, ok := ret.Get(1).(func(*backup_restore_service.BackupRestoreServiceGetBackupParams, ...backup_restore_service.ClientOption) error); ok {
+		r1 = rf(params, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetBillsBilledMonth provides a mock function with given fields: params, opts
+func (_m *TiDBCloudClient) GetBillsBilledMonth(params *billing.GetBillsBilledMonthParams, opts ...billing.ClientOption) (*billing.GetBillsBilledMonthOK, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, params)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetBillsBilledMonth")
+	}
+
+	var r0 *billing.GetBillsBilledMonthOK
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*billing.GetBillsBilledMonthParams, ...billing.ClientOption) (*billing.GetBillsBilledMonthOK, error)); ok {
+		return rf(params, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(*billing.GetBillsBilledMonthParams, ...billing.ClientOption) *billing.GetBillsBilledMonthOK); ok {
+		r0 = rf(params, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*billing.GetBillsBilledMonthOK)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(*billing.GetBillsBilledMonthParams, ...billing.ClientOption) error); ok {
 		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)
