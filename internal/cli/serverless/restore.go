@@ -79,10 +79,10 @@ func RestoreCmd(h *internal.Helper) *cobra.Command {
  $ %[1]s serverless restore
 
  Restore a serverless cluster with snaphot mode in non-interactive mode:
- $ %[1]s serverless restore --backup-id <back-id>
+ $ %[1]s serverless restore --backup-id <backup-id>
 
  Restore a serverless cluster with pointInTime mode in non-interactive mode:
- $ %[1]s serverless restore -p <project-id> -o json`, config.CliName),
+ $ %[1]s serverless restore -c <cluster-id> --backup-time <backup-time>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			err := opts.MarkInteractive(cmd)
 			if err != nil {
