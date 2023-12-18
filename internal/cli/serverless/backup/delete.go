@@ -12,16 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package branch
+package backup
 
 import (
 	"fmt"
+
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
-	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
+	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -38,8 +39,7 @@ type DeleteOpts struct {
 
 func (c DeleteOpts) NonInteractiveFlags() []string {
 	return []string{
-		flag.ClusterID,
-		flag.BranchID,
+		flag.BackupID,
 	}
 }
 
@@ -72,13 +72,13 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 	var force bool
 	var deleteCmd = &cobra.Command{
 		Use:   "delete",
-		Short: "Delete a branch",
+		Short: "Delete a serverless cluster backup",
 		Args:  cobra.NoArgs,
-		Example: fmt.Sprintf(`  Delete a branch in interactive mode:
-  $ %[1]s serverless branch delete
+		Example: fmt.Sprintf(`  Delete a backup in interactive mode:
+  $ %[1]s serverless backup delete
 
-  Delete a branch in non-interactive mode:
-  $ %[1]s serverless branch delete -c <cluster-id> -b <branch-id>`, config.CliName),
+  Delete a backup in non-interactive mode:
+  $ %[1]s serverless backup delete --backup-id <backup-id>`, config.CliName),
 		Aliases: []string{"rm"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			err := opts.MarkInteractive(cmd)
@@ -93,8 +93,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			var clusterID string
-			var branchID string
+			var backupID string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -109,31 +108,22 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				clusterID = cluster.ID
-
-				branch, err := cloud.GetSelectedBranch(clusterID, h.QueryPageSize, d)
+				backup, err := cloud.GetSelectedServerlessBackup(cluster.ID, int32(h.QueryPageSize), d)
 				if err != nil {
 					return err
 				}
-				branchID = branch.ID
+				backupID = backup.ID
 			} else {
 				// non-interactive mode, get values from flags
-				bID, err := cmd.Flags().GetString(flag.BranchID)
+				backupID, err = cmd.Flags().GetString(flag.BackupID)
 				if err != nil {
 					return errors.Trace(err)
 				}
-
-				cID, err := cmd.Flags().GetString(flag.ClusterID)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				branchID = bID
-				clusterID = cID
 			}
 
 			if !force {
 				if !h.IOStreams.CanPrompt {
-					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to delete the branch")
+					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to delete the backup")
 				}
 
 				confirmationMessage := fmt.Sprintf("%s %s %s", color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to confirm:"))
@@ -157,21 +147,19 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := branchApi.NewBranchServiceDeleteBranchParams().
-				WithClusterID(clusterID).WithBranchID(branchID)
-			_, err = d.DeleteBranch(params)
+			params := brApi.NewBackupRestoreServiceDeleteBackupParams().WithBackupID(backupID)
+			_, err = d.DeleteBackup(params)
 			if err != nil {
 				return errors.Trace(err)
 			}
 			// print success for delete branch is a sync operation
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("branch %s deleted", branchID))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("backup %s deleted", backupID))
 			return nil
 		},
 	}
 
-	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a branch without confirmation")
-	deleteCmd.Flags().StringP(flag.BranchID, flag.BranchIDShort, "", "The ID of the branch to be deleted")
-	deleteCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the branch to be deleted")
+	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a backup without confirmation")
+	deleteCmd.Flags().String(flag.BackupID, "", "The ID of the backup to be deleted")
 
 	return deleteCmd
 }

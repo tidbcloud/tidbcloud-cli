@@ -32,6 +32,8 @@ import (
 	branchOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 	serverlessClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client"
 	serverlessOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	brClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client"
+	brOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 
 	apiClient "github.com/c4pt0r/go-tidbcloud-sdk-v1/client"
 	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
@@ -84,29 +86,39 @@ type TiDBCloudClient interface {
 	DeleteBranch(params *branchOp.BranchServiceDeleteBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceDeleteBranchOK, error)
 
 	Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.ClientOption) (*pingchatOp.ChatOK, error)
+
+	DeleteBackup(params *brOp.BackupRestoreServiceDeleteBackupParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceDeleteBackupOK, error)
+
+	GetBackup(params *brOp.BackupRestoreServiceGetBackupParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceGetBackupOK, error)
+
+	ListBackups(params *brOp.BackupRestoreServiceListBackupsParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceListBackupsOK, error)
+
+	Restore(params *brOp.BackupRestoreServiceRestoreParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceRestoreOK, error)
 }
 
 type ClientDelegate struct {
-	c  *apiClient.GoTidbcloud
-	ic *importClient.TidbcloudImport
-	cc *connectInfoClient.TidbcloudConnectInfo
-	bc *branchClient.TidbcloudServerless
-	pc *pingchatClient.TidbcloudPingchat
-	sc *serverlessClient.TidbcloudServerless
+	c   *apiClient.GoTidbcloud
+	ic  *importClient.TidbcloudImport
+	cc  *connectInfoClient.TidbcloudConnectInfo
+	bc  *branchClient.TidbcloudServerless
+	pc  *pingchatClient.TidbcloudPingchat
+	sc  *serverlessClient.TidbcloudServerless
+	brc *brClient.TidbcloudServerless
 }
 
 func NewClientDelegate(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string) (*ClientDelegate, error) {
-	c, ic, cc, bc, sc, pc, err := NewApiClient(publicKey, privateKey, apiUrl, serverlessEndpoint)
+	c, ic, cc, bc, sc, pc, brc, err := NewApiClient(publicKey, privateKey, apiUrl, serverlessEndpoint)
 	if err != nil {
 		return nil, err
 	}
 	return &ClientDelegate{
-		c:  c,
-		ic: ic,
-		cc: cc,
-		bc: bc,
-		sc: sc,
-		pc: pc,
+		c:   c,
+		ic:  ic,
+		cc:  cc,
+		bc:  bc,
+		sc:  sc,
+		pc:  pc,
+		brc: brc,
 	}, nil
 }
 
@@ -206,8 +218,25 @@ func (d *ClientDelegate) Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.
 	return d.pc.Operations.Chat(params, opts...)
 }
 
+func (d *ClientDelegate) DeleteBackup(params *brOp.BackupRestoreServiceDeleteBackupParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceDeleteBackupOK, error) {
+	return d.brc.BackupRestoreService.BackupRestoreServiceDeleteBackup(params, opts...)
+}
+
+func (d *ClientDelegate) GetBackup(params *brOp.BackupRestoreServiceGetBackupParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceGetBackupOK, error) {
+	return d.brc.BackupRestoreService.BackupRestoreServiceGetBackup(params, opts...)
+}
+
+func (d *ClientDelegate) ListBackups(params *brOp.BackupRestoreServiceListBackupsParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceListBackupsOK, error) {
+	return d.brc.BackupRestoreService.BackupRestoreServiceListBackups(params, opts...)
+}
+
+func (d *ClientDelegate) Restore(params *brOp.BackupRestoreServiceRestoreParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceRestoreOK, error) {
+	return d.brc.BackupRestoreService.BackupRestoreServiceRestore(params, opts...)
+}
+
 func NewApiClient(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport,
-	*connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, error) {
+	*connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless,
+	*pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, error) {
 	httpclient := &http.Client{
 		Transport: NewTransportWithAgent(&digest.Transport{
 			Username: publicKey,
@@ -218,20 +247,22 @@ func NewApiClient(publicKey string, privateKey string, apiUrl string, serverless
 	// v1beta api
 	u, err := prop.ValidateApiUrl(apiUrl)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, err
 	}
 	transport := httpTransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpclient)
 
 	// v1beta1 api
 	serverlessURL, err := prop.ValidateApiUrl(serverlessEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, err
 	}
 	serverlessTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	branchTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
+	backRestoreTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 
 	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default),
-		branchClient.New(branchTransport, strfmt.Default), serverlessClient.New(serverlessTransport, strfmt.Default), pingchatClient.New(transport, strfmt.Default), nil
+		branchClient.New(branchTransport, strfmt.Default), serverlessClient.New(serverlessTransport, strfmt.Default),
+		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default), nil
 }
 
 // NewTransportWithAgent returns a new http.RoundTripper that add the User-Agent header,

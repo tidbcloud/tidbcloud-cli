@@ -72,7 +72,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "connect-info",
-		Short: "Get connection string for a specified branch",
+		Short: "Get connection string for a branch",
 		Example: fmt.Sprintf(`  Get connection string in interactive mode:
   $ %[1]s branch connect-info
 

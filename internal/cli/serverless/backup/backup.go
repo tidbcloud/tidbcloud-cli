@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package branch
+package backup
 
 import (
 	"tidbcloud-cli/internal"
@@ -22,15 +22,12 @@ import (
 
 func Cmd(h *internal.Helper) *cobra.Command {
 	var branchCmd = &cobra.Command{
-		Use:   "branch",
-		Short: "Manage serverless cluster branches",
+		Use:   "backup",
+		Short: "Manage serverless cluster backups",
 	}
 
-	branchCmd.AddCommand(CreateCmd(h))
 	branchCmd.AddCommand(ListCmd(h))
 	branchCmd.AddCommand(DescribeCmd(h))
 	branchCmd.AddCommand(DeleteCmd(h))
-	branchCmd.AddCommand(ConnectCmd(h))
-	branchCmd.AddCommand(ConnectInfoCmd(h))
 	return branchCmd
 }

@@ -57,13 +57,13 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 		Example: fmt.Sprintf(`  Connect to a serverless cluster in interactive mode:
   $ %[1]s serverless shell
 
-  Use the default user to connect to a serverless cluster in non-interactive mode:
+  Connect to a serverless cluster with default user in non-interactive mode:
   $ %[1]s serverless shell -c <cluster-id>
 
-  Use the default user to connect to a serverless cluster with password in non-interactive mode:
+  Connect to a serverless cluster with default user and password in non-interactive mode:
   $ %[1]s serverless shell -c <cluster-id> --password <password>
 
-  Use a specific user to connect to a serverless cluster in non-interactive mode:
+  Connect to a serverless cluster with specific user and password in non-interactive mode:
   $ %[1]s connect -c <cluster-id> -u <user-name> --password <password>`, config.CliName),
 
 		PreRunE: func(cmd *cobra.Command, args []string) error {

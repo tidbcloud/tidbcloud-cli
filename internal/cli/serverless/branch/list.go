@@ -70,10 +70,10 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		Example: fmt.Sprintf(`  List all branches in interactive mode:
   $ %[1]s serverless branch list
 
-  List the branches in non-interactive mode:
+  List all branches in non-interactive mode:
   $ %[1]s serverless branch list -c <cluster-id> 
 
-  List the branches with json format in non-interactive mode:
+  List all branches with json format in non-interactive mode:
   $ %[1]s serverless branch list -c <cluster-id> -o json`, config.CliName),
 		Aliases: []string{"ls"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -165,6 +165,6 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	listCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the branch to be listed.")
-	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, "Output format, one of: human, json. For the complete result, please use json format.")
+	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, flag.OutputHelp)
 	return listCmd
 }

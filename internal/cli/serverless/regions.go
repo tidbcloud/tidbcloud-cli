@@ -30,10 +30,10 @@ import (
 func RegionsCmd(h *internal.Helper) *cobra.Command {
 	var regionsCmd = &cobra.Command{
 		Use:         "regions",
-		Short:       "List all available regions for serverless cluster",
+		Short:       "List all available regions for serverless clusters",
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  List all available regions for serverless cluster:
- $ %[1]s serverless regions`, config.CliName),
+		Example: fmt.Sprintf(`  List all available regions for serverless clusters:
+  $ %[1]s serverless regions`, config.CliName),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			d, err := h.Client()
 			if err != nil {

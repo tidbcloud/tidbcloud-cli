@@ -1,0 +1,289 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "TiDB Cloud Serverless Open API",
+    "description": "TiDB Cloud Serverless Open API",
+    "version": "v1beta1"
+  },
+  "tags": [
+    {
+      "name": "BackupRestoreService"
+    }
+  ],
+  "host": "serverless.tidbapi.com",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1beta1/backups": {
+      "get": {
+        "summary": "Provides a list of backups.",
+        "operationId": "BackupRestoreService_ListBackups",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1ListBackupsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "pageSize",
+            "description": "Optional. The maximum number of clusters to return.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "Optional. The page token from the previous response for pagination.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "clusterId",
+            "description": "Required. The cluster ID to list backups for.",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "BackupRestoreService"
+        ]
+      }
+    },
+    "/v1beta1/backups/{backupId}": {
+      "get": {
+        "summary": "Retrieves details of a specific backup.",
+        "operationId": "BackupRestoreService_GetBackup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1Backup"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "backupId",
+            "description": "Required. The ID of the backup to be retrieved.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "BackupRestoreService"
+        ]
+      },
+      "delete": {
+        "summary": "Deletes a specific backup.",
+        "operationId": "BackupRestoreService_DeleteBackup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1Backup"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "backupId",
+            "description": "Required. The ID of the backup to be retrieved.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "BackupRestoreService"
+        ]
+      }
+    },
+    "/v1beta1/clusters:restore": {
+      "post": {
+        "operationId": "BackupRestoreService_Restore",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1RestoreResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1beta1RestoreRequest"
+            }
+          }
+        ],
+        "tags": [
+          "BackupRestoreService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "RestoreRequestPointInTime": {
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "type": "string"
+        },
+        "backupTime": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "RestoreRequestSnapshot": {
+      "type": "object",
+      "properties": {
+        "backupId": {
+          "type": "string"
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1beta1Backup": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Output_only. The unique name of the backup.",
+          "readOnly": true
+        },
+        "backupId": {
+          "type": "string",
+          "description": "Output_only. The unique ID of the backup.",
+          "readOnly": true
+        },
+        "clusterId": {
+          "type": "string",
+          "description": "Required. The cluster ID that backup belong to."
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Output_only. Timestamp when the backup was created.",
+          "readOnly": true
+        }
+      },
+      "description": "Message for backup resource.",
+      "required": [
+        "clusterId"
+      ]
+    },
+    "v1beta1ListBackupsResponse": {
+      "type": "object",
+      "properties": {
+        "backups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1beta1Backup"
+          },
+          "description": "A list of clusters."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Token provided to retrieve the next page of results."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Total number of backups."
+        }
+      }
+    },
+    "v1beta1RestoreRequest": {
+      "type": "object",
+      "properties": {
+        "snapshot": {
+          "$ref": "#/definitions/RestoreRequestSnapshot"
+        },
+        "pointInTime": {
+          "$ref": "#/definitions/RestoreRequestPointInTime"
+        }
+      }
+    },
+    "v1beta1RestoreResponse": {
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "clusterId"
+      ]
+    }
+  }
+}

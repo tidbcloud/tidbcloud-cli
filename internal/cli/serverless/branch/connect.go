@@ -76,16 +76,16 @@ func ConnectCmd(h *internal.Helper) *cobra.Command {
 		Short: "Connect to a branch",
 		Long: `Connect to a branch. 
 the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_ansi) for the session.`,
-		Example: fmt.Sprintf(`  Connect to the TiDB Cloud in interactive mode:
+		Example: fmt.Sprintf(`  Connect to a branch in interactive mode:
   $ %[1]s serverless branch shell
 
-  Use the default user to connect to a branch in non-interactive mode:
+  Connect to a branch with default user in non-interactive mode:
   $ %[1]s serverless branch shell -c <cluster-id> -b <branch-id>
 
-  Use the default user to connect to a branch with password in non-interactive mode:
+  Connect to a branch with default user and password in non-interactive mode:
   $ %[1]s serverless branch shell -c <cluster-id> -b <branch-id> --password <password>
 
-  Use a specific user to connect to a branch in non-interactive mode:
+  Connect to a branch with specific user and password in non-interactive mode:
   $ %[1]s serverless branch shell -c <cluster-id> -b <branch-id> -u <user-name> --password <password>`, config.CliName),
 
 		PreRunE: func(cmd *cobra.Command, args []string) error {
