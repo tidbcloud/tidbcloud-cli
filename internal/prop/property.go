@@ -26,6 +26,7 @@ const (
 	CurProfile         string = "current-profile"
 	ApiUrl             string = "api-url"
 	ServerlessEndpoint string = "serverless-endpoint"
+	BillingEndpoint    string = "billing-endpoint"
 	TelemetryEnabled   string = "telemetry-enabled"
 )
 
@@ -34,7 +35,7 @@ func GlobalProperties() []string {
 }
 
 func ProfileProperties() []string {
-	return []string{PublicKey, PrivateKey, ApiUrl, ServerlessEndpoint, TelemetryEnabled}
+	return []string{PublicKey, PrivateKey, ApiUrl, ServerlessEndpoint, TelemetryEnabled, BillingEndpoint}
 }
 
 func Properties() []string {

@@ -54,7 +54,7 @@ If not, the config in the active profile will be set`, prop.ProfileProperties())
 					return fmt.Errorf("no profile is configured, please use `config create` to create a profile")
 				}
 
-				if propertyName == prop.ApiUrl || propertyName == prop.ServerlessEndpoint {
+				if propertyName == prop.ApiUrl || propertyName == prop.ServerlessEndpoint || propertyName == prop.BillingEndpoint {
 					_, err := prop.ValidateApiUrl(value)
 					if err != nil {
 						return err

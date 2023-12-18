@@ -22,6 +22,7 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/cli/ai"
+	"tidbcloud-cli/internal/cli/billing"
 	configCmd "tidbcloud-cli/internal/cli/config"
 	"tidbcloud-cli/internal/cli/dataimport"
 	"tidbcloud-cli/internal/cli/dataimport/start"
@@ -61,7 +62,11 @@ func Execute(ctx context.Context) {
 			if serverlessEndpoint == "" {
 				serverlessEndpoint = cloud.DefaultServerlessEndpoint
 			}
-			delegate, err := cloud.NewClientDelegate(publicKey, privateKey, apiUrl, serverlessEndpoint)
+			billingEndpoint := config.GetBillingEndpoint()
+			if serverlessEndpoint == "" {
+				serverlessEndpoint = cloud.DefaultBillingEndpoint
+			}
+			delegate, err := cloud.NewClientDelegate(publicKey, privateKey, apiUrl, serverlessEndpoint, billingEndpoint)
 			if err != nil {
 				return nil, err
 			}
@@ -175,6 +180,7 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 	rootCmd.AddCommand(project.ProjectCmd(h))
 	rootCmd.AddCommand(version.VersionCmd(h))
 	rootCmd.AddCommand(upgrade.Cmd(h))
+	rootCmd.AddCommand(billing.Cmd(h))
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, flag.Debug, flag.DebugShort, false, "Enable debug mode")
 	rootCmd.PersistentFlags().Bool(flag.NoColor, false, "Disable color output")

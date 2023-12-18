@@ -125,3 +125,9 @@ func (p *Profile) GetServerlessEndpoint() (newApiUrl string) {
 	newApiUrl = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.ServerlessEndpoint))
 	return
 }
+
+func GetBillingEndpoint() (apiUrl string) { return activeProfile.GetBillingEndpoint() }
+func (p *Profile) GetBillingEndpoint() (newApiUrl string) {
+	newApiUrl = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.BillingEndpoint))
+	return
+}

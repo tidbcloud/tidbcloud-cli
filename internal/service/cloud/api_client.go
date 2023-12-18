@@ -28,6 +28,8 @@ import (
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 	pingchatClient "tidbcloud-cli/pkg/tidbcloud/pingchat/client"
 	pingchatOp "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
+	biClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/billing/client"
+	biOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/billing/client/billing"
 	branchClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client"
 	branchOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 	serverlessClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client"
@@ -45,6 +47,7 @@ import (
 const (
 	DefaultApiUrl             = "https://" + apiClient.DefaultHost
 	DefaultServerlessEndpoint = "https://" + serverlessClient.DefaultHost
+	DefaultBillingEndpoint    = "https://" + biClient.DefaultHost
 	userAgent                 = "User-Agent"
 )
 
@@ -94,6 +97,8 @@ type TiDBCloudClient interface {
 	ListBackups(params *brOp.BackupRestoreServiceListBackupsParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceListBackupsOK, error)
 
 	Restore(params *brOp.BackupRestoreServiceRestoreParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceRestoreOK, error)
+
+	GetBillsBilledMonth(params *biOp.GetBillsBilledMonthParams, opts ...biOp.ClientOption) (*biOp.GetBillsBilledMonthOK, error)
 }
 
 type ClientDelegate struct {
@@ -104,10 +109,11 @@ type ClientDelegate struct {
 	pc  *pingchatClient.TidbcloudPingchat
 	sc  *serverlessClient.TidbcloudServerless
 	brc *brClient.TidbcloudServerless
+	bic *biClient.Tidbcloud
 }
 
-func NewClientDelegate(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string) (*ClientDelegate, error) {
-	c, ic, cc, bc, sc, pc, brc, err := NewApiClient(publicKey, privateKey, apiUrl, serverlessEndpoint)
+func NewClientDelegate(publicKey string, privateKey string, apiUrl string, serverlessEndpoint, billingEndpoint string) (*ClientDelegate, error) {
+	c, ic, cc, bc, sc, pc, brc, bic, err := NewApiClient(publicKey, privateKey, apiUrl, serverlessEndpoint, billingEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -119,6 +125,7 @@ func NewClientDelegate(publicKey string, privateKey string, apiUrl string, serve
 		sc:  sc,
 		pc:  pc,
 		brc: brc,
+		bic: bic,
 	}, nil
 }
 
@@ -234,9 +241,13 @@ func (d *ClientDelegate) Restore(params *brOp.BackupRestoreServiceRestoreParams,
 	return d.brc.BackupRestoreService.BackupRestoreServiceRestore(params, opts...)
 }
 
-func NewApiClient(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport,
+func (d *ClientDelegate) GetBillsBilledMonth(params *biOp.GetBillsBilledMonthParams, opts ...biOp.ClientOption) (*biOp.GetBillsBilledMonthOK, error) {
+	return d.bic.Billing.GetBillsBilledMonth(params, opts...)
+}
+
+func NewApiClient(publicKey string, privateKey string, apiUrl string, serverlessEndpoint, billingEndpoint string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport,
 	*connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless,
-	*pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, error) {
+	*pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *biClient.Tidbcloud, error) {
 	httpclient := &http.Client{
 		Transport: NewTransportWithAgent(&digest.Transport{
 			Username: publicKey,
@@ -247,22 +258,28 @@ func NewApiClient(publicKey string, privateKey string, apiUrl string, serverless
 	// v1beta api
 	u, err := prop.ValidateApiUrl(apiUrl)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 	transport := httpTransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpclient)
 
 	// v1beta1 api
 	serverlessURL, err := prop.ValidateApiUrl(serverlessEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 	serverlessTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	branchTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	backRestoreTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 
+	billingURL, err := prop.ValidateApiUrl(billingEndpoint)
+	if err != nil {
+		return nil, nil, nil, nil, nil, nil, nil, nil, err
+	}
+	billingTransport := httpTransport.NewWithClient(billingURL.Host, biClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
+
 	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default),
 		branchClient.New(branchTransport, strfmt.Default), serverlessClient.New(serverlessTransport, strfmt.Default),
-		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default), nil
+		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default), biClient.New(billingTransport, strfmt.Default), nil
 }
 
 // NewTransportWithAgent returns a new http.RoundTripper that add the User-Agent header,

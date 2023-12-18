@@ -74,6 +74,7 @@ const (
 	Monthly               string = "monthly"
 	BackupID              string = "backup-id"
 	BackupTime            string = "backup-time"
+	Month                 string = "month"
 )
 
 const (

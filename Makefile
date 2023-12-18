@@ -58,6 +58,8 @@ addcopy: ## Add copyright to all files
 	swagger generate client -f pkg/tidbcloud/v1beta1/serverless/serverless.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless
 	@echo "==> Generating serverless br client"
 	swagger generate client -f pkg/tidbcloud/v1beta1/serverless_br/serverless-br.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless_br
+	@echo "==> Generating billing client"
+	swagger generate client -f pkg/tidbcloud/v1beta1/billing/billing.swagger.json -A tidbcloud -t pkg/tidbcloud/v1beta1/billing
 
 
 .PHONY: fmt
