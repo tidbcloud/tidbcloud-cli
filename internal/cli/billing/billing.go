@@ -103,9 +103,9 @@ func Cmd(h *internal.Helper) *cobra.Command {
 			}
 
 			// check month format
-			err = CheckMonthFormat(month)
-			if err != nil {
-				return errors.Trace(err)
+			isMatched, _ := regexp.MatchString(`^\d{4}-\d{2}$`, month)
+			if !isMatched {
+				return fmt.Errorf("invalid month format: %s, should be YYYY-MM", month)
 			}
 			param := biApi.NewGetBillsBilledMonthParams().WithBilledMonth(month)
 			resp, err := d.GetBillsBilledMonth(param)
@@ -147,13 +147,4 @@ func GetBillingInput() (tea.Model, error) {
 		return nil, util.InterruptError
 	}
 	return inputModel, nil
-}
-
-func CheckMonthFormat(month string) error {
-	// month should be YYYY-MM
-	isMatched, _ := regexp.MatchString(`^\d{4}-\d{2}$`, month)
-	if !isMatched {
-		return errors.Errorf("invalid month format: %s", month)
-	}
-	return nil
 }
