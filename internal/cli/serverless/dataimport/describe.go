@@ -53,10 +53,10 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		Aliases:     []string{"get"},
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Describe an import task in interactive mode:
-  $ %[1]s import describe
+  $ %[1]s serverless import describe
 
   Describe an import task in non-interactive mode:
-  $ %[1]s import describe --project-id <project-id> --cluster-id <cluster-id> --import-id <import-id>`,
+  $ %[1]s serverless import describe --project-id <project-id> --cluster-id <cluster-id> --import-id <import-id>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()

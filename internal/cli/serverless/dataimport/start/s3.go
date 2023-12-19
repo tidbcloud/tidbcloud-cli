@@ -73,13 +73,13 @@ func S3Cmd(h *internal.Helper) *cobra.Command {
 		Short:       "Import files from Amazon S3 into TiDB Cloud",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Start an import task in interactive mode:
-  $ %[1]s import start s3
+  $ %[1]s serverless import start s3
 
   Start an import task in non-interactive mode:
-  $ %[1]s import start s3 --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format <data-format> --source-url <source-url>
+  $ %[1]s serverless import start s3 --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format <data-format> --source-url <source-url>
 
   Start an import task with custom CSV format:
-  $ %[1]s import start s3 --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format CSV --source-url <source-url> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
+  $ %[1]s serverless import start s3 --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format CSV --source-url <source-url> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
 `,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {

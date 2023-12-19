@@ -56,10 +56,10 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 		Short:       "Cancel a data import task",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Cancel an import task in interactive mode:
-  $ %[1]s import cancel
+  $ %[1]s serverless import cancel
 
   Cancel an import task in non-interactive mode:
-  $ %[1]s import cancel --project-id <project-id> --cluster-id <cluster-id> --import-id <import-id>`,
+  $ %[1]s serverless import cancel --project-id <project-id> --cluster-id <cluster-id> --import-id <import-id>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()

@@ -90,16 +90,16 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 		Annotations: make(map[string]string),
 		Args:        cobra.NoArgs,
 		Example: fmt.Sprintf(`  Start an import task in interactive mode:
-  $ %[1]s import start mysql
+  $ %[1]s serverless import start mysql
 
   Start an import task in non-interactive mode (using the TiDB Serverless cluster default user '<username-prefix>.root'):
-  $ %[1]s import start mysql --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --target-database <target-database> --target-password <target-password>
+  $ %[1]s serverless import start mysql --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --target-database <target-database> --target-password <target-password>
 
   Start an import task in non-interactive mode (using a specific user):
-  $ %[1]s import start mysql --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --target-database <target-database> --target-password <target-password> --target-user <target-user>
+  $ %[1]s serverless import start mysql --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --target-database <target-database> --target-password <target-password> --target-user <target-user>
 
   Start an import task that skips creating the target table if it already exists in the target database:
-  $ %[1]s import start mysql --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --target-database <target-database> --target-password <target-password> --skip-create-table
+  $ %[1]s serverless import start mysql --cluster-id <cluster-id> --source-host <source-host> --source-port <source-port> --source-user <source-user> --source-password <source-password> --source-database <source-database> --source-table <source-table> --target-database <target-database> --target-password <target-password> --skip-create-table
 `,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {

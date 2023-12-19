@@ -76,13 +76,13 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 		Args:        util.RequiredArgs("file-path"),
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Start an import task in interactive mode:
-  $ %[1]s import start local <file-path>
+  $ %[1]s serverless import start local <file-path>
 
   Start an import task in non-interactive mode:
-  $ %[1]s import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>
+  $ %[1]s serverless import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>
 	
   Start an import task with custom CSV format:
-  $ %[1]s import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
+  $ %[1]s serverless import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
 `,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
