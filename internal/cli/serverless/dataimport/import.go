@@ -16,7 +16,7 @@ package dataimport
 
 import (
 	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/cli/dataimport/start"
+	"tidbcloud-cli/internal/cli/serverless/dataimport/start"
 
 	"github.com/spf13/cobra"
 )
@@ -24,7 +24,7 @@ import (
 func ImportCmd(h *internal.Helper) *cobra.Command {
 	var importCmd = &cobra.Command{
 		Use:   "import",
-		Short: "Import data into TiDB Cloud cluster",
+		Short: "Import data into serverless cluster",
 	}
 
 	importCmd.AddCommand(ListCmd(h))

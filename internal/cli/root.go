@@ -19,12 +19,11 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"tidbcloud-cli/internal/cli/serverless/dataimport/start"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/cli/ai"
 	configCmd "tidbcloud-cli/internal/cli/config"
-	"tidbcloud-cli/internal/cli/dataimport"
-	"tidbcloud-cli/internal/cli/dataimport/start"
 	"tidbcloud-cli/internal/cli/project"
 	"tidbcloud-cli/internal/cli/serverless"
 	"tidbcloud-cli/internal/cli/upgrade"
@@ -171,7 +170,6 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 	rootCmd.AddCommand(configCmd.ConfigCmd(h))
 	rootCmd.AddCommand(serverless.Cmd(h))
 	rootCmd.AddCommand(ai.AICmd(h))
-	rootCmd.AddCommand(dataimport.ImportCmd(h))
 	rootCmd.AddCommand(project.ProjectCmd(h))
 	rootCmd.AddCommand(version.VersionCmd(h))
 	rootCmd.AddCommand(upgrade.Cmd(h))
