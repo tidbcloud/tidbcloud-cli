@@ -15,11 +15,7 @@
 package start
 
 import (
-	"context"
 	"fmt"
-	"os"
-	"strconv"
-	"time"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -33,56 +29,57 @@ import (
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
 
-type localImportField int
+type s3ImportField int
 
 const (
-	databaseIdx localImportField = iota
-	tableIdx
+	awsRoleArnIdx s3ImportField = iota
+	sourceUrlIdx
 )
 
-type LocalOpts struct {
+type S3Opts struct {
 	interactive bool
 }
 
-func (c LocalOpts) NonInteractiveFlags() []string {
+func (c S3Opts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.ProjectID,
+		flag.AwsRoleArn,
 		flag.DataFormat,
-		flag.TargetDatabase,
-		flag.TargetTable,
+		flag.SourceUrl,
 	}
 }
 
-func (c LocalOpts) SupportedDataFormats() []string {
+func (c S3Opts) SupportedDataFormats() []string {
 	return []string{
 		string(importModel.OpenapiDataFormatCSV),
+		string(importModel.OpenapiDataFormatSQLFile),
+		string(importModel.OpenapiDataFormatParquet),
+		string(importModel.OpenapiDataFormatAuroraSnapshot),
 	}
 }
 
-func LocalCmd(h *internal.Helper) *cobra.Command {
-	opts := LocalOpts{
+func S3Cmd(h *internal.Helper) *cobra.Command {
+	opts := S3Opts{
 		interactive: true,
 	}
 
-	var localCmd = &cobra.Command{
-		Use:         "local <file-path>",
-		Short:       "Import a local file to TiDB Cloud",
-		Args:        util.RequiredArgs("file-path"),
+	var s3Cmd = &cobra.Command{
+		Use:         "s3",
+		Short:       "Import files from Amazon S3 into TiDB Cloud",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Start an import task in interactive mode:
-  $ %[1]s import start local <file-path>
+  $ %[1]s serverless import start s3
 
   Start an import task in non-interactive mode:
-  $ %[1]s import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>
-	
+  $ %[1]s serverless import start s3 --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format <data-format> --source-url <source-url>
+
   Start an import task with custom CSV format:
-  $ %[1]s import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
+  $ %[1]s serverless import start s3 --project-id <project-id> --cluster-id <cluster-id> --aws-role-arn <aws-role-arn> --data-format CSV --source-url <source-url> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
 `,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -108,8 +105,9 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			var projectID, clusterID, dataFormat, targetDatabase, targetTable, separator, delimiter string
+			var projectID, clusterID, awsRoleArn, dataFormat, sourceUrl, separator, delimiter string
 			var backslashEscape, trimLastSeparator bool
+
 			d, err := h.Client()
 			if err != nil {
 				return err
@@ -153,7 +151,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 				dataFormat = formatModel.(ui.SelectModel).Choices[formatModel.(ui.SelectModel).Selected].(string)
 
 				// variables for input
-				p = tea.NewProgram(initialLocalInputModel())
+				p = tea.NewProgram(initialS3InputModel())
 				inputModel, err := p.StartReturningModel()
 				if err != nil {
 					return errors.Trace(err)
@@ -162,29 +160,31 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 					return util.InterruptError
 				}
 
-				targetDatabase = inputModel.(ui.TextInputModel).Inputs[databaseIdx].Value()
-				if len(targetDatabase) == 0 {
-					return errors.New("Target database is required")
+				awsRoleArn = inputModel.(ui.TextInputModel).Inputs[awsRoleArnIdx].Value()
+				if len(awsRoleArn) == 0 {
+					return errors.New("AWS role ARN is required")
 				}
-				targetTable = inputModel.(ui.TextInputModel).Inputs[tableIdx].Value()
-				if len(targetTable) == 0 {
-					return errors.New("Target table is required")
+				sourceUrl = inputModel.(ui.TextInputModel).Inputs[sourceUrlIdx].Value()
+				if len(sourceUrl) == 0 {
+					return errors.New("Source url is required")
 				}
 
-				separator, delimiter, backslashEscape, trimLastSeparator, err = getCSVFormat()
-				if err != nil {
-					return err
+				if dataFormat == string(importModel.OpenapiDataFormatCSV) {
+					separator, delimiter, backslashEscape, trimLastSeparator, err = getCSVFormat()
+					if err != nil {
+						return err
+					}
 				}
 			} else {
 				// non-interactive mode
 				projectID = cmd.Flag(flag.ProjectID).Value.String()
 				clusterID = cmd.Flag(flag.ClusterID).Value.String()
+				awsRoleArn = cmd.Flag(flag.AwsRoleArn).Value.String()
 				dataFormat = cmd.Flag(flag.DataFormat).Value.String()
 				if !util.ElemInSlice(opts.SupportedDataFormats(), dataFormat) {
 					return fmt.Errorf("data format %s is not supported, please use one of %q", dataFormat, opts.SupportedDataFormats())
 				}
-				targetDatabase = cmd.Flag(flag.TargetDatabase).Value.String()
-				targetTable = cmd.Flag(flag.TargetTable).Value.String()
+				sourceUrl = cmd.Flag(flag.SourceUrl).Value.String()
 
 				// optional flags
 				backslashEscape, err = cmd.Flags().GetBool(flag.BackslashEscape)
@@ -207,45 +207,12 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 
 			cmd.Annotations[telemetry.ProjectID] = projectID
 
-			filePath := args[0]
-			uploadFile, err := os.Open(filePath)
-			if err != nil {
-				return err
-			}
-			defer uploadFile.Close()
-
-			stat, err := uploadFile.Stat()
-			if err != nil {
-				return err
-			}
-			size := strconv.FormatInt(stat.Size(), 10)
-			name := stat.Name()
-			urlRes, err := d.GenerateUploadURL(importOp.NewGenerateUploadURLParams().WithProjectID(projectID).WithClusterID(clusterID).WithBody(importOp.GenerateUploadURLBody{
-				ContentLength: &size,
-				FileName:      &name,
-			}))
-			if err != nil {
-				return err
-			}
-			url := urlRes.Payload.UploadURL
-
-			if h.IOStreams.CanPrompt {
-				err := spinnerWaitUploadOp(ctx, h, d, url, uploadFile, stat.Size())
-				if err != nil {
-					return err
-				}
-			} else {
-				err := waitUploadOp(h, d, url, uploadFile, stat.Size())
-				if err != nil {
-					return err
-				}
-			}
-
 			body := importOp.CreateImportBody{}
 			err = body.UnmarshalBinary([]byte(fmt.Sprintf(`{
-			"type": "LOCAL",
+			"aws_role_arn": "%s",
 			"data_format": "%s",
-			"file_name": "%s",
+			"source_url": "%s",
+			"type": "S3",
 			"csv_format": {
                 "separator": ",",
 				"delimiter": "\"",
@@ -254,11 +221,8 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 				"null": "\\N",
 				"trim_last_separator": false,
 				"not_null": false
-			},
-			"target_table": {
-				"schema": "%s",
-				"table": "%s"
-			}}`, dataFormat, *urlRes.Payload.NewFileName, targetDatabase, targetTable)))
+			}
+			}`, awsRoleArn, dataFormat, sourceUrl)))
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -286,19 +250,19 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	localCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
-	localCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	localCmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %q", opts.SupportedDataFormats()))
-	localCmd.Flags().String(flag.TargetDatabase, "", "Target database to which import data")
-	localCmd.Flags().String(flag.TargetTable, "", "Target table to which import data")
-	localCmd.Flags().String(flag.Delimiter, "\"", "The delimiter used for quoting of CSV file")
-	localCmd.Flags().String(flag.Separator, ",", "The field separator of CSV file")
-	localCmd.Flags().Bool(flag.TrimLastSeparator, false, "In CSV file whether to treat Separator as the line terminator and trim all trailing separators")
-	localCmd.Flags().Bool(flag.BackslashEscape, true, "In CSV file whether to parse backslash inside fields as escape characters")
-	return localCmd
+	s3Cmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
+	s3Cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
+	s3Cmd.Flags().String(flag.AwsRoleArn, "", "AWS S3 IAM Role ARN")
+	s3Cmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %q", opts.SupportedDataFormats()))
+	s3Cmd.Flags().String(flag.SourceUrl, "", "The S3 path where the source data file is stored")
+	s3Cmd.Flags().String(flag.Delimiter, "\"", "The delimiter used for quoting of CSV file")
+	s3Cmd.Flags().String(flag.Separator, ",", "The field separator of CSV file")
+	s3Cmd.Flags().Bool(flag.TrimLastSeparator, false, "In CSV file whether to treat Separator as the line terminator and trim all trailing separators")
+	s3Cmd.Flags().Bool(flag.BackslashEscape, true, "In CSV file whether to parse backslash inside fields as escape characters")
+	return s3Cmd
 }
 
-func initialLocalInputModel() ui.TextInputModel {
+func initialS3InputModel() ui.TextInputModel {
 	m := ui.TextInputModel{
 		Inputs: make([]textinput.Model, 2),
 	}
@@ -308,84 +272,20 @@ func initialLocalInputModel() ui.TextInputModel {
 		t = textinput.New()
 		t.CursorStyle = config.FocusedStyle
 		t.CharLimit = 0
-		f := localImportField(i)
+		f := s3ImportField(i)
 
 		switch f {
-		case databaseIdx:
-			t.Placeholder = "Target database"
+		case awsRoleArnIdx:
+			t.Placeholder = "AWS role ARN"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
-		case tableIdx:
-			t.Placeholder = "Target table"
+		case sourceUrlIdx:
+			t.Placeholder = "Source url"
 		}
 
 		m.Inputs[i] = t
 	}
 
 	return m
-}
-
-func waitUploadOp(h *internal.Helper, d cloud.TiDBCloudClient, url *string, uploadFile *os.File, size int64) error {
-	fmt.Fprintf(h.IOStreams.Out, "... Uploading file\n")
-	err := d.PreSignedUrlUpload(url, uploadFile, size)
-	if err != nil {
-		return err
-	}
-
-	fmt.Fprintln(h.IOStreams.Out, "File has been uploaded")
-	return nil
-}
-
-func spinnerWaitUploadOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, url *string, uploadFile *os.File, size int64) error {
-	task := func() tea.Msg {
-		errChan := make(chan error, 1)
-
-		go func() {
-			err := d.PreSignedUrlUpload(url, uploadFile, size)
-			if err != nil {
-				errChan <- err
-				return
-			}
-
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("File has been uploaded"))
-			errChan <- nil
-		}()
-
-		ticker := time.NewTicker(1 * time.Second)
-		defer ticker.Stop()
-		timer := time.After(2 * time.Minute)
-		for {
-			select {
-			case <-timer:
-				return fmt.Errorf("timeout waiting for uploading file")
-			case <-ticker.C:
-				// continue
-			case err := <-errChan:
-				if err != nil {
-					return err
-				} else {
-					return ui.Result("File has been uploaded")
-				}
-			case <-ctx.Done():
-				return util.InterruptError
-			}
-		}
-	}
-
-	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Uploading file"))
-	model, err := p.StartReturningModel()
-	if err != nil {
-		return errors.Trace(err)
-	}
-	if m, _ := model.(ui.SpinnerModel); m.Interrupted {
-		return util.InterruptError
-	}
-	if m, _ := model.(ui.SpinnerModel); m.Err != nil {
-		return m.Err
-	} else {
-		fmt.Fprintf(h.IOStreams.Out, color.GreenString(m.Output))
-	}
-
-	return nil
 }
