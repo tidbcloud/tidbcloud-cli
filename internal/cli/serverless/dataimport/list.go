@@ -53,13 +53,13 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		Aliases:     []string{"ls"},
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  List import tasks in interactive mode:
-  $ %[1]s import list
+  $ %[1]s serverless import list
 
   List import tasks in non-interactive mode:
-  $ %[1]s import list --project-id <project-id> --cluster-id <cluster-id>
+  $ %[1]s serverless import list --project-id <project-id> --cluster-id <cluster-id>
   
   List the clusters in the project with json format:
-  $ %[1]s import list --project-id <project-id> --cluster-id <cluster-id> --output json`,
+  $ %[1]s serverless import list --project-id <project-id> --cluster-id <cluster-id> --output json`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()

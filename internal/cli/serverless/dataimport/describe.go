@@ -15,6 +15,7 @@
 package dataimport
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"tidbcloud-cli/internal"
@@ -22,22 +23,18 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
-	"tidbcloud-cli/internal/util"
 	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
 	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 
-	"github.com/AlecAivazis/survey/v2"
-	"github.com/AlecAivazis/survey/v2/terminal"
-	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
 
-type CancelOpts struct {
+type DescribeOpts struct {
 	interactive bool
 }
 
-func (c CancelOpts) NonInteractiveFlags() []string {
+func (c DescribeOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.ProjectID,
@@ -45,21 +42,21 @@ func (c CancelOpts) NonInteractiveFlags() []string {
 	}
 }
 
-func CancelCmd(h *internal.Helper) *cobra.Command {
-	var force bool
-	opts := CancelOpts{
+func DescribeCmd(h *internal.Helper) *cobra.Command {
+	opts := DescribeOpts{
 		interactive: true,
 	}
 
-	var cancelCmd = &cobra.Command{
-		Use:         "cancel",
-		Short:       "Cancel a data import task",
+	var describeCmd = &cobra.Command{
+		Use:         "describe",
+		Short:       "Describe a data import task",
+		Aliases:     []string{"get"},
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Cancel an import task in interactive mode:
-  $ %[1]s import cancel
+		Example: fmt.Sprintf(`  Describe an import task in interactive mode:
+  $ %[1]s serverless import describe
 
-  Cancel an import task in non-interactive mode:
-  $ %[1]s import cancel --project-id <project-id> --cluster-id <cluster-id> --import-id <import-id>`,
+  Describe an import task in non-interactive mode:
+  $ %[1]s serverless import describe --project-id <project-id> --cluster-id <cluster-id> --import-id <import-id>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -108,11 +105,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				// Only task status is pending or importing can be canceled.
-				selectedImport, err := cloud.GetSelectedImport(projectID, clusterID, h.QueryPageSize, d, []importModel.OpenapiGetImportRespStatus{
-					importModel.OpenapiGetImportRespStatusPREPARING,
-					importModel.OpenapiGetImportRespStatusIMPORTING,
-				})
+				selectedImport, err := cloud.GetSelectedImport(projectID, clusterID, h.QueryPageSize, d, []importModel.OpenapiGetImportRespStatus{})
 				if err != nil {
 					return err
 				}
@@ -126,46 +119,24 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 
 			cmd.Annotations[telemetry.ProjectID] = projectID
 
-			if !force {
-				if !h.IOStreams.CanPrompt {
-					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to cancel the import task")
-				}
-
-				confirmationMessage := fmt.Sprintf("%s %s %s", color.BlueString("Please type"), color.HiBlueString(config.Confirmed), color.BlueString("to confirm:"))
-
-				prompt := &survey.Input{
-					Message: confirmationMessage,
-				}
-
-				var userInput string
-				err := survey.AskOne(prompt, &userInput)
-				if err != nil {
-					if err == terminal.InterruptErr {
-						return util.InterruptError
-					} else {
-						return err
-					}
-				}
-
-				if userInput != config.Confirmed {
-					return errors.New("incorrect confirm string entered, skipping import cancellation")
-				}
-			}
-
-			params := importOp.NewCancelImportParams().WithProjectID(projectID).WithClusterID(clusterID).WithID(importID)
-			_, err = d.CancelImport(params)
+			params := importOp.NewGetImportParams().WithProjectID(projectID).WithClusterID(clusterID).WithID(importID)
+			importTask, err := d.GetImport(params)
 			if err != nil {
 				return errors.Trace(err)
 			}
 
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s has been canceled.", importID))
+			v, err := json.MarshalIndent(importTask.Payload, "", "  ")
+			if err != nil {
+				return errors.Trace(err)
+			}
+
+			fmt.Fprintln(h.IOStreams.Out, string(v))
 			return nil
 		},
 	}
 
-	cancelCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a profile without confirmation")
-	cancelCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
-	cancelCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	cancelCmd.Flags().String(flag.ImportID, "", "The ID of import task")
-	return cancelCmd
+	describeCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
+	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
+	describeCmd.Flags().String(flag.ImportID, "", "The ID of import task")
+	return describeCmd
 }
