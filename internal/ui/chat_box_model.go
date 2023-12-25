@@ -40,8 +40,9 @@ const (
 )
 
 type ChatMessage struct {
-	Role    Role
-	Content string
+	Role        Role
+	Content     string
+	LinkContent string
 }
 
 type ChatBoxModel struct {
@@ -212,7 +213,7 @@ func (m ChatBoxModel) RenderChatLog() string {
 		// Due to a bug in the formatting of Chinese characters (see https://github.com/charmbracelet/glamour/pull/249),
 		// glamour cannot correctly word-wrap Chinese characters. Therefore, we need to wrap the string before rendering it.
 		// Because glamour will add some extra characters to the string, we need to subtract the length of those characters.
-		s := util.String(message.Content, maxWidth-6)
+		s := util.String(message.Content+message.LinkContent, maxWidth-6)
 		out, _ := r.Render(s)
 
 		var who string
