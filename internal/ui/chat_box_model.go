@@ -35,6 +35,8 @@ const (
 	RoleBot  Role = "bot"
 
 	LoadingPrompt = "AI generating"
+
+	defaultChatRound = 2
 )
 
 type ChatMessage struct {
@@ -135,7 +137,12 @@ func (m ChatBoxModel) Update(msg bubbletea.Msg) (bubbletea.Model, bubbletea.Cmd)
 				m.isLoading = true
 				m.viewport.GotoBottom()
 
-				nextCmd = m.sendMessage(inputMessage)
+				// The last message is the loading prompt, so we need to subtract 1.
+				if len(m.chatLog) >= defaultChatRound*2 {
+					nextCmd = m.sendMessage(m.chatLog[len(m.chatLog)-defaultChatRound*2 : len(m.chatLog)-1])
+				} else {
+					nextCmd = m.sendMessage(m.chatLog[:len(m.chatLog)-1])
+				}
 			}
 		}
 	case bubbletea.WindowSizeMsg:
@@ -180,15 +187,9 @@ func (m ChatBoxModel) Update(msg bubbletea.Msg) (bubbletea.Model, bubbletea.Cmd)
 	return m, bubbletea.Batch(taCmd, vpCmd, nextCmd, vpCmd2)
 }
 
-func (m ChatBoxModel) sendMessage(prompt string) bubbletea.Cmd {
+func (m ChatBoxModel) sendMessage(msgs []ChatMessage) bubbletea.Cmd {
 	return func() bubbletea.Msg {
-		msg := ChatMessage{
-			Content: prompt,
-			Role:    RoleUser,
-		}
-		return m.sendMsgFunc([]ChatMessage{
-			msg,
-		})
+		return m.sendMsgFunc(msgs)
 	}
 }
 

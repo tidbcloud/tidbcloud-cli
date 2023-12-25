@@ -140,8 +140,7 @@ func AICmd(h *internal.Helper) *cobra.Command {
 
 				model := ui.InitialChatBoxModel(task, "TiDB Bot")
 				p := tea.NewProgram(model,
-					tea.WithAltScreen(),       // use the full size of the terminal in its "alternate screen buffer"
-					tea.WithMouseCellMotion(), // turn on mouse support we can track the mouse wheel
+					tea.WithAltScreen(), // use the full size of the terminal in its "alternate screen buffer"
 				)
 				typeModel, err := p.Run()
 				if err != nil {
