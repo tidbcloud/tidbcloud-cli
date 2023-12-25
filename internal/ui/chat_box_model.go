@@ -137,6 +137,7 @@ func (m ChatBoxModel) Update(msg bubbletea.Msg) (bubbletea.Model, bubbletea.Cmd)
 				m.isLoading = true
 				m.viewport.GotoBottom()
 
+				// The last message is the loading prompt, so we need to subtract 1.
 				if len(m.chatLog) >= defaultChatRound*2 {
 					nextCmd = m.sendMessage(m.chatLog[len(m.chatLog)-defaultChatRound*2 : len(m.chatLog)-1])
 				} else {
