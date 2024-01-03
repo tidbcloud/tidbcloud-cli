@@ -21,7 +21,7 @@ type PrivateGCP struct {
 
 	// Output Only. Target Service Account for Private Link Service.
 	// Read Only: true
-	TargetServiceAccount string `json:"targetServiceAccount,omitempty"`
+	ServiceAttachmentName string `json:"serviceAttachmentName,omitempty"`
 }
 
 // Validate validates this private g c p
@@ -33,7 +33,7 @@ func (m *PrivateGCP) Validate(formats strfmt.Registry) error {
 func (m *PrivateGCP) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateTargetServiceAccount(ctx, formats); err != nil {
+	if err := m.contextValidateServiceAttachmentName(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -43,9 +43,9 @@ func (m *PrivateGCP) ContextValidate(ctx context.Context, formats strfmt.Registr
 	return nil
 }
 
-func (m *PrivateGCP) contextValidateTargetServiceAccount(ctx context.Context, formats strfmt.Registry) error {
+func (m *PrivateGCP) contextValidateServiceAttachmentName(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "targetServiceAccount", "body", string(m.TargetServiceAccount)); err != nil {
+	if err := validate.ReadOnly(ctx, "serviceAttachmentName", "body", string(m.ServiceAttachmentName)); err != nil {
 		return err
 	}
 

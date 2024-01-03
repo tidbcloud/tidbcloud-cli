@@ -202,11 +202,11 @@
     "BranchEndpoints": {
       "type": "object",
       "properties": {
-        "publicEndpoint": {
+        "public": {
           "$ref": "#/definitions/EndpointsPublic",
           "description": "Optional . Public Endpoint for this branch."
         },
-        "privateEndpoint": {
+        "private": {
           "$ref": "#/definitions/EndpointsPrivate",
           "description": "Optional . Private Endpoint for this branch."
         }
@@ -317,7 +317,7 @@
     "PrivateGCP": {
       "type": "object",
       "properties": {
-        "targetServiceAccount": {
+        "serviceAttachmentName": {
           "type": "string",
           "description": "Output Only. Target Service Account for Private Link Service.",
           "readOnly": true

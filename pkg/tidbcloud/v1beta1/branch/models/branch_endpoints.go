@@ -19,21 +19,21 @@ import (
 type BranchEndpoints struct {
 
 	// Optional . Private Endpoint for this branch.
-	PrivateEndpoint *EndpointsPrivate `json:"privateEndpoint,omitempty"`
+	Private *EndpointsPrivate `json:"private,omitempty"`
 
 	// Optional . Public Endpoint for this branch.
-	PublicEndpoint *EndpointsPublic `json:"publicEndpoint,omitempty"`
+	Public *EndpointsPublic `json:"public,omitempty"`
 }
 
 // Validate validates this branch endpoints
 func (m *BranchEndpoints) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validatePrivateEndpoint(formats); err != nil {
+	if err := m.validatePrivate(formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.validatePublicEndpoint(formats); err != nil {
+	if err := m.validatePublic(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -43,17 +43,17 @@ func (m *BranchEndpoints) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *BranchEndpoints) validatePrivateEndpoint(formats strfmt.Registry) error {
-	if swag.IsZero(m.PrivateEndpoint) { // not required
+func (m *BranchEndpoints) validatePrivate(formats strfmt.Registry) error {
+	if swag.IsZero(m.Private) { // not required
 		return nil
 	}
 
-	if m.PrivateEndpoint != nil {
-		if err := m.PrivateEndpoint.Validate(formats); err != nil {
+	if m.Private != nil {
+		if err := m.Private.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("privateEndpoint")
+				return ve.ValidateName("private")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("privateEndpoint")
+				return ce.ValidateName("private")
 			}
 			return err
 		}
@@ -62,17 +62,17 @@ func (m *BranchEndpoints) validatePrivateEndpoint(formats strfmt.Registry) error
 	return nil
 }
 
-func (m *BranchEndpoints) validatePublicEndpoint(formats strfmt.Registry) error {
-	if swag.IsZero(m.PublicEndpoint) { // not required
+func (m *BranchEndpoints) validatePublic(formats strfmt.Registry) error {
+	if swag.IsZero(m.Public) { // not required
 		return nil
 	}
 
-	if m.PublicEndpoint != nil {
-		if err := m.PublicEndpoint.Validate(formats); err != nil {
+	if m.Public != nil {
+		if err := m.Public.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("publicEndpoint")
+				return ve.ValidateName("public")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("publicEndpoint")
+				return ce.ValidateName("public")
 			}
 			return err
 		}
@@ -85,11 +85,11 @@ func (m *BranchEndpoints) validatePublicEndpoint(formats strfmt.Registry) error 
 func (m *BranchEndpoints) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidatePrivateEndpoint(ctx, formats); err != nil {
+	if err := m.contextValidatePrivate(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.contextValidatePublicEndpoint(ctx, formats); err != nil {
+	if err := m.contextValidatePublic(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -99,19 +99,19 @@ func (m *BranchEndpoints) ContextValidate(ctx context.Context, formats strfmt.Re
 	return nil
 }
 
-func (m *BranchEndpoints) contextValidatePrivateEndpoint(ctx context.Context, formats strfmt.Registry) error {
+func (m *BranchEndpoints) contextValidatePrivate(ctx context.Context, formats strfmt.Registry) error {
 
-	if m.PrivateEndpoint != nil {
+	if m.Private != nil {
 
-		if swag.IsZero(m.PrivateEndpoint) { // not required
+		if swag.IsZero(m.Private) { // not required
 			return nil
 		}
 
-		if err := m.PrivateEndpoint.ContextValidate(ctx, formats); err != nil {
+		if err := m.Private.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("privateEndpoint")
+				return ve.ValidateName("private")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("privateEndpoint")
+				return ce.ValidateName("private")
 			}
 			return err
 		}
@@ -120,19 +120,19 @@ func (m *BranchEndpoints) contextValidatePrivateEndpoint(ctx context.Context, fo
 	return nil
 }
 
-func (m *BranchEndpoints) contextValidatePublicEndpoint(ctx context.Context, formats strfmt.Registry) error {
+func (m *BranchEndpoints) contextValidatePublic(ctx context.Context, formats strfmt.Registry) error {
 
-	if m.PublicEndpoint != nil {
+	if m.Public != nil {
 
-		if swag.IsZero(m.PublicEndpoint) { // not required
+		if swag.IsZero(m.Public) { // not required
 			return nil
 		}
 
-		if err := m.PublicEndpoint.ContextValidate(ctx, formats); err != nil {
+		if err := m.Public.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("publicEndpoint")
+				return ve.ValidateName("public")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("publicEndpoint")
+				return ce.ValidateName("public")
 			}
 			return err
 		}
