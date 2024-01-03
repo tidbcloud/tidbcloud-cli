@@ -42,7 +42,7 @@ const getBranchResultStr = `{
   "createdBy": "yuhang.shi@pingcap.com",
   "displayName": "t2",
   "endpoints": {
-    "publicEndpoint": {
+    "public": {
       "host": "gateway01.us-east-1.dev.shared.aws.tidbcloud.com",
       "port": 4000
     }
