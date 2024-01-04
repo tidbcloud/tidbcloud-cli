@@ -192,8 +192,8 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 
 			// Get connect parameter
 			defaultUser := fmt.Sprintf("%s.root", branchInfo.Payload.UserPrefix)
-			host := branchInfo.Payload.Endpoints.PublicEndpoint.Host
-			port := strconv.Itoa(int(branchInfo.Payload.Endpoints.PublicEndpoint.Port))
+			host := branchInfo.Payload.Endpoints.Public.Host
+			port := strconv.Itoa(int(branchInfo.Payload.Endpoints.Public.Port))
 
 			// Get connection string
 			connectInfo, err := cloud.RetrieveConnectInfo(d)

@@ -194,8 +194,8 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			if err != nil {
 				return errors.Trace(err)
 			}
-			host = branchInfo.Payload.Endpoints.PublicEndpoint.Host
-			port = strconv.Itoa(int(branchInfo.Payload.Endpoints.PublicEndpoint.Port))
+			host = branchInfo.Payload.Endpoints.Public.Host
+			port = strconv.Itoa(int(branchInfo.Payload.Endpoints.Public.Port))
 			name = *branchInfo.Payload.DisplayName
 			if userName == "" {
 				userName = fmt.Sprintf("%s.root", branchInfo.Payload.UserPrefix)
