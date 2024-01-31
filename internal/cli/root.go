@@ -22,6 +22,7 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/cli/ai"
+	"tidbcloud-cli/internal/cli/auth"
 	configCmd "tidbcloud-cli/internal/cli/config"
 	"tidbcloud-cli/internal/cli/project"
 	"tidbcloud-cli/internal/cli/serverless"
@@ -44,8 +45,11 @@ import (
 	logger "github.com/pingcap/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/zalando/go-keyring"
 	"go.uber.org/zap"
 )
+
+var ErrMissingCredentials = errors.New("this action requires authentication")
 
 func Execute(ctx context.Context) {
 	h := &internal.Helper{
@@ -60,10 +64,35 @@ func Execute(ctx context.Context) {
 			if serverlessEndpoint == "" {
 				serverlessEndpoint = cloud.DefaultServerlessEndpoint
 			}
-			delegate, err := cloud.NewClientDelegate(publicKey, privateKey, apiUrl, serverlessEndpoint)
-			if err != nil {
-				return nil, err
+
+			var delegate cloud.TiDBCloudClient
+			if publicKey != "" && privateKey != "" {
+				var err error
+				delegate, err = cloud.NewClientDelegateWithApiKey(publicKey, privateKey, apiUrl, serverlessEndpoint)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				err := config.ValidateToken()
+				if err != nil {
+					logger.Debug("Failed to validate token", zap.Error(err))
+					color.Yellow("\nTo log in using your TiDB Cloud username and password, run: \n %[1]s auth login\nTo set credentials using API keys, run: \n %[1]s config set public-key <public-key>\n %[1]s config set private-key <private-key>",
+						config.CliName)
+					return nil, ErrMissingCredentials
+				}
+				token, err := config.GetAccessToken()
+				if err != nil {
+					if errors.Is(err, keyring.ErrNotFound) {
+						return nil, ErrMissingCredentials
+					}
+					return nil, err
+				}
+				delegate, err = cloud.NewClientDelegateWithToken(token, apiUrl, serverlessEndpoint)
+				if err != nil {
+					return nil, err
+				}
 			}
+
 			return delegate, nil
 		},
 		QueryPageSize: internal.DefaultPageSize,
@@ -108,6 +137,7 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
+			profile = strings.ToLower(profile)
 			if profile != "" {
 				err := config.ValidateProfile(profile)
 				if err != nil {
@@ -136,12 +166,6 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 				color.NoColor = true
 			}
 
-			if shouldCheckAuth(cmd) {
-				err := config.CheckAuth()
-				if err != nil {
-					return errors.Trace(err)
-				}
-			}
 			return nil
 		},
 		PersistentPostRun: func(cmd *cobra.Command, args []string) {
@@ -167,6 +191,7 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 		SilenceErrors: true,
 	}
 
+	rootCmd.AddCommand(auth.AuthCmd(h))
 	rootCmd.AddCommand(configCmd.ConfigCmd(h))
 	rootCmd.AddCommand(serverless.Cmd(h))
 	rootCmd.AddCommand(ai.AICmd(h))
@@ -182,22 +207,6 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 
 func shouldCheckNewRelease(cmd *cobra.Command) bool {
 	cmdPrefixShouldSkip := []string{
-		fmt.Sprintf("%s %s", config.CliName, "update")}
-	for _, p := range cmdPrefixShouldSkip {
-		if strings.HasPrefix(cmd.CommandPath(), p) {
-			return false
-		}
-	}
-
-	return true
-}
-
-func shouldCheckAuth(cmd *cobra.Command) bool {
-	cmdPrefixShouldSkip := []string{
-		fmt.Sprintf("%s %s", config.CliName, "config"),
-		fmt.Sprintf("%s %s", config.CliName, "help"),
-		fmt.Sprintf("%s %s", config.CliName, "completion"),
-		fmt.Sprintf("%s %s", config.CliName, "version"),
 		fmt.Sprintf("%s %s", config.CliName, "update")}
 	for _, p := range cmdPrefixShouldSkip {
 		if strings.HasPrefix(cmd.CommandPath(), p) {

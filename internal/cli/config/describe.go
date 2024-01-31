@@ -17,6 +17,7 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -36,7 +37,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s config describe <profile-name>`, config.CliName),
 		Args: util.RequiredArgs("profile-name"),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			name := args[0]
+			name := strings.ToLower(args[0])
 			err := config.ValidateProfile(name)
 			if err != nil {
 				return err

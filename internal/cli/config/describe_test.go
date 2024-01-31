@@ -84,6 +84,11 @@ func (suite *DescribeConfigSuite) TestDescribeConfigArgs() {
 			stdoutString: "{\n  \"private-key\": \"SDWIOUEOSDSDC\",\n  \"public-key\": \"SDIWODIJQNDKJQW\"\n}\n",
 		},
 		{
+			name:         "describe config case-insensitive",
+			args:         []string{"teSt"},
+			stdoutString: "{\n  \"private-key\": \"SDWIOUEOSDSDC\",\n  \"public-key\": \"SDIWODIJQNDKJQW\"\n}\n",
+		},
+		{
 			name: "describe config with no args",
 			args: []string{},
 			err:  fmt.Errorf("missing argument <profile-name> \n\nUsage:\n  describe <profile-name> [flags]\n\nAliases:\n  describe, get\n\nExamples:\n  Describe the profile configuration:\n  $ ticloud config describe <profile-name>\n\nFlags:\n  -h, --help   help for describe\n"),

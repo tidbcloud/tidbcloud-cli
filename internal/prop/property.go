@@ -27,6 +27,11 @@ const (
 	ApiUrl             string = "api-url"
 	ServerlessEndpoint string = "serverless-endpoint"
 	TelemetryEnabled   string = "telemetry-enabled"
+
+	// shall not be set by user
+	TokenExpiredAt string = "token-expired-at"
+	TokenType      string = "token-type"
+	AccessToken    string = "access-token"
 )
 
 func GlobalProperties() []string {
@@ -35,10 +40,6 @@ func GlobalProperties() []string {
 
 func ProfileProperties() []string {
 	return []string{PublicKey, PrivateKey, ApiUrl, ServerlessEndpoint, TelemetryEnabled}
-}
-
-func Properties() []string {
-	return []string{PublicKey, PrivateKey, CurProfile, ApiUrl, TelemetryEnabled}
 }
 
 func ValidateApiUrl(value string) (*url.URL, error) {

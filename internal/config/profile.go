@@ -16,18 +16,29 @@ package config
 
 import (
 	"fmt"
+	"os"
 	"sort"
+	"time"
 
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/util"
 	"tidbcloud-cli/internal/version"
 
+	"github.com/fatih/color"
+	"github.com/pelletier/go-toml"
+	"github.com/pingcap/errors"
+	"github.com/pingcap/log"
+	"github.com/spf13/afero"
 	"github.com/spf13/viper"
+	"github.com/zalando/go-keyring"
+	"go.uber.org/zap"
 )
 
 var (
 	activeProfile = &Profile{}
 )
+
+const keyringService = "ticloud_access_token"
 
 type Profile struct {
 	name string
@@ -61,6 +72,14 @@ func GetAllProfiles() ([]string, error) {
 }
 
 func SetActiveProfile(name string) {
+	if name == "" {
+		name = "default"
+		viper.Set(prop.CurProfile, name)
+		err := viper.WriteConfig()
+		if err != nil {
+			log.Debug("failed to save current profile to config file", zap.Error(err))
+		}
+	}
 	activeProfile.name = name
 }
 
@@ -81,25 +100,6 @@ func (p *Profile) TelemetryEnabled() bool {
 		return false
 	}
 	return viper.GetBool(key)
-}
-
-func CheckAuth() error { return activeProfile.CheckAuth() }
-func (p *Profile) CheckAuth() error {
-	if p.name == "" {
-		return fmt.Errorf("no active profile for auth, please use `config create` to create one")
-	}
-
-	publicKey := viper.Get(fmt.Sprintf("%s.%s", p.name, prop.PublicKey))
-	if publicKey == nil {
-		return fmt.Errorf("no public key configured for auth, please use `set %s <publicKey>` to set one", prop.PublicKey)
-	}
-
-	privateKey := viper.Get(fmt.Sprintf("%s.%s", p.name, prop.PrivateKey))
-	if privateKey == nil {
-		return fmt.Errorf("no private key configured for auth, please use `set %s <privateKey>` to set one", prop.PrivateKey)
-	}
-
-	return nil
 }
 
 func GetPublicKey() (publicKey string) { return activeProfile.GetPublicKey() }
@@ -124,4 +124,105 @@ func GetServerlessEndpoint() (apiUrl string) { return activeProfile.GetServerles
 func (p *Profile) GetServerlessEndpoint() (newApiUrl string) {
 	newApiUrl = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.ServerlessEndpoint))
 	return
+}
+
+func SaveAccessToken(expireAt time.Time, tokenType string, token string, insecureStorageUsed bool) error {
+	return activeProfile.SaveAccessToken(expireAt, tokenType, token, insecureStorageUsed)
+}
+func (p *Profile) SaveAccessToken(expireAt time.Time, tokenType string, token string, insecureStorageUsed bool) error {
+	if !insecureStorageUsed {
+		err := keyring.Set(keyringService, p.name, token)
+		if err != nil {
+			log.Debug("failed to save access token to keyring", zap.Error(err))
+			color.Yellow("failed to save access token to keyring, save to config file instead")
+			// If failed to save to keyring, fallback to save to config file.
+			insecureStorageUsed = true
+		}
+	}
+
+	if insecureStorageUsed {
+		viper.Set(fmt.Sprintf("%s.%s", p.name, prop.AccessToken), token)
+	}
+	viper.Set(fmt.Sprintf("%s.%s", p.name, prop.TokenExpiredAt), expireAt)
+	viper.Set(fmt.Sprintf("%s.%s", p.name, prop.TokenType), tokenType)
+	err := viper.WriteConfig()
+	if err != nil {
+		return errors.Annotate(err, "failed to save token info to config file")
+	}
+
+	return nil
+}
+
+func GetAccessToken() (string, error) {
+	return activeProfile.GetAccessToken()
+}
+func (p *Profile) GetAccessToken() (string, error) {
+	token := viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.AccessToken))
+	if token != "" {
+		return token, nil
+	}
+
+	return keyring.Get(keyringService, p.name)
+}
+
+func ValidateToken() error {
+	return activeProfile.ValidateToken()
+}
+func (p *Profile) ValidateToken() error {
+	tokenExpiredAt := viper.GetTime(fmt.Sprintf("%s.%s", p.name, prop.TokenExpiredAt))
+	if tokenExpiredAt.Before(time.Now()) {
+		err := DeleteAccessToken()
+		log.Debug("failed to delete access token", zap.Error(err))
+
+		return fmt.Errorf("access token expired, please login again")
+	}
+
+	return nil
+}
+
+func DeleteAccessToken() error {
+	return activeProfile.DeleteAccessToken()
+}
+func (p *Profile) DeleteAccessToken() error {
+	settings := viper.AllSettings()
+	t, err := toml.TreeFromMap(settings)
+	if err != nil {
+		return errors.Trace(err)
+	}
+
+	if t.Has(fmt.Sprintf("%s.%s", p.name, prop.AccessToken)) {
+		err := t.Delete(fmt.Sprintf("%s.%s", p.name, prop.AccessToken))
+		if err != nil {
+			return err
+		}
+	} else {
+		err := keyring.Delete(keyringService, p.name)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = t.Delete(fmt.Sprintf("%s.%s", p.name, prop.TokenType))
+	if err != nil {
+		return err
+	}
+	err = t.Delete(fmt.Sprintf("%s.%s", p.name, prop.TokenExpiredAt))
+	if err != nil {
+		return err
+	}
+
+	fs := afero.NewOsFs()
+	file, err := fs.OpenFile(viper.ConfigFileUsed(), os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0600)
+	if err != nil {
+		return errors.Trace(err)
+	}
+
+	defer file.Close()
+
+	s := t.String()
+	_, err = file.WriteString(s)
+	if err != nil {
+		return errors.Trace(err)
+	}
+	return nil
 }

@@ -75,6 +75,11 @@ func (suite *CreateConfigSuite) TestCreateConfigArgs() {
 			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\nCurrent profile has been changed to test\n",
 		},
 		{
+			name:         "create config case-insensitive",
+			args:         []string{"--profile-name", "teSt1", "--public-key", publicKey, "--private-key", privateKey},
+			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\nCurrent profile has been changed to test1\n",
+		},
+		{
 			name: "create config without required private key",
 			args: []string{"--profile-name", profile, "--public-key", publicKey},
 			err:  fmt.Errorf("required flag(s) \"private-key\" not set"),

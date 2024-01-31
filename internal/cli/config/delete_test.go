@@ -136,8 +136,8 @@ func (suite *DeleteConfigSuite) TestDeleteConfigWithActiveProfile() {
 	publicKey := "SDIWODIJQNDKJQW"
 	privateKey := "SDWIOUEOSDSDC"
 
-	viper.Set("test.public-key", publicKey)
-	viper.Set("test.private-key", privateKey)
+	viper.Set("newTest.public-key", publicKey)
+	viper.Set("newTest.private-key", privateKey)
 	viper.Set("current-profile", newProfile)
 
 	err := viper.WriteConfig()
@@ -154,16 +154,13 @@ func (suite *DeleteConfigSuite) TestDeleteConfigWithActiveProfile() {
 	}{
 		{
 			name:         "delete active profile",
-			args:         []string{"test", "--force"},
-			stdoutString: "Profile test deleted successfully\n",
+			args:         []string{"newtest", "--force"},
+			stdoutString: "Profile newtest deleted successfully\n",
 		},
 	}
 
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
-			err := viper.ReadInConfig()
-			assert.Nil(err)
-
 			cmd := DeleteCmd(suite.h)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
@@ -180,7 +177,7 @@ func (suite *DeleteConfigSuite) TestDeleteConfigWithActiveProfile() {
 			viper.SetConfigName(".tidbcloud-cli")
 			err = viper.ReadInConfig()
 			assert.Nil(err)
-			assert.Equal(newProfile, viper.GetString("current-profile"))
+			assert.Equal("test", viper.GetString("current-profile"))
 			assert.Equal("", viper.GetString(tt.args[0]+".public-key"))
 			assert.Equal("", viper.GetString(tt.args[0]+".private-key"))
 			assert.Equal("", viper.GetString(tt.args[0]))

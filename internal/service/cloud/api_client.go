@@ -106,8 +106,26 @@ type ClientDelegate struct {
 	brc *brClient.TidbcloudServerless
 }
 
-func NewClientDelegate(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string) (*ClientDelegate, error) {
-	c, ic, cc, bc, sc, pc, brc, err := NewApiClient(publicKey, privateKey, apiUrl, serverlessEndpoint)
+func NewClientDelegateWithToken(token string, apiUrl string, serverlessEndpoint string) (*ClientDelegate, error) {
+	transport := NewBearTokenTransport(token)
+	c, ic, cc, bc, sc, pc, brc, err := NewApiClient(transport, apiUrl, serverlessEndpoint)
+	if err != nil {
+		return nil, err
+	}
+	return &ClientDelegate{
+		c:   c,
+		ic:  ic,
+		cc:  cc,
+		bc:  bc,
+		sc:  sc,
+		pc:  pc,
+		brc: brc,
+	}, nil
+}
+
+func NewClientDelegateWithApiKey(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string) (*ClientDelegate, error) {
+	transport := NewDigestTransport(publicKey, privateKey)
+	c, ic, cc, bc, sc, pc, brc, err := NewApiClient(transport, apiUrl, serverlessEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -234,14 +252,11 @@ func (d *ClientDelegate) Restore(params *brOp.BackupRestoreServiceRestoreParams,
 	return d.brc.BackupRestoreService.BackupRestoreServiceRestore(params, opts...)
 }
 
-func NewApiClient(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport,
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport,
 	*connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless,
 	*pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, error) {
 	httpclient := &http.Client{
-		Transport: NewTransportWithAgent(&digest.Transport{
-			Username: publicKey,
-			Password: privateKey,
-		}, fmt.Sprintf("%s/%s", config.CliName, version.Version)),
+		Transport: rt,
 	}
 
 	// v1beta api
@@ -265,6 +280,18 @@ func NewApiClient(publicKey string, privateKey string, apiUrl string, serverless
 		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default), nil
 }
 
+func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {
+	return NewTransportWithAgent(&digest.Transport{
+		Username: publicKey,
+		Password: privateKey,
+	}, fmt.Sprintf("%s/%s", config.CliName, version.Version))
+}
+
+func NewBearTokenTransport(token string) http.RoundTripper {
+	return NewTransportWithAgent(NewTransportWithBearToken(http.DefaultTransport, token),
+		fmt.Sprintf("%s/%s", config.CliName, version.Version))
+}
+
 // NewTransportWithAgent returns a new http.RoundTripper that add the User-Agent header,
 // according to https://github.com/go-swagger/go-swagger/issues/1563.
 func NewTransportWithAgent(inner http.RoundTripper, userAgent string) http.RoundTripper {
@@ -282,4 +309,21 @@ type UserAgentTransport struct {
 func (ug *UserAgentTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	r.Header.Set(userAgent, ug.Agent)
 	return ug.inner.RoundTrip(r)
+}
+
+func NewTransportWithBearToken(inner http.RoundTripper, token string) http.RoundTripper {
+	return &BearTokenTransport{
+		inner: inner,
+		Token: token,
+	}
+}
+
+type BearTokenTransport struct {
+	inner http.RoundTripper
+	Token string
+}
+
+func (bt *BearTokenTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+	r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", bt.Token))
+	return bt.inner.RoundTrip(r)
 }
