@@ -122,26 +122,26 @@ func AICmd(h *internal.Helper) *cobra.Command {
 						}
 					}
 
-					content := chat.Payload.Content + "\n\n"
+					linkContent := "\n\n"
 					for i, link := range chat.Payload.Links {
-						content = fmt.Sprintf("%s[%d] [%s](%s)\n", content, i+1, link.Title, link.Link)
+						linkContent = fmt.Sprintf("%s[%d] [%s](%s)\n", linkContent, i+1, link.Title, link.Link)
 					}
 
 					// Replace occurrences of [^\d+] with [\d+] for better user comprehension.
-					content = re.ReplaceAllString(content, "[$1]")
+					content := re.ReplaceAllString(chat.Payload.Content, "[$1]")
 
 					return ui.EndSendingMsg{
 						Msg: ui.ChatMessage{
-							Role:    ui.RoleBot,
-							Content: content,
+							Role:        ui.RoleBot,
+							Content:     content,
+							LinkContent: linkContent,
 						},
 					}
 				}
 
 				model := ui.InitialChatBoxModel(task, "TiDB Bot")
 				p := tea.NewProgram(model,
-					tea.WithAltScreen(),       // use the full size of the terminal in its "alternate screen buffer"
-					tea.WithMouseCellMotion(), // turn on mouse support we can track the mouse wheel
+					tea.WithAltScreen(), // use the full size of the terminal in its "alternate screen buffer"
 				)
 				typeModel, err := p.Run()
 				if err != nil {

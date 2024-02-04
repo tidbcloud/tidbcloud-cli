@@ -5,8 +5,8 @@ go 1.21
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6
 	github.com/c4pt0r/go-tidbcloud-sdk-v1 v0.0.0-20221102224337-3b1c2179c517
-	github.com/charmbracelet/bubbles v0.16.1
-	github.com/charmbracelet/bubbletea v0.24.2
+	github.com/charmbracelet/bubbles v0.17.1
+	github.com/charmbracelet/bubbletea v0.25.0
 	github.com/charmbracelet/glamour v0.6.0
 	github.com/charmbracelet/lipgloss v0.9.1
 	github.com/dustin/go-humanize v1.0.1
@@ -29,7 +29,7 @@ require (
 	github.com/pingcap/errors v0.11.0
 	github.com/pingcap/log v1.1.0
 	github.com/rodaine/table v1.0.1
-	github.com/sahilm/fuzzy v0.1.0
+	github.com/sahilm/fuzzy v0.1.1-0.20230530133925-c48e322e2a8f
 	github.com/spf13/afero v1.8.2
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
