@@ -49,8 +49,8 @@ func LogoutCmd(h *internal.Helper) *cobra.Command {
 			body := RevokeRequest{
 				Token:         token,
 				TokenTypeHint: tokenTypeHint,
-				ClientID:      clientID,
-				ClientSecret:  clientSecret,
+				ClientID:      config.GetOAuthClientID(),
+				ClientSecret:  config.GetOAuthClientSecret(),
 			}
 			client := resty.New()
 			resp, err := client.R().
@@ -58,7 +58,7 @@ func LogoutCmd(h *internal.Helper) *cobra.Command {
 				SetHeader("user-agent", fmt.Sprintf("%s/%s", config.CliName, ver.Version)).
 				SetHeader("Content-type", "application/json").
 				SetBody(body).
-				Post("https://oauth.dev.tidbcloud.com/v1/revoke")
+				Post(fmt.Sprintf("%s%s", config.GetOAuthEndpoint(), revokePath))
 			if err != nil {
 				return err
 			}

@@ -21,14 +21,12 @@ import (
 )
 
 const (
-	clientID     = "DAQNOhpEVqMP3x5vJHAGHDbmmjTf1sxWYxwBycxwwTmrHNHmKFKsDBwilVCRZn0I"
-	clientSecret = "R9mOtJMspeT5pduyg7jILkE2JuDdqRURLizgOIBKPpaWFcaI59X64PfpKEj8YLBmEH0gTT1EvEXdU79UGk5byX5llkYOWVVEJd2SBBVKOs6sAHSRsptS7OOUGf4vBwG4"
-
 	tokenTypeHint = "access_token"
 	grantType     = "urn:ietf:params:oauth:grant-type:device_code"
 
-	authUrl        = "https://oauth.dev.tidbcloud.com/v1/device_authorization"
-	accessTokenUrl = "https://oauth.dev.tidbcloud.com/v1/token"
+	authPath   = "/v1/device_authorization"
+	accessPath = "/v1/token"
+	revokePath = "/v1/revoke"
 
 	errSlowDown = "slow_down"
 	errPending  = "authorization_pending"

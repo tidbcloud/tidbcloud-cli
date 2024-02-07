@@ -22,6 +22,7 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
+	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/util"
 	ver "tidbcloud-cli/internal/version"
 
@@ -51,10 +52,18 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 		Short: "Authenticate with the TiDB Cloud",
 		Example: fmt.Sprintf(`  To start the login for your account:
   $ %[1]s auth login`, config.CliName),
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			debug, err := cmd.Flags().GetBool(flag.Debug)
+			if err != nil {
+				return err
+			}
+			opts.client.SetDebug(debug)
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			body := AuthRequest{
-				ClientID: clientID,
+				ClientID: config.GetOAuthClientID(),
 			}
 			result := AuthResponse{}
 			response, err := opts.client.
@@ -64,7 +73,7 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 				SetHeader("Content-type", "application/json").
 				SetResult(&result).
 				SetBody(body).
-				Post(authUrl)
+				Post(fmt.Sprintf("%s%s", config.GetOAuthEndpoint(), authPath))
 			if err != nil {
 				return err
 			}
@@ -116,7 +125,7 @@ func (l LoginOpts) requestForToken(ctx context.Context, result AuthResponse) (*T
 	body := TokenRequest{
 		DeviceCode: result.DeviceCode,
 		GrantType:  grantType,
-		ClientID:   clientID,
+		ClientID:   config.GetOAuthClientID(),
 	}
 	var res TokenResponse
 	var tokenError TokenError
@@ -138,7 +147,7 @@ func (l LoginOpts) requestForToken(ctx context.Context, result AuthResponse) (*T
 			SetBody(body).
 			SetResult(&res).
 			SetError(&tokenError).
-			Post(accessTokenUrl)
+			Post(fmt.Sprintf("%s%s", config.GetOAuthEndpoint(), accessPath))
 		if err != nil {
 			return nil, err
 		}

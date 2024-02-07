@@ -26,6 +26,9 @@ const (
 	CurProfile         string = "current-profile"
 	ApiUrl             string = "api-url"
 	ServerlessEndpoint string = "serverless-endpoint"
+	OAuthEndpoint      string = "oauth-endpoint"
+	OAuthClientID      string = "oauth-client-id"
+	OAuthClientSecret  string = "oauth-client-secret"
 	TelemetryEnabled   string = "telemetry-enabled"
 
 	// shall not be set by user

@@ -108,12 +108,11 @@ type ClientDelegate struct {
 
 func NewClientDelegateWithToken(token string, apiUrl string, serverlessEndpoint string) (*ClientDelegate, error) {
 	transport := NewBearTokenTransport(token)
-	c, ic, cc, bc, sc, pc, brc, err := NewApiClient(transport, apiUrl, serverlessEndpoint)
+	ic, cc, bc, sc, pc, brc, err := NewApiClient(transport, apiUrl, serverlessEndpoint)
 	if err != nil {
 		return nil, err
 	}
 	return &ClientDelegate{
-		c:   c,
 		ic:  ic,
 		cc:  cc,
 		bc:  bc,
@@ -125,12 +124,11 @@ func NewClientDelegateWithToken(token string, apiUrl string, serverlessEndpoint 
 
 func NewClientDelegateWithApiKey(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string) (*ClientDelegate, error) {
 	transport := NewDigestTransport(publicKey, privateKey)
-	c, ic, cc, bc, sc, pc, brc, err := NewApiClient(transport, apiUrl, serverlessEndpoint)
+	ic, cc, bc, sc, pc, brc, err := NewApiClient(transport, apiUrl, serverlessEndpoint)
 	if err != nil {
 		return nil, err
 	}
 	return &ClientDelegate{
-		c:   c,
 		ic:  ic,
 		cc:  cc,
 		bc:  bc,
@@ -252,7 +250,7 @@ func (d *ClientDelegate) Restore(params *brOp.BackupRestoreServiceRestoreParams,
 	return d.brc.BackupRestoreService.BackupRestoreServiceRestore(params, opts...)
 }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport,
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string) (*importClient.TidbcloudImport,
 	*connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless,
 	*pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, error) {
 	httpclient := &http.Client{
@@ -262,20 +260,20 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	// v1beta api
 	u, err := prop.ValidateApiUrl(apiUrl)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, err
 	}
 	transport := httpTransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpclient)
 
 	// v1beta1 api
 	serverlessURL, err := prop.ValidateApiUrl(serverlessEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, err
 	}
 	serverlessTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	branchTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	backRestoreTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 
-	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default),
+	return importClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default),
 		branchClient.New(branchTransport, strfmt.Default), serverlessClient.New(serverlessTransport, strfmt.Default),
 		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default), nil
 }
