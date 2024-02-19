@@ -26,6 +26,7 @@ const (
 	CurProfile         string = "current-profile"
 	ApiUrl             string = "api-url"
 	ServerlessEndpoint string = "serverless-endpoint"
+	IAMEndpoint        string = "iam-endpoint"
 	OAuthEndpoint      string = "oauth-endpoint"
 	OAuthClientID      string = "oauth-client-id"
 	OAuthClientSecret  string = "oauth-client-secret"

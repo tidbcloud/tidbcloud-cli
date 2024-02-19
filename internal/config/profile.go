@@ -126,6 +126,11 @@ func (p *Profile) GetServerlessEndpoint() (newApiUrl string) {
 	return
 }
 
+func GetIAMEndpoint() (apiUrl string) { return activeProfile.GetIAMEndpoint() }
+func (p *Profile) GetIAMEndpoint() string {
+	return viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.IAMEndpoint))
+}
+
 func GetOAuthEndpoint() (apiUrl string) { return activeProfile.GetOAuthEndpoint() }
 func (p *Profile) GetOAuthEndpoint() (newApiUrl string) {
 	newApiUrl = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.OAuthEndpoint))

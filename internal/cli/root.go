@@ -39,6 +39,7 @@ import (
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/util"
 	ver "tidbcloud-cli/internal/version"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/fatih/color"
 	"github.com/juju/errors"
@@ -64,11 +65,15 @@ func Execute(ctx context.Context) {
 			if serverlessEndpoint == "" {
 				serverlessEndpoint = cloud.DefaultServerlessEndpoint
 			}
+			iamEndpoint := config.GetIAMEndpoint()
+			if iamEndpoint == "" {
+				iamEndpoint = iam.DefaultEndpoint
+			}
 
 			var delegate cloud.TiDBCloudClient
 			if publicKey != "" && privateKey != "" {
 				var err error
-				delegate, err = cloud.NewClientDelegateWithApiKey(publicKey, privateKey, apiUrl, serverlessEndpoint)
+				delegate, err = cloud.NewClientDelegateWithApiKey(publicKey, privateKey, apiUrl, serverlessEndpoint, iamEndpoint)
 				if err != nil {
 					return nil, err
 				}
@@ -87,7 +92,7 @@ func Execute(ctx context.Context) {
 					}
 					return nil, err
 				}
-				delegate, err = cloud.NewClientDelegateWithToken(token, apiUrl, serverlessEndpoint)
+				delegate, err = cloud.NewClientDelegateWithToken(token, apiUrl, serverlessEndpoint, iamEndpoint)
 				if err != nil {
 					return nil, err
 				}
