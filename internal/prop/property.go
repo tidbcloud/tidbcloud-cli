@@ -43,7 +43,7 @@ func GlobalProperties() []string {
 }
 
 func ProfileProperties() []string {
-	return []string{PublicKey, PrivateKey, ApiUrl, ServerlessEndpoint, TelemetryEnabled}
+	return []string{PublicKey, PrivateKey, ApiUrl, ServerlessEndpoint, IAMEndpoint, OAuthEndpoint, OAuthClientID, OAuthClientSecret, TelemetryEnabled}
 }
 
 func ValidateApiUrl(value string) (*url.URL, error) {
