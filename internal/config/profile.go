@@ -20,6 +20,7 @@ import (
 	"sort"
 	"time"
 
+	"tidbcloud-cli/internal/config/store"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/util"
 	"tidbcloud-cli/internal/version"
@@ -30,15 +31,12 @@ import (
 	"github.com/pingcap/log"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
-	"github.com/zalando/go-keyring"
 	"go.uber.org/zap"
 )
 
 var (
 	activeProfile = &Profile{}
 )
-
-const keyringService = "ticloud_access_token"
 
 type Profile struct {
 	name string
@@ -162,8 +160,14 @@ func SaveAccessToken(expireAt time.Time, tokenType string, token string, insecur
 	return activeProfile.SaveAccessToken(expireAt, tokenType, token, insecureStorageUsed)
 }
 func (p *Profile) SaveAccessToken(expireAt time.Time, tokenType string, token string, insecureStorageUsed bool) error {
+	// Clean up the previous oauth_token from the config file or keyring, if there were one
+	err := DeleteAccessToken()
+	if err != nil {
+		return err
+	}
+
 	if !insecureStorageUsed {
-		err := keyring.Set(keyringService, p.name, token)
+		err := store.Set(p.name, token)
 		if err != nil {
 			log.Debug("failed to save access token to keyring", zap.Error(err))
 			color.Yellow("failed to save access token to keyring, save to config file instead")
@@ -177,7 +181,7 @@ func (p *Profile) SaveAccessToken(expireAt time.Time, tokenType string, token st
 	}
 	viper.Set(fmt.Sprintf("%s.%s", p.name, prop.TokenExpiredAt), expireAt)
 	viper.Set(fmt.Sprintf("%s.%s", p.name, prop.TokenType), tokenType)
-	err := viper.WriteConfig()
+	err = viper.WriteConfig()
 	if err != nil {
 		return errors.Annotate(err, "failed to save token info to config file")
 	}
@@ -194,7 +198,7 @@ func (p *Profile) GetAccessToken() (string, error) {
 		return token, nil
 	}
 
-	return keyring.Get(keyringService, p.name)
+	return store.Get(p.name)
 }
 
 func ValidateToken() error {
@@ -227,11 +231,6 @@ func (p *Profile) DeleteAccessToken() error {
 		if err != nil {
 			return err
 		}
-	} else {
-		err := keyring.Delete(keyringService, p.name)
-		if err != nil {
-			return err
-		}
 	}
 
 	err = t.Delete(fmt.Sprintf("%s.%s", p.name, prop.TokenType))
@@ -248,13 +247,23 @@ func (p *Profile) DeleteAccessToken() error {
 	if err != nil {
 		return errors.Trace(err)
 	}
-
 	defer file.Close()
 
 	s := t.String()
 	_, err = file.WriteString(s)
 	if err != nil {
 		return errors.Trace(err)
+	}
+
+	// Refresh config from disk because we directly changed the config file, and viper doesn't know about it.
+	err = viper.ReadInConfig()
+	if err != nil {
+		return err
+	}
+
+	err = store.Delete(p.name)
+	if err != nil {
+		return err
 	}
 	return nil
 }
