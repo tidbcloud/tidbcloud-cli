@@ -34,6 +34,8 @@ import (
 	serverlessOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 	brClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client"
 	brOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
+	serverlessImportClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client"
+	serverlessImportOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 
 	apiClient "github.com/c4pt0r/go-tidbcloud-sdk-v1/client"
 	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
@@ -94,6 +96,12 @@ type TiDBCloudClient interface {
 	ListBackups(params *brOp.BackupRestoreServiceListBackupsParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceListBackupsOK, error)
 
 	Restore(params *brOp.BackupRestoreServiceRestoreParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceRestoreOK, error)
+
+	StartUpload(params *serverlessImportOp.ImportServiceStartUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceStartUploadOK, error)
+
+	CompleteMultipartUpload(params *serverlessImportOp.ImportServiceCompleteMultipartUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCompleteMultipartUploadOK, error)
+
+	CancelMultipartUpload(params *serverlessImportOp.ImportServiceCancelMultipartUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelMultipartUploadOK, error)
 }
 
 type ClientDelegate struct {
@@ -104,10 +112,11 @@ type ClientDelegate struct {
 	pc  *pingchatClient.TidbcloudPingchat
 	sc  *serverlessClient.TidbcloudServerless
 	brc *brClient.TidbcloudServerless
+	sic *serverlessImportClient.TidbcloudServerless
 }
 
 func NewClientDelegate(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string) (*ClientDelegate, error) {
-	c, ic, cc, bc, sc, pc, brc, err := NewApiClient(publicKey, privateKey, apiUrl, serverlessEndpoint)
+	c, ic, cc, bc, sc, pc, brc, sic, err := NewApiClient(publicKey, privateKey, apiUrl, serverlessEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -119,6 +128,7 @@ func NewClientDelegate(publicKey string, privateKey string, apiUrl string, serve
 		sc:  sc,
 		pc:  pc,
 		brc: brc,
+		sic: sic,
 	}, nil
 }
 
@@ -234,9 +244,19 @@ func (d *ClientDelegate) Restore(params *brOp.BackupRestoreServiceRestoreParams,
 	return d.brc.BackupRestoreService.BackupRestoreServiceRestore(params, opts...)
 }
 
-func NewApiClient(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport,
-	*connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless,
-	*pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, error) {
+func (d *ClientDelegate) StartUpload(params *serverlessImportOp.ImportServiceStartUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceStartUploadOK, error) {
+	return d.sic.ImportService.ImportServiceStartUpload(params, opts...)
+}
+
+func (d *ClientDelegate) CompleteMultipartUpload(params *serverlessImportOp.ImportServiceCompleteMultipartUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCompleteMultipartUploadOK, error) {
+	return d.sic.ImportService.ImportServiceCompleteMultipartUpload(params, opts...)
+}
+
+func (d *ClientDelegate) CancelMultipartUpload(params *serverlessImportOp.ImportServiceCancelMultipartUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelMultipartUploadOK, error) {
+	return d.sic.ImportService.ImportServiceCancelMultipartUpload(params, opts...)
+}
+
+func NewApiClient(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport, *connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *serverlessImportClient.TidbcloudServerless, error) {
 	httpclient := &http.Client{
 		Transport: NewTransportWithAgent(&digest.Transport{
 			Username: publicKey,
@@ -247,22 +267,24 @@ func NewApiClient(publicKey string, privateKey string, apiUrl string, serverless
 	// v1beta api
 	u, err := prop.ValidateApiUrl(apiUrl)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 	transport := httpTransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpclient)
 
 	// v1beta1 api
 	serverlessURL, err := prop.ValidateApiUrl(serverlessEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 	serverlessTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	branchTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	backRestoreTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
+	importTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 
 	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default),
 		branchClient.New(branchTransport, strfmt.Default), serverlessClient.New(serverlessTransport, strfmt.Default),
-		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default), nil
+		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default),
+		serverlessImportClient.New(importTransport, strfmt.Default), nil
 }
 
 // NewTransportWithAgent returns a new http.RoundTripper that add the User-Agent header,

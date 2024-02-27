@@ -1,0 +1,244 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "TiDB Cloud Serverless Open API",
+    "description": "TiDB Cloud Serverless Open API",
+    "version": "v1beta1"
+  },
+  "tags": [
+    {
+      "name": "ImportService"
+    }
+  ],
+  "host": "serverless.tidbapi.com",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1beta1/clusters/{clusterId}/imports:cancel-upload": {
+      "post": {
+        "operationId": "ImportService_CancelMultipartUpload",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster to import into",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "fileName",
+            "description": "The name of the file to import",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "uploadId",
+            "description": "The ID of the upload",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ImportService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/imports:complete-upload": {
+      "post": {
+        "operationId": "ImportService_CompleteMultipartUpload",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster to import into",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "parts",
+            "description": "The parts have been uploaded",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "$ref": "#/definitions/v1beta1CompletePart"
+              },
+              "required": [
+                "parts"
+              ]
+            }
+          },
+          {
+            "name": "fileName",
+            "description": "The name of the file to import",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "uploadId",
+            "description": "The ID of the upload",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ImportService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/imports:start-upload": {
+      "get": {
+        "summary": "Generate Upload url for importing data",
+        "operationId": "ImportService_StartUpload",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1StartUploadResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster to import into",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "fileName",
+            "description": "The name of the file to import",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "partNumber",
+            "description": "The number of parts to split the file into",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ImportService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1beta1CompletePart": {
+      "type": "object",
+      "properties": {
+        "partNumber": {
+          "type": "integer",
+          "format": "int32",
+          "title": "The part number"
+        },
+        "etag": {
+          "type": "string",
+          "title": "The ETag of the part"
+        }
+      },
+      "required": [
+        "partNumber",
+        "etag"
+      ]
+    },
+    "v1beta1StartUploadResponse": {
+      "type": "object",
+      "properties": {
+        "uploadUrl": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "The URL to upload the file to"
+        },
+        "uploadId": {
+          "type": "string",
+          "title": "The ID of the upload"
+        }
+      }
+    }
+  }
+}

@@ -34,7 +34,7 @@ generate-import-client: ## Generate import client
 	swagger generate client -f pkg/tidbcloud/import/import-api.json -A tidbcloud-import -t pkg/tidbcloud/import
 
 .PHONY: generate-connect-info-client
- generate-connect-info-client:
+generate-connect-info-client: ## Generate connect info client
 	@echo "==> Generating connect info client"
 	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
 	swagger generate client -f pkg/tidbcloud/connect_info/connect-info-api.json -A tidbcloud-connect-info -t pkg/tidbcloud/connect_info
@@ -50,7 +50,7 @@ addcopy: ## Add copyright to all files
 	@scripts/add-copy.sh
 
 .PHONY: generate-v1beta1-client
- generate-v1beta1-client:
+generate-v1beta1-client: ## Generate v1beta1 client
 	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
 	@echo "==> Generating branch client"
 	swagger generate client -f pkg/tidbcloud/v1beta1/branch/branch.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/branch
@@ -58,7 +58,8 @@ addcopy: ## Add copyright to all files
 	swagger generate client -f pkg/tidbcloud/v1beta1/serverless/serverless.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless
 	@echo "==> Generating serverless br client"
 	swagger generate client -f pkg/tidbcloud/v1beta1/serverless_br/serverless-br.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless_br
-
+	@echo "==> Generating serverless import client"
+	swagger generate client -f pkg/tidbcloud/v1beta1/serverless_import/import.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless_import
 
 .PHONY: fmt
 fmt: ## Format changed go

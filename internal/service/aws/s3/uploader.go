@@ -1,0 +1,519 @@
+package s3
+
+import (
+	"context"
+	"fmt"
+	"io"
+	"math"
+	"sort"
+	"sync"
+
+	"tidbcloud-cli/internal/service/cloud"
+	serverlessImportOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
+	serverlessImportModels "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/go-resty/resty/v2"
+	"github.com/pingcap/log"
+	"go.uber.org/zap"
+)
+
+// MaxUploadParts is the maximum allowed number of parts in a multipart upload
+// on Amazon S3.
+const MaxUploadParts int32 = 10000
+
+// MinUploadPartSize is the minimum allowed part size when uploading a part to
+// Amazon S3.
+const MinUploadPartSize int64 = 1024 * 1024 * 5
+
+// DefaultUploadPartSize is the default part size to buffer chunks of a
+// payload into.
+const DefaultUploadPartSize = MinUploadPartSize
+
+// DefaultUploadConcurrency is the default number of goroutines to spin up when
+// using Upload().
+const DefaultUploadConcurrency = 5
+
+type UploadFailure interface {
+	error
+
+	UploadID() string
+}
+
+type uploadError struct {
+	err error
+
+	// ID for multipart upload which failed.
+	uploadID string
+}
+
+// batchItemError returns the string representation of the error.
+func (m *uploadError) Error() string {
+	var extra string
+	if m.err != nil {
+		extra = fmt.Sprintf(", cause: %s", m.err.Error())
+	}
+	return fmt.Sprintf("upload multipart failed, upload id: %s%s", m.uploadID, extra)
+}
+
+// Unwrap returns the underlying error that cause the upload failure
+func (m *uploadError) Unwrap() error {
+	return m.err
+}
+
+// UploadID returns the id of the S3 upload which failed.
+func (m *uploadError) UploadID() string {
+	return m.uploadID
+}
+
+type PutObjectInput struct {
+	Key           *string
+	ContentLength *int64
+	ClusterID     *string
+	Body          ReaderAtSeeker
+}
+
+// The Uploader structure that calls Upload(). It is safe to call Upload()
+// on this structure for multiple objects and across concurrent goroutines.
+// Mutating the Uploader's properties is not safe to be done concurrently.
+type Uploader struct {
+	// The buffer size (in bytes) to use when buffering data into chunks and
+	// sending them as parts to S3. The minimum allowed part size is 5MB, and
+	// if this value is set to zero, the DefaultUploadPartSize value will be used.
+	PartSize int64
+
+	// The number of goroutines to spin up in parallel per call to Upload when
+	// sending parts. If this is set to zero, the DefaultUploadConcurrency value
+	// will be used.
+	//
+	// The concurrency pool is not shared between calls to Upload.
+	Concurrency int
+
+	// Setting this value to true will cause the SDK to avoid calling
+	// CancelMultipartUpload on a failure, leaving all successfully uploaded
+	// parts on S3 for manual recovery.
+	//
+	// Note that storing parts of an incomplete multipart upload counts towards
+	// space usage on S3 and will add additional costs if not cleaned up.
+	LeavePartsOnError bool
+
+	// MaxUploadParts is the max number of parts which will be uploaded to S3.
+	// Will be used to calculate the part size of the object to be uploaded.
+	// E.g: 5GB file, with MaxUploadParts set to 100, will upload the file
+	// as 100, 50MB parts. With a limited of s3.MaxUploadParts (10,000 parts).
+	//
+	// MaxUploadParts must not be used to limit the total number of bytes uploaded.
+	// Use a type like to io.LimitReader (https://golang.org/pkg/io/#LimitedReader)
+	// instead. An io.LimitReader is helpful when uploading an unbounded reader
+	// to S3, and you know its maximum size. Otherwise, the reader's io.EOF returned
+	// error must be used to signal end of stream.
+	//
+	// Defaults to package const's MaxUploadParts value.
+	MaxUploadParts int32
+
+	// Defines the buffer strategy used when uploading a part
+	BufferProvider manager.ReadSeekerWriteToProvider
+
+	// partPool allows for the re-usage of streaming payload part buffers between upload calls
+	partPool byteSlicePool
+
+	client cloud.TiDBCloudClient
+}
+
+// NewUploader creates a new Uploader instance to upload objects to S3. Pass In
+// additional functional options to customize the uploader's behavior. Requires a
+// cloud.TiDBCloudClient.
+func NewUploader(client cloud.TiDBCloudClient) *Uploader {
+	u := &Uploader{
+		PartSize:          DefaultUploadPartSize,
+		Concurrency:       DefaultUploadConcurrency,
+		LeavePartsOnError: false,
+		MaxUploadParts:    MaxUploadParts,
+		BufferProvider:    defaultUploadBufferProvider(),
+		client:            client,
+	}
+
+	u.partPool = newByteSlicePool(u.PartSize)
+
+	return u
+}
+
+// Upload uploads an object to S3, intelligently buffering large
+// files into smaller chunks and sending them in parallel across multiple
+// goroutines. You can configure the buffer size and concurrency through the
+// Uploader parameters.
+// It is safe to call this method concurrently across goroutines.
+func (u Uploader) Upload(ctx context.Context, input *PutObjectInput) error {
+	i := uploader{cfg: u, ctx: ctx, in: input}
+
+	return i.upload()
+}
+
+// internal structure to manage an upload to S3.
+type uploader struct {
+	ctx context.Context
+	cfg Uploader
+
+	in *PutObjectInput
+
+	readerPos int64 // current reader position
+	totalSize int64 // set to -1 if the size is not known
+}
+
+// internal logic for deciding whether to upload a single part or use a
+// multipart upload.
+func (u *uploader) upload() error {
+	if err := u.init(); err != nil {
+		return fmt.Errorf("unable to initialize upload: %w", err)
+	}
+	defer u.cfg.partPool.Close()
+
+	if u.cfg.PartSize < MinUploadPartSize {
+		return fmt.Errorf("part size must be at least %d bytes", MinUploadPartSize)
+	}
+
+	// Do one read to determine if we have more than one part
+	reader, _, cleanup, err := u.nextReader()
+	if err == io.EOF { // single part
+		return u.singlePart(reader, cleanup)
+	} else if err != nil {
+		cleanup()
+		return fmt.Errorf("read upload data failed: %w", err)
+	}
+
+	mu := multiUploader{uploader: u}
+	return mu.upload(reader, cleanup)
+}
+
+// init will initialize all default options.
+func (u *uploader) init() error {
+	if u.cfg.Concurrency == 0 {
+		u.cfg.Concurrency = DefaultUploadConcurrency
+	}
+	if u.cfg.PartSize == 0 {
+		u.cfg.PartSize = DefaultUploadPartSize
+	}
+	if u.cfg.MaxUploadParts == 0 {
+		u.cfg.MaxUploadParts = MaxUploadParts
+	}
+
+	// Try to get the total size for some optimizations
+	u.initSize()
+
+	// If PartSize was changed or partPool was never setup then we need to allocate a new pool
+	// so that we return []byte slices of the correct size
+	poolCap := u.cfg.Concurrency + 1
+	if u.cfg.partPool == nil || u.cfg.partPool.SliceSize() != u.cfg.PartSize {
+		u.cfg.partPool = newByteSlicePool(u.cfg.PartSize)
+		u.cfg.partPool.ModifyCapacity(poolCap)
+	} else {
+		u.cfg.partPool = &returnCapacityPoolCloser{byteSlicePool: u.cfg.partPool}
+		u.cfg.partPool.ModifyCapacity(poolCap)
+	}
+
+	return nil
+}
+
+// initSize tries to detect the total stream size, setting u.totalSize. If
+// the size is not known, totalSize is set to -1.
+func (u *uploader) initSize() {
+	u.totalSize = *u.in.ContentLength
+	// Try to adjust partSize if it is too small and account for
+	// integer division truncation.
+	if u.totalSize/u.cfg.PartSize >= int64(u.cfg.MaxUploadParts) {
+		// Add one to the part size to account for remainders
+		// during the size calculation. e.g. odd number of bytes.
+		u.cfg.PartSize = (u.totalSize / int64(u.cfg.MaxUploadParts)) + 1
+	}
+}
+
+// nextReader returns a seekable reader representing the next packet of data.
+// This operation increases the shared u.readerPos counter, but note that it
+// does not need to be wrapped in a mutex because nextReader is only called
+// from the main thread.
+func (u *uploader) nextReader() (io.ReadSeeker, int, func(), error) {
+	var err error
+	n := u.cfg.PartSize
+	if u.totalSize >= 0 {
+		bytesLeft := u.totalSize - u.readerPos
+
+		if bytesLeft <= u.cfg.PartSize {
+			err = io.EOF
+			n = bytesLeft
+		}
+	}
+
+	var (
+		reader  io.ReadSeeker
+		cleanup func()
+	)
+
+	reader = io.NewSectionReader(u.in.Body, u.readerPos, n)
+	if u.cfg.BufferProvider != nil {
+		reader, cleanup = u.cfg.BufferProvider.GetWriteTo(reader)
+	} else {
+		cleanup = func() {}
+	}
+
+	u.readerPos += n
+
+	return reader, int(n), cleanup, err
+}
+
+// singlePart contains upload logic for uploading a single chunk via
+// a regular PutObject request. Multipart requests require at least two
+// parts, or at least 5MB of data.
+func (u *uploader) singlePart(r io.ReadSeeker, cleanup func()) error {
+	defer cleanup()
+	url, err := u.cfg.client.StartUpload(serverlessImportOp.NewImportServiceStartUploadParams().
+		WithClusterID(*u.in.ClusterID).WithPartNumber(1).WithFileName(*u.in.Key).WithContext(u.ctx))
+	if err != nil {
+		return err
+	}
+
+	client := resty.New()
+	client.SetDebug(true)
+	resp, err := client.R().
+		SetContext(u.ctx).
+		SetContentLength(true).
+		SetBody(r).Put(url.Payload.UploadURL[0])
+
+	if err != nil {
+		return &uploadError{
+			err:      err,
+			uploadID: url.Payload.UploadID,
+		}
+	}
+
+	if !resp.IsSuccess() {
+		return &uploadError{
+			err:      fmt.Errorf("upload failed, code:%s, reason: %s", resp.Status(), string(resp.Body())),
+			uploadID: url.Payload.UploadID,
+		}
+	}
+
+	return nil
+}
+
+// internal structure to manage a specific multipart upload to S3.
+type multiUploader struct {
+	*uploader
+	wg       sync.WaitGroup
+	m        sync.Mutex
+	err      error
+	uploadID string
+	//parts    completedParts
+	parts completedParts
+	urls  []string
+}
+
+// keeps track of a single chunk of data being sent to S3.
+type chunk struct {
+	buf     io.ReadSeeker
+	num     int32
+	cleanup func()
+}
+
+// completedParts is a wrapper to make parts sortable by their part number,
+// since S3 required this list to be sent in sorted order.
+type completedParts []*serverlessImportModels.V1beta1CompletePart
+
+func (a completedParts) Len() int      { return len(a) }
+func (a completedParts) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a completedParts) Less(i, j int) bool {
+	return aws.ToInt32(a[i].PartNumber) < aws.ToInt32(a[j].PartNumber)
+}
+
+// upload will perform a multipart upload using the firstBuf buffer containing
+// the first chunk of data.
+func (u *multiUploader) upload(firstBuf io.ReadSeeker, cleanup func()) error {
+	partNumber := math.Ceil(float64(u.totalSize) / float64(u.cfg.PartSize))
+	url, err := u.cfg.client.StartUpload(serverlessImportOp.NewImportServiceStartUploadParams().
+		WithClusterID(*u.in.ClusterID).WithPartNumber(int32(partNumber)).WithFileName(*u.in.Key).WithContext(u.ctx))
+	if err != nil {
+		cleanup()
+		return err
+	}
+	u.uploadID = url.Payload.UploadID
+	u.urls = url.Payload.UploadURL
+
+	// Create the workers
+	ch := make(chan chunk, u.cfg.Concurrency)
+	for i := 0; i < u.cfg.Concurrency; i++ {
+		u.wg.Add(1)
+		go u.readChunk(ch)
+	}
+
+	// Send part 1 to the workers
+	var num int32 = 1
+	ch <- chunk{buf: firstBuf, num: num, cleanup: cleanup}
+
+	// Read and queue the rest of the parts
+	for u.getErr() == nil && err == nil {
+		var (
+			reader       io.ReadSeeker
+			nextChunkLen int
+			ok           bool
+		)
+
+		reader, nextChunkLen, cleanup, err = u.nextReader()
+		ok, err = u.shouldContinue(num, nextChunkLen, err)
+		if !ok {
+			cleanup()
+			if err != nil {
+				u.setErr(err)
+			}
+			break
+		}
+
+		num++
+
+		ch <- chunk{buf: reader, num: num, cleanup: cleanup}
+	}
+
+	// Close the channel, wait for workers, and complete upload
+	close(ch)
+	u.wg.Wait()
+	_ = u.complete()
+
+	if err := u.getErr(); err != nil {
+		return &uploadError{
+			err:      err,
+			uploadID: u.uploadID,
+		}
+	}
+	return nil
+}
+
+func (u *multiUploader) shouldContinue(part int32, nextChunkLen int, err error) (bool, error) {
+	if err != nil && err != io.EOF {
+		return false, fmt.Errorf("read multipart upload data failed, %w", err)
+	}
+
+	if nextChunkLen == 0 {
+		// No need to upload empty part, if file was empty to start
+		// with empty single part would have been created and never
+		// started multipart upload.
+		return false, nil
+	}
+
+	part++
+	// This upload exceeded maximum number of supported parts, error now.
+	if part > u.cfg.MaxUploadParts || part > MaxUploadParts {
+		var msg string
+		if part > u.cfg.MaxUploadParts {
+			msg = fmt.Sprintf("exceeded total allowed configured MaxUploadParts (%d). Adjust PartSize to fit in this limit",
+				u.cfg.MaxUploadParts)
+		} else {
+			msg = fmt.Sprintf("exceeded total allowed S3 limit MaxUploadParts (%d). Adjust PartSize to fit in this limit",
+				MaxUploadParts)
+		}
+		return false, fmt.Errorf(msg)
+	}
+
+	return true, err
+}
+
+// readChunk runs in worker goroutines to pull chunks off of the ch channel
+// and send() them as UploadPart requests.
+func (u *multiUploader) readChunk(ch chan chunk) {
+	defer u.wg.Done()
+	for {
+		data, ok := <-ch
+
+		if !ok {
+			break
+		}
+
+		if u.getErr() == nil {
+			if err := u.send(data); err != nil {
+				u.setErr(err)
+			}
+		}
+
+		data.cleanup()
+	}
+}
+
+// send performs an UploadPart request and keeps track of the completed
+// part information.
+func (u *multiUploader) send(c chunk) error {
+	client := resty.New()
+	client.SetDebug(true)
+	resp, err := client.R().
+		SetContext(u.ctx).
+		SetContentLength(true).
+		SetBody(c.buf).Put(u.urls[c.num-1])
+
+	if err != nil {
+		return err
+	}
+	if !resp.IsSuccess() {
+		return fmt.Errorf("upload failed, code:%s, reason: %s", resp.Status(), string(resp.Body()))
+	}
+
+	var completed serverlessImportModels.V1beta1CompletePart
+	completed.PartNumber = aws.Int32(c.num)
+	completed.Etag = aws.String(resp.Header().Get("ETag"))
+
+	u.m.Lock()
+	u.parts = append(u.parts, &completed)
+	u.m.Unlock()
+
+	return nil
+}
+
+// getErr is a thread-safe getter for the error object
+func (u *multiUploader) getErr() error {
+	u.m.Lock()
+	defer u.m.Unlock()
+
+	return u.err
+}
+
+// setErr is a thread-safe setter for the error object
+func (u *multiUploader) setErr(e error) {
+	u.m.Lock()
+	defer u.m.Unlock()
+
+	u.err = e
+}
+
+// fail will abort the multipart unless LeavePartsOnError is set to true.
+func (u *multiUploader) fail() {
+	if u.cfg.LeavePartsOnError {
+		return
+	}
+
+	_, err := u.cfg.client.CancelMultipartUpload(serverlessImportOp.NewImportServiceCancelMultipartUploadParams().
+		WithClusterID(*u.in.ClusterID).WithUploadID(u.uploadID).WithFileName(*u.in.Key).WithContext(u.ctx))
+	if err != nil {
+		log.Warn("failed to abort multipart upload", zap.Error(err))
+		return
+	}
+}
+
+// complete successfully completes a multipart upload and returns the response.
+func (u *multiUploader) complete() *s3.CompleteMultipartUploadOutput {
+	if u.getErr() != nil {
+		u.fail()
+		return nil
+	}
+
+	sort.Sort(u.parts)
+	_, err := u.cfg.client.CompleteMultipartUpload(serverlessImportOp.NewImportServiceCompleteMultipartUploadParams().
+		WithClusterID(*u.in.ClusterID).WithUploadID(u.uploadID).WithFileName(*u.in.Key).WithParts(u.parts).WithContext(u.ctx))
+	if err != nil {
+		u.setErr(err)
+		u.fail()
+	}
+
+	return nil
+}
+
+type ReaderAtSeeker interface {
+	io.ReaderAt
+	io.ReadSeeker
+}
