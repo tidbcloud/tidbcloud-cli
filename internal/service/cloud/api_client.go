@@ -34,6 +34,8 @@ import (
 	serverlessOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 	brClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client"
 	brOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
+	expClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client"
+	expOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
 
 	apiClient "github.com/c4pt0r/go-tidbcloud-sdk-v1/client"
 	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
@@ -94,6 +96,16 @@ type TiDBCloudClient interface {
 	ListBackups(params *brOp.BackupRestoreServiceListBackupsParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceListBackupsOK, error)
 
 	Restore(params *brOp.BackupRestoreServiceRestoreParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceRestoreOK, error)
+
+	GetExport(params *expOp.ExportServiceGetExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceGetExportOK, error)
+
+	CancelExport(params *expOp.ExportServiceCancelExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceCancelExportOK, error)
+
+	CreateExport(params *expOp.ExportServiceCreateExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceCreateExportOK, error)
+
+	DeleteExport(params *expOp.ExportServiceDeleteExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDeleteExportOK, error)
+
+	ListExports(params *expOp.ExportServiceListExportsParams, opts ...expOp.ClientOption) (*expOp.ExportServiceListExportsOK, error)
 }
 
 type ClientDelegate struct {
@@ -104,10 +116,11 @@ type ClientDelegate struct {
 	pc  *pingchatClient.TidbcloudPingchat
 	sc  *serverlessClient.TidbcloudServerless
 	brc *brClient.TidbcloudServerless
+	ec  *expClient.TidbcloudServerless
 }
 
 func NewClientDelegate(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string) (*ClientDelegate, error) {
-	c, ic, cc, bc, sc, pc, brc, err := NewApiClient(publicKey, privateKey, apiUrl, serverlessEndpoint)
+	c, ic, cc, bc, sc, pc, brc, ec, err := NewApiClient(publicKey, privateKey, apiUrl, serverlessEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -119,6 +132,7 @@ func NewClientDelegate(publicKey string, privateKey string, apiUrl string, serve
 		sc:  sc,
 		pc:  pc,
 		brc: brc,
+		ec:  ec,
 	}, nil
 }
 
@@ -234,9 +248,29 @@ func (d *ClientDelegate) Restore(params *brOp.BackupRestoreServiceRestoreParams,
 	return d.brc.BackupRestoreService.BackupRestoreServiceRestore(params, opts...)
 }
 
+func (d *ClientDelegate) GetExport(params *expOp.ExportServiceGetExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceGetExportOK, error) {
+	return d.ec.ExportService.ExportServiceGetExport(params, opts...)
+}
+
+func (d *ClientDelegate) CancelExport(params *expOp.ExportServiceCancelExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceCancelExportOK, error) {
+	return d.ec.ExportService.ExportServiceCancelExport(params, opts...)
+}
+
+func (d *ClientDelegate) CreateExport(params *expOp.ExportServiceCreateExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceCreateExportOK, error) {
+	return d.ec.ExportService.ExportServiceCreateExport(params, opts...)
+}
+
+func (d *ClientDelegate) DeleteExport(params *expOp.ExportServiceDeleteExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDeleteExportOK, error) {
+	return d.ec.ExportService.ExportServiceDeleteExport(params, opts...)
+}
+
+func (d *ClientDelegate) ListExports(params *expOp.ExportServiceListExportsParams, opts ...expOp.ClientOption) (*expOp.ExportServiceListExportsOK, error) {
+	return d.ec.ExportService.ExportServiceListExports(params, opts...)
+}
+
 func NewApiClient(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport,
 	*connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless,
-	*pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, error) {
+	*pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *expClient.TidbcloudServerless, error) {
 	httpclient := &http.Client{
 		Transport: NewTransportWithAgent(&digest.Transport{
 			Username: publicKey,
@@ -247,22 +281,24 @@ func NewApiClient(publicKey string, privateKey string, apiUrl string, serverless
 	// v1beta api
 	u, err := prop.ValidateApiUrl(apiUrl)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 	transport := httpTransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpclient)
 
-	// v1beta1 api
+	// v1beta1 api (serverless)
 	serverlessURL, err := prop.ValidateApiUrl(serverlessEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 	serverlessTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	branchTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	backRestoreTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
+	exportTransport := httpTransport.NewWithClient(serverlessURL.Host, expClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 
-	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default),
-		branchClient.New(branchTransport, strfmt.Default), serverlessClient.New(serverlessTransport, strfmt.Default),
-		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default), nil
+	return apiClient.New(transport, strfmt.Default), importClient.New(transport, strfmt.Default),
+		connectInfoClient.New(transport, strfmt.Default), branchClient.New(branchTransport, strfmt.Default),
+		serverlessClient.New(serverlessTransport, strfmt.Default), pingchatClient.New(transport, strfmt.Default),
+		brClient.New(backRestoreTransport, strfmt.Default), expClient.New(exportTransport, strfmt.Default), nil
 }
 
 // NewTransportWithAgent returns a new http.RoundTripper that add the User-Agent header,
