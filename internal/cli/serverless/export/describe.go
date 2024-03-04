@@ -138,7 +138,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			_, err = fmt.Fprintln(h.IOStreams.Out, string(dst.Bytes()))
+			_, err = fmt.Fprintln(h.IOStreams.Out, dst.String())
 			if err != nil {
 				return errors.Trace(err)
 			}
