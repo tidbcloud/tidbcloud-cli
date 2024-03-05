@@ -133,7 +133,7 @@ func GetOAuthEndpoint() (apiUrl string) { return activeProfile.GetOAuthEndpoint(
 func (p *Profile) GetOAuthEndpoint() (newApiUrl string) {
 	newApiUrl = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.OAuthEndpoint))
 	if newApiUrl == "" {
-		return "https://oauth.tidbcloud.com"
+		return OAuthEndpoint
 	}
 	return
 }
@@ -142,16 +142,16 @@ func GetOAuthClientID() (apiUrl string) { return activeProfile.GetOAuthClientID(
 func (p *Profile) GetOAuthClientID() (clientID string) {
 	clientID = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.OAuthClientID))
 	if clientID == "" {
-		return ""
+		return ClientID
 	}
 	return
 }
 
 func GetOAuthClientSecret() (apiUrl string) { return activeProfile.GetOAuthClientSecret() }
-func (p *Profile) GetOAuthClientSecret() (clientID string) {
-	clientID = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.OAuthClientSecret))
-	if clientID == "" {
-		return ""
+func (p *Profile) GetOAuthClientSecret() (clientSecret string) {
+	clientSecret = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.OAuthClientSecret))
+	if clientSecret == "" {
+		return ClientSecret
 	}
 	return
 }
