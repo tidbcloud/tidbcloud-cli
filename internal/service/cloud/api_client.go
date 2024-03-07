@@ -112,7 +112,8 @@ func NewClientDelegateWithToken(token string, apiUrl string, serverlessEndpoint 
 	transport := NewBearTokenTransport(token)
 	client := resty.New()
 	client.SetAuthToken(token)
-	client.SetDebug(true)
+	debug := os.Getenv(config.DebugEnv) != ""
+	client.SetDebug(debug)
 	ic, cc, bc, sc, pc, brc, is, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint, client)
 	if err != nil {
 		return nil, err

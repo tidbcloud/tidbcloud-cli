@@ -63,6 +63,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	var createCmd = &cobra.Command{
 		Use:         "create",
 		Short:       "Configure a user profile to store settings",
+		Long:        "Configure a user profile to store settings, where profile names are case-insensitive and do not contain '.' (periods).",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  To configure a new user profile in interactive mode:
   $ %[1]s config create
@@ -139,6 +140,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				privateKey = priKey
 			}
 
+			// viper treats all key names as case-insensitive see https://github.com/spf13/viper#does-viper-support-case-sensitive-keys
+			// and lowercases all keys  https://github.com/spf13/viper/blob/d9cca5ef33035202efb1586825bdbb15ff9ec3ba/viper.go#L1303
 			profileName = strings.ToLower(profileName)
 			profiles, err := config.GetAllProfiles()
 			if err != nil {

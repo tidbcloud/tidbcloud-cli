@@ -23,6 +23,7 @@ import (
 )
 
 const (
+	DebugEnv      = "TICLOUD_DEBUG"
 	cliName       = "ticloud"
 	cliNameInTiUP = "cloud"
 	HomePath      = ".ticloud"

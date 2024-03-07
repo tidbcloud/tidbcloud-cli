@@ -135,6 +135,10 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
+				err = os.Setenv(config.DebugEnv, "1")
+				if err != nil {
+					return err
+				}
 			} else {
 				log.InitLogger("WARN")
 			}

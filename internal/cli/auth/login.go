@@ -38,10 +38,6 @@ type LoginOpts struct {
 	insecureStorage bool
 }
 
-func (l LoginOpts) NonInteractiveFlags() []string {
-	return []string{}
-}
-
 func LoginCmd(h *internal.Helper) *cobra.Command {
 	opts := LoginOpts{
 		client: resty.New(),

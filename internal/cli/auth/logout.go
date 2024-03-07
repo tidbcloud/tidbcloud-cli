@@ -19,6 +19,7 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
+	"tidbcloud-cli/internal/flag"
 	ver "tidbcloud-cli/internal/version"
 
 	"github.com/fatih/color"
@@ -29,12 +30,27 @@ import (
 	"github.com/zalando/go-keyring"
 )
 
+type LogoutOpts struct {
+	client *resty.Client
+}
+
 func LogoutCmd(h *internal.Helper) *cobra.Command {
+	opts := LogoutOpts{
+		client: resty.New(),
+	}
 	var logoutCmd = &cobra.Command{
 		Use:   "logout",
 		Short: "Log out of the CLI.",
 		Example: fmt.Sprintf(`  To log out of the CLI:
   $ %[1]s auth logout`, config.CliName),
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			debug, err := cmd.Flags().GetBool(flag.Debug)
+			if err != nil {
+				return err
+			}
+			opts.client.SetDebug(debug)
+			return nil
+		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			token, err := config.GetAccessToken()
@@ -52,8 +68,8 @@ func LogoutCmd(h *internal.Helper) *cobra.Command {
 				ClientID:      config.GetOAuthClientID(),
 				ClientSecret:  config.GetOAuthClientSecret(),
 			}
-			client := resty.New()
-			resp, err := client.R().
+
+			resp, err := opts.client.R().
 				SetContext(ctx).
 				SetHeader("user-agent", fmt.Sprintf("%s/%s", config.CliName, ver.Version)).
 				SetHeader("Content-type", "application/json").
@@ -72,7 +88,7 @@ func LogoutCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			fmt.Fprintln(h.IOStreams.Out, "You have successfully logged out.")
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("You have successfully logged out."))
 
 			return nil
 		},
