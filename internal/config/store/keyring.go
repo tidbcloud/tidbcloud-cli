@@ -33,7 +33,7 @@ func Get(profile string) (string, error) {
 	}
 	val, err := keyring.Get(namespace, profile)
 	if err != nil {
-		return "", errors.New(fmt.Sprintf("failed to load token: %s", err))
+		return "", fmt.Errorf("failed to load token: %s", err)
 	}
 	return val, nil
 }
@@ -43,7 +43,7 @@ func Set(profile, token string) error {
 		return err
 	}
 	if err := keyring.Set(namespace, profile, token); err != nil {
-		return errors.New(fmt.Sprintf("failed to set token: %s", err))
+		return fmt.Errorf("failed to set token: %s", err)
 	}
 	return nil
 }
@@ -54,7 +54,7 @@ func Delete(profile string) error {
 	}
 	if err := keyring.Delete(namespace, profile); err != nil {
 		if !errors.Is(err, keyring.ErrNotFound) {
-			return errors.New(fmt.Sprintf("failed to delete token: %s", err))
+			return fmt.Errorf("failed to delete token: %s", err)
 		}
 	}
 	return nil
