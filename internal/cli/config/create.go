@@ -50,8 +50,6 @@ type CreateOpts struct {
 func (c CreateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ProfileName,
-		flag.PublicKey,
-		flag.PrivateKey,
 	}
 }
 
@@ -69,6 +67,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s config create
 
   To configure a new user profile in non-interactive mode:
+  $ %[1]s config create --profile-name <profile-name>
+
+  To configure a new user profile in non-interactive mode with api keys:
   $ %[1]s config create --profile-name <profile-name> --public-key <public-key> --private-key <private-key>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -104,7 +105,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
 
-				p := tea.NewProgram(initialDeletionInputModel())
+				p := tea.NewProgram(initialCreationInputModel())
 				inputModel, err := p.StartReturningModel()
 				if err != nil {
 					return errors.Trace(err)
@@ -167,12 +168,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	createCmd.Flags().String(flag.ProfileName, "", "the name of the profile, must not contain '.'")
-	createCmd.Flags().String(flag.PublicKey, "", "the public key of the TiDB Cloud API")
-	createCmd.Flags().String(flag.PrivateKey, "", "the private key of the TiDB Cloud API")
+	createCmd.Flags().String(flag.PublicKey, "", "the public key of the TiDB Cloud API(optional)")
+	createCmd.Flags().String(flag.PrivateKey, "", "the private key of the TiDB Cloud API(optional)")
 	return createCmd
 }
 
-func initialDeletionInputModel() ui.TextInputModel {
+func initialCreationInputModel() ui.TextInputModel {
 	m := ui.TextInputModel{
 		Inputs: make([]textinput.Model, 3),
 	}
@@ -198,10 +199,10 @@ func initialDeletionInputModel() ui.TextInputModel {
 				return nil
 			}
 		case publicKeyIdx:
-			t.Placeholder = "Public Key"
+			t.Placeholder = "Public Key(optional)"
 			t.CharLimit = 128
 		case privateKeyIdx:
-			t.Placeholder = "Private Key"
+			t.Placeholder = "Private Key(optional)"
 			t.EchoMode = textinput.EchoPassword
 			t.EchoCharacter = '•'
 			t.CharLimit = 128
