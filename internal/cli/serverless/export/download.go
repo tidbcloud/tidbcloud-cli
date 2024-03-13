@@ -33,7 +33,6 @@ import (
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
-	exportModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/models"
 )
 
 var DownloadPathInputFields = map[string]int{
@@ -77,7 +76,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 		interactive: true,
 	}
 
-	var describeCmd = &cobra.Command{
+	var downloadCmd = &cobra.Command{
 		Use:     "download",
 		Short:   "Download the local type export",
 		Aliases: []string{"get"},
@@ -142,23 +141,14 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := exportApi.NewExportServiceGetExportParams().
+			params := exportApi.NewExportServiceDownloadExportParams().
 				WithClusterID(clusterID).WithExportID(exportID)
-			export, err := d.GetExport(params)
+			resp, err := d.DownloadExports(params)
 			if err != nil {
 				return errors.Trace(err)
 			}
 
-			if export.Payload.Target.Type != exportModel.TargetTargetTypeLOCAL {
-				return errors.New("You can only download the local type export")
-			}
-
-			if export.Payload.State != exportModel.V1beta1ExportStateSuccess {
-				return errors.New("You can only download the export in success state")
-			}
-
-			downloadUrl := export.Payload.Target.Local
-			err = DownloadFile(downloadUrl, path)
+			err = DownloadFile(resp.Payload.DownloadURL, path)
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -167,11 +157,11 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	describeCmd.Flags().StringP(flag.ExportID, flag.ExportIDShort, "", "The ID of the export to be described")
-	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the export to be described")
-	describeCmd.Flags().String(flag.DownloadPath, "", "Where you want to download to. If not specified, download to the current directory")
-	describeCmd.MarkFlagsRequiredTogether(flag.ExportID, flag.ClusterID)
-	return describeCmd
+	downloadCmd.Flags().StringP(flag.ExportID, flag.ExportIDShort, "", "The ID of the export to be described")
+	downloadCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the export to be described")
+	downloadCmd.Flags().String(flag.DownloadPath, "", "Where you want to download to. If not specified, download to the current directory")
+	downloadCmd.MarkFlagsRequiredTogether(flag.ExportID, flag.ClusterID)
+	return downloadCmd
 }
 
 func DownloadFile(url, path string) error {

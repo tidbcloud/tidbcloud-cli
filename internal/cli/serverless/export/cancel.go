@@ -71,7 +71,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var force bool
-	var deleteCmd = &cobra.Command{
+	var cancelCmd = &cobra.Command{
 		Use:   "cancel",
 		Short: "Cancel an export",
 		Args:  cobra.NoArgs,
@@ -166,9 +166,9 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Cancel an export without confirmation")
-	deleteCmd.Flags().StringP(flag.ExportID, flag.ExportIDShort, "", "The ID of the export to be canceled")
-	deleteCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the export to be canceled")
+	cancelCmd.Flags().BoolVar(&force, flag.Force, false, "Cancel an export without confirmation")
+	cancelCmd.Flags().StringP(flag.ExportID, flag.ExportIDShort, "", "The ID of the export to be canceled")
+	cancelCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the export to be canceled")
 
-	return deleteCmd
+	return cancelCmd
 }

@@ -15,7 +15,6 @@
 package export
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 
@@ -128,20 +127,12 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			v, err := JSONMarshalWithoutEscape(export.Payload)
+			v, err := json.MarshalIndent(export.Payload, "", "  ")
 			if err != nil {
 				return errors.Trace(err)
-			}
-			var dst = new(bytes.Buffer)
-			err = json.Indent(dst, v, "", "  ")
-			if err != nil {
-				return err
 			}
 
-			_, err = fmt.Fprintln(h.IOStreams.Out, dst.String())
-			if err != nil {
-				return errors.Trace(err)
-			}
+			fmt.Fprintln(h.IOStreams.Out, string(v))
 			return nil
 		},
 	}
@@ -150,12 +141,4 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the export to be described")
 	describeCmd.MarkFlagsRequiredTogether(flag.ExportID, flag.ClusterID)
 	return describeCmd
-}
-
-func JSONMarshalWithoutEscape(t interface{}) ([]byte, error) {
-	buffer := &bytes.Buffer{}
-	encoder := json.NewEncoder(buffer)
-	encoder.SetEscapeHTML(false)
-	err := encoder.Encode(t)
-	return buffer.Bytes(), err
 }

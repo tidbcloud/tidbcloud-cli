@@ -238,6 +238,45 @@
           "ExportService"
         ]
       }
+    },
+    "/v1beta1/clusters/{clusterId}/exports/{exportId}:download": {
+      "get": {
+        "summary": "Generate download url",
+        "operationId": "ExportService_DownloadExport",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1DownloadExportsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "exportId",
+            "description": "Required. The ID of the export to be retrieved.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ExportService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -311,6 +350,15 @@
         }
       }
     },
+    "v1beta1DownloadExportsResponse": {
+      "type": "object",
+      "properties": {
+        "downloadUrl": {
+          "type": "string",
+          "description": "The download url of the export."
+        }
+      }
+    },
     "v1beta1Export": {
       "type": "object",
       "properties": {
@@ -344,6 +392,10 @@
         },
         "target": {
           "$ref": "#/definitions/v1beta1Target",
+          "description": "Optional. The target of the export."
+        },
+        "reason": {
+          "type": "string",
           "description": "Optional. The target of the export."
         },
         "createTime": {
@@ -420,11 +472,6 @@
         "type": {
           "$ref": "#/definitions/TargetTargetType",
           "description": "Optional. The exported file type."
-        },
-        "local": {
-          "type": "string",
-          "description": "Output_only. The download url of the export.",
-          "readOnly": true
         },
         "s3": {
           "$ref": "#/definitions/TargetS3Target",

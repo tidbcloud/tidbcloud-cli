@@ -11,17 +11,12 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
-	"github.com/go-openapi/validate"
 )
 
 // V1beta1Target v1beta1 target
 //
 // swagger:model v1beta1Target
 type V1beta1Target struct {
-
-	// Output_only. The download url of the export.
-	// Read Only: true
-	Local string `json:"local,omitempty"`
 
 	// Optional. The s3 information.
 	S3 *TargetS3Target `json:"s3,omitempty"`
@@ -88,10 +83,6 @@ func (m *V1beta1Target) validateType(formats strfmt.Registry) error {
 func (m *V1beta1Target) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateLocal(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateS3(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -103,15 +94,6 @@ func (m *V1beta1Target) ContextValidate(ctx context.Context, formats strfmt.Regi
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *V1beta1Target) contextValidateLocal(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "local", "body", string(m.Local)); err != nil {
-		return err
-	}
-
 	return nil
 }
 

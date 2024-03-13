@@ -43,6 +43,9 @@ type V1beta1Export struct {
 	// Read Only: true
 	Name string `json:"name,omitempty"`
 
+	// Optional. The target of the export.
+	Reason string `json:"reason,omitempty"`
+
 	// Output_only. The creator of the export.
 	// Read Only: true
 	State V1beta1ExportState `json:"state,omitempty"`

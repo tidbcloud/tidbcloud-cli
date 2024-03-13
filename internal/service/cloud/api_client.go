@@ -106,6 +106,8 @@ type TiDBCloudClient interface {
 	DeleteExport(params *expOp.ExportServiceDeleteExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDeleteExportOK, error)
 
 	ListExports(params *expOp.ExportServiceListExportsParams, opts ...expOp.ClientOption) (*expOp.ExportServiceListExportsOK, error)
+
+	DownloadExports(params *expOp.ExportServiceDownloadExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDownloadExportOK, error)
 }
 
 type ClientDelegate struct {
@@ -266,6 +268,10 @@ func (d *ClientDelegate) DeleteExport(params *expOp.ExportServiceDeleteExportPar
 
 func (d *ClientDelegate) ListExports(params *expOp.ExportServiceListExportsParams, opts ...expOp.ClientOption) (*expOp.ExportServiceListExportsOK, error) {
 	return d.ec.ExportService.ExportServiceListExports(params, opts...)
+}
+
+func (d *ClientDelegate) DownloadExports(params *expOp.ExportServiceDownloadExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDownloadExportOK, error) {
+	return d.ec.ExportService.ExportServiceDownloadExport(params, opts...)
 }
 
 func NewApiClient(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string) (*apiClient.GoTidbcloud, *importClient.TidbcloudImport,

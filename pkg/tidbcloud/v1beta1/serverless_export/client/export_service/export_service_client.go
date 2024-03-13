@@ -34,6 +34,8 @@ type ClientService interface {
 
 	ExportServiceDeleteExport(params *ExportServiceDeleteExportParams, opts ...ClientOption) (*ExportServiceDeleteExportOK, error)
 
+	ExportServiceDownloadExport(params *ExportServiceDownloadExportParams, opts ...ClientOption) (*ExportServiceDownloadExportOK, error)
+
 	ExportServiceGetExport(params *ExportServiceGetExportParams, opts ...ClientOption) (*ExportServiceGetExportOK, error)
 
 	ExportServiceListExports(params *ExportServiceListExportsParams, opts ...ClientOption) (*ExportServiceListExportsOK, error)
@@ -149,6 +151,43 @@ func (a *Client) ExportServiceDeleteExport(params *ExportServiceDeleteExportPara
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*ExportServiceDeleteExportDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ExportServiceDownloadExport generates download url
+*/
+func (a *Client) ExportServiceDownloadExport(params *ExportServiceDownloadExportParams, opts ...ClientOption) (*ExportServiceDownloadExportOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewExportServiceDownloadExportParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "ExportService_DownloadExport",
+		Method:             "GET",
+		PathPattern:        "/v1beta1/clusters/{clusterId}/exports/{exportId}:download",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ExportServiceDownloadExportReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ExportServiceDownloadExportOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ExportServiceDownloadExportDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
