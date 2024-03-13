@@ -77,14 +77,13 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var downloadCmd = &cobra.Command{
-		Use:     "download",
-		Short:   "Download the local type export",
-		Aliases: []string{"get"},
-		Args:    cobra.NoArgs,
-		Example: fmt.Sprintf(`  Downlod the local type export in interactive mode:
+		Use:   "download",
+		Short: "Download the local type export",
+		Args:  cobra.NoArgs,
+		Example: fmt.Sprintf(`  Download the local type export in interactive mode:
   $ %[1]s serverless export download
 
-  Downlod the local type export in non-interactive mode:
+  Download the local type export in non-interactive mode:
   $ %[1]s serverless export download -c <cluster-id> -e <export-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)

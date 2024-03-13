@@ -98,13 +98,16 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	var createCmd = &cobra.Command{
 		Use:   "create",
-		Short: "Create an export",
+		Short: "Create a serverless cluster export",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Create an export in interactive mode:
   $ %[1]s serverless export create
 
-  Create an export in non-interactive mode:
-  $ %[1]s serverless export create --cluster-id <cluster-id>`,
+  Create an export with local type in non-interactive mode:
+  $ %[1]s serverless export create -c <cluster-id> --databsae <database> --table <table>
+
+  Create an export with s3 type in non-interactive mode:
+  $ %[1]s serverless export create -c <cluster-id> --bucket-uri <bucket-uri> --access-key-id <access-key-id> --secret-access-key <secret-access-key>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)

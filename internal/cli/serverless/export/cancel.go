@@ -73,7 +73,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 	var force bool
 	var cancelCmd = &cobra.Command{
 		Use:   "cancel",
-		Short: "Cancel an export",
+		Short: "Cancel a serverless cluster export",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Cancel an export in interactive mode:
   $ %[1]s serverless export cancel

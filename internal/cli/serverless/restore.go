@@ -75,7 +75,7 @@ func RestoreCmd(h *internal.Helper) *cobra.Command {
 		Use:         "restore",
 		Short:       "Restore a serverless cluster",
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Restore a serverless cluster in interactive mode):
+		Example: fmt.Sprintf(`  Restore a serverless cluster in interactive mode:
  $ %[1]s serverless restore
 
  Restore a serverless cluster with snaphot mode in non-interactive mode:

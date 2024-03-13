@@ -324,7 +324,7 @@ func GetSelectedLocalExport(clusterID string, pageSize int64, client TiDBCloudCl
 
 	var items = make([]interface{}, 0, len(exportItems))
 	for _, item := range exportItems {
-		if item.Target.Type == exportModel.TargetTargetTypeLOCAL && item.Target.Local != "" {
+		if item.Target.Type == exportModel.TargetTargetTypeLOCAL && item.State == exportModel.V1beta1ExportStateSuccess {
 			items = append(items, &Export{
 				ID: item.ExportID,
 			})
@@ -334,7 +334,7 @@ func GetSelectedLocalExport(clusterID string, pageSize int64, client TiDBCloudCl
 		return nil, fmt.Errorf("no available exports found")
 	}
 
-	model, err := ui.InitialSelectModel(items, "Choose the export")
+	model, err := ui.InitialSelectModel(items, "Choose the succeed local type export")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
