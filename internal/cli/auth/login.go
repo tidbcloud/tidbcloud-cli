@@ -99,13 +99,12 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			color.HiGreen("\nSuccessfully logged in.")
-
 			err = config.SaveAccessToken(now.Add(time.Duration(token.ExpireIn)*time.Second), token.TokenType, token.AccessToken, opts.insecureStorage)
 			if err != nil {
 				return err
 			}
 
+			color.HiGreen("\nSuccessfully logged in.")
 			return nil
 		},
 	}

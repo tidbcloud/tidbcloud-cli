@@ -233,13 +233,18 @@ func (p *Profile) DeleteAccessToken() error {
 		}
 	}
 
-	err = t.Delete(fmt.Sprintf("%s.%s", p.name, prop.TokenType))
-	if err != nil {
-		return err
+	if t.Has(fmt.Sprintf("%s.%s", p.name, prop.TokenType)) {
+		err = t.Delete(fmt.Sprintf("%s.%s", p.name, prop.TokenType))
+		if err != nil {
+			return err
+		}
 	}
-	err = t.Delete(fmt.Sprintf("%s.%s", p.name, prop.TokenExpiredAt))
-	if err != nil {
-		return err
+
+	if t.Has(fmt.Sprintf("%s.%s", p.name, prop.TokenExpiredAt)) {
+		err = t.Delete(fmt.Sprintf("%s.%s", p.name, prop.TokenExpiredAt))
+		if err != nil {
+			return err
+		}
 	}
 
 	fs := afero.NewOsFs()

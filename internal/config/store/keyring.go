@@ -25,7 +25,7 @@ import (
 
 const namespace = "ticloud_access_token"
 
-var ErrNotSupported = errors.New("Keyring is not supported on WSL")
+var ErrNotSupported = errors.New("keyring is not supported on WSL")
 
 func Get(profile string) (string, error) {
 	if err := assertKeyringSupported(); err != nil {
@@ -33,6 +33,9 @@ func Get(profile string) (string, error) {
 	}
 	val, err := keyring.Get(namespace, profile)
 	if err != nil {
+		if errors.Is(err, keyring.ErrNotFound) {
+			return "", err
+		}
 		return "", fmt.Errorf("failed to load token: %s", err)
 	}
 	return val, nil
