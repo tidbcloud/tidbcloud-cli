@@ -21,8 +21,6 @@ import (
 	exec "golang.org/x/sys/execabs"
 )
 
-const ApplicationURL = "https://app.planetscale.com"
-
 // OpenBrowser opens a web browser at the specified url.
 func OpenBrowser(goos, url string) *exec.Cmd {
 	exe := "open"
