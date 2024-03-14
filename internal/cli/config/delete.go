@@ -17,6 +17,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -27,10 +28,12 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/fatih/color"
+	"github.com/pingcap/log"
+	"github.com/spf13/afero"
+	"go.uber.org/zap"
 
 	"github.com/juju/errors"
 	"github.com/pelletier/go-toml"
-	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -48,7 +51,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// Configuration needs to be deleted from toml, as viper doesn't support this yet.
 			// FIXME :: change when https://github.com/spf13/viper/pull/519 is merged.
-			profileName := args[0]
+			curProfileName := strings.ToLower(args[0])
 
 			if !force {
 				if !h.IOStreams.CanPrompt {
@@ -80,14 +83,19 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			err = t.Delete(profileName)
+			err = t.Delete(curProfileName)
 			if err != nil {
 				return errors.Trace(err)
 			}
 
 			// If the deleting profile is the current profile, set the current profile to another profile
 			curP := t.Get(prop.CurProfile)
-			if curP == profileName {
+			curPString, ok := curP.(string)
+			if !ok {
+				log.Debug("Failed to get current profile", zap.Any("current profile", curP))
+				curPString = ""
+			}
+			if strings.EqualFold(curPString, curProfileName) {
 				profiles, err := config.GetAllProfiles()
 				if err != nil {
 					return errors.Trace(err)
@@ -95,7 +103,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 
 				newP := ""
 				for _, profile := range profiles {
-					if profile != profileName {
+					if !strings.EqualFold(profile, curProfileName) {
 						newP = profile
 						break
 					}
@@ -125,7 +133,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Profile %s deleted successfully", profileName))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Profile %s deleted successfully", curProfileName))
 			return nil
 		},
 	}

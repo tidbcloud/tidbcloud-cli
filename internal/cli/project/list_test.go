@@ -25,6 +25,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 	"github.com/stretchr/testify/require"
@@ -101,9 +102,10 @@ func (suite *ListProjectSuite) TestListProjectArgs() {
 	result := &project.ListProjectsOK{
 		Payload: body,
 	}
-	suite.mockClient.On("ListProjects", project.NewListProjectsParams().
-		WithPage(&page).WithPageSize(&suite.h.QueryPageSize)).
-		Return(result, nil)
+	suite.mockClient.On("ListProjects", &iam.ListProjectsParams{
+		Page:     page,
+		PageSize: suite.h.QueryPageSize,
+	}).Return(result, nil)
 
 	tests := []struct {
 		name         string
@@ -159,11 +161,15 @@ func (suite *ListProjectSuite) TestListProjectWithMultiPages() {
 	result := &project.ListProjectsOK{
 		Payload: body,
 	}
-	suite.mockClient.On("ListProjects", project.NewListProjectsParams().
-		WithPage(&pageOne).WithPageSize(&suite.h.QueryPageSize)).
+	suite.mockClient.On("ListProjects", &iam.ListProjectsParams{
+		Page:     pageOne,
+		PageSize: suite.h.QueryPageSize,
+	}).
 		Return(result, nil)
-	suite.mockClient.On("ListProjects", project.NewListProjectsParams().
-		WithPage(&pageTwo).WithPageSize(&suite.h.QueryPageSize)).
+	suite.mockClient.On("ListProjects", &iam.ListProjectsParams{
+		Page:     pageTwo,
+		PageSize: suite.h.QueryPageSize,
+	}).
 		Return(result, nil)
 	cmd := ListCmd(suite.h)
 
