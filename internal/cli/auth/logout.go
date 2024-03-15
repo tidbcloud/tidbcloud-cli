@@ -40,7 +40,7 @@ func LogoutCmd(h *internal.Helper) *cobra.Command {
 	}
 	var logoutCmd = &cobra.Command{
 		Use:   "logout",
-		Short: "Log out of the CLI.",
+		Short: "Log out of the CLI",
 		Example: fmt.Sprintf(`  To log out of the CLI:
   $ %[1]s auth logout`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
