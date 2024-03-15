@@ -30,7 +30,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3.3.0
         with:
-          version: v1.55.2
+          version: v1.56.2
 
   fmt:
     name: fmt
