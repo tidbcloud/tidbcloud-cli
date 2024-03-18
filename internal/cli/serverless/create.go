@@ -17,6 +17,8 @@ package serverless
 import (
 	"context"
 	"fmt"
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
 	"math"
 	"strconv"
 	"time"
@@ -123,6 +125,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			var region string
 			var projectID string
 			var spendingLimitMonthly int32
+			var encryption bool
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
@@ -141,19 +144,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				for _, provider := range opts.serverlessProviders {
 					providers.Add(string(*provider.Provider))
 				}
-				model, err := ui.InitialSelectModel(providers.Values(), "Choose the cloud provider:")
-				if err != nil {
-					return err
-				}
-				p := tea.NewProgram(model)
-				providerModel, err := p.StartReturningModel()
+				cloudProvider, err = GetProvider(providers)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if m, _ := providerModel.(ui.SelectModel); m.Interrupted {
-					return util.InterruptError
-				}
-				cloudProvider = providerModel.(ui.SelectModel).Choices[providerModel.(ui.SelectModel).Selected].(string)
 
 				// filter out regions for the selected cloud provider
 				regionSet := hashset.New()
@@ -166,19 +160,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						})
 					}
 				}
-				model, err = ui.InitialSelectModel(regionSet.Values(), "Choose the cloud region:")
-				if err != nil {
-					return err
-				}
-				p = tea.NewProgram(model)
-				regionModel, err := p.StartReturningModel()
+				region, err = GetRegion(regionSet)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if m, _ := regionModel.(ui.SelectModel); m.Interrupted {
-					return util.InterruptError
-				}
-				region = regionModel.(ui.SelectModel).Choices[regionModel.(ui.SelectModel).Selected].(cloud.Region).Name
 
 				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
 				if err != nil {
@@ -187,8 +172,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				projectID = project.ID
 
 				// variables for input
-				p = tea.NewProgram(initialCreateInputModel())
-				inputModel, err := p.StartReturningModel()
+				p := tea.NewProgram(initialCreateInputModel())
+				inputModel, err := p.Run()
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -213,6 +198,22 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 					spendingLimitMonthly = int32(s) //nolint:gosec // will not overflow
 				}
+
+				// Ask enhanced encryption when spending limit is set
+				if spendingLimitMonthly > 0 {
+					prompt := &survey.Confirm{
+						Message: "Enable the enhanced encryption?",
+						Default: false,
+					}
+					err = survey.AskOne(prompt, &encryption)
+					if err != nil {
+						if err == terminal.InterruptErr {
+							return util.InterruptError
+						} else {
+							return err
+						}
+					}
+				}
 			} else {
 				// non-interactive mode, get values from flags
 				var err error
@@ -229,6 +230,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				projectID, err = cmd.Flags().GetString(flag.ProjectID)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				encryption, err = cmd.Flags().GetBool(flag.Encryption)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -257,6 +262,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					Monthly: spendingLimitMonthly,
 				}
 			}
+			if encryption {
+				v1Cluster.EncryptionConfig = &serverlessModel.V1beta1ClusterEncryptionConfig{
+					EnhancedEncryptionEnabled: encryption,
+				}
+			}
 
 			if h.IOStreams.CanPrompt {
 				err := CreateAndSpinnerWait(ctx, d, v1Cluster, h)
@@ -278,6 +288,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().StringP(flag.Region, flag.RegionShort, "", "The name of cloud region. You can use \"ticloud serverless regions\" to see all regions")
 	createCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project, in which the cluster will be created (optional: default \"default project\")")
 	createCmd.Flags().Int32(flag.SpendingLimitMonthly, 0, "Maximum monthly spending limit in USD cents (optional)")
+	createCmd.Flags().Bool(flag.Encryption, false, "Whether enhanced encryption for cluster data is enabled (optional)")
 	return createCmd
 }
 
@@ -398,4 +409,50 @@ func isNumber(s byte) bool {
 
 func isLetter(s byte) bool {
 	return s >= 'a' && s <= 'z' || s >= 'A' && s <= 'Z'
+}
+
+func GetProvider(providers *hashset.Set) (string, error) {
+	var cloudProvider string
+	if providers.Size() == 0 {
+		return cloudProvider, errors.New("No cloud provider available")
+	}
+	if providers.Size() == 1 {
+		return providers.Values()[0].(string), nil
+	}
+
+	model, err := ui.InitialSelectModel(providers.Values(), "Choose the cloud provider:")
+	if err != nil {
+		return cloudProvider, err
+	}
+	p := tea.NewProgram(model)
+	providerModel, err := p.Run()
+	if err != nil {
+		return cloudProvider, errors.Trace(err)
+	}
+	if m, _ := providerModel.(ui.SelectModel); m.Interrupted {
+		return cloudProvider, util.InterruptError
+	}
+	cloudProvider = providerModel.(ui.SelectModel).Choices[providerModel.(ui.SelectModel).Selected].(string)
+	return cloudProvider, nil
+}
+
+func GetRegion(regionSet *hashset.Set) (string, error) {
+	var region string
+	if regionSet.Size() == 0 {
+		return region, errors.New("No region available")
+	}
+	model, err := ui.InitialSelectModel(regionSet.Values(), "Choose the cloud region:")
+	if err != nil {
+		return region, err
+	}
+	p := tea.NewProgram(model)
+	regionModel, err := p.Run()
+	if err != nil {
+		return region, errors.Trace(err)
+	}
+	if m, _ := regionModel.(ui.SelectModel); m.Interrupted {
+		return region, util.InterruptError
+	}
+	region = regionModel.(ui.SelectModel).Choices[regionModel.(ui.SelectModel).Selected].(cloud.Region).Name
+	return region, nil
 }
