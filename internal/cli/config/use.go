@@ -17,6 +17,7 @@ package config
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -36,7 +37,7 @@ func UseCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s config use test`, config.CliName),
 		Args: util.RequiredArgs("profile-name"),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			profileName := args[0]
+			profileName := strings.ToLower(args[0])
 			err := SetProfile(h.IOStreams.Out, profileName)
 			if err != nil {
 				return err

@@ -23,11 +23,15 @@ import (
 )
 
 const (
+	DebugEnv      = "TICLOUD_DEBUG"
 	cliName       = "ticloud"
 	cliNameInTiUP = "cloud"
 	HomePath      = ".ticloud"
 
-	Confirmed = "yes"
+	Confirmed     = "yes"
+	OAuthEndpoint = "https://oauth.tidbcloud.com"
+	ClientID      = "wiSBy7f27zWBaBCxS16tDm7DDj2T3POgwFFbefTrgx8FAXKhzaPzv1Uta9NTck2r"
+	ClientSecret  = "ieKdWDao0QFmHbfYXpQJHuYZ9nLdpRptfE9d3W30WettIFLZL66JKewznvVkY39IkEbBQiZK60pjcnm7BN7Lj9uRiCSpIC4n2aI3IUyHlLKtvxZLrrfXugHsC7qhb1Js"
 )
 
 var (

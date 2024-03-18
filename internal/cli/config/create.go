@@ -50,8 +50,6 @@ type CreateOpts struct {
 func (c CreateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ProfileName,
-		flag.PublicKey,
-		flag.PrivateKey,
 	}
 }
 
@@ -63,11 +61,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	var createCmd = &cobra.Command{
 		Use:         "create",
 		Short:       "Configure a user profile to store settings",
+		Long:        "Configure a user profile to store settings, where profile names are case-insensitive and do not contain '.' (periods).",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  To configure a new user profile in interactive mode:
   $ %[1]s config create
 
   To configure a new user profile in non-interactive mode:
+  $ %[1]s config create --profile-name <profile-name>
+
+  To configure a new user profile in non-interactive mode with api keys:
   $ %[1]s config create --profile-name <profile-name> --public-key <public-key> --private-key <private-key>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -103,7 +105,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
 
-				p := tea.NewProgram(initialDeletionInputModel())
+				p := tea.NewProgram(initialCreationInputModel())
 				inputModel, err := p.StartReturningModel()
 				if err != nil {
 					return errors.Trace(err)
@@ -118,13 +120,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.New("profile name is required")
 				}
 				publicKey = inputs[publicKeyIdx].Value()
-				if len(publicKey) == 0 {
-					return errors.New("public key is required")
-				}
 				privateKey = inputs[privateKeyIdx].Value()
-				if len(privateKey) == 0 {
-					return errors.New("private key is required")
-				}
 			} else {
 				pName, err := cmd.Flags().GetString(flag.ProfileName)
 				if err != nil {
@@ -145,6 +141,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				privateKey = priKey
 			}
 
+			// viper treats all key names as case-insensitive see https://github.com/spf13/viper#does-viper-support-case-sensitive-keys
+			// and lowercases all keys  https://github.com/spf13/viper/blob/d9cca5ef33035202efb1586825bdbb15ff9ec3ba/viper.go#L1303
+			profileName = strings.ToLower(profileName)
 			profiles, err := config.GetAllProfiles()
 			if err != nil {
 				return errors.Trace(err)
@@ -169,12 +168,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	createCmd.Flags().String(flag.ProfileName, "", "the name of the profile, must not contain '.'")
-	createCmd.Flags().String(flag.PublicKey, "", "the public key of the TiDB Cloud API")
-	createCmd.Flags().String(flag.PrivateKey, "", "the private key of the TiDB Cloud API")
+	createCmd.Flags().String(flag.PublicKey, "", "the public key of the TiDB Cloud API(optional)")
+	createCmd.Flags().String(flag.PrivateKey, "", "the private key of the TiDB Cloud API(optional)")
 	return createCmd
 }
 
-func initialDeletionInputModel() ui.TextInputModel {
+func initialCreationInputModel() ui.TextInputModel {
 	m := ui.TextInputModel{
 		Inputs: make([]textinput.Model, 3),
 	}
@@ -200,10 +199,10 @@ func initialDeletionInputModel() ui.TextInputModel {
 				return nil
 			}
 		case publicKeyIdx:
-			t.Placeholder = "Public Key"
+			t.Placeholder = "Public Key(optional)"
 			t.CharLimit = 128
 		case privateKeyIdx:
-			t.Placeholder = "Private Key"
+			t.Placeholder = "Private Key(optional)"
 			t.EchoMode = textinput.EchoPassword
 			t.EchoCharacter = '•'
 			t.CharLimit = 128

@@ -90,6 +90,11 @@ func (suite *UseConfigSuite) TestUseConfigArgs() {
 			stdoutString: "Current profile has been changed to test1\n",
 		},
 		{
+			name:         "use config case-insensitive",
+			args:         []string{"tesT1"},
+			stdoutString: "Current profile has been changed to test1\n",
+		},
+		{
 			name: "use config with no args",
 			args: []string{},
 			err:  fmt.Errorf("missing argument <profile-name> \n\nUsage:\n  use <profile-name> [flags]\n\nExamples:\n  Use the \"test\" profile as the active profile:\n  $ ticloud config use test\n\nFlags:\n  -h, --help   help for use\n"),

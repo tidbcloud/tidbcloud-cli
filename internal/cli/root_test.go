@@ -106,6 +106,13 @@ func (suite *RootCmdSuite) TestFlagProfile() {
 			propertyKey:   "test1.private-key",
 			propertyValue: "{OPIFOPIDFO",
 		},
+		{
+			name:          "test flag -P case-insensitive",
+			args:          []string{"config", "set", "private-key", "SADASDIDFO", "-P", "tESt1"},
+			stdoutString:  "Set profile `test1` property `private-key` to value `SADASDIDFO` successfully\n",
+			propertyKey:   "test1.private-key",
+			propertyValue: "SADASDIDFO",
+		},
 	}
 
 	for _, tt := range tests {
