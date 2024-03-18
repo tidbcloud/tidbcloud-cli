@@ -21,13 +21,12 @@ import (
 )
 
 func Cmd(h *internal.Helper) *cobra.Command {
-	var branchCmd = &cobra.Command{
+	var backupCmd = &cobra.Command{
 		Use:   "backup",
 		Short: "Manage serverless cluster backups",
 	}
 
-	branchCmd.AddCommand(ListCmd(h))
-	branchCmd.AddCommand(DescribeCmd(h))
-	// branchCmd.AddCommand(DeleteCmd(h))
-	return branchCmd
+	backupCmd.AddCommand(ListCmd(h))
+	backupCmd.AddCommand(DescribeCmd(h))
+	return backupCmd
 }
