@@ -149,7 +149,7 @@ func NewClientDelegateWithApiKey(publicKey string, privateKey string, apiUrl str
 	transport := NewDigestTransport(publicKey, privateKey)
 	client := resty.New()
 	client.SetDigestAuth(publicKey, privateKey)
-	ic, cc, bc, sc, pc, brc,ec, is, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint, client)
+	ic, cc, bc, sc, pc, brc, ec, is, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint, client)
 	if err != nil {
 		return nil, err
 	}
@@ -160,7 +160,7 @@ func NewClientDelegateWithApiKey(publicKey string, privateKey string, apiUrl str
 		sc:  sc,
 		pc:  pc,
 		brc: brc,
-    ec: ec
+		ec:  ec,
 		is:  is,
 	}, nil
 }
@@ -301,7 +301,7 @@ func (d *ClientDelegate) DownloadExports(params *expOp.ExportServiceDownloadExpo
 	return d.ec.ExportService.ExportServiceDownloadExport(params, opts...)
 }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string, client *resty.Client) (*importClient.TidbcloudImport, *connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless,*expClient.TidbcloudServerless, *iam.Service, error) {
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string, client *resty.Client) (*importClient.TidbcloudImport, *connectInfoClient.TidbcloudConnectInfo, *branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *expClient.TidbcloudServerless, *iam.Service, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}
@@ -325,12 +325,12 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 
 	iamUrl, err := prop.ValidateApiUrl(iamEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 
 	return importClient.New(transport, strfmt.Default), connectInfoClient.New(transport, strfmt.Default),
 		branchClient.New(branchTransport, strfmt.Default), serverlessClient.New(serverlessTransport, strfmt.Default),
-		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default),expClient.New(exportTransport, strfmt.Default), iam.NewIamService(client, iamUrl.String()), nil
+		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default), expClient.New(exportTransport, strfmt.Default), iam.NewIamService(client, iamUrl.String()), nil
 }
 
 func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {
