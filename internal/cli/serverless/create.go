@@ -198,6 +198,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 					spendingLimitMonthly = int32(s) //nolint:gosec // will not overflow
 				}
+				// check clusterName
+				err = checkClusterName(clusterName)
+				if err != nil {
+					return errors.Trace(err)
+				}
 
 				// Ask enhanced encryption when spending limit is set
 				if spendingLimitMonthly > 0 {
@@ -237,15 +242,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
+				// check clusterName
+				err = checkClusterName(clusterName)
+				if err != nil {
+					return errors.Trace(err)
+				}
 			}
 
 			cmd.Annotations[telemetry.ProjectID] = projectID
-
-			// check clusterName
-			err = checkClusterName(clusterName)
-			if err != nil {
-				return errors.Trace(err)
-			}
 
 			v1Cluster := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 				DisplayName: &clusterName,
@@ -389,7 +393,7 @@ func initialCreateInputModel() ui.TextInputModel {
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
 		case spendingLimitIdx:
-			t.Placeholder = "Spending Limit Monthly($), e.g., 10. Skip it by press 0 or enter"
+			t.Placeholder = "Spending Limit Monthly(USD cents), e.g., 10. Skip it by press 0 or enter"
 		}
 		m.Inputs[i] = t
 	}
