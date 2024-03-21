@@ -26,6 +26,7 @@ import (
 	configCmd "tidbcloud-cli/internal/cli/config"
 	"tidbcloud-cli/internal/cli/project"
 	"tidbcloud-cli/internal/cli/serverless"
+	"tidbcloud-cli/internal/cli/serverless/dataimport/start"
 	"tidbcloud-cli/internal/cli/upgrade"
 	"tidbcloud-cli/internal/cli/version"
 	"tidbcloud-cli/internal/config"
@@ -100,7 +101,7 @@ func Execute(ctx context.Context) {
 			return delegate, nil
 		},
 		QueryPageSize: internal.DefaultPageSize,
-		MySQLHelper:   nil,
+		MySQLHelper:   &start.MySQLHelperImpl{},
 		IOStreams:     iostream.System(),
 	}
 
