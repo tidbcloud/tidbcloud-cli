@@ -1,0 +1,4 @@
+development:
+  <<: *default
+  adapter: mysql2
+  url: mysql2://${username}:${password}@${host}:${port}/${database}  

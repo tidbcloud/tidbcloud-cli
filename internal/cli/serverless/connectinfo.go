@@ -79,7 +79,7 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// flags
-			var clusterID, client, operatingSystem string
+			var clusterID, clientID, operatingSystemID string
 
 			// Get TiDBCloudClient
 			d, err := h.Client()
@@ -106,98 +106,135 @@ func ConnectInfoCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				// Get client
-				clientNameForInteractive, err := cloud.GetSelectedConnectClient(util.ConnectClientsList)
-				if err != nil {
-					return err
-				}
-				client = util.ClientsForInteractiveMap[clientNameForInteractive]
-
 				// Detect operating system
 				// TODO: detect linux operating system name
 				goOS := runtime.GOOS
 				if goOS == "darwin" {
-					goOS = "macOS"
+					goOS = "macos"
 				} else if goOS == "windows" {
-					goOS = "Windows"
+					goOS = "windows"
 				}
-				operatingSystems := util.OperatingSystemList
-				if goOS != "" && goOS != "linux" {
-					for id, value := range operatingSystems {
-						if strings.Contains(value, goOS) {
-							operatingSystems[id] = value + " (Detected)"
-							operatingSystems[0], operatingSystems[id] = operatingSystems[id], operatingSystems[0]
-							break
-						}
+				println("Detected operating system:", goOS)
+				operatingSystems := make([]util.Os, len(util.ConnectInfoOs))
+				for i, os := range util.ConnectInfoOs {
+					operatingSystems[i] = util.Os{
+						ID:   os.ID,
+						Name: os.Name,
+					}
+					if strings.Contains(os.ID, goOS) {
+						operatingSystems[i].Name = operatingSystems[i].Name + " (Detected)"
+						operatingSystems[0], operatingSystems[i] = operatingSystems[i], operatingSystems[0]
 					}
 				}
 
 				// Get operating system
-				operatingSystemCombination, err := cloud.GetSelectedConnectOs(operatingSystems)
+				operatingSystem, err := cloud.GetSelectedConnectOs(operatingSystems)
 				if err != nil {
 					return err
 				}
-				operatingSystem = strings.Split(operatingSystemCombination, "/")[0]
+				operatingSystemID = operatingSystem.ID
 
+				// Get client
+				client, err := cloud.GetSelectedConnectClient(util.ConnectInfoClient)
+				if err != nil {
+					return err
+				}
+				clientID = client.ID
+				if client.Options != nil && len(client.Options) > 0 {
+					// get options
+					option, err := cloud.GetSelectedConnectClientOptions(client.Options)
+					if err != nil {
+						return err
+					}
+					clientID = option.ID
+				}
 			} else { // non-interactive mode
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return err
 				}
 
-				clientNameForHelp, err := cmd.Flags().GetString(flag.ClientName)
+				clientName, err := cmd.Flags().GetString(flag.ClientName)
 				if err != nil {
 					return err
 				}
-				if v, ok := util.ClientsForHelpMap[strings.ToLower(clientNameForHelp)]; ok {
-					client = v
-				} else {
-					return errors.New(fmt.Sprintf("Unsupported client. Run \"%[1]s cluster connect-info -h\" to check supported clients list", config.CliName))
+				for _, v := range util.ConnectInfoClient {
+					name := v.Name
+					if v.Options != nil && len(v.Options) > 0 {
+						for _, option := range v.Options {
+							name = fmt.Sprintf("%s_%s", v.Name, option.Name)
+						}
+					}
+					if clientName == name {
+						clientID = v.ID
+						break
+					}
+				}
+				if clientID == "" {
+					return errors.New(fmt.Sprintf("Unsupported client. Run \"%[1]s serverless connect-info -h\" to check supported clients list", config.CliName))
 				}
 
-				operatingSystem, err = cmd.Flags().GetString(flag.OperatingSystem)
+				operatingSystemName, err := cmd.Flags().GetString(flag.OperatingSystem)
 				if err != nil {
 					return err
 				}
-				if !util.Contains(operatingSystem, util.OperatingSystemListForHelp) {
-					return errors.New(fmt.Sprintf("Unsupported operating system. Run \"%[1]s cluster connect-info -h\" to check supported operating systems list", config.CliName))
+				for _, v := range util.ConnectInfoOs {
+					osInfos := strings.Split(v.Name, "/")
+					for _, osInfo := range osInfos {
+						if operatingSystemName == osInfo {
+							operatingSystemID = v.ID
+							break
+						}
+					}
+				}
+				if operatingSystemID == "" {
+					return errors.New(fmt.Sprintf("Unsupported operating system. Run \"%[1]s serverless connect-info -h\" to check supported operating systems list", config.CliName))
 				}
 			}
 
-			// Get cluster info
+			// get cluster info
 			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID)
 			clusterInfo, err := d.GetCluster(params)
 			if err != nil {
 				return err
 			}
-
-			// Resolve cluster information
-			// Get connect parameter
 			defaultUser := fmt.Sprintf("%s.root", clusterInfo.Payload.UserPrefix)
 			host := clusterInfo.Payload.Endpoints.PublicEndpoint.Host
 			port := strconv.Itoa(int(clusterInfo.Payload.Endpoints.PublicEndpoint.Port))
-			clusterType := util.SERVERLESS
 
-			// Get connection string
-			connectInfo, err := cloud.RetrieveConnectInfo(d)
+			// get connect string
+			connectString, err := cloud.GetConnectString(clientID, operatingSystemID, defaultUser, host, port, "test")
 			if err != nil {
 				return err
 			}
-			connectionString, err := util.GenerateConnectionString(connectInfo, client, host, defaultUser, port, clusterType, operatingSystem, util.Shell)
-			if err != nil {
-				return err
-			}
+
 			fmt.Fprintln(h.IOStreams.Out)
-			fmt.Fprintln(h.IOStreams.Out, connectionString)
-
+			fmt.Fprintln(h.IOStreams.Out, connectString)
 			return nil
 		},
 	}
 
+	var ConnectClientName []string
+	for _, v := range util.ConnectInfoClient {
+		if v.Options != nil && len(v.Options) > 0 {
+			for _, option := range v.Options {
+				ConnectClientName = append(ConnectClientName, fmt.Sprintf("%s(%s)", v.Name, option.Name))
+			}
+		} else {
+			ConnectClientName = append(ConnectClientName, v.Name)
+		}
+	}
+
+	var ConnectOsName []string
+	for _, v := range util.ConnectInfoOs {
+		osInfos := strings.Split(v.Name, "/")
+		ConnectOsName = append(ConnectOsName, osInfos...)
+	}
+
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the Cluster")
-	cmd.Flags().String(flag.ClientName, "", fmt.Sprintf("Connected client. Supported clients: %q", util.ConnectClientsListForHelp))
+	cmd.Flags().String(flag.ClientName, "", fmt.Sprintf("Connected client. Supported clients: %q", ConnectClientName))
 	cmd.Flags().String(flag.OperatingSystem, "", fmt.Sprintf("Operating system name. "+
-		"Supported operating systems: %q", util.OperatingSystemListForHelp))
+		"Supported operating systems: %q", ConnectOsName))
 
 	return cmd
 }

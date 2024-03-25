@@ -1,0 +1,619 @@
+{
+    "endpoint": [
+        {
+            "id": "public",
+            "name": "Public"
+        },
+        {
+            "id": "private",
+            "name": "Private"
+        }
+    ],
+    "os": [
+        {
+            "id": "macos",
+            "name": "macOS"
+        },
+        {
+            "id": "debian",
+            "name": "Debian/Ubuntu/Arch"
+        },
+        {
+            "id": "centos",
+            "name": "CentOS/RedHat/Fedora"
+        },
+        {
+            "id": "alpine",
+            "name": "Alpine"
+        },
+        {
+            "id": "suse",
+            "name": "OpenSUSE"
+        },
+        {
+            "id": "windows",
+            "name": "Windows"
+        },
+        {
+            "id": "other",
+            "name": "Others"
+        }
+    ],
+    "ca": [
+        {
+            "os": "macos",
+            "type": "local",
+            "path": "/etc/ssl/cert.pem"
+        },
+        {
+            "os": "debian",
+            "type": "local",
+            "path": "/etc/ssl/certs/ca-certificates.crt"
+        },
+        {
+            "os": "centos",
+            "type": "local",
+            "path": "/etc/pki/tls/certs/ca-bundle.crt"
+        },
+        {
+            "os": "alpine",
+            "type": "local",
+            "path": "/etc/ssl/cert.pem"
+        },
+        {
+            "os": "suse",
+            "type": "local",
+            "path": "/etc/ssl/ca-bundle.pem"
+        },
+        {
+            "os": "windows",
+            "type": "link",
+            "path": "https://letsencrypt.org/certs/isrgrootx1.pem"
+        },
+        {
+            "os": "other",
+            "type": "link",
+            "path": "https://letsencrypt.org/certs/isrgrootx1.pem"
+        }
+    ],
+    "client": [
+        {
+            "id": "general",
+            "name": "General",
+            "options": [
+                {
+                    "id": "generalparams",
+                    "name": "Parameters"
+                },
+                {
+                    "id": "generalstring",
+                    "name": "Connection String"
+                }
+            ]
+        },
+        {
+            "id": "mysqlcli",
+            "name": "MySQL CLI"
+        },
+        {
+            "id": "mariadbcli",
+            "name": "MariaDB CLI"
+        },
+        {
+            "id": "dotenv",
+            "name": ".env"
+        },
+        {
+            "id": "mysqlconnectorj",
+            "name": "Java(MySQL Connector)"
+        },
+        {
+            "id": "mariadbconnectorj",
+            "name": "Java(MariaDB Connector)"
+        },
+        {
+            "id": "pythonmysqlclient",
+            "name": "Python(mysqlclient)"
+        },
+        {
+            "id": "pythonpymysql",
+            "name": "Python(PyMySQL)"
+        },
+        {
+            "id": "pythonmysqlconnector",
+            "name": "Python(MySQL Connector)"
+        },
+        {
+            "id": "sqlalchemy",
+            "name": "SQLAlchemy",
+            "options": [
+                {
+                    "id": "sqlalchemymysqlclient",
+                    "name": "mysqlclient"
+                },
+                {
+                    "id": "sqlalchemypymysql",
+                    "name": "PyMySQL"
+                },
+                {
+                    "id": "sqlalchemymysqlconnector",
+                    "name": "MySQL Connector"
+                }
+            ]
+        },
+        {
+            "id": "django",
+            "name": "Django"
+        },
+        {
+            "id": "nodemysql2",
+            "name": "Node.js(mysql2)"
+        },
+        {
+            "id": "prisma",
+            "name": "Prisma"
+        },
+        {
+            "id": "serverlessjs",
+            "name": "Serverless Driver"
+        },
+        {
+            "id": "go",
+            "name": "Go"
+        },
+        {
+            "id": "rails",
+            "name": "Rails"
+        },
+        {
+            "id": "wordpress",
+            "name": "WordPress"
+        },
+        {
+            "id": "datagrip",
+            "name": "DataGrip"
+        },
+        {
+            "id": "vscode",
+            "name": "VS Code"
+        },
+        {
+            "id": "dbeaver",
+            "name": "DBeaver"
+        },
+        {
+            "id": "mysqlworkbench",
+            "name": "MySQL Workbench"
+        },
+        {
+            "id": "navicat",
+            "name": "Navicat"
+        }
+    ],
+    "variable": [
+        {
+            "id": "host",
+            "placeholder": "<HOST>"
+        },
+        {
+            "id": "port",
+            "placeholder": "<PORT>"
+        },
+        {
+            "id": "username",
+            "placeholder": "<USERNAME>"
+        },
+        {
+            "id": "password",
+            "placeholder": "<PASSWORD>"
+        },
+        {
+            "id": "database",
+            "placeholder": "<DB>"
+        },
+        {
+            "id": "ca_path",
+            "placeholder": "<CA_PATH>"
+        }
+    ],
+    "connection": [
+        {
+            "endpoint": "public",
+            "client": "generalparams",
+            "type": "parameter",
+            "path": "./public/general/params",
+            "download_ca": [
+                "windows",
+                "other"
+            ]
+        },
+        {
+            "endpoint": "private",
+            "client": "generalparams",
+            "type": "parameter",
+            "path": "./private/general/params"
+        },
+        {
+            "endpoint": "public",
+            "client": "generalstring",
+            "type": "code",
+            "path": "./public/general/string",
+            "download_ca": [
+                "windows",
+                "other"
+            ]
+        },
+        {
+            "endpoint": "private",
+            "client": "generalstring",
+            "type": "code",
+            "path": "./private/general/string"
+        },
+        {
+            "endpoint": "public",
+            "client": "dotenv",
+            "type": "code",
+            "path": "./public/db.env"
+        },
+        {
+            "endpoint": "private",
+            "client": "dotenv",
+            "type": "code",
+            "path": "./private/db.env"
+        },
+        {
+            "endpoint": "public",
+            "client": "mysqlcli",
+            "type": "code",
+            "path": "./public/mysql.sh",
+            "download_ca": [
+                "windows",
+                "other"
+            ]
+        },
+        {
+            "endpoint": "private",
+            "client": "mysqlcli",
+            "type": "code",
+            "path": "./private/mysql.sh"
+        },
+        {
+            "endpoint": "public",
+            "client": "mariadbcli",
+            "type": "code",
+            "path": "./public/mariadb.sh",
+            "download_ca": [
+                "windows",
+                "other"
+            ]
+        },
+        {
+            "endpoint": "private",
+            "client": "mariadbcli",
+            "type": "code",
+            "path": "./private/mariadb.sh"
+        },
+        {
+            "endpoint": "public",
+            "client": "mysqlconnectorj",
+            "type": "code",
+            "path": "./public/java/mysql",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-java-jdbc"
+        },
+        {
+            "endpoint": "private",
+            "client": "mysqlconnectorj",
+            "type": "code",
+            "path": "./private/java/mysql",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-java-jdbc"
+        },
+        {
+            "endpoint": "public",
+            "client": "mariadbconnectorj",
+            "type": "code",
+            "path": "./public/java/mariadb"
+        },
+        {
+            "endpoint": "private",
+            "client": "mariadbconnectorj",
+            "type": "code",
+            "path": "./private/java/mariadb"
+        },
+        {
+            "endpoint": "public",
+            "client": "pythonmysqlclient",
+            "type": "code",
+            "path": "./public/python/mysqlclient.py",
+            "download_ca": [
+                "windows",
+                "other"
+            ],
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-python-mysqlclient"
+        },
+        {
+            "endpoint": "private",
+            "client": "pythonmysqlclient",
+            "type": "code",
+            "path": "./private/python/mysqlclient.py",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-python-mysqlclient"
+        },
+        {
+            "endpoint": "public",
+            "client": "pythonpymysql",
+            "type": "code",
+            "path": "./public/python/pymysql.py",
+            "download_ca": [
+                "windows",
+                "other"
+            ],
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-python-pymysql"
+        },
+        {
+            "endpoint": "private",
+            "client": "pythonpymysql",
+            "type": "code",
+            "path": "./private/python/pymysql.py",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-python-pymysql"
+        },
+        {
+            "endpoint": "public",
+            "client": "pythonmysqlconnector",
+            "type": "code",
+            "path": "./public/python/connector.py",
+            "download_ca": [
+                "windows",
+                "other"
+            ],
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-python-mysql-connector"
+        },
+        {
+            "endpoint": "private",
+            "client": "pythonmysqlconnector",
+            "type": "code",
+            "path": "./private/python/connector.py",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-python-mysql-connector"
+        },
+        {
+            "endpoint": "public",
+            "client": "sqlalchemymysqlclient",
+            "type": "code",
+            "path": "./public/sqlalchemy/mysqlclient",
+            "download_ca": [
+                "windows",
+                "other"
+            ],
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-python-sqlalchemy"
+        },
+        {
+            "endpoint": "private",
+            "client": "sqlalchemymysqlclient",
+            "type": "code",
+            "path": "./private/sqlalchemy/mysqlclient",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-python-sqlalchemy"
+        },
+        {
+            "endpoint": "public",
+            "client": "sqlalchemypymysql",
+            "type": "code",
+            "path": "./public/sqlalchemy/pymysql",
+            "download_ca": [
+                "windows",
+                "other"
+            ],
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-python-sqlalchemy"
+        },
+        {
+            "endpoint": "private",
+            "client": "sqlalchemypymysql",
+            "type": "code",
+            "path": "./private/sqlalchemy/pymysql",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-python-sqlalchemy"
+        },
+        {
+            "endpoint": "public",
+            "client": "sqlalchemymysqlconnector",
+            "type": "code",
+            "path": "./public/sqlalchemy/connector",
+            "download_ca": [
+                "windows",
+                "other"
+            ],
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-python-sqlalchemy"
+        },
+        {
+            "endpoint": "private",
+            "client": "sqlalchemymysqlconnector",
+            "type": "code",
+            "path": "./private/sqlalchemy/connector",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-python-sqlalchemy"
+        },
+        {
+            "endpoint": "public",
+            "client": "django",
+            "type": "code",
+            "path": "./public/django.py",
+            "download_ca": [
+                "windows",
+                "other"
+            ],
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-python-django"
+        },
+        {
+            "endpoint": "private",
+            "client": "django",
+            "type": "code",
+            "path": "./private/django.py",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-python-django"
+        },
+        {
+            "endpoint": "public",
+            "client": "nodemysql2",
+            "type": "code",
+            "path": "./public/js/mysql2",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-nodejs-mysql2"
+        },
+        {
+            "endpoint": "private",
+            "client": "nodemysql2",
+            "type": "code",
+            "path": "./private/js/mysql2",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-nodejs-mysql2"
+        },
+        {
+            "endpoint": "public",
+            "client": "prisma",
+            "type": "code",
+            "path": "./public/js/prisma",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-nodejs-prisma"
+        },
+        {
+            "endpoint": "private",
+            "client": "prisma",
+            "type": "code",
+            "path": "./private/js/prisma",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-nodejs-prisma"
+        },
+        {
+            "endpoint": "public",
+            "client": "serverlessjs",
+            "type": "code",
+            "path": "./public/js/serverless",
+            "doc": "https://docs.pingcap.com/tidbcloud/serverless-driver-node-example"
+        },
+        {
+            "endpoint": "private",
+            "client": "serverlessjs",
+            "type": "code",
+            "path": "./private/js/serverless",
+            "doc": "https://docs.pingcap.com/tidbcloud/serverless-driver-node-example"
+        },
+        {
+            "endpoint": "public",
+            "client": "go",
+            "type": "code",
+            "path": "./public/mysql.go",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-golang-sql-driver"
+        },
+        {
+            "endpoint": "private",
+            "client": "go",
+            "type": "code",
+            "path": "./private/mysql.go",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-golang-sql-driver"
+        },
+        {
+            "endpoint": "public",
+            "client": "rails",
+            "type": "code",
+            "path": "./public/rails.yml",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-ruby-rails"
+        },
+        {
+            "endpoint": "private",
+            "client": "rails",
+            "type": "code",
+            "path": "./private/rails.yml",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-sample-application-ruby-rails"
+        },
+        {
+            "endpoint": "public",
+            "client": "datagrip",
+            "type": "code",
+            "path": "./public/gui/datagrip",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-gui-datagrip"
+        },
+        {
+            "endpoint": "private",
+            "client": "datagrip",
+            "type": "code",
+            "path": "./private/gui/datagrip",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-gui-datagrip"
+        },
+        {
+            "endpoint": "public",
+            "client": "dbeaver",
+            "type": "code",
+            "path": "./public/java/mysql",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-gui-dbeaver"
+        },
+        {
+            "endpoint": "private",
+            "client": "dbeaver",
+            "type": "code",
+            "path": "./private/java/mysql",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-gui-dbeaver"
+        },
+        {
+            "endpoint": "public",
+            "client": "vscode",
+            "type": "parameter",
+            "path": "./public/general/params",
+            "download_ca": [
+                "windows",
+                "other"
+            ],
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-gui-vscode-sqltools"
+        },
+        {
+            "endpoint": "private",
+            "client": "vscode",
+            "type": "parameter",
+            "path": "./private/general/params",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-gui-vscode-sqltools"
+        },
+        {
+            "endpoint": "public",
+            "client": "mysqlworkbench",
+            "type": "parameter",
+            "path": "./public/general/params",
+            "download_ca": [
+                "windows",
+                "other"
+            ],
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-gui-mysql-workbench"
+        },
+        {
+            "endpoint": "private",
+            "client": "mysqlworkbench",
+            "type": "parameter",
+            "path": "./private/general/params",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-gui-mysql-workbench"
+        },
+        {
+            "endpoint": "public",
+            "client": "navicat",
+            "type": "parameter",
+            "path": "./public/general/params",
+            "download_ca": [
+                "windows",
+                "other"
+            ],
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-gui-navicat"
+        },
+        {
+            "endpoint": "private",
+            "client": "navicat",
+            "type": "parameter",
+            "path": "./private/general/params",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-gui-navicat"
+        },
+        {
+            "endpoint": "public",
+            "client": "wordpress",
+            "type": "parameter",
+            "path": "./public/general/params",
+            "download_ca": [
+                "windows",
+                "other"
+            ],
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-wordpress"
+        },
+        {
+            "endpoint": "private",
+            "client": "wordpress",
+            "type": "parameter",
+            "path": "./private/general/params",
+            "doc": "https://docs.pingcap.com/tidbcloud/dev-guide-wordpress"
+        }
+    ]
+}

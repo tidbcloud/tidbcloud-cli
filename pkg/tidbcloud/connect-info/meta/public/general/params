@@ -1,0 +1,6 @@
+HOST ${host}
+PORT ${port}
+USERNAME ${username}
+PASSWORD ${password}
+DATABASE ${database}
+CA ${ca_path}

@@ -1,0 +1,5 @@
+HOST ${host}
+PORT ${port}
+USERNAME ${username}
+PASSWORD ${password}
+DATABASE ${database}

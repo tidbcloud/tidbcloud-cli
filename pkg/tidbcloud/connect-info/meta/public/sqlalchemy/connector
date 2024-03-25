@@ -1,0 +1,1 @@
+mysql+mysqlconnector://${username}:${password}@${host}:${port}/${database}?ssl_ca=${ca_path}&ssl_verify_cert=true&ssl_verify_identity=true

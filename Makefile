@@ -59,6 +59,9 @@ addcopy: ## Add copyright to all files
 	@echo "==> Generating serverless br client"
 	swagger generate client -f pkg/tidbcloud/v1beta1/serverless_br/serverless-br.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless_br
 
+.PHONY: generate-connect-info
+generate-connect-info:
+	@scripts/connect-info.sh
 
 .PHONY: fmt
 fmt: ## Format changed go
