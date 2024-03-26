@@ -1,0 +1,1 @@
+mysql+mysqlconnector://${username}:${password}@${host}:${port}/${database}

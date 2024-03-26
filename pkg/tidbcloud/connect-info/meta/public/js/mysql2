@@ -1,0 +1,1 @@
+mysql://${username}:${password}@${host}:${port}/${database}?ssl={"rejectUnauthorized":true}

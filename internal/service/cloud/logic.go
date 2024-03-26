@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
@@ -504,47 +505,108 @@ func RetrieveConnectInfo(d TiDBCloudClient) (*connectInfoModel.ConnectInfo, erro
 	return connectInfo.Payload, nil
 }
 
-func GetSelectedConnectClient(connectClientList []string) (string, error) {
-	s := make([]interface{}, len(connectClientList))
-	for i, v := range connectClientList {
+func GetSelectedConnectClient(connectInfoClient []util.Client) (util.Client, error) {
+	s := make([]interface{}, len(connectInfoClient))
+	for i, v := range connectInfoClient {
 		s[i] = v
 	}
 	model, err := ui.InitialSelectModel(s, "Choose the client")
 	if err != nil {
-		return "", errors.Trace(err)
+		return util.Client{}, errors.Trace(err)
 	}
 	itemsPerPage := 6
 	model.EnablePagination(itemsPerPage)
 	model.EnableFilter()
 	p := tea.NewProgram(model)
-	connectClientModel, err := p.StartReturningModel()
+	connectClientModel, err := p.Run()
 	if err != nil {
-		return "", errors.Trace(err)
+		return util.Client{}, errors.Trace(err)
 	}
 	if m, _ := connectClientModel.(ui.SelectModel); m.Interrupted {
-		return "", util.InterruptError
+		return util.Client{}, util.InterruptError
 	}
-	connectClient := connectClientModel.(ui.SelectModel).GetSelectedItem().(string)
+	connectClient := connectClientModel.(ui.SelectModel).GetSelectedItem().(util.Client)
 	return connectClient, nil
 }
 
-func GetSelectedConnectOs(osList []string) (string, error) {
-	s := make([]interface{}, len(osList))
-	for i, v := range osList {
+func GetSelectedConnectClientOptions(connectInfoClientOption []util.Options) (util.Options, error) {
+	s := make([]interface{}, len(connectInfoClientOption))
+	for i, v := range connectInfoClientOption {
+		s[i] = v
+	}
+	model, err := ui.InitialSelectModel(s, "Choose the client")
+	if err != nil {
+		return util.Options{}, errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+	p := tea.NewProgram(model)
+	connectClientModel, err := p.Run()
+	if err != nil {
+		return util.Options{}, errors.Trace(err)
+	}
+	if m, _ := connectClientModel.(ui.SelectModel); m.Interrupted {
+		return util.Options{}, util.InterruptError
+	}
+	connectClient := connectClientModel.(ui.SelectModel).GetSelectedItem().(util.Options)
+	return connectClient, nil
+}
+
+func GetSelectedConnectOs(connectInfoOs []util.Os) (util.Os, error) {
+	s := make([]interface{}, len(connectInfoOs))
+	for i, v := range connectInfoOs {
 		s[i] = v
 	}
 	model, err := ui.InitialSelectModel(s, "Choose the operating system")
 	if err != nil {
-		return "", errors.Trace(err)
+		return util.Os{}, errors.Trace(err)
 	}
 	p := tea.NewProgram(model)
-	connectClientModel, err := p.StartReturningModel()
+	connectClientModel, err := p.Run()
 	if err != nil {
-		return "", errors.Trace(err)
+		return util.Os{}, errors.Trace(err)
 	}
 	if m, _ := connectClientModel.(ui.SelectModel); m.Interrupted {
-		return "", util.InterruptError
+		return util.Os{}, util.InterruptError
 	}
-	operatingSystem := connectClientModel.(ui.SelectModel).GetSelectedItem().(string)
+	operatingSystem := connectClientModel.(ui.SelectModel).GetSelectedItem().(util.Os)
 	return operatingSystem, nil
+}
+
+func GetConnectString(clientID, osID string, user, host, port, database string) (string, error) {
+	var connectInfo util.Connection
+	for _, v := range util.ConnectInfoConnection {
+		if v.Client == clientID && v.Endpoint == "public" {
+			connectInfo = v
+		}
+	}
+	if connectInfo.Client == "" {
+		return "", errors.New("Can not find the connection information for the client")
+	}
+
+	// generate connection string
+	connectString := connectInfo.Content
+	connectString = strings.Replace(connectString, "${host}", host, -1)
+	connectString = strings.Replace(connectString, "${username}", user, -1)
+	connectString = strings.Replace(connectString, "${port}", port, -1)
+	connectString = strings.Replace(connectString, "${database}", database, -1)
+	connectString = strings.Replace(connectString, "${password}", "<your_password>", -1)
+	downloadCa := false
+	for _, v := range connectInfo.DownloadCa {
+		if v == osID {
+			connectString = strings.Replace(connectString, "${ca_path}", "<path_to_ca_cert>", -1)
+			downloadCa = true
+			break
+		}
+	}
+	if !downloadCa {
+		for _, v := range util.ConnectInfoCa {
+			if v.Os == osID {
+				connectString = strings.Replace(connectString, "${ca_path}", v.Path, -1)
+				break
+			}
+		}
+	}
+	return connectString, nil
 }

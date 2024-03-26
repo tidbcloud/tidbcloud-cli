@@ -1,0 +1,1 @@
+mysql+pymysql://${username}:${password}@${host}:${port}/${database}

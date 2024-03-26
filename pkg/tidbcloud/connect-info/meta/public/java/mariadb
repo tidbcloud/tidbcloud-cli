@@ -1,0 +1,1 @@
+jdbc:mariadb://${host}:${port}/${database}?user=${username}&password=${password}&sslMode=verify-full

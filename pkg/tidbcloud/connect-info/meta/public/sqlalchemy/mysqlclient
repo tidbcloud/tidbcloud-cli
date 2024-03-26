@@ -1,0 +1,1 @@
+mysql+mysqldb://${username}:${password}@${host}:${port}/${database}?ssl_mode=VERIFY_IDENTITY&ssl_ca=${ca_path}
