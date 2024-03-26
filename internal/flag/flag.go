@@ -83,6 +83,7 @@ const (
 	ExportID              string = "export-id"
 	ExportIDShort         string = "e"
 	DownloadPath          string = "download-path"
+	Encryption            string = "encryption"
 )
 
 const (
