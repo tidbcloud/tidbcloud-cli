@@ -173,9 +173,9 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			if err != nil {
 				return errors.Trace(err)
 			}
-			host = cluster.Payload.Endpoints.PublicEndpoint.Host
+			host = cluster.Payload.Endpoints.Public.Host
 			name = *cluster.Payload.DisplayName
-			port = strconv.Itoa(int(cluster.Payload.Endpoints.PublicEndpoint.Port))
+			port = strconv.Itoa(int(cluster.Payload.Endpoints.Public.Port))
 			if userName == "" {
 				userName = cluster.Payload.UserPrefix + ".root"
 				fmt.Fprintln(h.IOStreams.Out, color.GreenString("Current user: ")+color.HiGreenString(userName))

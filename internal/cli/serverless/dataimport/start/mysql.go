@@ -341,8 +341,8 @@ It depends on 'mysql' command-line tool, please make sure you have installed it 
 			if userName == "" {
 				userName = fmt.Sprintf("%s.root", clusterInfo.Payload.UserPrefix)
 			}
-			host := clusterInfo.Payload.Endpoints.PublicEndpoint.Host
-			port := strconv.Itoa(int(clusterInfo.Payload.Endpoints.PublicEndpoint.Port))
+			host := clusterInfo.Payload.Endpoints.Public.Host
+			port := strconv.Itoa(int(clusterInfo.Payload.Endpoints.Public.Port))
 			clusterType := SERVERLESS
 
 			goOS := runtime.GOOS
