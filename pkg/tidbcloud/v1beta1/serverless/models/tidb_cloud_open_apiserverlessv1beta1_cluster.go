@@ -20,6 +20,8 @@ import (
 type TidbCloudOpenApiserverlessv1beta1Cluster struct {
 
 	// Optional. The annotations for the cluster.
+	// tidb.cloud/has-set-password. The annotation for whether the cluster has set password.
+	// tidb.cloud/available-features. The annotation for the available features of the cluster.
 	Annotations map[string]string `json:"annotations,omitempty"`
 
 	// Optional. Automated backup policy to set on the cluster.
@@ -46,9 +48,11 @@ type TidbCloudOpenApiserverlessv1beta1Cluster struct {
 	EncryptionConfig *V1beta1ClusterEncryptionConfig `json:"encryptionConfig,omitempty"`
 
 	// Optional. The endpoints for connecting to the cluster.
-	Endpoints *V1beta1ClusterEndpoints `json:"endpoints,omitempty"`
+	Endpoints *TidbCloudOpenApiserverlessv1beta1ClusterEndpoints `json:"endpoints,omitempty"`
 
 	// Optional. The labels for the cluster.
+	// tidb.cloud/organization. The label for the cluster organization id.
+	// tidb.cloud/project. The label for the cluster project id.
 	Labels map[string]string `json:"labels,omitempty"`
 
 	// Output_only. The unique name of the cluster.
@@ -57,14 +61,14 @@ type TidbCloudOpenApiserverlessv1beta1Cluster struct {
 
 	// Required. Region where the cluster will be created.
 	// Required: true
-	Region *TidbCloudOpenApiserverlessv1beta1Region `json:"region"`
+	Region *Commonv1beta1Region `json:"region"`
 
 	// Optional. The spending limit for the cluster.
 	SpendingLimit *ClusterSpendingLimit `json:"spendingLimit,omitempty"`
 
 	// Output_only. The current state of the cluster.
 	// Read Only: true
-	State *TidbCloudOpenApiserverlessv1beta1ClusterState `json:"state,omitempty"`
+	State *Commonv1beta1ClusterState `json:"state,omitempty"`
 
 	// Output_only. Timestamp when the cluster was last updated.
 	// Read Only: true
@@ -73,7 +77,7 @@ type TidbCloudOpenApiserverlessv1beta1Cluster struct {
 
 	// Output_only. Usage details of the cluster.
 	// Read Only: true
-	Usage *ClusterUsage `json:"usage,omitempty"`
+	Usage *V1beta1ClusterUsage `json:"usage,omitempty"`
 
 	// Output_only. The unique prefix in SQL user name.
 	// Read Only: true
