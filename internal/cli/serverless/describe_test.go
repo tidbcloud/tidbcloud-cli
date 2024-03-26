@@ -44,7 +44,7 @@ const getClusterResultStr = `{
   "createdBy": "yuhang.shi@pingcap.com",
   "displayName": "Cluster0",
   "endpoints": {
-    "privateEndpoint": {
+    "private": {
       "aws": {
         "availabilityZone": [
           "use1-az1"
@@ -54,7 +54,7 @@ const getClusterResultStr = `{
       "host": "gateway01-privatelink.us-east-1.prod.aws.tidbcloud.com",
       "port": 4000
     },
-    "publicEndpoint": {
+    "public": {
       "host": "gateway01.us-east-1.prod.aws.tidbcloud.com",
       "port": 4000
     }
