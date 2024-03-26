@@ -86,11 +86,11 @@ func (o *ExportServiceDownloadExportOK) Code() int {
 }
 
 func (o *ExportServiceDownloadExportOK) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/exports/{exportId}:download][%d] exportServiceDownloadExportOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:download][%d] exportServiceDownloadExportOK  %+v", 200, o.Payload)
 }
 
 func (o *ExportServiceDownloadExportOK) String() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/exports/{exportId}:download][%d] exportServiceDownloadExportOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:download][%d] exportServiceDownloadExportOK  %+v", 200, o.Payload)
 }
 
 func (o *ExportServiceDownloadExportOK) GetPayload() *models.V1beta1DownloadExportsResponse {
@@ -158,11 +158,11 @@ func (o *ExportServiceDownloadExportDefault) Code() int {
 }
 
 func (o *ExportServiceDownloadExportDefault) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/exports/{exportId}:download][%d] ExportService_DownloadExport default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:download][%d] ExportService_DownloadExport default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ExportServiceDownloadExportDefault) String() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/exports/{exportId}:download][%d] ExportService_DownloadExport default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:download][%d] ExportService_DownloadExport default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ExportServiceDownloadExportDefault) GetPayload() *models.RPCStatus {

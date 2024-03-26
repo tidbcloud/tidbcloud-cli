@@ -164,7 +164,7 @@ func (a *Client) ExportServiceDownloadExport(params *ExportServiceDownloadExport
 	}
 	op := &runtime.ClientOperation{
 		ID:                 "ExportService_DownloadExport",
-		Method:             "GET",
+		Method:             "POST",
 		PathPattern:        "/v1beta1/clusters/{clusterId}/exports/{exportId}:download",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},

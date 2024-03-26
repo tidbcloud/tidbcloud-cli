@@ -61,6 +61,9 @@ ExportServiceDownloadExportParams contains all the parameters to send to the API
 */
 type ExportServiceDownloadExportParams struct {
 
+	// Body.
+	Body interface{}
+
 	/* ClusterID.
 
 	   Required. The ID of the cluster.
@@ -126,6 +129,17 @@ func (o *ExportServiceDownloadExportParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithBody adds the body to the export service download export params
+func (o *ExportServiceDownloadExportParams) WithBody(body interface{}) *ExportServiceDownloadExportParams {
+	o.SetBody(body)
+	return o
+}
+
+// SetBody adds the body to the export service download export params
+func (o *ExportServiceDownloadExportParams) SetBody(body interface{}) {
+	o.Body = body
+}
+
 // WithClusterID adds the clusterID to the export service download export params
 func (o *ExportServiceDownloadExportParams) WithClusterID(clusterID string) *ExportServiceDownloadExportParams {
 	o.SetClusterID(clusterID)
@@ -155,6 +169,11 @@ func (o *ExportServiceDownloadExportParams) WriteToRequest(r runtime.ClientReque
 		return err
 	}
 	var res []error
+	if o.Body != nil {
+		if err := r.SetBodyParam(o.Body); err != nil {
+			return err
+		}
+	}
 
 	// path param clusterId
 	if err := r.SetPathParam("clusterId", o.ClusterID); err != nil {

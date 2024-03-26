@@ -17,11 +17,11 @@ import (
 // V1beta1ExportState Output Only. Export State.
 //
 //   - STATE_UNSPECIFIED: The state of the export is unknown.
-//   - Running: The export job is being created.
-//   - Success: The export job is success.
-//   - Failed: The export job is failed.
-//   - Cancel: The export job is canceled.
-//   - Deleted: The export job is deleted.
+//   - RUNNING: The export job is being created.
+//   - SUCCEEDED: The export job is success.
+//   - FAILED: The export job is failed.
+//   - CANCELED: The export job is canceled.
+//   - DELETED: The export job is deleted.
 //
 // swagger:model v1beta1ExportState
 type V1beta1ExportState string
@@ -37,20 +37,20 @@ func (m V1beta1ExportState) Pointer() *V1beta1ExportState {
 
 const (
 
-	// V1beta1ExportStateRunning captures enum value "Running"
-	V1beta1ExportStateRunning V1beta1ExportState = "Running"
+	// V1beta1ExportStateRUNNING captures enum value "RUNNING"
+	V1beta1ExportStateRUNNING V1beta1ExportState = "RUNNING"
 
-	// V1beta1ExportStateSuccess captures enum value "Success"
-	V1beta1ExportStateSuccess V1beta1ExportState = "Success"
+	// V1beta1ExportStateSUCCEEDED captures enum value "SUCCEEDED"
+	V1beta1ExportStateSUCCEEDED V1beta1ExportState = "SUCCEEDED"
 
-	// V1beta1ExportStateFailed captures enum value "Failed"
-	V1beta1ExportStateFailed V1beta1ExportState = "Failed"
+	// V1beta1ExportStateFAILED captures enum value "FAILED"
+	V1beta1ExportStateFAILED V1beta1ExportState = "FAILED"
 
-	// V1beta1ExportStateCancel captures enum value "Cancel"
-	V1beta1ExportStateCancel V1beta1ExportState = "Cancel"
+	// V1beta1ExportStateCANCELED captures enum value "CANCELED"
+	V1beta1ExportStateCANCELED V1beta1ExportState = "CANCELED"
 
-	// V1beta1ExportStateDeleted captures enum value "Deleted"
-	V1beta1ExportStateDeleted V1beta1ExportState = "Deleted"
+	// V1beta1ExportStateDELETED captures enum value "DELETED"
+	V1beta1ExportStateDELETED V1beta1ExportState = "DELETED"
 )
 
 // for schema
@@ -58,7 +58,7 @@ var v1beta1ExportStateEnum []interface{}
 
 func init() {
 	var res []V1beta1ExportState
-	if err := json.Unmarshal([]byte(`["Running","Success","Failed","Cancel","Deleted"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["RUNNING","SUCCEEDED","FAILED","CANCELED","DELETED"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {

@@ -18,13 +18,13 @@ import (
 // swagger:model v1beta1ExportOptions
 type V1beta1ExportOptions struct {
 
-	// Optional. The specify table the export.
+	// Optional. The specify database of the export.
 	Database string `json:"database,omitempty"`
 
 	// Optional. The exported file type.
 	FileType ExportOptionsFileType `json:"fileType,omitempty"`
 
-	// Optional. The specify table the export.
+	// Optional. The specify table of the export.
 	Table string `json:"table,omitempty"`
 }
 

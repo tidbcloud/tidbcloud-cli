@@ -1,8 +1,8 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "TiDB Cloud Serverless Internal Open API",
-    "description": "TiDB Cloud Serverless Internal Open API",
+    "title": "TiDB Cloud Serverless Export Open API",
+    "description": "TiDB Cloud Serverless Export Open API",
     "version": "v1beta1"
   },
   "tags": [
@@ -240,7 +240,7 @@
       }
     },
     "/v1beta1/clusters/{clusterId}/exports/{exportId}:download": {
-      "get": {
+      "post": {
         "summary": "Generate download url",
         "operationId": "ExportService_DownloadExport",
         "responses": {
@@ -271,6 +271,14 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
           }
         ],
         "tags": [
@@ -383,7 +391,7 @@
         },
         "state": {
           "$ref": "#/definitions/v1beta1ExportState",
-          "description": "Output_only. The creator of the export.",
+          "description": "Output_only. The state of the export.",
           "readOnly": true
         },
         "exportOptions": {
@@ -396,7 +404,7 @@
         },
         "reason": {
           "type": "string",
-          "description": "Optional. The target of the export."
+          "description": "Optional. The failed reason of the export."
         },
         "createTime": {
           "type": "string",
@@ -425,24 +433,24 @@
         },
         "database": {
           "type": "string",
-          "description": "Optional. The specify table the export."
+          "description": "Optional. The specify database of the export."
         },
         "table": {
           "type": "string",
-          "description": "Optional. The specify table the export."
+          "description": "Optional. The specify table of the export."
         }
       }
     },
     "v1beta1ExportState": {
       "type": "string",
       "enum": [
-        "Running",
-        "Success",
-        "Failed",
-        "Cancel",
-        "Deleted"
+        "RUNNING",
+        "SUCCEEDED",
+        "FAILED",
+        "CANCELED",
+        "DELETED"
       ],
-      "description": "Output Only. Export State.\n\n - STATE_UNSPECIFIED: The state of the export is unknown.\n - Running: The export job is being created.\n - Success: The export job is success.\n - Failed: The export job is failed.\n - Cancel: The export job is canceled.\n - Deleted: The export job is deleted."
+      "description": "Output Only. Export State.\n\n - STATE_UNSPECIFIED: The state of the export is unknown.\n - RUNNING: The export job is being created.\n - SUCCEEDED: The export job is success.\n - FAILED: The export job is failed.\n - CANCELED: The export job is canceled.\n - DELETED: The export job is deleted."
     },
     "v1beta1ListExportsResponse": {
       "type": "object",
