@@ -15,10 +15,12 @@ import (
 )
 
 // V1beta1RegionCloudProvider Enum for cloud providers for the region.
+// @gotags: tag:"replace"
 //
-//   - CLOUD_PROVIDER_UNSPECIFIED: Unspecified cloud provider.
+// - CLOUD_PROVIDER_UNSPECIFIED: Unspecified cloud provider.
 //   - AWS: Amazon Web Services.
 //   - GCP: Google Cloud Platform.
+//   - AZURE: Microsoft Azure.
 //
 // swagger:model v1beta1RegionCloudProvider
 type V1beta1RegionCloudProvider string
@@ -42,6 +44,9 @@ const (
 
 	// V1beta1RegionCloudProviderGCP captures enum value "GCP"
 	V1beta1RegionCloudProviderGCP V1beta1RegionCloudProvider = "GCP"
+
+	// V1beta1RegionCloudProviderAZURE captures enum value "AZURE"
+	V1beta1RegionCloudProviderAZURE V1beta1RegionCloudProvider = "AZURE"
 )
 
 // for schema
@@ -49,7 +54,7 @@ var v1beta1RegionCloudProviderEnum []interface{}
 
 func init() {
 	var res []V1beta1RegionCloudProvider
-	if err := json.Unmarshal([]byte(`["CLOUD_PROVIDER_UNSPECIFIED","AWS","GCP"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["CLOUD_PROVIDER_UNSPECIFIED","AWS","GCP","AZURE"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {

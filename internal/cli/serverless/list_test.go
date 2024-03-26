@@ -41,7 +41,7 @@ const listResultStr = `{
       "createdBy": "yuhang.shi@pingcap.com",
       "displayName": "Cluster0",
       "endpoints": {
-        "privateEndpoint": {
+        "private": {
           "aws": {
             "availabilityZone": [
               "use1-az1"
@@ -51,7 +51,7 @@ const listResultStr = `{
           "host": "gateway01-privatelink.us-east-1.prod.aws.tidbcloud.com",
           "port": 4000
         },
-        "publicEndpoint": {
+        "public": {
           "host": "gateway01.us-east-1.prod.aws.tidbcloud.com",
           "port": 4000
         }
@@ -84,7 +84,7 @@ const listResultMultiPageStr = `{
       "createdBy": "yuhang.shi@pingcap.com",
       "displayName": "Cluster0",
       "endpoints": {
-        "privateEndpoint": {
+        "private": {
           "aws": {
             "availabilityZone": [
               "use1-az1"
@@ -94,7 +94,7 @@ const listResultMultiPageStr = `{
           "host": "gateway01-privatelink.us-east-1.prod.aws.tidbcloud.com",
           "port": 4000
         },
-        "publicEndpoint": {
+        "public": {
           "host": "gateway01.us-east-1.prod.aws.tidbcloud.com",
           "port": 4000
         }
@@ -120,7 +120,7 @@ const listResultMultiPageStr = `{
       "createdBy": "yuhang.shi@pingcap.com",
       "displayName": "Cluster0",
       "endpoints": {
-        "privateEndpoint": {
+        "private": {
           "aws": {
             "availabilityZone": [
               "use1-az1"
@@ -130,7 +130,7 @@ const listResultMultiPageStr = `{
           "host": "gateway01-privatelink.us-east-1.prod.aws.tidbcloud.com",
           "port": 4000
         },
-        "publicEndpoint": {
+        "public": {
           "host": "gateway01.us-east-1.prod.aws.tidbcloud.com",
           "port": 4000
         }

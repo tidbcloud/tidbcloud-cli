@@ -62,7 +62,7 @@ func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 		WithClusterID(clusterID)).
 		Return(&serverlessApi.ServerlessServiceDeleteClusterOK{
 			Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
-				State: (*serverlessModel.TidbCloudOpenApiserverlessv1beta1ClusterState)(&state),
+				State: (*serverlessModel.Commonv1beta1ClusterState)(&state),
 			},
 		}, nil)
 

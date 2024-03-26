@@ -41,12 +41,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type createClusterField int
-
-const (
-	clusterNameIdx createClusterField = iota
-	spendingLimitIdx
-)
+var createClusterField = map[string]int{
+	flag.DisplayName: 0,
+}
 
 const (
 	serverlessType = "SERVERLESS"
@@ -55,7 +52,7 @@ const (
 )
 
 type CreateOpts struct {
-	serverlessProviders []*serverlessModel.TidbCloudOpenApiserverlessv1beta1Region
+	serverlessProviders []*serverlessModel.Commonv1beta1Region
 	interactive         bool
 }
 
@@ -181,25 +178,28 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return util.InterruptError
 				}
 
-				clusterName = inputModel.(ui.TextInputModel).Inputs[clusterNameIdx].Value()
-				spendingLimitString := inputModel.(ui.TextInputModel).Inputs[spendingLimitIdx].Value()
-				if len(clusterName) == 0 {
-					return errors.New("cluster name is required")
-				}
-				if len(spendingLimitString) == 0 {
-					spendingLimitMonthly = 0
-				} else {
-					s, err := strconv.Atoi(spendingLimitString)
-					if err != nil {
-						return errors.New("monthly spending limit should be int type")
-					}
-					if s > math.MaxInt32 || s < math.MinInt32 {
-						return errors.New("monthly spending limit out of range")
-					}
-					spendingLimitMonthly = int32(s) //nolint:gosec // will not overflow
-				}
+				clusterName = inputModel.(ui.TextInputModel).Inputs[createClusterField[flag.DisplayName]].Value()
 				// check clusterName
 				err = checkClusterName(clusterName)
+				if err != nil {
+					return errors.Trace(err)
+				}
+
+				// advanced options: spending limit and enhanced encryption
+				var spendingLimitString string
+				spendingLimitPrompt := &survey.Input{
+					Message: "Set spending limit monthly in USD cents (Example: 10, default is 0)?",
+					Default: "0",
+				}
+				err = survey.AskOne(spendingLimitPrompt, &spendingLimitString)
+				if err != nil {
+					if err == terminal.InterruptErr {
+						return util.InterruptError
+					} else {
+						return err
+					}
+				}
+				spendingLimitMonthly, err = getAndCheckSpendingLimit(spendingLimitString)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -207,7 +207,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				// Ask enhanced encryption when spending limit is set
 				if spendingLimitMonthly > 0 {
 					prompt := &survey.Confirm{
-						Message: "Enable Enhanced Encryption at Rest?",
+						Message: "Enable Enhanced Encryption at Rest (Default is No)?",
 						Default: false,
 					}
 					err = survey.AskOne(prompt, &encryption)
@@ -253,7 +253,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 			v1Cluster := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 				DisplayName: &clusterName,
-				Region: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Region{
+				Region: &serverlessModel.Commonv1beta1Region{
 					Name: &region,
 				},
 			}
@@ -376,32 +376,30 @@ func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, v1Cluste
 
 func initialCreateInputModel() ui.TextInputModel {
 	m := ui.TextInputModel{
-		Inputs: make([]textinput.Model, 2),
+		Inputs: make([]textinput.Model, len(createClusterField)),
 	}
 
-	var t textinput.Model
-	for i := range m.Inputs {
-		t = textinput.New()
-		t.CursorStyle = config.CursorStyle
+	for k, v := range createClusterField {
+		t := textinput.New()
+		t.Cursor.Style = config.CursorStyle
 		t.CharLimit = 64
-		f := createClusterField(i)
 
-		switch f {
-		case clusterNameIdx:
+		switch k {
+		case flag.DisplayName:
 			t.Placeholder = "Display Name"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
-		case spendingLimitIdx:
-			t.Placeholder = "Spending Limit Monthly(USD cents), e.g., 10. Skip it by press 0 or enter"
 		}
-		m.Inputs[i] = t
+		m.Inputs[v] = t
 	}
-
 	return m
 }
 
 func checkClusterName(name string) error {
+	if len(name) == 0 {
+		return errors.New("cluster name is required")
+	}
 	if len(name) < 4 || len(name) > 64 || !isNumber(name[0]) && !isLetter(name[0]) || !isNumber(name[len(name)-1]) && !isLetter(name[len(name)-1]) {
 		return errors.New("Cluster name must be 4~64 characters that can only include numbers, lowercase or uppercase letters, and hyphens. The first and last character must be a letter or number.")
 	}
@@ -413,6 +411,21 @@ func isNumber(s byte) bool {
 
 func isLetter(s byte) bool {
 	return s >= 'a' && s <= 'z' || s >= 'A' && s <= 'Z'
+}
+
+func getAndCheckSpendingLimit(spendingLimit string) (int32, error) {
+	if len(spendingLimit) == 0 {
+		return 0, nil
+	} else {
+		s, err := strconv.Atoi(spendingLimit)
+		if err != nil {
+			return 0, errors.New("monthly spending limit should be int type")
+		}
+		if s > math.MaxInt32 || s < math.MinInt32 {
+			return 0, errors.New("monthly spending limit out of range")
+		}
+		return int32(s), nil //nolint:gosec // will not overflow
+	}
 }
 
 func GetProvider(providers *hashset.Set) (string, error) {
