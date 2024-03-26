@@ -41,13 +41,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-//type createClusterField int
-//
-//const (
-//	clusterNameIdx createClusterField = iota
-//	spendingLimitIdx
-//)
-
 var createClusterField = map[string]int{
 	flag.DisplayName: 0,
 }
