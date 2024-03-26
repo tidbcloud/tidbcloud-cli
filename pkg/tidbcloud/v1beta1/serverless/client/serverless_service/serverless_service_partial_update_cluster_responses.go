@@ -307,6 +307,8 @@ swagger:model ServerlessServicePartialUpdateClusterParamsBodyCluster
 type ServerlessServicePartialUpdateClusterParamsBodyCluster struct {
 
 	// Optional. The annotations for the cluster.
+	// tidb.cloud/has-set-password. The annotation for whether the cluster has set password.
+	// tidb.cloud/available-features. The annotation for the available features of the cluster.
 	Annotations map[string]string `json:"annotations,omitempty"`
 
 	// Optional. Automated backup policy to set on the cluster.
@@ -328,9 +330,11 @@ type ServerlessServicePartialUpdateClusterParamsBodyCluster struct {
 	EncryptionConfig *models.V1beta1ClusterEncryptionConfig `json:"encryptionConfig,omitempty"`
 
 	// Optional. The endpoints for connecting to the cluster.
-	Endpoints *models.V1beta1ClusterEndpoints `json:"endpoints,omitempty"`
+	Endpoints *models.TidbCloudOpenApiserverlessv1beta1ClusterEndpoints `json:"endpoints,omitempty"`
 
 	// Optional. The labels for the cluster.
+	// tidb.cloud/organization. The label for the cluster organization id.
+	// tidb.cloud/project. The label for the cluster project id.
 	Labels map[string]string `json:"labels,omitempty"`
 
 	// Output_only. The unique name of the cluster.
@@ -338,14 +342,14 @@ type ServerlessServicePartialUpdateClusterParamsBodyCluster struct {
 	Name string `json:"name,omitempty"`
 
 	// Required. Region where the cluster will be created.
-	Region *models.TidbCloudOpenApiserverlessv1beta1Region `json:"region,omitempty"`
+	Region *models.Commonv1beta1Region `json:"region,omitempty"`
 
 	// Optional. The spending limit for the cluster.
 	SpendingLimit *models.ClusterSpendingLimit `json:"spendingLimit,omitempty"`
 
 	// Output_only. The current state of the cluster.
 	// Read Only: true
-	State *models.TidbCloudOpenApiserverlessv1beta1ClusterState `json:"state,omitempty"`
+	State *models.Commonv1beta1ClusterState `json:"state,omitempty"`
 
 	// Output_only. Timestamp when the cluster was last updated.
 	// Read Only: true
@@ -354,7 +358,7 @@ type ServerlessServicePartialUpdateClusterParamsBodyCluster struct {
 
 	// Output_only. Usage details of the cluster.
 	// Read Only: true
-	Usage *models.ClusterUsage `json:"usage,omitempty"`
+	Usage *models.V1beta1ClusterUsage `json:"usage,omitempty"`
 
 	// Output_only. The unique prefix in SQL user name.
 	// Read Only: true

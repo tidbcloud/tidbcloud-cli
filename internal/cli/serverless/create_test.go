@@ -62,7 +62,7 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 	regionName := "regions/aws-us-west-1"
 	v1Cluster := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 		DisplayName: &clusterName,
-		Region: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Region{
+		Region: &serverlessModel.Commonv1beta1Region{
 			Name: &regionName,
 		},
 		Labels: map[string]string{"tidb.cloud/project": projectID},
@@ -132,7 +132,7 @@ func (suite *CreateClusterSuite) TestCreateClusterWithoutProject() {
 
 	v1ClusterWithoutProject := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 		DisplayName: &clusterName,
-		Region: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Region{
+		Region: &serverlessModel.Commonv1beta1Region{
 			Name: &regionName,
 		},
 	}
