@@ -147,7 +147,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			err = DownloadFile(resp.Payload.DownloadURL, path)
+			err = DownloadFile(h, resp.Payload.DownloadURL, path)
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -163,11 +163,11 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 	return downloadCmd
 }
 
-func DownloadFile(url, path string) error {
+func DownloadFile(h *internal.Helper, url, path string) error {
+	fmt.Fprintln(h.IOStreams.Out, "... Start to download the file")
 	// get the file name from the url
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		fmt.Println("Error creating request:", err)
 		return err
 	}
 	paths := strings.Split(req.URL.Path, "/")
@@ -177,7 +177,6 @@ func DownloadFile(url, path string) error {
 	client := http.DefaultClient
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Error sending request:", err)
 		return err
 	}
 	defer resp.Body.Close()
@@ -185,7 +184,6 @@ func DownloadFile(url, path string) error {
 	// create the file and download
 	file, err := os.Create(path + "/" + fileName)
 	if err != nil {
-		fmt.Println("Error creating file:", err)
 		return err
 	}
 	defer file.Close()
@@ -195,7 +193,7 @@ func DownloadFile(url, path string) error {
 		return err
 	}
 
-	fmt.Println("Download completed!")
+	fmt.Fprintln(h.IOStreams.Out, "Download completed!")
 	return nil
 }
 
