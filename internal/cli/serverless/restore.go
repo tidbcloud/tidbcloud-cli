@@ -75,7 +75,7 @@ func RestoreCmd(h *internal.Helper) *cobra.Command {
 		Use:         "restore",
 		Short:       "Restore a serverless cluster",
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Restore a serverless cluster in interactive mode):
+		Example: fmt.Sprintf(`  Restore a serverless cluster in interactive mode:
  $ %[1]s serverless restore
 
  Restore a serverless cluster with snaphot mode in non-interactive mode:
@@ -188,7 +188,7 @@ func RestoreCmd(h *internal.Helper) *cobra.Command {
 	return restoreCmd
 }
 
-func initialCreateBranchInputModel() ui.TextInputModel {
+func initialRestoreInputModel() ui.TextInputModel {
 	m := ui.TextInputModel{
 		Inputs: make([]textinput.Model, 1),
 	}
@@ -202,7 +202,7 @@ func initialCreateBranchInputModel() ui.TextInputModel {
 }
 
 func GetRestoreInput() (tea.Model, error) {
-	p := tea.NewProgram(initialCreateBranchInputModel())
+	p := tea.NewProgram(initialRestoreInputModel())
 	inputModel, err := p.Run()
 	if err != nil {
 		return nil, errors.Trace(err)

@@ -64,7 +64,7 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
   $ %[1]s serverless shell -c <cluster-id> --password <password>
 
   Connect to a serverless cluster with specific user and password in non-interactive mode:
-  $ %[1]s connect -c <cluster-id> -u <user-name> --password <password>`, config.CliName),
+  $ %[1]s serverless shell -c <cluster-id> -u <user-name> --password <password>`, config.CliName),
 
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
