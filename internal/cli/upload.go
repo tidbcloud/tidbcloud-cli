@@ -28,8 +28,8 @@ func UploadCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 			length := stat.Size()
-			clusterID := "10092819840638843800"
-			err = s3.NewUploader(client).Upload(cmd.Context(),
+			clusterID := "10714770929298590617"
+			_, err = s3.NewUploader(client).Upload(cmd.Context(),
 				&s3.PutObjectInput{
 					Key:           &key,
 					ContentLength: &length,

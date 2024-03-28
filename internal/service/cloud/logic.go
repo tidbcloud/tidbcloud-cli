@@ -17,20 +17,20 @@ package cloud
 import (
 	"fmt"
 	"math"
-	"strconv"
 
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	connectInfoApi "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
 	connectInfoModel "tidbcloud-cli/pkg/tidbcloud/connect_info/models"
-	importApi "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
 	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 	branchModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/models"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 	brModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/models"
+	importApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
+	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
 	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 	tea "github.com/charmbracelet/bubbletea"
@@ -97,7 +97,7 @@ func (c Cluster) String() string {
 
 type Import struct {
 	ID     string
-	Status *importModel.OpenapiGetImportRespStatus
+	Status *importModel.V1beta1ImportStatus
 }
 
 func (i Import) String() string {
@@ -334,21 +334,21 @@ func GetSelectedRestoreMode() (string, error) {
 
 // GetSelectedImport get the selected import task. statusFilter is used to filter the available options, only imports has status in statusFilter will be available.
 // statusFilter with no filter will mark all the import tasks as available options just like statusFilter with all status.
-func GetSelectedImport(pID string, cID string, pageSize int64, client TiDBCloudClient, statusFilter []importModel.OpenapiGetImportRespStatus) (*Import, error) {
-	_, importItems, err := RetrieveImports(pID, cID, pageSize, client)
+func GetSelectedImport(cID string, pageSize int64, client TiDBCloudClient, statusFilter []models.V1beta1ImportStatus) (*Import, error) {
+	_, importItems, err := RetrieveImports(cID, pageSize, client)
 	if err != nil {
 		return nil, err
 	}
 
 	var items = make([]interface{}, 0, len(importItems))
 	for _, item := range importItems {
-		if len(statusFilter) != 0 && !util.ElemInSlice(statusFilter, *item.Status) {
+		if len(statusFilter) != 0 && !util.ElemInSlice(statusFilter, item.Status) {
 			continue
 		}
 
 		items = append(items, &Import{
 			ID:     item.ID,
-			Status: item.Status,
+			Status: &item.Status,
 		})
 	}
 	model, err := ui.InitialSelectModel(items, "Choose the import task:")
@@ -469,12 +469,12 @@ func RetrieveServerlessBackups(cID string, pageSize int32, d TiDBCloudClient) (i
 	return int64(len(items)), items, nil
 }
 
-func RetrieveImports(pID string, cID string, pageSize int64, d TiDBCloudClient) (uint64, []*importModel.OpenapiGetImportResp, error) {
-	params := importApi.NewListImportsParams().WithProjectID(pID).WithClusterID(cID)
+func RetrieveImports(cID string, pageSize int64, d TiDBCloudClient) (uint64, []*importModel.V1beta1Import, error) {
+	params := importApi.NewImportServiceListImportsParams().WithClusterID(cID)
 	ps := int32(pageSize)
 	var total uint64 = math.MaxUint64
 	var page int32 = 1
-	var items []*importModel.OpenapiGetImportResp
+	var items []*importModel.V1beta1Import
 	// loop to get all clusters
 	for uint64((page-1)*ps) < total {
 		imports, err := d.ListImports(params.WithPage(&page).WithPageSize(&ps))
@@ -482,7 +482,7 @@ func RetrieveImports(pID string, cID string, pageSize int64, d TiDBCloudClient) 
 			return 0, nil, errors.Trace(err)
 		}
 
-		total, err = strconv.ParseUint(*imports.Payload.Total, 0, 64)
+		total = uint64(imports.Payload.Total)
 		if err != nil {
 			return 0, nil, errors.Annotate(err, " failed parse total import number.")
 		}

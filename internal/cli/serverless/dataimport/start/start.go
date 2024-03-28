@@ -25,7 +25,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
+	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -52,23 +52,22 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	startCmd.AddCommand(LocalCmd(h))
-	startCmd.AddCommand(S3Cmd(h))
 	startCmd.AddCommand(MySQLCmd(h))
 	return startCmd
 }
 
-func waitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.CreateImportParams) error {
+func waitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.ImportServiceCreateImportParams) error {
 	fmt.Fprintf(h.IOStreams.Out, "... Starting the import task\n")
 	res, err := d.CreateImport(params)
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", *(res.Payload.ID)))
+	fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", res.Payload.ID))
 	return nil
 }
 
-func spinnerWaitStartOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.CreateImportParams) error {
+func spinnerWaitStartOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.ImportServiceCreateImportParams) error {
 	task := func() tea.Msg {
 		errChan := make(chan error, 1)
 
@@ -79,7 +78,7 @@ func spinnerWaitStartOp(ctx context.Context, h *internal.Helper, d cloud.TiDBClo
 				return
 			}
 
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", *(res.Payload.ID)))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", res.Payload.ID))
 			errChan <- nil
 		}()
 

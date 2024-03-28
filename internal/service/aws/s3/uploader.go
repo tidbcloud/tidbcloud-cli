@@ -145,7 +145,7 @@ func NewUploader(client cloud.TiDBCloudClient) *Uploader {
 // goroutines. You can configure the buffer size and concurrency through the
 // Uploader parameters.
 // It is safe to call this method concurrently across goroutines.
-func (u Uploader) Upload(ctx context.Context, input *PutObjectInput) error {
+func (u Uploader) Upload(ctx context.Context, input *PutObjectInput) (string, error) {
 	i := uploader{cfg: u, ctx: ctx, in: input}
 
 	return i.upload()
@@ -164,14 +164,14 @@ type uploader struct {
 
 // internal logic for deciding whether to upload a single part or use a
 // multipart upload.
-func (u *uploader) upload() error {
+func (u *uploader) upload() (string, error) {
 	if err := u.init(); err != nil {
-		return fmt.Errorf("unable to initialize upload: %w", err)
+		return "", fmt.Errorf("unable to initialize upload: %w", err)
 	}
 	defer u.cfg.partPool.Close()
 
 	if u.cfg.PartSize < MinUploadPartSize {
-		return fmt.Errorf("part size must be at least %d bytes", MinUploadPartSize)
+		return "", fmt.Errorf("part size must be at least %d bytes", MinUploadPartSize)
 	}
 
 	// Do one read to determine if we have more than one part
@@ -180,7 +180,7 @@ func (u *uploader) upload() error {
 		return u.singlePart(reader, cleanup)
 	} else if err != nil {
 		cleanup()
-		return fmt.Errorf("read upload data failed: %w", err)
+		return "", fmt.Errorf("read upload data failed: %w", err)
 	}
 
 	mu := multiUploader{uploader: u}
@@ -265,12 +265,12 @@ func (u *uploader) nextReader() (io.ReadSeeker, int, func(), error) {
 // singlePart contains upload logic for uploading a single chunk via
 // a regular PutObject request. Multipart requests require at least two
 // parts, or at least 5MB of data.
-func (u *uploader) singlePart(r io.ReadSeeker, cleanup func()) error {
+func (u *uploader) singlePart(r io.ReadSeeker, cleanup func()) (string, error) {
 	defer cleanup()
 	url, err := u.cfg.client.StartUpload(serverlessImportOp.NewImportServiceStartUploadParams().
 		WithClusterID(*u.in.ClusterID).WithPartNumber(1).WithFileName(*u.in.Key).WithContext(u.ctx))
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	client := resty.New()
@@ -281,20 +281,20 @@ func (u *uploader) singlePart(r io.ReadSeeker, cleanup func()) error {
 		SetBody(r).Put(url.Payload.UploadURL[0])
 
 	if err != nil {
-		return &uploadError{
+		return "", &uploadError{
 			err:      err,
 			uploadID: url.Payload.UploadID,
 		}
 	}
 
 	if !resp.IsSuccess() {
-		return &uploadError{
+		return "", &uploadError{
 			err:      fmt.Errorf("upload failed, code:%s, reason: %s", resp.Status(), string(resp.Body())),
 			uploadID: url.Payload.UploadID,
 		}
 	}
 
-	return nil
+	return url.Payload.UploadID, nil
 }
 
 // internal structure to manage a specific multipart upload to S3.
@@ -328,13 +328,13 @@ func (a completedParts) Less(i, j int) bool {
 
 // upload will perform a multipart upload using the firstBuf buffer containing
 // the first chunk of data.
-func (u *multiUploader) upload(firstBuf io.ReadSeeker, cleanup func()) error {
+func (u *multiUploader) upload(firstBuf io.ReadSeeker, cleanup func()) (string, error) {
 	partNumber := math.Ceil(float64(u.totalSize) / float64(u.cfg.PartSize))
 	url, err := u.cfg.client.StartUpload(serverlessImportOp.NewImportServiceStartUploadParams().
 		WithClusterID(*u.in.ClusterID).WithPartNumber(int32(partNumber)).WithFileName(*u.in.Key).WithContext(u.ctx))
 	if err != nil {
 		cleanup()
-		return err
+		return "", err
 	}
 	u.uploadID = url.Payload.UploadID
 	u.urls = url.Payload.UploadURL
@@ -379,12 +379,12 @@ func (u *multiUploader) upload(firstBuf io.ReadSeeker, cleanup func()) error {
 	_ = u.complete()
 
 	if err := u.getErr(); err != nil {
-		return &uploadError{
+		return "", &uploadError{
 			err:      err,
 			uploadID: u.uploadID,
 		}
 	}
-	return nil
+	return u.uploadID, nil
 }
 
 func (u *multiUploader) shouldContinue(part int32, nextChunkLen int, err error) (bool, error) {

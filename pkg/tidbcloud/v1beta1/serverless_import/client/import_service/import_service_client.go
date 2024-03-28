@@ -28,13 +28,58 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
+	ImportServiceCancelImport(params *ImportServiceCancelImportParams, opts ...ClientOption) (*ImportServiceCancelImportOK, error)
+
 	ImportServiceCancelMultipartUpload(params *ImportServiceCancelMultipartUploadParams, opts ...ClientOption) (*ImportServiceCancelMultipartUploadOK, error)
 
 	ImportServiceCompleteMultipartUpload(params *ImportServiceCompleteMultipartUploadParams, opts ...ClientOption) (*ImportServiceCompleteMultipartUploadOK, error)
 
+	ImportServiceCreateImport(params *ImportServiceCreateImportParams, opts ...ClientOption) (*ImportServiceCreateImportOK, error)
+
+	ImportServiceGetImport(params *ImportServiceGetImportParams, opts ...ClientOption) (*ImportServiceGetImportOK, error)
+
+	ImportServiceListImports(params *ImportServiceListImportsParams, opts ...ClientOption) (*ImportServiceListImportsOK, error)
+
 	ImportServiceStartUpload(params *ImportServiceStartUploadParams, opts ...ClientOption) (*ImportServiceStartUploadOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
+}
+
+/*
+ImportServiceCancelImport import service cancel import API
+*/
+func (a *Client) ImportServiceCancelImport(params *ImportServiceCancelImportParams, opts ...ClientOption) (*ImportServiceCancelImportOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewImportServiceCancelImportParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "ImportService_CancelImport",
+		Method:             "POST",
+		PathPattern:        "/v1beta1/clusters/{clusterId}/imports/{id}:cancel",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ImportServiceCancelImportReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ImportServiceCancelImportOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ImportServiceCancelImportDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
 /*
@@ -108,6 +153,117 @@ func (a *Client) ImportServiceCompleteMultipartUpload(params *ImportServiceCompl
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*ImportServiceCompleteMultipartUploadDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ImportServiceCreateImport import service create import API
+*/
+func (a *Client) ImportServiceCreateImport(params *ImportServiceCreateImportParams, opts ...ClientOption) (*ImportServiceCreateImportOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewImportServiceCreateImportParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "ImportService_CreateImport",
+		Method:             "POST",
+		PathPattern:        "/v1beta1/clusters/{clusterId}/imports",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ImportServiceCreateImportReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ImportServiceCreateImportOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ImportServiceCreateImportDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ImportServiceGetImport import service get import API
+*/
+func (a *Client) ImportServiceGetImport(params *ImportServiceGetImportParams, opts ...ClientOption) (*ImportServiceGetImportOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewImportServiceGetImportParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "ImportService_GetImport",
+		Method:             "GET",
+		PathPattern:        "/v1beta1/clusters/{clusterId}/imports/{id}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ImportServiceGetImportReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ImportServiceGetImportOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ImportServiceGetImportDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ImportServiceListImports import service list imports API
+*/
+func (a *Client) ImportServiceListImports(params *ImportServiceListImportsParams, opts ...ClientOption) (*ImportServiceListImportsOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewImportServiceListImportsParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "ImportService_ListImports",
+		Method:             "GET",
+		PathPattern:        "/v1beta1/clusters/{clusterId}/imports",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ImportServiceListImportsReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ImportServiceListImportsOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ImportServiceListImportsDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
