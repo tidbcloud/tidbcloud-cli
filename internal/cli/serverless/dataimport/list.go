@@ -152,7 +152,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				for _, item := range importTasks {
 					var source string
 					if item.CreationDetails.Type != nil && *item.CreationDetails.Type == importModel.CreateImportReqImportTypeLOCAL {
-						source = item.CreationDetails.Target.Local.UploadID
+						source = item.CreationDetails.Target.Local.FileName
 					}
 					rows = append(rows, output.Row{
 						item.ID,

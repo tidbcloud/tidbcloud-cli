@@ -18,6 +18,9 @@ import (
 // swagger:model ImportTargetLocalTarget
 type ImportTargetLocalTarget struct {
 
+	// Optional. The file name to import.
+	FileName string `json:"fileName,omitempty"`
+
 	// Optional. The table to import to.
 	TargetTable *V1beta1Table `json:"targetTable,omitempty"`
 

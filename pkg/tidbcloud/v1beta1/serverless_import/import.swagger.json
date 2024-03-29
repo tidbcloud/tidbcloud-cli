@@ -388,6 +388,10 @@
         "targetTable": {
           "$ref": "#/definitions/v1beta1Table",
           "description": "Optional. The table to import to."
+        },
+        "fileName": {
+          "type": "string",
+          "description": "Optional. The file name to import."
         }
       }
     },
