@@ -17,8 +17,8 @@ import (
 // swagger:model v1beta1DownloadExportsResponse
 type V1beta1DownloadExportsResponse struct {
 
-	// The download url of the export.
-	DownloadURL string `json:"downloadUrl,omitempty"`
+	// The download urls of the export.
+	DownloadUrls map[string]string `json:"downloadUrls,omitempty"`
 }
 
 // Validate validates this v1beta1 download exports response

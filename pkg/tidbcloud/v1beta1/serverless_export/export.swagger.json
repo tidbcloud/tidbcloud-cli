@@ -361,9 +361,12 @@
     "v1beta1DownloadExportsResponse": {
       "type": "object",
       "properties": {
-        "downloadUrl": {
-          "type": "string",
-          "description": "The download url of the export."
+        "downloadUrls": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "The download urls of the export."
         }
       }
     },

@@ -19,13 +19,11 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
-
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
@@ -147,7 +145,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			err = DownloadFile(h, resp.Payload.DownloadURL, path)
+			err = DownloadFiles(h, resp.Payload.DownloadUrls, path)
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -163,34 +161,36 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 	return downloadCmd
 }
 
-func DownloadFile(h *internal.Helper, url, path string) error {
-	fmt.Fprintln(h.IOStreams.Out, "... Start to download the file")
-	// get the file name from the url
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return err
+func DownloadFiles(h *internal.Helper, url map[string]string, path string) error {
+	if path == "" {
+		path = "."
 	}
-	paths := strings.Split(req.URL.Path, "/")
-	fileName := paths[len(paths)-1]
+	for k, v := range url {
+		fmt.Fprintln(h.IOStreams.Out, fmt.Sprintf("download %s to %s", k, path+"/"+k))
+		req, err := http.NewRequest("GET", v, nil)
+		if err != nil {
+			return err
+		}
+		// send the request
+		client := http.DefaultClient
+		resp, err := client.Do(req)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
 
-	// send the request
-	client := http.DefaultClient
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	// create the file and download
-	file, err := os.Create(path + "/" + fileName)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-	_, err = io.Copy(file, resp.Body)
-	if err != nil {
-		fmt.Println("Error writing to file:", err)
-		return err
+		// create the file and download
+		file, err := os.Create(path + "/" + k)
+		if err != nil {
+			fmt.Fprintf(h.IOStreams.Out, "create file error: %v\n", err)
+			continue
+		}
+		defer file.Close()
+		_, err = io.Copy(file, resp.Body)
+		if err != nil {
+			fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
+			continue
+		}
 	}
 
 	fmt.Fprintln(h.IOStreams.Out, "Download completed!")
