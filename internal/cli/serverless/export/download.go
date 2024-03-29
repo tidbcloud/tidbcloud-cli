@@ -24,6 +24,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
+
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
@@ -169,7 +170,7 @@ func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, p
 	for _, downloadUrl := range urls {
 		fileName := downloadUrl.Name
 		url := downloadUrl.URL
-		fmt.Fprintln(h.IOStreams.Out, fmt.Sprintf("download %s to %s", fileName, path+"/"+fileName))
+		fmt.Fprintf(h.IOStreams.Out, "download %s to %s", fileName, path+"/"+fileName)
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			return err
