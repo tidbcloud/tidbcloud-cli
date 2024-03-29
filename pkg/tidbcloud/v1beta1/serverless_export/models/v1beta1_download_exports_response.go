@@ -7,7 +7,9 @@ package models
 
 import (
 	"context"
+	"strconv"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 )
@@ -18,16 +20,85 @@ import (
 type V1beta1DownloadExportsResponse struct {
 
 	// The download urls of the export.
-	DownloadUrls map[string]string `json:"downloadUrls,omitempty"`
+	Downloads []*V1beta1DownloadURL `json:"downloads"`
 }
 
 // Validate validates this v1beta1 download exports response
 func (m *V1beta1DownloadExportsResponse) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateDownloads(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
 	return nil
 }
 
-// ContextValidate validates this v1beta1 download exports response based on context it is used
+func (m *V1beta1DownloadExportsResponse) validateDownloads(formats strfmt.Registry) error {
+	if swag.IsZero(m.Downloads) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.Downloads); i++ {
+		if swag.IsZero(m.Downloads[i]) { // not required
+			continue
+		}
+
+		if m.Downloads[i] != nil {
+			if err := m.Downloads[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("downloads" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("downloads" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// ContextValidate validate this v1beta1 download exports response based on the context it is used
 func (m *V1beta1DownloadExportsResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateDownloads(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *V1beta1DownloadExportsResponse) contextValidateDownloads(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.Downloads); i++ {
+
+		if m.Downloads[i] != nil {
+
+			if swag.IsZero(m.Downloads[i]) { // not required
+				return nil
+			}
+
+			if err := m.Downloads[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("downloads" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("downloads" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
 	return nil
 }
 

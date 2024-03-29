@@ -361,12 +361,26 @@
     "v1beta1DownloadExportsResponse": {
       "type": "object",
       "properties": {
-        "downloadUrls": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
+        "downloads": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1beta1DownloadUrl"
           },
           "description": "The download urls of the export."
+        }
+      }
+    },
+    "v1beta1DownloadUrl": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the download file."
+        },
+        "url": {
+          "type": "string",
+          "description": "The download url."
         }
       }
     },

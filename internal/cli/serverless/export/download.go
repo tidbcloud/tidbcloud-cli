@@ -31,6 +31,7 @@ import (
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
+	exportModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/models"
 )
 
 var DownloadPathInputFields = map[string]int{
@@ -145,7 +146,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			err = DownloadFiles(h, resp.Payload.DownloadUrls, path)
+			err = DownloadFiles(h, resp.Payload.Downloads, path)
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -161,13 +162,15 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 	return downloadCmd
 }
 
-func DownloadFiles(h *internal.Helper, url map[string]string, path string) error {
+func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string) error {
 	if path == "" {
 		path = "."
 	}
-	for k, v := range url {
-		fmt.Fprintln(h.IOStreams.Out, fmt.Sprintf("download %s to %s", k, path+"/"+k))
-		req, err := http.NewRequest("GET", v, nil)
+	for _, downloadUrl := range urls {
+		fileName := downloadUrl.Name
+		url := downloadUrl.URL
+		fmt.Fprintln(h.IOStreams.Out, fmt.Sprintf("download %s to %s", fileName, path+"/"+fileName))
+		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			return err
 		}
@@ -180,7 +183,7 @@ func DownloadFiles(h *internal.Helper, url map[string]string, path string) error
 		defer resp.Body.Close()
 
 		// create the file and download
-		file, err := os.Create(path + "/" + k)
+		file, err := os.Create(path + "/" + fileName)
 		if err != nil {
 			fmt.Fprintf(h.IOStreams.Out, "create file error: %v\n", err)
 			continue
