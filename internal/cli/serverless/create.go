@@ -31,6 +31,8 @@ import (
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/emirpasic/gods/sets/hashset"
@@ -39,12 +41,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type createClusterField int
-
-const (
-	clusterNameIdx createClusterField = iota
-	spendingLimitIdx
-)
+var createClusterField = map[string]int{
+	flag.DisplayName: 0,
+}
 
 const (
 	serverlessType = "SERVERLESS"
@@ -53,7 +52,7 @@ const (
 )
 
 type CreateOpts struct {
-	serverlessProviders []*serverlessModel.TidbCloudOpenApiserverlessv1beta1Region
+	serverlessProviders []*serverlessModel.Commonv1beta1Region
 	interactive         bool
 }
 
@@ -123,6 +122,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			var region string
 			var projectID string
 			var spendingLimitMonthly int32
+			var encryption bool
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
@@ -141,19 +141,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				for _, provider := range opts.serverlessProviders {
 					providers.Add(string(*provider.Provider))
 				}
-				model, err := ui.InitialSelectModel(providers.Values(), "Choose the cloud provider:")
-				if err != nil {
-					return err
-				}
-				p := tea.NewProgram(model)
-				providerModel, err := p.StartReturningModel()
+				cloudProvider, err = GetProvider(providers)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if m, _ := providerModel.(ui.SelectModel); m.Interrupted {
-					return util.InterruptError
-				}
-				cloudProvider = providerModel.(ui.SelectModel).Choices[providerModel.(ui.SelectModel).Selected].(string)
 
 				// filter out regions for the selected cloud provider
 				regionSet := hashset.New()
@@ -166,19 +157,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						})
 					}
 				}
-				model, err = ui.InitialSelectModel(regionSet.Values(), "Choose the cloud region:")
-				if err != nil {
-					return err
-				}
-				p = tea.NewProgram(model)
-				regionModel, err := p.StartReturningModel()
+				region, err = GetRegion(regionSet)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if m, _ := regionModel.(ui.SelectModel); m.Interrupted {
-					return util.InterruptError
-				}
-				region = regionModel.(ui.SelectModel).Choices[regionModel.(ui.SelectModel).Selected].(cloud.Region).Name
 
 				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
 				if err != nil {
@@ -187,8 +169,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				projectID = project.ID
 
 				// variables for input
-				p = tea.NewProgram(initialCreateInputModel())
-				inputModel, err := p.StartReturningModel()
+				p := tea.NewProgram(initialCreateInputModel())
+				inputModel, err := p.Run()
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -196,22 +178,46 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return util.InterruptError
 				}
 
-				clusterName = inputModel.(ui.TextInputModel).Inputs[clusterNameIdx].Value()
-				spendingLimitString := inputModel.(ui.TextInputModel).Inputs[spendingLimitIdx].Value()
-				if len(clusterName) == 0 {
-					return errors.New("cluster name is required")
+				clusterName = inputModel.(ui.TextInputModel).Inputs[createClusterField[flag.DisplayName]].Value()
+				// check clusterName
+				err = checkClusterName(clusterName)
+				if err != nil {
+					return errors.Trace(err)
 				}
-				if len(spendingLimitString) == 0 {
-					spendingLimitMonthly = 0
-				} else {
-					s, err := strconv.Atoi(spendingLimitString)
+
+				// advanced options: spending limit and enhanced encryption
+				var spendingLimitString string
+				spendingLimitPrompt := &survey.Input{
+					Message: "Set spending limit monthly in USD cents (Example: 10, default is 0)?",
+					Default: "0",
+				}
+				err = survey.AskOne(spendingLimitPrompt, &spendingLimitString)
+				if err != nil {
+					if err == terminal.InterruptErr {
+						return util.InterruptError
+					} else {
+						return err
+					}
+				}
+				spendingLimitMonthly, err = getAndCheckSpendingLimit(spendingLimitString)
+				if err != nil {
+					return errors.Trace(err)
+				}
+
+				// Ask enhanced encryption when spending limit is set
+				if spendingLimitMonthly > 0 {
+					prompt := &survey.Confirm{
+						Message: "Enable Enhanced Encryption at Rest (Default is No)?",
+						Default: false,
+					}
+					err = survey.AskOne(prompt, &encryption)
 					if err != nil {
-						return errors.New("monthly spending limit should be int type")
+						if err == terminal.InterruptErr {
+							return util.InterruptError
+						} else {
+							return err
+						}
 					}
-					if s > math.MaxInt32 || s < math.MinInt32 {
-						return errors.New("monthly spending limit out of range")
-					}
-					spendingLimitMonthly = int32(s) //nolint:gosec // will not overflow
 				}
 			} else {
 				// non-interactive mode, get values from flags
@@ -232,19 +238,22 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
+				encryption, err = cmd.Flags().GetBool(flag.Encryption)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				// check clusterName
+				err = checkClusterName(clusterName)
+				if err != nil {
+					return errors.Trace(err)
+				}
 			}
 
 			cmd.Annotations[telemetry.ProjectID] = projectID
 
-			// check clusterName
-			err = checkClusterName(clusterName)
-			if err != nil {
-				return errors.Trace(err)
-			}
-
 			v1Cluster := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 				DisplayName: &clusterName,
-				Region: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Region{
+				Region: &serverlessModel.Commonv1beta1Region{
 					Name: &region,
 				},
 			}
@@ -255,6 +264,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if spendingLimitMonthly != 0 {
 				v1Cluster.SpendingLimit = &serverlessModel.ClusterSpendingLimit{
 					Monthly: spendingLimitMonthly,
+				}
+			}
+			if encryption {
+				v1Cluster.EncryptionConfig = &serverlessModel.V1beta1ClusterEncryptionConfig{
+					EnhancedEncryptionEnabled: encryption,
 				}
 			}
 
@@ -278,6 +292,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().StringP(flag.Region, flag.RegionShort, "", "The name of cloud region. You can use \"ticloud serverless regions\" to see all regions")
 	createCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project, in which the cluster will be created (optional: default \"default project\")")
 	createCmd.Flags().Int32(flag.SpendingLimitMonthly, 0, "Maximum monthly spending limit in USD cents (optional)")
+	createCmd.Flags().Bool(flag.Encryption, false, "Whether Enhanced Encryption at Rest is enabled (optional)")
 	return createCmd
 }
 
@@ -361,32 +376,30 @@ func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, v1Cluste
 
 func initialCreateInputModel() ui.TextInputModel {
 	m := ui.TextInputModel{
-		Inputs: make([]textinput.Model, 2),
+		Inputs: make([]textinput.Model, len(createClusterField)),
 	}
 
-	var t textinput.Model
-	for i := range m.Inputs {
-		t = textinput.New()
-		t.CursorStyle = config.CursorStyle
+	for k, v := range createClusterField {
+		t := textinput.New()
+		t.Cursor.Style = config.CursorStyle
 		t.CharLimit = 64
-		f := createClusterField(i)
 
-		switch f {
-		case clusterNameIdx:
+		switch k {
+		case flag.DisplayName:
 			t.Placeholder = "Display Name"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
-		case spendingLimitIdx:
-			t.Placeholder = "Spending Limit Monthly($), e.g., 10. Skip it by press 0 or enter"
 		}
-		m.Inputs[i] = t
+		m.Inputs[v] = t
 	}
-
 	return m
 }
 
 func checkClusterName(name string) error {
+	if len(name) == 0 {
+		return errors.New("cluster name is required")
+	}
 	if len(name) < 4 || len(name) > 64 || !isNumber(name[0]) && !isLetter(name[0]) || !isNumber(name[len(name)-1]) && !isLetter(name[len(name)-1]) {
 		return errors.New("Cluster name must be 4~64 characters that can only include numbers, lowercase or uppercase letters, and hyphens. The first and last character must be a letter or number.")
 	}
@@ -398,4 +411,65 @@ func isNumber(s byte) bool {
 
 func isLetter(s byte) bool {
 	return s >= 'a' && s <= 'z' || s >= 'A' && s <= 'Z'
+}
+
+func getAndCheckSpendingLimit(spendingLimit string) (int32, error) {
+	if len(spendingLimit) == 0 {
+		return 0, nil
+	} else {
+		s, err := strconv.Atoi(spendingLimit)
+		if err != nil {
+			return 0, errors.New("monthly spending limit should be int type")
+		}
+		if s > math.MaxInt32 || s < math.MinInt32 {
+			return 0, errors.New("monthly spending limit out of range")
+		}
+		return int32(s), nil //nolint:gosec // will not overflow
+	}
+}
+
+func GetProvider(providers *hashset.Set) (string, error) {
+	var cloudProvider string
+	if providers.Size() == 0 {
+		return cloudProvider, errors.New("No cloud provider available")
+	}
+	if providers.Size() == 1 {
+		return providers.Values()[0].(string), nil
+	}
+
+	model, err := ui.InitialSelectModel(providers.Values(), "Choose the cloud provider:")
+	if err != nil {
+		return cloudProvider, err
+	}
+	p := tea.NewProgram(model)
+	providerModel, err := p.Run()
+	if err != nil {
+		return cloudProvider, errors.Trace(err)
+	}
+	if m, _ := providerModel.(ui.SelectModel); m.Interrupted {
+		return cloudProvider, util.InterruptError
+	}
+	cloudProvider = providerModel.(ui.SelectModel).Choices[providerModel.(ui.SelectModel).Selected].(string)
+	return cloudProvider, nil
+}
+
+func GetRegion(regionSet *hashset.Set) (string, error) {
+	var region string
+	if regionSet.Size() == 0 {
+		return region, errors.New("No region available")
+	}
+	model, err := ui.InitialSelectModel(regionSet.Values(), "Choose the cloud region:")
+	if err != nil {
+		return region, err
+	}
+	p := tea.NewProgram(model)
+	regionModel, err := p.Run()
+	if err != nil {
+		return region, errors.Trace(err)
+	}
+	if m, _ := regionModel.(ui.SelectModel); m.Interrupted {
+		return region, util.InterruptError
+	}
+	region = regionModel.(ui.SelectModel).Choices[regionModel.(ui.SelectModel).Selected].(cloud.Region).Name
+	return region, nil
 }

@@ -24,6 +24,7 @@ import (
 	connectInfoModel "tidbcloud-cli/pkg/tidbcloud/connect_info/models"
 	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 	branchModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
@@ -372,13 +373,15 @@ func GetSelectedImport(cID string, pageSize int64, client TiDBCloudClient, statu
 }
 
 func RetrieveProjects(size int64, d TiDBCloudClient) (int64, []*projectApi.ListProjectsOKBodyItemsItems0, error) {
-	params := projectApi.NewListProjectsParams()
 	var total int64 = math.MaxInt64
 	var page int64 = 1
 	var pageSize = size
 	var items []*projectApi.ListProjectsOKBodyItemsItems0
 	for (page-1)*pageSize < total {
-		projects, err := d.ListProjects(params.WithPage(&page).WithPageSize(&pageSize))
+		projects, err := d.ListProjects(&iam.ListProjectsParams{
+			Page:     page,
+			PageSize: pageSize,
+		})
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}

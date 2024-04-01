@@ -157,7 +157,7 @@
                       "description": "Required. User friendly display name of the cluster."
                     },
                     "region": {
-                      "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Region",
+                      "$ref": "#/definitions/commonv1beta1Region",
                       "description": "Required. Region where the cluster will be created."
                     },
                     "spendingLimit": {
@@ -184,16 +184,16 @@
                       "readOnly": true
                     },
                     "endpoints": {
-                      "$ref": "#/definitions/v1beta1ClusterEndpoints",
+                      "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1ClusterEndpoints",
                       "description": "Optional. The endpoints for connecting to the cluster."
                     },
                     "state": {
-                      "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1ClusterState",
+                      "$ref": "#/definitions/commonv1beta1ClusterState",
                       "description": "Output_only. The current state of the cluster.",
                       "readOnly": true
                     },
                     "usage": {
-                      "$ref": "#/definitions/ClusterUsage",
+                      "$ref": "#/definitions/v1beta1ClusterUsage",
                       "description": "Output_only. Usage details of the cluster.",
                       "readOnly": true
                     },
@@ -206,14 +206,14 @@
                       "additionalProperties": {
                         "type": "string"
                       },
-                      "description": "Optional. The labels for the cluster."
+                      "description": "Optional. The labels for the cluster.\ntidb.cloud/organization. The label for the cluster organization id.\ntidb.cloud/project. The label for the cluster project id."
                     },
                     "annotations": {
                       "type": "object",
                       "additionalProperties": {
                         "type": "string"
                       },
-                      "description": "Optional. The annotations for the cluster."
+                      "description": "Optional. The annotations for the cluster.\ntidb.cloud/has-set-password. The annotation for whether the cluster has set password.\ntidb.cloud/available-features. The annotation for the available features of the cluster."
                     },
                     "createTime": {
                       "type": "string",
@@ -411,30 +411,6 @@
       },
       "description": "Message for spending limit configuration."
     },
-    "ClusterUsage": {
-      "type": "object",
-      "properties": {
-        "requestUnit": {
-          "type": "string",
-          "format": "int64",
-          "description": "Output_only. The Request Units used in this month.",
-          "readOnly": true
-        },
-        "rowBasedStorage": {
-          "type": "number",
-          "format": "double",
-          "description": "Output_only. The storage used on row-based storage in bytes.",
-          "readOnly": true
-        },
-        "columnarStorage": {
-          "type": "number",
-          "format": "double",
-          "description": "Output_only. The storage used on column-based storage in bytes.",
-          "readOnly": true
-        }
-      },
-      "description": "Message for usage statistics of a cluster."
-    },
     "EndpointsPrivate": {
       "type": "object",
       "properties": {
@@ -511,6 +487,58 @@
       },
       "description": "Message for GCP Private Service information."
     },
+    "commonv1beta1ClusterState": {
+      "type": "string",
+      "enum": [
+        "CLUSTER_STATE_UNSPECIFIED",
+        "CREATING",
+        "DELETING",
+        "ACTIVE",
+        "RESTORING",
+        "MAINTENANCE",
+        "DELETED",
+        "INACTIVE",
+        "UPDATING",
+        "IMPORTING",
+        "MODIFYING",
+        "PAUSING",
+        "PAUSED",
+        "RESUMING",
+        "SCALING"
+      ],
+      "default": "CLUSTER_STATE_UNSPECIFIED",
+      "description": "Enum for current state of a cluster.\n\n - CREATING: Cluster is being created.\n - DELETING: Cluster is being deleted.\n - ACTIVE: Cluster is active for use.\n - RESTORING: Cluster data is being restored.\n - MAINTENANCE: Cluster is under maintenance.\n - DELETED: Cluster has been deleted.\n - INACTIVE: Cluster is not active, but not being deleted.\n - UPDATING: Cluster is being updated.\nOnly for Dedicated Cluster.\n - IMPORTING: Cluster is being imported.\nOnly for Dedicated Cluster.\n - MODIFYING: Cluster is being modified.\nOnly for Dedicated Cluster.\n - PAUSING: Cluster is being paused.\nOnly for Dedicated Cluster.\n - PAUSED: Cluster is paused.\nOnly for Dedicated Cluster.\n - RESUMING: Cluster is resuming.\nOnly for Dedicated Cluster.\n - SCALING: Cluster is scaling.\nOnly for Dedicated Cluster.\nOnly for Mgmt Internal API."
+    },
+    "commonv1beta1Region": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "regions/aws-us-west-2",
+          "description": "Required. The unique name of the region.",
+          "pattern": "^regions/(aws|gcp|azure)-(.+)$"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Output only. User-friendly display name of the region.",
+          "readOnly": true
+        },
+        "provider": {
+          "$ref": "#/definitions/v1beta1RegionCloudProvider",
+          "description": "Output only. The cloud provider for the region.",
+          "readOnly": true
+        },
+        "id": {
+          "type": "string",
+          "example": "us-west-2",
+          "readOnly": true
+        }
+      },
+      "description": "Message for describing a region for deploying TiDB Serverless clusters.",
+      "required": [
+        "name"
+      ]
+    },
     "googlerpcStatus": {
       "type": "object",
       "properties": {
@@ -539,6 +567,16 @@
       },
       "additionalProperties": {}
     },
+    "serverlessv1beta1ClusterView": {
+      "type": "string",
+      "enum": [
+        "CLUSTER_VIEW_UNSPECIFIED",
+        "BASIC",
+        "FULL"
+      ],
+      "default": "CLUSTER_VIEW_UNSPECIFIED",
+      "description": "Enum for the different types of detail view to be returned for a TiDB Serverless cluster.\n\n - CLUSTER_VIEW_UNSPECIFIED: The server default is used if unspecified.\n - BASIC: Only basic information about the cluster is returned.\n - FULL: All details about the cluster are returned."
+    },
     "tidb_cloud_open_apiserverlessv1beta1Cluster": {
       "type": "object",
       "properties": {
@@ -557,7 +595,7 @@
           "description": "Required. User friendly display name of the cluster."
         },
         "region": {
-          "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Region",
+          "$ref": "#/definitions/commonv1beta1Region",
           "description": "Required. Region where the cluster will be created."
         },
         "spendingLimit": {
@@ -584,16 +622,16 @@
           "readOnly": true
         },
         "endpoints": {
-          "$ref": "#/definitions/v1beta1ClusterEndpoints",
+          "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1ClusterEndpoints",
           "description": "Optional. The endpoints for connecting to the cluster."
         },
         "state": {
-          "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1ClusterState",
+          "$ref": "#/definitions/commonv1beta1ClusterState",
           "description": "Output_only. The current state of the cluster.",
           "readOnly": true
         },
         "usage": {
-          "$ref": "#/definitions/ClusterUsage",
+          "$ref": "#/definitions/v1beta1ClusterUsage",
           "description": "Output_only. Usage details of the cluster.",
           "readOnly": true
         },
@@ -606,14 +644,14 @@
           "additionalProperties": {
             "type": "string"
           },
-          "description": "Optional. The labels for the cluster."
+          "description": "Optional. The labels for the cluster.\ntidb.cloud/organization. The label for the cluster organization id.\ntidb.cloud/project. The label for the cluster project id."
         },
         "annotations": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
           },
-          "description": "Optional. The annotations for the cluster."
+          "description": "Optional. The annotations for the cluster.\ntidb.cloud/has-set-password. The annotation for whether the cluster has set password.\ntidb.cloud/available-features. The annotation for the available features of the cluster."
         },
         "createTime": {
           "type": "string",
@@ -634,19 +672,20 @@
         "region"
       ]
     },
-    "tidb_cloud_open_apiserverlessv1beta1ClusterState": {
-      "type": "string",
-      "enum": [
-        "STATE_UNSPECIFIED",
-        "CREATING",
-        "DELETING",
-        "ACTIVE",
-        "RESTORING",
-        "MAINTENANCE",
-        "DELETED"
-      ],
-      "default": "STATE_UNSPECIFIED",
-      "description": "Enum for current state of a cluster.\n\n - STATE_UNSPECIFIED: Unspecified state.\n - CREATING: Cluster is being created.\n - DELETING: Cluster is being deleted.\n - ACTIVE: Cluster is active for use.\n - RESTORING: Cluster data is being restored.\n - MAINTENANCE: Cluster is under maintenance.\n - DELETED: Cluster has been deleted."
+    "tidb_cloud_open_apiserverlessv1beta1ClusterEndpoints": {
+      "type": "object",
+      "properties": {
+        "public": {
+          "$ref": "#/definitions/EndpointsPublic",
+          "description": "Optional. Public endpoint to connect to the cluster."
+        },
+        "private": {
+          "$ref": "#/definitions/EndpointsPrivate",
+          "description": "Output_only. Private endpoint to securely connect to the cluster.",
+          "readOnly": true
+        }
+      },
+      "description": "Message for endpoint information for connecting to a cluster."
     },
     "tidb_cloud_open_apiserverlessv1beta1ListClustersResponse": {
       "type": "object",
@@ -678,35 +717,12 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Region"
+            "$ref": "#/definitions/commonv1beta1Region"
           },
           "description": "A list of available regions."
         }
       },
       "description": "Responses message to the request for listing of available regions in TiDB Serverless."
-    },
-    "tidb_cloud_open_apiserverlessv1beta1Region": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "Required. Immutable. The unique name of the region."
-        },
-        "displayName": {
-          "type": "string",
-          "description": "Output_only. Immutable. User-friendly display name of the region.",
-          "readOnly": true
-        },
-        "provider": {
-          "$ref": "#/definitions/v1beta1RegionCloudProvider",
-          "description": "Output_only. Immutable. The cloud provider for the region.",
-          "readOnly": true
-        }
-      },
-      "description": "Message for describing a region for deploying TiDB Serverless clusters.",
-      "required": [
-        "name"
-      ]
     },
     "v1beta1ChangeRootPasswordResponse": {
       "type": "object",
@@ -737,40 +753,41 @@
       },
       "description": "Message for encryption settings for a cluster."
     },
-    "v1beta1ClusterEndpoints": {
+    "v1beta1ClusterUsage": {
       "type": "object",
       "properties": {
-        "publicEndpoint": {
-          "$ref": "#/definitions/EndpointsPublic",
-          "description": "Optional. Public endpoint to connect to the cluster."
+        "requestUnit": {
+          "type": "string",
+          "format": "int64",
+          "description": "Output_only. The Request Units used in this month.",
+          "readOnly": true
         },
-        "privateEndpoint": {
-          "$ref": "#/definitions/EndpointsPrivate",
-          "description": "Output_only. Private endpoint to securely connect to the cluster.",
+        "rowBasedStorage": {
+          "type": "number",
+          "format": "double",
+          "description": "Output_only. The storage used on row-based storage in bytes.",
+          "readOnly": true
+        },
+        "columnarStorage": {
+          "type": "number",
+          "format": "double",
+          "description": "Output_only. The storage used on column-based storage in bytes.",
           "readOnly": true
         }
       },
-      "description": "Message for endpoint information for connecting to a cluster."
-    },
-    "v1beta1ClusterView": {
-      "type": "string",
-      "enum": [
-        "CLUSTER_VIEW_UNSPECIFIED",
-        "BASIC",
-        "FULL"
-      ],
-      "default": "CLUSTER_VIEW_UNSPECIFIED",
-      "description": "Enum for the different types of detail view to be returned for a TiDB Serverless cluster.\n\n - CLUSTER_VIEW_UNSPECIFIED: The server default is used if unspecified.\n - BASIC: Only basic information about the cluster is returned.\n - FULL: All details about the cluster are returned."
+      "description": "Message for usage statistics of a cluster."
     },
     "v1beta1RegionCloudProvider": {
       "type": "string",
       "enum": [
         "CLOUD_PROVIDER_UNSPECIFIED",
         "AWS",
-        "GCP"
+        "GCP",
+        "AZURE"
       ],
       "default": "CLOUD_PROVIDER_UNSPECIFIED",
-      "description": "Enum for cloud providers for the region.\n\n - CLOUD_PROVIDER_UNSPECIFIED: Unspecified cloud provider.\n - AWS: Amazon Web Services.\n - GCP: Google Cloud Platform."
+      "description": "- CLOUD_PROVIDER_UNSPECIFIED: Unspecified cloud provider.\n - AWS: Amazon Web Services.\n - GCP: Google Cloud Platform.\n - AZURE: Microsoft Azure.",
+      "title": "Enum for cloud providers for the region.\n@gotags: tag:\"replace\""
     }
   }
 }

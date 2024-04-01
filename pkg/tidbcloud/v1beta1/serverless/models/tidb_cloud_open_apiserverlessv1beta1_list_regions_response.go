@@ -20,7 +20,7 @@ import (
 type TidbCloudOpenApiserverlessv1beta1ListRegionsResponse struct {
 
 	// A list of available regions.
-	Regions []*TidbCloudOpenApiserverlessv1beta1Region `json:"regions"`
+	Regions []*Commonv1beta1Region `json:"regions"`
 }
 
 // Validate validates this tidb cloud open apiserverlessv1beta1 list regions response

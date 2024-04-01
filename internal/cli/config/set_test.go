@@ -156,9 +156,9 @@ func (suite *SetConfigSuite) TestSetConfigWhenNoActiveProfile() {
 		stderrString string
 	}{
 		{
-			name: "set config",
-			args: []string{"private-key", "value"},
-			err:  fmt.Errorf("no profile is configured, please use `config create` to create a profile"),
+			name:         "set config",
+			args:         []string{"private-key", "value"},
+			stdoutString: "Set profile `default` property `private-key` to value `value` successfully\n",
 		},
 	}
 
