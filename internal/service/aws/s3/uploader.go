@@ -1,3 +1,17 @@
+// Copyright 2024 PingCAP, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package s3
 
 import (
@@ -5,9 +19,11 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"os"
 	"sort"
 	"sync"
 
+	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/service/cloud"
 	serverlessImportOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 	serverlessImportModels "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
@@ -121,13 +137,17 @@ type Uploader struct {
 	// partPool allows for the re-usage of streaming payload part buffers between upload calls
 	partPool byteSlicePool
 
-	client cloud.TiDBCloudClient
+	client     cloud.TiDBCloudClient
+	httpClient *resty.Client
 }
 
 // NewUploader creates a new Uploader instance to upload objects to S3. Pass In
 // additional functional options to customize the uploader's behavior. Requires a
 // cloud.TiDBCloudClient.
 func NewUploader(client cloud.TiDBCloudClient) *Uploader {
+	httpClient := resty.New()
+	debug := os.Getenv(config.DebugEnv) != ""
+	httpClient.SetDebug(debug)
 	u := &Uploader{
 		PartSize:          DefaultUploadPartSize,
 		Concurrency:       DefaultUploadConcurrency,
@@ -135,6 +155,7 @@ func NewUploader(client cloud.TiDBCloudClient) *Uploader {
 		MaxUploadParts:    MaxUploadParts,
 		BufferProvider:    defaultUploadBufferProvider(),
 		client:            client,
+		httpClient:        httpClient,
 	}
 
 	u.partPool = newByteSlicePool(u.PartSize)
@@ -276,9 +297,7 @@ func (u *uploader) singlePart(r io.ReadSeeker, cleanup func()) (string, error) {
 		return "", err
 	}
 
-	client := resty.New()
-	client.SetDebug(true)
-	resp, err := client.R().
+	resp, err := u.cfg.httpClient.R().
 		SetContext(u.ctx).
 		SetContentLength(true).
 		SetBody(r).Put(url.Payload.UploadURL[0])
@@ -444,9 +463,7 @@ func (u *multiUploader) readChunk(ch chan chunk) {
 // send performs an UploadPart request and keeps track of the completed
 // part information.
 func (u *multiUploader) send(c chunk) error {
-	client := resty.New()
-	client.SetDebug(true)
-	resp, err := client.R().
+	resp, err := u.cfg.httpClient.R().
 		SetContext(u.ctx).
 		SetContentLength(true).
 		SetBody(c.buf).Put(u.urls[c.num-1])

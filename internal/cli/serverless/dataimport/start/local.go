@@ -221,13 +221,21 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			var uploadID string
+			input := &s3.PutObjectInput{
+				FileName:      aws.String(stat.Name()),
+				DatabaseName:  aws.String(targetDatabase),
+				TableName:     aws.String(targetTable),
+				ContentLength: aws.Int64(stat.Size()),
+				ClusterID:     aws.String(clusterID),
+				Body:          uploadFile,
+			}
 			if h.IOStreams.CanPrompt {
-				uploadID, err = spinnerWaitUploadOp(ctx, h, d, clusterID, uploadFile, stat, targetDatabase, targetTable)
+				uploadID, err = spinnerWaitUploadOp(ctx, h, d, input)
 				if err != nil {
 					return err
 				}
 			} else {
-				uploadID, err = waitUploadOp(ctx, h, d, clusterID, uploadFile, stat, targetDatabase, targetTable)
+				uploadID, err = waitUploadOp(ctx, h, d, input)
 				if err != nil {
 					return err
 				}
@@ -327,17 +335,9 @@ func initialLocalInputModel() ui.TextInputModel {
 	return m
 }
 
-func waitUploadOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, clusterID string, uploadFile *os.File, info os.FileInfo, database, table string) (string, error) {
+func waitUploadOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, input *s3.PutObjectInput) (string, error) {
 	fmt.Fprintf(h.IOStreams.Out, "... Uploading file\n")
-	id, err := s3.NewUploader(d).Upload(ctx,
-		&s3.PutObjectInput{
-			FileName:      aws.String(info.Name()),
-			DatabaseName:  aws.String(database),
-			TableName:     aws.String(table),
-			ContentLength: aws.Int64(info.Size()),
-			ClusterID:     aws.String(clusterID),
-			Body:          uploadFile,
-		})
+	id, err := s3.NewUploader(d).Upload(ctx, input)
 	if err != nil {
 		return "", err
 	}
@@ -346,22 +346,14 @@ func waitUploadOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClie
 	return id, nil
 }
 
-func spinnerWaitUploadOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, clusterID string, uploadFile *os.File, info os.FileInfo, database string, table string) (string, error) {
+func spinnerWaitUploadOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, input *s3.PutObjectInput) (string, error) {
 	var uploadID string
 	task := func() tea.Msg {
 		errChan := make(chan error, 1)
 
 		go func() {
 			var err error
-			uploadID, err = s3.NewUploader(d).Upload(ctx,
-				&s3.PutObjectInput{
-					FileName:      aws.String(info.Name()),
-					DatabaseName:  aws.String(database),
-					TableName:     aws.String(table),
-					ContentLength: aws.Int64(info.Size()),
-					ClusterID:     aws.String(clusterID),
-					Body:          uploadFile,
-				})
+			uploadID, err = s3.NewUploader(d).Upload(ctx, input)
 			if err != nil {
 				errChan <- err
 				return
