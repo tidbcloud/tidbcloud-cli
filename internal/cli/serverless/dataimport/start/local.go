@@ -222,12 +222,12 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 
 			var uploadID string
 			if h.IOStreams.CanPrompt {
-				uploadID, err = spinnerWaitUploadOp(ctx, h, d, clusterID, uploadFile, stat)
+				uploadID, err = spinnerWaitUploadOp(ctx, h, d, clusterID, uploadFile, stat, targetDatabase, targetTable)
 				if err != nil {
 					return err
 				}
 			} else {
-				uploadID, err = waitUploadOp(ctx, h, d, clusterID, uploadFile, stat)
+				uploadID, err = waitUploadOp(ctx, h, d, clusterID, uploadFile, stat, targetDatabase, targetTable)
 				if err != nil {
 					return err
 				}
@@ -246,7 +246,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 					"null": "\\N",
 					"trimLastSeparator": false,
 					"notNull": false
-				},
+				}
 			},
 			"target": {
 				"local": {
@@ -255,9 +255,11 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 						"schema": "%s",
 						"table": "%s"
 					},
+					"fileName": "%s"
 				},
 				"type": "LOCAL"
-			}}`, dataFormat, uploadID, targetDatabase, targetTable)))
+			}
+			}`, dataFormat, uploadID, targetDatabase, targetTable, stat.Name())))
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -325,11 +327,13 @@ func initialLocalInputModel() ui.TextInputModel {
 	return m
 }
 
-func waitUploadOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, clusterID string, uploadFile *os.File, info os.FileInfo) (string, error) {
+func waitUploadOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, clusterID string, uploadFile *os.File, info os.FileInfo, database, table string) (string, error) {
 	fmt.Fprintf(h.IOStreams.Out, "... Uploading file\n")
 	id, err := s3.NewUploader(d).Upload(ctx,
 		&s3.PutObjectInput{
-			Key:           aws.String(info.Name()),
+			FileName:      aws.String(info.Name()),
+			DatabaseName:  aws.String(database),
+			TableName:     aws.String(table),
 			ContentLength: aws.Int64(info.Size()),
 			ClusterID:     aws.String(clusterID),
 			Body:          uploadFile,
@@ -342,7 +346,7 @@ func waitUploadOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClie
 	return id, nil
 }
 
-func spinnerWaitUploadOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, clusterID string, uploadFile *os.File, info os.FileInfo) (string, error) {
+func spinnerWaitUploadOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, clusterID string, uploadFile *os.File, info os.FileInfo, database string, table string) (string, error) {
 	var uploadID string
 	task := func() tea.Msg {
 		errChan := make(chan error, 1)
@@ -351,7 +355,9 @@ func spinnerWaitUploadOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCl
 			var err error
 			uploadID, err = s3.NewUploader(d).Upload(ctx,
 				&s3.PutObjectInput{
-					Key:           aws.String(info.Name()),
+					FileName:      aws.String(info.Name()),
+					DatabaseName:  aws.String(database),
+					TableName:     aws.String(table),
 					ContentLength: aws.Int64(info.Size()),
 					ClusterID:     aws.String(clusterID),
 					Body:          uploadFile,

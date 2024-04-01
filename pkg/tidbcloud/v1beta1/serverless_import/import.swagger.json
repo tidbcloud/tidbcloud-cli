@@ -346,6 +346,20 @@
             "required": true,
             "type": "integer",
             "format": "int32"
+          },
+          {
+            "name": "targetDatabase",
+            "description": "The name of the database to import into",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "targetTable",
+            "description": "The name of the table to import into",
+            "in": "query",
+            "required": true,
+            "type": "string"
           }
         ],
         "tags": [

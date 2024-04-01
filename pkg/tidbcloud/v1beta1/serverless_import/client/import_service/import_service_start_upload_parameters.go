@@ -82,6 +82,18 @@ type ImportServiceStartUploadParams struct {
 	*/
 	PartNumber int32
 
+	/* TargetDatabase.
+
+	   The name of the database to import into
+	*/
+	TargetDatabase string
+
+	/* TargetTable.
+
+	   The name of the table to import into
+	*/
+	TargetTable string
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -168,6 +180,28 @@ func (o *ImportServiceStartUploadParams) SetPartNumber(partNumber int32) {
 	o.PartNumber = partNumber
 }
 
+// WithTargetDatabase adds the targetDatabase to the import service start upload params
+func (o *ImportServiceStartUploadParams) WithTargetDatabase(targetDatabase string) *ImportServiceStartUploadParams {
+	o.SetTargetDatabase(targetDatabase)
+	return o
+}
+
+// SetTargetDatabase adds the targetDatabase to the import service start upload params
+func (o *ImportServiceStartUploadParams) SetTargetDatabase(targetDatabase string) {
+	o.TargetDatabase = targetDatabase
+}
+
+// WithTargetTable adds the targetTable to the import service start upload params
+func (o *ImportServiceStartUploadParams) WithTargetTable(targetTable string) *ImportServiceStartUploadParams {
+	o.SetTargetTable(targetTable)
+	return o
+}
+
+// SetTargetTable adds the targetTable to the import service start upload params
+func (o *ImportServiceStartUploadParams) SetTargetTable(targetTable string) {
+	o.TargetTable = targetTable
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *ImportServiceStartUploadParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -197,6 +231,26 @@ func (o *ImportServiceStartUploadParams) WriteToRequest(r runtime.ClientRequest,
 	if qPartNumber != "" {
 
 		if err := r.SetQueryParam("partNumber", qPartNumber); err != nil {
+			return err
+		}
+	}
+
+	// query param targetDatabase
+	qrTargetDatabase := o.TargetDatabase
+	qTargetDatabase := qrTargetDatabase
+	if qTargetDatabase != "" {
+
+		if err := r.SetQueryParam("targetDatabase", qTargetDatabase); err != nil {
+			return err
+		}
+	}
+
+	// query param targetTable
+	qrTargetTable := o.TargetTable
+	qTargetTable := qrTargetTable
+	if qTargetTable != "" {
+
+		if err := r.SetQueryParam("targetTable", qTargetTable); err != nil {
 			return err
 		}
 	}

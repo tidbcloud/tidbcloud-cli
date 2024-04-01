@@ -69,7 +69,9 @@ func (m *uploadError) UploadID() string {
 }
 
 type PutObjectInput struct {
-	Key           *string
+	FileName      *string
+	DatabaseName  *string
+	TableName     *string
 	ContentLength *int64
 	ClusterID     *string
 	Body          ReaderAtSeeker
@@ -268,7 +270,8 @@ func (u *uploader) nextReader() (io.ReadSeeker, int, func(), error) {
 func (u *uploader) singlePart(r io.ReadSeeker, cleanup func()) (string, error) {
 	defer cleanup()
 	url, err := u.cfg.client.StartUpload(serverlessImportOp.NewImportServiceStartUploadParams().
-		WithClusterID(*u.in.ClusterID).WithPartNumber(1).WithFileName(*u.in.Key).WithContext(u.ctx))
+		WithClusterID(*u.in.ClusterID).WithPartNumber(1).WithFileName(*u.in.FileName).
+		WithTargetDatabase(*u.in.DatabaseName).WithTargetTable(*u.in.TableName).WithContext(u.ctx))
 	if err != nil {
 		return "", err
 	}
@@ -331,7 +334,8 @@ func (a completedParts) Less(i, j int) bool {
 func (u *multiUploader) upload(firstBuf io.ReadSeeker, cleanup func()) (string, error) {
 	partNumber := math.Ceil(float64(u.totalSize) / float64(u.cfg.PartSize))
 	url, err := u.cfg.client.StartUpload(serverlessImportOp.NewImportServiceStartUploadParams().
-		WithClusterID(*u.in.ClusterID).WithPartNumber(int32(partNumber)).WithFileName(*u.in.Key).WithContext(u.ctx))
+		WithClusterID(*u.in.ClusterID).WithPartNumber(int32(partNumber)).WithFileName(*u.in.FileName).
+		WithTargetDatabase(*u.in.DatabaseName).WithTargetTable(*u.in.TableName).WithContext(u.ctx))
 	if err != nil {
 		cleanup()
 		return "", err
@@ -488,7 +492,7 @@ func (u *multiUploader) fail() {
 	}
 
 	_, err := u.cfg.client.CancelMultipartUpload(serverlessImportOp.NewImportServiceCancelMultipartUploadParams().
-		WithClusterID(*u.in.ClusterID).WithUploadID(u.uploadID).WithFileName(*u.in.Key).WithContext(u.ctx))
+		WithClusterID(*u.in.ClusterID).WithUploadID(u.uploadID).WithFileName(*u.in.FileName).WithContext(u.ctx))
 	if err != nil {
 		log.Warn("failed to abort multipart upload", zap.Error(err))
 		return
@@ -504,7 +508,7 @@ func (u *multiUploader) complete() *s3.CompleteMultipartUploadOutput {
 
 	sort.Sort(u.parts)
 	_, err := u.cfg.client.CompleteMultipartUpload(serverlessImportOp.NewImportServiceCompleteMultipartUploadParams().
-		WithClusterID(*u.in.ClusterID).WithUploadID(u.uploadID).WithFileName(*u.in.Key).WithParts(u.parts).WithContext(u.ctx))
+		WithClusterID(*u.in.ClusterID).WithUploadID(u.uploadID).WithFileName(*u.in.FileName).WithParts(u.parts).WithContext(u.ctx))
 	if err != nil {
 		u.setErr(err)
 		u.fail()

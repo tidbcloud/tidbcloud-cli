@@ -173,7 +173,6 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 	rootCmd.AddCommand(project.ProjectCmd(h))
 	rootCmd.AddCommand(version.VersionCmd(h))
 	rootCmd.AddCommand(upgrade.Cmd(h))
-	rootCmd.AddCommand(UploadCmd(h))
 
 	rootCmd.PersistentFlags().BoolVarP(&debugMode, flag.Debug, flag.DebugShort, false, "Enable debug mode")
 	rootCmd.PersistentFlags().Bool(flag.NoColor, false, "Disable color output")
