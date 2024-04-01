@@ -16,6 +16,7 @@ package dataimport
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -24,7 +25,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
+	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -54,13 +55,13 @@ func (suite *CancelImportSuite) SetupTest() {
 
 func (suite *CancelImportSuite) TestCancelImportArgs() {
 	assert := require.New(suite.T())
-
-	result := &importOp.CancelImportOK{}
+	ctx := context.Background()
+	result := &importOp.ImportServiceCancelImportOK{}
 	projectID := "12345"
 	clusterID := "12345"
 	importID := "12345"
-	suite.mockClient.On("CancelImport", importOp.NewCancelImportParams().
-		WithProjectID(projectID).WithClusterID(clusterID).WithID(importID)).
+	suite.mockClient.On("CancelImport", importOp.NewImportServiceCancelImportParams().
+		WithClusterID(clusterID).WithID(importID).WithContext(ctx)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -95,6 +96,7 @@ func (suite *CancelImportSuite) TestCancelImportArgs() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := CancelCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)

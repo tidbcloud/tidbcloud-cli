@@ -277,8 +277,8 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 			body.ImportOptions.CsvFormat.BackslashEscape = backslashEscape
 			body.ImportOptions.CsvFormat.TrimLastSeparator = trimLastSeparator
 
-			params := importOp.NewImportServiceCreateImportParamsWithContext(ctx).WithClusterID(clusterID).
-				WithBody(body)
+			params := importOp.NewImportServiceCreateImportParams().WithClusterID(clusterID).
+				WithBody(body).WithContext(ctx)
 			if h.IOStreams.CanPrompt {
 				err := spinnerWaitStartOp(ctx, h, d, params)
 				if err != nil {

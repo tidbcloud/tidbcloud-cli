@@ -116,7 +116,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 			cmd.Annotations[telemetry.ProjectID] = projectID
 
-			total, importTasks, err := cloud.RetrieveImports(clusterID, h.QueryPageSize, d)
+			total, importTasks, err := cloud.RetrieveImports(cmd.Context(), clusterID, h.QueryPageSize, d)
 			if err != nil {
 				return err
 			}

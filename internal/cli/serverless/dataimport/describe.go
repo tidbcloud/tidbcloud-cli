@@ -105,7 +105,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				selectedImport, err := cloud.GetSelectedImport(clusterID, h.QueryPageSize, d, []importModel.V1beta1ImportStatus{})
+				selectedImport, err := cloud.GetSelectedImport(cmd.Context(), clusterID, h.QueryPageSize, d, []importModel.V1beta1ImportStatus{})
 				if err != nil {
 					return err
 				}
@@ -119,7 +119,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 
 			cmd.Annotations[telemetry.ProjectID] = projectID
 
-			params := importOp.NewImportServiceGetImportParamsWithContext(cmd.Context()).WithClusterID(clusterID).WithID(importID)
+			params := importOp.NewImportServiceGetImportParams().WithClusterID(clusterID).WithID(importID).WithContext(cmd.Context())
 			importTask, err := d.GetImport(params)
 			if err != nil {
 				return errors.Trace(err)

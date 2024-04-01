@@ -109,7 +109,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cluster.ID
 
 				// Only task status is pending or importing can be canceled.
-				selectedImport, err := cloud.GetSelectedImport(clusterID, h.QueryPageSize, d, []importModel.V1beta1ImportStatus{
+				selectedImport, err := cloud.GetSelectedImport(cmd.Context(), clusterID, h.QueryPageSize, d, []importModel.V1beta1ImportStatus{
 					importModel.V1beta1ImportStatusPREPARING,
 					importModel.V1beta1ImportStatusIMPORTING,
 				})
@@ -152,7 +152,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := importOp.NewImportServiceCancelImportParamsWithContext(cmd.Context()).WithClusterID(clusterID).WithID(importID)
+			params := importOp.NewImportServiceCancelImportParams().WithClusterID(clusterID).WithID(importID).WithContext(cmd.Context())
 			_, err = d.CancelImport(params)
 			if err != nil {
 				return errors.Trace(err)

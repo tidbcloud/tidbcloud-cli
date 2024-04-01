@@ -15,6 +15,7 @@
 package cloud
 
 import (
+	"context"
 	"fmt"
 	"math"
 
@@ -30,7 +31,6 @@ import (
 	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 	brModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/models"
 	importApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
 	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
@@ -335,8 +335,8 @@ func GetSelectedRestoreMode() (string, error) {
 
 // GetSelectedImport get the selected import task. statusFilter is used to filter the available options, only imports has status in statusFilter will be available.
 // statusFilter with no filter will mark all the import tasks as available options just like statusFilter with all status.
-func GetSelectedImport(cID string, pageSize int64, client TiDBCloudClient, statusFilter []models.V1beta1ImportStatus) (*Import, error) {
-	_, importItems, err := RetrieveImports(cID, pageSize, client)
+func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client TiDBCloudClient, statusFilter []importModel.V1beta1ImportStatus) (*Import, error) {
+	_, importItems, err := RetrieveImports(ctx, cID, pageSize, client)
 	if err != nil {
 		return nil, err
 	}
@@ -472,7 +472,7 @@ func RetrieveServerlessBackups(cID string, pageSize int32, d TiDBCloudClient) (i
 	return int64(len(items)), items, nil
 }
 
-func RetrieveImports(cID string, pageSize int64, d TiDBCloudClient) (uint64, []*importModel.V1beta1Import, error) {
+func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDBCloudClient) (uint64, []*importModel.V1beta1Import, error) {
 	params := importApi.NewImportServiceListImportsParams().WithClusterID(cID)
 	ps := int32(pageSize)
 	var total uint64 = math.MaxUint64
@@ -480,7 +480,7 @@ func RetrieveImports(cID string, pageSize int64, d TiDBCloudClient) (uint64, []*
 	var items []*importModel.V1beta1Import
 	// loop to get all clusters
 	for uint64((page-1)*ps) < total {
-		imports, err := d.ListImports(params.WithPage(&page).WithPageSize(&ps))
+		imports, err := d.ListImports(params.WithPage(&page).WithPageSize(&ps).WithContext(context))
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}

@@ -24,8 +24,8 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
+	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
+	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
 	mockTool "github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -72,7 +72,7 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 	assert := require.New(suite.T())
 
 	importID := "12345"
-	body := &importModel.OpenapiCreateImportResp{
+	body := &importModel.V1beta1Import{
 		ID: &importID,
 	}
 	result := &importOp.CreateImportOK{

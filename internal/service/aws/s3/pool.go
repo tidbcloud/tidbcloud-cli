@@ -114,7 +114,7 @@ func (p *maxSlicePool) Get(ctx context.Context) (*[]byte, error) {
 			p.mtx.RUnlock()
 
 			select {
-			case _ = <-c:
+			case <-c:
 				p.mtx.RLock()
 			case <-ctx.Done():
 				return nil, ctx.Err()

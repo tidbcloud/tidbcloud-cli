@@ -16,6 +16,7 @@ package dataimport
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -25,49 +26,57 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
+	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
+	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
 
 const getImportResultStr = `{
-  "all_completed_tables": [],
-  "cluster_id": "121026",
-  "completed_percent": 100,
-  "completed_tables": 1,
-  "created_at": "2023-01-10T10:32:01.000Z",
-  "creation_details": {
-    "cluster_id": "121026",
-    "csv_format": {
-      "backslash_escape": true,
-      "delimiter": "\"",
-      "header": true,
-      "null": "\n",
-      "separator": ","
+  "allCompletedTables": [
+    {
+      "result": "SUCCESS",
+      "tableName": "test.ttt"
+    }
+  ],
+  "clusterId": "12345",
+  "completedPercent": 100,
+  "completedTables": 1,
+  "createdAt": "2024-04-01T06:39:50.000Z",
+  "creationDetails": {
+    "clusterId": "12345",
+    "dataFormat": "CSV",
+    "importOptions": {
+      "csvFormat": {
+        "backslashEscape": true,
+        "delimiter": "\"",
+        "header": true,
+        "null": "\\N",
+        "separator": ","
+      }
     },
-    "data_format": "CSV",
-    "file_name": "a.csv",
-    "project_id": "0",
-    "target_table": {
-      "schema": "test",
-      "table": "yxxxx"
+    "target": {
+      "local": {
+        "fileName": "a.csv",
+        "targetTable": {
+          "schema": "test",
+          "table": "yxxxx"
+        }
+      },
+      "type": "LOCAL"
     },
     "type": "LOCAL"
   },
-  "current_tables": [],
-  "data_format": "CSV",
-  "elapsed_time_seconds": 35,
-  "id": "120295",
-  "message": "",
-  "pending_tables": 0,
-  "post_import_completed_percent": 100,
-  "processed_source_data_size": "36",
+  "currentTables": [],
+  "dataFormat": "CSV",
+  "elapsedTimeSeconds": 14,
+  "id": "imp-qwert",
+  "postImportCompletedPercent": 100,
+  "processedSourceDataSize": "37",
   "status": "COMPLETED",
-  "total_files": 0,
-  "total_size": "36",
-  "total_tables_count": 1
+  "totalSize": "37",
+  "totalTablesCount": 1
 }
 `
 
@@ -95,19 +104,19 @@ func (suite *DescribeImportSuite) SetupTest() {
 
 func (suite *DescribeImportSuite) TestDescribeImportArgs() {
 	assert := require.New(suite.T())
-
-	body := &importModel.OpenapiGetImportResp{}
+	ctx := context.Background()
+	body := &importModel.V1beta1Import{}
 	err := json.Unmarshal([]byte(getImportResultStr), body)
 	assert.Nil(err)
-	result := &importOp.GetImportOK{
+	result := &importOp.ImportServiceGetImportOK{
 		Payload: body,
 	}
 
 	projectID := "12345"
 	clusterID := "12345"
-	importID := "12345"
-	suite.mockClient.On("GetImport", importOp.NewGetImportParams().
-		WithProjectID(projectID).WithClusterID(clusterID).WithID(importID)).
+	importID := "imp-qwert"
+	suite.mockClient.On("GetImport", importOp.NewImportServiceGetImportParams().
+		WithClusterID(clusterID).WithID(importID).WithContext(ctx)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -140,6 +149,7 @@ func (suite *DescribeImportSuite) TestDescribeImportArgs() {
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
+			cmd.SetContext(ctx)
 			err = cmd.Execute()
 			assert.Equal(tt.err, err)
 
