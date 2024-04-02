@@ -131,6 +131,7 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
   "totalTablesCount": 1
 }
 `, importID)), body)
+	assert.Nil(err)
 	result := &importOp.ImportServiceCreateImportOK{
 		Payload: body,
 	}
@@ -245,11 +246,6 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 	targetTable := "test"
 	projectID := "12345"
 	clusterID := "12345"
-	open, err := os.Open(fileName)
-	defer open.Close()
-	if err != nil {
-		assert.Nil(err)
-	}
 	suite.mockUploader.On("Upload", ctx, mockTool.MatchedBy(func(keys *s3.PutObjectInput) bool {
 		assert.Equal(fileName, *keys.FileName)
 		assert.Equal(targetDatabase, *keys.DatabaseName)
@@ -259,7 +255,7 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 	})).Return(uploadID, nil)
 
 	reqBody := importOp.ImportServiceCreateImportBody{}
-	err = reqBody.UnmarshalBinary([]byte(fmt.Sprintf(`{
+	err := reqBody.UnmarshalBinary([]byte(fmt.Sprintf(`{
     "clusterId": "12345",
     "dataFormat": "%s",
     "importOptions": {
