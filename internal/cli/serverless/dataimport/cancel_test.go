@@ -59,7 +59,7 @@ func (suite *CancelImportSuite) TestCancelImportArgs() {
 	result := &importOp.ImportServiceCancelImportOK{}
 	projectID := "12345"
 	clusterID := "12345"
-	importID := "12345"
+	importID := "imp-asdasd"
 	suite.mockClient.On("CancelImport", importOp.NewImportServiceCancelImportParams().
 		WithClusterID(clusterID).WithID(importID).WithContext(ctx)).
 		Return(result, nil)

@@ -112,6 +112,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 			var projectID, clusterID, dataFormat, targetDatabase, targetTable, separator, delimiter string
 			var backslashEscape, trimLastSeparator bool
 			d, err := h.Client()
+			uploader := h.Uploader(d)
 			if err != nil {
 				return err
 			}
@@ -230,12 +231,12 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 				Body:          uploadFile,
 			}
 			if h.IOStreams.CanPrompt {
-				uploadID, err = spinnerWaitUploadOp(ctx, h, d, input)
+				uploadID, err = spinnerWaitUploadOp(ctx, h, uploader, input)
 				if err != nil {
 					return err
 				}
 			} else {
-				uploadID, err = waitUploadOp(ctx, h, d, input)
+				uploadID, err = waitUploadOp(ctx, h, uploader, input)
 				if err != nil {
 					return err
 				}
@@ -335,9 +336,9 @@ func initialLocalInputModel() ui.TextInputModel {
 	return m
 }
 
-func waitUploadOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, input *s3.PutObjectInput) (string, error) {
+func waitUploadOp(ctx context.Context, h *internal.Helper, u s3.Uploader, input *s3.PutObjectInput) (string, error) {
 	fmt.Fprintf(h.IOStreams.Out, "... Uploading file\n")
-	id, err := s3.NewUploader(d).Upload(ctx, input)
+	id, err := u.Upload(ctx, input)
 	if err != nil {
 		return "", err
 	}
@@ -346,14 +347,14 @@ func waitUploadOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClie
 	return id, nil
 }
 
-func spinnerWaitUploadOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, input *s3.PutObjectInput) (string, error) {
+func spinnerWaitUploadOp(ctx context.Context, h *internal.Helper, u s3.Uploader, input *s3.PutObjectInput) (string, error) {
 	var uploadID string
 	task := func() tea.Msg {
 		errChan := make(chan error, 1)
 
 		go func() {
 			var err error
-			uploadID, err = s3.NewUploader(d).Upload(ctx, input)
+			uploadID, err = u.Upload(ctx, input)
 			if err != nil {
 				errChan <- err
 				return

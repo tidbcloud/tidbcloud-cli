@@ -93,10 +93,14 @@ type PutObjectInput struct {
 	Body          ReaderAtSeeker
 }
 
-// The Uploader structure that calls Upload(). It is safe to call Upload()
+type Uploader interface {
+	Upload(ctx context.Context, input *PutObjectInput) (string, error)
+}
+
+// The UploaderImpl structure that calls Upload(). It is safe to call Upload()
 // on this structure for multiple objects and across concurrent goroutines.
-// Mutating the Uploader's properties is not safe to be done concurrently.
-type Uploader struct {
+// Mutating the UploaderImpl's properties is not safe to be done concurrently.
+type UploaderImpl struct {
 	// The buffer size (in bytes) to use when buffering data into chunks and
 	// sending them as parts to S3. The minimum allowed part size is 5MB, and
 	// if this value is set to zero, the DefaultUploadPartSize value will be used.
@@ -141,14 +145,14 @@ type Uploader struct {
 	httpClient *resty.Client
 }
 
-// NewUploader creates a new Uploader instance to upload objects to S3. Pass In
+// NewUploader creates a new UploaderImpl instance to upload objects to S3. Pass In
 // additional functional options to customize the uploader's behavior. Requires a
 // cloud.TiDBCloudClient.
-func NewUploader(client cloud.TiDBCloudClient) *Uploader {
+func NewUploader(client cloud.TiDBCloudClient) Uploader {
 	httpClient := resty.New()
 	debug := os.Getenv(config.DebugEnv) != ""
 	httpClient.SetDebug(debug)
-	u := &Uploader{
+	u := &UploaderImpl{
 		PartSize:          DefaultUploadPartSize,
 		Concurrency:       DefaultUploadConcurrency,
 		LeavePartsOnError: false,
@@ -166,9 +170,9 @@ func NewUploader(client cloud.TiDBCloudClient) *Uploader {
 // Upload uploads an object to S3, intelligently buffering large
 // files into smaller chunks and sending them in parallel across multiple
 // goroutines. You can configure the buffer size and concurrency through the
-// Uploader parameters.
+// UploaderImpl parameters.
 // It is safe to call this method concurrently across goroutines.
-func (u Uploader) Upload(ctx context.Context, input *PutObjectInput) (string, error) {
+func (u UploaderImpl) Upload(ctx context.Context, input *PutObjectInput) (string, error) {
 	i := uploader{cfg: u, ctx: ctx, in: input}
 
 	return i.upload()
@@ -177,7 +181,7 @@ func (u Uploader) Upload(ctx context.Context, input *PutObjectInput) (string, er
 // internal structure to manage an upload to S3.
 type uploader struct {
 	ctx context.Context
-	cfg Uploader
+	cfg UploaderImpl
 
 	in *PutObjectInput
 

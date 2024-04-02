@@ -33,6 +33,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/log"
 	"tidbcloud-cli/internal/prop"
+	"tidbcloud-cli/internal/service/aws/s3"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/service/github"
 	"tidbcloud-cli/internal/telemetry"
@@ -98,6 +99,9 @@ func Execute(ctx context.Context) {
 			}
 
 			return delegate, nil
+		},
+		Uploader: func(client cloud.TiDBCloudClient) s3.Uploader {
+			return s3.NewUploader(client)
 		},
 		QueryPageSize: internal.DefaultPageSize,
 		IOStreams:     iostream.System(),
