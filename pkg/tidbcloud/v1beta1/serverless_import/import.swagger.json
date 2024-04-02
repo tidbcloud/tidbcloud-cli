@@ -198,7 +198,7 @@
         ]
       }
     },
-    "/v1beta1/clusters/{clusterId}/imports:cancel-upload": {
+    "/v1beta1/clusters/{clusterId}/imports:cancelUpload": {
       "post": {
         "operationId": "ImportService_CancelMultipartUpload",
         "responses": {
@@ -244,7 +244,7 @@
         ]
       }
     },
-    "/v1beta1/clusters/{clusterId}/imports:complete-upload": {
+    "/v1beta1/clusters/{clusterId}/imports:completeUpload": {
       "post": {
         "operationId": "ImportService_CompleteMultipartUpload",
         "responses": {
@@ -306,7 +306,7 @@
         ]
       }
     },
-    "/v1beta1/clusters/{clusterId}/imports:start-upload": {
+    "/v1beta1/clusters/{clusterId}/imports:startUpload": {
       "get": {
         "summary": "Generate Upload url for importing data",
         "operationId": "ImportService_StartUpload",

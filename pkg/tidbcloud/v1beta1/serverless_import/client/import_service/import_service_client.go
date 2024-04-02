@@ -93,7 +93,7 @@ func (a *Client) ImportServiceCancelMultipartUpload(params *ImportServiceCancelM
 	op := &runtime.ClientOperation{
 		ID:                 "ImportService_CancelMultipartUpload",
 		Method:             "POST",
-		PathPattern:        "/v1beta1/clusters/{clusterId}/imports:cancel-upload",
+		PathPattern:        "/v1beta1/clusters/{clusterId}/imports:cancelUpload",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},
@@ -130,7 +130,7 @@ func (a *Client) ImportServiceCompleteMultipartUpload(params *ImportServiceCompl
 	op := &runtime.ClientOperation{
 		ID:                 "ImportService_CompleteMultipartUpload",
 		Method:             "POST",
-		PathPattern:        "/v1beta1/clusters/{clusterId}/imports:complete-upload",
+		PathPattern:        "/v1beta1/clusters/{clusterId}/imports:completeUpload",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},
@@ -278,7 +278,7 @@ func (a *Client) ImportServiceStartUpload(params *ImportServiceStartUploadParams
 	op := &runtime.ClientOperation{
 		ID:                 "ImportService_StartUpload",
 		Method:             "GET",
-		PathPattern:        "/v1beta1/clusters/{clusterId}/imports:start-upload",
+		PathPattern:        "/v1beta1/clusters/{clusterId}/imports:startUpload",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},

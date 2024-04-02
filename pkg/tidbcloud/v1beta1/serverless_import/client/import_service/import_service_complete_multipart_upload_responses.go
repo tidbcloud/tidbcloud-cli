@@ -86,11 +86,11 @@ func (o *ImportServiceCompleteMultipartUploadOK) Code() int {
 }
 
 func (o *ImportServiceCompleteMultipartUploadOK) Error() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:complete-upload][%d] importServiceCompleteMultipartUploadOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:completeUpload][%d] importServiceCompleteMultipartUploadOK  %+v", 200, o.Payload)
 }
 
 func (o *ImportServiceCompleteMultipartUploadOK) String() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:complete-upload][%d] importServiceCompleteMultipartUploadOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:completeUpload][%d] importServiceCompleteMultipartUploadOK  %+v", 200, o.Payload)
 }
 
 func (o *ImportServiceCompleteMultipartUploadOK) GetPayload() interface{} {
@@ -156,11 +156,11 @@ func (o *ImportServiceCompleteMultipartUploadDefault) Code() int {
 }
 
 func (o *ImportServiceCompleteMultipartUploadDefault) Error() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:complete-upload][%d] ImportService_CompleteMultipartUpload default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:completeUpload][%d] ImportService_CompleteMultipartUpload default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ImportServiceCompleteMultipartUploadDefault) String() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:complete-upload][%d] ImportService_CompleteMultipartUpload default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:completeUpload][%d] ImportService_CompleteMultipartUpload default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ImportServiceCompleteMultipartUploadDefault) GetPayload() *models.GooglerpcStatus {
