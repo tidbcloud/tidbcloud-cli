@@ -33,12 +33,6 @@ generate-import-client: ## Generate import client
 	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
 	swagger generate client -f pkg/tidbcloud/import/import-api.json -A tidbcloud-import -t pkg/tidbcloud/import
 
-.PHONY: generate-connect-info-client
-generate-connect-info-client: ## Generate connect info client
-	@echo "==> Generating connect info client"
-	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
-	swagger generate client -f pkg/tidbcloud/connect_info/connect-info-api.json -A tidbcloud-connect-info -t pkg/tidbcloud/connect_info
-
 .PHONY: generate-pingchat-client
 generate-pingchat-client: ## Generate PingChat client
 	@echo "==> Generating PingChat client"

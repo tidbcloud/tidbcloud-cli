@@ -6,8 +6,6 @@ import (
 	branch_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 	backup_restore_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 
-	connect_info_service "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
-
 	iam "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	import_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
@@ -499,43 +497,6 @@ func (_m *TiDBCloudClient) GetCluster(params *serverless_service.ServerlessServi
 	}
 
 	if rf, ok := ret.Get(1).(func(*serverless_service.ServerlessServiceGetClusterParams, ...serverless_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// GetConnectInfo provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) GetConnectInfo(params *connect_info_service.GetInfoParams, opts ...connect_info_service.ClientOption) (*connect_info_service.GetInfoOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetConnectInfo")
-	}
-
-	var r0 *connect_info_service.GetInfoOK
-	var r1 error
-	if rf, ok := ret.Get(0).(func(*connect_info_service.GetInfoParams, ...connect_info_service.ClientOption) (*connect_info_service.GetInfoOK, error)); ok {
-		return rf(params, opts...)
-	}
-	if rf, ok := ret.Get(0).(func(*connect_info_service.GetInfoParams, ...connect_info_service.ClientOption) *connect_info_service.GetInfoOK); ok {
-		r0 = rf(params, opts...)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*connect_info_service.GetInfoOK)
-		}
-	}
-
-	if rf, ok := ret.Get(1).(func(*connect_info_service.GetInfoParams, ...connect_info_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)

@@ -40,7 +40,6 @@ func Cmd(h *internal.Helper) *cobra.Command {
 	serverlessCmd.AddCommand(RestoreCmd(h))
 	serverlessCmd.AddCommand(UpdateCmd(h))
 	serverlessCmd.AddCommand(dataimport.ImportCmd(h))
-	serverlessCmd.AddCommand(ConnectInfoCmd(h))
 	serverlessCmd.AddCommand(SpendingLimitCmd(h))
 	return serverlessCmd
 }

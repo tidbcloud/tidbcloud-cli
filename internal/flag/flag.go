@@ -15,10 +15,7 @@
 package flag
 
 const (
-	AwsRoleArn            string = "aws-role-arn"
 	BackslashEscape       string = "backslash-escape"
-	ClientName            string = "client"
-	CloudProvider         string = "cloud-provider"
 	ClusterID             string = "cluster-id"
 	ClusterIDShort        string = "c"
 	DisplayName           string = "display-name"
@@ -26,7 +23,6 @@ const (
 	ClusterType           string = "cluster-type"
 	BranchID              string = "branch-id"
 	BranchIDShort         string = "b"
-	Database              string = "database"
 	DataFormat            string = "data-format"
 	Debug                 string = "debug"
 	DebugShort            string = "D"
@@ -34,7 +30,6 @@ const (
 	Force                 string = "force"
 	ImportID              string = "import-id"
 	NoColor               string = "no-color"
-	OperatingSystem       string = "operating-system"
 	Output                string = "output"
 	OutputShort           string = "o"
 	Password              string = "password"
@@ -49,25 +44,12 @@ const (
 	QueryShort            string = "q"
 	Region                string = "region"
 	RegionShort           string = "r"
-	RootPassword          string = "root-password"
 	Separator             string = "separator"
-	SkipCreateTable       string = "skip-create-table"
-	SourceDatabase        string = "source-database"
-	SourceHost            string = "source-host"
-	SourcePassword        string = "source-password"
-	SourcePort            string = "source-port"
-	SourceTable           string = "source-table"
-	SourceUser            string = "source-user"
-	SourceUrl             string = "source-url"
 	TargetDatabase        string = "target-database"
-	TargetPassword        string = "target-password"
 	TargetTable           string = "target-table"
-	TargetUser            string = "target-user"
 	TrimLastSeparator     string = "trim-last-separator"
 	User                  string = "user"
 	UserShort             string = "u"
-	View                  string = "view"
-	ViewShort             string = "v"
 	SpendingLimitMonthly  string = "spending-limit-monthly"
 	ServerlessLabels      string = "labels"
 	ServerlessAnnotations string = "annotations"
@@ -75,11 +57,6 @@ const (
 	BackupID              string = "backup-id"
 	BackupTime            string = "backup-time"
 	Encryption            string = "encryption"
-)
-
-const (
-	BasicView string = "BASIC"
-	FullView  string = "FULL"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format"

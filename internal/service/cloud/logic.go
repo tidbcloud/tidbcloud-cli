@@ -21,8 +21,6 @@ import (
 
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	connectInfoApi "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
-	connectInfoModel "tidbcloud-cli/pkg/tidbcloud/connect_info/models"
 	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 	branchModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/models"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
@@ -493,58 +491,4 @@ func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDB
 		items = append(items, imports.Payload.Imports...)
 	}
 	return total, items, nil
-}
-
-func RetrieveConnectInfo(d TiDBCloudClient) (*connectInfoModel.ConnectInfo, error) {
-	params := connectInfoApi.NewGetInfoParams()
-	connectInfo, err := d.GetConnectInfo(params)
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-	return connectInfo.Payload, nil
-}
-
-func GetSelectedConnectClient(connectClientList []string) (string, error) {
-	s := make([]interface{}, len(connectClientList))
-	for i, v := range connectClientList {
-		s[i] = v
-	}
-	model, err := ui.InitialSelectModel(s, "Choose the client")
-	if err != nil {
-		return "", errors.Trace(err)
-	}
-	itemsPerPage := 6
-	model.EnablePagination(itemsPerPage)
-	model.EnableFilter()
-	p := tea.NewProgram(model)
-	connectClientModel, err := p.StartReturningModel()
-	if err != nil {
-		return "", errors.Trace(err)
-	}
-	if m, _ := connectClientModel.(ui.SelectModel); m.Interrupted {
-		return "", util.InterruptError
-	}
-	connectClient := connectClientModel.(ui.SelectModel).GetSelectedItem().(string)
-	return connectClient, nil
-}
-
-func GetSelectedConnectOs(osList []string) (string, error) {
-	s := make([]interface{}, len(osList))
-	for i, v := range osList {
-		s[i] = v
-	}
-	model, err := ui.InitialSelectModel(s, "Choose the operating system")
-	if err != nil {
-		return "", errors.Trace(err)
-	}
-	p := tea.NewProgram(model)
-	connectClientModel, err := p.StartReturningModel()
-	if err != nil {
-		return "", errors.Trace(err)
-	}
-	if m, _ := connectClientModel.(ui.SelectModel); m.Interrupted {
-		return "", util.InterruptError
-	}
-	operatingSystem := connectClientModel.(ui.SelectModel).GetSelectedItem().(string)
-	return operatingSystem, nil
 }
