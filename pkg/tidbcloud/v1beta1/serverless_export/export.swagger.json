@@ -288,6 +288,16 @@
     }
   },
   "definitions": {
+    "ExportOptionsCompressionType": {
+      "type": "string",
+      "enum": [
+        "GZIP",
+        "SNAPPY",
+        "ZSTD",
+        "NONE"
+      ],
+      "description": " - Compression_UNSPECIFIED: The type of the compression is unknown."
+    },
     "ExportOptionsFileType": {
       "type": "string",
       "enum": [
@@ -314,7 +324,7 @@
       "properties": {
         "bucketUri": {
           "type": "string",
-          "description": "Optional. The bucketUri of the s3."
+          "description": "Optional. The bucket URI of the s3."
         },
         "accessKey": {
           "$ref": "#/definitions/S3TargetAccessKey",
@@ -381,6 +391,11 @@
         "url": {
           "type": "string",
           "description": "The download url."
+        },
+        "size": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The size in bytes of the the download file."
         }
       }
     },
@@ -434,6 +449,12 @@
           "format": "date-time",
           "description": "Output_only. Timestamp when the export was updated.",
           "readOnly": true
+        },
+        "completeTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Output_only. Timestamp when the export was updated.",
+          "readOnly": true
         }
       },
       "description": "Message for export resource.",
@@ -455,6 +476,10 @@
         "table": {
           "type": "string",
           "description": "Optional. The specify table of the export."
+        },
+        "compression": {
+          "$ref": "#/definitions/ExportOptionsCompressionType",
+          "description": "Optional. The compression of the export."
         }
       }
     },

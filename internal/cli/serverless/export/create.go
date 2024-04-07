@@ -50,7 +50,7 @@ const (
 )
 
 var S3InputFields = map[string]int{
-	flag.BucketUri:       0,
+	flag.BucketURI:       0,
 	flag.AccessKeyID:     1,
 	flag.SecretAccessKey: 2,
 }
@@ -119,7 +119,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			var clusterId string
-			var bucketUri, accessKeyID, secretAccessKey, database, table, targetType, fileType string
+			var bucketURI, accessKeyID, secretAccessKey, database, table, targetType, fileType string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -150,9 +150,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if err != nil {
 						return err
 					}
-					bucketUri = s3InputModel.(ui.TextInputModel).Inputs[S3InputFields[flag.BucketUri]].Value()
-					if bucketUri == "" {
-						return errors.New("bucketUri is required when target type is S3")
+					bucketURI = s3InputModel.(ui.TextInputModel).Inputs[S3InputFields[flag.BucketURI]].Value()
+					if bucketURI == "" {
+						return errors.New("bucket URI is required when target type is S3")
 					}
 					accessKeyID = s3InputModel.(ui.TextInputModel).Inputs[S3InputFields[flag.AccessKeyID]].Value()
 					if accessKeyID == "" {
@@ -182,9 +182,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.New("you must specify the database when target type is LOCAL")
 				}
 				table = filterInputModel.(ui.TextInputModel).Inputs[FilterInputFields[flag.Table]].Value()
-				if (table == "" || table == "*") && selectedTargetType == TargetTypeLOCAL {
-					return errors.New("you must specify the table when target type is LOCAL")
-				}
 			} else {
 				// non-interactive mode, get values from flags
 				var err error
@@ -201,12 +198,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if targetType == string(TargetTypeS3) {
-					bucketUri, err = cmd.Flags().GetString(flag.BucketUri)
+					bucketURI, err = cmd.Flags().GetString(flag.BucketURI)
 					if err != nil {
 						return errors.Trace(err)
 					}
-					if bucketUri == "" {
-						return errors.New("bucketUri is required when target type is S3")
+					if bucketURI == "" {
+						return errors.New("bucket URI is required when target type is S3")
 					}
 					accessKeyID, err = cmd.Flags().GetString(flag.AccessKeyID)
 					if err != nil {
@@ -234,9 +231,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if (database == "" || database == "*") && targetType == string(TargetTypeLOCAL) {
 					return errors.New("you must specify the database when target type is LOCAL")
 				}
-				if (table == "" || table == "*") && targetType == string(TargetTypeLOCAL) {
-					return errors.New("you must specify the table when target type is LOCAL")
-				}
 			}
 
 			params := exportApi.NewExportServiceCreateExportParams().WithClusterID(clusterId).WithBody(
@@ -249,7 +243,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					Target: &exportModel.V1beta1Target{
 						Type: exportModel.TargetTargetType(targetType),
 						S3: &exportModel.TargetS3Target{
-							BucketURI: bucketUri,
+							BucketURI: bucketURI,
 							AccessKey: &exportModel.S3TargetAccessKey{
 								ID:     accessKeyID,
 								Secret: secretAccessKey,
@@ -275,7 +269,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.Table, "*", "The table name you want to export")
 	createCmd.Flags().String(flag.FileType, "CSV", "The exported file type. One of [\"CSV\" \"SQL\"]")
 	createCmd.Flags().String(flag.TargetType, "LOCAL", "The exported Target. One of [\"LOCAL\" \"S3\"]")
-	createCmd.Flags().String(flag.BucketUri, "", "The bucket URI of the S3 bucket. Required when target type is S3")
+	createCmd.Flags().String(flag.BucketURI, "", "The bucket URI of the S3 bucket. Required when target type is S3")
 	createCmd.Flags().String(flag.AccessKeyID, "", "The access key ID of the S3 bucket. Required when target type is S3")
 	createCmd.Flags().String(flag.SecretAccessKey, "", "The secret access key of the S3 bucket. Required when target type is S3")
 	return createCmd
@@ -328,7 +322,7 @@ func initialS3InputModel() ui.TextInputModel {
 	for k, v := range S3InputFields {
 		t := textinput.New()
 		switch k {
-		case flag.BucketUri:
+		case flag.BucketURI:
 			t.Placeholder = "Bucket Uri"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
@@ -363,7 +357,7 @@ func initialFilterInputModel() ui.TextInputModel {
 		t := textinput.New()
 		switch k {
 		case flag.Database:
-			t.Placeholder = "Database Name. Press Enter to skip and export all databases."
+			t.Placeholder = "Database Name. Press Enter to skip and export all databases (Can't skip in LOCAL target)."
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle

@@ -20,8 +20,11 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 
@@ -36,7 +39,7 @@ import (
 )
 
 var DownloadPathInputFields = map[string]int{
-	flag.DownloadPath: 0,
+	flag.OutputPath: 0,
 }
 
 type DownloadOpts struct {
@@ -72,6 +75,7 @@ func (c *DownloadOpts) MarkInteractive(cmd *cobra.Command) error {
 }
 
 func DownloadCmd(h *internal.Helper) *cobra.Command {
+	var autoApprove bool
 	opts := DownloadOpts{
 		interactive: true,
 	}
@@ -122,7 +126,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				path = downloadPathInputModel.(ui.TextInputModel).
-					Inputs[DownloadPathInputFields[flag.DownloadPath]].Value()
+					Inputs[DownloadPathInputFields[flag.OutputPath]].Value()
 			} else {
 				// non-interactive mode, get values from flags
 				exportID, err = cmd.Flags().GetString(flag.ExportID)
@@ -134,7 +138,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				path, err = cmd.Flags().GetString(flag.DownloadPath)
+				path, err = cmd.Flags().GetString(flag.OutputPath)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -145,6 +149,35 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			resp, err := d.DownloadExports(params)
 			if err != nil {
 				return errors.Trace(err)
+			}
+
+			if !autoApprove {
+				if !h.IOStreams.CanPrompt {
+					return fmt.Errorf("the terminal doesn't support prompt, please run with --auto-approve to download")
+				}
+
+				var totalSize int64
+				for _, download := range resp.Payload.Downloads {
+					totalSize += download.Size
+				}
+				fileMessage := fmt.Sprintf("There are %d files to download, total size is %s.", len(resp.Payload.Downloads), parseSize(totalSize))
+
+				confirmationMessage := fmt.Sprintf("%s %s %s %s", color.BlueString(fileMessage), color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to confirm:"))
+				prompt := &survey.Input{
+					Message: confirmationMessage,
+				}
+				var userInput string
+				err := survey.AskOne(prompt, &userInput)
+				if err != nil {
+					if err == terminal.InterruptErr {
+						return util.InterruptError
+					} else {
+						return err
+					}
+				}
+				if userInput != confirmed {
+					return errors.New("incorrect confirm string entered, skipping download")
+				}
 			}
 
 			err = DownloadFiles(h, resp.Payload.Downloads, path)
@@ -158,7 +191,8 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 
 	downloadCmd.Flags().StringP(flag.ExportID, flag.ExportIDShort, "", "The ID of the export to be described")
 	downloadCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the export to be described")
-	downloadCmd.Flags().String(flag.DownloadPath, "", "Where you want to download to. If not specified, download to the current directory")
+	downloadCmd.Flags().String(flag.OutputPath, "", "Where you want to download to. If not specified, download to the current directory")
+	downloadCmd.Flags().BoolVar(&autoApprove, flag.AutoApprove, false, "Download without confirmation")
 	downloadCmd.MarkFlagsRequiredTogether(flag.ExportID, flag.ClusterID)
 	return downloadCmd
 }
@@ -170,7 +204,8 @@ func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, p
 	for _, downloadUrl := range urls {
 		fileName := downloadUrl.Name
 		url := downloadUrl.URL
-		fmt.Fprintf(h.IOStreams.Out, "download %s to %s", fileName, path+"/"+fileName)
+		size := parseSize(downloadUrl.Size)
+		fmt.Fprintf(h.IOStreams.Out, "download %s(%s) to %s\n", fileName, size, path+"/"+fileName)
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			return err
@@ -208,7 +243,7 @@ func initialDownloadPathInputModel() ui.TextInputModel {
 	for k, v := range DownloadPathInputFields {
 		t := textinput.New()
 		switch k {
-		case flag.DownloadPath:
+		case flag.OutputPath:
 			t.Placeholder = "Where you want to download the file. Press Enter to skip and download to the current file"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
@@ -229,4 +264,17 @@ func GetDownloadPathInput() (tea.Model, error) {
 		return nil, util.InterruptError
 	}
 	return inputModel, nil
+}
+
+func parseSize(size int64) string {
+	if size < 1024 {
+		return fmt.Sprintf("%d B", size)
+	}
+	if size < 1024*1024 {
+		return fmt.Sprintf("%.2f KB", float64(size)/1024)
+	}
+	if size < 1024*1024*1024 {
+		return fmt.Sprintf("%.2f MB", float64(size)/(1024*1024))
+	}
+	return fmt.Sprintf("%.2f GB", float64(size)/(1024*1024*1024))
 }

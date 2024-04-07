@@ -23,6 +23,11 @@ type V1beta1Export struct {
 	// Required: true
 	ClusterID *string `json:"clusterId"`
 
+	// Output_only. Timestamp when the export was updated.
+	// Read Only: true
+	// Format: date-time
+	CompleteTime strfmt.DateTime `json:"completeTime,omitempty"`
+
 	// Output_only. Timestamp when the export was created.
 	// Read Only: true
 	// Format: date-time
@@ -67,6 +72,10 @@ func (m *V1beta1Export) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
+	if err := m.validateCompleteTime(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateCreateTime(formats); err != nil {
 		res = append(res, err)
 	}
@@ -96,6 +105,18 @@ func (m *V1beta1Export) Validate(formats strfmt.Registry) error {
 func (m *V1beta1Export) validateClusterID(formats strfmt.Registry) error {
 
 	if err := validate.Required("clusterId", "body", m.ClusterID); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *V1beta1Export) validateCompleteTime(formats strfmt.Registry) error {
+	if swag.IsZero(m.CompleteTime) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("completeTime", "body", "date-time", m.CompleteTime.String(), formats); err != nil {
 		return err
 	}
 
@@ -185,6 +206,10 @@ func (m *V1beta1Export) validateUpdateTime(formats strfmt.Registry) error {
 func (m *V1beta1Export) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateCompleteTime(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateCreateTime(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -220,6 +245,15 @@ func (m *V1beta1Export) ContextValidate(ctx context.Context, formats strfmt.Regi
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *V1beta1Export) contextValidateCompleteTime(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "completeTime", "body", strfmt.DateTime(m.CompleteTime)); err != nil {
+		return err
+	}
+
 	return nil
 }
 

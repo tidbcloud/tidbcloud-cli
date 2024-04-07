@@ -134,6 +134,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					"State",
 					"CreatedBy",
 					"CreateTime",
+					"CompleteTime",
 				}
 
 				var rows []output.Row
@@ -143,6 +144,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 						string(item.State),
 						item.CreatedBy,
 						item.CreateTime.String(),
+						item.CompleteTime.String(),
 					})
 				}
 

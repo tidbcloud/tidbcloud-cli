@@ -74,7 +74,7 @@ const (
 	Monthly               string = "monthly"
 	BackupID              string = "backup-id"
 	BackupTime            string = "backup-time"
-	BucketUri             string = "bucket-uri"
+	BucketURI             string = "bucket-uri"
 	AccessKeyID           string = "access-key-id"
 	SecretAccessKey       string = "secret-access-key"
 	Table                 string = "table"
@@ -82,8 +82,9 @@ const (
 	FileType              string = "file-type"
 	ExportID              string = "export-id"
 	ExportIDShort         string = "e"
-	DownloadPath          string = "download-path"
+	OutputPath            string = "output-path"
 	Encryption            string = "encryption"
+	AutoApprove           string = "auto-approve"
 )
 
 const (

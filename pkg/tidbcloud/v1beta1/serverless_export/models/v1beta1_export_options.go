@@ -18,6 +18,9 @@ import (
 // swagger:model v1beta1ExportOptions
 type V1beta1ExportOptions struct {
 
+	// Optional. The compression of the export.
+	Compression ExportOptionsCompressionType `json:"compression,omitempty"`
+
 	// Optional. The specify database of the export.
 	Database string `json:"database,omitempty"`
 
@@ -32,6 +35,10 @@ type V1beta1ExportOptions struct {
 func (m *V1beta1ExportOptions) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateCompression(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateFileType(formats); err != nil {
 		res = append(res, err)
 	}
@@ -39,6 +46,23 @@ func (m *V1beta1ExportOptions) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *V1beta1ExportOptions) validateCompression(formats strfmt.Registry) error {
+	if swag.IsZero(m.Compression) { // not required
+		return nil
+	}
+
+	if err := m.Compression.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("compression")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("compression")
+		}
+		return err
+	}
+
 	return nil
 }
 
@@ -63,6 +87,10 @@ func (m *V1beta1ExportOptions) validateFileType(formats strfmt.Registry) error {
 func (m *V1beta1ExportOptions) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateCompression(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateFileType(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -70,6 +98,24 @@ func (m *V1beta1ExportOptions) ContextValidate(ctx context.Context, formats strf
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *V1beta1ExportOptions) contextValidateCompression(ctx context.Context, formats strfmt.Registry) error {
+
+	if swag.IsZero(m.Compression) { // not required
+		return nil
+	}
+
+	if err := m.Compression.ContextValidate(ctx, formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("compression")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("compression")
+		}
+		return err
+	}
+
 	return nil
 }
 
