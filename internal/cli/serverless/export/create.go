@@ -119,7 +119,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			var clusterId string
-			var bucketURI, accessKeyID, secretAccessKey, database, table, targetType, fileType string
+			var bucketURI, accessKeyID, secretAccessKey, database, table, targetType, fileType, compression string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -172,6 +172,13 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.New("file type must be LOCAL or S3")
 				}
 				fileType = string(selectedFileType)
+
+				compression, err = GetSelectedCompression()
+				if err != nil {
+					return err
+				}
+
+				fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following options"))
 
 				filterInputModel, err := GetFilterInput()
 				if err != nil {
@@ -231,6 +238,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if (database == "" || database == "*") && targetType == string(TargetTypeLOCAL) {
 					return errors.New("you must specify the database when target type is LOCAL")
 				}
+				compression, err = cmd.Flags().GetString(flag.Compression)
+				if err != nil {
+					return errors.Trace(err)
+				}
 			}
 
 			params := exportApi.NewExportServiceCreateExportParams().WithClusterID(clusterId).WithBody(
@@ -251,7 +262,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						},
 					},
 				})
-
+			if compression != "" {
+				params.Body.ExportOptions.Compression = exportModel.ExportOptionsCompressionType(compression)
+			}
 			resp, err := d.CreateExport(params)
 			if err != nil {
 				return errors.Trace(err)
@@ -272,6 +285,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.BucketURI, "", "The bucket URI of the S3 bucket. Required when target type is S3")
 	createCmd.Flags().String(flag.AccessKeyID, "", "The access key ID of the S3 bucket. Required when target type is S3")
 	createCmd.Flags().String(flag.SecretAccessKey, "", "The secret access key of the S3 bucket. Required when target type is S3")
+	createCmd.Flags().String(flag.Compression, "", "The compression algorithm of the exported file. One of [\"gzip\" \"snappy\" \"zstd\" \"none\"]")
 	return createCmd
 }
 
@@ -313,6 +327,26 @@ func GetSelectedFileType() (FileType, error) {
 	}
 	fileType := fileTypeModel.(ui.SelectModel).GetSelectedItem().(FileType)
 	return fileType, nil
+}
+
+func GetSelectedCompression() (string, error) {
+	compressions := make([]interface{}, 0, 4)
+	compressions = append(compressions, "gzip", "snappy", "zstd", "none")
+	model, err := ui.InitialSelectModel(compressions, "Choose the compression algorithm")
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+
+	p := tea.NewProgram(model)
+	fileTypeModel, err := p.Run()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := fileTypeModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	compression := fileTypeModel.(ui.SelectModel).GetSelectedItem().(string)
+	return compression, nil
 }
 
 func initialS3InputModel() ui.TextInputModel {

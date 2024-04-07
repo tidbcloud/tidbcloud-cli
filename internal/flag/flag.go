@@ -85,6 +85,7 @@ const (
 	OutputPath            string = "output-path"
 	Encryption            string = "encryption"
 	AutoApprove           string = "auto-approve"
+	Compression           string = "compression"
 )
 
 const (
