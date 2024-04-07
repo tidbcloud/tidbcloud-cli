@@ -437,8 +437,8 @@ func (_m *TiDBCloudClient) DeleteExport(params *export_service.ExportServiceDele
 	return r0, r1
 }
 
-// DownloadExports provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) DownloadExports(params *export_service.ExportServiceDownloadExportParams, opts ...export_service.ClientOption) (*export_service.ExportServiceDownloadExportOK, error) {
+// DownloadExport provides a mock function with given fields: params, opts
+func (_m *TiDBCloudClient) DownloadExport(params *export_service.ExportServiceDownloadExportParams, opts ...export_service.ClientOption) (*export_service.ExportServiceDownloadExportOK, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -449,7 +449,7 @@ func (_m *TiDBCloudClient) DownloadExports(params *export_service.ExportServiceD
 	ret := _m.Called(_ca...)
 
 	if len(ret) == 0 {
-		panic("no return value specified for DownloadExports")
+		panic("no return value specified for DownloadExport")
 	}
 
 	var r0 *export_service.ExportServiceDownloadExportOK

@@ -22,6 +22,7 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/charmbracelet/bubbles/progress"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
@@ -162,7 +163,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				}
 				fileMessage := fmt.Sprintf("There are %d files to download, total size is %s.", len(resp.Payload.Downloads), parseSize(totalSize))
 
-				confirmationMessage := fmt.Sprintf("%s %s %s %s", color.BlueString(fileMessage), color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to confirm:"))
+				confirmationMessage := fmt.Sprintf("%s %s %s %s", color.BlueString(fileMessage), color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to download:"))
 				prompt := &survey.Input{
 					Message: confirmationMessage,
 				}
@@ -206,17 +207,24 @@ func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, p
 		url := downloadUrl.URL
 		size := parseSize(downloadUrl.Size)
 		fmt.Fprintf(h.IOStreams.Out, "download %s(%s) to %s\n", fileName, size, path+"/"+fileName)
-		req, err := http.NewRequest("GET", url, nil)
-		if err != nil {
-			return err
-		}
+
 		// send the request
-		client := http.DefaultClient
-		resp, err := client.Do(req)
+		resp, err := http.Get(url) // nolint:gosec
 		if err != nil {
-			return err
+			fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
+			continue
+		}
+		if resp.StatusCode != http.StatusOK {
+			fmt.Fprintf(h.IOStreams.Out, "download file error with status code: %d\n", resp.StatusCode)
+			continue
 		}
 		defer resp.Body.Close()
+
+		// check the response
+		if resp.ContentLength <= 0 {
+			fmt.Fprintf(h.IOStreams.Out, "content length less than 0, aborting download")
+			continue
+		}
 
 		// create the file and download
 		file, err := os.Create(path + "/" + fileName)
@@ -225,14 +233,14 @@ func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, p
 			continue
 		}
 		defer file.Close()
-		_, err = io.Copy(file, resp.Body)
+
+		err = processDownload(int(resp.ContentLength), file, resp.Body)
 		if err != nil {
 			fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
 			continue
 		}
-	}
 
-	fmt.Fprintln(h.IOStreams.Out, "Download completed!")
+	}
 	return nil
 }
 
@@ -268,7 +276,7 @@ func GetDownloadPathInput() (tea.Model, error) {
 
 func parseSize(size int64) string {
 	if size < 1024 {
-		return fmt.Sprintf("%d B", size)
+		return fmt.Sprintf("%d Byte", size)
 	}
 	if size < 1024*1024 {
 		return fmt.Sprintf("%.2f KB", float64(size)/1024)
@@ -277,4 +285,29 @@ func parseSize(size int64) string {
 		return fmt.Sprintf("%.2f MB", float64(size)/(1024*1024))
 	}
 	return fmt.Sprintf("%.2f GB", float64(size)/(1024*1024*1024))
+}
+
+func processDownload(contentType int, file *os.File, reader io.Reader) error {
+	var p *tea.Program
+	pw := &ui.ProgressWriter{
+		Total:  contentType,
+		File:   file,
+		Reader: reader,
+		OnProgress: func(ratio float64) {
+			p.Send(ui.ProgressMsg(ratio))
+		},
+	}
+
+	m := ui.ProcessModel{
+		Pw:       pw,
+		Progress: progress.New(progress.WithDefaultGradient()),
+	}
+	// Start Bubble Tea
+	p = tea.NewProgram(m)
+	// Start the download
+	go pw.Start()
+	if _, err := p.Run(); err != nil {
+		return err
+	}
+	return nil
 }

@@ -331,7 +331,7 @@ func GetSelectedFileType() (FileType, error) {
 
 func GetSelectedCompression() (string, error) {
 	compressions := make([]interface{}, 0, 4)
-	compressions = append(compressions, "gzip", "snappy", "zstd", "none")
+	compressions = append(compressions, "GZIP", "SNAPPY", "ZSTD", "NONE")
 	model, err := ui.InitialSelectModel(compressions, "Choose the compression algorithm")
 	if err != nil {
 		return "", errors.Trace(err)
