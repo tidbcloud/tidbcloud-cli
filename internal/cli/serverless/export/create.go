@@ -180,7 +180,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 				fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following options"))
 
-				filterInputModel, err := GetFilterInput()
+				filterInputModel, err := GetFilterInput(targetType)
 				if err != nil {
 					return err
 				}
@@ -383,7 +383,7 @@ func GetS3Input() (tea.Model, error) {
 	return inputModel, nil
 }
 
-func initialFilterInputModel() ui.TextInputModel {
+func initialFilterInputModel(targetType string) ui.TextInputModel {
 	m := ui.TextInputModel{
 		Inputs: make([]textinput.Model, len(FilterInputFields)),
 	}
@@ -391,7 +391,11 @@ func initialFilterInputModel() ui.TextInputModel {
 		t := textinput.New()
 		switch k {
 		case flag.Database:
-			t.Placeholder = "Database Name. Press Enter to skip and export all databases (Can't skip in LOCAL target)."
+			if targetType == string(TargetTypeLOCAL) {
+				t.Placeholder = "Database Name (Required)."
+			} else {
+				t.Placeholder = "Database Name. Press Enter to skip and export all databases."
+			}
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
@@ -403,8 +407,8 @@ func initialFilterInputModel() ui.TextInputModel {
 	return m
 }
 
-func GetFilterInput() (tea.Model, error) {
-	p := tea.NewProgram(initialFilterInputModel())
+func GetFilterInput(targetType string) (tea.Model, error) {
+	p := tea.NewProgram(initialFilterInputModel(targetType))
 	inputModel, err := p.Run()
 	if err != nil {
 		return nil, errors.Trace(err)
