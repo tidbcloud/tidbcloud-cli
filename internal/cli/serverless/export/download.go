@@ -203,43 +203,39 @@ func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, p
 		path = "."
 	}
 	for _, downloadUrl := range urls {
-		fileName := downloadUrl.Name
-		url := downloadUrl.URL
-		size := parseSize(downloadUrl.Size)
-		fmt.Fprintf(h.IOStreams.Out, "download %s(%s) to %s\n", fileName, size, path+"/"+fileName)
+		func() {
+			fileName := downloadUrl.Name
+			url := downloadUrl.URL
+			size := parseSize(downloadUrl.Size)
+			fmt.Fprintf(h.IOStreams.Out, "download %s(%s) to %s\n", fileName, size, path+"/"+fileName)
 
-		// send the request
-		resp, err := http.Get(url) // nolint:gosec
-		if err != nil {
-			fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
-			continue
-		}
-		if resp.StatusCode != http.StatusOK {
-			fmt.Fprintf(h.IOStreams.Out, "download file error with status code: %d\n", resp.StatusCode)
-			continue
-		}
-		defer resp.Body.Close()
+			// send the request
+			resp, err := http.Get(url) // nolint:gosec
+			if err != nil {
+				fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
+			}
+			if resp.StatusCode != http.StatusOK {
+				fmt.Fprintf(h.IOStreams.Out, "download file error with status code: %d\n", resp.StatusCode)
+			}
+			defer resp.Body.Close()
 
-		// check the response
-		if resp.ContentLength <= 0 {
-			fmt.Fprintf(h.IOStreams.Out, "content length less than 0, aborting download")
-			continue
-		}
+			// check the response
+			if resp.ContentLength <= 0 {
+				fmt.Fprintf(h.IOStreams.Out, "content length less than 0, aborting download")
+			}
 
-		// create the file and download
-		file, err := os.Create(path + "/" + fileName)
-		if err != nil {
-			fmt.Fprintf(h.IOStreams.Out, "create file error: %v\n", err)
-			continue
-		}
-		defer file.Close()
+			// create the file and download
+			file, err := os.Create(path + "/" + fileName)
+			if err != nil {
+				fmt.Fprintf(h.IOStreams.Out, "create file error: %v\n", err)
+			}
+			defer file.Close()
 
-		err = processDownload(int(resp.ContentLength), file, resp.Body)
-		if err != nil {
-			fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
-			continue
-		}
-
+			err = processDownload(int(resp.ContentLength), file, resp.Body)
+			if err != nil {
+				fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
+			}
+		}()
 	}
 	return nil
 }
