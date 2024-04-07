@@ -207,7 +207,7 @@ func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, p
 			fileName := downloadUrl.Name
 			url := downloadUrl.URL
 			size := parseSize(downloadUrl.Size)
-			fmt.Fprintf(h.IOStreams.Out, "download %s(%s) to %s\n", fileName, size, path+"/"+fileName)
+			fmt.Fprintf(h.IOStreams.Out, "\ndownload %s(%s) to %s\n", fileName, size, path+"/"+fileName)
 
 			// send the request
 			resp, err := http.Get(url) // nolint:gosec
