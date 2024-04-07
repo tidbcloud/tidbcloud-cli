@@ -109,7 +109,7 @@ type TiDBCloudClient interface {
 
 	ListExports(params *expOp.ExportServiceListExportsParams, opts ...expOp.ClientOption) (*expOp.ExportServiceListExportsOK, error)
 
-	DownloadExports(params *expOp.ExportServiceDownloadExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDownloadExportOK, error)
+	DownloadExport(params *expOp.ExportServiceDownloadExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDownloadExportOK, error)
 }
 
 type ClientDelegate struct {
@@ -297,7 +297,7 @@ func (d *ClientDelegate) ListExports(params *expOp.ExportServiceListExportsParam
 	return d.ec.ExportService.ExportServiceListExports(params, opts...)
 }
 
-func (d *ClientDelegate) DownloadExports(params *expOp.ExportServiceDownloadExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDownloadExportOK, error) {
+func (d *ClientDelegate) DownloadExport(params *expOp.ExportServiceDownloadExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDownloadExportOK, error) {
 	return d.ec.ExportService.ExportServiceDownloadExport(params, opts...)
 }
 

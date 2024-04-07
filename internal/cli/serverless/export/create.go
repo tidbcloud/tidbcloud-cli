@@ -104,7 +104,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless export create
 
   Create an export with local type in non-interactive mode:
-  $ %[1]s serverless export create -c <cluster-id> --databsae <database> --table <table>
+  $ %[1]s serverless export create -c <cluster-id> --database <database> --table <table>
 
   Create an export with s3 type in non-interactive mode:
   $ %[1]s serverless export create -c <cluster-id> --bucket-uri <bucket-uri> --access-key-id <access-key-id> --secret-access-key <secret-access-key>`,
@@ -280,12 +280,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster, in which the export will be created")
 	createCmd.Flags().String(flag.Database, "*", "The database name you want to export")
 	createCmd.Flags().String(flag.Table, "*", "The table name you want to export")
-	createCmd.Flags().String(flag.FileType, "CSV", "The exported file type. One of [\"CSV\" \"SQL\"]")
-	createCmd.Flags().String(flag.TargetType, "LOCAL", "The exported Target. One of [\"LOCAL\" \"S3\"]")
+	createCmd.Flags().String(flag.FileType, "CSV", "The export file type. One of [\"CSV\" \"SQL\"]")
+	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export Target. One of [\"LOCAL\" \"S3\"]")
 	createCmd.Flags().String(flag.BucketURI, "", "The bucket URI of the S3 bucket. Required when target type is S3")
 	createCmd.Flags().String(flag.AccessKeyID, "", "The access key ID of the S3 bucket. Required when target type is S3")
 	createCmd.Flags().String(flag.SecretAccessKey, "", "The secret access key of the S3 bucket. Required when target type is S3")
-	createCmd.Flags().String(flag.Compression, "", "The compression algorithm of the exported file. One of [\"gzip\" \"snappy\" \"zstd\" \"none\"]")
+	createCmd.Flags().String(flag.Compression, "", "The compression algorithm of the export file. One of [\"gzip\" \"snappy\" \"zstd\" \"none\"]")
 	return createCmd
 }
 
@@ -312,7 +312,7 @@ func GetSelectedTargetType() (TargetType, error) {
 func GetSelectedFileType() (FileType, error) {
 	fileTypes := make([]interface{}, 0, 2)
 	fileTypes = append(fileTypes, FileTypeSQL, FileTypeCSV)
-	model, err := ui.InitialSelectModel(fileTypes, "Choose exported file type")
+	model, err := ui.InitialSelectModel(fileTypes, "Choose export file type")
 	if err != nil {
 		return FileTypeUnknown, errors.Trace(err)
 	}

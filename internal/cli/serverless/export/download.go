@@ -146,7 +146,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 
 			params := exportApi.NewExportServiceDownloadExportParams().
 				WithClusterID(clusterID).WithExportID(exportID)
-			resp, err := d.DownloadExports(params)
+			resp, err := d.DownloadExport(params)
 			if err != nil {
 				return errors.Trace(err)
 			}

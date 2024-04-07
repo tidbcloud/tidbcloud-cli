@@ -137,8 +137,8 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	describeCmd.Flags().StringP(flag.ExportID, flag.ExportIDShort, "", "The ID of the export to be described")
-	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the export to be described")
+	describeCmd.Flags().StringP(flag.ExportID, flag.ExportIDShort, "", "The ID of the export")
+	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the export")
 	describeCmd.MarkFlagsRequiredTogether(flag.ExportID, flag.ClusterID)
 	return describeCmd
 }
