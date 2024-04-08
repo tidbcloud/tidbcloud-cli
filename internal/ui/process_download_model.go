@@ -54,9 +54,7 @@ func (m ProcessModel) Init() tea.Cmd {
 func (m ProcessModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		if msg.Type == tea.KeyCtrlD {
-			return m, tea.Quit
-		} else if msg.Type == tea.KeyCtrlC {
+		if msg.Type == tea.KeyEsc || msg.Type == tea.KeyCtrlC {
 			m.Interrupted = true
 			return m, tea.Quit
 		}
@@ -100,7 +98,5 @@ func (m ProcessModel) View() string {
 	}
 
 	pad := strings.Repeat(" ", padding)
-	return "\n" +
-		pad + m.Progress.View() + "\n\n" +
-		pad + helpStyle("Press ctrl+d to skip download this file.")
+	return "\n" + pad + m.Progress.View() + "\n\n"
 }

@@ -162,7 +162,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				for _, download := range resp.Payload.Downloads {
 					totalSize += download.Size
 				}
-				fileMessage := fmt.Sprintf("There are %d files to download, total size is %s.", len(resp.Payload.Downloads), humanize.Bytes(uint64(totalSize)))
+				fileMessage := fmt.Sprintf("There are %d files to download, total size is %s.", len(resp.Payload.Downloads), humanize.IBytes(uint64(totalSize)))
 
 				confirmationMessage := fmt.Sprintf("%s %s %s %s", color.BlueString(fileMessage), color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to download:"))
 				prompt := &survey.Input{
@@ -210,7 +210,7 @@ func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, p
 		func() {
 			fileName := downloadUrl.Name
 			url := downloadUrl.URL
-			size := humanize.Bytes(uint64(downloadUrl.Size))
+			size := humanize.IBytes(uint64(downloadUrl.Size))
 			fmt.Fprintf(h.IOStreams.Out, "\ndownload %s(%s) to %s\n", fileName, size, path+"/"+fileName)
 
 			// send the request
