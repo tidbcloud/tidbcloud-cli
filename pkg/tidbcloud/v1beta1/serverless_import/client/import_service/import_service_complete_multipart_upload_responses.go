@@ -122,7 +122,7 @@ An unexpected error response.
 type ImportServiceCompleteMultipartUploadDefault struct {
 	_statusCode int
 
-	Payload *models.GooglerpcStatus
+	Payload *models.RPCStatus
 }
 
 // IsSuccess returns true when this import service complete multipart upload default response has a 2xx status code
@@ -163,13 +163,13 @@ func (o *ImportServiceCompleteMultipartUploadDefault) String() string {
 	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:completeUpload][%d] ImportService_CompleteMultipartUpload default  %+v", o._statusCode, o.Payload)
 }
 
-func (o *ImportServiceCompleteMultipartUploadDefault) GetPayload() *models.GooglerpcStatus {
+func (o *ImportServiceCompleteMultipartUploadDefault) GetPayload() *models.RPCStatus {
 	return o.Payload
 }
 
 func (o *ImportServiceCompleteMultipartUploadDefault) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.GooglerpcStatus)
+	o.Payload = new(models.RPCStatus)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

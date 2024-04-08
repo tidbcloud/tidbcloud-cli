@@ -277,7 +277,7 @@ func (a *Client) ImportServiceStartUpload(params *ImportServiceStartUploadParams
 	}
 	op := &runtime.ClientOperation{
 		ID:                 "ImportService_StartUpload",
-		Method:             "GET",
+		Method:             "POST",
 		PathPattern:        "/v1beta1/clusters/{clusterId}/imports:startUpload",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},

@@ -74,7 +74,7 @@ const getImportResultStr = `{
   "id": "imp-qwert",
   "postImportCompletedPercent": 100,
   "processedSourceDataSize": "37",
-  "status": "COMPLETED",
+  "state": "COMPLETED",
   "totalSize": "37",
   "totalTablesCount": 1
 }

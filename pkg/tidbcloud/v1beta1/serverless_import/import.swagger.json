@@ -34,7 +34,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -77,7 +77,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -136,7 +136,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -174,7 +174,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -212,7 +212,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -258,7 +258,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -307,7 +307,7 @@
       }
     },
     "/v1beta1/clusters/{clusterId}/imports:startUpload": {
-      "get": {
+      "post": {
         "summary": "Generate Upload url for importing data",
         "operationId": "ImportService_StartUpload",
         "responses": {
@@ -320,7 +320,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/googlerpcStatus"
+              "$ref": "#/definitions/rpcStatus"
             }
           }
         },
@@ -409,7 +409,16 @@
         }
       }
     },
-    "googlerpcStatus": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
       "type": "object",
       "properties": {
         "code": {
@@ -427,15 +436,6 @@
           }
         }
       }
-    },
-    "protobufAny": {
-      "type": "object",
-      "properties": {
-        "@type": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": {}
     },
     "v1beta1CompletePart": {
       "type": "object",
@@ -531,10 +531,10 @@
     "v1beta1DataFormat": {
       "type": "string",
       "enum": [
-        "SqlFile",
-        "AuroraSnapshot",
+        "SQL_FILE",
+        "AURORA_SNAPSHOT",
         "CSV",
-        "Parquet"
+        "PARQUET"
       ]
     },
     "v1beta1Import": {
@@ -571,13 +571,13 @@
           "format": "int64",
           "readOnly": true
         },
-        "createdAt": {
+        "createTime": {
           "type": "string",
           "format": "date-time",
           "readOnly": true
         },
-        "status": {
-          "$ref": "#/definitions/v1beta1ImportStatus",
+        "state": {
+          "$ref": "#/definitions/v1beta1ImportState",
           "readOnly": true
         },
         "completedPercent": {
@@ -646,7 +646,7 @@
         }
       }
     },
-    "v1beta1ImportStatus": {
+    "v1beta1ImportState": {
       "type": "string",
       "enum": [
         "PREPARING",
@@ -713,11 +713,13 @@
           "items": {
             "type": "string"
           },
-          "title": "The URL to upload the file to"
+          "title": "The URL to upload the file to",
+          "readOnly": true
         },
         "uploadId": {
           "type": "string",
-          "title": "The ID of the upload"
+          "title": "The ID of the upload",
+          "readOnly": true
         }
       }
     },

@@ -8,8 +8,10 @@ package models
 import (
 	"context"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // V1beta1StartUploadResponse v1beta1 start upload response
@@ -18,9 +20,11 @@ import (
 type V1beta1StartUploadResponse struct {
 
 	// The ID of the upload
+	// Read Only: true
 	UploadID string `json:"uploadId,omitempty"`
 
 	// The URL to upload the file to
+	// Read Only: true
 	UploadURL []string `json:"uploadUrl"`
 }
 
@@ -29,8 +33,39 @@ func (m *V1beta1StartUploadResponse) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this v1beta1 start upload response based on context it is used
+// ContextValidate validate this v1beta1 start upload response based on the context it is used
 func (m *V1beta1StartUploadResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateUploadID(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateUploadURL(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *V1beta1StartUploadResponse) contextValidateUploadID(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "uploadId", "body", string(m.UploadID)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *V1beta1StartUploadResponse) contextValidateUploadURL(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "uploadUrl", "body", []string(m.UploadURL)); err != nil {
+		return err
+	}
+
 	return nil
 }
 

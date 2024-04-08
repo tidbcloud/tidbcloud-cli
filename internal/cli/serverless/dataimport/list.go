@@ -141,8 +141,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				columns := []output.Column{
 					"ID",
 					"Type",
-					"Status",
-					"CreatedAt",
+					"State",
+					"CreateTime",
 					"Source",
 					"DataFormat",
 					"Size",
@@ -157,8 +157,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					rows = append(rows, output.Row{
 						item.ID,
 						string(*item.CreationDetails.Type),
-						string(item.Status),
-						item.CreatedAt.String(),
+						string(item.State),
+						item.CreateTime.String(),
 						source,
 						string(item.DataFormat),
 						convertToStoreSize(item.TotalSize),

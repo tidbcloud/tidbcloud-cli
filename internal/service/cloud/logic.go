@@ -96,7 +96,7 @@ func (c Cluster) String() string {
 
 type Import struct {
 	ID     string
-	Status *importModel.V1beta1ImportStatus
+	Status *importModel.V1beta1ImportState
 }
 
 func (i Import) String() string {
@@ -333,7 +333,7 @@ func GetSelectedRestoreMode() (string, error) {
 
 // GetSelectedImport get the selected import task. statusFilter is used to filter the available options, only imports has status in statusFilter will be available.
 // statusFilter with no filter will mark all the import tasks as available options just like statusFilter with all status.
-func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client TiDBCloudClient, statusFilter []importModel.V1beta1ImportStatus) (*Import, error) {
+func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client TiDBCloudClient, statusFilter []importModel.V1beta1ImportState) (*Import, error) {
 	_, importItems, err := RetrieveImports(ctx, cID, pageSize, client)
 	if err != nil {
 		return nil, err
@@ -341,13 +341,13 @@ func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client T
 
 	var items = make([]interface{}, 0, len(importItems))
 	for _, item := range importItems {
-		if len(statusFilter) != 0 && !util.ElemInSlice(statusFilter, item.Status) {
+		if len(statusFilter) != 0 && !util.ElemInSlice(statusFilter, item.State) {
 			continue
 		}
 
 		items = append(items, &Import{
 			ID:     item.ID,
-			Status: &item.Status,
+			Status: &item.State,
 		})
 	}
 	model, err := ui.InitialSelectModel(items, "Choose the import task:")

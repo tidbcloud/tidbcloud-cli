@@ -30,17 +30,17 @@ func (m V1beta1DataFormat) Pointer() *V1beta1DataFormat {
 
 const (
 
-	// V1beta1DataFormatSQLFile captures enum value "SqlFile"
-	V1beta1DataFormatSQLFile V1beta1DataFormat = "SqlFile"
+	// V1beta1DataFormatSQLFILE captures enum value "SQL_FILE"
+	V1beta1DataFormatSQLFILE V1beta1DataFormat = "SQL_FILE"
 
-	// V1beta1DataFormatAuroraSnapshot captures enum value "AuroraSnapshot"
-	V1beta1DataFormatAuroraSnapshot V1beta1DataFormat = "AuroraSnapshot"
+	// V1beta1DataFormatAURORASNAPSHOT captures enum value "AURORA_SNAPSHOT"
+	V1beta1DataFormatAURORASNAPSHOT V1beta1DataFormat = "AURORA_SNAPSHOT"
 
 	// V1beta1DataFormatCSV captures enum value "CSV"
 	V1beta1DataFormatCSV V1beta1DataFormat = "CSV"
 
-	// V1beta1DataFormatParquet captures enum value "Parquet"
-	V1beta1DataFormatParquet V1beta1DataFormat = "Parquet"
+	// V1beta1DataFormatPARQUET captures enum value "PARQUET"
+	V1beta1DataFormatPARQUET V1beta1DataFormat = "PARQUET"
 )
 
 // for schema
@@ -48,7 +48,7 @@ var v1beta1DataFormatEnum []interface{}
 
 func init() {
 	var res []V1beta1DataFormat
-	if err := json.Unmarshal([]byte(`["SqlFile","AuroraSnapshot","CSV","Parquet"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["SQL_FILE","AURORA_SNAPSHOT","CSV","PARQUET"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {

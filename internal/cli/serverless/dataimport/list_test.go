@@ -77,7 +77,7 @@ const listResultStr = `{
       "id": "imp-qwert",
       "postImportCompletedPercent": 100,
       "processedSourceDataSize": "37",
-      "status": "COMPLETED",
+      "state": "COMPLETED",
       "totalSize": "37",
       "totalTablesCount": 1
     }
@@ -129,7 +129,7 @@ const listResultMultiPageStr = `{
       "id": "imp-qwert",
       "postImportCompletedPercent": 100,
       "processedSourceDataSize": "37",
-      "status": "COMPLETED",
+      "state": "COMPLETED",
       "totalSize": "37",
       "totalTablesCount": 1
     },
@@ -174,7 +174,7 @@ const listResultMultiPageStr = `{
       "id": "imp-qwert",
       "postImportCompletedPercent": 100,
       "processedSourceDataSize": "37",
-      "status": "COMPLETED",
+      "state": "COMPLETED",
       "totalSize": "37",
       "totalTablesCount": 1
     }

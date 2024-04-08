@@ -86,11 +86,11 @@ func (o *ImportServiceStartUploadOK) Code() int {
 }
 
 func (o *ImportServiceStartUploadOK) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/imports:startUpload][%d] importServiceStartUploadOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:startUpload][%d] importServiceStartUploadOK  %+v", 200, o.Payload)
 }
 
 func (o *ImportServiceStartUploadOK) String() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/imports:startUpload][%d] importServiceStartUploadOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:startUpload][%d] importServiceStartUploadOK  %+v", 200, o.Payload)
 }
 
 func (o *ImportServiceStartUploadOK) GetPayload() *models.V1beta1StartUploadResponse {
@@ -124,7 +124,7 @@ An unexpected error response.
 type ImportServiceStartUploadDefault struct {
 	_statusCode int
 
-	Payload *models.GooglerpcStatus
+	Payload *models.RPCStatus
 }
 
 // IsSuccess returns true when this import service start upload default response has a 2xx status code
@@ -158,20 +158,20 @@ func (o *ImportServiceStartUploadDefault) Code() int {
 }
 
 func (o *ImportServiceStartUploadDefault) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/imports:startUpload][%d] ImportService_StartUpload default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:startUpload][%d] ImportService_StartUpload default  %+v", o._statusCode, o.Payload)
 }
 
 func (o *ImportServiceStartUploadDefault) String() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/imports:startUpload][%d] ImportService_StartUpload default  %+v", o._statusCode, o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:startUpload][%d] ImportService_StartUpload default  %+v", o._statusCode, o.Payload)
 }
 
-func (o *ImportServiceStartUploadDefault) GetPayload() *models.GooglerpcStatus {
+func (o *ImportServiceStartUploadDefault) GetPayload() *models.RPCStatus {
 	return o.Payload
 }
 
 func (o *ImportServiceStartUploadDefault) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.GooglerpcStatus)
+	o.Payload = new(models.RPCStatus)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

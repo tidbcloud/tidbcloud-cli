@@ -124,7 +124,7 @@ An unexpected error response.
 type ImportServiceListImportsDefault struct {
 	_statusCode int
 
-	Payload *models.GooglerpcStatus
+	Payload *models.RPCStatus
 }
 
 // IsSuccess returns true when this import service list imports default response has a 2xx status code
@@ -165,13 +165,13 @@ func (o *ImportServiceListImportsDefault) String() string {
 	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/imports][%d] ImportService_ListImports default  %+v", o._statusCode, o.Payload)
 }
 
-func (o *ImportServiceListImportsDefault) GetPayload() *models.GooglerpcStatus {
+func (o *ImportServiceListImportsDefault) GetPayload() *models.RPCStatus {
 	return o.Payload
 }
 
 func (o *ImportServiceListImportsDefault) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.GooglerpcStatus)
+	o.Payload = new(models.RPCStatus)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

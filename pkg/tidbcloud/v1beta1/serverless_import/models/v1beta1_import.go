@@ -36,10 +36,10 @@ type V1beta1Import struct {
 	// Read Only: true
 	CompletedTables int64 `json:"completedTables,omitempty"`
 
-	// created at
+	// create time
 	// Read Only: true
 	// Format: date-time
-	CreatedAt strfmt.DateTime `json:"createdAt,omitempty"`
+	CreateTime strfmt.DateTime `json:"createTime,omitempty"`
 
 	// creation details
 	// Read Only: true
@@ -77,9 +77,9 @@ type V1beta1Import struct {
 	// Read Only: true
 	ProcessedSourceDataSize string `json:"processedSourceDataSize,omitempty"`
 
-	// status
+	// state
 	// Read Only: true
-	Status V1beta1ImportStatus `json:"status,omitempty"`
+	State V1beta1ImportState `json:"state,omitempty"`
 
 	// The total number of files of the data imported.
 	// Read Only: true
@@ -102,7 +102,7 @@ func (m *V1beta1Import) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateCreatedAt(formats); err != nil {
+	if err := m.validateCreateTime(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -118,7 +118,7 @@ func (m *V1beta1Import) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateStatus(formats); err != nil {
+	if err := m.validateState(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -154,12 +154,12 @@ func (m *V1beta1Import) validateAllCompletedTables(formats strfmt.Registry) erro
 	return nil
 }
 
-func (m *V1beta1Import) validateCreatedAt(formats strfmt.Registry) error {
-	if swag.IsZero(m.CreatedAt) { // not required
+func (m *V1beta1Import) validateCreateTime(formats strfmt.Registry) error {
+	if swag.IsZero(m.CreateTime) { // not required
 		return nil
 	}
 
-	if err := validate.FormatOf("createdAt", "body", "date-time", m.CreatedAt.String(), formats); err != nil {
+	if err := validate.FormatOf("createTime", "body", "date-time", m.CreateTime.String(), formats); err != nil {
 		return err
 	}
 
@@ -228,16 +228,16 @@ func (m *V1beta1Import) validateDataFormat(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1Import) validateStatus(formats strfmt.Registry) error {
-	if swag.IsZero(m.Status) { // not required
+func (m *V1beta1Import) validateState(formats strfmt.Registry) error {
+	if swag.IsZero(m.State) { // not required
 		return nil
 	}
 
-	if err := m.Status.Validate(formats); err != nil {
+	if err := m.State.Validate(formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("status")
+			return ve.ValidateName("state")
 		} else if ce, ok := err.(*errors.CompositeError); ok {
-			return ce.ValidateName("status")
+			return ce.ValidateName("state")
 		}
 		return err
 	}
@@ -265,7 +265,7 @@ func (m *V1beta1Import) ContextValidate(ctx context.Context, formats strfmt.Regi
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateCreatedAt(ctx, formats); err != nil {
+	if err := m.contextValidateCreateTime(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -305,7 +305,7 @@ func (m *V1beta1Import) ContextValidate(ctx context.Context, formats strfmt.Regi
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateStatus(ctx, formats); err != nil {
+	if err := m.contextValidateState(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -383,9 +383,9 @@ func (m *V1beta1Import) contextValidateCompletedTables(ctx context.Context, form
 	return nil
 }
 
-func (m *V1beta1Import) contextValidateCreatedAt(ctx context.Context, formats strfmt.Registry) error {
+func (m *V1beta1Import) contextValidateCreateTime(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "createdAt", "body", strfmt.DateTime(m.CreatedAt)); err != nil {
+	if err := validate.ReadOnly(ctx, "createTime", "body", strfmt.DateTime(m.CreateTime)); err != nil {
 		return err
 	}
 
@@ -514,17 +514,17 @@ func (m *V1beta1Import) contextValidateProcessedSourceDataSize(ctx context.Conte
 	return nil
 }
 
-func (m *V1beta1Import) contextValidateStatus(ctx context.Context, formats strfmt.Registry) error {
+func (m *V1beta1Import) contextValidateState(ctx context.Context, formats strfmt.Registry) error {
 
-	if swag.IsZero(m.Status) { // not required
+	if swag.IsZero(m.State) { // not required
 		return nil
 	}
 
-	if err := m.Status.ContextValidate(ctx, formats); err != nil {
+	if err := m.State.ContextValidate(ctx, formats); err != nil {
 		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("status")
+			return ve.ValidateName("state")
 		} else if ce, ok := err.(*errors.CompositeError); ok {
-			return ce.ValidateName("status")
+			return ce.ValidateName("state")
 		}
 		return err
 	}
