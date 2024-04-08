@@ -50,9 +50,9 @@ const (
 )
 
 var S3InputFields = map[string]int{
-	flag.BucketURI:       0,
-	flag.AccessKeyID:     1,
-	flag.SecretAccessKey: 2,
+	flag.S3BucketURI:       0,
+	flag.S3AccessKeyID:     1,
+	flag.S3SecretAccessKey: 2,
 }
 
 var FilterInputFields = map[string]int{
@@ -150,17 +150,17 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if err != nil {
 						return err
 					}
-					bucketURI = s3InputModel.(ui.TextInputModel).Inputs[S3InputFields[flag.BucketURI]].Value()
+					bucketURI = s3InputModel.(ui.TextInputModel).Inputs[S3InputFields[flag.S3BucketURI]].Value()
 					if bucketURI == "" {
 						return errors.New("bucket URI is required when target type is S3")
 					}
-					accessKeyID = s3InputModel.(ui.TextInputModel).Inputs[S3InputFields[flag.AccessKeyID]].Value()
+					accessKeyID = s3InputModel.(ui.TextInputModel).Inputs[S3InputFields[flag.S3AccessKeyID]].Value()
 					if accessKeyID == "" {
-						return errors.New("accessKeyId is required when target type is S3")
+						return errors.New("access key Id is required when target type is S3")
 					}
-					secretAccessKey = s3InputModel.(ui.TextInputModel).Inputs[S3InputFields[flag.SecretAccessKey]].Value()
+					secretAccessKey = s3InputModel.(ui.TextInputModel).Inputs[S3InputFields[flag.S3SecretAccessKey]].Value()
 					if secretAccessKey == "" {
-						return errors.New("secretAccessKey is required when target type is S3")
+						return errors.New("secret access key is required when target type is S3")
 					}
 				}
 
@@ -205,21 +205,21 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if targetType == string(TargetTypeS3) {
-					bucketURI, err = cmd.Flags().GetString(flag.BucketURI)
+					bucketURI, err = cmd.Flags().GetString(flag.S3BucketURI)
 					if err != nil {
 						return errors.Trace(err)
 					}
 					if bucketURI == "" {
 						return errors.New("bucket URI is required when target type is S3")
 					}
-					accessKeyID, err = cmd.Flags().GetString(flag.AccessKeyID)
+					accessKeyID, err = cmd.Flags().GetString(flag.S3AccessKeyID)
 					if err != nil {
 						return errors.Trace(err)
 					}
 					if accessKeyID == "" {
 						return errors.New("accessKeyId is required when target type is S3")
 					}
-					secretAccessKey, err = cmd.Flags().GetString(flag.SecretAccessKey)
+					secretAccessKey, err = cmd.Flags().GetString(flag.S3SecretAccessKey)
 					if err != nil {
 						return errors.Trace(err)
 					}
@@ -282,9 +282,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.Table, "*", "The table name you want to export")
 	createCmd.Flags().String(flag.FileType, "CSV", "The export file type. One of [\"CSV\" \"SQL\"]")
 	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export Target. One of [\"LOCAL\" \"S3\"]")
-	createCmd.Flags().String(flag.BucketURI, "", "The bucket URI of the S3 bucket. Required when target type is S3")
-	createCmd.Flags().String(flag.AccessKeyID, "", "The access key ID of the S3 bucket. Required when target type is S3")
-	createCmd.Flags().String(flag.SecretAccessKey, "", "The secret access key of the S3 bucket. Required when target type is S3")
+	createCmd.Flags().String(flag.S3BucketURI, "", "The bucket URI of the S3 bucket. Required when target type is S3")
+	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3 bucket. Required when target type is S3")
+	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3 bucket. Required when target type is S3")
 	createCmd.Flags().String(flag.Compression, "", "The compression algorithm of the export file. One of [\"gzip\" \"snappy\" \"zstd\" \"none\"]")
 	return createCmd
 }
@@ -356,15 +356,15 @@ func initialS3InputModel() ui.TextInputModel {
 	for k, v := range S3InputFields {
 		t := textinput.New()
 		switch k {
-		case flag.BucketURI:
+		case flag.S3BucketURI:
 			t.Placeholder = "Bucket Uri"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
-		case flag.AccessKeyID:
-			t.Placeholder = "Access Key ID"
-		case flag.SecretAccessKey:
-			t.Placeholder = "Secret Access Key"
+		case flag.S3AccessKeyID:
+			t.Placeholder = "S3 Access Key ID"
+		case flag.S3SecretAccessKey:
+			t.Placeholder = "S3 Secret Access key"
 		}
 		m.Inputs[v] = t
 	}

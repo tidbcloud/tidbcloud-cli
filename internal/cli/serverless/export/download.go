@@ -25,6 +25,7 @@ import (
 	"github.com/charmbracelet/bubbles/progress"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/dustin/go-humanize"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -161,7 +162,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				for _, download := range resp.Payload.Downloads {
 					totalSize += download.Size
 				}
-				fileMessage := fmt.Sprintf("There are %d files to download, total size is %s.", len(resp.Payload.Downloads), parseSize(totalSize))
+				fileMessage := fmt.Sprintf("There are %d files to download, total size is %s.", len(resp.Payload.Downloads), humanize.Bytes(uint64(totalSize)))
 
 				confirmationMessage := fmt.Sprintf("%s %s %s %s", color.BlueString(fileMessage), color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to download:"))
 				prompt := &survey.Input{
@@ -185,7 +186,6 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
-
 			return nil
 		},
 	}
@@ -202,40 +202,70 @@ func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, p
 	if path == "" {
 		path = "."
 	}
+	interrupt := false
 	for _, downloadUrl := range urls {
+		if interrupt {
+			return util.InterruptError
+		}
 		func() {
 			fileName := downloadUrl.Name
 			url := downloadUrl.URL
-			size := parseSize(downloadUrl.Size)
+			size := humanize.Bytes(uint64(downloadUrl.Size))
 			fmt.Fprintf(h.IOStreams.Out, "\ndownload %s(%s) to %s\n", fileName, size, path+"/"+fileName)
 
 			// send the request
 			resp, err := http.Get(url) // nolint:gosec
 			if err != nil {
 				fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
+				return
 			}
 			if resp.StatusCode != http.StatusOK {
 				fmt.Fprintf(h.IOStreams.Out, "download file error with status code: %d\n", resp.StatusCode)
+				return
 			}
 			defer resp.Body.Close()
 
 			// check the response
 			if resp.ContentLength <= 0 {
 				fmt.Fprintf(h.IOStreams.Out, "content length less than 0, aborting download")
+				return
+			}
+
+			// create the path if not exist
+			if _, err := os.Stat(path); os.IsNotExist(err) {
+				err = os.MkdirAll(path, 0755)
+				if err != nil {
+					fmt.Fprintf(h.IOStreams.Out, "create path error: %v\n", err)
+					return
+				}
+			}
+			// skip if the file exists
+			if _, err := os.Stat(path + "/" + fileName); err == nil {
+				fmt.Fprintf(h.IOStreams.Out, "file %s already exists, skipping download\n", path+"/"+fileName)
+				return
 			}
 
 			// create the file and download
 			file, err := os.Create(path + "/" + fileName)
 			if err != nil {
 				fmt.Fprintf(h.IOStreams.Out, "create file error: %v\n", err)
+				return
 			}
 			defer file.Close()
 
 			err = processDownload(int(resp.ContentLength), file, resp.Body)
 			if err != nil {
+				if err == util.InterruptError {
+					interrupt = true
+					return
+				}
 				fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
+				return
 			}
 		}()
+	}
+	if interrupt {
+		return util.InterruptError
 	}
 	return nil
 }
@@ -248,7 +278,7 @@ func initialDownloadPathInputModel() ui.TextInputModel {
 		t := textinput.New()
 		switch k {
 		case flag.OutputPath:
-			t.Placeholder = "Where you want to download the file. Press Enter to skip and download to the current file"
+			t.Placeholder = "Where you want to download the file. Press Enter to skip and download to the current directory"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
@@ -270,19 +300,6 @@ func GetDownloadPathInput() (tea.Model, error) {
 	return inputModel, nil
 }
 
-func parseSize(size int64) string {
-	if size < 1024 {
-		return fmt.Sprintf("%d Byte", size)
-	}
-	if size < 1024*1024 {
-		return fmt.Sprintf("%.2f KB", float64(size)/1024)
-	}
-	if size < 1024*1024*1024 {
-		return fmt.Sprintf("%.2f MB", float64(size)/(1024*1024))
-	}
-	return fmt.Sprintf("%.2f GB", float64(size)/(1024*1024*1024))
-}
-
 func processDownload(contentType int, file *os.File, reader io.Reader) error {
 	var p *tea.Program
 	pw := &ui.ProgressWriter{
@@ -302,8 +319,12 @@ func processDownload(contentType int, file *os.File, reader io.Reader) error {
 	p = tea.NewProgram(m)
 	// Start the download
 	go pw.Start()
-	if _, err := p.Run(); err != nil {
-		return err
+	processModel, err := p.Run()
+	if err != nil {
+		return errors.Trace(err)
+	}
+	if processModel.(ui.ProcessModel).Interrupted {
+		return util.InterruptError
 	}
 	return nil
 }

@@ -23,10 +23,10 @@ type V1beta1Export struct {
 	// Required: true
 	ClusterID *string `json:"clusterId"`
 
-	// Output_only. Timestamp when the export was updated.
+	// Output_only. Timestamp when the export was completed.
 	// Read Only: true
 	// Format: date-time
-	CompleteTime strfmt.DateTime `json:"completeTime,omitempty"`
+	CompleteTime *strfmt.DateTime `json:"completeTime,omitempty"`
 
 	// Output_only. Timestamp when the export was created.
 	// Read Only: true
@@ -49,7 +49,7 @@ type V1beta1Export struct {
 	Name string `json:"name,omitempty"`
 
 	// Optional. The failed reason of the export.
-	Reason string `json:"reason,omitempty"`
+	Reason *string `json:"reason,omitempty"`
 
 	// Output_only. The state of the export.
 	// Read Only: true
@@ -61,7 +61,7 @@ type V1beta1Export struct {
 	// Output_only. Timestamp when the export was updated.
 	// Read Only: true
 	// Format: date-time
-	UpdateTime strfmt.DateTime `json:"updateTime,omitempty"`
+	UpdateTime *strfmt.DateTime `json:"updateTime,omitempty"`
 }
 
 // Validate validates this v1beta1 export
@@ -250,7 +250,7 @@ func (m *V1beta1Export) ContextValidate(ctx context.Context, formats strfmt.Regi
 
 func (m *V1beta1Export) contextValidateCompleteTime(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "completeTime", "body", strfmt.DateTime(m.CompleteTime)); err != nil {
+	if err := validate.ReadOnly(ctx, "completeTime", "body", m.CompleteTime); err != nil {
 		return err
 	}
 
@@ -355,7 +355,7 @@ func (m *V1beta1Export) contextValidateTarget(ctx context.Context, formats strfm
 
 func (m *V1beta1Export) contextValidateUpdateTime(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "updateTime", "body", strfmt.DateTime(m.UpdateTime)); err != nil {
+	if err := validate.ReadOnly(ctx, "updateTime", "body", m.UpdateTime); err != nil {
 		return err
 	}
 

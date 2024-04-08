@@ -139,12 +139,16 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 				var rows []output.Row
 				for _, item := range items {
+					completeTime := ""
+					if item.UpdateTime != nil {
+						completeTime = item.CompleteTime.String()
+					}
 					rows = append(rows, output.Row{
 						item.ExportID,
 						string(item.State),
 						item.CreatedBy,
 						item.CreateTime.String(),
-						item.CompleteTime.String(),
+						completeTime,
 					})
 				}
 

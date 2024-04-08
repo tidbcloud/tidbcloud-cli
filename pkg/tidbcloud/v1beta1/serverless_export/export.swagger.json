@@ -436,6 +436,7 @@
         },
         "reason": {
           "type": "string",
+          "x-nullable": true,
           "description": "Optional. The failed reason of the export."
         },
         "createTime": {
@@ -447,13 +448,15 @@
         "updateTime": {
           "type": "string",
           "format": "date-time",
+          "x-nullable": true,
           "description": "Output_only. Timestamp when the export was updated.",
           "readOnly": true
         },
         "completeTime": {
           "type": "string",
           "format": "date-time",
-          "description": "Output_only. Timestamp when the export was updated.",
+          "x-nullable": true,
+          "description": "Output_only. Timestamp when the export was completed.",
           "readOnly": true
         }
       },
@@ -525,6 +528,7 @@
         },
         "s3": {
           "$ref": "#/definitions/TargetS3Target",
+          "x-nullable": true,
           "description": "Optional. The s3 information."
         }
       }
