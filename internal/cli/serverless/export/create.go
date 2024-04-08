@@ -67,6 +67,20 @@ type CreateOpts struct {
 func (c CreateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
+		flag.Database,
+		flag.Table,
+		flag.FileType,
+		flag.TargetType,
+		flag.S3BucketURI,
+		flag.S3AccessKeyID,
+		flag.S3SecretAccessKey,
+		flag.Compression,
+	}
+}
+
+func (c CreateOpts) RequiredFlags() []string {
+	return []string{
+		flag.ClusterID,
 	}
 }
 
@@ -81,7 +95,7 @@ func (c *CreateOpts) MarkInteractive(cmd *cobra.Command) error {
 	}
 	// Mark required flags
 	if !c.interactive {
-		for _, fn := range flags {
+		for _, fn := range c.RequiredFlags() {
 			err := cmd.MarkFlagRequired(fn)
 			if err != nil {
 				return err
@@ -282,10 +296,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.Table, "*", "The table name you want to export")
 	createCmd.Flags().String(flag.FileType, "CSV", "The export file type. One of [\"CSV\" \"SQL\"]")
 	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export Target. One of [\"LOCAL\" \"S3\"]")
-	createCmd.Flags().String(flag.S3BucketURI, "", "The bucket URI of the S3 bucket. Required when target type is S3")
+	createCmd.Flags().String(flag.S3BucketURI, "", "The bucket URI of the S3. Required when target type is S3")
 	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3 bucket. Required when target type is S3")
 	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3 bucket. Required when target type is S3")
-	createCmd.Flags().String(flag.Compression, "", "The compression algorithm of the export file. One of [\"gzip\" \"snappy\" \"zstd\" \"none\"]")
+	createCmd.Flags().String(flag.Compression, "", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"]")
 	return createCmd
 }
 
@@ -357,7 +371,7 @@ func initialS3InputModel() ui.TextInputModel {
 		t := textinput.New()
 		switch k {
 		case flag.S3BucketURI:
-			t.Placeholder = "Bucket Uri"
+			t.Placeholder = "Bucket URI"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle

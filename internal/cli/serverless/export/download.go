@@ -52,6 +52,14 @@ func (c DownloadOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.ExportID,
+		flag.OutputPath,
+	}
+}
+
+func (c DownloadOpts) RequiredFlags() []string {
+	return []string{
+		flag.ClusterID,
+		flag.ExportID,
 	}
 }
 
@@ -66,7 +74,7 @@ func (c *DownloadOpts) MarkInteractive(cmd *cobra.Command) error {
 	}
 	// Mark required flags
 	if !c.interactive {
-		for _, fn := range flags {
+		for _, fn := range c.RequiredFlags() {
 			err := cmd.MarkFlagRequired(fn)
 			if err != nil {
 				return err
@@ -153,18 +161,18 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
+			var totalSize int64
+			for _, download := range resp.Payload.Downloads {
+				totalSize += download.Size
+			}
+			fileMessage := fmt.Sprintf("There are %d files to download, total size is %s.", len(resp.Payload.Downloads), humanize.IBytes(uint64(totalSize)))
+
 			if !autoApprove {
 				if !h.IOStreams.CanPrompt {
 					return fmt.Errorf("the terminal doesn't support prompt, please run with --auto-approve to download")
 				}
 
-				var totalSize int64
-				for _, download := range resp.Payload.Downloads {
-					totalSize += download.Size
-				}
-				fileMessage := fmt.Sprintf("There are %d files to download, total size is %s.", len(resp.Payload.Downloads), humanize.IBytes(uint64(totalSize)))
-
-				confirmationMessage := fmt.Sprintf("%s %s %s %s", color.BlueString(fileMessage), color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to download:"))
+				confirmationMessage := fmt.Sprintf("\n%s %s %s %s", color.BlueString(fileMessage), color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to download:"))
 				prompt := &survey.Input{
 					Message: confirmationMessage,
 				}
@@ -180,6 +188,8 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				if userInput != confirmed {
 					return errors.New("incorrect confirm string entered, skipping download")
 				}
+			} else {
+				fmt.Fprintf(h.IOStreams.Out, "\n%s\n", color.BlueString(fileMessage))
 			}
 
 			err = DownloadFiles(h, resp.Payload.Downloads, path)
@@ -201,6 +211,16 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string) error {
 	if path == "" {
 		path = "."
+	}
+
+	// create the path if not exist
+	if _, err := os.Stat(path); err != nil {
+		if os.IsNotExist(err) {
+			err = os.MkdirAll(path, 0755)
+		}
+		if err != nil {
+			return err
+		}
 	}
 	interrupt := false
 	for _, downloadUrl := range urls {
@@ -231,14 +251,6 @@ func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, p
 				return
 			}
 
-			// create the path if not exist
-			if _, err := os.Stat(path); os.IsNotExist(err) {
-				err = os.MkdirAll(path, 0755)
-				if err != nil {
-					fmt.Fprintf(h.IOStreams.Out, "create path error: %v\n", err)
-					return
-				}
-			}
 			// skip if the file exists
 			if _, err := os.Stat(path + "/" + fileName); err == nil {
 				fmt.Fprintf(h.IOStreams.Out, "file %s already exists, skipping download\n", path+"/"+fileName)
