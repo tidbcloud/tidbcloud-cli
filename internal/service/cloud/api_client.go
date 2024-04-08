@@ -61,7 +61,7 @@ type TiDBCloudClient interface {
 
 	ListProviderRegions(params *serverlessOp.ServerlessServiceListRegionsParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListRegionsOK, error)
 
-	ListProjects(params *iam.ListProjectsParams) (res *project.ListProjectsOK, err error)
+	ListProjects(params *project.ListProjectsParams, opts ...project.ClientOption) (*project.ListProjectsOK, error)
 
 	CancelImport(params *serverlessImportOp.ImportServiceCancelImportParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelImportOK, error)
 
@@ -97,6 +97,7 @@ type TiDBCloudClient interface {
 }
 
 type ClientDelegate struct {
+	c   *apiClient.GoTidbcloud
 	is  *iam.Service
 	bc  *branchClient.TidbcloudServerless
 	pc  *pingchatClient.TidbcloudPingchat
@@ -167,8 +168,8 @@ func (d *ClientDelegate) PartialUpdateCluster(params *serverlessOp.ServerlessSer
 	return d.sc.ServerlessService.ServerlessServicePartialUpdateCluster(params, opts...)
 }
 
-func (d *ClientDelegate) ListProjects(params *iam.ListProjectsParams) (res *project.ListProjectsOK, err error) {
-	return d.is.ListProjects(params)
+func (d *ClientDelegate) ListProjects(params *project.ListProjectsParams, opts ...project.ClientOption) (*project.ListProjectsOK, error) {
+	return d.c.Project.ListProjects(params, opts...)
 }
 
 func (d *ClientDelegate) CancelImport(params *serverlessImportOp.ImportServiceCancelImportParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelImportOK, error) {
