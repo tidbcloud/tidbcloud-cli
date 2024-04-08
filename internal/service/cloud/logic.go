@@ -31,6 +31,8 @@ import (
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 	brModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/models"
+	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
+	exportModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/models"
 
 	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 	tea "github.com/charmbracelet/bubbletea"
@@ -71,6 +73,10 @@ type ServerlessBackup struct {
 	CreateTime strfmt.DateTime
 }
 
+type Export struct {
+	ID string
+}
+
 func (c ServerlessBackup) String() string {
 	return fmt.Sprintf("%s(%s)", c.CreateTime, c.ID)
 }
@@ -93,6 +99,10 @@ func (b Branch) String() string {
 
 func (c Cluster) String() string {
 	return fmt.Sprintf("%s(%s)", c.DisplayName, c.ID)
+}
+
+func (e Export) String() string {
+	return e.ID
 }
 
 type Import struct {
@@ -270,6 +280,80 @@ func GetSelectedBranch(clusterID string, pageSize int64, client TiDBCloudClient)
 	return branch, nil
 }
 
+func GetSelectedExport(clusterID string, pageSize int64, client TiDBCloudClient) (*Export, error) {
+	_, exportItems, err := RetrieveExports(clusterID, pageSize, client)
+	if err != nil {
+		return nil, err
+	}
+
+	var items = make([]interface{}, 0, len(exportItems))
+	for _, item := range exportItems {
+		items = append(items, &Export{
+			ID: item.ExportID,
+		})
+	}
+	if len(items) == 0 {
+		return nil, fmt.Errorf("no available exports found")
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the export")
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	eModel, err := p.Run()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if m, _ := eModel.(ui.SelectModel); m.Interrupted {
+		return nil, util.InterruptError
+	}
+	export := eModel.(ui.SelectModel).GetSelectedItem().(*Export)
+	return export, nil
+}
+
+func GetSelectedLocalExport(clusterID string, pageSize int64, client TiDBCloudClient) (*Export, error) {
+	_, exportItems, err := RetrieveExports(clusterID, pageSize, client)
+	if err != nil {
+		return nil, err
+	}
+
+	var items = make([]interface{}, 0, len(exportItems))
+	for _, item := range exportItems {
+		if item.Target.Type == exportModel.TargetTargetTypeLOCAL && item.State == exportModel.V1beta1ExportStateSUCCEEDED {
+			items = append(items, &Export{
+				ID: item.ExportID,
+			})
+		}
+	}
+	if len(items) == 0 {
+		return nil, fmt.Errorf("no available exports found")
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the succeed local type export")
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	eModel, err := p.Run()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if m, _ := eModel.(ui.SelectModel); m.Interrupted {
+		return nil, util.InterruptError
+	}
+	export := eModel.(ui.SelectModel).GetSelectedItem().(*Export)
+	return export, nil
+}
+
 func GetSelectedServerlessBackup(clusterID string, pageSize int32, client TiDBCloudClient) (*ServerlessBackup, error) {
 	_, backupItems, err := RetrieveServerlessBackups(clusterID, pageSize, client)
 	if err != nil {
@@ -440,6 +524,32 @@ func RetrieveBranches(cID string, pageSize int64, d TiDBCloudClient) (int64, []*
 			return 0, nil, errors.Trace(err)
 		}
 		items = append(items, branches.Payload.Branches...)
+	}
+	return int64(len(items)), items, nil
+}
+
+func RetrieveExports(cID string, pageSize int64, d TiDBCloudClient) (int64, []*exportModel.V1beta1Export, error) {
+	var items []*exportModel.V1beta1Export
+	pageSizeInt32 := int32(pageSize)
+	var pageToken string
+
+	params := exportApi.NewExportServiceListExportsParams().WithClusterID(cID).WithPageSize(&pageSizeInt32)
+	exports, err := d.ListExports(params)
+	if err != nil {
+		return 0, nil, errors.Trace(err)
+	}
+	items = append(items, exports.Payload.Exports...)
+	// loop to get all branches
+	for {
+		pageToken = exports.Payload.NextPageToken
+		if pageToken == "" {
+			break
+		}
+		exports, err = d.ListExports(params.WithPageSize(&pageSizeInt32).WithPageToken(&pageToken))
+		if err != nil {
+			return 0, nil, errors.Trace(err)
+		}
+		items = append(items, exports.Payload.Exports...)
 	}
 	return int64(len(items)), items, nil
 }

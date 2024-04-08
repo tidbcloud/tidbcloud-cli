@@ -203,9 +203,9 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	updateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster to be updated")
-	updateCmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "The displayName of the cluster")
-	updateCmd.Flags().String(flag.ServerlessLabels, "", "The label of the cluster.\nInteractive example: {\"label1\":\"value1\",\"label2\":\"value2\"}\nNonInteractive example: \"{\\\"label1\\\":\\\"value1\\\",\\\"label2\\\":\\\"value2\\\"}\"")
-	updateCmd.Flags().String(flag.ServerlessAnnotations, "", "The annotations of the cluster.\nInteractive example: {\"annotation1\":\"value1\",\"annotation2\":\"value2\"}\nNonInteractive example: \"{\\\"annotation1\\\":\\\"value1\\\",\\\"annotation2\\\":\\\"value2\\\"}\"")
+	updateCmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "The new displayName of the cluster to be updated")
+	updateCmd.Flags().String(flag.ServerlessLabels, "", "The labels of the cluster to be added or updated.\nInteractive example: {\"label1\":\"value1\",\"label2\":\"value2\"}\nNonInteractive example: \"{\\\"label1\\\":\\\"value1\\\",\\\"label2\\\":\\\"value2\\\"}\"")
+	updateCmd.Flags().String(flag.ServerlessAnnotations, "", "The annotations of the cluster to be added or updated.\nInteractive example: {\"annotation1\":\"value1\",\"annotation2\":\"value2\"}\nNonInteractive example: \"{\\\"annotation1\\\":\\\"value1\\\",\\\"annotation2\\\":\\\"value2\\\"}\"")
 	return updateCmd
 }
 

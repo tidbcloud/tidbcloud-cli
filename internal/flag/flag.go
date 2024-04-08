@@ -74,7 +74,18 @@ const (
 	Monthly               string = "monthly"
 	BackupID              string = "backup-id"
 	BackupTime            string = "backup-time"
+	S3BucketURI           string = "s3.bucket-uri"
+	S3AccessKeyID         string = "s3.access-key-id"
+	S3SecretAccessKey     string = "s3.secret-access-key"
+	Table                 string = "table"
+	TargetType            string = "target-type"
+	FileType              string = "file-type"
+	ExportID              string = "export-id"
+	ExportIDShort         string = "e"
+	OutputPath            string = "output-path"
 	Encryption            string = "encryption"
+	AutoApprove           string = "auto-approve"
+	Compression           string = "compression"
 )
 
 const (

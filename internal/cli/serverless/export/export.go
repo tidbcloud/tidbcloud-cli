@@ -1,4 +1,4 @@
-// Copyright 2023 PingCAP, Inc.
+// Copyright 2024 PingCAP, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,21 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package backup
+package export
 
 import (
-	"tidbcloud-cli/internal"
-
 	"github.com/spf13/cobra"
+
+	"tidbcloud-cli/internal"
 )
 
 func Cmd(h *internal.Helper) *cobra.Command {
-	var backupCmd = &cobra.Command{
-		Use:   "backup",
-		Short: "Manage serverless cluster backups",
+	var exportCmd = &cobra.Command{
+		Use:   "export",
+		Short: "Manage serverless cluster exports",
 	}
 
-	backupCmd.AddCommand(ListCmd(h))
-	backupCmd.AddCommand(DescribeCmd(h))
-	return backupCmd
+	exportCmd.AddCommand(CreateCmd(h))
+	exportCmd.AddCommand(DescribeCmd(h))
+	exportCmd.AddCommand(ListCmd(h))
+	exportCmd.AddCommand(CancelCmd(h))
+	exportCmd.AddCommand(DownloadCmd(h))
+	return exportCmd
 }
