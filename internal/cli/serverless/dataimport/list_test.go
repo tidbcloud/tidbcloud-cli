@@ -46,7 +46,7 @@ const listResultStr = `{
       "clusterId": "12345",
       "completedPercent": 100,
       "completedTables": 1,
-      "createdAt": "2024-04-01T06:39:50.000Z",
+      "createTime": "2024-04-01T06:39:50.000Z",
       "creationDetails": {
         "clusterId": "12345",
         "dataFormat": "CSV",
@@ -98,7 +98,7 @@ const listResultMultiPageStr = `{
       "clusterId": "12345",
       "completedPercent": 100,
       "completedTables": 1,
-      "createdAt": "2024-04-01T06:39:50.000Z",
+      "createTime": "2024-04-01T06:39:50.000Z",
       "creationDetails": {
         "clusterId": "12345",
         "dataFormat": "CSV",
@@ -143,7 +143,7 @@ const listResultMultiPageStr = `{
       "clusterId": "12345",
       "completedPercent": 100,
       "completedTables": 1,
-      "createdAt": "2024-04-01T06:39:50.000Z",
+      "createTime": "2024-04-01T06:39:50.000Z",
       "creationDetails": {
         "clusterId": "12345",
         "dataFormat": "CSV",

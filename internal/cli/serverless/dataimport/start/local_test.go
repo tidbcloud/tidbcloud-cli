@@ -95,7 +95,7 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
   "clusterId": "12345",
   "completedPercent": 100,
   "completedTables": 1,
-  "createdAt": "2024-04-01T06:39:50.000Z",
+  "createTime": "2024-04-01T06:39:50.000Z",
   "creationDetails": {
     "clusterId": "12345",
     "dataFormat": "CSV",
@@ -126,7 +126,7 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
   "id": "%s",
   "postImportCompletedPercent": 100,
   "processedSourceDataSize": "37",
-  "status": "COMPLETED",
+  "state": "COMPLETED",
   "totalSize": "37",
   "totalTablesCount": 1
 }
@@ -294,7 +294,7 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
   "clusterId": "12345",
   "completedPercent": 100,
   "completedTables": 1,
-  "createdAt": "2024-04-01T06:39:50.000Z",
+  "createTime": "2024-04-01T06:39:50.000Z",
   "creationDetails": {
     "clusterId": "12345",
     "dataFormat": "CSV",
@@ -325,7 +325,7 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
   "id": "%s",
   "postImportCompletedPercent": 100,
   "processedSourceDataSize": "37",
-  "status": "COMPLETED",
+  "state": "COMPLETED",
   "totalSize": "37",
   "totalTablesCount": 1
 }
