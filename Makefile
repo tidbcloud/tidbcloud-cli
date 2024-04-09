@@ -54,6 +54,9 @@ generate-v1beta1-client: ## Generate v1beta1 client
 	swagger generate client -f pkg/tidbcloud/v1beta1/serverless_br/serverless-br.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless_br
 	@echo "==> Generating serverless import client"
 	swagger generate client -f pkg/tidbcloud/v1beta1/serverless_import/import.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless_import
+	@echo "==> Generating serverless export client"
+	swagger generate client -f pkg/tidbcloud/v1beta1/serverless_export/export.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless_export
+
 
 .PHONY: fmt
 fmt: ## Format changed go

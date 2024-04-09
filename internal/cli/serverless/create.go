@@ -59,9 +59,10 @@ type CreateOpts struct {
 func (c CreateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.DisplayName,
-		flag.ClusterType,
 		flag.Region,
 		flag.ProjectID,
+		flag.SpendingLimitMonthly,
+		flag.Encryption,
 	}
 }
 

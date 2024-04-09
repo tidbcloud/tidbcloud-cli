@@ -1,4 +1,4 @@
-// Copyright 2023 PingCAP, Inc.
+// Copyright 2024 PingCAP, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,20 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package branch
+package export
 
 import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/juju/errors"
+	"github.com/spf13/cobra"
+
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
-	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
-
-	"github.com/juju/errors"
-	"github.com/spf13/cobra"
+	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
 )
 
 type DescribeOpts struct {
@@ -35,7 +35,7 @@ type DescribeOpts struct {
 func (c DescribeOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.BranchID,
+		flag.ExportID,
 	}
 }
 
@@ -67,20 +67,16 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 
 	var describeCmd = &cobra.Command{
 		Use:     "describe",
-		Short:   "Describe a branch",
+		Short:   "Describe a serverless cluster export",
 		Aliases: []string{"get"},
 		Args:    cobra.NoArgs,
-		Example: fmt.Sprintf(`  Get a branch in interactive mode:
-  $ %[1]s serverless branch describe
+		Example: fmt.Sprintf(`  Get an export in interactive mode:
+  $ %[1]s serverless export describe
 
-  Get a branch in non-interactive mode:
-  $ %[1]s serverless branch describe -c <cluster-id> -b <branch-id>`, config.CliName),
+  Get an export in non-interactive mode:
+  $ %[1]s serverless export describe -c <cluster-id> -e <export-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			err := opts.MarkInteractive(cmd)
-			if err != nil {
-				return errors.Trace(err)
-			}
-			return nil
+			return opts.MarkInteractive(cmd)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			d, err := h.Client()
@@ -88,7 +84,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			var branchID string
+			var exportID string
 			var clusterID string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
@@ -106,14 +102,14 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				branch, err := cloud.GetSelectedBranch(clusterID, h.QueryPageSize, d)
+				export, err := cloud.GetSelectedExport(clusterID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				branchID = branch.ID
+				exportID = export.ID
 			} else {
 				// non-interactive mode, get values from flags
-				branchID, err = cmd.Flags().GetString(flag.BranchID)
+				exportID, err = cmd.Flags().GetString(flag.ExportID)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -124,14 +120,14 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := branchApi.NewBranchServiceGetBranchParams().
-				WithClusterID(clusterID).WithBranchID(branchID)
-			branch, err := d.GetBranch(params)
+			params := exportApi.NewExportServiceGetExportParams().
+				WithClusterID(clusterID).WithExportID(exportID)
+			export, err := d.GetExport(params)
 			if err != nil {
 				return errors.Trace(err)
 			}
 
-			v, err := json.MarshalIndent(branch.Payload, "", "  ")
+			v, err := json.MarshalIndent(export.Payload, "", "  ")
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -141,8 +137,8 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	describeCmd.Flags().StringP(flag.BranchID, flag.BranchIDShort, "", "The ID of the branch to be described")
-	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the branch to be described")
-	describeCmd.MarkFlagsRequiredTogether(flag.BranchID, flag.ClusterID)
+	describeCmd.Flags().StringP(flag.ExportID, flag.ExportIDShort, "", "The ID of the export")
+	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the export")
+	describeCmd.MarkFlagsRequiredTogether(flag.ExportID, flag.ClusterID)
 	return describeCmd
 }
