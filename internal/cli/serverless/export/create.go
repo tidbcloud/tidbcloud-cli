@@ -121,7 +121,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless export create -c <cluster-id> --database <database> --table <table>
 
   Create an export with s3 type in non-interactive mode:
-  $ %[1]s serverless export create -c <cluster-id> --bucket-uri <bucket-uri> --access-key-id <access-key-id> --secret-access-key <secret-access-key>`,
+  $ %[1]s serverless export create -c <cluster-id> --s3.bucket-uri <bucket-uri> --s3.access-key-id <access-key-id> --s3.secret-access-key <secret-access-key>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
@@ -299,7 +299,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.S3BucketURI, "", "The bucket URI of the S3. Required when target type is S3")
 	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3 bucket. Required when target type is S3")
 	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3 bucket. Required when target type is S3")
-	createCmd.Flags().String(flag.Compression, "", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"]")
+	createCmd.Flags().String(flag.Compression, "GZIP", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"]")
 	return createCmd
 }
 
