@@ -71,6 +71,8 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 	opts := LocalOpts{
 		interactive: true,
 	}
+	var partSize int64
+	var concurrency int
 
 	var localCmd = &cobra.Command{
 		Use:         "local <file-path>",
@@ -113,7 +115,15 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 			var projectID, clusterID, dataFormat, targetDatabase, targetTable, separator, delimiter string
 			var backslashEscape, trimLastSeparator bool
 			d, err := h.Client()
+			if err != nil {
+				return err
+			}
 			uploader := h.Uploader(d)
+			err = uploader.SetConcurrency(concurrency)
+			if err != nil {
+				return err
+			}
+			err = uploader.SetPartSize(partSize * 1024 * 1024)
 			if err != nil {
 				return err
 			}
@@ -306,6 +316,8 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 	localCmd.Flags().String(flag.Separator, ",", "The field separator of CSV file")
 	localCmd.Flags().Bool(flag.TrimLastSeparator, false, "In CSV file whether to treat Separator as the line terminator and trim all trailing separators")
 	localCmd.Flags().Bool(flag.BackslashEscape, true, "In CSV file whether to parse backslash inside fields as escape characters")
+	localCmd.Flags().Int64Var(&partSize, flag.PartSize, 5, "The part size for uploading file(MiB), default is 5")
+	localCmd.Flags().IntVar(&concurrency, flag.Concurrency, 5, "The concurrency for uploading file, default is 5")
 	return localCmd
 }
 
@@ -392,7 +404,7 @@ func spinnerWaitUploadOp(ctx context.Context, h *internal.Helper, u s3.Uploader,
 		}
 	}()
 
-	fmt.Fprintf(h.IOStreams.Out, color.GreenString("Start uploading..."))
+	fmt.Fprintf(h.IOStreams.Out, color.GreenString("Start uploading...\n"))
 
 	processModel, err := p.Run()
 	if err != nil {

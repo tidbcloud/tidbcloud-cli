@@ -46,13 +46,20 @@ const MaxUploadParts int32 = 10000
 // Amazon S3.
 const MinUploadPartSize int64 = 1024 * 1024 * 5
 
+// MaxUploadPartSize is the maximum allowed part size when uploading a part to
+// Amazon S3.
+const MaxUploadPartSize int64 = 1024 * 1024 * 1024 * 5
+
 // DefaultUploadPartSize is the default part size to buffer chunks of a
 // payload into.
-const DefaultUploadPartSize = 1024 * 1024 * 100
+const DefaultUploadPartSize = 1024 * 1024 * 5
 
 // DefaultUploadConcurrency is the default number of goroutines to spin up when
 // using Upload().
 const DefaultUploadConcurrency = 5
+
+// MaxConcurrency is the maximum number of goroutines to upload parts in parallel.
+const MaxConcurrency = 64
 
 type UploadFailure interface {
 	error
@@ -99,6 +106,8 @@ type PutObjectInput struct {
 
 type Uploader interface {
 	Upload(ctx context.Context, input *PutObjectInput) (string, error)
+	SetPartSize(partSize int64) error
+	SetConcurrency(concurrency int) error
 }
 
 // The UploaderImpl structure that calls Upload(). It is safe to call Upload()
@@ -180,6 +189,28 @@ func (u UploaderImpl) Upload(ctx context.Context, input *PutObjectInput) (string
 	i := uploader{cfg: u, ctx: ctx, in: input}
 
 	return i.upload()
+}
+
+func (u UploaderImpl) SetConcurrency(concurrency int) error {
+	if concurrency > MaxConcurrency {
+		return errors.New("concurrency must be less than 64")
+	}
+	if concurrency <= 0 {
+		return errors.New("concurrency must be greater than 0")
+	}
+	u.Concurrency = concurrency
+	return nil
+}
+
+func (u UploaderImpl) SetPartSize(partSize int64) error {
+	if partSize > MaxUploadPartSize {
+		return errors.New("part size must be less than 5GiB")
+	}
+	if partSize < MinUploadPartSize {
+		return errors.New("part size must be at least 5MiB")
+	}
+	u.PartSize = partSize
+	return nil
 }
 
 // internal structure to manage an upload to S3.
