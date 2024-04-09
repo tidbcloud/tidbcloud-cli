@@ -365,7 +365,7 @@ func spinnerWaitUploadOp(ctx context.Context, h *internal.Helper, u s3.Uploader,
 
 		ticker := time.NewTicker(1 * time.Second)
 		defer ticker.Stop()
-		timer := time.After(2 * time.Minute)
+		timer := time.After(2 * time.Hour)
 		for {
 			select {
 			case <-timer:

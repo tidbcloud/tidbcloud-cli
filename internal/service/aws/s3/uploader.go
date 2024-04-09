@@ -46,7 +46,7 @@ const MinUploadPartSize int64 = 1024 * 1024 * 5
 
 // DefaultUploadPartSize is the default part size to buffer chunks of a
 // payload into.
-const DefaultUploadPartSize = MinUploadPartSize
+const DefaultUploadPartSize = 1024 * 1024 * 100
 
 // DefaultUploadConcurrency is the default number of goroutines to spin up when
 // using Upload().
@@ -486,6 +486,7 @@ func (u *multiUploader) send(c chunk) error {
 	u.m.Lock()
 	u.parts = append(u.parts, &completed)
 	u.m.Unlock()
+	log.Debug(fmt.Sprintf("completed part :%d, total part :%d", len(u.parts), len(u.urls)))
 
 	return nil
 }
