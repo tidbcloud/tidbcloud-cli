@@ -29,7 +29,7 @@ const (
 
 type ProgressMsg float64
 
-type progressErrMsg struct{ err error }
+type ProgressErrMsg struct{ Err error }
 
 func finalPause() tea.Cmd {
 	return tea.Tick(time.Millisecond*750, func(_ time.Time) tea.Msg {
@@ -38,7 +38,6 @@ func finalPause() tea.Cmd {
 }
 
 type ProcessModel struct {
-	Pw          *ProgressWriter
 	Progress    progress.Model
 	Err         error
 	Interrupted bool
@@ -64,8 +63,8 @@ func (m ProcessModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 		return m, nil
 
-	case progressErrMsg:
-		m.Err = msg.err
+	case ProgressErrMsg:
+		m.Err = msg.Err
 		return m, tea.Quit
 
 	case ProgressMsg:
@@ -91,7 +90,7 @@ func (m ProcessModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m ProcessModel) View() string {
 	if m.Err != nil {
-		return "Error downloading: " + m.Err.Error() + "\n"
+		return "Error: " + m.Err.Error() + "\n"
 	}
 
 	pad := strings.Repeat(" ", padding)

@@ -324,7 +324,6 @@ func processDownload(contentType int, file *os.File, reader io.Reader) error {
 	}
 
 	m := ui.ProcessModel{
-		Pw:       pw,
 		Progress: progress.New(progress.WithDefaultGradient()),
 	}
 	// Start Bubble Tea

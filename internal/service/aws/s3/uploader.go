@@ -16,6 +16,7 @@ package s3
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -25,6 +26,7 @@ import (
 
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/util"
 	serverlessImportOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 	serverlessImportModels "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
@@ -69,7 +71,7 @@ type uploadError struct {
 func (m *uploadError) Error() string {
 	var extra string
 	if m.err != nil {
-		extra = fmt.Sprintf(", cause: %s", m.err.Error())
+		extra = fmt.Sprintf(", cause: %v", m.err)
 	}
 	return fmt.Sprintf("upload multipart failed, upload id: %s%s", m.uploadID, extra)
 }
@@ -91,6 +93,8 @@ type PutObjectInput struct {
 	ContentLength *int64
 	ClusterID     *string
 	Body          ReaderAtSeeker
+
+	OnProgress func(ratio float64)
 }
 
 type Uploader interface {
@@ -319,6 +323,7 @@ func (u *uploader) singlePart(r io.ReadSeeker, cleanup func()) (string, error) {
 			uploadID: url.Payload.UploadID,
 		}
 	}
+	u.in.OnProgress(1.0)
 
 	return url.Payload.UploadID, nil
 }
@@ -473,6 +478,9 @@ func (u *multiUploader) send(c chunk) error {
 		SetBody(c.buf).Put(u.urls[c.num-1])
 
 	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			return util.InterruptError
+		}
 		return err
 	}
 	if !resp.IsSuccess() {
@@ -485,8 +493,8 @@ func (u *multiUploader) send(c chunk) error {
 
 	u.m.Lock()
 	u.parts = append(u.parts, &completed)
+	u.in.OnProgress(float64(len(u.parts)) / float64(len(u.urls)))
 	u.m.Unlock()
-	log.Debug(fmt.Sprintf("completed part :%d, total part :%d", len(u.parts), len(u.urls)))
 
 	return nil
 }
@@ -513,8 +521,9 @@ func (u *multiUploader) fail() {
 		return
 	}
 
+	ctx := context.WithoutCancel(u.ctx)
 	_, err := u.cfg.client.CancelMultipartUpload(serverlessImportOp.NewImportServiceCancelMultipartUploadParams().
-		WithClusterID(*u.in.ClusterID).WithUploadID(u.uploadID).WithFileName(*u.in.FileName).WithContext(u.ctx))
+		WithClusterID(*u.in.ClusterID).WithUploadID(u.uploadID).WithFileName(*u.in.FileName).WithContext(ctx))
 	if err != nil {
 		log.Warn("failed to abort multipart upload", zap.Error(err))
 		return

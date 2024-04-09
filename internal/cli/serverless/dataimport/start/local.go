@@ -32,6 +32,7 @@ import (
 	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/charmbracelet/bubbles/progress"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
@@ -338,65 +339,69 @@ func initialLocalInputModel() ui.TextInputModel {
 
 func waitUploadOp(ctx context.Context, h *internal.Helper, u s3.Uploader, input *s3.PutObjectInput) (string, error) {
 	fmt.Fprintf(h.IOStreams.Out, "... Uploading file\n")
-	id, err := u.Upload(ctx, input)
-	if err != nil {
-		return "", err
+
+	p := make(chan float64)
+	e := make(chan error)
+	input.OnProgress = func(ratio float64) {
+		p <- ratio
 	}
 
-	fmt.Fprintln(h.IOStreams.Out, "File has been uploaded")
-	return id, nil
+	var id string
+	var err error
+	go func() {
+		id, err = u.Upload(ctx, input)
+		if err != nil {
+			e <- err
+		}
+	}()
+	timer := time.After(2 * time.Hour)
+	for {
+		select {
+		case progress := <-p:
+			fmt.Fprintln(h.IOStreams.Out, fmt.Sprintf("upload progress: %.2f%%", progress*100))
+		case <-timer:
+			return "", fmt.Errorf("time out when uploading file")
+		case err := <-e:
+			if err != nil {
+				return "", err
+			}
+			fmt.Fprintln(h.IOStreams.Out, "File has been uploaded")
+			return id, nil
+		}
+	}
 }
 
 func spinnerWaitUploadOp(ctx context.Context, h *internal.Helper, u s3.Uploader, input *s3.PutObjectInput) (string, error) {
 	var uploadID string
-	task := func() tea.Msg {
-		errChan := make(chan error, 1)
-
-		go func() {
-			var err error
-			uploadID, err = u.Upload(ctx, input)
-			if err != nil {
-				errChan <- err
-				return
-			}
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("File has been uploaded"))
-			errChan <- nil
-		}()
-
-		ticker := time.NewTicker(1 * time.Second)
-		defer ticker.Stop()
-		timer := time.After(2 * time.Hour)
-		for {
-			select {
-			case <-timer:
-				return fmt.Errorf("timeout waiting for uploading file")
-			case <-ticker.C:
-				// continue
-			case err := <-errChan:
-				if err != nil {
-					return err
-				} else {
-					return ui.Result("File has been uploaded")
-				}
-			case <-ctx.Done():
-				return util.InterruptError
-			}
-		}
+	m := ui.ProcessModel{
+		Progress: progress.New(progress.WithDefaultGradient()),
+	}
+	var p *tea.Program
+	p = tea.NewProgram(m)
+	input.OnProgress = func(ratio float64) {
+		p.Send(ui.ProgressMsg(ratio))
 	}
 
-	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Uploading file"))
-	model, err := p.StartReturningModel()
+	go func() {
+		var err error
+		uploadID, err = u.Upload(ctx, input)
+		if err != nil {
+			p.Send(ui.ProgressErrMsg{
+				Err: err,
+			})
+		}
+	}()
+
+	fmt.Fprintf(h.IOStreams.Out, color.GreenString("Start uploading..."))
+
+	processModel, err := p.Run()
 	if err != nil {
 		return "", errors.Trace(err)
 	}
-	if m, _ := model.(ui.SpinnerModel); m.Interrupted {
+	if processModel.(ui.ProcessModel).Interrupted {
 		return "", util.InterruptError
 	}
-	if m, _ := model.(ui.SpinnerModel); m.Err != nil {
-		return "", m.Err
-	} else {
-		fmt.Fprintf(h.IOStreams.Out, color.GreenString(m.Output))
-	}
 
+	fmt.Fprintln(h.IOStreams.Out, color.GreenString("File has been uploaded"))
 	return uploadID, nil
 }

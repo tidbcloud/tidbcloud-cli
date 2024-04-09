@@ -36,7 +36,7 @@ func (pw *ProgressWriter) Start() {
 	_, err := io.Copy(pw.File, io.TeeReader(pw.Reader, pw))
 	if err != nil {
 		if p != nil {
-			p.Send(progressErrMsg{err})
+			p.Send(ProgressErrMsg{err})
 		}
 	}
 }
