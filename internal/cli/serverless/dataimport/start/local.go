@@ -54,7 +54,6 @@ type LocalOpts struct {
 func (c LocalOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.ProjectID,
 		flag.DataFormat,
 		flag.TargetDatabase,
 		flag.TargetTable,
@@ -83,10 +82,10 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless import start local <file-path>
 
   Start an import task in non-interactive mode:
-  $ %[1]s serverless import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>
+  $ %[1]s serverless import start local <file-path> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>
 	
   Start an import task with custom CSV format:
-  $ %[1]s serverless import start local <file-path> --project-id <project-id> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
+  $ %[1]s serverless import start local <file-path> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
 `,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -112,7 +111,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			var projectID, clusterID, dataFormat, targetDatabase, targetTable, separator, delimiter string
+			var clusterID, dataFormat, targetDatabase, targetTable, separator, delimiter string
 			var backslashEscape, trimLastSeparator bool
 			d, err := h.Client()
 			if err != nil {
@@ -139,9 +138,8 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				projectID = project.ID
 
-				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -190,7 +188,6 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 				}
 			} else {
 				// non-interactive mode
-				projectID = cmd.Flag(flag.ProjectID).Value.String()
 				clusterID = cmd.Flag(flag.ClusterID).Value.String()
 				dataFormat = cmd.Flag(flag.DataFormat).Value.String()
 				if !util.ElemInSlice(opts.SupportedDataFormats(), dataFormat) {
@@ -218,7 +215,7 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			cmd.Annotations[telemetry.ProjectID] = projectID
+			cmd.Annotations[telemetry.ClusterID] = clusterID
 
 			filePath := args[0]
 			uploadFile, err := os.Open(filePath)
@@ -307,7 +304,6 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	localCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	localCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
 	localCmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %q", opts.SupportedDataFormats()))
 	localCmd.Flags().String(flag.TargetDatabase, "", "Target database to which import data")
@@ -362,15 +358,13 @@ func waitUploadOp(ctx context.Context, h *internal.Helper, u s3.Uploader, input 
 	var err error
 	go func() {
 		id, err = u.Upload(ctx, input)
-		if err != nil {
-			e <- err
-		}
+		e <- err
 	}()
 	timer := time.After(2 * time.Hour)
 	for {
 		select {
 		case progress := <-p:
-			fmt.Fprintln(h.IOStreams.Out, fmt.Sprintf("upload progress: %.2f%%", progress*100))
+			fmt.Fprintf(h.IOStreams.Out, "upload progress: %.2f%%\n", progress*100)
 		case <-timer:
 			return "", fmt.Errorf("time out when uploading file")
 		case err := <-e:
@@ -388,8 +382,8 @@ func spinnerWaitUploadOp(ctx context.Context, h *internal.Helper, u s3.Uploader,
 	m := ui.ProcessModel{
 		Progress: progress.New(progress.WithDefaultGradient()),
 	}
-	var p *tea.Program
-	p = tea.NewProgram(m)
+
+	p := tea.NewProgram(m)
 	input.OnProgress = func(ratio float64) {
 		p.Send(ui.ProgressMsg(ratio))
 	}
@@ -402,6 +396,7 @@ func spinnerWaitUploadOp(ctx context.Context, h *internal.Helper, u s3.Uploader,
 				Err: err,
 			})
 		}
+		input.OnProgress(1.0)
 	}()
 
 	fmt.Fprintf(h.IOStreams.Out, color.GreenString("Start uploading...\n"))

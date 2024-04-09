@@ -57,7 +57,6 @@ func (suite *CancelImportSuite) TestCancelImportArgs() {
 	assert := require.New(suite.T())
 	ctx := context.Background()
 	result := &importOp.ImportServiceCancelImportOK{}
-	projectID := "12345"
 	clusterID := "12345"
 	importID := "imp-asdasd"
 	suite.mockClient.On("CancelImport", importOp.NewImportServiceCancelImportParams().
@@ -73,22 +72,22 @@ func (suite *CancelImportSuite) TestCancelImportArgs() {
 	}{
 		{
 			name:         "cancel import with default format(json when without tty)",
-			args:         []string{"--project-id", projectID, "--cluster-id", clusterID, "--import-id", importID, "--force"},
+			args:         []string{"--cluster-id", clusterID, "--import-id", importID, "--force"},
 			stdoutString: fmt.Sprintf("Import task %s has been canceled.\n", importID),
 		},
 		{
 			name:         "cancel import with output shorthand flag",
-			args:         []string{"-p", projectID, "-c", clusterID, "--import-id", importID, "--force"},
+			args:         []string{"-c", clusterID, "--import-id", importID, "--force"},
 			stdoutString: fmt.Sprintf("Import task %s has been canceled.\n", importID),
 		},
 		{
-			name: "cancel import without required project id",
-			args: []string{"-c", clusterID, "--import-id", importID, "--force"},
-			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
+			name: "cancel import without required cluster id",
+			args: []string{"--import-id", importID, "--force"},
+			err:  fmt.Errorf("required flag(s) \"cluster-id\" not set"),
 		},
 		{
 			name: "cancel import without force flag",
-			args: []string{"-p", projectID, "-c", clusterID, "--import-id", importID},
+			args: []string{"-c", clusterID, "--import-id", importID},
 			err:  fmt.Errorf("the terminal doesn't support prompt, please run with --force to cancel the import task"),
 		},
 	}

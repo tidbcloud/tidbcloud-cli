@@ -38,7 +38,6 @@ type ListOpts struct {
 func (c ListOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.ProjectID,
 	}
 }
 
@@ -56,10 +55,10 @@ func ListCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless import list
 
   List import tasks in non-interactive mode:
-  $ %[1]s serverless import list --project-id <project-id> --cluster-id <cluster-id>
+  $ %[1]s serverless import list --cluster-id <cluster-id>
   
   List the clusters in the project with json format:
-  $ %[1]s serverless import list --project-id <project-id> --cluster-id <cluster-id> --output json`,
+  $ %[1]s serverless import list --cluster-id <cluster-id> --output json`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -83,7 +82,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var projectID, clusterID string
+			var clusterID string
 			d, err := h.Client()
 			if err != nil {
 				return err
@@ -101,20 +100,18 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				projectID = project.ID
 
-				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				clusterID = cluster.ID
 			} else {
 				// non-interactive mode
-				projectID = cmd.Flag(flag.ProjectID).Value.String()
 				clusterID = cmd.Flag(flag.ClusterID).Value.String()
 			}
 
-			cmd.Annotations[telemetry.ProjectID] = projectID
+			cmd.Annotations[telemetry.ClusterID] = clusterID
 
 			total, importTasks, err := cloud.RetrieveImports(cmd.Context(), clusterID, h.QueryPageSize, d)
 			if err != nil {
@@ -178,7 +175,6 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	listCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	listCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
 	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, flag.OutputHelp)
 	return listCmd

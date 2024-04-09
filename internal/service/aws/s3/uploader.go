@@ -61,6 +61,8 @@ const DefaultUploadConcurrency = 5
 // MaxConcurrency is the maximum number of goroutines to upload parts in parallel.
 const MaxConcurrency = 64
 
+const processCompletePartWeights = 1
+
 type UploadFailure interface {
 	error
 
@@ -354,7 +356,6 @@ func (u *uploader) singlePart(r io.ReadSeeker, cleanup func()) (string, error) {
 			uploadID: url.Payload.UploadID,
 		}
 	}
-	u.in.OnProgress(1.0)
 
 	return url.Payload.UploadID, nil
 }
@@ -524,7 +525,7 @@ func (u *multiUploader) send(c chunk) error {
 
 	u.m.Lock()
 	u.parts = append(u.parts, &completed)
-	u.in.OnProgress(float64(len(u.parts)) / float64(len(u.urls)))
+	u.in.OnProgress(float64(len(u.parts)) / float64(len(u.urls)+processCompletePartWeights))
 	u.m.Unlock()
 
 	return nil

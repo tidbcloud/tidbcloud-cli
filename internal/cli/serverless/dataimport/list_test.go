@@ -18,7 +18,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -217,7 +216,6 @@ func (suite *ListImportSuite) TestListImportArgs() {
 	result := &importOp.ImportServiceListImportsOK{
 		Payload: body,
 	}
-	projectID := "12345"
 	clusterID := "12345"
 	suite.mockClient.On("ListImports", importOp.NewImportServiceListImportsParams().
 		WithClusterID(clusterID).WithPage(&page).WithPageSize(&pageSize).WithContext(ctx)).
@@ -232,23 +230,18 @@ func (suite *ListImportSuite) TestListImportArgs() {
 	}{
 		{
 			name:         "list imports with default format(json when without tty)",
-			args:         []string{"--project-id", projectID, "--cluster-id", clusterID},
+			args:         []string{"--cluster-id", clusterID},
 			stdoutString: listResultStr,
 		},
 		{
 			name:         "list imports with output flag",
-			args:         []string{"--project-id", projectID, "--cluster-id", clusterID, "--output", "json"},
+			args:         []string{"--cluster-id", clusterID, "--output", "json"},
 			stdoutString: listResultStr,
 		},
 		{
 			name:         "list imports with output shorthand flag",
-			args:         []string{"-p", projectID, "-c", clusterID, "-o", "json"},
+			args:         []string{"-c", clusterID, "-o", "json"},
 			stdoutString: listResultStr,
-		},
-		{
-			name: "list imports without required project id",
-			args: []string{"-c", clusterID},
-			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
 		},
 	}
 
@@ -285,7 +278,6 @@ func (suite *ListImportSuite) TestListImportWithMultiPages() {
 	result := &importOp.ImportServiceListImportsOK{
 		Payload: body,
 	}
-	projectID := "12345"
 	clusterID := "12345"
 	suite.mockClient.On("ListImports", importOp.NewImportServiceListImportsParams().
 		WithClusterID(clusterID).WithPage(&pageOne).WithPageSize(&pageSize).WithContext(ctx)).
@@ -303,7 +295,7 @@ func (suite *ListImportSuite) TestListImportWithMultiPages() {
 	}{
 		{
 			name:         "query with multi pages",
-			args:         []string{"-p", projectID, "-c", clusterID, "--output", "json"},
+			args:         []string{"-c", clusterID, "--output", "json"},
 			stdoutString: listResultMultiPageStr,
 		},
 	}

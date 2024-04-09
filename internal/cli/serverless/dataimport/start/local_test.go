@@ -139,7 +139,6 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 	dataFormat := "CSV"
 	targetDatabase := "test"
 	targetTable := "test"
-	projectID := "12345"
 	clusterID := "12345"
 
 	suite.mockUploader.On("Upload", ctx, mockTool.MatchedBy(func(keys *s3.PutObjectInput) bool {
@@ -149,6 +148,8 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 		assert.Equal(clusterID, *keys.ClusterID)
 		return true
 	})).Return(uploadID, nil)
+	suite.mockUploader.On("SetConcurrency", 5).Return(nil)
+	suite.mockUploader.On("SetPartSize", int64(5*1024*1024)).Return(nil)
 
 	reqBody := importOp.ImportServiceCreateImportBody{}
 	err = reqBody.UnmarshalBinary([]byte(fmt.Sprintf(`{
@@ -190,27 +191,27 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 	}{
 		{
 			name:         "start import success",
-			args:         []string{fileName, "--project-id", projectID, "--cluster-id", clusterID, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable},
+			args:         []string{fileName, "--cluster-id", clusterID, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable},
 			stdoutString: fmt.Sprintf("... Uploading file\nFile has been uploaded\n... Starting the import task\nImport task %s started.\n", importID),
 		},
 		{
 			name: "start import with unsupported data format",
-			args: []string{fileName, "--project-id", projectID, "--cluster-id", clusterID, "--data-format", "yaml", "--target-database", targetDatabase, "--target-table", targetTable},
+			args: []string{fileName, "--cluster-id", clusterID, "--data-format", "yaml", "--target-database", targetDatabase, "--target-table", targetTable},
 			err:  fmt.Errorf("data format yaml is not supported, please use one of [\"CSV\"]"),
 		},
 		{
 			name:         "start import with shorthand flag",
-			args:         []string{fileName, "-p", projectID, "-c", clusterID, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable},
+			args:         []string{fileName, "-c", clusterID, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable},
 			stdoutString: fmt.Sprintf("... Uploading file\nFile has been uploaded\n... Starting the import task\nImport task %s started.\n", importID),
 		},
 		{
-			name: "start import without required project id",
-			args: []string{fileName, "-c", clusterID, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable},
-			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
+			name: "start import without required cluster id",
+			args: []string{fileName, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable},
+			err:  fmt.Errorf("required flag(s) \"cluster-id\" not set"),
 		},
 		{
 			name: "start import without required file path",
-			args: []string{"-p", projectID, "-c", clusterID, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable},
+			args: []string{"-c", clusterID, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable},
 			err:  fmt.Errorf("missing argument <file-path>"),
 		},
 	}
@@ -244,7 +245,6 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 	dataFormat := "CSV"
 	targetDatabase := "test"
 	targetTable := "test"
-	projectID := "12345"
 	clusterID := "12345"
 	suite.mockUploader.On("Upload", ctx, mockTool.MatchedBy(func(keys *s3.PutObjectInput) bool {
 		assert.Equal(fileName, *keys.FileName)
@@ -337,6 +337,8 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 	suite.mockClient.On("CreateImport", importOp.NewImportServiceCreateImportParams().
 		WithClusterID(clusterID).WithBody(reqBody).WithContext(ctx)).
 		Return(result, nil)
+	suite.mockUploader.On("SetConcurrency", 5).Return(nil)
+	suite.mockUploader.On("SetPartSize", int64(5*1024*1024)).Return(nil)
 
 	tests := []struct {
 		name         string
@@ -347,7 +349,7 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 	}{
 		{
 			name:         "start import success",
-			args:         []string{fileName, "--project-id", projectID, "--cluster-id", clusterID, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable, "--separator", "\"", "--delimiter", ",", "--backslash-escape=false", "--trim-last-separator=true"},
+			args:         []string{fileName, "--cluster-id", clusterID, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable, "--separator", "\"", "--delimiter", ",", "--backslash-escape=false", "--trim-last-separator=true"},
 			stdoutString: fmt.Sprintf("... Uploading file\nFile has been uploaded\n... Starting the import task\nImport task %s started.\n", importID),
 		},
 	}

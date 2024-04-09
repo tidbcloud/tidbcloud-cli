@@ -112,7 +112,6 @@ func (suite *DescribeImportSuite) TestDescribeImportArgs() {
 		Payload: body,
 	}
 
-	projectID := "12345"
 	clusterID := "12345"
 	importID := "imp-qwert"
 	suite.mockClient.On("GetImport", importOp.NewImportServiceGetImportParams().
@@ -128,18 +127,18 @@ func (suite *DescribeImportSuite) TestDescribeImportArgs() {
 	}{
 		{
 			name:         "describe import success",
-			args:         []string{"--project-id", projectID, "--cluster-id", clusterID, "--import-id", importID},
+			args:         []string{"--cluster-id", clusterID, "--import-id", importID},
 			stdoutString: getImportResultStr,
 		},
 		{
 			name:         "describe import with shorthand flag",
-			args:         []string{"-p", projectID, "-c", clusterID, "--import-id", importID},
+			args:         []string{"-c", clusterID, "--import-id", importID},
 			stdoutString: getImportResultStr,
 		},
 		{
-			name: "describe import without required project id",
-			args: []string{"-c", clusterID, "--import-id", importID},
-			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
+			name: "describe import without required cluster id",
+			args: []string{"--import-id", importID},
+			err:  fmt.Errorf("required flag(s) \"cluster-id\" not set"),
 		},
 	}
 

@@ -40,7 +40,6 @@ type CancelOpts struct {
 func (c CancelOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.ProjectID,
 		flag.ImportID,
 	}
 }
@@ -59,7 +58,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless import cancel
 
   Cancel an import task in non-interactive mode:
-  $ %[1]s serverless import cancel --project-id <project-id> --cluster-id <cluster-id> --import-id <import-id>`,
+  $ %[1]s serverless import cancel --cluster-id <cluster-id> --import-id <import-id>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -83,7 +82,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var projectID, clusterID, importID string
+			var clusterID, importID string
 			d, err := h.Client()
 			if err != nil {
 				return err
@@ -100,9 +99,8 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				projectID = project.ID
 
-				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -119,12 +117,11 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				importID = selectedImport.ID
 			} else {
 				// non-interactive mode
-				projectID = cmd.Flag(flag.ProjectID).Value.String()
 				clusterID = cmd.Flag(flag.ClusterID).Value.String()
 				importID = cmd.Flag(flag.ImportID).Value.String()
 			}
 
-			cmd.Annotations[telemetry.ProjectID] = projectID
+			cmd.Annotations[telemetry.ClusterID] = clusterID
 
 			if !force {
 				if !h.IOStreams.CanPrompt {
@@ -164,7 +161,6 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	cancelCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a profile without confirmation")
-	cancelCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	cancelCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
 	cancelCmd.Flags().String(flag.ImportID, "", "The ID of import task")
 	return cancelCmd
