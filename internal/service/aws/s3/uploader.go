@@ -187,13 +187,13 @@ func NewUploader(client cloud.TiDBCloudClient) Uploader {
 // goroutines. You can configure the buffer size and concurrency through the
 // UploaderImpl parameters.
 // It is safe to call this method concurrently across goroutines.
-func (u UploaderImpl) Upload(ctx context.Context, input *PutObjectInput) (string, error) {
+func (u *UploaderImpl) Upload(ctx context.Context, input *PutObjectInput) (string, error) {
 	i := uploader{cfg: u, ctx: ctx, in: input}
 
 	return i.upload()
 }
 
-func (u UploaderImpl) SetConcurrency(concurrency int) error {
+func (u *UploaderImpl) SetConcurrency(concurrency int) error {
 	if concurrency > MaxConcurrency {
 		return errors.New("concurrency must be less than 64")
 	}
@@ -204,7 +204,7 @@ func (u UploaderImpl) SetConcurrency(concurrency int) error {
 	return nil
 }
 
-func (u UploaderImpl) SetPartSize(partSize int64) error {
+func (u *UploaderImpl) SetPartSize(partSize int64) error {
 	if partSize > MaxUploadPartSize {
 		return errors.New("part size must be less than 5GiB")
 	}
@@ -218,7 +218,7 @@ func (u UploaderImpl) SetPartSize(partSize int64) error {
 // internal structure to manage an upload to S3.
 type uploader struct {
 	ctx context.Context
-	cfg UploaderImpl
+	cfg *UploaderImpl
 
 	in *PutObjectInput
 
