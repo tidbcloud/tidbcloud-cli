@@ -295,7 +295,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.Database, "*", "The database name you want to export")
 	createCmd.Flags().String(flag.Table, "*", "The table name you want to export")
 	createCmd.Flags().String(flag.FileType, "CSV", "The export file type. One of [\"CSV\" \"SQL\"]")
-	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export Target. One of [\"LOCAL\" \"S3\"]")
+	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export target. One of [\"LOCAL\" \"S3\"]")
 	createCmd.Flags().String(flag.S3BucketURI, "", "The bucket URI of the S3. Required when target type is S3")
 	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3 bucket. Required when target type is S3")
 	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3 bucket. Required when target type is S3")
