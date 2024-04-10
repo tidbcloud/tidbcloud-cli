@@ -191,40 +191,41 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 	}{
 		{
 			name:         "start import success",
-			args:         []string{fileName, "--cluster-id", clusterID, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable},
+			args:         []string{"--target-type", "LOCAL", "--local.file-path", fileName, "--cluster-id", clusterID, "--data-format", dataFormat, "--local.target-database", targetDatabase, "--local.target-table", targetTable},
 			stdoutString: fmt.Sprintf("... Uploading file\nFile has been uploaded\n... Starting the import task\nImport task %s started.\n", importID),
 		},
 		{
 			name: "start import with unsupported data format",
-			args: []string{fileName, "--cluster-id", clusterID, "--data-format", "yaml", "--target-database", targetDatabase, "--target-table", targetTable},
+			args: []string{"--target-type", "LOCAL", "--local.file-path", fileName, "--cluster-id", clusterID, "--data-format", "yaml", "--local.target-database", targetDatabase, "--local.target-table", targetTable},
 			err:  fmt.Errorf("data format yaml is not supported, please use one of [\"CSV\"]"),
 		},
 		{
 			name:         "start import with shorthand flag",
-			args:         []string{fileName, "-c", clusterID, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable},
+			args:         []string{"--target-type", "LOCAL", "--local.file-path", fileName, "-c", clusterID, "--data-format", dataFormat, "--local.target-database", targetDatabase, "--local.target-table", targetTable},
 			stdoutString: fmt.Sprintf("... Uploading file\nFile has been uploaded\n... Starting the import task\nImport task %s started.\n", importID),
 		},
 		{
 			name: "start import without required cluster id",
-			args: []string{fileName, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable},
+			args: []string{"--target-type", "LOCAL", "--local.file-path", fileName, "--data-format", dataFormat, "--local.target-database", targetDatabase, "--local.target-table", targetTable},
 			err:  fmt.Errorf("required flag(s) \"cluster-id\" not set"),
 		},
 		{
 			name: "start import without required file path",
-			args: []string{"-c", clusterID, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable},
-			err:  fmt.Errorf("missing argument <file-path>"),
+			args: []string{"--target-type", "LOCAL", "-c", clusterID, "--data-format", dataFormat, "--local.target-database", targetDatabase, "--local.target-table", targetTable},
+			err:  fmt.Errorf("required flag(s) \"local.file-path\" not set"),
 		},
 	}
 
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
-			cmd := LocalCmd(suite.h)
+			cmd := StartCmd(suite.h)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
 			cmd.SetContext(ctx)
 			err = cmd.Execute()
 			if err != nil {
+				assert.NotNil(tt.err)
 				assert.Contains(err.Error(), tt.err.Error())
 			}
 			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
@@ -349,7 +350,7 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 	}{
 		{
 			name:         "start import success",
-			args:         []string{fileName, "--cluster-id", clusterID, "--data-format", dataFormat, "--target-database", targetDatabase, "--target-table", targetTable, "--separator", "\"", "--delimiter", ",", "--backslash-escape=false", "--trim-last-separator=true"},
+			args:         []string{"--target-type", "LOCAL", "--local.file-path", fileName, "--cluster-id", clusterID, "--data-format", dataFormat, "--local.target-database", targetDatabase, "--local.target-table", targetTable, "--csv.separator", "\"", "--csv.delimiter", ",", "--csv.backslash-escape=false", "--csv.trim-last-separator=true"},
 			stdoutString: fmt.Sprintf("... Uploading file\nFile has been uploaded\n... Starting the import task\nImport task %s started.\n", importID),
 		},
 	}

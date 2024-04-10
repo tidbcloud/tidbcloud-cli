@@ -43,215 +43,177 @@ import (
 type localImportField int
 
 const (
-	databaseIdx localImportField = iota
+	filePathIdx localImportField = iota
+	databaseIdx
 	tableIdx
 )
 
 type LocalOpts struct {
+	partSize    int64
+	concurrency int
+	h           *internal.Helper
 	interactive bool
 }
 
-func (c LocalOpts) NonInteractiveFlags() []string {
-	return []string{
-		flag.ClusterID,
-		flag.DataFormat,
-		flag.TargetDatabase,
-		flag.TargetTable,
-	}
-}
-
-func (c LocalOpts) SupportedDataFormats() []string {
+func (o LocalOpts) SupportedDataFormats() []string {
 	return []string{
 		string(importModel.V1beta1DataFormatCSV),
 	}
 }
 
-func LocalCmd(h *internal.Helper) *cobra.Command {
-	opts := LocalOpts{
-		interactive: true,
+func (o LocalOpts) Run(cmd *cobra.Command) error {
+	ctx := cmd.Context()
+	var clusterID, dataFormat, targetDatabase, targetTable, separator, delimiter, filePath string
+	var backslashEscape, trimLastSeparator bool
+	d, err := o.h.Client()
+	if err != nil {
+		return err
 	}
-	var partSize int64
-	var concurrency int
+	uploader := o.h.Uploader(d)
+	err = uploader.SetConcurrency(o.concurrency)
+	if err != nil {
+		return err
+	}
+	err = uploader.SetPartSize(o.partSize * 1024 * 1024)
+	if err != nil {
+		return err
+	}
 
-	var localCmd = &cobra.Command{
-		Use:         "local <file-path>",
-		Short:       "Import a local file to TiDB Cloud",
-		Args:        util.RequiredArgs("file-path"),
-		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Start an import task in interactive mode:
-  $ %[1]s serverless import start local <file-path>
+	if o.interactive {
+		cmd.Annotations[telemetry.InteractiveMode] = "true"
+		if !o.h.IOStreams.CanPrompt {
+			return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
+		}
 
-  Start an import task in non-interactive mode:
-  $ %[1]s serverless import start local <file-path> --cluster-id <cluster-id> --data-format <data-format> --target-database <target-database> --target-table <target-table>
-	
-  Start an import task with custom CSV format:
-  $ %[1]s serverless import start local <file-path> --cluster-id <cluster-id> --data-format CSV --target-database <target-database> --target-table <target-table> --separator \" --delimiter \' --backslash-escape=false --trim-last-separator=true
-`,
-			config.CliName),
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			flags := opts.NonInteractiveFlags()
-			for _, fn := range flags {
-				f := cmd.Flags().Lookup(fn)
-				if f != nil && f.Changed {
-					opts.interactive = false
-				}
-			}
+		// interactive mode
+		project, err := cloud.GetSelectedProject(o.h.QueryPageSize, d)
+		if err != nil {
+			return err
+		}
 
-			// mark required flags in non-interactive mode
-			if !opts.interactive {
-				for _, fn := range flags {
-					err := cmd.MarkFlagRequired(fn)
-					if err != nil {
-						return errors.Trace(err)
-					}
-				}
-			}
+		cluster, err := cloud.GetSelectedCluster(project.ID, o.h.QueryPageSize, d)
+		if err != nil {
+			return err
+		}
+		clusterID = cluster.ID
 
-			return nil
-		},
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx := cmd.Context()
-			var clusterID, dataFormat, targetDatabase, targetTable, separator, delimiter string
-			var backslashEscape, trimLastSeparator bool
-			d, err := h.Client()
-			if err != nil {
-				return err
-			}
-			uploader := h.Uploader(d)
-			err = uploader.SetConcurrency(concurrency)
-			if err != nil {
-				return err
-			}
-			err = uploader.SetPartSize(partSize * 1024 * 1024)
-			if err != nil {
-				return err
-			}
+		var dataFormats []interface{}
+		for _, f := range o.SupportedDataFormats() {
+			dataFormats = append(dataFormats, f)
+		}
+		model, err := ui.InitialSelectModel(dataFormats, "Choose the data format:")
+		if err != nil {
+			return err
+		}
+		p := tea.NewProgram(model)
+		formatModel, err := p.Run()
+		if err != nil {
+			return errors.Trace(err)
+		}
+		if m, _ := formatModel.(ui.SelectModel); m.Interrupted {
+			return util.InterruptError
+		}
+		dataFormat = formatModel.(ui.SelectModel).Choices[formatModel.(ui.SelectModel).Selected].(string)
 
-			if opts.interactive {
-				cmd.Annotations[telemetry.InteractiveMode] = "true"
-				if !h.IOStreams.CanPrompt {
-					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
-				}
+		// variables for input
+		p = tea.NewProgram(initialLocalInputModel())
+		inputModel, err := p.Run()
+		if err != nil {
+			return errors.Trace(err)
+		}
+		if inputModel.(ui.TextInputModel).Interrupted {
+			return util.InterruptError
+		}
 
-				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
-				if err != nil {
-					return err
-				}
+		filePath = inputModel.(ui.TextInputModel).Inputs[filePathIdx].Value()
+		if len(filePath) == 0 {
+			return errors.New("Local file path is required")
+		}
+		targetDatabase = inputModel.(ui.TextInputModel).Inputs[databaseIdx].Value()
+		if len(targetDatabase) == 0 {
+			return errors.New("Target database is required")
+		}
+		targetTable = inputModel.(ui.TextInputModel).Inputs[tableIdx].Value()
+		if len(targetTable) == 0 {
+			return errors.New("Target table is required")
+		}
 
-				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
-				if err != nil {
-					return err
-				}
-				clusterID = cluster.ID
+		separator, delimiter, backslashEscape, trimLastSeparator, err = getCSVFormat()
+		if err != nil {
+			return err
+		}
+	} else {
+		// non-interactive mode
+		clusterID = cmd.Flag(flag.ClusterID).Value.String()
+		dataFormat = cmd.Flag(flag.DataFormat).Value.String()
+		if !util.ElemInSlice(o.SupportedDataFormats(), dataFormat) {
+			return fmt.Errorf("data format %s is not supported, please use one of %q", dataFormat, o.SupportedDataFormats())
+		}
+		targetDatabase = cmd.Flag(flag.LocalTargetDatabase).Value.String()
+		targetTable = cmd.Flag(flag.LocalTargetTable).Value.String()
+		f := cmd.Flags().Lookup(flag.LocalFilePath)
+		if !f.Changed {
+			return errors.New("required flag(s) \"local.file-path\" not set")
+		}
+		filePath = f.Value.String()
 
-				var dataFormats []interface{}
-				for _, f := range opts.SupportedDataFormats() {
-					dataFormats = append(dataFormats, f)
-				}
-				model, err := ui.InitialSelectModel(dataFormats, "Choose the data format:")
-				if err != nil {
-					return err
-				}
-				p := tea.NewProgram(model)
-				formatModel, err := p.StartReturningModel()
-				if err != nil {
-					return errors.Trace(err)
-				}
-				if m, _ := formatModel.(ui.SelectModel); m.Interrupted {
-					return util.InterruptError
-				}
-				dataFormat = formatModel.(ui.SelectModel).Choices[formatModel.(ui.SelectModel).Selected].(string)
+		// optional flags
+		backslashEscape, err = cmd.Flags().GetBool(flag.CSVBackslashEscape)
+		if err != nil {
+			return errors.Trace(err)
+		}
+		separator, err = cmd.Flags().GetString(flag.CSVSeparator)
+		if err != nil {
+			return errors.Trace(err)
+		}
+		delimiter, err = cmd.Flags().GetString(flag.CSVDelimiter)
+		if err != nil {
+			return errors.Trace(err)
+		}
+		trimLastSeparator, err = cmd.Flags().GetBool(flag.CSVTrimLastSeparator)
+		if err != nil {
+			return errors.Trace(err)
+		}
+	}
 
-				// variables for input
-				p = tea.NewProgram(initialLocalInputModel())
-				inputModel, err := p.StartReturningModel()
-				if err != nil {
-					return errors.Trace(err)
-				}
-				if inputModel.(ui.TextInputModel).Interrupted {
-					return util.InterruptError
-				}
+	cmd.Annotations[telemetry.ClusterID] = clusterID
 
-				targetDatabase = inputModel.(ui.TextInputModel).Inputs[databaseIdx].Value()
-				if len(targetDatabase) == 0 {
-					return errors.New("Target database is required")
-				}
-				targetTable = inputModel.(ui.TextInputModel).Inputs[tableIdx].Value()
-				if len(targetTable) == 0 {
-					return errors.New("Target table is required")
-				}
+	uploadFile, err := os.Open(filePath)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = uploadFile.Close()
+	}()
 
-				separator, delimiter, backslashEscape, trimLastSeparator, err = getCSVFormat()
-				if err != nil {
-					return err
-				}
-			} else {
-				// non-interactive mode
-				clusterID = cmd.Flag(flag.ClusterID).Value.String()
-				dataFormat = cmd.Flag(flag.DataFormat).Value.String()
-				if !util.ElemInSlice(opts.SupportedDataFormats(), dataFormat) {
-					return fmt.Errorf("data format %s is not supported, please use one of %q", dataFormat, opts.SupportedDataFormats())
-				}
-				targetDatabase = cmd.Flag(flag.TargetDatabase).Value.String()
-				targetTable = cmd.Flag(flag.TargetTable).Value.String()
+	stat, err := uploadFile.Stat()
+	if err != nil {
+		return err
+	}
 
-				// optional flags
-				backslashEscape, err = cmd.Flags().GetBool(flag.BackslashEscape)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				separator, err = cmd.Flags().GetString(flag.Separator)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				delimiter, err = cmd.Flags().GetString(flag.Delimiter)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				trimLastSeparator, err = cmd.Flags().GetBool(flag.TrimLastSeparator)
-				if err != nil {
-					return errors.Trace(err)
-				}
-			}
+	var uploadID string
+	input := &s3.PutObjectInput{
+		FileName:      aws.String(stat.Name()),
+		DatabaseName:  aws.String(targetDatabase),
+		TableName:     aws.String(targetTable),
+		ContentLength: aws.Int64(stat.Size()),
+		ClusterID:     aws.String(clusterID),
+		Body:          uploadFile,
+	}
+	if o.h.IOStreams.CanPrompt {
+		uploadID, err = spinnerWaitUploadOp(ctx, o.h, uploader, input)
+		if err != nil {
+			return err
+		}
+	} else {
+		uploadID, err = waitUploadOp(ctx, o.h, uploader, input)
+		if err != nil {
+			return err
+		}
+	}
 
-			cmd.Annotations[telemetry.ClusterID] = clusterID
-
-			filePath := args[0]
-			uploadFile, err := os.Open(filePath)
-			if err != nil {
-				return err
-			}
-			defer uploadFile.Close()
-
-			stat, err := uploadFile.Stat()
-			if err != nil {
-				return err
-			}
-
-			var uploadID string
-			input := &s3.PutObjectInput{
-				FileName:      aws.String(stat.Name()),
-				DatabaseName:  aws.String(targetDatabase),
-				TableName:     aws.String(targetTable),
-				ContentLength: aws.Int64(stat.Size()),
-				ClusterID:     aws.String(clusterID),
-				Body:          uploadFile,
-			}
-			if h.IOStreams.CanPrompt {
-				uploadID, err = spinnerWaitUploadOp(ctx, h, uploader, input)
-				if err != nil {
-					return err
-				}
-			} else {
-				uploadID, err = waitUploadOp(ctx, h, uploader, input)
-				if err != nil {
-					return err
-				}
-			}
-
-			body := importOp.ImportServiceCreateImportBody{}
-			err = body.UnmarshalBinary([]byte(fmt.Sprintf(`{
+	body := importOp.ImportServiceCreateImportBody{}
+	err = body.UnmarshalBinary([]byte(fmt.Sprintf(`{
 			"type": "LOCAL",
 			"dataFormat": "%s",
 			"importOptions": {
@@ -277,64 +239,52 @@ func LocalCmd(h *internal.Helper) *cobra.Command {
 				"type": "LOCAL"
 			}
 			}`, dataFormat, uploadID, targetDatabase, targetTable, stat.Name())))
-			if err != nil {
-				return errors.Trace(err)
-			}
-
-			body.ImportOptions.CsvFormat.Separator = separator
-			body.ImportOptions.CsvFormat.Delimiter = delimiter
-			body.ImportOptions.CsvFormat.BackslashEscape = backslashEscape
-			body.ImportOptions.CsvFormat.TrimLastSeparator = trimLastSeparator
-
-			params := importOp.NewImportServiceCreateImportParams().WithClusterID(clusterID).
-				WithBody(body).WithContext(ctx)
-			if h.IOStreams.CanPrompt {
-				err := spinnerWaitStartOp(ctx, h, d, params)
-				if err != nil {
-					return err
-				}
-			} else {
-				err := waitStartOp(h, d, params)
-				if err != nil {
-					return err
-				}
-			}
-
-			return nil
-		},
+	if err != nil {
+		return errors.Trace(err)
 	}
 
-	localCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	localCmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %q", opts.SupportedDataFormats()))
-	localCmd.Flags().String(flag.TargetDatabase, "", "Target database to which import data")
-	localCmd.Flags().String(flag.TargetTable, "", "Target table to which import data")
-	localCmd.Flags().String(flag.Delimiter, "\"", "The delimiter used for quoting of CSV file")
-	localCmd.Flags().String(flag.Separator, ",", "The field separator of CSV file")
-	localCmd.Flags().Bool(flag.TrimLastSeparator, false, "In CSV file whether to treat Separator as the line terminator and trim all trailing separators")
-	localCmd.Flags().Bool(flag.BackslashEscape, true, "In CSV file whether to parse backslash inside fields as escape characters")
-	localCmd.Flags().Int64Var(&partSize, flag.PartSize, 5, "The part size for uploading file(MiB), default is 5")
-	localCmd.Flags().IntVar(&concurrency, flag.Concurrency, 5, "The concurrency for uploading file, default is 5")
-	return localCmd
+	body.ImportOptions.CsvFormat.Separator = separator
+	body.ImportOptions.CsvFormat.Delimiter = delimiter
+	body.ImportOptions.CsvFormat.BackslashEscape = backslashEscape
+	body.ImportOptions.CsvFormat.TrimLastSeparator = trimLastSeparator
+
+	params := importOp.NewImportServiceCreateImportParams().WithClusterID(clusterID).
+		WithBody(body).WithContext(ctx)
+	if o.h.IOStreams.CanPrompt {
+		err := spinnerWaitStartOp(ctx, o.h, d, params)
+		if err != nil {
+			return err
+		}
+	} else {
+		err := waitStartOp(o.h, d, params)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func initialLocalInputModel() ui.TextInputModel {
 	m := ui.TextInputModel{
-		Inputs: make([]textinput.Model, 2),
+		Inputs: make([]textinput.Model, 3),
 	}
 
 	var t textinput.Model
 	for i := range m.Inputs {
 		t = textinput.New()
-		t.CursorStyle = config.FocusedStyle
+		t.Cursor.Style = config.FocusedStyle
 		t.CharLimit = 0
 		f := localImportField(i)
 
 		switch f {
-		case databaseIdx:
-			t.Placeholder = "Target database"
+		case filePathIdx:
+			t.Placeholder = "Local file path"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
+		case databaseIdx:
+			t.Placeholder = "Target database"
 		case tableIdx:
 			t.Placeholder = "Target table"
 		}

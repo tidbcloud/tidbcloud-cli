@@ -22,10 +22,13 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
+	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
+	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -45,14 +48,141 @@ const (
 	trimLastSeparatorIdx
 )
 
+type TargetType string
+
+const (
+	TargetTypeLOCAL   TargetType = "LOCAL"
+	TargetTypeUnknown TargetType = "UNKNOWN"
+)
+
+type StartOpts struct {
+	interactive bool
+}
+
+func (o StartOpts) SupportedDataFormats() []string {
+	return []string{
+		string(importModel.V1beta1DataFormatCSV),
+	}
+}
+
+func (c StartOpts) NonInteractiveFlags() []string {
+	return []string{
+		flag.ClusterID,
+		flag.DataFormat,
+	}
+}
+
 func StartCmd(h *internal.Helper) *cobra.Command {
+	var partSize int64
+	var concurrency int
+	opts := StartOpts{
+		interactive: true,
+	}
 	startCmd := &cobra.Command{
-		Use:   "start",
-		Short: "Start an import task",
+		Use:         "start",
+		Short:       "start a serverless import task",
+		Aliases:     []string{"create"},
+		Annotations: make(map[string]string),
+		Example: fmt.Sprintf(`  Start an import task in interactive mode:
+  $ %[1]s serverless import start
+
+  Start an local import task in non-interactive mode:
+  $ %[1]s serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --data-format <data-format> --local.target-database <target-database> --local.target-table <target-table>
+
+  Start an local import task with custom upload parameters:
+  $ %[1]s serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --data-format <data-format> --local.target-database <target-database> --local.target-table <target-table> --local.part-size 100 --local.concurrency 10
+	
+  Start an local import task with custom CSV format:
+  $ %[1]s serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --data-format CSV --local.target-database <target-database> --local.target-table <target-table> --csv.separator \" --csv.delimiter \' --csv.backslash-escape=false --csv.trim-last-separator=true
+`,
+			config.CliName),
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			flags := opts.NonInteractiveFlags()
+			for _, fn := range flags {
+				f := cmd.Flags().Lookup(fn)
+				if f != nil && f.Changed {
+					opts.interactive = false
+				}
+			}
+
+			// mark required flags in non-interactive mode
+			if !opts.interactive {
+				for _, fn := range flags {
+					err := cmd.MarkFlagRequired(fn)
+					if err != nil {
+						return errors.Trace(err)
+					}
+				}
+			}
+
+			return nil
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			var targetType TargetType
+			if opts.interactive {
+				cmd.Annotations[telemetry.InteractiveMode] = "true"
+				if !h.IOStreams.CanPrompt {
+					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
+				}
+				var err error
+				targetType, err = getSelectedTargetType()
+				if err != nil {
+					return err
+				}
+			} else {
+				targetType = TargetType(cmd.Flag(flag.TargetType).Value.String())
+			}
+
+			if targetType == TargetTypeLOCAL {
+				localOpts := LocalOpts{
+					partSize:    partSize,
+					concurrency: concurrency,
+					h:           h,
+					interactive: opts.interactive,
+				}
+				return localOpts.Run(cmd)
+			} else {
+				return errors.New("unsupported import target")
+			}
+		},
 	}
 
-	startCmd.AddCommand(LocalCmd(h))
+	startCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
+	startCmd.Flags().String(flag.TargetType, "LOCAL", fmt.Sprintf("Target type, one of %q", []string{string(TargetTypeLOCAL)}))
+	startCmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %q", opts.SupportedDataFormats()))
+
+	startCmd.Flags().String(flag.LocalFilePath, "", "The local file path to import")
+	startCmd.Flags().String(flag.LocalTargetDatabase, "", "Target database to which import data")
+	startCmd.Flags().String(flag.LocalTargetTable, "", "Target table to which import data")
+	startCmd.Flags().Int64Var(&partSize, flag.LocalPartSize, 5, "The part size for uploading file(MiB)")
+	startCmd.Flags().IntVar(&concurrency, flag.LocalConcurrency, 5, "The concurrency for uploading file")
+
+	startCmd.Flags().String(flag.CSVDelimiter, "\"", "The delimiter used for quoting of CSV file")
+	startCmd.Flags().String(flag.CSVSeparator, ",", "The field separator of CSV file")
+	startCmd.Flags().Bool(flag.CSVTrimLastSeparator, false, "In CSV file whether to treat Separator as the line terminator and trim all trailing separators")
+	startCmd.Flags().Bool(flag.CSVBackslashEscape, true, "In CSV file whether to parse backslash inside fields as escape characters")
+
 	return startCmd
+}
+
+func getSelectedTargetType() (TargetType, error) {
+	targetTypes := make([]interface{}, 0, 1)
+	targetTypes = append(targetTypes, TargetTypeLOCAL)
+	model, err := ui.InitialSelectModel(targetTypes, "Choose import target")
+	if err != nil {
+		return TargetTypeUnknown, errors.Trace(err)
+	}
+
+	p := tea.NewProgram(model)
+	targetTypeModel, err := p.Run()
+	if err != nil {
+		return TargetTypeUnknown, errors.Trace(err)
+	}
+	if m, _ := targetTypeModel.(ui.SelectModel); m.Interrupted {
+		return TargetTypeUnknown, util.InterruptError
+	}
+	fileType := targetTypeModel.(ui.SelectModel).GetSelectedItem().(TargetType)
+	return fileType, nil
 }
 
 func waitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.ImportServiceCreateImportParams) error {
