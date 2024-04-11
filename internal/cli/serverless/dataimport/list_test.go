@@ -36,49 +36,38 @@ import (
 const listResultStr = `{
   "imports": [
     {
-      "allCompletedTables": [
-        {
-          "result": "SUCCESS",
-          "tableName": "test.ttt"
-        }
-      ],
       "clusterId": "12345",
-      "completedPercent": 100,
-      "completedTables": 1,
+      "completePercent": 100,
+      "completeTime": "2024-04-01T06:49:50.000Z",
       "createTime": "2024-04-01T06:39:50.000Z",
+      "createdBy": "test",
       "creationDetails": {
-        "clusterId": "12345",
-        "dataFormat": "CSV",
         "importOptions": {
           "csvFormat": {
-            "backslashEscape": true,
-            "delimiter": "\"",
+            "backslashEscape": false,
+            "delimiter": ",",
             "header": true,
+            "notNull": false,
             "null": "\\N",
-            "separator": ","
-          }
+            "separator": "\"",
+            "trimLastSeparator": true
+          },
+          "fileType": "CSV"
         },
-        "target": {
+        "source": {
           "local": {
             "fileName": "a.csv",
-            "targetTable": {
-              "schema": "test",
-              "table": "yxxxx"
-            }
+            "targetDatabase": "test",
+            "targetTable": "test"
           },
           "type": "LOCAL"
-        },
-        "type": "LOCAL"
+        }
       },
-      "currentTables": [],
-      "dataFormat": "CSV",
-      "elapsedTimeSeconds": 14,
-      "id": "imp-qwert",
-      "postImportCompletedPercent": 100,
-      "processedSourceDataSize": "37",
+      "id": "%s",
+      "message": "import success",
+      "name": "import-2024-04-01T06:39:50.000Z",
       "state": "COMPLETED",
-      "totalSize": "37",
-      "totalTablesCount": 1
+      "totalSize": "37"
     }
   ],
   "total": 1
@@ -88,94 +77,72 @@ const listResultStr = `{
 const listResultMultiPageStr = `{
   "imports": [
     {
-      "allCompletedTables": [
-        {
-          "result": "SUCCESS",
-          "tableName": "test.ttt"
-        }
-      ],
       "clusterId": "12345",
-      "completedPercent": 100,
-      "completedTables": 1,
+      "completePercent": 100,
+      "completeTime": "2024-04-01T06:49:50.000Z",
       "createTime": "2024-04-01T06:39:50.000Z",
+      "createdBy": "test",
       "creationDetails": {
-        "clusterId": "12345",
-        "dataFormat": "CSV",
         "importOptions": {
           "csvFormat": {
-            "backslashEscape": true,
-            "delimiter": "\"",
+            "backslashEscape": false,
+            "delimiter": ",",
             "header": true,
+            "notNull": false,
             "null": "\\N",
-            "separator": ","
-          }
+            "separator": "\"",
+            "trimLastSeparator": true
+          },
+          "fileType": "CSV"
         },
-        "target": {
+        "source": {
           "local": {
             "fileName": "a.csv",
-            "targetTable": {
-              "schema": "test",
-              "table": "yxxxx"
-            }
+            "targetDatabase": "test",
+            "targetTable": "test"
           },
           "type": "LOCAL"
-        },
-        "type": "LOCAL"
+        }
       },
-      "currentTables": [],
-      "dataFormat": "CSV",
-      "elapsedTimeSeconds": 14,
-      "id": "imp-qwert",
-      "postImportCompletedPercent": 100,
-      "processedSourceDataSize": "37",
+      "id": "%s",
+      "message": "import success",
+      "name": "import-2024-04-01T06:39:50.000Z",
       "state": "COMPLETED",
-      "totalSize": "37",
-      "totalTablesCount": 1
+      "totalSize": "37"
     },
     {
-      "allCompletedTables": [
-        {
-          "result": "SUCCESS",
-          "tableName": "test.ttt"
-        }
-      ],
       "clusterId": "12345",
-      "completedPercent": 100,
-      "completedTables": 1,
+      "completePercent": 100,
+      "completeTime": "2024-04-01T06:49:50.000Z",
       "createTime": "2024-04-01T06:39:50.000Z",
+      "createdBy": "test",
       "creationDetails": {
-        "clusterId": "12345",
-        "dataFormat": "CSV",
         "importOptions": {
           "csvFormat": {
-            "backslashEscape": true,
-            "delimiter": "\"",
+            "backslashEscape": false,
+            "delimiter": ",",
             "header": true,
+            "notNull": false,
             "null": "\\N",
-            "separator": ","
-          }
+            "separator": "\"",
+            "trimLastSeparator": true
+          },
+          "fileType": "CSV"
         },
-        "target": {
+        "source": {
           "local": {
             "fileName": "a.csv",
-            "targetTable": {
-              "schema": "test",
-              "table": "yxxxx"
-            }
+            "targetDatabase": "test",
+            "targetTable": "test"
           },
           "type": "LOCAL"
-        },
-        "type": "LOCAL"
+        }
       },
-      "currentTables": [],
-      "dataFormat": "CSV",
-      "elapsedTimeSeconds": 14,
-      "id": "imp-qwert",
-      "postImportCompletedPercent": 100,
-      "processedSourceDataSize": "37",
+      "id": "%s",
+      "message": "import success",
+      "name": "import-2024-04-01T06:39:50.000Z",
       "state": "COMPLETED",
-      "totalSize": "37",
-      "totalTablesCount": 1
+      "totalSize": "37"
     }
   ],
   "total": 2

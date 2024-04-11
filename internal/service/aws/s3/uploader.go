@@ -597,8 +597,6 @@ func (u *multiUploader) complete() {
 		u.setErr(err)
 		u.fail()
 	}
-
-	return
 }
 
 type ReaderAtSeeker interface {

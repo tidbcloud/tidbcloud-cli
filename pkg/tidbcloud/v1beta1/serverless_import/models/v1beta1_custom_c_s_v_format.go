@@ -18,16 +18,16 @@ import (
 type V1beta1CustomCSVFormat struct {
 
 	// backslash escape
-	BackslashEscape bool `json:"backslashEscape,omitempty"`
+	BackslashEscape *bool `json:"backslashEscape,omitempty"`
 
 	// delimiter
 	Delimiter string `json:"delimiter,omitempty"`
 
 	// header
-	Header bool `json:"header,omitempty"`
+	Header *bool `json:"header,omitempty"`
 
 	// not null
-	NotNull bool `json:"notNull,omitempty"`
+	NotNull *bool `json:"notNull,omitempty"`
 
 	// null
 	Null string `json:"null,omitempty"`
@@ -36,7 +36,7 @@ type V1beta1CustomCSVFormat struct {
 	Separator string `json:"separator,omitempty"`
 
 	// trim last separator
-	TrimLastSeparator bool `json:"trimLastSeparator,omitempty"`
+	TrimLastSeparator *bool `json:"trimLastSeparator,omitempty"`
 }
 
 // Validate validates this v1beta1 custom c s v format

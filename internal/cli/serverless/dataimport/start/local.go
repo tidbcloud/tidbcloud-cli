@@ -54,15 +54,15 @@ type LocalOpts struct {
 	interactive bool
 }
 
-func (o LocalOpts) SupportedDataFormats() []string {
+func (o LocalOpts) SupportedFileTypes() []string {
 	return []string{
-		string(importModel.V1beta1DataFormatCSV),
+		string(importModel.V1beta1ImportOptionsFileTypeCSV),
 	}
 }
 
 func (o LocalOpts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
-	var clusterID, dataFormat, targetDatabase, targetTable, separator, delimiter, filePath string
+	var clusterID, fileType, targetDatabase, targetTable, separator, delimiter, filePath string
 	var backslashEscape, trimLastSeparator bool
 	d, err := o.h.Client()
 	if err != nil {
@@ -92,11 +92,11 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		}
 		clusterID = cluster.ID
 
-		var dataFormats []interface{}
-		for _, f := range o.SupportedDataFormats() {
-			dataFormats = append(dataFormats, f)
+		var fileTypes []interface{}
+		for _, f := range o.SupportedFileTypes() {
+			fileTypes = append(fileTypes, f)
 		}
-		model, err := ui.InitialSelectModel(dataFormats, "Choose the data format:")
+		model, err := ui.InitialSelectModel(fileTypes, "Choose the source file type:")
 		if err != nil {
 			return err
 		}
@@ -108,7 +108,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		if m, _ := formatModel.(ui.SelectModel); m.Interrupted {
 			return util.InterruptError
 		}
-		dataFormat = formatModel.(ui.SelectModel).Choices[formatModel.(ui.SelectModel).Selected].(string)
+		fileType = formatModel.(ui.SelectModel).Choices[formatModel.(ui.SelectModel).Selected].(string)
 
 		// variables for input
 		p = tea.NewProgram(initialLocalInputModel())
@@ -140,9 +140,9 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 	} else {
 		// non-interactive mode
 		clusterID = cmd.Flag(flag.ClusterID).Value.String()
-		dataFormat = cmd.Flag(flag.DataFormat).Value.String()
-		if !util.ElemInSlice(o.SupportedDataFormats(), dataFormat) {
-			return fmt.Errorf("data format %s is not supported, please use one of %q", dataFormat, o.SupportedDataFormats())
+		fileType = cmd.Flag(flag.FileType).Value.String()
+		if !util.ElemInSlice(o.SupportedFileTypes(), fileType) {
+			return fmt.Errorf("file type \"%s\" is not supported, please use one of %q", fileType, o.SupportedFileTypes())
 		}
 		targetDatabase = cmd.Flag(flag.LocalTargetDatabase).Value.String()
 		targetTable = cmd.Flag(flag.LocalTargetTable).Value.String()
@@ -209,9 +209,8 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 
 	body := importOp.ImportServiceCreateImportBody{}
 	err = body.UnmarshalBinary([]byte(fmt.Sprintf(`{
-			"type": "LOCAL",
-			"dataFormat": "%s",
 			"importOptions": {
+				"fileType": "%s",
 				"csvFormat": {
                 	"separator": ",",
 					"delimiter": "\"",
@@ -222,26 +221,23 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 					"notNull": false
 				}
 			},
-			"target": {
+			"source": {
 				"local": {
 					"uploadId": "%s",
-					"targetTable": {
-						"schema": "%s",
-						"table": "%s"
-					},
-					"fileName": "%s"
+					"targetDatabase": "%s",
+					"targetTable": "%s"
 				},
 				"type": "LOCAL"
 			}
-			}`, dataFormat, uploadID, targetDatabase, targetTable, stat.Name())))
+			}`, fileType, uploadID, targetDatabase, targetTable)))
 	if err != nil {
 		return errors.Trace(err)
 	}
 
 	body.ImportOptions.CsvFormat.Separator = separator
 	body.ImportOptions.CsvFormat.Delimiter = delimiter
-	body.ImportOptions.CsvFormat.BackslashEscape = backslashEscape
-	body.ImportOptions.CsvFormat.TrimLastSeparator = trimLastSeparator
+	body.ImportOptions.CsvFormat.BackslashEscape = aws.Bool(backslashEscape)
+	body.ImportOptions.CsvFormat.TrimLastSeparator = aws.Bool(trimLastSeparator)
 
 	params := importOp.NewImportServiceCreateImportParams().WithClusterID(clusterID).
 		WithBody(body).WithContext(ctx)

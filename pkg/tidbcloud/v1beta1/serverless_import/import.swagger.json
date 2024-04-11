@@ -96,24 +96,18 @@
             "schema": {
               "type": "object",
               "properties": {
-                "type": {
-                  "$ref": "#/definitions/CreateImportReqImportType"
-                },
-                "dataFormat": {
-                  "$ref": "#/definitions/v1beta1DataFormat"
-                },
                 "importOptions": {
                   "$ref": "#/definitions/v1beta1ImportOptions",
-                  "description": "Optional. The options of the import."
+                  "description": "The options of the import."
                 },
-                "target": {
-                  "$ref": "#/definitions/v1beta1ImportTarget",
-                  "description": "Optional. The target of the import."
+                "source": {
+                  "$ref": "#/definitions/v1beta1ImportSource",
+                  "description": "The source of the import."
                 }
               },
               "required": [
-                "type",
-                "dataFormat"
+                "importOptions",
+                "source"
               ]
             }
           }
@@ -352,46 +346,6 @@
     }
   },
   "definitions": {
-    "CreateImportReqImportType": {
-      "type": "string",
-      "enum": [
-        "S3",
-        "GCS",
-        "LOCAL"
-      ]
-    },
-    "ImportTableCompletionInfoResult": {
-      "type": "string",
-      "enum": [
-        "SUCCESS",
-        "WARNING",
-        "ERROR"
-      ]
-    },
-    "ImportTargetImportTargetType": {
-      "type": "string",
-      "enum": [
-        "LOCAL"
-      ],
-      "description": " - TARGET_UNSPECIFIED: The target of the import is unknown.\n - LOCAL: Local target."
-    },
-    "ImportTargetLocalTarget": {
-      "type": "object",
-      "properties": {
-        "uploadId": {
-          "type": "string",
-          "description": "Optional. The upload id of import source file."
-        },
-        "targetTable": {
-          "$ref": "#/definitions/v1beta1Table",
-          "description": "Optional. The table to import to."
-        },
-        "fileName": {
-          "type": "string",
-          "description": "Optional. The file name to import."
-        }
-      }
-    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -434,49 +388,17 @@
         }
       }
     },
-    "v1beta1CreateImportReq": {
+    "v1beta1CreationDetails": {
       "type": "object",
       "properties": {
-        "clusterId": {
-          "type": "string",
-          "format": "uint64"
-        },
-        "type": {
-          "$ref": "#/definitions/CreateImportReqImportType"
-        },
-        "dataFormat": {
-          "$ref": "#/definitions/v1beta1DataFormat"
-        },
         "importOptions": {
           "$ref": "#/definitions/v1beta1ImportOptions",
-          "description": "Optional. The options of the import."
-        },
-        "target": {
-          "$ref": "#/definitions/v1beta1ImportTarget",
-          "description": "Optional. The target of the import."
-        }
-      },
-      "required": [
-        "clusterId",
-        "type",
-        "dataFormat"
-      ]
-    },
-    "v1beta1CurrentTable": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
+          "description": "Optional. The options of the import.",
           "readOnly": true
         },
-        "size": {
-          "type": "string",
-          "format": "uint64",
-          "readOnly": true
-        },
-        "completedPercent": {
-          "type": "integer",
-          "format": "int64",
+        "source": {
+          "$ref": "#/definitions/v1beta1ImportSourceView",
+          "description": "Optional. The source of the import.",
           "readOnly": true
         }
       }
@@ -491,35 +413,34 @@
           "type": "string"
         },
         "header": {
-          "type": "boolean"
+          "type": "boolean",
+          "x-nullable": true
         },
         "notNull": {
-          "type": "boolean"
+          "type": "boolean",
+          "x-nullable": true
         },
         "null": {
           "type": "string"
         },
         "backslashEscape": {
-          "type": "boolean"
+          "type": "boolean",
+          "x-nullable": true
         },
         "trimLastSeparator": {
-          "type": "boolean"
+          "type": "boolean",
+          "x-nullable": true
         }
       }
-    },
-    "v1beta1DataFormat": {
-      "type": "string",
-      "enum": [
-        "SQL_FILE",
-        "AURORA_SNAPSHOT",
-        "CSV",
-        "PARQUET"
-      ]
     },
     "v1beta1Import": {
       "type": "object",
       "properties": {
         "id": {
+          "type": "string",
+          "readOnly": true
+        },
+        "name": {
           "type": "string",
           "readOnly": true
         },
@@ -534,85 +455,37 @@
           "description": "The total size of the data imported.",
           "readOnly": true
         },
-        "totalFiles": {
-          "type": "integer",
-          "format": "int64",
-          "description": "The total number of files of the data imported.",
-          "readOnly": true
-        },
-        "completedTables": {
-          "type": "integer",
-          "format": "int64",
-          "readOnly": true
-        },
-        "pendingTables": {
-          "type": "integer",
-          "format": "int64",
-          "readOnly": true
-        },
         "createTime": {
           "type": "string",
           "format": "date-time",
+          "readOnly": true
+        },
+        "completeTime": {
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true,
           "readOnly": true
         },
         "state": {
           "$ref": "#/definitions/v1beta1ImportState",
           "readOnly": true
         },
-        "completedPercent": {
+        "completePercent": {
           "type": "integer",
           "format": "int64",
           "description": "The process in percent of the import job, but doesn't include the post-processing progress.",
-          "readOnly": true
-        },
-        "currentTables": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1beta1CurrentTable"
-          },
-          "description": "The current tables are being imported.",
-          "readOnly": true
-        },
-        "dataFormat": {
-          "$ref": "#/definitions/v1beta1DataFormat",
           "readOnly": true
         },
         "message": {
           "type": "string",
           "readOnly": true
         },
-        "elapsedTimeSeconds": {
-          "type": "integer",
-          "format": "int64",
-          "readOnly": true
-        },
-        "processedSourceDataSize": {
+        "createdBy": {
           "type": "string",
-          "format": "uint64",
-          "readOnly": true
-        },
-        "totalTablesCount": {
-          "type": "integer",
-          "format": "int64",
-          "readOnly": true
-        },
-        "postImportCompletedPercent": {
-          "type": "integer",
-          "format": "int64",
-          "readOnly": true
-        },
-        "allCompletedTables": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1beta1ImportTableCompletionInfo"
-          },
-          "description": "all completed means whole process (import + post-process) has finised.  It may contain warnings or errors.",
           "readOnly": true
         },
         "creationDetails": {
-          "$ref": "#/definitions/v1beta1CreateImportReq",
+          "$ref": "#/definitions/v1beta1CreationDetails",
           "readOnly": true
         }
       }
@@ -620,8 +493,90 @@
     "v1beta1ImportOptions": {
       "type": "object",
       "properties": {
+        "fileType": {
+          "$ref": "#/definitions/v1beta1ImportOptionsFileType",
+          "description": "Optional. The exported file type."
+        },
         "csvFormat": {
           "$ref": "#/definitions/v1beta1CustomCSVFormat"
+        }
+      }
+    },
+    "v1beta1ImportOptionsFileType": {
+      "type": "string",
+      "enum": [
+        "CSV"
+      ],
+      "description": " - TYPE_UNSPECIFIED: The type of the file is unknown.\n - CSV: CSV type."
+    },
+    "v1beta1ImportSource": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/v1beta1ImportSourceType",
+          "description": "Optional. The import source type."
+        },
+        "local": {
+          "$ref": "#/definitions/v1beta1ImportSourceLocalSource"
+        }
+      }
+    },
+    "v1beta1ImportSourceLocalSource": {
+      "type": "object",
+      "properties": {
+        "uploadId": {
+          "type": "string",
+          "description": "Optional. The upload id of import source file."
+        },
+        "targetDatabase": {
+          "type": "string"
+        },
+        "targetTable": {
+          "type": "string"
+        }
+      }
+    },
+    "v1beta1ImportSourceType": {
+      "type": "string",
+      "enum": [
+        "LOCAL"
+      ],
+      "description": " - TARGET_UNSPECIFIED: The target of the import is unknown.\n - LOCAL: Local target."
+    },
+    "v1beta1ImportSourceView": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/v1beta1ImportSourceType",
+          "description": "Optional. The import source type.",
+          "readOnly": true
+        },
+        "local": {
+          "$ref": "#/definitions/v1beta1ImportSourceViewLocalSource",
+          "readOnly": true
+        }
+      }
+    },
+    "v1beta1ImportSourceViewLocalSource": {
+      "type": "object",
+      "properties": {
+        "uploadId": {
+          "type": "string",
+          "description": "Optional. The upload id of import source file.",
+          "readOnly": true
+        },
+        "targetDatabase": {
+          "type": "string",
+          "readOnly": true
+        },
+        "targetTable": {
+          "type": "string",
+          "readOnly": true
+        },
+        "fileName": {
+          "type": "string",
+          "description": "Optional. The file name of import source file.",
+          "readOnly": true
         }
       }
     },
@@ -635,37 +590,6 @@
         "CANCELING",
         "CANCELED"
       ]
-    },
-    "v1beta1ImportTableCompletionInfo": {
-      "type": "object",
-      "properties": {
-        "tableName": {
-          "type": "string",
-          "readOnly": true
-        },
-        "result": {
-          "$ref": "#/definitions/ImportTableCompletionInfoResult",
-          "readOnly": true
-        },
-        "message": {
-          "type": "string",
-          "readOnly": true
-        }
-      }
-    },
-    "v1beta1ImportTarget": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "$ref": "#/definitions/ImportTargetImportTargetType",
-          "description": "Optional. The imported file type."
-        },
-        "local": {
-          "$ref": "#/definitions/ImportTargetLocalTarget",
-          "x-nullable": true,
-          "description": "Optional. The s3 information."
-        }
-      }
     },
     "v1beta1ListImportsResp": {
       "type": "object",
@@ -700,17 +624,6 @@
           "type": "string",
           "title": "The ID of the upload",
           "readOnly": true
-        }
-      }
-    },
-    "v1beta1Table": {
-      "type": "object",
-      "properties": {
-        "schema": {
-          "type": "string"
-        },
-        "table": {
-          "type": "string"
         }
       }
     }

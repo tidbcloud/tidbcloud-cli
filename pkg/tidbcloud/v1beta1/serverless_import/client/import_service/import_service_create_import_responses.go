@@ -191,38 +191,24 @@ swagger:model ImportServiceCreateImportBody
 */
 type ImportServiceCreateImportBody struct {
 
-	// data format
+	// The options of the import.
 	// Required: true
-	DataFormat *models.V1beta1DataFormat `json:"dataFormat"`
+	ImportOptions *models.V1beta1ImportOptions `json:"importOptions"`
 
-	// Optional. The options of the import.
-	ImportOptions *models.V1beta1ImportOptions `json:"importOptions,omitempty"`
-
-	// Optional. The target of the import.
-	Target *models.V1beta1ImportTarget `json:"target,omitempty"`
-
-	// type
+	// The source of the import.
 	// Required: true
-	Type *models.CreateImportReqImportType `json:"type"`
+	Source *models.V1beta1ImportSource `json:"source"`
 }
 
 // Validate validates this import service create import body
 func (o *ImportServiceCreateImportBody) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := o.validateDataFormat(formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := o.validateImportOptions(formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := o.validateTarget(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := o.validateType(formats); err != nil {
+	if err := o.validateSource(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -232,33 +218,10 @@ func (o *ImportServiceCreateImportBody) Validate(formats strfmt.Registry) error 
 	return nil
 }
 
-func (o *ImportServiceCreateImportBody) validateDataFormat(formats strfmt.Registry) error {
-
-	if err := validate.Required("body"+"."+"dataFormat", "body", o.DataFormat); err != nil {
-		return err
-	}
-
-	if err := validate.Required("body"+"."+"dataFormat", "body", o.DataFormat); err != nil {
-		return err
-	}
-
-	if o.DataFormat != nil {
-		if err := o.DataFormat.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "dataFormat")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "dataFormat")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (o *ImportServiceCreateImportBody) validateImportOptions(formats strfmt.Registry) error {
-	if swag.IsZero(o.ImportOptions) { // not required
-		return nil
+
+	if err := validate.Required("body"+"."+"importOptions", "body", o.ImportOptions); err != nil {
+		return err
 	}
 
 	if o.ImportOptions != nil {
@@ -275,41 +238,18 @@ func (o *ImportServiceCreateImportBody) validateImportOptions(formats strfmt.Reg
 	return nil
 }
 
-func (o *ImportServiceCreateImportBody) validateTarget(formats strfmt.Registry) error {
-	if swag.IsZero(o.Target) { // not required
-		return nil
-	}
+func (o *ImportServiceCreateImportBody) validateSource(formats strfmt.Registry) error {
 
-	if o.Target != nil {
-		if err := o.Target.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "target")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "target")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (o *ImportServiceCreateImportBody) validateType(formats strfmt.Registry) error {
-
-	if err := validate.Required("body"+"."+"type", "body", o.Type); err != nil {
+	if err := validate.Required("body"+"."+"source", "body", o.Source); err != nil {
 		return err
 	}
 
-	if err := validate.Required("body"+"."+"type", "body", o.Type); err != nil {
-		return err
-	}
-
-	if o.Type != nil {
-		if err := o.Type.Validate(formats); err != nil {
+	if o.Source != nil {
+		if err := o.Source.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "type")
+				return ve.ValidateName("body" + "." + "source")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "type")
+				return ce.ValidateName("body" + "." + "source")
 			}
 			return err
 		}
@@ -322,19 +262,11 @@ func (o *ImportServiceCreateImportBody) validateType(formats strfmt.Registry) er
 func (o *ImportServiceCreateImportBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := o.contextValidateDataFormat(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := o.contextValidateImportOptions(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := o.contextValidateTarget(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := o.contextValidateType(ctx, formats); err != nil {
+	if err := o.contextValidateSource(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -344,30 +276,9 @@ func (o *ImportServiceCreateImportBody) ContextValidate(ctx context.Context, for
 	return nil
 }
 
-func (o *ImportServiceCreateImportBody) contextValidateDataFormat(ctx context.Context, formats strfmt.Registry) error {
-
-	if o.DataFormat != nil {
-
-		if err := o.DataFormat.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "dataFormat")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "dataFormat")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (o *ImportServiceCreateImportBody) contextValidateImportOptions(ctx context.Context, formats strfmt.Registry) error {
 
 	if o.ImportOptions != nil {
-
-		if swag.IsZero(o.ImportOptions) { // not required
-			return nil
-		}
 
 		if err := o.ImportOptions.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
@@ -382,36 +293,15 @@ func (o *ImportServiceCreateImportBody) contextValidateImportOptions(ctx context
 	return nil
 }
 
-func (o *ImportServiceCreateImportBody) contextValidateTarget(ctx context.Context, formats strfmt.Registry) error {
+func (o *ImportServiceCreateImportBody) contextValidateSource(ctx context.Context, formats strfmt.Registry) error {
 
-	if o.Target != nil {
+	if o.Source != nil {
 
-		if swag.IsZero(o.Target) { // not required
-			return nil
-		}
-
-		if err := o.Target.ContextValidate(ctx, formats); err != nil {
+		if err := o.Source.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "target")
+				return ve.ValidateName("body" + "." + "source")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "target")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (o *ImportServiceCreateImportBody) contextValidateType(ctx context.Context, formats strfmt.Registry) error {
-
-	if o.Type != nil {
-
-		if err := o.Type.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "type")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "type")
+				return ce.ValidateName("body" + "." + "source")
 			}
 			return err
 		}

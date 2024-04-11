@@ -13,20 +13,20 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// V1beta1ImportTarget v1beta1 import target
+// V1beta1ImportSource v1beta1 import source
 //
-// swagger:model v1beta1ImportTarget
-type V1beta1ImportTarget struct {
+// swagger:model v1beta1ImportSource
+type V1beta1ImportSource struct {
 
-	// Optional. The s3 information.
-	Local *ImportTargetLocalTarget `json:"local,omitempty"`
+	// local
+	Local *V1beta1ImportSourceLocalSource `json:"local,omitempty"`
 
-	// Optional. The imported file type.
-	Type ImportTargetImportTargetType `json:"type,omitempty"`
+	// Optional. The import source type.
+	Type V1beta1ImportSourceType `json:"type,omitempty"`
 }
 
-// Validate validates this v1beta1 import target
-func (m *V1beta1ImportTarget) Validate(formats strfmt.Registry) error {
+// Validate validates this v1beta1 import source
+func (m *V1beta1ImportSource) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateLocal(formats); err != nil {
@@ -43,7 +43,7 @@ func (m *V1beta1ImportTarget) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1ImportTarget) validateLocal(formats strfmt.Registry) error {
+func (m *V1beta1ImportSource) validateLocal(formats strfmt.Registry) error {
 	if swag.IsZero(m.Local) { // not required
 		return nil
 	}
@@ -62,7 +62,7 @@ func (m *V1beta1ImportTarget) validateLocal(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1ImportTarget) validateType(formats strfmt.Registry) error {
+func (m *V1beta1ImportSource) validateType(formats strfmt.Registry) error {
 	if swag.IsZero(m.Type) { // not required
 		return nil
 	}
@@ -79,8 +79,8 @@ func (m *V1beta1ImportTarget) validateType(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this v1beta1 import target based on the context it is used
-func (m *V1beta1ImportTarget) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this v1beta1 import source based on the context it is used
+func (m *V1beta1ImportSource) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateLocal(ctx, formats); err != nil {
@@ -97,7 +97,7 @@ func (m *V1beta1ImportTarget) ContextValidate(ctx context.Context, formats strfm
 	return nil
 }
 
-func (m *V1beta1ImportTarget) contextValidateLocal(ctx context.Context, formats strfmt.Registry) error {
+func (m *V1beta1ImportSource) contextValidateLocal(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Local != nil {
 
@@ -118,7 +118,7 @@ func (m *V1beta1ImportTarget) contextValidateLocal(ctx context.Context, formats 
 	return nil
 }
 
-func (m *V1beta1ImportTarget) contextValidateType(ctx context.Context, formats strfmt.Registry) error {
+func (m *V1beta1ImportSource) contextValidateType(ctx context.Context, formats strfmt.Registry) error {
 
 	if swag.IsZero(m.Type) { // not required
 		return nil
@@ -137,7 +137,7 @@ func (m *V1beta1ImportTarget) contextValidateType(ctx context.Context, formats s
 }
 
 // MarshalBinary interface implementation
-func (m *V1beta1ImportTarget) MarshalBinary() ([]byte, error) {
+func (m *V1beta1ImportSource) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -145,8 +145,8 @@ func (m *V1beta1ImportTarget) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1beta1ImportTarget) UnmarshalBinary(b []byte) error {
-	var res V1beta1ImportTarget
+func (m *V1beta1ImportSource) UnmarshalBinary(b []byte) error {
+	var res V1beta1ImportSource
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

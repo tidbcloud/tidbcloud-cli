@@ -20,6 +20,9 @@ type V1beta1ImportOptions struct {
 
 	// csv format
 	CsvFormat *V1beta1CustomCSVFormat `json:"csvFormat,omitempty"`
+
+	// Optional. The exported file type.
+	FileType V1beta1ImportOptionsFileType `json:"fileType,omitempty"`
 }
 
 // Validate validates this v1beta1 import options
@@ -27,6 +30,10 @@ func (m *V1beta1ImportOptions) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateCsvFormat(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateFileType(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -55,11 +62,32 @@ func (m *V1beta1ImportOptions) validateCsvFormat(formats strfmt.Registry) error 
 	return nil
 }
 
+func (m *V1beta1ImportOptions) validateFileType(formats strfmt.Registry) error {
+	if swag.IsZero(m.FileType) { // not required
+		return nil
+	}
+
+	if err := m.FileType.Validate(formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("fileType")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("fileType")
+		}
+		return err
+	}
+
+	return nil
+}
+
 // ContextValidate validate this v1beta1 import options based on the context it is used
 func (m *V1beta1ImportOptions) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateCsvFormat(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateFileType(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -85,6 +113,24 @@ func (m *V1beta1ImportOptions) contextValidateCsvFormat(ctx context.Context, for
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (m *V1beta1ImportOptions) contextValidateFileType(ctx context.Context, formats strfmt.Registry) error {
+
+	if swag.IsZero(m.FileType) { // not required
+		return nil
+	}
+
+	if err := m.FileType.ContextValidate(ctx, formats); err != nil {
+		if ve, ok := err.(*errors.Validation); ok {
+			return ve.ValidateName("fileType")
+		} else if ce, ok := err.(*errors.CompositeError); ok {
+			return ce.ValidateName("fileType")
+		}
+		return err
 	}
 
 	return nil

@@ -28,7 +28,6 @@ const (
 	BranchID              string = "branch-id"
 	BranchIDShort         string = "b"
 	Database              string = "database"
-	DataFormat            string = "data-format"
 	Debug                 string = "debug"
 	DebugShort            string = "D"
 	LocalFilePath         string = "local.file-path"
@@ -71,6 +70,7 @@ const (
 	Encryption            string = "encryption"
 	AutoApprove           string = "auto-approve"
 	Compression           string = "compression"
+	SourceType            string = "source-type"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format"

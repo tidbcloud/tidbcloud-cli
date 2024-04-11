@@ -137,27 +137,33 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			} else if format == output.HumanFormat {
 				columns := []output.Column{
 					"ID",
-					"Type",
+					"SourceType",
 					"State",
 					"CreateTime",
 					"Source",
-					"DataFormat",
+					"FileType",
 					"Size",
 				}
 
 				var rows []output.Row
 				for _, item := range importTasks {
-					var source string
-					if item.CreationDetails.Type != nil && *item.CreationDetails.Type == importModel.CreateImportReqImportTypeLOCAL {
-						source = item.CreationDetails.Target.Local.FileName
+					var source, st, ft string
+					if item.CreationDetails != nil && item.CreationDetails.Source != nil {
+						st = string(item.CreationDetails.Source.Type)
+						if item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeLOCAL {
+							source = item.CreationDetails.Source.Local.FileName
+						}
+					}
+					if item.CreationDetails != nil && item.CreationDetails.ImportOptions != nil {
+						ft = string(item.CreationDetails.ImportOptions.FileType)
 					}
 					rows = append(rows, output.Row{
 						item.ID,
-						string(*item.CreationDetails.Type),
+						st,
 						string(item.State),
 						item.CreateTime.String(),
 						source,
-						string(item.DataFormat),
+						ft,
 						convertToStoreSize(item.TotalSize),
 					})
 				}

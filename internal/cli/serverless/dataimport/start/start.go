@@ -48,27 +48,27 @@ const (
 	trimLastSeparatorIdx
 )
 
-type TargetType string
+type SourceType string
 
 const (
-	TargetTypeLOCAL   TargetType = "LOCAL"
-	TargetTypeUnknown TargetType = "UNKNOWN"
+	SourceTypeLOCAL   SourceType = "LOCAL"
+	SourceTypeUnknown SourceType = "UNKNOWN"
 )
 
 type StartOpts struct {
 	interactive bool
 }
 
-func (o StartOpts) SupportedDataFormats() []string {
+func (o StartOpts) SupportedFileTypes() []string {
 	return []string{
-		string(importModel.V1beta1DataFormatCSV),
+		string(importModel.V1beta1ImportOptionsFileTypeCSV),
 	}
 }
 
 func (c StartOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.DataFormat,
+		flag.FileType,
 	}
 }
 
@@ -79,20 +79,20 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	}
 	startCmd := &cobra.Command{
 		Use:         "start",
-		Short:       "start a serverless import task",
+		Short:       "Start a data import task",
 		Aliases:     []string{"create"},
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Start an import task in interactive mode:
   $ %[1]s serverless import start
 
   Start an local import task in non-interactive mode:
-  $ %[1]s serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --data-format <data-format> --local.target-database <target-database> --local.target-table <target-table>
+  $ %[1]s serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --file-type <file-type> --local.target-database <target-database> --local.target-table <target-table>
 
   Start an local import task with custom upload concurrency:
-  $ %[1]s serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --data-format <data-format> --local.target-database <target-database> --local.target-table <target-table> --local.concurrency 10
+  $ %[1]s serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --file-type <file-type> --local.target-database <target-database> --local.target-table <target-table> --local.concurrency 10
 	
   Start an local import task with custom CSV format:
-  $ %[1]s serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --data-format CSV --local.target-database <target-database> --local.target-table <target-table> --csv.separator \" --csv.delimiter \' --csv.backslash-escape=false --csv.trim-last-separator=true
+  $ %[1]s serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --file-type CSV --local.target-database <target-database> --local.target-table <target-table> --csv.separator \" --csv.delimiter \' --csv.backslash-escape=false --csv.trim-last-separator=true
 `,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -117,22 +117,22 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var targetType TargetType
+			var sourceType SourceType
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
 				var err error
-				targetType, err = getSelectedTargetType()
+				sourceType, err = getSelectedSourceType()
 				if err != nil {
 					return err
 				}
 			} else {
-				targetType = TargetType(cmd.Flag(flag.TargetType).Value.String())
+				sourceType = SourceType(cmd.Flag(flag.SourceType).Value.String())
 			}
 
-			if targetType == TargetTypeLOCAL {
+			if sourceType == SourceTypeLOCAL {
 				localOpts := LocalOpts{
 					concurrency: concurrency,
 					h:           h,
@@ -140,14 +140,14 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 				}
 				return localOpts.Run(cmd)
 			} else {
-				return errors.New("unsupported import target")
+				return errors.New("unsupported import source type")
 			}
 		},
 	}
 
 	startCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	startCmd.Flags().String(flag.TargetType, "LOCAL", fmt.Sprintf("Target type, one of %q", []string{string(TargetTypeLOCAL)}))
-	startCmd.Flags().String(flag.DataFormat, "", fmt.Sprintf("Data format, one of %q", opts.SupportedDataFormats()))
+	startCmd.Flags().String(flag.SourceType, "LOCAL", fmt.Sprintf("The import source type, one of %q", []string{string(SourceTypeLOCAL)}))
+	startCmd.Flags().String(flag.FileType, "", fmt.Sprintf("The import file type, one of %q", opts.SupportedFileTypes()))
 
 	startCmd.Flags().String(flag.LocalFilePath, "", "The local file path to import")
 	startCmd.Flags().String(flag.LocalTargetDatabase, "", "Target database to which import data")
@@ -162,23 +162,23 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	return startCmd
 }
 
-func getSelectedTargetType() (TargetType, error) {
-	targetTypes := make([]interface{}, 0, 1)
-	targetTypes = append(targetTypes, TargetTypeLOCAL)
-	model, err := ui.InitialSelectModel(targetTypes, "Choose import target")
+func getSelectedSourceType() (SourceType, error) {
+	SourceTypes := make([]interface{}, 0, 1)
+	SourceTypes = append(SourceTypes, SourceTypeLOCAL)
+	model, err := ui.InitialSelectModel(SourceTypes, "Choose import source type:")
 	if err != nil {
-		return TargetTypeUnknown, errors.Trace(err)
+		return SourceTypeUnknown, errors.Trace(err)
 	}
 
 	p := tea.NewProgram(model)
-	targetTypeModel, err := p.Run()
+	SourceTypeModel, err := p.Run()
 	if err != nil {
-		return TargetTypeUnknown, errors.Trace(err)
+		return SourceTypeUnknown, errors.Trace(err)
 	}
-	if m, _ := targetTypeModel.(ui.SelectModel); m.Interrupted {
-		return TargetTypeUnknown, util.InterruptError
+	if m, _ := SourceTypeModel.(ui.SelectModel); m.Interrupted {
+		return SourceTypeUnknown, util.InterruptError
 	}
-	fileType := targetTypeModel.(ui.SelectModel).GetSelectedItem().(TargetType)
+	fileType := SourceTypeModel.(ui.SelectModel).GetSelectedItem().(SourceType)
 	return fileType, nil
 }
 
@@ -266,7 +266,7 @@ func getCSVFormat() (separator string, delimiter string, backslashEscape bool, t
 	if needCustomCSV {
 		// variables for input
 		p := tea.NewProgram(initialCSVFormatInputModel())
-		inputModel, err := p.StartReturningModel()
+		inputModel, err := p.Run()
 		if err != nil {
 			errToReturn = errors.Trace(err)
 			return
@@ -313,7 +313,7 @@ func initialCSVFormatInputModel() ui.TextInputModel {
 	var t textinput.Model
 	for i := range m.Inputs {
 		t = textinput.New()
-		t.CursorStyle = config.FocusedStyle
+		t.Cursor.Style = config.FocusedStyle
 		t.CharLimit = 0
 		f := csvFormatField(i)
 

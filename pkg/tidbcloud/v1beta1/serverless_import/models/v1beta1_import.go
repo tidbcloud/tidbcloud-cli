@@ -7,7 +7,6 @@ package models
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -20,42 +19,31 @@ import (
 // swagger:model v1beta1Import
 type V1beta1Import struct {
 
-	// all completed means whole process (import + post-process) has finised.  It may contain warnings or errors.
-	// Read Only: true
-	AllCompletedTables []*V1beta1ImportTableCompletionInfo `json:"allCompletedTables"`
-
 	// cluster Id
 	// Read Only: true
 	ClusterID string `json:"clusterId,omitempty"`
 
 	// The process in percent of the import job, but doesn't include the post-processing progress.
 	// Read Only: true
-	CompletedPercent int64 `json:"completedPercent,omitempty"`
+	CompletePercent int64 `json:"completePercent,omitempty"`
 
-	// completed tables
+	// complete time
 	// Read Only: true
-	CompletedTables int64 `json:"completedTables,omitempty"`
+	// Format: date-time
+	CompleteTime *strfmt.DateTime `json:"completeTime,omitempty"`
 
 	// create time
 	// Read Only: true
 	// Format: date-time
 	CreateTime strfmt.DateTime `json:"createTime,omitempty"`
 
+	// created by
+	// Read Only: true
+	CreatedBy string `json:"createdBy,omitempty"`
+
 	// creation details
 	// Read Only: true
-	CreationDetails *V1beta1CreateImportReq `json:"creationDetails,omitempty"`
-
-	// The current tables are being imported.
-	// Read Only: true
-	CurrentTables []*V1beta1CurrentTable `json:"currentTables"`
-
-	// data format
-	// Read Only: true
-	DataFormat V1beta1DataFormat `json:"dataFormat,omitempty"`
-
-	// elapsed time seconds
-	// Read Only: true
-	ElapsedTimeSeconds int64 `json:"elapsedTimeSeconds,omitempty"`
+	CreationDetails *V1beta1CreationDetails `json:"creationDetails,omitempty"`
 
 	// id
 	// Read Only: true
@@ -65,40 +53,24 @@ type V1beta1Import struct {
 	// Read Only: true
 	Message string `json:"message,omitempty"`
 
-	// pending tables
+	// name
 	// Read Only: true
-	PendingTables int64 `json:"pendingTables,omitempty"`
-
-	// post import completed percent
-	// Read Only: true
-	PostImportCompletedPercent int64 `json:"postImportCompletedPercent,omitempty"`
-
-	// processed source data size
-	// Read Only: true
-	ProcessedSourceDataSize string `json:"processedSourceDataSize,omitempty"`
+	Name string `json:"name,omitempty"`
 
 	// state
 	// Read Only: true
 	State V1beta1ImportState `json:"state,omitempty"`
 
-	// The total number of files of the data imported.
-	// Read Only: true
-	TotalFiles int64 `json:"totalFiles,omitempty"`
-
 	// The total size of the data imported.
 	// Read Only: true
 	TotalSize string `json:"totalSize,omitempty"`
-
-	// total tables count
-	// Read Only: true
-	TotalTablesCount int64 `json:"totalTablesCount,omitempty"`
 }
 
 // Validate validates this v1beta1 import
 func (m *V1beta1Import) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateAllCompletedTables(formats); err != nil {
+	if err := m.validateCompleteTime(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -107,14 +79,6 @@ func (m *V1beta1Import) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateCreationDetails(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateCurrentTables(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateDataFormat(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -128,27 +92,13 @@ func (m *V1beta1Import) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1Import) validateAllCompletedTables(formats strfmt.Registry) error {
-	if swag.IsZero(m.AllCompletedTables) { // not required
+func (m *V1beta1Import) validateCompleteTime(formats strfmt.Registry) error {
+	if swag.IsZero(m.CompleteTime) { // not required
 		return nil
 	}
 
-	for i := 0; i < len(m.AllCompletedTables); i++ {
-		if swag.IsZero(m.AllCompletedTables[i]) { // not required
-			continue
-		}
-
-		if m.AllCompletedTables[i] != nil {
-			if err := m.AllCompletedTables[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("allCompletedTables" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("allCompletedTables" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
+	if err := validate.FormatOf("completeTime", "body", "date-time", m.CompleteTime.String(), formats); err != nil {
+		return err
 	}
 
 	return nil
@@ -185,49 +135,6 @@ func (m *V1beta1Import) validateCreationDetails(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1Import) validateCurrentTables(formats strfmt.Registry) error {
-	if swag.IsZero(m.CurrentTables) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.CurrentTables); i++ {
-		if swag.IsZero(m.CurrentTables[i]) { // not required
-			continue
-		}
-
-		if m.CurrentTables[i] != nil {
-			if err := m.CurrentTables[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("currentTables" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("currentTables" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-func (m *V1beta1Import) validateDataFormat(formats strfmt.Registry) error {
-	if swag.IsZero(m.DataFormat) { // not required
-		return nil
-	}
-
-	if err := m.DataFormat.Validate(formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("dataFormat")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
-			return ce.ValidateName("dataFormat")
-		}
-		return err
-	}
-
-	return nil
-}
-
 func (m *V1beta1Import) validateState(formats strfmt.Registry) error {
 	if swag.IsZero(m.State) { // not required
 		return nil
@@ -249,19 +156,15 @@ func (m *V1beta1Import) validateState(formats strfmt.Registry) error {
 func (m *V1beta1Import) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateAllCompletedTables(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateClusterID(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateCompletedPercent(ctx, formats); err != nil {
+	if err := m.contextValidateCompletePercent(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateCompletedTables(ctx, formats); err != nil {
+	if err := m.contextValidateCompleteTime(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -269,19 +172,11 @@ func (m *V1beta1Import) ContextValidate(ctx context.Context, formats strfmt.Regi
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateCreatedBy(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateCreationDetails(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateCurrentTables(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateDataFormat(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateElapsedTimeSeconds(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -293,15 +188,7 @@ func (m *V1beta1Import) ContextValidate(ctx context.Context, formats strfmt.Regi
 		res = append(res, err)
 	}
 
-	if err := m.contextValidatePendingTables(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidatePostImportCompletedPercent(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateProcessedSourceDataSize(ctx, formats); err != nil {
+	if err := m.contextValidateName(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -309,50 +196,13 @@ func (m *V1beta1Import) ContextValidate(ctx context.Context, formats strfmt.Regi
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateTotalFiles(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateTotalSize(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateTotalTablesCount(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-func (m *V1beta1Import) contextValidateAllCompletedTables(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "allCompletedTables", "body", []*V1beta1ImportTableCompletionInfo(m.AllCompletedTables)); err != nil {
-		return err
-	}
-
-	for i := 0; i < len(m.AllCompletedTables); i++ {
-
-		if m.AllCompletedTables[i] != nil {
-
-			if swag.IsZero(m.AllCompletedTables[i]) { // not required
-				return nil
-			}
-
-			if err := m.AllCompletedTables[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("allCompletedTables" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("allCompletedTables" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
 	return nil
 }
 
@@ -365,18 +215,18 @@ func (m *V1beta1Import) contextValidateClusterID(ctx context.Context, formats st
 	return nil
 }
 
-func (m *V1beta1Import) contextValidateCompletedPercent(ctx context.Context, formats strfmt.Registry) error {
+func (m *V1beta1Import) contextValidateCompletePercent(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "completedPercent", "body", int64(m.CompletedPercent)); err != nil {
+	if err := validate.ReadOnly(ctx, "completePercent", "body", int64(m.CompletePercent)); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (m *V1beta1Import) contextValidateCompletedTables(ctx context.Context, formats strfmt.Registry) error {
+func (m *V1beta1Import) contextValidateCompleteTime(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "completedTables", "body", int64(m.CompletedTables)); err != nil {
+	if err := validate.ReadOnly(ctx, "completeTime", "body", m.CompleteTime); err != nil {
 		return err
 	}
 
@@ -386,6 +236,15 @@ func (m *V1beta1Import) contextValidateCompletedTables(ctx context.Context, form
 func (m *V1beta1Import) contextValidateCreateTime(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "createTime", "body", strfmt.DateTime(m.CreateTime)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *V1beta1Import) contextValidateCreatedBy(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "createdBy", "body", string(m.CreatedBy)); err != nil {
 		return err
 	}
 
@@ -413,62 +272,6 @@ func (m *V1beta1Import) contextValidateCreationDetails(ctx context.Context, form
 	return nil
 }
 
-func (m *V1beta1Import) contextValidateCurrentTables(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "currentTables", "body", []*V1beta1CurrentTable(m.CurrentTables)); err != nil {
-		return err
-	}
-
-	for i := 0; i < len(m.CurrentTables); i++ {
-
-		if m.CurrentTables[i] != nil {
-
-			if swag.IsZero(m.CurrentTables[i]) { // not required
-				return nil
-			}
-
-			if err := m.CurrentTables[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("currentTables" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("currentTables" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-func (m *V1beta1Import) contextValidateDataFormat(ctx context.Context, formats strfmt.Registry) error {
-
-	if swag.IsZero(m.DataFormat) { // not required
-		return nil
-	}
-
-	if err := m.DataFormat.ContextValidate(ctx, formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("dataFormat")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
-			return ce.ValidateName("dataFormat")
-		}
-		return err
-	}
-
-	return nil
-}
-
-func (m *V1beta1Import) contextValidateElapsedTimeSeconds(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "elapsedTimeSeconds", "body", int64(m.ElapsedTimeSeconds)); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (m *V1beta1Import) contextValidateID(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "id", "body", string(m.ID)); err != nil {
@@ -487,27 +290,9 @@ func (m *V1beta1Import) contextValidateMessage(ctx context.Context, formats strf
 	return nil
 }
 
-func (m *V1beta1Import) contextValidatePendingTables(ctx context.Context, formats strfmt.Registry) error {
+func (m *V1beta1Import) contextValidateName(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "pendingTables", "body", int64(m.PendingTables)); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *V1beta1Import) contextValidatePostImportCompletedPercent(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "postImportCompletedPercent", "body", int64(m.PostImportCompletedPercent)); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *V1beta1Import) contextValidateProcessedSourceDataSize(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "processedSourceDataSize", "body", string(m.ProcessedSourceDataSize)); err != nil {
+	if err := validate.ReadOnly(ctx, "name", "body", string(m.Name)); err != nil {
 		return err
 	}
 
@@ -532,27 +317,9 @@ func (m *V1beta1Import) contextValidateState(ctx context.Context, formats strfmt
 	return nil
 }
 
-func (m *V1beta1Import) contextValidateTotalFiles(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "totalFiles", "body", int64(m.TotalFiles)); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (m *V1beta1Import) contextValidateTotalSize(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "totalSize", "body", string(m.TotalSize)); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (m *V1beta1Import) contextValidateTotalTablesCount(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "totalTablesCount", "body", int64(m.TotalTablesCount)); err != nil {
 		return err
 	}
 

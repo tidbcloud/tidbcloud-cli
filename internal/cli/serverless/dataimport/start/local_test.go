@@ -86,20 +86,13 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 	importID := "imp-asdasd"
 	body := &importModel.V1beta1Import{}
 	err := json.Unmarshal([]byte(fmt.Sprintf(`{
-  "allCompletedTables": [
-    {
-      "result": "SUCCESS",
-      "tableName": "test.ttt"
-    }
-  ],
   "clusterId": "12345",
-  "completedPercent": 100,
-  "completedTables": 1,
+  "completePercent": 100,
   "createTime": "2024-04-01T06:39:50.000Z",
+  "completeTime": "2024-04-01T06:49:50.000Z",
   "creationDetails": {
-    "clusterId": "12345",
-    "dataFormat": "CSV",
     "importOptions": {
+      "fileType": "CSV",
       "csvFormat": {
         "backslashEscape": true,
         "delimiter": "\"",
@@ -108,27 +101,21 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
         "separator": ","
       }
     },
-    "target": {
+    "source": {
       "local": {
         "fileName": "a.csv",
-        "targetTable": {
-          "schema": "test",
-          "table": "yxxxx"
-        }
+       	"targetDatabase": "test",
+        "targetTable": "test"
       },
       "type": "LOCAL"
-    },
-    "type": "LOCAL"
+    }
   },
-  "currentTables": [],
-  "dataFormat": "CSV",
-  "elapsedTimeSeconds": 14,
   "id": "%s",
-  "postImportCompletedPercent": 100,
-  "processedSourceDataSize": "37",
+  "name": "import-2024-04-01T06:39:50.000Z",
   "state": "COMPLETED",
   "totalSize": "37",
-  "totalTablesCount": 1
+  "createdBy": "test",
+  "message": "import success"
 }
 `, importID)), body)
 	assert.Nil(err)
@@ -136,7 +123,7 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 		Payload: body,
 	}
 
-	dataFormat := "CSV"
+	fileType := "CSV"
 	targetDatabase := "test"
 	targetTable := "test"
 	clusterID := "12345"
@@ -154,29 +141,27 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 	reqBody := importOp.ImportServiceCreateImportBody{}
 	err = reqBody.UnmarshalBinary([]byte(fmt.Sprintf(`{
     "clusterId": "12345",
-    "dataFormat": "%s",
     "importOptions": {
+      "fileType": "%s",
       "csvFormat": {
         "backslashEscape": true,
         "delimiter": "\"",
         "header": true,
+		"notNull": false,
         "null": "\\N",
-        "separator": ","
+        "separator": ",",
+		"trimLastSeparator": false
       }
     },
-    "target": {
+    "source": {
       "local": {
-        "fileName": "%s",
-        "targetTable": {
-          "schema": "%s",
-          "table": "%s"
-        },
+       	"targetDatabase": "%s",
+        "targetTable": "%s",
 		"uploadID": "%s"
       },
       "type": "LOCAL"
-    },
-    "type": "LOCAL"
-  }`, dataFormat, fileName, targetDatabase, targetTable, uploadID)))
+    }
+  }`, fileType, targetDatabase, targetTable, uploadID)))
 	assert.Nil(err)
 
 	suite.mockClient.On("CreateImport", importOp.NewImportServiceCreateImportParams().
@@ -191,27 +176,27 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 	}{
 		{
 			name:         "start import success",
-			args:         []string{"--target-type", "LOCAL", "--local.file-path", fileName, "--cluster-id", clusterID, "--data-format", dataFormat, "--local.target-database", targetDatabase, "--local.target-table", targetTable},
+			args:         []string{"--source-type", "LOCAL", "--local.file-path", fileName, "--cluster-id", clusterID, "--file-type", fileType, "--local.target-database", targetDatabase, "--local.target-table", targetTable},
 			stdoutString: fmt.Sprintf("... Uploading file\nFile has been uploaded\n... Starting the import task\nImport task %s started.\n", importID),
 		},
 		{
 			name: "start import with unsupported data format",
-			args: []string{"--target-type", "LOCAL", "--local.file-path", fileName, "--cluster-id", clusterID, "--data-format", "yaml", "--local.target-database", targetDatabase, "--local.target-table", targetTable},
-			err:  fmt.Errorf("data format yaml is not supported, please use one of [\"CSV\"]"),
+			args: []string{"--source-type", "LOCAL", "--local.file-path", fileName, "--cluster-id", clusterID, "--file-type", "yaml", "--local.target-database", targetDatabase, "--local.target-table", targetTable},
+			err:  fmt.Errorf("file type \"yaml\" is not supported, please use one of [\"CSV\"]"),
 		},
 		{
 			name:         "start import with shorthand flag",
-			args:         []string{"--target-type", "LOCAL", "--local.file-path", fileName, "-c", clusterID, "--data-format", dataFormat, "--local.target-database", targetDatabase, "--local.target-table", targetTable},
+			args:         []string{"--source-type", "LOCAL", "--local.file-path", fileName, "-c", clusterID, "--file-type", fileType, "--local.target-database", targetDatabase, "--local.target-table", targetTable},
 			stdoutString: fmt.Sprintf("... Uploading file\nFile has been uploaded\n... Starting the import task\nImport task %s started.\n", importID),
 		},
 		{
 			name: "start import without required cluster id",
-			args: []string{"--target-type", "LOCAL", "--local.file-path", fileName, "--data-format", dataFormat, "--local.target-database", targetDatabase, "--local.target-table", targetTable},
+			args: []string{"--source-type", "LOCAL", "--local.file-path", fileName, "--file-type", fileType, "--local.target-database", targetDatabase, "--local.target-table", targetTable},
 			err:  fmt.Errorf("required flag(s) \"cluster-id\" not set"),
 		},
 		{
 			name: "start import without required file path",
-			args: []string{"--target-type", "LOCAL", "-c", clusterID, "--data-format", dataFormat, "--local.target-database", targetDatabase, "--local.target-table", targetTable},
+			args: []string{"--source-type", "LOCAL", "-c", clusterID, "--file-type", fileType, "--local.target-database", targetDatabase, "--local.target-table", targetTable},
 			err:  fmt.Errorf("required flag(s) \"local.file-path\" not set"),
 		},
 	}
@@ -243,7 +228,7 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 	uploadID := "upl-sadads"
 	importID := "imp-asdasd"
 
-	dataFormat := "CSV"
+	fileType := "CSV"
 	targetDatabase := "test"
 	targetTable := "test"
 	clusterID := "12345"
@@ -257,9 +242,39 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 
 	reqBody := importOp.ImportServiceCreateImportBody{}
 	err := reqBody.UnmarshalBinary([]byte(fmt.Sprintf(`{
-    "clusterId": "12345",
-    "dataFormat": "%s",
+   "clusterId": "12345",
     "importOptions": {
+      "fileType": "%s",
+      "csvFormat": {
+        "backslashEscape": false,
+        "delimiter": ",",
+        "header": true,
+		"notNull": false,
+        "null": "\\N",
+        "separator": "\"",
+		"trimLastSeparator": true
+      }
+    },
+    "source": {
+      "local": {
+       	"targetDatabase": "%s",
+        "targetTable": "%s",
+		"uploadID": "%s"
+      },
+      "type": "LOCAL"
+    }
+  }`, fileType, targetDatabase, targetTable, uploadID)))
+	assert.Nil(err)
+
+	body := &importModel.V1beta1Import{}
+	err = json.Unmarshal([]byte(fmt.Sprintf(`{
+  "clusterId": "12345",
+  "completePercent": 100,
+  "createTime": "2024-04-01T06:39:50.000Z",
+  "completeTime": "2024-04-01T06:49:50.000Z",
+  "creationDetails": {
+    "importOptions": {
+      "fileType": "CSV",
       "csvFormat": {
         "backslashEscape": false,
         "delimiter": ",",
@@ -269,68 +284,24 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 		"trimLastSeparator": true
       }
     },
-    "target": {
-      "local": {
-        "fileName": "%s",
-        "targetTable": {
-          "schema": "%s",
-          "table": "%s"
-        },
-		"uploadID": "%s"
-      },
-      "type": "LOCAL"
-    },
-    "type": "LOCAL"
-  }`, dataFormat, fileName, targetDatabase, targetTable, uploadID)))
-	assert.Nil(err)
-
-	body := &importModel.V1beta1Import{}
-	err = json.Unmarshal([]byte(fmt.Sprintf(`{
-  "allCompletedTables": [
-    {
-      "result": "SUCCESS",
-      "tableName": "test.ttt"
-    }
-  ],
-  "clusterId": "12345",
-  "completedPercent": 100,
-  "completedTables": 1,
-  "createTime": "2024-04-01T06:39:50.000Z",
-  "creationDetails": {
-    "clusterId": "12345",
-    "dataFormat": "CSV",
-    "importOptions": {
-      "csvFormat": {
-        "backslashEscape": true,
-        "delimiter": "\"",
-        "header": true,
-        "null": "\\N",
-        "separator": ","
-      }
-    },
-    "target": {
+    "source": {
       "local": {
         "fileName": "a.csv",
-        "targetTable": {
-          "schema": "test",
-          "table": "yxxxx"
-        }
+       	"targetDatabase": "test",
+        "targetTable": "test"
       },
       "type": "LOCAL"
-    },
-    "type": "LOCAL"
+    }
   },
-  "currentTables": [],
-  "dataFormat": "CSV",
-  "elapsedTimeSeconds": 14,
   "id": "%s",
-  "postImportCompletedPercent": 100,
-  "processedSourceDataSize": "37",
+  "name": "import-2024-04-01T06:39:50.000Z",
   "state": "COMPLETED",
   "totalSize": "37",
-  "totalTablesCount": 1
+  "createdBy": "test",
+  "message": "import success"
 }
 `, importID)), body)
+	assert.Nil(err)
 	result := &importOp.ImportServiceCreateImportOK{
 		Payload: body,
 	}
@@ -349,7 +320,7 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 	}{
 		{
 			name:         "start import success",
-			args:         []string{"--target-type", "LOCAL", "--local.file-path", fileName, "--cluster-id", clusterID, "--data-format", dataFormat, "--local.target-database", targetDatabase, "--local.target-table", targetTable, "--csv.separator", "\"", "--csv.delimiter", ",", "--csv.backslash-escape=false", "--csv.trim-last-separator=true"},
+			args:         []string{"--source-type", "LOCAL", "--local.file-path", fileName, "--cluster-id", clusterID, "--file-type", fileType, "--local.target-database", targetDatabase, "--local.target-table", targetTable, "--csv.separator", "\"", "--csv.delimiter", ",", "--csv.backslash-escape=false", "--csv.trim-last-separator=true"},
 			stdoutString: fmt.Sprintf("... Uploading file\nFile has been uploaded\n... Starting the import task\nImport task %s started.\n", importID),
 		},
 	}
