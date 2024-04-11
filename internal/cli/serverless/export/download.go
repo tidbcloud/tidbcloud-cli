@@ -265,14 +265,22 @@ func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, p
 			}
 			defer file.Close()
 
-			err = processDownload(int(resp.ContentLength), file, resp.Body)
-			if err != nil {
-				if err == util.InterruptError {
-					interrupt = true
+			if h.IOStreams.CanPrompt {
+				err = processDownload(int(resp.ContentLength), file, resp.Body)
+				if err != nil {
+					if err == util.InterruptError {
+						interrupt = true
+						return
+					}
+					fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
 					return
 				}
-				fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
-				return
+			} else {
+				_, err = io.Copy(file, resp.Body)
+				if err != nil {
+					fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
+					return
+				}
 			}
 		}()
 	}
