@@ -73,7 +73,6 @@ func (c StartOpts) NonInteractiveFlags() []string {
 }
 
 func StartCmd(h *internal.Helper) *cobra.Command {
-	var partSize int64
 	var concurrency int
 	opts := StartOpts{
 		interactive: true,
@@ -89,8 +88,8 @@ func StartCmd(h *internal.Helper) *cobra.Command {
   Start an local import task in non-interactive mode:
   $ %[1]s serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --data-format <data-format> --local.target-database <target-database> --local.target-table <target-table>
 
-  Start an local import task with custom upload parameters:
-  $ %[1]s serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --data-format <data-format> --local.target-database <target-database> --local.target-table <target-table> --local.part-size 100 --local.concurrency 10
+  Start an local import task with custom upload concurrency:
+  $ %[1]s serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --data-format <data-format> --local.target-database <target-database> --local.target-table <target-table> --local.concurrency 10
 	
   Start an local import task with custom CSV format:
   $ %[1]s serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --data-format CSV --local.target-database <target-database> --local.target-table <target-table> --csv.separator \" --csv.delimiter \' --csv.backslash-escape=false --csv.trim-last-separator=true
@@ -135,7 +134,6 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 
 			if targetType == TargetTypeLOCAL {
 				localOpts := LocalOpts{
-					partSize:    partSize,
 					concurrency: concurrency,
 					h:           h,
 					interactive: opts.interactive,
@@ -154,7 +152,6 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	startCmd.Flags().String(flag.LocalFilePath, "", "The local file path to import")
 	startCmd.Flags().String(flag.LocalTargetDatabase, "", "Target database to which import data")
 	startCmd.Flags().String(flag.LocalTargetTable, "", "Target table to which import data")
-	startCmd.Flags().Int64Var(&partSize, flag.LocalPartSize, 5, "The part size for uploading file(MiB)")
 	startCmd.Flags().IntVar(&concurrency, flag.LocalConcurrency, 5, "The concurrency for uploading file")
 
 	startCmd.Flags().String(flag.CSVDelimiter, "\"", "The delimiter used for quoting of CSV file")

@@ -50,11 +50,11 @@ const MaxUploadPartSize int64 = 1024 * 1024 * 1024 * 5
 
 // DefaultUploadPartSize is the default part size to buffer chunks of a
 // payload into.
-const DefaultUploadPartSize = 1024 * 1024 * 5
+const DefaultUploadPartSize = 1024 * 1024 * 100
 
 // DefaultUploadConcurrency is the default number of goroutines to spin up when
 // using Upload().
-const DefaultUploadConcurrency = 5
+const DefaultUploadConcurrency = 8
 
 // MaxConcurrency is the maximum number of goroutines to upload parts in parallel.
 const MaxConcurrency = 64
@@ -106,7 +106,6 @@ type PutObjectInput struct {
 
 type Uploader interface {
 	Upload(ctx context.Context, input *PutObjectInput) (string, error)
-	SetPartSize(partSize int64) error
 	SetConcurrency(concurrency int) error
 }
 
@@ -199,17 +198,6 @@ func (u *UploaderImpl) SetConcurrency(concurrency int) error {
 		return errors.New("concurrency must be greater than 0")
 	}
 	u.Concurrency = concurrency
-	return nil
-}
-
-func (u *UploaderImpl) SetPartSize(partSize int64) error {
-	if partSize > MaxUploadPartSize {
-		return errors.New("part size must be less than 5GiB")
-	}
-	if partSize < MinUploadPartSize {
-		return errors.New("part size must be at least 5MiB")
-	}
-	u.PartSize = partSize
 	return nil
 }
 

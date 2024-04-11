@@ -49,7 +49,6 @@ const (
 )
 
 type LocalOpts struct {
-	partSize    int64
 	concurrency int
 	h           *internal.Helper
 	interactive bool
@@ -71,10 +70,6 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 	}
 	uploader := o.h.Uploader(d)
 	err = uploader.SetConcurrency(o.concurrency)
-	if err != nil {
-		return err
-	}
-	err = uploader.SetPartSize(o.partSize * 1024 * 1024)
 	if err != nil {
 		return err
 	}

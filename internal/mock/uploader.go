@@ -32,24 +32,6 @@ func (_m *Uploader) SetConcurrency(concurrency int) error {
 	return r0
 }
 
-// SetPartSize provides a mock function with given fields: partSize
-func (_m *Uploader) SetPartSize(partSize int64) error {
-	ret := _m.Called(partSize)
-
-	if len(ret) == 0 {
-		panic("no return value specified for SetPartSize")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(int64) error); ok {
-		r0 = rf(partSize)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // Upload provides a mock function with given fields: ctx, input
 func (_m *Uploader) Upload(ctx context.Context, input *s3.PutObjectInput) (string, error) {
 	ret := _m.Called(ctx, input)

@@ -37,7 +37,6 @@ const (
 	NoColor               string = "no-color"
 	Output                string = "output"
 	OutputShort           string = "o"
-	LocalPartSize         string = "local.part-size"
 	Password              string = "local.password"
 	ProjectID             string = "project-id"
 	ProjectIDShort        string = "p"

@@ -339,7 +339,6 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 		WithClusterID(clusterID).WithBody(reqBody).WithContext(ctx)).
 		Return(result, nil)
 	suite.mockUploader.On("SetConcurrency", 5).Return(nil)
-	suite.mockUploader.On("SetPartSize", int64(5*1024*1024)).Return(nil)
 
 	tests := []struct {
 		name         string
