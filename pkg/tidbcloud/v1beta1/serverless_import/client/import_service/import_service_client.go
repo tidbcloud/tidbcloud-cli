@@ -30,9 +30,9 @@ type ClientOption func(*runtime.ClientOperation)
 type ClientService interface {
 	ImportServiceCancelImport(params *ImportServiceCancelImportParams, opts ...ClientOption) (*ImportServiceCancelImportOK, error)
 
-	ImportServiceCancelMultipartUpload(params *ImportServiceCancelMultipartUploadParams, opts ...ClientOption) (*ImportServiceCancelMultipartUploadOK, error)
+	ImportServiceCancelUpload(params *ImportServiceCancelUploadParams, opts ...ClientOption) (*ImportServiceCancelUploadOK, error)
 
-	ImportServiceCompleteMultipartUpload(params *ImportServiceCompleteMultipartUploadParams, opts ...ClientOption) (*ImportServiceCompleteMultipartUploadOK, error)
+	ImportServiceCompleteUpload(params *ImportServiceCompleteUploadParams, opts ...ClientOption) (*ImportServiceCompleteUploadOK, error)
 
 	ImportServiceCreateImport(params *ImportServiceCreateImportParams, opts ...ClientOption) (*ImportServiceCreateImportOK, error)
 
@@ -83,22 +83,22 @@ func (a *Client) ImportServiceCancelImport(params *ImportServiceCancelImportPara
 }
 
 /*
-ImportServiceCancelMultipartUpload import service cancel multipart upload API
+ImportServiceCancelUpload import service cancel upload API
 */
-func (a *Client) ImportServiceCancelMultipartUpload(params *ImportServiceCancelMultipartUploadParams, opts ...ClientOption) (*ImportServiceCancelMultipartUploadOK, error) {
+func (a *Client) ImportServiceCancelUpload(params *ImportServiceCancelUploadParams, opts ...ClientOption) (*ImportServiceCancelUploadOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewImportServiceCancelMultipartUploadParams()
+		params = NewImportServiceCancelUploadParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "ImportService_CancelMultipartUpload",
+		ID:                 "ImportService_CancelUpload",
 		Method:             "POST",
 		PathPattern:        "/v1beta1/clusters/{clusterId}/imports:cancelUpload",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},
 		Params:             params,
-		Reader:             &ImportServiceCancelMultipartUploadReader{formats: a.formats},
+		Reader:             &ImportServiceCancelUploadReader{formats: a.formats},
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	}
@@ -110,32 +110,32 @@ func (a *Client) ImportServiceCancelMultipartUpload(params *ImportServiceCancelM
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*ImportServiceCancelMultipartUploadOK)
+	success, ok := result.(*ImportServiceCancelUploadOK)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
-	unexpectedSuccess := result.(*ImportServiceCancelMultipartUploadDefault)
+	unexpectedSuccess := result.(*ImportServiceCancelUploadDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 
 /*
-ImportServiceCompleteMultipartUpload import service complete multipart upload API
+ImportServiceCompleteUpload import service complete upload API
 */
-func (a *Client) ImportServiceCompleteMultipartUpload(params *ImportServiceCompleteMultipartUploadParams, opts ...ClientOption) (*ImportServiceCompleteMultipartUploadOK, error) {
+func (a *Client) ImportServiceCompleteUpload(params *ImportServiceCompleteUploadParams, opts ...ClientOption) (*ImportServiceCompleteUploadOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewImportServiceCompleteMultipartUploadParams()
+		params = NewImportServiceCompleteUploadParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "ImportService_CompleteMultipartUpload",
+		ID:                 "ImportService_CompleteUpload",
 		Method:             "POST",
 		PathPattern:        "/v1beta1/clusters/{clusterId}/imports:completeUpload",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"https"},
 		Params:             params,
-		Reader:             &ImportServiceCompleteMultipartUploadReader{formats: a.formats},
+		Reader:             &ImportServiceCompleteUploadReader{formats: a.formats},
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	}
@@ -147,12 +147,12 @@ func (a *Client) ImportServiceCompleteMultipartUpload(params *ImportServiceCompl
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*ImportServiceCompleteMultipartUploadOK)
+	success, ok := result.(*ImportServiceCompleteUploadOK)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
-	unexpectedSuccess := result.(*ImportServiceCompleteMultipartUploadDefault)
+	unexpectedSuccess := result.(*ImportServiceCompleteUploadDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

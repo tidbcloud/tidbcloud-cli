@@ -93,9 +93,9 @@ type TiDBCloudClient interface {
 
 	StartUpload(params *serverlessImportOp.ImportServiceStartUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceStartUploadOK, error)
 
-	CompleteMultipartUpload(params *serverlessImportOp.ImportServiceCompleteMultipartUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCompleteMultipartUploadOK, error)
+	CompleteUpload(params *serverlessImportOp.ImportServiceCompleteUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCompleteUploadOK, error)
 
-	CancelMultipartUpload(params *serverlessImportOp.ImportServiceCancelMultipartUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelMultipartUploadOK, error)
+	CancelUpload(params *serverlessImportOp.ImportServiceCancelUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelUploadOK, error)
 
 	GetExport(params *expOp.ExportServiceGetExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceGetExportOK, error)
 
@@ -251,12 +251,12 @@ func (d *ClientDelegate) StartUpload(params *serverlessImportOp.ImportServiceSta
 	return d.sic.ImportService.ImportServiceStartUpload(params, opts...)
 }
 
-func (d *ClientDelegate) CompleteMultipartUpload(params *serverlessImportOp.ImportServiceCompleteMultipartUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCompleteMultipartUploadOK, error) {
-	return d.sic.ImportService.ImportServiceCompleteMultipartUpload(params, opts...)
+func (d *ClientDelegate) CompleteUpload(params *serverlessImportOp.ImportServiceCompleteUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCompleteUploadOK, error) {
+	return d.sic.ImportService.ImportServiceCompleteUpload(params, opts...)
 }
 
-func (d *ClientDelegate) CancelMultipartUpload(params *serverlessImportOp.ImportServiceCancelMultipartUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelMultipartUploadOK, error) {
-	return d.sic.ImportService.ImportServiceCancelMultipartUpload(params, opts...)
+func (d *ClientDelegate) CancelUpload(params *serverlessImportOp.ImportServiceCancelUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelUploadOK, error) {
+	return d.sic.ImportService.ImportServiceCancelUpload(params, opts...)
 }
 
 func (d *ClientDelegate) GetExport(params *expOp.ExportServiceGetExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceGetExportOK, error) {

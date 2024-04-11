@@ -200,7 +200,7 @@
     },
     "/v1beta1/clusters/{clusterId}/imports:cancelUpload": {
       "post": {
-        "operationId": "ImportService_CancelMultipartUpload",
+        "operationId": "ImportService_CancelUpload",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -225,13 +225,6 @@
             "type": "string"
           },
           {
-            "name": "fileName",
-            "description": "The name of the file to import",
-            "in": "query",
-            "required": true,
-            "type": "string"
-          },
-          {
             "name": "uploadId",
             "description": "The ID of the upload",
             "in": "query",
@@ -246,7 +239,7 @@
     },
     "/v1beta1/clusters/{clusterId}/imports:completeUpload": {
       "post": {
-        "operationId": "ImportService_CompleteMultipartUpload",
+        "operationId": "ImportService_CompleteUpload",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -280,18 +273,8 @@
               "items": {
                 "type": "object",
                 "$ref": "#/definitions/v1beta1CompletePart"
-              },
-              "required": [
-                "parts"
-              ]
+              }
             }
-          },
-          {
-            "name": "fileName",
-            "description": "The name of the file to import",
-            "in": "query",
-            "required": true,
-            "type": "string"
           },
           {
             "name": "uploadId",
@@ -449,11 +432,7 @@
           "type": "string",
           "title": "The ETag of the part"
         }
-      },
-      "required": [
-        "partNumber",
-        "etag"
-      ]
+      }
     },
     "v1beta1CreateImportReq": {
       "type": "object",
@@ -683,6 +662,7 @@
         },
         "local": {
           "$ref": "#/definitions/ImportTargetLocalTarget",
+          "x-nullable": true,
           "description": "Optional. The s3 information."
         }
       }

@@ -98,8 +98,8 @@ func (_m *TiDBCloudClient) CancelImport(params *import_service.ImportServiceCanc
 	return r0, r1
 }
 
-// CancelMultipartUpload provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) CancelMultipartUpload(params *import_service.ImportServiceCancelMultipartUploadParams, opts ...import_service.ClientOption) (*import_service.ImportServiceCancelMultipartUploadOK, error) {
+// CancelUpload provides a mock function with given fields: params, opts
+func (_m *TiDBCloudClient) CancelUpload(params *import_service.ImportServiceCancelUploadParams, opts ...import_service.ClientOption) (*import_service.ImportServiceCancelUploadOK, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -110,23 +110,23 @@ func (_m *TiDBCloudClient) CancelMultipartUpload(params *import_service.ImportSe
 	ret := _m.Called(_ca...)
 
 	if len(ret) == 0 {
-		panic("no return value specified for CancelMultipartUpload")
+		panic("no return value specified for CancelUpload")
 	}
 
-	var r0 *import_service.ImportServiceCancelMultipartUploadOK
+	var r0 *import_service.ImportServiceCancelUploadOK
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceCancelMultipartUploadParams, ...import_service.ClientOption) (*import_service.ImportServiceCancelMultipartUploadOK, error)); ok {
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceCancelUploadParams, ...import_service.ClientOption) (*import_service.ImportServiceCancelUploadOK, error)); ok {
 		return rf(params, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceCancelMultipartUploadParams, ...import_service.ClientOption) *import_service.ImportServiceCancelMultipartUploadOK); ok {
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceCancelUploadParams, ...import_service.ClientOption) *import_service.ImportServiceCancelUploadOK); ok {
 		r0 = rf(params, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*import_service.ImportServiceCancelMultipartUploadOK)
+			r0 = ret.Get(0).(*import_service.ImportServiceCancelUploadOK)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*import_service.ImportServiceCancelMultipartUploadParams, ...import_service.ClientOption) error); ok {
+	if rf, ok := ret.Get(1).(func(*import_service.ImportServiceCancelUploadParams, ...import_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -172,8 +172,8 @@ func (_m *TiDBCloudClient) Chat(params *operations.ChatParams, opts ...operation
 	return r0, r1
 }
 
-// CompleteMultipartUpload provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) CompleteMultipartUpload(params *import_service.ImportServiceCompleteMultipartUploadParams, opts ...import_service.ClientOption) (*import_service.ImportServiceCompleteMultipartUploadOK, error) {
+// CompleteUpload provides a mock function with given fields: params, opts
+func (_m *TiDBCloudClient) CompleteUpload(params *import_service.ImportServiceCompleteUploadParams, opts ...import_service.ClientOption) (*import_service.ImportServiceCompleteUploadOK, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -184,23 +184,23 @@ func (_m *TiDBCloudClient) CompleteMultipartUpload(params *import_service.Import
 	ret := _m.Called(_ca...)
 
 	if len(ret) == 0 {
-		panic("no return value specified for CompleteMultipartUpload")
+		panic("no return value specified for CompleteUpload")
 	}
 
-	var r0 *import_service.ImportServiceCompleteMultipartUploadOK
+	var r0 *import_service.ImportServiceCompleteUploadOK
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceCompleteMultipartUploadParams, ...import_service.ClientOption) (*import_service.ImportServiceCompleteMultipartUploadOK, error)); ok {
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceCompleteUploadParams, ...import_service.ClientOption) (*import_service.ImportServiceCompleteUploadOK, error)); ok {
 		return rf(params, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceCompleteMultipartUploadParams, ...import_service.ClientOption) *import_service.ImportServiceCompleteMultipartUploadOK); ok {
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceCompleteUploadParams, ...import_service.ClientOption) *import_service.ImportServiceCompleteUploadOK); ok {
 		r0 = rf(params, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*import_service.ImportServiceCompleteMultipartUploadOK)
+			r0 = ret.Get(0).(*import_service.ImportServiceCompleteUploadOK)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*import_service.ImportServiceCompleteMultipartUploadParams, ...import_service.ClientOption) error); ok {
+	if rf, ok := ret.Get(1).(func(*import_service.ImportServiceCompleteUploadParams, ...import_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)
