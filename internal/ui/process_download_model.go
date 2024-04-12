@@ -89,10 +89,6 @@ func (m ProcessModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m ProcessModel) View() string {
-	if m.Err != nil {
-		return "Error: " + m.Err.Error() + "\n"
-	}
-
 	pad := strings.Repeat(" ", padding)
 	return "\n" + pad + m.Progress.View() + "\n\n"
 }

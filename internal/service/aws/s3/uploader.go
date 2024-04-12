@@ -80,7 +80,7 @@ func (m *uploadError) Error() string {
 	if m.err != nil {
 		extra = fmt.Sprintf(", cause: %v", m.err)
 	}
-	return fmt.Sprintf("upload multipart failed, upload id: %s%s", m.uploadID, extra)
+	return fmt.Sprintf("upload failed, upload id: %s%s", m.uploadID, extra)
 }
 
 // Unwrap returns the underlying error that cause the upload failure

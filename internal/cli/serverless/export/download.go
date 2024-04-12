@@ -345,5 +345,8 @@ func processDownload(contentType int, file *os.File, reader io.Reader) error {
 	if processModel.(ui.ProcessModel).Interrupted {
 		return util.InterruptError
 	}
+	if processModel.(ui.ProcessModel).Err != nil {
+		return processModel.(ui.ProcessModel).Err
+	}
 	return nil
 }
