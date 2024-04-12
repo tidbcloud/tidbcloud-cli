@@ -19,7 +19,7 @@ import (
 type V1beta1ImportOptions struct {
 
 	// csv format
-	CsvFormat *V1beta1CustomCSVFormat `json:"csvFormat,omitempty"`
+	CsvFormat *V1beta1CSVFormat `json:"csvFormat,omitempty"`
 
 	// Optional. The exported file type.
 	FileType V1beta1ImportOptionsFileType `json:"fileType,omitempty"`

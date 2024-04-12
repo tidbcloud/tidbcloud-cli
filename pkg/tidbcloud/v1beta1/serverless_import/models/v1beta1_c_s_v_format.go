@@ -12,10 +12,10 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// V1beta1CustomCSVFormat v1beta1 custom c s v format
+// V1beta1CSVFormat v1beta1 c s v format
 //
-// swagger:model v1beta1CustomCSVFormat
-type V1beta1CustomCSVFormat struct {
+// swagger:model v1beta1CSVFormat
+type V1beta1CSVFormat struct {
 
 	// backslash escape
 	BackslashEscape *bool `json:"backslashEscape,omitempty"`
@@ -39,18 +39,18 @@ type V1beta1CustomCSVFormat struct {
 	TrimLastSeparator *bool `json:"trimLastSeparator,omitempty"`
 }
 
-// Validate validates this v1beta1 custom c s v format
-func (m *V1beta1CustomCSVFormat) Validate(formats strfmt.Registry) error {
+// Validate validates this v1beta1 c s v format
+func (m *V1beta1CSVFormat) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this v1beta1 custom c s v format based on context it is used
-func (m *V1beta1CustomCSVFormat) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this v1beta1 c s v format based on context it is used
+func (m *V1beta1CSVFormat) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *V1beta1CustomCSVFormat) MarshalBinary() ([]byte, error) {
+func (m *V1beta1CSVFormat) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -58,8 +58,8 @@ func (m *V1beta1CustomCSVFormat) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1beta1CustomCSVFormat) UnmarshalBinary(b []byte) error {
-	var res V1beta1CustomCSVFormat
+func (m *V1beta1CSVFormat) UnmarshalBinary(b []byte) error {
+	var res V1beta1CSVFormat
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

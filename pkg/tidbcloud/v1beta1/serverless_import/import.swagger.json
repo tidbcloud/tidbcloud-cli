@@ -374,36 +374,7 @@
         }
       }
     },
-    "v1beta1CompletePart": {
-      "type": "object",
-      "properties": {
-        "partNumber": {
-          "type": "integer",
-          "format": "int32",
-          "title": "The part number"
-        },
-        "etag": {
-          "type": "string",
-          "title": "The ETag of the part"
-        }
-      }
-    },
-    "v1beta1CreationDetails": {
-      "type": "object",
-      "properties": {
-        "importOptions": {
-          "$ref": "#/definitions/v1beta1ImportOptions",
-          "description": "Optional. The options of the import.",
-          "readOnly": true
-        },
-        "source": {
-          "$ref": "#/definitions/v1beta1ImportSourceView",
-          "description": "Optional. The source of the import.",
-          "readOnly": true
-        }
-      }
-    },
-    "v1beta1CustomCSVFormat": {
+    "v1beta1CSVFormat": {
       "type": "object",
       "properties": {
         "separator": {
@@ -430,6 +401,35 @@
         "trimLastSeparator": {
           "type": "boolean",
           "x-nullable": true
+        }
+      }
+    },
+    "v1beta1CompletePart": {
+      "type": "object",
+      "properties": {
+        "partNumber": {
+          "type": "integer",
+          "format": "int32",
+          "title": "The part number"
+        },
+        "etag": {
+          "type": "string",
+          "title": "The ETag of the part"
+        }
+      }
+    },
+    "v1beta1CreationDetails": {
+      "type": "object",
+      "properties": {
+        "importOptions": {
+          "$ref": "#/definitions/v1beta1ImportOptions",
+          "description": "Optional. The options of the import.",
+          "readOnly": true
+        },
+        "source": {
+          "$ref": "#/definitions/v1beta1ImportSourceView",
+          "description": "Optional. The source of the import.",
+          "readOnly": true
         }
       }
     },
@@ -498,7 +498,7 @@
           "description": "Optional. The exported file type."
         },
         "csvFormat": {
-          "$ref": "#/definitions/v1beta1CustomCSVFormat"
+          "$ref": "#/definitions/v1beta1CSVFormat"
         }
       }
     },
