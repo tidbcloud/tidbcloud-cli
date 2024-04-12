@@ -15,9 +15,8 @@
 package internal
 
 import (
-	"context"
-
 	"tidbcloud-cli/internal/iostream"
+	"tidbcloud-cli/internal/service/aws/s3"
 	"tidbcloud-cli/internal/service/cloud"
 )
 
@@ -27,15 +26,7 @@ const (
 
 type Helper struct {
 	Client        func() (cloud.TiDBCloudClient, error)
+	Uploader      func(client cloud.TiDBCloudClient) s3.Uploader
 	QueryPageSize int64
 	IOStreams     *iostream.IOStreams
-	MySQLHelper   MySQLHelper
-}
-
-type MySQLHelper interface {
-	DownloadCaFile(caFile string) error
-	CheckMySQLClient() error
-	DumpFromMySQL(ctx context.Context, command []string, sqlCacheFile string) error
-	ImportToServerless(ctx context.Context, command []string, sqlCacheFile string) error
-	GenerateSqlCachePath() string
 }

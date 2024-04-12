@@ -16,6 +16,7 @@ package dataimport
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -25,49 +26,44 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
+	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
+	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
 
 const getImportResultStr = `{
-  "all_completed_tables": [],
-  "cluster_id": "121026",
-  "completed_percent": 100,
-  "completed_tables": 1,
-  "created_at": "2023-01-10T10:32:01.000Z",
-  "creation_details": {
-    "cluster_id": "121026",
-    "csv_format": {
-      "backslash_escape": true,
-      "delimiter": "\"",
-      "header": true,
-      "null": "\n",
-      "separator": ","
+  "clusterId": "12345",
+  "completePercent": 100,
+  "completeTime": "2024-04-01T06:49:50.000Z",
+  "createTime": "2024-04-01T06:39:50.000Z",
+  "createdBy": "test",
+  "creationDetails": {
+    "importOptions": {
+      "csvFormat": {
+        "delimiter": ",",
+        "header": true,
+        "null": "\\N",
+        "separator": "\"",
+        "trimLastSeparator": true
+      },
+      "fileType": "CSV"
     },
-    "data_format": "CSV",
-    "file_name": "a.csv",
-    "project_id": "0",
-    "target_table": {
-      "schema": "test",
-      "table": "yxxxx"
-    },
-    "type": "LOCAL"
+    "source": {
+      "local": {
+        "fileName": "a.csv",
+        "targetDatabase": "test",
+        "targetTable": "test"
+      },
+      "type": "LOCAL"
+    }
   },
-  "current_tables": [],
-  "data_format": "CSV",
-  "elapsed_time_seconds": 35,
-  "id": "120295",
-  "message": "",
-  "pending_tables": 0,
-  "post_import_completed_percent": 100,
-  "processed_source_data_size": "36",
-  "status": "COMPLETED",
-  "total_files": 0,
-  "total_size": "36",
-  "total_tables_count": 1
+  "id": "%s",
+  "message": "import success",
+  "name": "import-2024-04-01T06:39:50.000Z",
+  "state": "COMPLETED",
+  "totalSize": "37"
 }
 `
 
@@ -95,19 +91,18 @@ func (suite *DescribeImportSuite) SetupTest() {
 
 func (suite *DescribeImportSuite) TestDescribeImportArgs() {
 	assert := require.New(suite.T())
-
-	body := &importModel.OpenapiGetImportResp{}
+	ctx := context.Background()
+	body := &importModel.V1beta1Import{}
 	err := json.Unmarshal([]byte(getImportResultStr), body)
 	assert.Nil(err)
-	result := &importOp.GetImportOK{
+	result := &importOp.ImportServiceGetImportOK{
 		Payload: body,
 	}
 
-	projectID := "12345"
 	clusterID := "12345"
-	importID := "12345"
-	suite.mockClient.On("GetImport", importOp.NewGetImportParams().
-		WithProjectID(projectID).WithClusterID(clusterID).WithID(importID)).
+	importID := "imp-qwert"
+	suite.mockClient.On("GetImport", importOp.NewImportServiceGetImportParams().
+		WithClusterID(clusterID).WithID(importID).WithContext(ctx)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -119,18 +114,18 @@ func (suite *DescribeImportSuite) TestDescribeImportArgs() {
 	}{
 		{
 			name:         "describe import success",
-			args:         []string{"--project-id", projectID, "--cluster-id", clusterID, "--import-id", importID},
+			args:         []string{"--cluster-id", clusterID, "--import-id", importID},
 			stdoutString: getImportResultStr,
 		},
 		{
 			name:         "describe import with shorthand flag",
-			args:         []string{"-p", projectID, "-c", clusterID, "--import-id", importID},
+			args:         []string{"-c", clusterID, "--import-id", importID},
 			stdoutString: getImportResultStr,
 		},
 		{
-			name: "describe import without required project id",
-			args: []string{"-c", clusterID, "--import-id", importID},
-			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
+			name: "describe import without required cluster id",
+			args: []string{"--import-id", importID},
+			err:  fmt.Errorf("required flag(s) \"cluster-id\" not set"),
 		},
 	}
 
@@ -140,6 +135,7 @@ func (suite *DescribeImportSuite) TestDescribeImportArgs() {
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
+			cmd.SetContext(ctx)
 			err = cmd.Execute()
 			assert.Equal(tt.err, err)
 

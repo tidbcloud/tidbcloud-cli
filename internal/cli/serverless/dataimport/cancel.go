@@ -23,8 +23,8 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/util"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
+	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
+	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -40,7 +40,6 @@ type CancelOpts struct {
 func (c CancelOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.ProjectID,
 		flag.ImportID,
 	}
 }
@@ -59,7 +58,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless import cancel
 
   Cancel an import task in non-interactive mode:
-  $ %[1]s serverless import cancel --project-id <project-id> --cluster-id <cluster-id> --import-id <import-id>`,
+  $ %[1]s serverless import cancel --cluster-id <cluster-id> --import-id <import-id>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -83,7 +82,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var projectID, clusterID, importID string
+			var clusterID, importID string
 			d, err := h.Client()
 			if err != nil {
 				return err
@@ -100,18 +99,17 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				projectID = project.ID
 
-				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				clusterID = cluster.ID
 
 				// Only task status is pending or importing can be canceled.
-				selectedImport, err := cloud.GetSelectedImport(projectID, clusterID, h.QueryPageSize, d, []importModel.OpenapiGetImportRespStatus{
-					importModel.OpenapiGetImportRespStatusPREPARING,
-					importModel.OpenapiGetImportRespStatusIMPORTING,
+				selectedImport, err := cloud.GetSelectedImport(cmd.Context(), clusterID, h.QueryPageSize, d, []importModel.V1beta1ImportState{
+					importModel.V1beta1ImportStatePREPARING,
+					importModel.V1beta1ImportStateIMPORTING,
 				})
 				if err != nil {
 					return err
@@ -119,12 +117,11 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				importID = selectedImport.ID
 			} else {
 				// non-interactive mode
-				projectID = cmd.Flag(flag.ProjectID).Value.String()
 				clusterID = cmd.Flag(flag.ClusterID).Value.String()
 				importID = cmd.Flag(flag.ImportID).Value.String()
 			}
 
-			cmd.Annotations[telemetry.ProjectID] = projectID
+			cmd.Annotations[telemetry.ClusterID] = clusterID
 
 			if !force {
 				if !h.IOStreams.CanPrompt {
@@ -152,7 +149,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := importOp.NewCancelImportParams().WithProjectID(projectID).WithClusterID(clusterID).WithID(importID)
+			params := importOp.NewImportServiceCancelImportParams().WithClusterID(clusterID).WithID(importID).WithContext(cmd.Context())
 			_, err = d.CancelImport(params)
 			if err != nil {
 				return errors.Trace(err)
@@ -163,8 +160,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	cancelCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a profile without confirmation")
-	cancelCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
+	cancelCmd.Flags().BoolVar(&force, flag.Force, false, "Cancel an import task without confirmation")
 	cancelCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
 	cancelCmd.Flags().String(flag.ImportID, "", "The ID of import task")
 	return cancelCmd

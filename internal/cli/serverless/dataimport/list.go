@@ -24,7 +24,7 @@ import (
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
-	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
+	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
 	"github.com/dustin/go-humanize"
 	"github.com/juju/errors"
@@ -38,7 +38,6 @@ type ListOpts struct {
 func (c ListOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.ProjectID,
 	}
 }
 
@@ -56,10 +55,10 @@ func ListCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless import list
 
   List import tasks in non-interactive mode:
-  $ %[1]s serverless import list --project-id <project-id> --cluster-id <cluster-id>
+  $ %[1]s serverless import list --cluster-id <cluster-id>
   
   List the clusters in the project with json format:
-  $ %[1]s serverless import list --project-id <project-id> --cluster-id <cluster-id> --output json`,
+  $ %[1]s serverless import list --cluster-id <cluster-id> --output json`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -83,7 +82,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var projectID, clusterID string
+			var clusterID string
 			d, err := h.Client()
 			if err != nil {
 				return err
@@ -101,26 +100,23 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				projectID = project.ID
 
-				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				clusterID = cluster.ID
 			} else {
 				// non-interactive mode
-				projectID = cmd.Flag(flag.ProjectID).Value.String()
 				clusterID = cmd.Flag(flag.ClusterID).Value.String()
 			}
 
-			cmd.Annotations[telemetry.ProjectID] = projectID
+			cmd.Annotations[telemetry.ClusterID] = clusterID
 
-			total, importTasks, err := cloud.RetrieveImports(projectID, clusterID, h.QueryPageSize, d)
+			total, importTasks, err := cloud.RetrieveImports(cmd.Context(), clusterID, h.QueryPageSize, d)
 			if err != nil {
 				return err
 			}
-			totalStr := strconv.FormatUint(total, 10)
 
 			format, err := cmd.Flags().GetString(flag.Output)
 			if err != nil {
@@ -130,9 +126,9 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			// for terminal which can prompt, humanFormat is the default format.
 			// for other terminals, json format is the default format.
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				res := &importModel.OpenapiListImportsResp{
+				res := &importModel.V1beta1ListImportsResp{
 					Imports: importTasks,
-					Total:   &totalStr,
+					Total:   int64(total),
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)
 				if err != nil {
@@ -141,31 +137,34 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			} else if format == output.HumanFormat {
 				columns := []output.Column{
 					"ID",
-					"Type",
-					"Status",
-					"CreatedAt",
+					"SourceType",
+					"State",
+					"CreateTime",
 					"Source",
-					"DataFormat",
+					"FileType",
 					"Size",
 				}
 
 				var rows []output.Row
 				for _, item := range importTasks {
-					var source string
-					if item.CreationDetails.Type != nil && *item.CreationDetails.Type == importModel.CreateImportReqImportTypeS3 {
-						source = item.CreationDetails.SourceURL
-					} else {
-						source = item.CreationDetails.FileName
+					var source, st, ft string
+					if item.CreationDetails != nil && item.CreationDetails.Source != nil {
+						st = string(item.CreationDetails.Source.Type)
+						if item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeLOCAL {
+							source = item.CreationDetails.Source.Local.FileName
+						}
 					}
-
+					if item.CreationDetails != nil && item.CreationDetails.ImportOptions != nil {
+						ft = string(item.CreationDetails.ImportOptions.FileType)
+					}
 					rows = append(rows, output.Row{
 						item.ID,
-						string(*item.CreationDetails.Type),
-						string(*item.Status),
-						item.CreatedAt.String(),
+						st,
+						string(item.State),
+						item.CreateTime.String(),
 						source,
-						string(*item.DataFormat),
-						convertToStoreSize(*item.TotalSize),
+						ft,
+						convertToStoreSize(item.TotalSize),
 					})
 				}
 
@@ -182,7 +181,6 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	listCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "Project ID")
 	listCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
 	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, flag.OutputHelp)
 	return listCmd

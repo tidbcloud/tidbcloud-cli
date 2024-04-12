@@ -26,7 +26,6 @@ import (
 	configCmd "tidbcloud-cli/internal/cli/config"
 	"tidbcloud-cli/internal/cli/project"
 	"tidbcloud-cli/internal/cli/serverless"
-	"tidbcloud-cli/internal/cli/serverless/dataimport/start"
 	"tidbcloud-cli/internal/cli/upgrade"
 	"tidbcloud-cli/internal/cli/version"
 	"tidbcloud-cli/internal/config"
@@ -34,6 +33,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/log"
 	"tidbcloud-cli/internal/prop"
+	"tidbcloud-cli/internal/service/aws/s3"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/service/github"
 	"tidbcloud-cli/internal/telemetry"
@@ -100,8 +100,10 @@ func Execute(ctx context.Context) {
 
 			return delegate, nil
 		},
+		Uploader: func(client cloud.TiDBCloudClient) s3.Uploader {
+			return s3.NewUploader(client)
+		},
 		QueryPageSize: internal.DefaultPageSize,
-		MySQLHelper:   &start.MySQLHelperImpl{},
 		IOStreams:     iostream.System(),
 	}
 

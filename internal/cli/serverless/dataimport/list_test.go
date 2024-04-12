@@ -16,8 +16,8 @@ package dataimport
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
-	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -26,8 +26,8 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/import/models"
+	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
+	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -36,125 +36,116 @@ import (
 const listResultStr = `{
   "imports": [
     {
-      "all_completed_tables": [],
-      "cluster_id": "121026",
-      "completed_percent": 100,
-      "completed_tables": 1,
-      "created_at": "2023-01-10T10:32:01.000Z",
-      "creation_details": {
-        "cluster_id": "121026",
-        "csv_format": {
-          "backslash_escape": true,
-          "delimiter": "\"",
-          "header": true,
-          "null": "\n",
-          "separator": ","
+      "clusterId": "12345",
+      "completePercent": 100,
+      "completeTime": "2024-04-01T06:49:50.000Z",
+      "createTime": "2024-04-01T06:39:50.000Z",
+      "createdBy": "test",
+      "creationDetails": {
+        "importOptions": {
+          "csvFormat": {
+            "backslashEscape": false,
+            "delimiter": ",",
+            "header": true,
+            "notNull": false,
+            "null": "\\N",
+            "separator": "\"",
+            "trimLastSeparator": true
+          },
+          "fileType": "CSV"
         },
-        "data_format": "CSV",
-        "file_name": "a.csv",
-        "project_id": "0",
-        "target_table": {
-          "schema": "test",
-          "table": "yxxxx"
-        },
-        "type": "LOCAL"
+        "source": {
+          "local": {
+            "fileName": "a.csv",
+            "targetDatabase": "test",
+            "targetTable": "test"
+          },
+          "type": "LOCAL"
+        }
       },
-      "current_tables": [],
-      "data_format": "CSV",
-      "elapsed_time_seconds": 35,
-      "id": "120295",
-      "message": "",
-      "pending_tables": 0,
-      "post_import_completed_percent": 100,
-      "processed_source_data_size": "36",
-      "status": "COMPLETED",
-      "total_files": 0,
-      "total_size": "36",
-      "total_tables_count": 1
+      "id": "%s",
+      "message": "import success",
+      "name": "import-2024-04-01T06:39:50.000Z",
+      "state": "COMPLETED",
+      "totalSize": "37"
     }
   ],
-  "total": "1"
+  "total": 1
 }
 `
 
 const listResultMultiPageStr = `{
   "imports": [
     {
-      "all_completed_tables": [],
-      "cluster_id": "121026",
-      "completed_percent": 100,
-      "completed_tables": 1,
-      "created_at": "2023-01-10T10:32:01.000Z",
-      "creation_details": {
-        "cluster_id": "121026",
-        "csv_format": {
-          "backslash_escape": true,
-          "delimiter": "\"",
-          "header": true,
-          "null": "\n",
-          "separator": ","
+      "clusterId": "12345",
+      "completePercent": 100,
+      "completeTime": "2024-04-01T06:49:50.000Z",
+      "createTime": "2024-04-01T06:39:50.000Z",
+      "createdBy": "test",
+      "creationDetails": {
+        "importOptions": {
+          "csvFormat": {
+            "backslashEscape": false,
+            "delimiter": ",",
+            "header": true,
+            "notNull": false,
+            "null": "\\N",
+            "separator": "\"",
+            "trimLastSeparator": true
+          },
+          "fileType": "CSV"
         },
-        "data_format": "CSV",
-        "file_name": "a.csv",
-        "project_id": "0",
-        "target_table": {
-          "schema": "test",
-          "table": "yxxxx"
-        },
-        "type": "LOCAL"
+        "source": {
+          "local": {
+            "fileName": "a.csv",
+            "targetDatabase": "test",
+            "targetTable": "test"
+          },
+          "type": "LOCAL"
+        }
       },
-      "current_tables": [],
-      "data_format": "CSV",
-      "elapsed_time_seconds": 35,
-      "id": "120295",
-      "message": "",
-      "pending_tables": 0,
-      "post_import_completed_percent": 100,
-      "processed_source_data_size": "36",
-      "status": "COMPLETED",
-      "total_files": 0,
-      "total_size": "36",
-      "total_tables_count": 1
+      "id": "%s",
+      "message": "import success",
+      "name": "import-2024-04-01T06:39:50.000Z",
+      "state": "COMPLETED",
+      "totalSize": "37"
     },
     {
-      "all_completed_tables": [],
-      "cluster_id": "121026",
-      "completed_percent": 100,
-      "completed_tables": 1,
-      "created_at": "2023-01-10T10:32:01.000Z",
-      "creation_details": {
-        "cluster_id": "121026",
-        "csv_format": {
-          "backslash_escape": true,
-          "delimiter": "\"",
-          "header": true,
-          "null": "\n",
-          "separator": ","
+      "clusterId": "12345",
+      "completePercent": 100,
+      "completeTime": "2024-04-01T06:49:50.000Z",
+      "createTime": "2024-04-01T06:39:50.000Z",
+      "createdBy": "test",
+      "creationDetails": {
+        "importOptions": {
+          "csvFormat": {
+            "backslashEscape": false,
+            "delimiter": ",",
+            "header": true,
+            "notNull": false,
+            "null": "\\N",
+            "separator": "\"",
+            "trimLastSeparator": true
+          },
+          "fileType": "CSV"
         },
-        "data_format": "CSV",
-        "file_name": "a.csv",
-        "project_id": "0",
-        "target_table": {
-          "schema": "test",
-          "table": "yxxxx"
-        },
-        "type": "LOCAL"
+        "source": {
+          "local": {
+            "fileName": "a.csv",
+            "targetDatabase": "test",
+            "targetTable": "test"
+          },
+          "type": "LOCAL"
+        }
       },
-      "current_tables": [],
-      "data_format": "CSV",
-      "elapsed_time_seconds": 35,
-      "id": "120295",
-      "message": "",
-      "pending_tables": 0,
-      "post_import_completed_percent": 100,
-      "processed_source_data_size": "36",
-      "status": "COMPLETED",
-      "total_files": 0,
-      "total_size": "36",
-      "total_tables_count": 1
+      "id": "%s",
+      "message": "import success",
+      "name": "import-2024-04-01T06:39:50.000Z",
+      "state": "COMPLETED",
+      "totalSize": "37"
     }
   ],
-  "total": "2"
+  "total": 2
 }
 `
 
@@ -184,17 +175,17 @@ func (suite *ListImportSuite) TestListImportArgs() {
 	assert := require.New(suite.T())
 	var page int32 = 1
 	var pageSize = int32(suite.h.QueryPageSize)
+	ctx := context.Background()
 
-	body := &importModel.OpenapiListImportsResp{}
+	body := &importModel.V1beta1ListImportsResp{}
 	err := json.Unmarshal([]byte(listResultStr), body)
 	assert.Nil(err)
-	result := &importOp.ListImportsOK{
+	result := &importOp.ImportServiceListImportsOK{
 		Payload: body,
 	}
-	projectID := "12345"
 	clusterID := "12345"
-	suite.mockClient.On("ListImports", importOp.NewListImportsParams().
-		WithProjectID(projectID).WithClusterID(clusterID).WithPage(&page).WithPageSize(&pageSize)).
+	suite.mockClient.On("ListImports", importOp.NewImportServiceListImportsParams().
+		WithClusterID(clusterID).WithPage(&page).WithPageSize(&pageSize).WithContext(ctx)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -206,23 +197,18 @@ func (suite *ListImportSuite) TestListImportArgs() {
 	}{
 		{
 			name:         "list imports with default format(json when without tty)",
-			args:         []string{"--project-id", projectID, "--cluster-id", clusterID},
+			args:         []string{"--cluster-id", clusterID},
 			stdoutString: listResultStr,
 		},
 		{
 			name:         "list imports with output flag",
-			args:         []string{"--project-id", projectID, "--cluster-id", clusterID, "--output", "json"},
+			args:         []string{"--cluster-id", clusterID, "--output", "json"},
 			stdoutString: listResultStr,
 		},
 		{
 			name:         "list imports with output shorthand flag",
-			args:         []string{"-p", projectID, "-c", clusterID, "-o", "json"},
+			args:         []string{"-c", clusterID, "-o", "json"},
 			stdoutString: listResultStr,
-		},
-		{
-			name: "list imports without required project id",
-			args: []string{"-c", clusterID},
-			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
 		},
 	}
 
@@ -231,6 +217,7 @@ func (suite *ListImportSuite) TestListImportArgs() {
 			cmd := ListCmd(suite.h)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
+			cmd.SetContext(ctx)
 			cmd.SetArgs(tt.args)
 			err = cmd.Execute()
 			assert.Equal(tt.err, err)
@@ -250,20 +237,20 @@ func (suite *ListImportSuite) TestListImportWithMultiPages() {
 	var pageTwo int32 = 2
 	suite.h.QueryPageSize = 1
 	var pageSize = int32(suite.h.QueryPageSize)
+	ctx := context.Background()
 
-	body := &importModel.OpenapiListImportsResp{}
-	err := json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"total": "1"`, `"total": "2"`)), body)
+	body := &importModel.V1beta1ListImportsResp{}
+	err := json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"total": 1`, `"total": 2`)), body)
 	assert.Nil(err)
-	result := &importOp.ListImportsOK{
+	result := &importOp.ImportServiceListImportsOK{
 		Payload: body,
 	}
-	projectID := "12345"
 	clusterID := "12345"
-	suite.mockClient.On("ListImports", importOp.NewListImportsParams().
-		WithProjectID(projectID).WithClusterID(clusterID).WithPage(&pageOne).WithPageSize(&pageSize)).
+	suite.mockClient.On("ListImports", importOp.NewImportServiceListImportsParams().
+		WithClusterID(clusterID).WithPage(&pageOne).WithPageSize(&pageSize).WithContext(ctx)).
 		Return(result, nil)
-	suite.mockClient.On("ListImports", importOp.NewListImportsParams().
-		WithProjectID(projectID).WithClusterID(clusterID).WithPage(&pageTwo).WithPageSize(&pageSize)).
+	suite.mockClient.On("ListImports", importOp.NewImportServiceListImportsParams().
+		WithClusterID(clusterID).WithPage(&pageTwo).WithPageSize(&pageSize).WithContext(ctx)).
 		Return(result, nil)
 	cmd := ListCmd(suite.h)
 
@@ -275,7 +262,7 @@ func (suite *ListImportSuite) TestListImportWithMultiPages() {
 	}{
 		{
 			name:         "query with multi pages",
-			args:         []string{"-p", projectID, "-c", clusterID, "--output", "json"},
+			args:         []string{"-c", clusterID, "--output", "json"},
 			stdoutString: listResultMultiPageStr,
 		},
 	}

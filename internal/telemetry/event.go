@@ -32,6 +32,7 @@ import (
 const (
 	InteractiveMode = "interactive"
 	ProjectID       = "project-id"
+	ClusterID       = "cluster-id"
 )
 
 type Event struct {

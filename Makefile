@@ -24,7 +24,7 @@ generate-mocks: ## Generate mock objects
 	go install github.com/vektra/mockery/v2@latest
 	mockery --name TiDBCloudClient --recursive --output=internal/mock --outpkg mock --filename api_client.go
 	mockery --name EventsSender --recursive --output=internal/mock --outpkg mock --filename sender.go
-	mockery --name MySQLHelper --recursive --output=internal/mock --outpkg mock --filename mysql_helper.go
+	mockery --name Uploader --recursive --output=internal/mock --outpkg mock --filename uploader.go
 
 # Required to install go-swagger https://goswagger.io/install.html
 .PHONY: generate-import-client
@@ -32,12 +32,6 @@ generate-import-client: ## Generate import client
 	@echo "==> Generating import client"
 	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
 	swagger generate client -f pkg/tidbcloud/import/import-api.json -A tidbcloud-import -t pkg/tidbcloud/import
-
-.PHONY: generate-connect-info-client
- generate-connect-info-client:
-	@echo "==> Generating connect info client"
-	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
-	swagger generate client -f pkg/tidbcloud/connect_info/connect-info-api.json -A tidbcloud-connect-info -t pkg/tidbcloud/connect_info
 
 .PHONY: generate-pingchat-client
 generate-pingchat-client: ## Generate PingChat client
@@ -50,7 +44,7 @@ addcopy: ## Add copyright to all files
 	@scripts/add-copy.sh
 
 .PHONY: generate-v1beta1-client
- generate-v1beta1-client:
+generate-v1beta1-client: ## Generate v1beta1 client
 	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
 	@echo "==> Generating branch client"
 	swagger generate client -f pkg/tidbcloud/v1beta1/branch/branch.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/branch
@@ -58,6 +52,8 @@ addcopy: ## Add copyright to all files
 	swagger generate client -f pkg/tidbcloud/v1beta1/serverless/serverless.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless
 	@echo "==> Generating serverless br client"
 	swagger generate client -f pkg/tidbcloud/v1beta1/serverless_br/serverless-br.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless_br
+	@echo "==> Generating serverless import client"
+	swagger generate client -f pkg/tidbcloud/v1beta1/serverless_import/import.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless_import
 	@echo "==> Generating serverless export client"
 	swagger generate client -f pkg/tidbcloud/v1beta1/serverless_export/export.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless_export
 
@@ -85,4 +81,4 @@ list: ## List all make targets
 .PHONY: help
 .DEFAULT_GOAL := help
 help:
-	@grep -h -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -h -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

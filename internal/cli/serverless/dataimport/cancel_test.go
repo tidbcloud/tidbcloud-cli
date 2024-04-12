@@ -16,6 +16,7 @@ package dataimport
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -24,7 +25,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
+	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -54,13 +55,12 @@ func (suite *CancelImportSuite) SetupTest() {
 
 func (suite *CancelImportSuite) TestCancelImportArgs() {
 	assert := require.New(suite.T())
-
-	result := &importOp.CancelImportOK{}
-	projectID := "12345"
+	ctx := context.Background()
+	result := &importOp.ImportServiceCancelImportOK{}
 	clusterID := "12345"
-	importID := "12345"
-	suite.mockClient.On("CancelImport", importOp.NewCancelImportParams().
-		WithProjectID(projectID).WithClusterID(clusterID).WithID(importID)).
+	importID := "imp-asdasd"
+	suite.mockClient.On("CancelImport", importOp.NewImportServiceCancelImportParams().
+		WithClusterID(clusterID).WithID(importID).WithContext(ctx)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -72,22 +72,22 @@ func (suite *CancelImportSuite) TestCancelImportArgs() {
 	}{
 		{
 			name:         "cancel import with default format(json when without tty)",
-			args:         []string{"--project-id", projectID, "--cluster-id", clusterID, "--import-id", importID, "--force"},
+			args:         []string{"--cluster-id", clusterID, "--import-id", importID, "--force"},
 			stdoutString: fmt.Sprintf("Import task %s has been canceled.\n", importID),
 		},
 		{
 			name:         "cancel import with output shorthand flag",
-			args:         []string{"-p", projectID, "-c", clusterID, "--import-id", importID, "--force"},
+			args:         []string{"-c", clusterID, "--import-id", importID, "--force"},
 			stdoutString: fmt.Sprintf("Import task %s has been canceled.\n", importID),
 		},
 		{
-			name: "cancel import without required project id",
-			args: []string{"-c", clusterID, "--import-id", importID, "--force"},
-			err:  fmt.Errorf("required flag(s) \"project-id\" not set"),
+			name: "cancel import without required cluster id",
+			args: []string{"--import-id", importID, "--force"},
+			err:  fmt.Errorf("required flag(s) \"cluster-id\" not set"),
 		},
 		{
 			name: "cancel import without force flag",
-			args: []string{"-p", projectID, "-c", clusterID, "--import-id", importID},
+			args: []string{"-c", clusterID, "--import-id", importID},
 			err:  fmt.Errorf("the terminal doesn't support prompt, please run with --force to cancel the import task"),
 		},
 	}
@@ -95,6 +95,7 @@ func (suite *CancelImportSuite) TestCancelImportArgs() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := CancelCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)

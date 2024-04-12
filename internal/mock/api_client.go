@@ -6,17 +6,13 @@ import (
 	branch_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 	backup_restore_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 
-	connect_info_service "tidbcloud-cli/pkg/tidbcloud/connect_info/client/connect_info_service"
-
 	export_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
 
-	import_service "tidbcloud-cli/pkg/tidbcloud/import/client/import_service"
+	import_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 
 	mock "github.com/stretchr/testify/mock"
 
 	operations "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
-
-	os "os"
 
 	project "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 
@@ -66,7 +62,7 @@ func (_m *TiDBCloudClient) CancelExport(params *export_service.ExportServiceCanc
 }
 
 // CancelImport provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) CancelImport(params *import_service.CancelImportParams, opts ...import_service.ClientOption) (*import_service.CancelImportOK, error) {
+func (_m *TiDBCloudClient) CancelImport(params *import_service.ImportServiceCancelImportParams, opts ...import_service.ClientOption) (*import_service.ImportServiceCancelImportOK, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -80,20 +76,57 @@ func (_m *TiDBCloudClient) CancelImport(params *import_service.CancelImportParam
 		panic("no return value specified for CancelImport")
 	}
 
-	var r0 *import_service.CancelImportOK
+	var r0 *import_service.ImportServiceCancelImportOK
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*import_service.CancelImportParams, ...import_service.ClientOption) (*import_service.CancelImportOK, error)); ok {
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceCancelImportParams, ...import_service.ClientOption) (*import_service.ImportServiceCancelImportOK, error)); ok {
 		return rf(params, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(*import_service.CancelImportParams, ...import_service.ClientOption) *import_service.CancelImportOK); ok {
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceCancelImportParams, ...import_service.ClientOption) *import_service.ImportServiceCancelImportOK); ok {
 		r0 = rf(params, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*import_service.CancelImportOK)
+			r0 = ret.Get(0).(*import_service.ImportServiceCancelImportOK)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*import_service.CancelImportParams, ...import_service.ClientOption) error); ok {
+	if rf, ok := ret.Get(1).(func(*import_service.ImportServiceCancelImportParams, ...import_service.ClientOption) error); ok {
+		r1 = rf(params, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CancelUpload provides a mock function with given fields: params, opts
+func (_m *TiDBCloudClient) CancelUpload(params *import_service.ImportServiceCancelUploadParams, opts ...import_service.ClientOption) (*import_service.ImportServiceCancelUploadOK, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, params)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CancelUpload")
+	}
+
+	var r0 *import_service.ImportServiceCancelUploadOK
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceCancelUploadParams, ...import_service.ClientOption) (*import_service.ImportServiceCancelUploadOK, error)); ok {
+		return rf(params, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceCancelUploadParams, ...import_service.ClientOption) *import_service.ImportServiceCancelUploadOK); ok {
+		r0 = rf(params, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*import_service.ImportServiceCancelUploadOK)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(*import_service.ImportServiceCancelUploadParams, ...import_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -131,6 +164,43 @@ func (_m *TiDBCloudClient) Chat(params *operations.ChatParams, opts ...operation
 	}
 
 	if rf, ok := ret.Get(1).(func(*operations.ChatParams, ...operations.ClientOption) error); ok {
+		r1 = rf(params, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CompleteUpload provides a mock function with given fields: params, opts
+func (_m *TiDBCloudClient) CompleteUpload(params *import_service.ImportServiceCompleteUploadParams, opts ...import_service.ClientOption) (*import_service.ImportServiceCompleteUploadOK, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, params)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CompleteUpload")
+	}
+
+	var r0 *import_service.ImportServiceCompleteUploadOK
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceCompleteUploadParams, ...import_service.ClientOption) (*import_service.ImportServiceCompleteUploadOK, error)); ok {
+		return rf(params, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceCompleteUploadParams, ...import_service.ClientOption) *import_service.ImportServiceCompleteUploadOK); ok {
+		r0 = rf(params, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*import_service.ImportServiceCompleteUploadOK)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(*import_service.ImportServiceCompleteUploadParams, ...import_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -251,7 +321,7 @@ func (_m *TiDBCloudClient) CreateExport(params *export_service.ExportServiceCrea
 }
 
 // CreateImport provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) CreateImport(params *import_service.CreateImportParams, opts ...import_service.ClientOption) (*import_service.CreateImportOK, error) {
+func (_m *TiDBCloudClient) CreateImport(params *import_service.ImportServiceCreateImportParams, opts ...import_service.ClientOption) (*import_service.ImportServiceCreateImportOK, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -265,20 +335,20 @@ func (_m *TiDBCloudClient) CreateImport(params *import_service.CreateImportParam
 		panic("no return value specified for CreateImport")
 	}
 
-	var r0 *import_service.CreateImportOK
+	var r0 *import_service.ImportServiceCreateImportOK
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*import_service.CreateImportParams, ...import_service.ClientOption) (*import_service.CreateImportOK, error)); ok {
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceCreateImportParams, ...import_service.ClientOption) (*import_service.ImportServiceCreateImportOK, error)); ok {
 		return rf(params, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(*import_service.CreateImportParams, ...import_service.ClientOption) *import_service.CreateImportOK); ok {
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceCreateImportParams, ...import_service.ClientOption) *import_service.ImportServiceCreateImportOK); ok {
 		r0 = rf(params, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*import_service.CreateImportOK)
+			r0 = ret.Get(0).(*import_service.ImportServiceCreateImportOK)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*import_service.CreateImportParams, ...import_service.ClientOption) error); ok {
+	if rf, ok := ret.Get(1).(func(*import_service.ImportServiceCreateImportParams, ...import_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -472,43 +542,6 @@ func (_m *TiDBCloudClient) DownloadExport(params *export_service.ExportServiceDo
 	return r0, r1
 }
 
-// GenerateUploadURL provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) GenerateUploadURL(params *import_service.GenerateUploadURLParams, opts ...import_service.ClientOption) (*import_service.GenerateUploadURLOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
-
-	if len(ret) == 0 {
-		panic("no return value specified for GenerateUploadURL")
-	}
-
-	var r0 *import_service.GenerateUploadURLOK
-	var r1 error
-	if rf, ok := ret.Get(0).(func(*import_service.GenerateUploadURLParams, ...import_service.ClientOption) (*import_service.GenerateUploadURLOK, error)); ok {
-		return rf(params, opts...)
-	}
-	if rf, ok := ret.Get(0).(func(*import_service.GenerateUploadURLParams, ...import_service.ClientOption) *import_service.GenerateUploadURLOK); ok {
-		r0 = rf(params, opts...)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*import_service.GenerateUploadURLOK)
-		}
-	}
-
-	if rf, ok := ret.Get(1).(func(*import_service.GenerateUploadURLParams, ...import_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 // GetBackup provides a mock function with given fields: params, opts
 func (_m *TiDBCloudClient) GetBackup(params *backup_restore_service.BackupRestoreServiceGetBackupParams, opts ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceGetBackupOK, error) {
 	_va := make([]interface{}, len(opts))
@@ -620,43 +653,6 @@ func (_m *TiDBCloudClient) GetCluster(params *serverless_service.ServerlessServi
 	return r0, r1
 }
 
-// GetConnectInfo provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) GetConnectInfo(params *connect_info_service.GetInfoParams, opts ...connect_info_service.ClientOption) (*connect_info_service.GetInfoOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
-
-	if len(ret) == 0 {
-		panic("no return value specified for GetConnectInfo")
-	}
-
-	var r0 *connect_info_service.GetInfoOK
-	var r1 error
-	if rf, ok := ret.Get(0).(func(*connect_info_service.GetInfoParams, ...connect_info_service.ClientOption) (*connect_info_service.GetInfoOK, error)); ok {
-		return rf(params, opts...)
-	}
-	if rf, ok := ret.Get(0).(func(*connect_info_service.GetInfoParams, ...connect_info_service.ClientOption) *connect_info_service.GetInfoOK); ok {
-		r0 = rf(params, opts...)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*connect_info_service.GetInfoOK)
-		}
-	}
-
-	if rf, ok := ret.Get(1).(func(*connect_info_service.GetInfoParams, ...connect_info_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 // GetExport provides a mock function with given fields: params, opts
 func (_m *TiDBCloudClient) GetExport(params *export_service.ExportServiceGetExportParams, opts ...export_service.ClientOption) (*export_service.ExportServiceGetExportOK, error) {
 	_va := make([]interface{}, len(opts))
@@ -695,7 +691,7 @@ func (_m *TiDBCloudClient) GetExport(params *export_service.ExportServiceGetExpo
 }
 
 // GetImport provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) GetImport(params *import_service.GetImportParams, opts ...import_service.ClientOption) (*import_service.GetImportOK, error) {
+func (_m *TiDBCloudClient) GetImport(params *import_service.ImportServiceGetImportParams, opts ...import_service.ClientOption) (*import_service.ImportServiceGetImportOK, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -709,20 +705,20 @@ func (_m *TiDBCloudClient) GetImport(params *import_service.GetImportParams, opt
 		panic("no return value specified for GetImport")
 	}
 
-	var r0 *import_service.GetImportOK
+	var r0 *import_service.ImportServiceGetImportOK
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*import_service.GetImportParams, ...import_service.ClientOption) (*import_service.GetImportOK, error)); ok {
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceGetImportParams, ...import_service.ClientOption) (*import_service.ImportServiceGetImportOK, error)); ok {
 		return rf(params, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(*import_service.GetImportParams, ...import_service.ClientOption) *import_service.GetImportOK); ok {
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceGetImportParams, ...import_service.ClientOption) *import_service.ImportServiceGetImportOK); ok {
 		r0 = rf(params, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*import_service.GetImportOK)
+			r0 = ret.Get(0).(*import_service.ImportServiceGetImportOK)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*import_service.GetImportParams, ...import_service.ClientOption) error); ok {
+	if rf, ok := ret.Get(1).(func(*import_service.ImportServiceGetImportParams, ...import_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -880,7 +876,7 @@ func (_m *TiDBCloudClient) ListExports(params *export_service.ExportServiceListE
 }
 
 // ListImports provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) ListImports(params *import_service.ListImportsParams, opts ...import_service.ClientOption) (*import_service.ListImportsOK, error) {
+func (_m *TiDBCloudClient) ListImports(params *import_service.ImportServiceListImportsParams, opts ...import_service.ClientOption) (*import_service.ImportServiceListImportsOK, error) {
 	_va := make([]interface{}, len(opts))
 	for _i := range opts {
 		_va[_i] = opts[_i]
@@ -894,20 +890,20 @@ func (_m *TiDBCloudClient) ListImports(params *import_service.ListImportsParams,
 		panic("no return value specified for ListImports")
 	}
 
-	var r0 *import_service.ListImportsOK
+	var r0 *import_service.ImportServiceListImportsOK
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*import_service.ListImportsParams, ...import_service.ClientOption) (*import_service.ListImportsOK, error)); ok {
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceListImportsParams, ...import_service.ClientOption) (*import_service.ImportServiceListImportsOK, error)); ok {
 		return rf(params, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(*import_service.ListImportsParams, ...import_service.ClientOption) *import_service.ListImportsOK); ok {
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceListImportsParams, ...import_service.ClientOption) *import_service.ImportServiceListImportsOK); ok {
 		r0 = rf(params, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*import_service.ListImportsOK)
+			r0 = ret.Get(0).(*import_service.ImportServiceListImportsOK)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*import_service.ListImportsParams, ...import_service.ClientOption) error); ok {
+	if rf, ok := ret.Get(1).(func(*import_service.ImportServiceListImportsParams, ...import_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)
@@ -1027,24 +1023,6 @@ func (_m *TiDBCloudClient) PartialUpdateCluster(params *serverless_service.Serve
 	return r0, r1
 }
 
-// PreSignedUrlUpload provides a mock function with given fields: url, uploadFile, size
-func (_m *TiDBCloudClient) PreSignedUrlUpload(url *string, uploadFile *os.File, size int64) error {
-	ret := _m.Called(url, uploadFile, size)
-
-	if len(ret) == 0 {
-		panic("no return value specified for PreSignedUrlUpload")
-	}
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(*string, *os.File, int64) error); ok {
-		r0 = rf(url, uploadFile, size)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // Restore provides a mock function with given fields: params, opts
 func (_m *TiDBCloudClient) Restore(params *backup_restore_service.BackupRestoreServiceRestoreParams, opts ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceRestoreOK, error) {
 	_va := make([]interface{}, len(opts))
@@ -1074,6 +1052,43 @@ func (_m *TiDBCloudClient) Restore(params *backup_restore_service.BackupRestoreS
 	}
 
 	if rf, ok := ret.Get(1).(func(*backup_restore_service.BackupRestoreServiceRestoreParams, ...backup_restore_service.ClientOption) error); ok {
+		r1 = rf(params, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// StartUpload provides a mock function with given fields: params, opts
+func (_m *TiDBCloudClient) StartUpload(params *import_service.ImportServiceStartUploadParams, opts ...import_service.ClientOption) (*import_service.ImportServiceStartUploadOK, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, params)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	if len(ret) == 0 {
+		panic("no return value specified for StartUpload")
+	}
+
+	var r0 *import_service.ImportServiceStartUploadOK
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceStartUploadParams, ...import_service.ClientOption) (*import_service.ImportServiceStartUploadOK, error)); ok {
+		return rf(params, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(*import_service.ImportServiceStartUploadParams, ...import_service.ClientOption) *import_service.ImportServiceStartUploadOK); ok {
+		r0 = rf(params, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*import_service.ImportServiceStartUploadOK)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(*import_service.ImportServiceStartUploadParams, ...import_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)
