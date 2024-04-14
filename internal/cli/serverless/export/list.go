@@ -132,7 +132,9 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				columns := []output.Column{
 					"ID",
 					"State",
-					"CreatedBy",
+					"Database",
+					"Table",
+					"Compression",
 					"CreateTime",
 					"CompleteTime",
 				}
@@ -146,7 +148,9 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					rows = append(rows, output.Row{
 						item.ExportID,
 						string(item.State),
-						item.CreatedBy,
+						item.ExportOptions.Database,
+						item.ExportOptions.Table,
+						string(item.ExportOptions.Compression),
 						item.CreateTime.String(),
 						completeTime,
 					})
