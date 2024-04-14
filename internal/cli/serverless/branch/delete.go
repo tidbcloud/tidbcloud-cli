@@ -169,9 +169,9 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a branch without confirmation")
-	deleteCmd.Flags().StringP(flag.BranchID, flag.BranchIDShort, "", "The ID of the branch to be deleted")
-	deleteCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the branch to be deleted")
+	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a branch without confirmation.")
+	deleteCmd.Flags().StringP(flag.BranchID, flag.BranchIDShort, "", "The ID of the branch to be deleted.")
+	deleteCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the branch to be deleted.")
 
 	return deleteCmd
 }

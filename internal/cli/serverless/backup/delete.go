@@ -158,8 +158,8 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a backup without confirmation")
-	deleteCmd.Flags().String(flag.BackupID, "", "The ID of the backup to be deleted")
+	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a backup without confirmation.")
+	deleteCmd.Flags().String(flag.BackupID, "", "The ID of the backup to be deleted.")
 
 	return deleteCmd
 }

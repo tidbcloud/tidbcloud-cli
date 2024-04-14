@@ -136,6 +136,6 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	describeCmd.Flags().String(flag.BackupID, "", "The ID of the backup to be described")
+	describeCmd.Flags().String(flag.BackupID, "", "The ID of the backup to be described.")
 	return describeCmd
 }

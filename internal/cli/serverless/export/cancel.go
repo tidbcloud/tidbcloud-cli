@@ -166,9 +166,9 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	cancelCmd.Flags().BoolVar(&force, flag.Force, false, "Cancel an export without confirmation")
-	cancelCmd.Flags().StringP(flag.ExportID, flag.ExportIDShort, "", "The ID of the export to be canceled")
-	cancelCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the export to be canceled")
+	cancelCmd.Flags().BoolVar(&force, flag.Force, false, "Cancel an export without confirmation.")
+	cancelCmd.Flags().StringP(flag.ExportID, flag.ExportIDShort, "", "The ID of the export to be canceled.")
+	cancelCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the export to be canceled.")
 
 	return cancelCmd
 }

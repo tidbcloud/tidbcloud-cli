@@ -45,7 +45,7 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 
 	var loginCmd = &cobra.Command{
 		Use:   "login",
-		Short: "Authenticate with the TiDB Cloud",
+		Short: "Authenticate with TiDB Cloud",
 		Example: fmt.Sprintf(`  To start the login for your account:
   $ %[1]s auth login`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -109,7 +109,7 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	loginCmd.Flags().BoolVar(&opts.insecureStorage, "insecure-storage", false, "Save authentication credentials in plain text instead of credential store")
+	loginCmd.Flags().BoolVar(&opts.insecureStorage, "insecure-storage", false, "Save authentication credentials in plain text instead of credential store.")
 
 	return loginCmd
 }

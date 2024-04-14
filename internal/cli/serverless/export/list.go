@@ -164,7 +164,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	listCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the exports to be listed")
+	listCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the exports to be listed.")
 	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, flag.OutputHelp)
 	return listCmd
 }

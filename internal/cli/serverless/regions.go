@@ -80,6 +80,6 @@ func RegionsCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 	}
-	regionsCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, "Output format, one of [\"human\" \"json\"]")
+	regionsCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, flag.OutputHelp)
 	return regionsCmd
 }

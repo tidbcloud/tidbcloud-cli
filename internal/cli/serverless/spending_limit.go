@@ -162,8 +162,8 @@ func SpendingLimitCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	spendingLimitCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster")
-	spendingLimitCmd.Flags().Int32(flag.Monthly, 0, "Maximum monthly spending limit in USD cents")
+	spendingLimitCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
+	spendingLimitCmd.Flags().Int32(flag.Monthly, 0, "Maximum monthly spending limit in USD cents.")
 	return spendingLimitCmd
 }
 

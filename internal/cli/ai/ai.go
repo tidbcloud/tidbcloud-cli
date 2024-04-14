@@ -185,7 +185,7 @@ func AICmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringP(flag.Query, flag.QueryShort, "", "The query to chat with TiDB Bot")
+	cmd.Flags().StringP(flag.Query, flag.QueryShort, "", "The query to chat with TiDB Bot.")
 	return cmd
 }
 
