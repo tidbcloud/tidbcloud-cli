@@ -22,7 +22,6 @@ require (
 	github.com/go-resty/resty/v2 v2.11.0
 	github.com/go-sql-driver/mysql v1.7.2-0.20230809113539-7cf548287682
 	github.com/google/go-github/v49 v49.0.0
-	github.com/google/go-querystring v1.1.0
 	github.com/hashicorp/go-version v1.6.0
 	github.com/icholy/digest v0.1.22
 	github.com/juju/errors v1.0.0
@@ -84,6 +83,7 @@ require (
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/gohxs/readline v0.0.0-20171011095936-a780388e6e7c // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect

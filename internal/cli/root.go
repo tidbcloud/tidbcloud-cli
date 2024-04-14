@@ -39,7 +39,6 @@ import (
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/util"
 	ver "tidbcloud-cli/internal/version"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/fatih/color"
 	"github.com/juju/errors"
@@ -67,7 +66,7 @@ func Execute(ctx context.Context) {
 			}
 			iamEndpoint := config.GetIAMEndpoint()
 			if iamEndpoint == "" {
-				iamEndpoint = iam.DefaultEndpoint
+				iamEndpoint = cloud.DefaultIAMEndpoint
 			}
 
 			var delegate cloud.TiDBCloudClient

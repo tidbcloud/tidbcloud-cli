@@ -4,19 +4,16 @@ package mock
 
 import (
 	branch_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
+	account "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
 	backup_restore_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 
 	export_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
-
-	iam "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	import_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 
 	mock "github.com/stretchr/testify/mock"
 
 	operations "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
-
-	project "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 
 	serverless_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 )
@@ -914,29 +911,36 @@ func (_m *TiDBCloudClient) ListImports(params *import_service.ImportServiceListI
 	return r0, r1
 }
 
-// ListProjects provides a mock function with given fields: params
-func (_m *TiDBCloudClient) ListProjects(params *iam.ListProjectsParams) (*project.ListProjectsOK, error) {
-	ret := _m.Called(params)
+// ListProjects provides a mock function with given fields: params, opts
+func (_m *TiDBCloudClient) ListProjects(params *account.GetV1beta1ProjectsParams, opts ...account.ClientOption) (*account.GetV1beta1ProjectsOK, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, params)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ListProjects")
 	}
 
-	var r0 *project.ListProjectsOK
+	var r0 *account.GetV1beta1ProjectsOK
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*iam.ListProjectsParams) (*project.ListProjectsOK, error)); ok {
-		return rf(params)
+	if rf, ok := ret.Get(0).(func(*account.GetV1beta1ProjectsParams, ...account.ClientOption) (*account.GetV1beta1ProjectsOK, error)); ok {
+		return rf(params, opts...)
 	}
-	if rf, ok := ret.Get(0).(func(*iam.ListProjectsParams) *project.ListProjectsOK); ok {
-		r0 = rf(params)
+	if rf, ok := ret.Get(0).(func(*account.GetV1beta1ProjectsParams, ...account.ClientOption) *account.GetV1beta1ProjectsOK); ok {
+		r0 = rf(params, opts...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*project.ListProjectsOK)
+			r0 = ret.Get(0).(*account.GetV1beta1ProjectsOK)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*iam.ListProjectsParams) error); ok {
-		r1 = rf(params)
+	if rf, ok := ret.Get(1).(func(*account.GetV1beta1ProjectsParams, ...account.ClientOption) error); ok {
+		r1 = rf(params, opts...)
 	} else {
 		r1 = ret.Error(1)
 	}
