@@ -46,7 +46,7 @@ addcopy: ## Add copyright to all files
 .PHONY: generate-v1beta1-client
 generate-v1beta1-client: ## Generate v1beta1 client
 	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
-	@echo "==> Generating branch client"
+	@echo "==> Generating serverless branch client"
 	swagger generate client -f pkg/tidbcloud/v1beta1/branch/branch.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/branch
 	@echo "==> Generating serverless client"
 	swagger generate client -f pkg/tidbcloud/v1beta1/serverless/serverless.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless
@@ -56,6 +56,8 @@ generate-v1beta1-client: ## Generate v1beta1 client
 	swagger generate client -f pkg/tidbcloud/v1beta1/serverless_import/import.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless_import
 	@echo "==> Generating serverless export client"
 	swagger generate client -f pkg/tidbcloud/v1beta1/serverless_export/export.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless_export
+	@echo "==> Generating iam client"
+	swagger generate client -f pkg/tidbcloud/v1beta1/iam/iam.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/iam
 
 
 .PHONY: fmt

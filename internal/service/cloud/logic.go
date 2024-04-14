@@ -23,6 +23,8 @@ import (
 	"tidbcloud-cli/internal/util"
 	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 	branchModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/models"
+	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
+	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
@@ -32,7 +34,6 @@ import (
 	importApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
-	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/go-openapi/strfmt"
 	"github.com/juju/errors"
@@ -453,23 +454,29 @@ func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client T
 	return res, nil
 }
 
-func RetrieveProjects(size int64, d TiDBCloudClient) (int64, []*projectApi.ListProjectsOKBodyItemsItems0, error) {
-	params := projectApi.NewListProjectsParams()
-	var total int64 = math.MaxInt64
-	var page int64 = 1
-	var pageSize = size
-	var items []*projectApi.ListProjectsOKBodyItemsItems0
-	for (page-1)*pageSize < total {
-		projects, err := d.ListProjects(params.WithPage(&page).WithPageSize(&pageSize))
+func RetrieveProjects(pageSize int64, d TiDBCloudClient) (int64, []*iamModel.APIProject, error) {
+	var items []*iamModel.APIProject
+	var pageToken string
+
+	params := iamApi.NewGetV1beta1ProjectsParams().WithPageSize(&pageSize)
+	projects, err := d.ListProjects(params)
+	if err != nil {
+		return 0, nil, errors.Trace(err)
+	}
+	items = append(items, projects.Payload.Projects...)
+	// loop to get all projects
+	for {
+		pageToken = projects.Payload.NextPageToken
+		if pageToken == "" {
+			break
+		}
+		projects, err = d.ListProjects(params.WithPageSize(&pageSize).WithPageToken(&pageToken))
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
-
-		total = *projects.Payload.Total
-		page += 1
-		items = append(items, projects.Payload.Items...)
+		items = append(items, projects.Payload.Projects...)
 	}
-	return total, items, nil
+	return int64(len(items)), items, nil
 }
 
 func RetrieveClusters(pID string, pageSize int64, d TiDBCloudClient) (int64, []*serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster, error) {

@@ -24,7 +24,8 @@ import (
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
 
-	projectApi "github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
+	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
+
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
@@ -44,7 +45,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			total, items, err := cloud.RetrieveProjects(h.QueryPageSize, d)
+			_, items, err := cloud.RetrieveProjects(h.QueryPageSize, d)
 			if err != nil {
 				return err
 			}
@@ -54,9 +55,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				res := projectApi.ListProjectsOKBody{
-					Items: items,
-					Total: &total,
+				res := iamModel.APIListProjectsRsp{
+					Projects: items,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)
 				if err != nil {

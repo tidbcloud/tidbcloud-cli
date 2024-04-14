@@ -26,7 +26,8 @@ import (
 	pingchatOp "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
 	branchClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client"
 	branchOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client"
+	iamOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
 	serverlessClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client"
 	serverlessOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 	brClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client"
@@ -37,7 +38,6 @@ import (
 	serverlessImportOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 
 	apiClient "github.com/c4pt0r/go-tidbcloud-sdk-v1/client"
-	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 	httpTransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-resty/resty/v2"
@@ -47,6 +47,7 @@ import (
 const (
 	DefaultApiUrl             = "https://" + apiClient.DefaultHost
 	DefaultServerlessEndpoint = "https://" + serverlessClient.DefaultHost
+	DefaultIAMEndpoint        = "https://" + iamClient.DefaultHost
 	userAgent                 = "User-Agent"
 )
 
@@ -63,7 +64,7 @@ type TiDBCloudClient interface {
 
 	ListProviderRegions(params *serverlessOp.ServerlessServiceListRegionsParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListRegionsOK, error)
 
-	ListProjects(params *project.ListProjectsParams, opts ...project.ClientOption) (*project.ListProjectsOK, error)
+	ListProjects(params *iamOp.GetV1beta1ProjectsParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ProjectsOK, error)
 
 	CancelImport(params *serverlessImportOp.ImportServiceCancelImportParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelImportOK, error)
 
@@ -111,8 +112,7 @@ type TiDBCloudClient interface {
 }
 
 type ClientDelegate struct {
-	c   *apiClient.GoTidbcloud
-	is  *iam.Service
+	ic  *iamClient.TidbcloudServerless
 	bc  *branchClient.TidbcloudServerless
 	pc  *pingchatClient.TidbcloudPingchat
 	sc  *serverlessClient.TidbcloudServerless
@@ -127,18 +127,17 @@ func NewClientDelegateWithToken(token string, apiUrl string, serverlessEndpoint 
 	client.SetAuthToken(token)
 	debug := os.Getenv(config.DebugEnv) != ""
 	client.SetDebug(debug)
-	c, bc, sc, pc, brc, sic, ec, is, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint, client)
+	bc, sc, pc, brc, sic, ec, ic, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint, client)
 	if err != nil {
 		return nil, err
 	}
 	return &ClientDelegate{
-		c:   c,
 		bc:  bc,
 		sc:  sc,
 		pc:  pc,
 		brc: brc,
 		ec:  ec,
-		is:  is,
+		ic:  ic,
 		sic: sic,
 	}, nil
 }
@@ -147,18 +146,17 @@ func NewClientDelegateWithApiKey(publicKey string, privateKey string, apiUrl str
 	transport := NewDigestTransport(publicKey, privateKey)
 	client := resty.New()
 	client.SetDigestAuth(publicKey, privateKey)
-	c, bc, sc, pc, brc, sic, ec, is, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint, client)
+	bc, sc, pc, brc, sic, ec, ic, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint, client)
 	if err != nil {
 		return nil, err
 	}
 	return &ClientDelegate{
-		c:   c,
 		bc:  bc,
 		sc:  sc,
 		pc:  pc,
 		brc: brc,
 		ec:  ec,
-		is:  is,
+		ic:  ic,
 		sic: sic,
 	}, nil
 }
@@ -187,8 +185,8 @@ func (d *ClientDelegate) PartialUpdateCluster(params *serverlessOp.ServerlessSer
 	return d.sc.ServerlessService.ServerlessServicePartialUpdateCluster(params, opts...)
 }
 
-func (d *ClientDelegate) ListProjects(params *project.ListProjectsParams, opts ...project.ClientOption) (*project.ListProjectsOK, error) {
-	return d.c.Project.ListProjects(params, opts...)
+func (d *ClientDelegate) ListProjects(params *iamOp.GetV1beta1ProjectsParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ProjectsOK, error) {
+	return d.ic.Account.GetV1beta1Projects(params, opts...)
 }
 
 func (d *ClientDelegate) CancelImport(params *serverlessImportOp.ImportServiceCancelImportParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelImportOK, error) {
@@ -283,7 +281,7 @@ func (d *ClientDelegate) DownloadExport(params *expOp.ExportServiceDownloadExpor
 	return d.ec.ExportService.ExportServiceDownloadExport(params, opts...)
 }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string, client *resty.Client) (*apiClient.GoTidbcloud, *branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *serverlessImportClient.TidbcloudServerless, *expClient.TidbcloudServerless, *iam.Service, error) {
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string, client *resty.Client) (*branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *serverlessImportClient.TidbcloudServerless, *expClient.TidbcloudServerless, *iamClient.TidbcloudServerless, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}
@@ -291,29 +289,30 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	// v1beta api
 	u, err := prop.ValidateApiUrl(apiUrl)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, err
 	}
 	transport := httpTransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpclient)
 
 	// v1beta1 api (serverless)
 	serverlessURL, err := prop.ValidateApiUrl(serverlessEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, err
+	}
+	iamUrl, err := prop.ValidateApiUrl(iamEndpoint)
+	if err != nil {
+		return nil, nil, nil, nil, nil, nil, nil, err
 	}
 	serverlessTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	branchTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
-	backRestoreTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
-	importTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
+	backRestoreTransport := httpTransport.NewWithClient(serverlessURL.Host, brClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
+	importTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessImportClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	exportTransport := httpTransport.NewWithClient(serverlessURL.Host, expClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
+	iamTransport := httpTransport.NewWithClient(iamUrl.Host, iamClient.DefaultBasePath, []string{iamUrl.Scheme}, httpclient)
 
-	iamUrl, err := prop.ValidateApiUrl(iamEndpoint)
-	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, nil, err
-	}
-
-	return apiClient.New(transport, strfmt.Default), branchClient.New(branchTransport, strfmt.Default), serverlessClient.New(serverlessTransport, strfmt.Default),
+	return branchClient.New(branchTransport, strfmt.Default), serverlessClient.New(serverlessTransport, strfmt.Default),
 		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default),
-		serverlessImportClient.New(importTransport, strfmt.Default), expClient.New(exportTransport, strfmt.Default), iam.NewIamService(client, iamUrl.String()), nil
+		serverlessImportClient.New(importTransport, strfmt.Default), expClient.New(exportTransport, strfmt.Default),
+		iamClient.New(iamTransport, strfmt.Default), nil
 }
 
 func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {

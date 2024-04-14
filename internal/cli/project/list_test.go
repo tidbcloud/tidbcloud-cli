@@ -18,21 +18,21 @@ import (
 	"bytes"
 	"encoding/json"
 	"os"
-	"strings"
 	"testing"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
+	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
+	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
 
-	"github.com/c4pt0r/go-tidbcloud-sdk-v1/client/project"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
 
 const resultStr = `{
-  "items": [
+  "projects": [
     {
       "cluster_count": 1,
       "create_timestamp": "1640076859",
@@ -41,13 +41,27 @@ const resultStr = `{
       "org_id": "1372813089189621285",
       "user_count": 1
     }
-  ],
-  "total": 1
+  ]
 }
 `
 
+const resultPageOne = `{
+	"projects": [
+	  {
+		"cluster_count": 1,
+		"create_timestamp": "1640076859",
+		"id": "1372813089189381287",
+		"name": "default project",
+		"org_id": "1372813089189621285",
+		"user_count": 1
+	  }
+	],
+	"nextPageToken": "next_token"
+  }
+  `
+
 const resultMultiPageStr = `{
-  "items": [
+  "projects": [
     {
       "cluster_count": 1,
       "create_timestamp": "1640076859",
@@ -64,8 +78,7 @@ const resultMultiPageStr = `{
       "org_id": "1372813089189621285",
       "user_count": 1
     }
-  ],
-  "total": 2
+  ]
 }
 `
 
@@ -93,17 +106,15 @@ func (suite *ListProjectSuite) SetupTest() {
 
 func (suite *ListProjectSuite) TestListProjectArgs() {
 	assert := require.New(suite.T())
-	var page int64 = 1
 
-	body := &project.ListProjectsOKBody{}
+	body := &iamModel.APIListProjectsRsp{}
 	err := json.Unmarshal([]byte(resultStr), body)
 	assert.Nil(err)
-	result := &project.ListProjectsOK{
+	result := &iamApi.GetV1beta1ProjectsOK{
 		Payload: body,
 	}
-	suite.mockClient.On("ListProjects", project.NewListProjectsParams().
-		WithPage(&page).WithPageSize(&suite.h.QueryPageSize)).
-		Return(result, nil)
+	suite.mockClient.On("ListProjects", iamApi.NewGetV1beta1ProjectsParams().
+		WithPageSize(&suite.h.QueryPageSize)).Return(result, nil)
 
 	tests := []struct {
 		name         string
@@ -149,24 +160,25 @@ func (suite *ListProjectSuite) TestListProjectArgs() {
 
 func (suite *ListProjectSuite) TestListProjectWithMultiPages() {
 	assert := require.New(suite.T())
-	var pageOne int64 = 1
-	var pageTwo int64 = 2
 	suite.h.QueryPageSize = 1
+	nextPageToken := "next_token"
 
-	body := &project.ListProjectsOKBody{}
-	err := json.Unmarshal([]byte(strings.ReplaceAll(resultStr, `"total": 1`, `"total": 2`)), body)
+	body1 := &iamModel.APIListProjectsRsp{}
+	err := json.Unmarshal([]byte(resultPageOne), body1)
 	assert.Nil(err)
-	result := &project.ListProjectsOK{
-		Payload: body,
+	resultPageOne := &iamApi.GetV1beta1ProjectsOK{
+		Payload: body1,
 	}
-	suite.mockClient.On("ListProjects", project.NewListProjectsParams().
-		WithPage(&pageOne).WithPageSize(&suite.h.QueryPageSize)).
-		Return(result, nil)
-	suite.mockClient.On("ListProjects", project.NewListProjectsParams().
-		WithPage(&pageTwo).WithPageSize(&suite.h.QueryPageSize)).
-		Return(result, nil)
-	cmd := ListCmd(suite.h)
-
+	body2 := &iamModel.APIListProjectsRsp{}
+	err = json.Unmarshal([]byte(resultStr), body2)
+	assert.Nil(err)
+	resultPageTwo := &iamApi.GetV1beta1ProjectsOK{
+		Payload: body2,
+	}
+	suite.mockClient.On("ListProjects", iamApi.NewGetV1beta1ProjectsParams().
+		WithPageSize(&suite.h.QueryPageSize)).Return(resultPageOne, nil)
+	suite.mockClient.On("ListProjects", iamApi.NewGetV1beta1ProjectsParams().
+		WithPageSize(&suite.h.QueryPageSize).WithPageToken(&nextPageToken)).Return(resultPageTwo, nil)
 	tests := []struct {
 		name         string
 		args         []string
@@ -179,9 +191,9 @@ func (suite *ListProjectSuite) TestListProjectWithMultiPages() {
 			stdoutString: resultMultiPageStr,
 		},
 	}
-
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
+			cmd := ListCmd(suite.h)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
