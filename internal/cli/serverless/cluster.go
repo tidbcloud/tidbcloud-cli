@@ -26,8 +26,9 @@ import (
 
 func Cmd(h *internal.Helper) *cobra.Command {
 	var serverlessCmd = &cobra.Command{
-		Use:   "serverless",
-		Short: "Manage TiDB Serverless clusters",
+		Use:     "serverless",
+		Short:   "Manage TiDB Serverless clusters",
+		Aliases: []string{"s"},
 	}
 
 	serverlessCmd.AddCommand(ListCmd(h))
