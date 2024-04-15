@@ -55,6 +55,9 @@ ticloud config create
 
 # via TiUP
 tiup cloud config create
+
+# via OAuth
+ticloud auth login
 ```
 
 > :information_source: The config name **MUST NOT** contain '.'

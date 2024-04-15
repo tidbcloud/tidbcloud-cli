@@ -208,7 +208,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				// Ask enhanced encryption when spending limit is set
 				if spendingLimitMonthly > 0 {
 					prompt := &survey.Confirm{
-						Message: "Enable Enhanced Encryption at Rest (Default is No)?",
+						Message: "Enable Enhanced Encryption at Rest?",
 						Default: false,
 					}
 					err = survey.AskOne(prompt, &encryption)
