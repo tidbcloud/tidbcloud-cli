@@ -52,7 +52,7 @@ func ShellCmd(h *internal.Helper) *cobra.Command {
 	var shellCmd = &cobra.Command{
 		Use:   "shell",
 		Short: "Connect to a serverless cluster",
-		Long: `Connect to a serverless cluster
+		Long: `Connect to a serverless cluster.
 The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_ansi) for the session.`,
 		Example: fmt.Sprintf(`  Connect to a serverless cluster in interactive mode:
   $ %[1]s serverless shell
