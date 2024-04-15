@@ -37,7 +37,7 @@ func Cmd(h *internal.Helper) *cobra.Command {
 	serverlessCmd.AddCommand(UpdateCmd(h))
 	serverlessCmd.AddCommand(DeleteCmd(h))
 	serverlessCmd.AddCommand(branch.Cmd(h))
-	serverlessCmd.AddCommand(ConnectCmd(h))
+	serverlessCmd.AddCommand(ShellCmd(h))
 	serverlessCmd.AddCommand(backup.Cmd(h))
 	serverlessCmd.AddCommand(RestoreCmd(h))
 	serverlessCmd.AddCommand(dataimport.ImportCmd(h))

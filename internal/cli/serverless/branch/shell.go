@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package serverless
+package branch
 
 import (
 	"fmt"
@@ -23,7 +23,7 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -34,57 +34,65 @@ import (
 	"github.com/xo/usql/env"
 )
 
-type ConnectOpts struct {
+type ShellOpts struct {
 	interactive bool
 }
 
-func (c ConnectOpts) NonInteractiveFlags() []string {
+func (c ShellOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
+		flag.BranchID,
 	}
 }
 
-func ConnectCmd(h *internal.Helper) *cobra.Command {
-	opts := ConnectOpts{
+func (c *ShellOpts) MarkInteractive(cmd *cobra.Command) error {
+	flags := c.NonInteractiveFlags()
+	for _, fn := range flags {
+		f := cmd.Flags().Lookup(fn)
+		if f != nil && f.Changed {
+			c.interactive = false
+			break
+		}
+	}
+	// Mark required flags
+	if !c.interactive {
+		for _, fn := range flags {
+			err := cmd.MarkFlagRequired(fn)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func ShellCmd(h *internal.Helper) *cobra.Command {
+	opts := ShellOpts{
 		interactive: true,
 	}
 
-	var connectCmd = &cobra.Command{
+	var shellCmd = &cobra.Command{
 		Use:   "shell",
-		Short: "Connect to a serverless cluster",
-		Long: `Connect to a serverless cluster
-The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_ansi) for the session.`,
-		Example: fmt.Sprintf(`  Connect to a serverless cluster in interactive mode:
-  $ %[1]s serverless shell
+		Short: "Connect to a branch",
+		Long: `Connect to a branch. 
+the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_ansi) for the session.`,
+		Example: fmt.Sprintf(`  Connect to a branch in interactive mode:
+  $ %[1]s serverless branch shell
 
-  Connect to a serverless cluster with default user in non-interactive mode:
-  $ %[1]s serverless shell -c <cluster-id>
+  Connect to a branch with default user in non-interactive mode:
+  $ %[1]s serverless branch shell -c <cluster-id> -b <branch-id>
 
-  Connect to a serverless cluster with default user and password in non-interactive mode:
-  $ %[1]s serverless shell -c <cluster-id> --password <password>
+  Connect to a branch with default user and password in non-interactive mode:
+  $ %[1]s serverless branch shell -c <cluster-id> -b <branch-id> --password <password>
 
-  Connect to a serverless cluster with specific user and password in non-interactive mode:
-  $ %[1]s serverless shell -c <cluster-id> -u <user-name> --password <password>`, config.CliName),
+  Connect to a branch with specific user and password in non-interactive mode:
+  $ %[1]s serverless branch shell -c <cluster-id> -b <branch-id> -u <user-name> --password <password>`, config.CliName),
 
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			flags := opts.NonInteractiveFlags()
-			for _, fn := range flags {
-				f := cmd.Flags().Lookup(fn)
-				if f != nil && f.Changed {
-					opts.interactive = false
-				}
+			err := opts.MarkInteractive(cmd)
+			if err != nil {
+				return errors.Trace(err)
 			}
-
-			// mark required flags in non-interactive mode
-			if !opts.interactive {
-				for _, fn := range flags {
-					err := cmd.MarkFlagRequired(fn)
-					if err != nil {
-						return errors.Trace(err)
-					}
-				}
-			}
-
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -98,7 +106,7 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 				return err
 			}
 
-			var clusterID, userName string
+			var clusterID, branchID, userName string
 			var pass *string
 			if opts.interactive {
 				// interactive mode
@@ -113,6 +121,12 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 					return err
 				}
 				clusterID = cluster.ID
+
+				branch, err := cloud.GetSelectedBranch(clusterID, h.QueryPageSize, d)
+				if err != nil {
+					return err
+				}
+				branchID = branch.ID
 
 				useDefaultUser := false
 				prompt := &survey.Confirm{
@@ -152,6 +166,13 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 
 				clusterID = cID
 
+				// options flags
+				bID, err := cmd.Flags().GetString(flag.BranchID)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				branchID = bID
+
 				uName, err := cmd.Flags().GetString(flag.User)
 				if err != nil {
 					return errors.Trace(err)
@@ -168,16 +189,16 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			}
 
 			var host, name, port string
-			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID)
-			cluster, err := d.GetCluster(params)
+			params := branchApi.NewBranchServiceGetBranchParams().WithClusterID(clusterID).WithBranchID(branchID)
+			branchInfo, err := d.GetBranch(params)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			host = cluster.Payload.Endpoints.Public.Host
-			name = *cluster.Payload.DisplayName
-			port = strconv.Itoa(int(cluster.Payload.Endpoints.Public.Port))
+			host = branchInfo.Payload.Endpoints.Public.Host
+			port = strconv.Itoa(int(branchInfo.Payload.Endpoints.Public.Port))
+			name = *branchInfo.Payload.DisplayName
 			if userName == "" {
-				userName = cluster.Payload.UserPrefix + ".root"
+				userName = fmt.Sprintf("%s.root", branchInfo.Payload.UserPrefix)
 				fmt.Fprintln(h.IOStreams.Out, color.GreenString("Current user: ")+color.HiGreenString(userName))
 			}
 
@@ -196,8 +217,9 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 		},
 	}
 
-	connectCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
-	connectCmd.Flags().String(flag.Password, "", "The password of the user.")
-	connectCmd.Flags().StringP(flag.User, flag.UserShort, "", "A specific user for login if not using the default user.")
-	return connectCmd
+	shellCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
+	shellCmd.Flags().StringP(flag.BranchID, flag.BranchIDShort, "", "The ID of the branch.")
+	shellCmd.Flags().String(flag.Password, "", "The password of the user.")
+	shellCmd.Flags().StringP(flag.User, flag.UserShort, "", "A specific user for login if not using the default user.")
+	return shellCmd
 }
