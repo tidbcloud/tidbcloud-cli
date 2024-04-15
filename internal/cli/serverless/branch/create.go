@@ -235,7 +235,7 @@ func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, params *
 	}
 
 	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Waiting for branch to be ready"))
-	createModel, err := p.StartReturningModel()
+	createModel, err := p.Run()
 	if err != nil {
 		return errors.Trace(err)
 	}
@@ -257,7 +257,7 @@ func initialCreateBranchInputModel() ui.TextInputModel {
 
 	for k, v := range createBranchField {
 		t := textinput.New()
-		t.CursorStyle = config.CursorStyle
+		t.Cursor.Style = config.CursorStyle
 		t.CharLimit = 64
 
 		switch k {
@@ -276,7 +276,7 @@ func initialCreateBranchInputModel() ui.TextInputModel {
 
 func GetCreateBranchInput() (tea.Model, error) {
 	p := tea.NewProgram(initialCreateBranchInputModel())
-	inputModel, err := p.StartReturningModel()
+	inputModel, err := p.Run()
 	if err != nil {
 		return nil, errors.Trace(err)
 	}

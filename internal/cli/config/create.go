@@ -106,7 +106,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				p := tea.NewProgram(initialCreationInputModel())
-				inputModel, err := p.StartReturningModel()
+				inputModel, err := p.Run()
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -181,7 +181,7 @@ func initialCreationInputModel() ui.TextInputModel {
 	var t textinput.Model
 	for i := range m.Inputs {
 		t = textinput.New()
-		t.CursorStyle = config.CursorStyle
+		t.Cursor.Style = config.CursorStyle
 		t.CharLimit = 64
 		f := createConfigField(i)
 

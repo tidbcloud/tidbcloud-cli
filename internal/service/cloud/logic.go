@@ -143,7 +143,7 @@ func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error
 	model.EnableFilter()
 
 	p := tea.NewProgram(model)
-	projectModel, err := p.StartReturningModel()
+	projectModel, err := p.Run()
 	if err != nil {
 		return nil, err
 	}
@@ -180,7 +180,7 @@ func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient
 	model.EnableFilter()
 
 	p := tea.NewProgram(model)
-	clusterModel, err := p.StartReturningModel()
+	clusterModel, err := p.Run()
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -205,7 +205,7 @@ func GetSelectedField(mutableFields []string) (string, error) {
 	model.EnableFilter()
 
 	p := tea.NewProgram(model)
-	fieldModel, err := p.StartReturningModel()
+	fieldModel, err := p.Run()
 	if err != nil {
 		return "", errors.Trace(err)
 	}
@@ -230,7 +230,7 @@ func GetSpendingLimitField(mutableFields []string) (string, error) {
 	model.EnableFilter()
 
 	p := tea.NewProgram(model)
-	fieldModel, err := p.StartReturningModel()
+	fieldModel, err := p.Run()
 	if err != nil {
 		return "", errors.Trace(err)
 	}
@@ -268,7 +268,7 @@ func GetSelectedBranch(clusterID string, pageSize int64, client TiDBCloudClient)
 	model.EnableFilter()
 
 	p := tea.NewProgram(model)
-	bModel, err := p.StartReturningModel()
+	bModel, err := p.Run()
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -443,7 +443,7 @@ func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client T
 	model.EnableFilter()
 
 	p := tea.NewProgram(model)
-	importModel, err := p.StartReturningModel()
+	importModel, err := p.Run()
 	if err != nil {
 		return nil, err
 	}

@@ -173,16 +173,16 @@ func GetMonthlyInput() (tea.Model, error) {
 		Inputs: make([]textinput.Model, 1),
 	}
 	t := textinput.New()
-	t.CursorStyle = config.CursorStyle
+	t.Cursor.Style = config.CursorStyle
 	t.CharLimit = 64
-	t.Placeholder = "Input monthly spending limit(int)"
+	t.Placeholder = "Input monthly spending limit in USD cents (int)"
 	t.Focus()
 	t.PromptStyle = config.FocusedStyle
 	t.TextStyle = config.FocusedStyle
 	m.Inputs[0] = t
 
 	p := tea.NewProgram(m)
-	inputModel, err := p.StartReturningModel()
+	inputModel, err := p.Run()
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
