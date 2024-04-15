@@ -85,7 +85,7 @@ func (c *DownloadOpts) MarkInteractive(cmd *cobra.Command) error {
 }
 
 func DownloadCmd(h *internal.Helper) *cobra.Command {
-	var autoApprove bool
+	var force bool
 	opts := DownloadOpts{
 		interactive: true,
 	}
@@ -167,9 +167,9 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			}
 			fileMessage := fmt.Sprintf("There are %d files to download, total size is %s.", len(resp.Payload.Downloads), humanize.IBytes(uint64(totalSize)))
 
-			if !autoApprove {
+			if !force {
 				if !h.IOStreams.CanPrompt {
-					return fmt.Errorf("the terminal doesn't support prompt, please run with --auto-approve to download")
+					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to download")
 				}
 
 				confirmationMessage := fmt.Sprintf("\n%s %s %s %s", color.BlueString(fileMessage), color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to download:"))
@@ -203,7 +203,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 	downloadCmd.Flags().StringP(flag.ExportID, flag.ExportIDShort, "", "The ID of the export.")
 	downloadCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the export.")
 	downloadCmd.Flags().String(flag.OutputPath, "", "Where you want to download to. If not specified, download to the current directory.")
-	downloadCmd.Flags().BoolVar(&autoApprove, flag.AutoApprove, false, "Download without confirmation.")
+	downloadCmd.Flags().BoolVar(&force, flag.Force, false, "Download without confirmation.")
 	downloadCmd.MarkFlagsRequiredTogether(flag.ExportID, flag.ClusterID)
 	return downloadCmd
 }
