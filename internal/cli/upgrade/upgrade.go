@@ -170,7 +170,7 @@ func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, newRelease *g
 	}
 
 	p := tea.NewProgram(ui.InitialSpinnerModel(task, fmt.Sprintf("Updating the CLI to version %s", newRelease.Version)))
-	model, err := p.StartReturningModel()
+	model, err := p.Run()
 	if err != nil {
 		return errors.Trace(err)
 	}

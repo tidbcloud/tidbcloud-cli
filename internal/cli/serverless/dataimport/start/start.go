@@ -230,7 +230,7 @@ func spinnerWaitStartOp(ctx context.Context, h *internal.Helper, d cloud.TiDBClo
 	}
 
 	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Starting import task"))
-	model, err := p.StartReturningModel()
+	model, err := p.Run()
 	if err != nil {
 		return errors.Trace(err)
 	}
