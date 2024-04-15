@@ -13,5 +13,5 @@
       "matchPackagePatterns": ["*"]
     }
   ], 
-  "baseBranches": ["main", "/^release\\/.*/"] 
+  "baseBranches": ["main"] 
 }
