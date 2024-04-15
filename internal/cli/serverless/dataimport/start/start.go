@@ -85,13 +85,13 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 		Example: fmt.Sprintf(`  Start an import task in interactive mode:
   $ %[1]s serverless import start
 
-  Start an local import task in non-interactive mode:
+  Start a local import task in non-interactive mode:
   $ %[1]s serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --file-type <file-type> --local.target-database <target-database> --local.target-table <target-table>
 
-  Start an local import task with custom upload concurrency:
+  Start a local import task with custom upload concurrency:
   $ %[1]s serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --file-type <file-type> --local.target-database <target-database> --local.target-table <target-table> --local.concurrency 10
 	
-  Start an local import task with custom CSV format:
+  Start a local import task with custom CSV format:
   $ %[1]s serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --file-type CSV --local.target-database <target-database> --local.target-table <target-table> --csv.separator \" --csv.delimiter \' --csv.backslash-escape=false --csv.trim-last-separator=true
 `,
 			config.CliName),

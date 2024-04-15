@@ -58,12 +58,12 @@ func SpendingLimitCmd(h *internal.Helper) *cobra.Command {
 
 	var spendingLimitCmd = &cobra.Command{
 		Use:         "spending-limit",
-		Short:       "Set spending limit for a serverless cluster",
+		Short:       "Set spending limit for a TiDB Serverless cluster",
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Set spending limit for serverless clusters in interactive mode:
+		Example: fmt.Sprintf(`  Set spending limit for a TiDB Serverless cluster in interactive mode:
   $ %[1]s serverless spending-limit
 
-  Set spending limit for serverless clusters in non-interactive mode:
+  Set spending limit for a TiDB Serverless cluster in non-interactive mode:
   $ %[1]s serverless spending-limit -c <cluster-id> --monthly <spending-limit-monthly>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()

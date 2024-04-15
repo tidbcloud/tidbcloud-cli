@@ -92,7 +92,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 
 	var downloadCmd = &cobra.Command{
 		Use:   "download",
-		Short: "Download the local type export",
+		Short: "Download the exported data",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Download the local type export in interactive mode:
   $ %[1]s serverless export download

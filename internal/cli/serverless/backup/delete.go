@@ -72,7 +72,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 	var force bool
 	var deleteCmd = &cobra.Command{
 		Use:   "delete",
-		Short: "Delete a serverless cluster backup",
+		Short: "Delete a backup",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Delete a backup in interactive mode:
   $ %[1]s serverless backup delete

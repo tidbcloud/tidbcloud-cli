@@ -46,15 +46,15 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 	var listCmd = &cobra.Command{
 		Use:         "list",
-		Short:       "List all serverless clusters",
+		Short:       "List all TiDB Serverless clusters",
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  List all serverless clusters in interactive mode):
+		Example: fmt.Sprintf(`  List all TiDB Serverless clusters in interactive mode):
   $ %[1]s serverless list
 
-  List all serverless clusters in non-interactive mode:
+  List all TiDB Serverless clusters in non-interactive mode:
   $ %[1]s serverless list -p <project-id>
 
-  List all serverless clusters in non-interactive mode:
+  List all TiDB Serverless clusters in non-interactive mode:
   $ %[1]s serverless list -p <project-id> -o json`, config.CliName),
 		Aliases: []string{"ls"},
 		PreRun: func(cmd *cobra.Command, args []string) {

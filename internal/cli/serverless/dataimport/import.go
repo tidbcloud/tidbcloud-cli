@@ -24,7 +24,7 @@ import (
 func ImportCmd(h *internal.Helper) *cobra.Command {
 	var importCmd = &cobra.Command{
 		Use:   "import",
-		Short: "Import data into serverless cluster",
+		Short: "Manage TiDB Serverless data imports",
 	}
 
 	importCmd.AddCommand(ListCmd(h))

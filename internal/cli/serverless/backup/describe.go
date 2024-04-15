@@ -67,7 +67,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 
 	var describeCmd = &cobra.Command{
 		Use:     "describe",
-		Short:   "Describe a serverless cluster backup",
+		Short:   "Describe a backup",
 		Aliases: []string{"get"},
 		Args:    cobra.NoArgs,
 		Example: fmt.Sprintf(`  Get the backup in interactive mode:
