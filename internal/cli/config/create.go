@@ -199,10 +199,10 @@ func initialCreationInputModel() ui.TextInputModel {
 				return nil
 			}
 		case publicKeyIdx:
-			t.Placeholder = "Public Key(optional)"
+			t.Placeholder = "Public Key (optional)"
 			t.CharLimit = 128
 		case privateKeyIdx:
-			t.Placeholder = "Private Key(optional)"
+			t.Placeholder = "Private Key (optional)"
 			t.EchoMode = textinput.EchoPassword
 			t.EchoCharacter = '•'
 			t.CharLimit = 128
