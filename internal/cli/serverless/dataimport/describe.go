@@ -132,7 +132,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	describeCmd.Flags().String(flag.ImportID, "", "The ID of import task")
+	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID.")
+	describeCmd.Flags().String(flag.ImportID, "", "The ID of import task.")
 	return describeCmd
 }

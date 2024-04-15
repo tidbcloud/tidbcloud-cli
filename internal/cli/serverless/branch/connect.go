@@ -217,9 +217,9 @@ the connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 		},
 	}
 
-	connectCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster")
-	connectCmd.Flags().StringP(flag.BranchID, flag.BranchIDShort, "", "The ID of the branch")
-	connectCmd.Flags().String(flag.Password, "", "The password of the user")
-	connectCmd.Flags().StringP(flag.User, flag.UserShort, "", "A specific user for login if not using the default user")
+	connectCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
+	connectCmd.Flags().StringP(flag.BranchID, flag.BranchIDShort, "", "The ID of the branch.")
+	connectCmd.Flags().String(flag.Password, "", "The password of the user.")
+	connectCmd.Flags().StringP(flag.User, flag.UserShort, "", "A specific user for login if not using the default user.")
 	return connectCmd
 }

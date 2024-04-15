@@ -27,13 +27,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func RegionsCmd(h *internal.Helper) *cobra.Command {
-	var regionsCmd = &cobra.Command{
-		Use:         "regions",
+func RegionCmd(h *internal.Helper) *cobra.Command {
+	var regionCmd = &cobra.Command{
+		Use:         "region",
 		Short:       "List all available regions for serverless clusters",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  List all available regions for serverless clusters:
-  $ %[1]s serverless regions`, config.CliName),
+  $ %[1]s serverless region`, config.CliName),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			d, err := h.Client()
 			if err != nil {
@@ -80,6 +80,6 @@ func RegionsCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 	}
-	regionsCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, "Output format, one of [\"human\" \"json\"]")
-	return regionsCmd
+	regionCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, flag.OutputHelp)
+	return regionCmd
 }

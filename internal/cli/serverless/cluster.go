@@ -26,22 +26,23 @@ import (
 
 func Cmd(h *internal.Helper) *cobra.Command {
 	var serverlessCmd = &cobra.Command{
-		Use:   "serverless",
-		Short: "Manage TiDB Serverless clusters",
+		Use:     "serverless",
+		Short:   "Manage TiDB Serverless clusters",
+		Aliases: []string{"s"},
 	}
 
-	serverlessCmd.AddCommand(CreateCmd(h))
 	serverlessCmd.AddCommand(ListCmd(h))
+	serverlessCmd.AddCommand(CreateCmd(h))
 	serverlessCmd.AddCommand(DescribeCmd(h))
+	serverlessCmd.AddCommand(UpdateCmd(h))
 	serverlessCmd.AddCommand(DeleteCmd(h))
 	serverlessCmd.AddCommand(branch.Cmd(h))
-	serverlessCmd.AddCommand(backup.Cmd(h))
-	serverlessCmd.AddCommand(RegionsCmd(h))
 	serverlessCmd.AddCommand(ConnectCmd(h))
+	serverlessCmd.AddCommand(backup.Cmd(h))
 	serverlessCmd.AddCommand(RestoreCmd(h))
-	serverlessCmd.AddCommand(UpdateCmd(h))
 	serverlessCmd.AddCommand(dataimport.ImportCmd(h))
-	serverlessCmd.AddCommand(SpendingLimitCmd(h))
 	serverlessCmd.AddCommand(export.Cmd(h))
+	serverlessCmd.AddCommand(SpendingLimitCmd(h))
+	serverlessCmd.AddCommand(RegionCmd(h))
 	return serverlessCmd
 }

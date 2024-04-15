@@ -153,6 +153,6 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, flag.OutputHelp)
-	listCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project")
+	listCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project.")
 	return listCmd
 }

@@ -167,9 +167,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	createCmd.Flags().String(flag.ProfileName, "", "the name of the profile, must not contain '.'")
-	createCmd.Flags().String(flag.PublicKey, "", "the public key of the TiDB Cloud API(optional)")
-	createCmd.Flags().String(flag.PrivateKey, "", "the private key of the TiDB Cloud API(optional)")
+	createCmd.Flags().String(flag.ProfileName, "", "The name of the profile, must not contain '.'.")
+	createCmd.Flags().String(flag.PublicKey, "", "The public key of the TiDB Cloud API. (optional)")
+	createCmd.Flags().String(flag.PrivateKey, "", "The private key of the TiDB Cloud API. (optional)")
 	return createCmd
 }
 

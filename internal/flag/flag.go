@@ -73,4 +73,4 @@ const (
 	SourceType            string = "source-type"
 )
 
-const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format"
+const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."

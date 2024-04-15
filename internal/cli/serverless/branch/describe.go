@@ -141,8 +141,8 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	describeCmd.Flags().StringP(flag.BranchID, flag.BranchIDShort, "", "The ID of the branch to be described")
-	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the branch to be described")
+	describeCmd.Flags().StringP(flag.BranchID, flag.BranchIDShort, "", "The ID of the branch to be described.")
+	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the branch to be described.")
 	describeCmd.MarkFlagsRequiredTogether(flag.BranchID, flag.ClusterID)
 	return describeCmd
 }

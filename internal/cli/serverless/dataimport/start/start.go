@@ -145,19 +145,19 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	startCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	startCmd.Flags().String(flag.SourceType, "LOCAL", fmt.Sprintf("The import source type, one of %q", []string{string(SourceTypeLOCAL)}))
-	startCmd.Flags().String(flag.FileType, "", fmt.Sprintf("The import file type, one of %q", opts.SupportedFileTypes()))
+	startCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID.")
+	startCmd.Flags().String(flag.SourceType, "LOCAL", fmt.Sprintf("The import source type, one of %q.", []string{string(SourceTypeLOCAL)}))
+	startCmd.Flags().String(flag.FileType, "", fmt.Sprintf("The import file type, one of %q.", opts.SupportedFileTypes()))
 
-	startCmd.Flags().String(flag.LocalFilePath, "", "The local file path to import")
-	startCmd.Flags().String(flag.LocalTargetDatabase, "", "Target database to which import data")
-	startCmd.Flags().String(flag.LocalTargetTable, "", "Target table to which import data")
-	startCmd.Flags().IntVar(&concurrency, flag.LocalConcurrency, 5, "The concurrency for uploading file")
+	startCmd.Flags().String(flag.LocalFilePath, "", "The local file path to import.")
+	startCmd.Flags().String(flag.LocalTargetDatabase, "", "Target database to which import data.")
+	startCmd.Flags().String(flag.LocalTargetTable, "", "Target table to which import data.")
+	startCmd.Flags().IntVar(&concurrency, flag.LocalConcurrency, 5, "The concurrency for uploading file.")
 
-	startCmd.Flags().String(flag.CSVDelimiter, "\"", "The delimiter used for quoting of CSV file")
-	startCmd.Flags().String(flag.CSVSeparator, ",", "The field separator of CSV file")
-	startCmd.Flags().Bool(flag.CSVTrimLastSeparator, false, "In CSV file whether to treat Separator as the line terminator and trim all trailing separators")
-	startCmd.Flags().Bool(flag.CSVBackslashEscape, true, "In CSV file whether to parse backslash inside fields as escape characters")
+	startCmd.Flags().String(flag.CSVDelimiter, "\"", "The delimiter used for quoting of CSV file.")
+	startCmd.Flags().String(flag.CSVSeparator, ",", "The field separator of CSV file.")
+	startCmd.Flags().Bool(flag.CSVTrimLastSeparator, false, "In CSV file whether to treat separator as the line terminator and trim all trailing separators.")
+	startCmd.Flags().Bool(flag.CSVBackslashEscape, true, "In CSV file whether to parse backslash inside fields as escape characters.")
 
 	return startCmd
 }

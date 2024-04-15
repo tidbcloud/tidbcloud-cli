@@ -138,6 +138,6 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a profile without confirmation")
+	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a profile without confirmation.")
 	return deleteCmd
 }

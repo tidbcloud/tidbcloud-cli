@@ -126,6 +126,6 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster")
+	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
 	return describeCmd
 }

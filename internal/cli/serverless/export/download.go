@@ -200,10 +200,10 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	downloadCmd.Flags().StringP(flag.ExportID, flag.ExportIDShort, "", "The ID of the export")
-	downloadCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the export")
-	downloadCmd.Flags().String(flag.OutputPath, "", "Where you want to download to. If not specified, download to the current directory")
-	downloadCmd.Flags().BoolVar(&autoApprove, flag.AutoApprove, false, "Download without confirmation")
+	downloadCmd.Flags().StringP(flag.ExportID, flag.ExportIDShort, "", "The ID of the export.")
+	downloadCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the export.")
+	downloadCmd.Flags().String(flag.OutputPath, "", "Where you want to download to. If not specified, download to the current directory.")
+	downloadCmd.Flags().BoolVar(&autoApprove, flag.AutoApprove, false, "Download without confirmation.")
 	downloadCmd.MarkFlagsRequiredTogether(flag.ExportID, flag.ClusterID)
 	return downloadCmd
 }

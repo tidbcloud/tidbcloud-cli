@@ -35,7 +35,7 @@ const (
 func AuthCmd(h *internal.Helper) *cobra.Command {
 	var authCmd = &cobra.Command{
 		Use:   "auth",
-		Short: "Login and logout via the TiDB Cloud API",
+		Short: "Login and logout via TiDB Cloud API",
 	}
 
 	authCmd.AddCommand(LoginCmd(h))

@@ -132,7 +132,9 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				columns := []output.Column{
 					"ID",
 					"State",
-					"CreatedBy",
+					"Database",
+					"Table",
+					"Compression",
 					"CreateTime",
 					"CompleteTime",
 				}
@@ -146,7 +148,9 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					rows = append(rows, output.Row{
 						item.ExportID,
 						string(item.State),
-						item.CreatedBy,
+						item.ExportOptions.Database,
+						item.ExportOptions.Table,
+						string(item.ExportOptions.Compression),
 						item.CreateTime.String(),
 						completeTime,
 					})
@@ -164,7 +168,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	listCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the exports to be listed")
+	listCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the exports to be listed.")
 	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, flag.OutputHelp)
 	return listCmd
 }

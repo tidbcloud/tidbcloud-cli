@@ -160,8 +160,8 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	cancelCmd.Flags().BoolVar(&force, flag.Force, false, "Cancel an import task without confirmation")
-	cancelCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID")
-	cancelCmd.Flags().String(flag.ImportID, "", "The ID of import task")
+	cancelCmd.Flags().BoolVar(&force, flag.Force, false, "Cancel an import task without confirmation.")
+	cancelCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID.")
+	cancelCmd.Flags().String(flag.ImportID, "", "The ID of import task.")
 	return cancelCmd
 }
