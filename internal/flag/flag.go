@@ -68,7 +68,6 @@ const (
 	ExportIDShort         string = "e"
 	OutputPath            string = "output-path"
 	Encryption            string = "encryption"
-	AutoApprove           string = "auto-approve"
 	Compression           string = "compression"
 	SourceType            string = "source-type"
 )

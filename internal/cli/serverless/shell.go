@@ -34,25 +34,25 @@ import (
 	"github.com/xo/usql/env"
 )
 
-type ConnectOpts struct {
+type ShellOpts struct {
 	interactive bool
 }
 
-func (c ConnectOpts) NonInteractiveFlags() []string {
+func (c ShellOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
 	}
 }
 
-func ConnectCmd(h *internal.Helper) *cobra.Command {
-	opts := ConnectOpts{
+func ShellCmd(h *internal.Helper) *cobra.Command {
+	opts := ShellOpts{
 		interactive: true,
 	}
 
-	var connectCmd = &cobra.Command{
+	var shellCmd = &cobra.Command{
 		Use:   "shell",
 		Short: "Connect to a serverless cluster",
-		Long: `Connect to a serverless cluster
+		Long: `Connect to a serverless cluster.
 The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_ansi) for the session.`,
 		Example: fmt.Sprintf(`  Connect to a serverless cluster in interactive mode:
   $ %[1]s serverless shell
@@ -196,8 +196,8 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 		},
 	}
 
-	connectCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
-	connectCmd.Flags().String(flag.Password, "", "The password of the user.")
-	connectCmd.Flags().StringP(flag.User, flag.UserShort, "", "A specific user for login if not using the default user.")
-	return connectCmd
+	shellCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
+	shellCmd.Flags().String(flag.Password, "", "The password of the user.")
+	shellCmd.Flags().StringP(flag.User, flag.UserShort, "", "A specific user for login if not using the default user.")
+	return shellCmd
 }
