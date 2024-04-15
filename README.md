@@ -3,19 +3,20 @@
 The `ticloud` command line tool brings deploy cluster requests, and other TiDB Cloud concepts to your fingertips.
 
 ## Table of Contents
-* [TiDB Cloud CLI](#tidb-cloud-cli)
-    * [Installation](#installation)
-        * [macOS and Linux](#macos-and-linux)
-            * [Installing via script](#installing-via-script)
-            * [Installing via TiUP](#installing-via-tiup)
-        * [Manually](#manually)
-        * [GitHub Action](#github-action)
-    * [Quick Start](#quick-start)
-        * [Config a profile](#config-a-profile)
-        * [Create a cluster](#create-a-cluster)
-    * [Documentation](#documentation)
-        * [Set up TiDB Cloud API host](#set-up-tidb-cloud-api-host)
-    * [Roadmap](#roadmap)
+- [TiDB Cloud CLI](#tidb-cloud-cli)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+    - [macOS and Linux](#macos-and-linux)
+      - [Installing via script](#installing-via-script)
+      - [Installing via TiUP](#installing-via-tiup)
+    - [Manually](#manually)
+    - [GitHub Action](#github-action)
+  - [Quick Start](#quick-start)
+    - [Config a profile](#config-a-profile)
+    - [Create a cluster](#create-a-cluster)
+  - [Documentation](#documentation)
+  - [Telemetry](#telemetry)
+  - [Roadmap](#roadmap)
 
 ## Installation
 
@@ -47,7 +48,7 @@ In order to use the `ticloud` CLI, you need to have a TiDB Cloud account. If you
 
 ### Config a profile
 
-Config a profile with your TiDB Cloud [API key](https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management).
+Config a profile with your TiDB Cloud [API key](https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management) or log in via OAuth.
 
 ```shell
 ticloud config create
@@ -61,35 +62,24 @@ tiup cloud config create
 ### Create a cluster
 
 ```shell
-ticloud cluster create
+ticloud serverless create
 
 # via TiUP
-tiup cloud cluster create
+tiup cloud serverless create
 ```
 
 ## Documentation
 
 Please check the CLI help for more information.
 
-### Set up TiDB Cloud API host
-
-Usually you don't need to set up the TiDB Cloud API url, the default value is `https://api.tidbcloud.com`.
-
-```shell
-ticloud config set api-url https://api.tidbcloud.com
-
-# via TiUP
-tiup cloud config set api-url https://api.tidbcloud.com
-```
-
-### Telemetry
+## Telemetry
 
 See [here](/docs/telemetry.md)
 
 ## Roadmap
 
 There are many features we want to add to the CLI.
-- CLI supports auth login.
 - CLI supports generating demo code for using TiDB Cloud cluster.
-- CLI supports creating the dedicated cluster(on condition that dedicated support flavor).
+- CLI supports managing the dedicated cluster.
 - CLI supports backing up and restoring the TiDB Cloud cluster.
+- CLI supports importing/exporting to external cloud storages.
