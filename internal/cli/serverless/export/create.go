@@ -112,7 +112,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	var createCmd = &cobra.Command{
 		Use:   "create",
-		Short: "Create a serverless cluster export",
+		Short: "Export data from a TiDB Serverless cluster",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Create an export in interactive mode:
   $ %[1]s serverless export create

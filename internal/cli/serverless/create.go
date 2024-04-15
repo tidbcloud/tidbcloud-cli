@@ -80,15 +80,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	var createCmd = &cobra.Command{
 		Use:         "create",
-		Short:       "Create a serverless cluster",
+		Short:       "Create a TiDB Serverless cluster",
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Create a serverless cluster in interactive mode:
+		Example: fmt.Sprintf(`  Create a TiDB Serverless cluster in interactive mode:
   $ %[1]s serverless create
 
-  Create a serverless cluster of the default ptoject in non-interactive mode:
+  Create a TiDB Serverless cluster of the default ptoject in non-interactive mode:
   $ %[1]s serverless create --display-name <cluster-name> --region <region>
 
-  Create a serverless cluster in non-interactive mode:
+  Create a TiDB Serverless cluster in non-interactive mode:
   $ %[1]s serverless create --project-id <project-id> --display-name <cluster-name> --region <region>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {

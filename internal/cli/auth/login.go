@@ -46,7 +46,7 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 	var loginCmd = &cobra.Command{
 		Use:   "login",
 		Short: "Authenticate with TiDB Cloud",
-		Example: fmt.Sprintf(`  To start the login for your account:
+		Example: fmt.Sprintf(`  To log into TiDB Cloud::
   $ %[1]s auth login`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			debug, err := cmd.Flags().GetBool(flag.Debug)
