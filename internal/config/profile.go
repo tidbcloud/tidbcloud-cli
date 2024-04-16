@@ -15,6 +15,7 @@
 package config
 
 import (
+	stderrors "errors"
 	"fmt"
 	"os"
 	"sort"
@@ -267,8 +268,9 @@ func (p *Profile) DeleteAccessToken() error {
 	}
 
 	err = store.Delete(p.name)
-	if err != nil {
+	if !stderrors.Is(err, store.ErrNotSupported) {
 		return err
 	}
+
 	return nil
 }
