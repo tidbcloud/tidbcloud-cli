@@ -306,7 +306,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 func GetSelectedTargetType() (TargetType, error) {
 	targetTypes := make([]interface{}, 0, 2)
 	targetTypes = append(targetTypes, TargetTypeLOCAL, TargetTypeS3)
-	model, err := ui.InitialSelectModel(targetTypes, "Choose export target")
+	model, err := ui.InitialSelectModel(targetTypes, "Choose export target:")
 	if err != nil {
 		return TargetTypeUnknown, errors.Trace(err)
 	}
@@ -329,7 +329,7 @@ func GetSelectedTargetType() (TargetType, error) {
 func GetSelectedFileType() (FileType, error) {
 	fileTypes := make([]interface{}, 0, 2)
 	fileTypes = append(fileTypes, FileTypeSQL, FileTypeCSV)
-	model, err := ui.InitialSelectModel(fileTypes, "Choose export file type")
+	model, err := ui.InitialSelectModel(fileTypes, "Choose export file type:")
 	if err != nil {
 		return FileTypeUnknown, errors.Trace(err)
 	}
@@ -352,7 +352,7 @@ func GetSelectedFileType() (FileType, error) {
 func GetSelectedCompression() (string, error) {
 	compressions := make([]interface{}, 0, 4)
 	compressions = append(compressions, "GZIP", "SNAPPY", "ZSTD", "NONE")
-	model, err := ui.InitialSelectModel(compressions, "Choose the compression algorithm")
+	model, err := ui.InitialSelectModel(compressions, "Choose the compression algorithm:")
 	if err != nil {
 		return "", errors.Trace(err)
 	}
