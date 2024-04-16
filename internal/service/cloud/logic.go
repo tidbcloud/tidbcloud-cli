@@ -174,7 +174,7 @@ func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient
 		return nil, fmt.Errorf("no available clusters found")
 	}
 
-	model, err := ui.InitialSelectModel(items, "Choose the cluster")
+	model, err := ui.InitialSelectModel(items, "Choose the cluster:")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -202,7 +202,7 @@ func GetSelectedField(mutableFields []string) (string, error) {
 	for _, item := range mutableFields {
 		items = append(items, item)
 	}
-	model, err := ui.InitialSelectModel(items, "Choose the field to update")
+	model, err := ui.InitialSelectModel(items, "Choose the field to update:")
 	if err != nil {
 		return "", errors.Trace(err)
 	}
@@ -230,7 +230,7 @@ func GetSpendingLimitField(mutableFields []string) (string, error) {
 	for _, item := range mutableFields {
 		items = append(items, item)
 	}
-	model, err := ui.InitialSelectModel(items, "Choose the type of spending limit")
+	model, err := ui.InitialSelectModel(items, "Choose the type of spending limit:")
 	if err != nil {
 		return "", errors.Trace(err)
 	}
@@ -271,7 +271,7 @@ func GetSelectedBranch(clusterID string, pageSize int64, client TiDBCloudClient)
 		return nil, fmt.Errorf("no available branches found")
 	}
 
-	model, err := ui.InitialSelectModel(items, "Choose the branch")
+	model, err := ui.InitialSelectModel(items, "Choose the branch:")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -310,7 +310,7 @@ func GetSelectedExport(clusterID string, pageSize int64, client TiDBCloudClient)
 		return nil, fmt.Errorf("no available exports found")
 	}
 
-	model, err := ui.InitialSelectModel(items, "Choose the export")
+	model, err := ui.InitialSelectModel(items, "Choose the export:")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -351,7 +351,7 @@ func GetSelectedLocalExport(clusterID string, pageSize int64, client TiDBCloudCl
 		return nil, fmt.Errorf("no available exports found")
 	}
 
-	model, err := ui.InitialSelectModel(items, "Choose the succeed local type export")
+	model, err := ui.InitialSelectModel(items, "Choose the succeeded local type export:")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -392,7 +392,7 @@ func GetSelectedServerlessBackup(clusterID string, pageSize int32, client TiDBCl
 		return nil, fmt.Errorf("no available backups found")
 	}
 
-	model, err := ui.InitialSelectModel(items, "Choose the backup")
+	model, err := ui.InitialSelectModel(items, "Choose the backup:")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -421,7 +421,7 @@ func GetSelectedRestoreMode() (string, error) {
 		RestoreModePointInTime,
 	}
 
-	model, err := ui.InitialSelectModel(items, "Choose the restore mode")
+	model, err := ui.InitialSelectModel(items, "Choose the restore mode:")
 	if err != nil {
 		return "", errors.Trace(err)
 	}
