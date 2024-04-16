@@ -319,8 +319,11 @@ func GetSelectedTargetType() (TargetType, error) {
 	if m, _ := targetTypeModel.(ui.SelectModel); m.Interrupted {
 		return TargetTypeUnknown, util.InterruptError
 	}
-	targetType := targetTypeModel.(ui.SelectModel).GetSelectedItem().(TargetType)
-	return targetType, nil
+	targetType := targetTypeModel.(ui.SelectModel).GetSelectedItem()
+	if targetType == nil {
+		return TargetTypeUnknown, errors.New("no export target selected")
+	}
+	return targetType.(TargetType), nil
 }
 
 func GetSelectedFileType() (FileType, error) {
@@ -339,8 +342,11 @@ func GetSelectedFileType() (FileType, error) {
 	if m, _ := fileTypeModel.(ui.SelectModel); m.Interrupted {
 		return FileTypeUnknown, util.InterruptError
 	}
-	fileType := fileTypeModel.(ui.SelectModel).GetSelectedItem().(FileType)
-	return fileType, nil
+	fileType := fileTypeModel.(ui.SelectModel).GetSelectedItem()
+	if fileType == nil {
+		return FileTypeUnknown, errors.New("no export file type selected")
+	}
+	return fileType.(FileType), nil
 }
 
 func GetSelectedCompression() (string, error) {
@@ -359,8 +365,11 @@ func GetSelectedCompression() (string, error) {
 	if m, _ := fileTypeModel.(ui.SelectModel); m.Interrupted {
 		return "", util.InterruptError
 	}
-	compression := fileTypeModel.(ui.SelectModel).GetSelectedItem().(string)
-	return compression, nil
+	compression := fileTypeModel.(ui.SelectModel).GetSelectedItem()
+	if compression == nil {
+		return "", errors.New("no compression algorithm selected")
+	}
+	return compression.(string), nil
 }
 
 func initialS3InputModel() ui.TextInputModel {

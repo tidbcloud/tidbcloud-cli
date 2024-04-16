@@ -178,8 +178,11 @@ func getSelectedSourceType() (SourceType, error) {
 	if m, _ := SourceTypeModel.(ui.SelectModel); m.Interrupted {
 		return SourceTypeUnknown, util.InterruptError
 	}
-	fileType := SourceTypeModel.(ui.SelectModel).GetSelectedItem().(SourceType)
-	return fileType, nil
+	fileType := SourceTypeModel.(ui.SelectModel).GetSelectedItem()
+	if fileType == nil {
+		return SourceTypeUnknown, errors.New("no source type selected")
+	}
+	return fileType.(SourceType), nil
 }
 
 func waitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.ImportServiceCreateImportParams) error {

@@ -150,8 +150,11 @@ func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error
 	if m, _ := projectModel.(ui.SelectModel); m.Interrupted {
 		return nil, util.InterruptError
 	}
-	res := projectModel.(ui.SelectModel).GetSelectedItem().(*Project)
-	return res, nil
+	res := projectModel.(ui.SelectModel).GetSelectedItem()
+	if res == nil {
+		return nil, errors.New("no project selected")
+	}
+	return res.(*Project), nil
 }
 
 func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient) (*Cluster, error) {
@@ -187,8 +190,11 @@ func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient
 	if m, _ := clusterModel.(ui.SelectModel); m.Interrupted {
 		return nil, util.InterruptError
 	}
-	cluster := clusterModel.(ui.SelectModel).GetSelectedItem().(*Cluster)
-	return cluster, nil
+	cluster := clusterModel.(ui.SelectModel).GetSelectedItem()
+	if cluster == nil {
+		return nil, errors.New("no cluster selected")
+	}
+	return cluster.(*Cluster), nil
 }
 
 func GetSelectedField(mutableFields []string) (string, error) {
@@ -212,8 +218,11 @@ func GetSelectedField(mutableFields []string) (string, error) {
 	if m, _ := fieldModel.(ui.SelectModel); m.Interrupted {
 		return "", util.InterruptError
 	}
-	field := fieldModel.(ui.SelectModel).GetSelectedItem().(string)
-	return field, nil
+	field := fieldModel.(ui.SelectModel).GetSelectedItem()
+	if field == nil {
+		return "", errors.New("no field selected")
+	}
+	return field.(string), nil
 }
 
 func GetSpendingLimitField(mutableFields []string) (string, error) {
@@ -237,8 +246,11 @@ func GetSpendingLimitField(mutableFields []string) (string, error) {
 	if m, _ := fieldModel.(ui.SelectModel); m.Interrupted {
 		return "", util.InterruptError
 	}
-	field := fieldModel.(ui.SelectModel).GetSelectedItem().(string)
-	return field, nil
+	field := fieldModel.(ui.SelectModel).GetSelectedItem()
+	if field == nil {
+		return "", errors.New("no type selected")
+	}
+	return field.(string), nil
 }
 
 func GetSelectedBranch(clusterID string, pageSize int64, client TiDBCloudClient) (*Branch, error) {
@@ -275,8 +287,11 @@ func GetSelectedBranch(clusterID string, pageSize int64, client TiDBCloudClient)
 	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
 		return nil, util.InterruptError
 	}
-	branch := bModel.(ui.SelectModel).GetSelectedItem().(*Branch)
-	return branch, nil
+	branch := bModel.(ui.SelectModel).GetSelectedItem()
+	if branch == nil {
+		return nil, errors.New("no branch selected")
+	}
+	return branch.(*Branch), nil
 }
 
 func GetSelectedExport(clusterID string, pageSize int64, client TiDBCloudClient) (*Export, error) {
@@ -311,8 +326,11 @@ func GetSelectedExport(clusterID string, pageSize int64, client TiDBCloudClient)
 	if m, _ := eModel.(ui.SelectModel); m.Interrupted {
 		return nil, util.InterruptError
 	}
-	export := eModel.(ui.SelectModel).GetSelectedItem().(*Export)
-	return export, nil
+	export := eModel.(ui.SelectModel).GetSelectedItem()
+	if export == nil {
+		return nil, errors.New("no export selected")
+	}
+	return export.(*Export), nil
 }
 
 func GetSelectedLocalExport(clusterID string, pageSize int64, client TiDBCloudClient) (*Export, error) {
@@ -349,8 +367,11 @@ func GetSelectedLocalExport(clusterID string, pageSize int64, client TiDBCloudCl
 	if m, _ := eModel.(ui.SelectModel); m.Interrupted {
 		return nil, util.InterruptError
 	}
-	export := eModel.(ui.SelectModel).GetSelectedItem().(*Export)
-	return export, nil
+	export := eModel.(ui.SelectModel).GetSelectedItem()
+	if export == nil {
+		return nil, errors.New("no export selected")
+	}
+	return export.(*Export), nil
 }
 
 func GetSelectedServerlessBackup(clusterID string, pageSize int32, client TiDBCloudClient) (*ServerlessBackup, error) {
@@ -387,8 +408,11 @@ func GetSelectedServerlessBackup(clusterID string, pageSize int32, client TiDBCl
 	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
 		return nil, util.InterruptError
 	}
-	backup := bModel.(ui.SelectModel).GetSelectedItem().(*ServerlessBackup)
-	return backup, nil
+	backup := bModel.(ui.SelectModel).GetSelectedItem()
+	if backup == nil {
+		return nil, errors.New("no backup selected")
+	}
+	return backup.(*ServerlessBackup), nil
 }
 
 func GetSelectedRestoreMode() (string, error) {
@@ -411,8 +435,11 @@ func GetSelectedRestoreMode() (string, error) {
 	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
 		return "", util.InterruptError
 	}
-	restoreMode := bModel.(ui.SelectModel).GetSelectedItem().(string)
-	return restoreMode, nil
+	restoreMode := bModel.(ui.SelectModel).GetSelectedItem()
+	if restoreMode == nil {
+		return "", errors.New("no restore mode selected")
+	}
+	return restoreMode.(string), nil
 }
 
 // GetSelectedImport get the selected import task. statusFilter is used to filter the available options, only imports has status in statusFilter will be available.
@@ -450,8 +477,11 @@ func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client T
 	if m, _ := importModel.(ui.SelectModel); m.Interrupted {
 		return nil, util.InterruptError
 	}
-	res := importModel.(ui.SelectModel).GetSelectedItem().(*Import)
-	return res, nil
+	res := importModel.(ui.SelectModel).GetSelectedItem()
+	if res == nil {
+		return nil, errors.New("no import task selected")
+	}
+	return res.(*Import), nil
 }
 
 func RetrieveProjects(pageSize int64, d TiDBCloudClient) (int64, []*iamModel.APIProject, error) {

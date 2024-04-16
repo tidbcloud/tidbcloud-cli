@@ -237,6 +237,9 @@ func (m SelectModel) View() string {
 
 	// Has user selected?
 	if m.Selected != -1 {
+		if len(m.VisibleChoices) == 0 {
+			return s
+		}
 		checked := "x" // selected!
 		cursor := ">"
 		s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, m.VisibleChoices[m.Selected])
@@ -280,6 +283,9 @@ func (m SelectModel) View() string {
 
 // GetSelectedItem returns the selected item in VisibleChoices.
 func (m SelectModel) GetSelectedItem() interface{} {
+	if len(m.VisibleChoices) == 0 || m.Selected == -1 {
+		return nil
+	}
 	return m.VisibleChoices[m.Selected]
 }
 
