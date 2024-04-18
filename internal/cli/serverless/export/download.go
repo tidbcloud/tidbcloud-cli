@@ -16,10 +16,6 @@ package export
 
 import (
 	"fmt"
-	"io"
-	"net/http"
-	"os"
-
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/charmbracelet/bubbles/progress"
@@ -29,12 +25,15 @@ import (
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
+	"io"
+	"os"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
+	"tidbcloud-cli/internal/ui/concurrency"
 	"tidbcloud-cli/internal/util"
 	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
 	exportModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/models"
@@ -222,70 +221,33 @@ func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, p
 			return err
 		}
 	}
-	interrupt := false
-	for _, downloadUrl := range urls {
-		if interrupt {
-			return util.InterruptError
+
+	var p *tea.Program
+	urlMsgs := make([]ui_concurrency.URLMsg, 0)
+	for _, u := range urls {
+		url := ui_concurrency.URLMsg{
+			Name: u.Name,
+			Url:  u.URL,
 		}
-		func() {
-			fileName := downloadUrl.Name
-			url := downloadUrl.URL
-			size := humanize.IBytes(uint64(downloadUrl.Size))
-			fmt.Fprintf(h.IOStreams.Out, "\ndownload %s(%s) to %s\n", fileName, size, path+"/"+fileName)
-
-			// send the request
-			resp, err := http.Get(url) // nolint:gosec
-			if err != nil {
-				fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
-				return
-			}
-			if resp.StatusCode != http.StatusOK {
-				fmt.Fprintf(h.IOStreams.Out, "download file error with status code: %d\n", resp.StatusCode)
-				return
-			}
-			defer resp.Body.Close()
-
-			// check the response
-			if resp.ContentLength <= 0 {
-				fmt.Fprintf(h.IOStreams.Out, "content length less than 0, aborting download")
-				return
-			}
-
-			// skip if the file exists
-			if _, err := os.Stat(path + "/" + fileName); err == nil {
-				fmt.Fprintf(h.IOStreams.Out, "file %s already exists, skipping download\n", path+"/"+fileName)
-				return
-			}
-
-			// create the file and download
-			file, err := os.Create(path + "/" + fileName)
-			if err != nil {
-				fmt.Fprintf(h.IOStreams.Out, "create file error: %v\n", err)
-				return
-			}
-			defer file.Close()
-
-			if h.IOStreams.CanPrompt {
-				err = processDownload(int(resp.ContentLength), file, resp.Body)
-				if err != nil {
-					if err == util.InterruptError {
-						interrupt = true
-						return
-					}
-					fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
-					return
-				}
-			} else {
-				_, err = io.Copy(file, resp.Body)
-				if err != nil {
-					fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
-					return
-				}
-			}
-		}()
+		urlMsgs = append(urlMsgs, url)
 	}
-	if interrupt {
-		return util.InterruptError
+	m := ui_concurrency.NewModel(
+		urlMsgs,
+		func(id int, ratio float64) {
+			if p != nil {
+				p.Send(ui_concurrency.NewProgressMsg(id, ratio))
+			}
+		},
+		func(id int, err error) {
+			if p != nil {
+				p.Send(ui_concurrency.NewProgressErrMsg(id, err))
+			}
+		},
+	)
+	p = tea.NewProgram(m)
+	_, err := p.Run()
+	if err != nil {
+		return errors.Trace(err)
 	}
 	return nil
 }
