@@ -70,6 +70,7 @@ const (
 	Encryption            string = "encryption"
 	Compression           string = "compression"
 	SourceType            string = "source-type"
+	Concurrency           string = "concurrency"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."

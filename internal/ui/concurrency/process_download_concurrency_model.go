@@ -15,11 +15,6 @@
 package ui_concurrency
 
 import (
-	"errors"
-	"fmt"
-	"io"
-	"net/http"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -27,6 +22,8 @@ import (
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+
+	"tidbcloud-cli/internal/util"
 )
 
 var helpStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#626262")).Render
@@ -54,30 +51,21 @@ func NewProgressErrMsg(id int, err error) ProgressErrMsg {
 	return ProgressErrMsg{id: id, err: err}
 }
 
-func finalPause() tea.Cmd {
-	return tea.Tick(time.Second*2, func(_ time.Time) tea.Msg {
-		return nil
-	})
-}
-
 type FileJob struct {
-	id            int
-	path          string
-	name          string
-	url           string
-	process       progress.Model
-	reader        io.ReadCloser
-	file          *os.File
-	ContentLength int64
-	err           error
+	id      int
+	path    string
+	name    string
+	url     string
+	process progress.Model
+	err     error
 }
 
 type JobInfo struct {
-	idToJob     map[int]*FileJob
-	pendingJobs []*FileJob
-	viewJobs    []*FileJob
-	count       int
-	lock        sync.Mutex
+	idToJob       map[int]*FileJob
+	viewJobs      []*FileJob
+	finishedCount int
+	total         int
+	lock          sync.Mutex
 }
 
 type Model struct {
@@ -100,19 +88,17 @@ type URLMsg struct {
 func NewModel(urls []URLMsg, onProgress func(int, float64), onError func(int, error), concurrency int) Model {
 	jobs := make(chan *FileJob, len(urls))
 	idToJob := make(map[int]*FileJob)
-	pendingJobs := make([]*FileJob, 0, len(urls))
 
 	for i, url := range urls {
 		job := &FileJob{id: i, name: url.Name, url: url.Url, path: url.Path}
 		idToJob[i] = job
-		pendingJobs = append(pendingJobs, job)
 	}
 
 	jobInfo := &JobInfo{
-		idToJob:     idToJob,
-		pendingJobs: pendingJobs,
-		viewJobs:    make([]*FileJob, 0, len(urls)),
-		count:       0,
+		idToJob:       idToJob,
+		viewJobs:      make([]*FileJob, 0, len(urls)),
+		finishedCount: 0,
+		total:         len(urls),
 	}
 	return Model{
 		jobsCh:      jobs,
@@ -138,7 +124,7 @@ func (m *Model) InitPool() {
 			go m.consume(m.jobsCh)
 		}
 		// start produce
-		for _, job := range m.jobInfo.pendingJobs {
+		for _, job := range m.jobInfo.idToJob {
 			go m.produce(job, m.jobsCh)
 		}
 	})
@@ -160,13 +146,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 
 	case ProgressErrMsg:
+		// handle error msg
 		f, ok := m.jobInfo.idToJob[msg.id]
 		if ok {
 			f.err = msg.err
 			m.jobInfo.lock.Lock()
-			m.jobInfo.count++
+			m.jobInfo.finishedCount++
 			m.jobInfo.lock.Unlock()
-			if m.jobInfo.count >= len(m.jobInfo.idToJob) {
+			if m.jobInfo.finishedCount >= m.jobInfo.total {
 				var cmds []tea.Cmd
 				cmds = append(cmds, tea.Sequence(finalPause(), tea.Quit))
 				return m, tea.Batch(cmds...)
@@ -179,9 +166,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		if msg.percent >= 1.0 {
 			m.jobInfo.lock.Lock()
-			m.jobInfo.count++
+			m.jobInfo.finishedCount++
 			m.jobInfo.lock.Unlock()
-			if m.jobInfo.count >= len(m.jobInfo.idToJob) {
+			if m.jobInfo.finishedCount >= m.jobInfo.total {
 				cmds = append(cmds, tea.Sequence(finalPause(), tea.Quit))
 			}
 		}
@@ -233,6 +220,7 @@ func (m *Model) produce(job *FileJob, jobsCh chan<- *FileJob) {
 func (m *Model) consume(jobs <-chan *FileJob) {
 	for job := range jobs {
 		func() {
+			// create progress bar before download
 			pro := progress.New(progress.WithDefaultGradient())
 			pro.Width = m.width - padding*2 - 4
 			if pro.Width > maxWidth {
@@ -246,38 +234,27 @@ func (m *Model) consume(jobs <-chan *FileJob) {
 			m.jobInfo.lock.Unlock()
 
 			// request the url
-			resp, err := getResponse(job.url)
+			resp, err := util.GetResponse(job.url)
 			if err != nil {
 				m.onError(job.id, err)
 				return
 			}
-			job.reader = resp.Body
-			defer job.reader.Close()
+			defer resp.Body.Close()
 
-			if resp.ContentLength <= 0 {
-				m.onError(job.id, err)
-				return
-			}
-			job.ContentLength = resp.ContentLength
-
-			// skip if the file exists
-			if _, err := os.Stat(job.path + "/" + job.name); err == nil {
-				m.onError(job.id, errors.New("file already exists"))
-				return
-			}
-			file, err := os.Create(job.path + "/" + job.name)
+			// create file
+			file, err := util.CreateFile(job.path, job.name)
 			if err != nil {
 				m.onError(job.id, err)
 				return
 			}
-			job.file = file
-			defer job.file.Close()
+			defer file.Close()
 
+			// create progress writer
 			pw := &progressConcurrencyWriter{
 				id:     job.id,
-				total:  int(job.ContentLength),
-				file:   job.file,
-				reader: job.reader,
+				total:  int(resp.ContentLength),
+				file:   file,
+				reader: resp.Body,
 				onProgress: func(id int, ratio float64) {
 					m.onProgress(id, ratio)
 				},
@@ -290,13 +267,8 @@ func (m *Model) consume(jobs <-chan *FileJob) {
 	}
 }
 
-func getResponse(url string) (*http.Response, error) {
-	resp, err := http.Get(url) // nolint:gosec
-	if err != nil {
-		return nil, err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("receiving status of %d for url: %s", resp.StatusCode, url)
-	}
-	return resp, nil
+func finalPause() tea.Cmd {
+	return tea.Tick(time.Second*2, func(_ time.Time) tea.Msg {
+		return nil
+	})
 }
