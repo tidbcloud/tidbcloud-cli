@@ -105,6 +105,11 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			color.HiGreen("\nSuccessfully logged in.")
+
+			if config.GetPublicKey() != "" && config.GetPrivateKey() != "" {
+				color.HiYellow("\nDetect an API key already set in %s profile! Note it will take precedence over auth token.", config.ActiveProfileName())
+			}
+
 			return nil
 		},
 	}
