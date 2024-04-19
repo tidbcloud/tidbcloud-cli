@@ -15,6 +15,7 @@
 package ui_concurrency
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -61,6 +62,7 @@ func finalPause() tea.Cmd {
 
 type FileJob struct {
 	id            int
+	path          string
 	name          string
 	url           string
 	process       progress.Model
@@ -83,22 +85,24 @@ type model struct {
 	jobsCh      chan *FileJob
 	jobInfo     *JobInfo
 	width       int
+	once        sync.Once
 	onProgress  func(int, float64)
 	onError     func(int, error)
 }
 
 type URLMsg struct {
 	Name string
+	Path string
 	Url  string
 }
 
-func NewModel(urls []URLMsg, onProgress func(int, float64), onError func(int, error)) model {
+func NewModel(urls []URLMsg, onProgress func(int, float64), onError func(int, error), concurrency int) model {
 	jobs := make(chan *FileJob, len(urls))
 	idToJob := make(map[int]*FileJob)
 	pendingJobs := make([]*FileJob, 0, len(urls))
 
 	for i, url := range urls {
-		job := &FileJob{id: i, name: url.Name, url: url.Url}
+		job := &FileJob{id: i, name: url.Name, url: url.Url, path: url.Path}
 		idToJob[i] = job
 		pendingJobs = append(pendingJobs, job)
 	}
@@ -112,14 +116,31 @@ func NewModel(urls []URLMsg, onProgress func(int, float64), onError func(int, er
 	return model{
 		jobsCh:      jobs,
 		jobInfo:     jobInfo,
-		concurrency: 2,
+		concurrency: concurrency,
 		onProgress:  onProgress,
 		onError:     onError,
 	}
 }
 
+func NewDefaultModel(urls []URLMsg, onProgress func(int, float64), onError func(int, error)) model {
+	return NewModel(urls, onProgress, onError, 2)
+}
+
 func (m model) Init() tea.Cmd {
 	return nil
+}
+
+func (m *model) InitPool() {
+	m.once.Do(func() {
+		// start consumer goroutine
+		for i := 0; i < m.concurrency; i++ {
+			go m.consume(m.jobsCh)
+		}
+		// start produce
+		for _, job := range m.jobInfo.pendingJobs {
+			go m.produce(job, m.jobsCh)
+		}
+	})
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -132,22 +153,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
-		// start consumer goroutine
-		for i := 0; i < m.concurrency; i++ {
-			go m.consume(m.jobsCh)
-		}
-		// start produce
-		for _, job := range m.jobInfo.pendingJobs {
-			go m.produce(job, m.jobsCh)
-		}
+		m.InitPool()
+
 		return m, nil
 
 	case ProgressErrMsg:
 		f, ok := m.jobInfo.idToJob[msg.id]
 		if ok {
 			f.err = msg.err
+			m.jobInfo.lock.Lock()
 			m.jobInfo.count++
-			if m.jobInfo.count == len(m.jobInfo.idToJob) {
+			m.jobInfo.lock.Unlock()
+			if m.jobInfo.count >= len(m.jobInfo.idToJob) {
 				var cmds []tea.Cmd
 				cmds = append(cmds, tea.Sequence(finalPause(), tea.Quit))
 				return m, tea.Batch(cmds...)
@@ -159,8 +176,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var cmds []tea.Cmd
 
 		if msg.percent >= 1.0 {
+			m.jobInfo.lock.Lock()
 			m.jobInfo.count++
-			if m.jobInfo.count == len(m.jobInfo.idToJob) {
+			m.jobInfo.lock.Unlock()
+			if m.jobInfo.count >= len(m.jobInfo.idToJob) {
 				cmds = append(cmds, tea.Sequence(finalPause(), tea.Quit))
 			}
 		}
@@ -191,10 +210,14 @@ func (m model) View() string {
 	viewString := "\n"
 	pad := strings.Repeat(" ", padding)
 	for _, f := range m.jobInfo.viewJobs {
-		viewString += f.name + pad + f.process.View() + "\n\n"
-		if f.err != nil {
-			viewString += pad + "download failed: " + f.err.Error() + "\n\n"
+		if f.process.Percent() >= 1.0 {
+			viewString += "download " + f.name + " success" + "\n"
+		} else if f.err != nil {
+			viewString += "download " + f.name + " failed: " + f.err.Error() + "\n"
+		} else {
+			viewString += "downloading " + f.name + "\n"
 		}
+		viewString += pad + f.process.View() + "\n\n"
 	}
 	viewString += pad + helpStyle("Press ctrl+c key to quit")
 
@@ -235,7 +258,12 @@ func (m *model) consume(jobs <-chan *FileJob) {
 			}
 			job.ContentLength = resp.ContentLength
 
-			file, err := os.Create(job.name)
+			// skip if the file exists
+			if _, err := os.Stat(job.path + "/" + job.name); err == nil {
+				m.onError(job.id, errors.New("file already exists"))
+				return
+			}
+			file, err := os.Create(job.path + "/" + job.name)
 			if err != nil {
 				m.onError(job.id, err)
 				return
@@ -258,9 +286,6 @@ func (m *model) consume(jobs <-chan *FileJob) {
 			pw.Start()
 		}()
 	}
-}
-
-func (m *model) Close() {
 }
 
 func getResponse(url string) (*http.Response, error) {

@@ -16,6 +16,9 @@ package export
 
 import (
 	"fmt"
+	"io"
+	"os"
+
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/charmbracelet/bubbles/progress"
@@ -25,8 +28,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
-	"io"
-	"os"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -228,10 +229,11 @@ func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, p
 		url := ui_concurrency.URLMsg{
 			Name: u.Name,
 			Url:  u.URL,
+			Path: path,
 		}
 		urlMsgs = append(urlMsgs, url)
 	}
-	m := ui_concurrency.NewModel(
+	m := ui_concurrency.NewDefaultModel(
 		urlMsgs,
 		func(id int, ratio float64) {
 			if p != nil {
