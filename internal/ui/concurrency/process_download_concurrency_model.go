@@ -80,7 +80,7 @@ type JobInfo struct {
 	lock        sync.Mutex
 }
 
-type model struct {
+type Model struct {
 	concurrency int
 	jobsCh      chan *FileJob
 	jobInfo     *JobInfo
@@ -88,6 +88,7 @@ type model struct {
 	once        sync.Once
 	onProgress  func(int, float64)
 	onError     func(int, error)
+	Interrupted bool
 }
 
 type URLMsg struct {
@@ -96,7 +97,7 @@ type URLMsg struct {
 	Url  string
 }
 
-func NewModel(urls []URLMsg, onProgress func(int, float64), onError func(int, error), concurrency int) model {
+func NewModel(urls []URLMsg, onProgress func(int, float64), onError func(int, error), concurrency int) Model {
 	jobs := make(chan *FileJob, len(urls))
 	idToJob := make(map[int]*FileJob)
 	pendingJobs := make([]*FileJob, 0, len(urls))
@@ -113,7 +114,7 @@ func NewModel(urls []URLMsg, onProgress func(int, float64), onError func(int, er
 		viewJobs:    make([]*FileJob, 0, len(urls)),
 		count:       0,
 	}
-	return model{
+	return Model{
 		jobsCh:      jobs,
 		jobInfo:     jobInfo,
 		concurrency: concurrency,
@@ -122,15 +123,15 @@ func NewModel(urls []URLMsg, onProgress func(int, float64), onError func(int, er
 	}
 }
 
-func NewDefaultModel(urls []URLMsg, onProgress func(int, float64), onError func(int, error)) model {
+func NewDefaultModel(urls []URLMsg, onProgress func(int, float64), onError func(int, error)) Model {
 	return NewModel(urls, onProgress, onError, 2)
 }
 
-func (m model) Init() tea.Cmd {
+func (m Model) Init() tea.Cmd {
 	return nil
 }
 
-func (m *model) InitPool() {
+func (m *Model) InitPool() {
 	m.once.Do(func() {
 		// start consumer goroutine
 		for i := 0; i < m.concurrency; i++ {
@@ -143,10 +144,11 @@ func (m *model) InitPool() {
 	})
 }
 
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		if msg.Type == tea.KeyEsc || msg.Type == tea.KeyCtrlC {
+			m.Interrupted = true
 			return m, tea.Quit
 		}
 		return m, nil
@@ -206,7 +208,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 }
 
-func (m model) View() string {
+func (m Model) View() string {
 	viewString := "\n"
 	pad := strings.Repeat(" ", padding)
 	for _, f := range m.jobInfo.viewJobs {
@@ -224,11 +226,11 @@ func (m model) View() string {
 	return viewString
 }
 
-func (m *model) produce(job *FileJob, jobsCh chan<- *FileJob) {
+func (m *Model) produce(job *FileJob, jobsCh chan<- *FileJob) {
 	jobsCh <- job
 }
 
-func (m *model) consume(jobs <-chan *FileJob) {
+func (m *Model) consume(jobs <-chan *FileJob) {
 	for job := range jobs {
 		func() {
 			pro := progress.New(progress.WithDefaultGradient())

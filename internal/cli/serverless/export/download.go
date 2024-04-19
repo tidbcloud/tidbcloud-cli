@@ -247,9 +247,12 @@ func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, p
 		},
 	)
 	p = tea.NewProgram(m)
-	_, err := p.Run()
+	model, err := p.Run()
 	if err != nil {
 		return errors.Trace(err)
+	}
+	if m, _ := model.(ui_concurrency.Model); m.Interrupted {
+		return util.InterruptError
 	}
 	return nil
 }
