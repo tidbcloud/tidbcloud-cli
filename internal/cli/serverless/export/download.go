@@ -19,6 +19,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -107,6 +108,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			ctx := cmd.Context()
 
 			var exportID, clusterID, path string
 			if opts.interactive {
@@ -115,17 +117,17 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				clusterID = cluster.ID
 
-				export, err := cloud.GetSelectedLocalExport(clusterID, h.QueryPageSize, d)
+				export, err := cloud.GetSelectedLocalExport(ctx, clusterID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -155,7 +157,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			params := exportApi.NewExportServiceDownloadExportParams().
-				WithClusterID(clusterID).WithExportID(exportID)
+				WithClusterID(clusterID).WithExportID(exportID).WithContext(ctx)
 			resp, err := d.DownloadExport(params)
 			if err != nil {
 				return errors.Trace(err)
@@ -231,7 +233,8 @@ func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, p
 			fileName := downloadUrl.Name
 			url := downloadUrl.URL
 			size := humanize.IBytes(uint64(downloadUrl.Size))
-			fmt.Fprintf(h.IOStreams.Out, "\ndownload %s(%s) to %s\n", fileName, size, path+"/"+fileName)
+			downloadFilePath := filepath.Join(path, fileName)
+			fmt.Fprintf(h.IOStreams.Out, "\ndownload %s(%s) to %s\n", fileName, size, downloadFilePath)
 
 			// send the request
 			resp, err := http.Get(url) // nolint:gosec
@@ -252,13 +255,13 @@ func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, p
 			}
 
 			// skip if the file exists
-			if _, err := os.Stat(path + "/" + fileName); err == nil {
-				fmt.Fprintf(h.IOStreams.Out, "file %s already exists, skipping download\n", path+"/"+fileName)
+			if _, err := os.Stat(downloadFilePath); err == nil {
+				fmt.Fprintf(h.IOStreams.Out, "file %s already exists, skipping download\n", downloadFilePath)
 				return
 			}
 
 			// create the file and download
-			file, err := os.Create(path + "/" + fileName)
+			file, err := os.Create(downloadFilePath)
 			if err != nil {
 				fmt.Fprintf(h.IOStreams.Out, "create file error: %v\n", err)
 				return
