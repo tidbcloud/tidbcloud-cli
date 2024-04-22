@@ -126,7 +126,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			params := branchApi.NewBranchServiceGetBranchParams().
-				WithClusterID(clusterID).WithBranchID(branchID)
+				WithClusterID(clusterID).WithBranchID(branchID).WithContext(ctx)
 			branch, err := d.GetBranch(params)
 			if err != nil {
 				return errors.Trace(err)

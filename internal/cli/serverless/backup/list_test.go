@@ -16,6 +16,7 @@ package backup
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"os"
 	"strings"
@@ -89,6 +90,7 @@ func (suite *ListBackupSuite) SetupTest() {
 
 func (suite *ListBackupSuite) TestListBackups() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	body := &brModel.V1beta1ListBackupsResponse{}
 	err := json.Unmarshal([]byte(listResultStr), body)
@@ -100,7 +102,7 @@ func (suite *ListBackupSuite) TestListBackups() {
 	pageSize := int32(suite.pageSize)
 	clusterID := "10048930788495339885"
 	suite.mockClient.On("ListBackups", brApi.NewBackupRestoreServiceListBackupsParams().
-		WithClusterID(clusterID).WithPageSize(&pageSize)).
+		WithClusterID(clusterID).WithPageSize(&pageSize).WithContext(ctx)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -130,6 +132,7 @@ func (suite *ListBackupSuite) TestListBackups() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := ListCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
@@ -147,6 +150,7 @@ func (suite *ListBackupSuite) TestListBackups() {
 
 func (suite *ListBackupSuite) TestListBackupsWithMultiPages() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	pageSize := int32(suite.pageSize)
 	pageToken := "2"
@@ -157,14 +161,14 @@ func (suite *ListBackupSuite) TestListBackupsWithMultiPages() {
 	assert.Nil(err)
 	body.NextPageToken = pageToken
 	suite.mockClient.On("ListBackups", brApi.NewBackupRestoreServiceListBackupsParams().
-		WithClusterID(clusterID).WithPageSize(&pageSize)).
+		WithClusterID(clusterID).WithPageSize(&pageSize).WithContext(ctx)).
 		Return(&brApi.BackupRestoreServiceListBackupsOK{Payload: body}, nil)
 
 	body2 := &brModel.V1beta1ListBackupsResponse{}
 	err = json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"total": 1`, `"total": 2`)), body2)
 	assert.Nil(err)
 	suite.mockClient.On("ListBackups", brApi.NewBackupRestoreServiceListBackupsParams().
-		WithClusterID(clusterID).WithPageToken(&pageToken).WithPageSize(&pageSize)).
+		WithClusterID(clusterID).WithPageToken(&pageToken).WithPageSize(&pageSize).WithContext(ctx)).
 		Return(&brApi.BackupRestoreServiceListBackupsOK{Payload: body2}, nil)
 
 	tests := []struct {
@@ -183,6 +187,7 @@ func (suite *ListBackupSuite) TestListBackupsWithMultiPages() {
 	for _, tt := range tests {
 		cmd := ListCmd(suite.h)
 		suite.T().Run(tt.name, func(t *testing.T) {
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)

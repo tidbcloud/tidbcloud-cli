@@ -189,7 +189,7 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			}
 
 			var host, name, port string
-			params := branchApi.NewBranchServiceGetBranchParams().WithClusterID(clusterID).WithBranchID(branchID)
+			params := branchApi.NewBranchServiceGetBranchParams().WithClusterID(clusterID).WithBranchID(branchID).WithContext(ctx)
 			branchInfo, err := d.GetBranch(params)
 			if err != nil {
 				return errors.Trace(err)
