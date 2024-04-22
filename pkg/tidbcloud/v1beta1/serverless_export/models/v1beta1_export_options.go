@@ -25,7 +25,7 @@ type V1beta1ExportOptions struct {
 	Database string `json:"database,omitempty"`
 
 	// Optional. The exported file type.
-	FileType ExportOptionsFileType `json:"fileType,omitempty"`
+	FileType V1beta1ExportOptionsFileType `json:"fileType,omitempty"`
 
 	// Optional. The specify table of the export.
 	Table string `json:"table,omitempty"`
