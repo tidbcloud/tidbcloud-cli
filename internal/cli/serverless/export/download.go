@@ -222,9 +222,6 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 }
 
 func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int) error {
-	if path == "" {
-		path = "."
-	}
 	if concurrency <= 0 {
 		concurrency = 3
 	}
@@ -311,10 +308,6 @@ type DownloadJob struct {
 }
 
 func DownloadFilesWithoutPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int) error {
-	if path == "" {
-		path = "."
-	}
-
 	// create the path if not exist
 	err := util.CreateFolder(path)
 	if err != nil {

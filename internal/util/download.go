@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 // GetResponse returns the response of a given URL
@@ -39,13 +40,11 @@ func GetResponse(url string) (*http.Response, error) {
 
 // CreateFile creates a file if it does not exist
 func CreateFile(path, fileName string) (*os.File, error) {
-	if path == "" {
-		path = "."
-	}
-	if _, err := os.Stat(path + "/" + fileName); err == nil {
+	filePath := filepath.Join(path, fileName)
+	if _, err := os.Stat(filePath); err == nil {
 		return nil, fmt.Errorf("file already exists")
 	}
-	file, err := os.Create(path + "/" + fileName)
+	file, err := os.Create(filePath)
 	if err != nil {
 		return nil, err
 	}
@@ -54,6 +53,9 @@ func CreateFile(path, fileName string) (*os.File, error) {
 
 // CreateFolder creates a folder if it does not exist
 func CreateFolder(path string) error {
+	if path == "" {
+		return nil
+	}
 	if _, err := os.Stat(path); err != nil {
 		if os.IsNotExist(err) {
 			err = os.MkdirAll(path, 0755)

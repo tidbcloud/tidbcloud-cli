@@ -1,0 +1,13 @@
+name: test windows
+on:
+  pull_request:
+jobs:
+  tests:
+    runs-on: windows-latest
+    steps:
+      - uses: tidbcloud/setup-tidbcloud-cli@v0
+        with:
+          api_public_key: ${{ secrets.TIDB_CLOUD_API_PUBLIC_KEY }}
+          api_private_key: ${{ secrets.TIDB_CLOUD_API_PRIVATE_KEY }}
+      - name: run
+        run: ticloud serverless ls -p 1372813089191151295
