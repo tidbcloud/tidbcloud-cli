@@ -16,6 +16,7 @@ package branch
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"os"
 	"strings"
@@ -104,6 +105,7 @@ func (suite *ListBranchSuite) SetupTest() {
 func (suite *ListBranchSuite) TestListBranchesArgs() {
 	assert := require.New(suite.T())
 	pageSize := int32(suite.h.QueryPageSize)
+	ctx := context.Background()
 
 	body := &branchModel.V1beta1ListBranchesResponse{}
 	err := json.Unmarshal([]byte(listResultStr), body)
@@ -113,7 +115,7 @@ func (suite *ListBranchSuite) TestListBranchesArgs() {
 	}
 	clusterID := "12345"
 	suite.mockClient.On("ListBranches", branchApi.NewBranchServiceListBranchesParams().
-		WithClusterID(clusterID).WithPageSize(&pageSize)).
+		WithClusterID(clusterID).WithPageSize(&pageSize).WithContext(ctx)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -143,6 +145,7 @@ func (suite *ListBranchSuite) TestListBranchesArgs() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := ListCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
@@ -160,6 +163,7 @@ func (suite *ListBranchSuite) TestListBranchesArgs() {
 
 func (suite *ListBranchSuite) TestListBranchesWithMultiPages() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 	pageSize := int32(suite.h.QueryPageSize)
 	pageToken := "2"
 	body := &branchModel.V1beta1ListBranchesResponse{}
@@ -172,7 +176,7 @@ func (suite *ListBranchSuite) TestListBranchesWithMultiPages() {
 
 	clusterID := "12345"
 	suite.mockClient.On("ListBranches", branchApi.NewBranchServiceListBranchesParams().
-		WithClusterID(clusterID).WithPageSize(&pageSize)).
+		WithClusterID(clusterID).WithPageSize(&pageSize).WithContext(ctx)).
 		Return(result, nil)
 
 	body2 := &branchModel.V1beta1ListBranchesResponse{}
@@ -182,7 +186,7 @@ func (suite *ListBranchSuite) TestListBranchesWithMultiPages() {
 		Payload: body2,
 	}
 	suite.mockClient.On("ListBranches", branchApi.NewBranchServiceListBranchesParams().
-		WithClusterID(clusterID).WithPageToken(&pageToken).WithPageSize(&pageSize)).
+		WithClusterID(clusterID).WithPageToken(&pageToken).WithPageSize(&pageSize).WithContext(ctx)).
 		Return(result2, nil)
 	cmd := ListCmd(suite.h)
 
@@ -201,6 +205,7 @@ func (suite *ListBranchSuite) TestListBranchesWithMultiPages() {
 
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)

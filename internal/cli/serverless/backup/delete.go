@@ -92,6 +92,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			ctx := cmd.Context()
 
 			var backupID string
 			if opts.interactive {
@@ -100,15 +101,15 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				backup, err := cloud.GetSelectedServerlessBackup(cluster.ID, int32(h.QueryPageSize), d)
+				backup, err := cloud.GetSelectedServerlessBackup(ctx, cluster.ID, int32(h.QueryPageSize), d)
 				if err != nil {
 					return err
 				}
@@ -147,7 +148,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := brApi.NewBackupRestoreServiceDeleteBackupParams().WithBackupID(backupID)
+			params := brApi.NewBackupRestoreServiceDeleteBackupParams().WithBackupID(backupID).WithContext(ctx)
 			_, err = d.DeleteBackup(params)
 			if err != nil {
 				return errors.Trace(err)

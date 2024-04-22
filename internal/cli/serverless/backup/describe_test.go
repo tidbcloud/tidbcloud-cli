@@ -16,6 +16,7 @@ package backup
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"os"
@@ -63,6 +64,7 @@ func (suite *DescribeBackupSuite) SetupTest() {
 
 func (suite *DescribeBackupSuite) TestDescribeBackup() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	body := &brModel.V1beta1Backup{}
 	err := json.Unmarshal([]byte(getBackupResult), body)
@@ -73,7 +75,7 @@ func (suite *DescribeBackupSuite) TestDescribeBackup() {
 	backupId := "289048"
 
 	suite.mockClient.On("GetBackup", brApi.NewBackupRestoreServiceGetBackupParams().
-		WithBackupID(backupId)).
+		WithBackupID(backupId).WithContext(ctx)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -98,6 +100,7 @@ func (suite *DescribeBackupSuite) TestDescribeBackup() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := DescribeCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)

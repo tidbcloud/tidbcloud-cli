@@ -81,12 +81,12 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		}
 
 		// interactive mode
-		project, err := cloud.GetSelectedProject(o.h.QueryPageSize, d)
+		project, err := cloud.GetSelectedProject(ctx, o.h.QueryPageSize, d)
 		if err != nil {
 			return err
 		}
 
-		cluster, err := cloud.GetSelectedCluster(project.ID, o.h.QueryPageSize, d)
+		cluster, err := cloud.GetSelectedCluster(ctx, project.ID, o.h.QueryPageSize, d)
 		if err != nil {
 			return err
 		}

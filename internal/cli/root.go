@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"tidbcloud-cli/internal"
@@ -241,8 +242,8 @@ func initConfig() {
 	// Find home directory.
 	home, err := os.UserHomeDir()
 	cobra.CheckErr(err)
-	path := home + "/" + config.HomePath
-	err = os.MkdirAll(path+"/cache", 0700)
+	path := filepath.Join(home, config.HomePath)
+	err = os.MkdirAll(path, 0700)
 	if err != nil {
 		color.Red("Failed to create home directory: %s", err)
 		os.Exit(1)

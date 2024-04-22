@@ -16,6 +16,7 @@ package serverless
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -55,6 +56,7 @@ func (suite *SpendingLimitSuite) SetupTest() {
 
 func (suite *SpendingLimitSuite) TestSetSpendingLimit() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	clusterID := "0"
 	monthly := 10
@@ -69,7 +71,7 @@ func (suite *SpendingLimitSuite) TestSetSpendingLimit() {
 	}
 
 	suite.mockClient.On("PartialUpdateCluster", serverlessApi.NewServerlessServicePartialUpdateClusterParams().
-		WithClusterClusterID(clusterID).WithBody(body)).
+		WithClusterClusterID(clusterID).WithBody(body).WithContext(ctx)).
 		Return(&serverlessApi.ServerlessServicePartialUpdateClusterOK{}, nil)
 
 	tests := []struct {
@@ -89,6 +91,7 @@ func (suite *SpendingLimitSuite) TestSetSpendingLimit() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := SpendingLimitCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)

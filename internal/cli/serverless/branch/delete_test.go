@@ -16,6 +16,7 @@ package branch
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -54,11 +55,12 @@ func (suite *DeleteBranchSuite) SetupTest() {
 
 func (suite *DeleteBranchSuite) TestDeleteBranchArgs() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	clusterID := "12345"
 	branchID := "12345"
 	suite.mockClient.On("DeleteBranch", branchApi.NewBranchServiceDeleteBranchParams().
-		WithBranchID(branchID).WithClusterID(clusterID)).
+		WithBranchID(branchID).WithClusterID(clusterID).WithContext(ctx)).
 		Return(&branchApi.BranchServiceDeleteBranchOK{}, nil)
 
 	tests := []struct {
@@ -93,6 +95,7 @@ func (suite *DeleteBranchSuite) TestDeleteBranchArgs() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := DeleteCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)

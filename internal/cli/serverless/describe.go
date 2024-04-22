@@ -80,6 +80,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			ctx := cmd.Context()
 
 			var clusterID string
 			if opts.interactive {
@@ -89,13 +90,13 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				projectID := project.ID
 
-				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, projectID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -109,7 +110,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cID
 			}
 
-			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID)
+			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID).WithContext(cmd.Context())
 
 			cluster, err := d.GetCluster(params)
 			if err != nil {
