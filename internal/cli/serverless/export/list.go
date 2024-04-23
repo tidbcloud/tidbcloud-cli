@@ -138,6 +138,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					"Compression",
 					"CreateTime",
 					"CompleteTime",
+					"SnapshotTime",
 				}
 
 				var rows []output.Row
@@ -145,6 +146,10 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					completeTime := ""
 					if item.UpdateTime != nil {
 						completeTime = item.CompleteTime.String()
+					}
+					snapshotTime := ""
+					if item.SnapshotTime != nil {
+						snapshotTime = item.SnapshotTime.String()
 					}
 					rows = append(rows, output.Row{
 						item.ExportID,
@@ -154,6 +159,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 						string(item.ExportOptions.Compression),
 						item.CreateTime.String(),
 						completeTime,
+						snapshotTime,
 					})
 				}
 

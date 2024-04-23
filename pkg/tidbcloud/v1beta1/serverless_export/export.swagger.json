@@ -298,14 +298,6 @@
       ],
       "description": " - Compression_UNSPECIFIED: The type of the compression is unknown."
     },
-    "ExportOptionsFileType": {
-      "type": "string",
-      "enum": [
-        "SQL",
-        "CSV"
-      ],
-      "description": " - TYPE_UNSPECIFIED: The type of the file is unknown.\n - SQL: SQL type.\n - CSV: CSV type."
-    },
     "S3TargetAccessKey": {
       "type": "object",
       "properties": {
@@ -458,6 +450,13 @@
           "x-nullable": true,
           "description": "Output_only. Timestamp when the export was completed.",
           "readOnly": true
+        },
+        "snapshotTime": {
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true,
+          "description": "OUTPUT_ONLY. Snapshot time of the export.",
+          "readOnly": true
         }
       },
       "description": "Message for export resource.",
@@ -469,7 +468,7 @@
       "type": "object",
       "properties": {
         "fileType": {
-          "$ref": "#/definitions/ExportOptionsFileType",
+          "$ref": "#/definitions/v1beta1ExportOptionsFileType",
           "description": "Optional. The exported file type."
         },
         "database": {
@@ -485,6 +484,14 @@
           "description": "Optional. The compression of the export."
         }
       }
+    },
+    "v1beta1ExportOptionsFileType": {
+      "type": "string",
+      "enum": [
+        "SQL",
+        "CSV"
+      ],
+      "description": " - TYPE_UNSPECIFIED: The type of the file is unknown.\n - SQL: SQL type.\n - CSV: CSV type."
     },
     "v1beta1ExportState": {
       "type": "string",

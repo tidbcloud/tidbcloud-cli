@@ -264,7 +264,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					ExportOptions: &exportModel.V1beta1ExportOptions{
 						Database: database,
 						Table:    table,
-						FileType: exportModel.ExportOptionsFileType(fileType),
+						FileType: exportModel.V1beta1ExportOptionsFileType(fileType),
 					},
 					Target: &exportModel.V1beta1Target{
 						Type: exportModel.TargetTargetType(targetType),
