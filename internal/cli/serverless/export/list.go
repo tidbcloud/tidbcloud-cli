@@ -84,6 +84,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			ctx := cmd.Context()
 
 			var clusterID string
 			if opts.interactive {
@@ -91,11 +92,11 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
 
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -107,7 +108,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			total, items, err := cloud.RetrieveExports(clusterID, h.QueryPageSize, d)
+			total, items, err := cloud.RetrieveExports(ctx, clusterID, h.QueryPageSize, d)
 			if err != nil {
 				return err
 			}

@@ -87,6 +87,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			ctx := cmd.Context()
 
 			var branchID string
 			var clusterID string
@@ -96,17 +97,17 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				clusterID = cluster.ID
 
-				branch, err := cloud.GetSelectedBranch(clusterID, h.QueryPageSize, d)
+				branch, err := cloud.GetSelectedBranch(ctx, clusterID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -125,7 +126,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			params := branchApi.NewBranchServiceGetBranchParams().
-				WithClusterID(clusterID).WithBranchID(branchID)
+				WithClusterID(clusterID).WithBranchID(branchID).WithContext(ctx)
 			branch, err := d.GetBranch(params)
 			if err != nil {
 				return errors.Trace(err)

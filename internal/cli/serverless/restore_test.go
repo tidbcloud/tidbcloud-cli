@@ -16,6 +16,7 @@ package serverless
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"os"
@@ -57,6 +58,7 @@ func (suite *RestoreClusterSuite) SetupTest() {
 
 func (suite *RestoreClusterSuite) TestRestoreClusterSnapshot() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	clusterID := "10048930788495339885"
 	backupID := "289048"
@@ -67,7 +69,7 @@ func (suite *RestoreClusterSuite) TestRestoreClusterSnapshot() {
 		},
 	}
 	suite.mockClient.On("Restore", brApi.NewBackupRestoreServiceRestoreParams().
-		WithBody(body)).
+		WithBody(body).WithContext(ctx)).
 		Return(&brApi.BackupRestoreServiceRestoreOK{Payload: &brModel.V1beta1RestoreResponse{
 			ClusterID: &clusterID}}, nil)
 
@@ -88,6 +90,7 @@ func (suite *RestoreClusterSuite) TestRestoreClusterSnapshot() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := RestoreCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
@@ -105,6 +108,7 @@ func (suite *RestoreClusterSuite) TestRestoreClusterSnapshot() {
 
 func (suite *RestoreClusterSuite) TestRestoreClusterPointInTime() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	clusterID := "10048930788495339885"
 	backupTimeStr := "2023-12-15T07:00:00.000Z"
@@ -118,7 +122,7 @@ func (suite *RestoreClusterSuite) TestRestoreClusterPointInTime() {
 		},
 	}
 	suite.mockClient.On("Restore", brApi.NewBackupRestoreServiceRestoreParams().
-		WithBody(body)).
+		WithBody(body).WithContext(ctx)).
 		Return(&brApi.BackupRestoreServiceRestoreOK{Payload: &brModel.V1beta1RestoreResponse{
 			ClusterID: &clusterID}}, nil)
 
@@ -139,6 +143,7 @@ func (suite *RestoreClusterSuite) TestRestoreClusterPointInTime() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := RestoreCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)

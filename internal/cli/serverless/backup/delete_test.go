@@ -16,6 +16,7 @@ package backup
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -53,10 +54,11 @@ func (suite *DeleteBackupSuite) SetupTest() {
 
 func (suite *DeleteBackupSuite) TestDeleteBackup() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	backupID := "289048"
 	suite.mockClient.On("DeleteBackup", brApi.NewBackupRestoreServiceDeleteBackupParams().
-		WithBackupID(backupID)).
+		WithBackupID(backupID).WithContext(ctx)).
 		Return(&brApi.BackupRestoreServiceDeleteBackupOK{}, nil)
 
 	tests := []struct {
@@ -81,6 +83,7 @@ func (suite *DeleteBackupSuite) TestDeleteBackup() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := DeleteCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)

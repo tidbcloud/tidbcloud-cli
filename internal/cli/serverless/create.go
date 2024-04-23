@@ -131,7 +131,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				regions, err := d.ListProviderRegions(serverlessApi.NewServerlessServiceListRegionsParams())
+				regions, err := d.ListProviderRegions(serverlessApi.NewServerlessServiceListRegionsParams().WithContext(ctx))
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -163,7 +163,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -279,7 +279,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 			} else {
-				err := CreateAndWaitReady(h, d, v1Cluster)
+				err := CreateAndWaitReady(ctx, h, d, v1Cluster)
 				if err != nil {
 					return err
 				}
@@ -297,8 +297,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	return createCmd
 }
 
-func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, v1Cluster *serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster) error {
-	createClusterResult, err := d.CreateCluster(serverlessApi.NewServerlessServiceCreateClusterParams().WithCluster(v1Cluster))
+func CreateAndWaitReady(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, v1Cluster *serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster) error {
+	createClusterResult, err := d.CreateCluster(serverlessApi.NewServerlessServiceCreateClusterParams().
+		WithCluster(v1Cluster).WithContext(ctx))
 	if err != nil {
 		return errors.Trace(err)
 	}
@@ -314,7 +315,7 @@ func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, v1Cluster *
 			return errors.New(fmt.Sprintf("Timeout waiting for cluster %s to be ready, please check status on dashboard.", newClusterID))
 		case <-ticker.C:
 			clusterResult, err := d.GetCluster(serverlessApi.NewServerlessServiceGetClusterParams().
-				WithClusterID(newClusterID))
+				WithClusterID(newClusterID).WithContext(ctx))
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -330,7 +331,8 @@ func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, v1Cluster *
 func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, v1Cluster *serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster, h *internal.Helper) error {
 	// use spinner to indicate that the cluster is being created
 	task := func() tea.Msg {
-		createClusterResult, err := d.CreateCluster(serverlessApi.NewServerlessServiceCreateClusterParams().WithCluster(v1Cluster))
+		createClusterResult, err := d.CreateCluster(serverlessApi.NewServerlessServiceCreateClusterParams().
+			WithCluster(v1Cluster).WithContext(ctx))
 		if err != nil {
 			return errors.Trace(err)
 		}
@@ -345,7 +347,7 @@ func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, v1Cluste
 				return ui.Result(fmt.Sprintf("Timeout waiting for cluster %s to be ready, please check status on dashboard.", newClusterID))
 			case <-ticker.C:
 				clusterResult, err := d.GetCluster(serverlessApi.NewServerlessServiceGetClusterParams().
-					WithClusterID(newClusterID))
+					WithClusterID(newClusterID).WithContext(ctx))
 				if err != nil {
 					return errors.Trace(err)
 				}

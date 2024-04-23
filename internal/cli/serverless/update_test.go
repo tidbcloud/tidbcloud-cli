@@ -16,6 +16,7 @@ package serverless
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -55,6 +56,7 @@ func (suite *UpdateClusterSuite) SetupTest() {
 
 func (suite *UpdateClusterSuite) TestUpdateClusterArgs() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	displayName := "update_name"
 	cluster := &serverlessApi.ServerlessServicePartialUpdateClusterParamsBodyCluster{
@@ -68,7 +70,7 @@ func (suite *UpdateClusterSuite) TestUpdateClusterArgs() {
 
 	clusterID := "12345"
 	suite.mockClient.On("PartialUpdateCluster", serverlessApi.NewServerlessServicePartialUpdateClusterParams().
-		WithClusterClusterID(clusterID).WithBody(body)).
+		WithClusterClusterID(clusterID).WithBody(body).WithContext(ctx)).
 		Return(&serverlessApi.ServerlessServicePartialUpdateClusterOK{}, nil)
 
 	tests := []struct {
@@ -88,6 +90,7 @@ func (suite *UpdateClusterSuite) TestUpdateClusterArgs() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := UpdateCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
@@ -105,6 +108,7 @@ func (suite *UpdateClusterSuite) TestUpdateClusterArgs() {
 
 func (suite *UpdateClusterSuite) TestUpdateLabels() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	labels := "{\"labels\":\"values\"}"
 	mask := "labels"
@@ -120,7 +124,7 @@ func (suite *UpdateClusterSuite) TestUpdateLabels() {
 	}
 	clusterID := "12345"
 	suite.mockClient.On("PartialUpdateCluster", serverlessApi.NewServerlessServicePartialUpdateClusterParams().
-		WithClusterClusterID(clusterID).WithBody(body)).
+		WithClusterClusterID(clusterID).WithBody(body).WithContext(ctx)).
 		Return(&serverlessApi.ServerlessServicePartialUpdateClusterOK{}, nil)
 
 	tests := []struct {
@@ -140,6 +144,7 @@ func (suite *UpdateClusterSuite) TestUpdateLabels() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := UpdateCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)

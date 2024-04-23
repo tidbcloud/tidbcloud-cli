@@ -16,6 +16,7 @@ package serverless
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"os"
 	"testing"
@@ -55,6 +56,7 @@ func (suite *CreateClusterSuite) SetupTest() {
 
 func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	projectID := "12345"
 	clusterID := "12345"
@@ -76,14 +78,14 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 	}
 
 	suite.mockClient.On("CreateCluster", serverlessApi.NewServerlessServiceCreateClusterParams().
-		WithCluster(v1Cluster)).
+		WithCluster(v1Cluster).WithContext(ctx)).
 		Return(&serverlessApi.ServerlessServiceCreateClusterOK{
 			Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 				ClusterID: clusterID,
 			},
 		}, nil)
 	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
-		WithClusterID(clusterID)).
+		WithClusterID(clusterID).WithContext(ctx)).
 		Return(res, nil)
 
 	tests := []struct {
@@ -108,6 +110,7 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := CreateCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
@@ -125,6 +128,7 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 
 func (suite *CreateClusterSuite) TestCreateClusterWithoutProject() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	clusterID := "12345"
 	clusterName := "test"
@@ -145,14 +149,14 @@ func (suite *CreateClusterSuite) TestCreateClusterWithoutProject() {
 	}
 
 	suite.mockClient.On("CreateCluster", serverlessApi.NewServerlessServiceCreateClusterParams().
-		WithCluster(v1ClusterWithoutProject)).
+		WithCluster(v1ClusterWithoutProject).WithContext(ctx)).
 		Return(&serverlessApi.ServerlessServiceCreateClusterOK{
 			Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 				ClusterID: clusterID,
 			},
 		}, nil)
 	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
-		WithClusterID(clusterID)).
+		WithClusterID(clusterID).WithContext(ctx)).
 		Return(res, nil)
 
 	tests := []struct {
@@ -172,6 +176,7 @@ func (suite *CreateClusterSuite) TestCreateClusterWithoutProject() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := CreateCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)

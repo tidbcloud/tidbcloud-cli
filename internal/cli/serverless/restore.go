@@ -95,6 +95,7 @@ func RestoreCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			ctx := cmd.Context()
 
 			var clusterID string
 			var backupID string
@@ -107,25 +108,25 @@ func RestoreCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				if restoreMode == cloud.RestoreModeSnapshot {
-					project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+					project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 					if err != nil {
 						return err
 					}
-					cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
+					cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 					if err != nil {
 						return err
 					}
-					backup, err := cloud.GetSelectedServerlessBackup(cluster.ID, int32(h.QueryPageSize), d)
+					backup, err := cloud.GetSelectedServerlessBackup(ctx, cluster.ID, int32(h.QueryPageSize), d)
 					if err != nil {
 						return err
 					}
 					backupID = backup.ID
 				} else if restoreMode == cloud.RestoreModePointInTime {
-					project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+					project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 					if err != nil {
 						return err
 					}
-					cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
+					cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 					if err != nil {
 						return err
 					}
@@ -154,7 +155,7 @@ func RestoreCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := brApi.NewBackupRestoreServiceRestoreParams().WithBody(&brModel.V1beta1RestoreRequest{})
+			params := brApi.NewBackupRestoreServiceRestoreParams().WithBody(&brModel.V1beta1RestoreRequest{}).WithContext(ctx)
 			if backupID != "" {
 				params.Body.Snapshot = &brModel.RestoreRequestSnapshot{
 					BackupID: backupID,

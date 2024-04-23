@@ -87,6 +87,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			ctx := cmd.Context()
 
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
@@ -95,19 +96,19 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 
-				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				clusterID = cluster.ID
 
 				// Only task status is pending or importing can be canceled.
-				selectedImport, err := cloud.GetSelectedImport(cmd.Context(), clusterID, h.QueryPageSize, d, []importModel.V1beta1ImportState{
+				selectedImport, err := cloud.GetSelectedImport(ctx, clusterID, h.QueryPageSize, d, []importModel.V1beta1ImportState{
 					importModel.V1beta1ImportStatePREPARING,
 					importModel.V1beta1ImportStateIMPORTING,
 				})

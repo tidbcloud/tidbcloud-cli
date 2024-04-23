@@ -16,6 +16,7 @@ package serverless
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"os"
 	"testing"
@@ -104,6 +105,7 @@ func (suite *DescribeClusterSuite) SetupTest() {
 
 func (suite *DescribeClusterSuite) TestDescribeClusterArgs() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	body := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{}
 	err := json.Unmarshal([]byte(getClusterResultStr), body)
@@ -113,7 +115,7 @@ func (suite *DescribeClusterSuite) TestDescribeClusterArgs() {
 	}
 	clusterID := "12345"
 	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
-		WithClusterID(clusterID)).
+		WithClusterID(clusterID).WithContext(ctx)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -138,6 +140,7 @@ func (suite *DescribeClusterSuite) TestDescribeClusterArgs() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := DescribeCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)

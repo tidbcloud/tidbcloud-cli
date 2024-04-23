@@ -88,6 +88,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			ctx := cmd.Context()
 
 			var clusterID string
 			var exportID string
@@ -97,17 +98,17 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				clusterID = cluster.ID
 
-				export, err := cloud.GetSelectedExport(clusterID, h.QueryPageSize, d)
+				export, err := cloud.GetSelectedExport(ctx, clusterID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -152,7 +153,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			params := exportApi.NewExportServiceCancelExportParams().
-				WithClusterID(clusterID).WithExportID(exportID)
+				WithClusterID(clusterID).WithExportID(exportID).WithContext(ctx)
 			_, err = d.CancelExport(params)
 			if err != nil {
 				return errors.Trace(err)
