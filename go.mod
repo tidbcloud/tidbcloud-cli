@@ -83,7 +83,7 @@ require (
 	github.com/go-openapi/spec v0.20.4 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/gohxs/readline v0.0.0-20171011095936-a780388e6e7c // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
@@ -122,6 +122,7 @@ require (
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/yuin/goldmark v1.6.0 // indirect
 	github.com/yuin/goldmark-emoji v1.0.2 // indirect
+	go.einride.tech/aip v0.67.1 // indirect
 	go.mongodb.org/mongo-driver v1.10.0 // indirect
 	go.uber.org/atomic v1.10.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect

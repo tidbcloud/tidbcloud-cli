@@ -29,8 +29,10 @@ import (
 	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
+	"go.einride.tech/aip/pagination"
 )
 
 const listResultStr = `{
@@ -70,7 +72,7 @@ const listResultStr = `{
       "totalSize": "37"
     }
   ],
-  "total": 1
+  "totalSize": 1
 }
 `
 
@@ -145,7 +147,7 @@ const listResultMultiPageStr = `{
       "totalSize": "37"
     }
   ],
-  "total": 2
+  "totalSize": 2
 }
 `
 
@@ -173,7 +175,6 @@ func (suite *ListImportSuite) SetupTest() {
 
 func (suite *ListImportSuite) TestListImportArgs() {
 	assert := require.New(suite.T())
-	var page int32 = 1
 	var pageSize = int32(suite.h.QueryPageSize)
 	ctx := context.Background()
 
@@ -185,7 +186,7 @@ func (suite *ListImportSuite) TestListImportArgs() {
 	}
 	clusterID := "12345"
 	suite.mockClient.On("ListImports", importOp.NewImportServiceListImportsParams().
-		WithClusterID(clusterID).WithPage(&page).WithPageSize(&pageSize).WithContext(ctx)).
+		WithClusterID(clusterID).WithPageSize(&pageSize).WithContext(ctx)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -233,11 +234,10 @@ func (suite *ListImportSuite) TestListImportArgs() {
 
 func (suite *ListImportSuite) TestListImportWithMultiPages() {
 	assert := require.New(suite.T())
-	var pageOne int32 = 1
-	var pageTwo int32 = 2
 	suite.h.QueryPageSize = 1
 	var pageSize = int32(suite.h.QueryPageSize)
 	ctx := context.Background()
+	clusterID := "12345"
 
 	body := &importModel.V1beta1ListImportsResp{}
 	err := json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"total": 1`, `"total": 2`)), body)
@@ -245,13 +245,24 @@ func (suite *ListImportSuite) TestListImportWithMultiPages() {
 	result := &importOp.ImportServiceListImportsOK{
 		Payload: body,
 	}
-	clusterID := "12345"
+	nextPageToken := pagination.PageToken{
+		Offset: 1,
+	}
+	result.Payload.NextPageToken = nextPageToken.String()
+
 	suite.mockClient.On("ListImports", importOp.NewImportServiceListImportsParams().
-		WithClusterID(clusterID).WithPage(&pageOne).WithPageSize(&pageSize).WithContext(ctx)).
+		WithClusterID(clusterID).WithPageSize(&pageSize).WithContext(ctx)).
 		Return(result, nil)
+
+	body2 := &importModel.V1beta1ListImportsResp{}
+	err = json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"totalSize": 1`, `"totalSize": 2`)), body2)
+	assert.Nil(err)
+	result2 := &importOp.ImportServiceListImportsOK{
+		Payload: body2,
+	}
 	suite.mockClient.On("ListImports", importOp.NewImportServiceListImportsParams().
-		WithClusterID(clusterID).WithPage(&pageTwo).WithPageSize(&pageSize).WithContext(ctx)).
-		Return(result, nil)
+		WithClusterID(clusterID).WithPageToken(aws.String(nextPageToken.String())).WithPageSize(&pageSize).WithContext(ctx)).
+		Return(result2, nil)
 	cmd := ListCmd(suite.h)
 
 	tests := []struct {
