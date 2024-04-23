@@ -47,11 +47,10 @@
             "format": "uint64"
           },
           {
-            "name": "page",
+            "name": "pageToken",
             "in": "query",
             "required": false,
-            "type": "integer",
-            "format": "int32"
+            "type": "string"
           },
           {
             "name": "pageSize",
@@ -602,10 +601,13 @@
           },
           "readOnly": true
         },
-        "total": {
+        "totalSize": {
           "type": "integer",
           "format": "int64",
           "readOnly": true
+        },
+        "nextPageToken": {
+          "type": "string"
         }
       }
     },

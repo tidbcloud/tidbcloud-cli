@@ -36,9 +36,10 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.13.0
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.4
 	github.com/xo/usql v0.13.8
 	github.com/zalando/go-keyring v0.2.3
+	go.einride.tech/aip v0.67.1
 	go.uber.org/zap v1.24.0
 	golang.org/x/oauth2 v0.5.0
 	golang.org/x/sys v0.18.0
@@ -75,6 +76,7 @@ require (
 	github.com/danieljoos/wincred v1.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dlclark/regexp2 v1.10.0 // indirect
+	github.com/envoyproxy/go-control-plane v0.12.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/go-openapi/analysis v0.21.2 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
@@ -83,7 +85,7 @@ require (
 	github.com/go-openapi/spec v0.20.4 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/gohxs/readline v0.0.0-20171011095936-a780388e6e7c // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect

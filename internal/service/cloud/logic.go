@@ -17,7 +17,6 @@ package cloud
 import (
 	"context"
 	"fmt"
-	"math"
 
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
@@ -614,25 +613,26 @@ func RetrieveServerlessBackups(ctx context.Context, cID string, pageSize int32, 
 	return int64(len(items)), items, nil
 }
 
-func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDBCloudClient) (uint64, []*importModel.V1beta1Import, error) {
-	params := importApi.NewImportServiceListImportsParams().WithClusterID(cID)
+func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*importModel.V1beta1Import, error) {
+	params := importApi.NewImportServiceListImportsParams().WithClusterID(cID).WithContext(context)
 	ps := int32(pageSize)
-	var total uint64 = math.MaxUint64
-	var page int32 = 1
 	var items []*importModel.V1beta1Import
-	// loop to get all clusters
-	for uint64((page-1)*ps) < total {
-		imports, err := d.ListImports(params.WithPage(&page).WithPageSize(&ps).WithContext(context))
+	imports, err := d.ListImports(params.WithPageSize(&ps))
+	if err != nil {
+		return 0, nil, errors.Trace(err)
+	}
+	items = append(items, imports.Payload.Imports...)
+	var pageToken string
+	for {
+		pageToken = imports.Payload.NextPageToken
+		if pageToken == "" {
+			break
+		}
+		imports, err = d.ListImports(params.WithPageToken(&pageToken).WithPageSize(&ps))
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
-
-		total = uint64(imports.Payload.Total)
-		if err != nil {
-			return 0, nil, errors.Annotate(err, " failed parse total import number.")
-		}
-		page += 1
 		items = append(items, imports.Payload.Imports...)
 	}
-	return total, items, nil
+	return int64(len(items)), items, nil
 }
