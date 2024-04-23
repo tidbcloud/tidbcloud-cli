@@ -16,6 +16,7 @@ package branch
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -56,6 +57,7 @@ func (suite *CreateBranchSuite) SetupTest() {
 
 func (suite *CreateBranchSuite) TestCreateBranchArgs() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	clusterID := "12345"
 	branchName := "test"
@@ -65,7 +67,7 @@ func (suite *CreateBranchSuite) TestCreateBranchArgs() {
 		DisplayName: &branchName,
 	}
 	suite.mockClient.On("CreateBranch", branchApi.NewBranchServiceCreateBranchParams().
-		WithClusterID(clusterID).WithBranch(createBranchBody)).
+		WithClusterID(clusterID).WithBranch(createBranchBody).WithContext(ctx)).
 		Return(&branchApi.BranchServiceCreateBranchOK{
 			Payload: &branchModel.V1beta1Branch{
 				BranchID: branchId,
@@ -79,7 +81,7 @@ func (suite *CreateBranchSuite) TestCreateBranchArgs() {
 		Payload: body,
 	}
 	suite.mockClient.On("GetBranch", branchApi.NewBranchServiceGetBranchParams().
-		WithClusterID(clusterID).WithBranchID(branchId)).
+		WithClusterID(clusterID).WithBranchID(branchId).WithContext(ctx)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -109,6 +111,7 @@ func (suite *CreateBranchSuite) TestCreateBranchArgs() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := CreateCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)

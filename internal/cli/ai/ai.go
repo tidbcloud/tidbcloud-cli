@@ -94,6 +94,7 @@ func AICmd(h *internal.Helper) *cobra.Command {
 			}
 			param := operations.NewChatParams()
 
+			context := cmd.Context()
 			if opts.interactive {
 				task := func(messages []ui.ChatMessage) tea.Msg {
 					msgs := make([]*models.PingchatChatMessage, 0, len(messages))
@@ -114,7 +115,7 @@ func AICmd(h *internal.Helper) *cobra.Command {
 					chat, err := client.Chat(param.WithChatInfo(&models.PingchatChatInfo{
 						Messages: msgs,
 						Domain:   domain,
-					}))
+					}).WithContext(context))
 
 					if err != nil {
 						return ui.EndSendingMsg{
@@ -168,7 +169,7 @@ func AICmd(h *internal.Helper) *cobra.Command {
 						},
 					},
 					Domain: domain,
-				}))
+				}).WithContext(context))
 
 				if err != nil {
 					return err

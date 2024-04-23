@@ -16,6 +16,7 @@ package serverless
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -179,6 +180,7 @@ func (suite *ListClusterSuite) SetupTest() {
 
 func (suite *ListClusterSuite) TestListClusterArgs() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	body := &serverlessModel.TidbCloudOpenApiserverlessv1beta1ListClustersResponse{}
 	err := json.Unmarshal([]byte(listResultStr), body)
@@ -190,7 +192,7 @@ func (suite *ListClusterSuite) TestListClusterArgs() {
 	pageSize := int32(suite.h.QueryPageSize)
 	filter := fmt.Sprintf("projectId=%s", projectID)
 	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
-		WithPageSize(&pageSize).WithFilter(&filter)).
+		WithPageSize(&pageSize).WithFilter(&filter).WithContext(ctx)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -220,6 +222,7 @@ func (suite *ListClusterSuite) TestListClusterArgs() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := ListCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
@@ -237,6 +240,8 @@ func (suite *ListClusterSuite) TestListClusterArgs() {
 
 func (suite *ListClusterSuite) TestListClusterWithMultiPages() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
+
 	suite.h.QueryPageSize = 1
 	pageSize := int32(suite.h.QueryPageSize)
 	pageToken := "2"
@@ -250,7 +255,7 @@ func (suite *ListClusterSuite) TestListClusterWithMultiPages() {
 	projectID := "12345"
 	filter := fmt.Sprintf("projectId=%s", projectID)
 	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
-		WithPageSize(&pageSize).WithFilter(&filter)).
+		WithPageSize(&pageSize).WithFilter(&filter).WithContext(ctx)).
 		Return(result, nil)
 
 	body2 := &serverlessModel.TidbCloudOpenApiserverlessv1beta1ListClustersResponse{}
@@ -260,7 +265,7 @@ func (suite *ListClusterSuite) TestListClusterWithMultiPages() {
 		Payload: body2,
 	}
 	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
-		WithPageToken(&pageToken).WithPageSize(&pageSize).WithFilter(&filter)).
+		WithPageToken(&pageToken).WithPageSize(&pageSize).WithFilter(&filter).WithContext(ctx)).
 		Return(result2, nil)
 	cmd := ListCmd(suite.h)
 
@@ -279,6 +284,7 @@ func (suite *ListClusterSuite) TestListClusterWithMultiPages() {
 
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)

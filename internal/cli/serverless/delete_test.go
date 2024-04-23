@@ -16,6 +16,7 @@ package serverless
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -55,11 +56,12 @@ func (suite *DeleteClusterSuite) SetupTest() {
 
 func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	clusterID := "12345"
 	state := "DELETING"
 	suite.mockClient.On("DeleteCluster", serverlessApi.NewServerlessServiceDeleteClusterParams().
-		WithClusterID(clusterID)).
+		WithClusterID(clusterID).WithContext(ctx)).
 		Return(&serverlessApi.ServerlessServiceDeleteClusterOK{
 			Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
 				State: (*serverlessModel.Commonv1beta1ClusterState)(&state),
@@ -93,6 +95,7 @@ func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := DeleteCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)

@@ -16,6 +16,7 @@ package serverless
 
 import (
 	"fmt"
+
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
 
@@ -45,7 +46,7 @@ func RegionCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			regions, err := d.ListProviderRegions(serverlessApi.NewServerlessServiceListRegionsParams())
+			regions, err := d.ListProviderRegions(serverlessApi.NewServerlessServiceListRegionsParams().WithContext(cmd.Context()))
 			if err != nil {
 				return errors.Trace(err)
 			}

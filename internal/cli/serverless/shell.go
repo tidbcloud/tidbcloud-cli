@@ -102,13 +102,13 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			var pass *string
 			if opts.interactive {
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				projectID := project.ID
 
-				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, projectID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -168,7 +168,7 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			}
 
 			var host, name, port string
-			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID)
+			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID).WithContext(ctx)
 			cluster, err := d.GetCluster(params)
 			if err != nil {
 				return errors.Trace(err)

@@ -16,6 +16,7 @@ package project
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"os"
 	"testing"
@@ -106,6 +107,7 @@ func (suite *ListProjectSuite) SetupTest() {
 
 func (suite *ListProjectSuite) TestListProjectArgs() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	body := &iamModel.APIListProjectsRsp{}
 	err := json.Unmarshal([]byte(resultStr), body)
@@ -114,7 +116,7 @@ func (suite *ListProjectSuite) TestListProjectArgs() {
 		Payload: body,
 	}
 	suite.mockClient.On("ListProjects", iamApi.NewGetV1beta1ProjectsParams().
-		WithPageSize(&suite.h.QueryPageSize)).Return(result, nil)
+		WithPageSize(&suite.h.QueryPageSize).WithContext(ctx)).Return(result, nil)
 
 	tests := []struct {
 		name         string
@@ -143,6 +145,7 @@ func (suite *ListProjectSuite) TestListProjectArgs() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := ListCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
@@ -160,6 +163,7 @@ func (suite *ListProjectSuite) TestListProjectArgs() {
 
 func (suite *ListProjectSuite) TestListProjectWithMultiPages() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 	suite.h.QueryPageSize = 1
 	nextPageToken := "next_token"
 
@@ -176,9 +180,9 @@ func (suite *ListProjectSuite) TestListProjectWithMultiPages() {
 		Payload: body2,
 	}
 	suite.mockClient.On("ListProjects", iamApi.NewGetV1beta1ProjectsParams().
-		WithPageSize(&suite.h.QueryPageSize)).Return(resultPageOne, nil)
+		WithPageSize(&suite.h.QueryPageSize).WithContext(ctx)).Return(resultPageOne, nil)
 	suite.mockClient.On("ListProjects", iamApi.NewGetV1beta1ProjectsParams().
-		WithPageSize(&suite.h.QueryPageSize).WithPageToken(&nextPageToken)).Return(resultPageTwo, nil)
+		WithPageSize(&suite.h.QueryPageSize).WithPageToken(&nextPageToken).WithContext(ctx)).Return(resultPageTwo, nil)
 	tests := []struct {
 		name         string
 		args         []string
@@ -194,6 +198,7 @@ func (suite *ListProjectSuite) TestListProjectWithMultiPages() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := ListCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)

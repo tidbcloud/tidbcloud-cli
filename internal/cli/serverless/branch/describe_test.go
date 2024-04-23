@@ -16,6 +16,7 @@ package branch
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -83,6 +84,7 @@ func (suite *DescribeBranchSuite) SetupTest() {
 
 func (suite *DescribeBranchSuite) TestDescribeBranchArgs() {
 	assert := require.New(suite.T())
+	ctx := context.Background()
 
 	body := &branchModel.V1beta1Branch{}
 	err := json.Unmarshal([]byte(getBranchResultStr), body)
@@ -93,7 +95,7 @@ func (suite *DescribeBranchSuite) TestDescribeBranchArgs() {
 	clusterID := "10202848322613926203"
 	branchID := "bran-fgwdnpasmrahnh5iozqawnmijq"
 	suite.mockClient.On("GetBranch", branchApi.NewBranchServiceGetBranchParams().
-		WithBranchID(branchID).WithClusterID(clusterID)).
+		WithBranchID(branchID).WithClusterID(clusterID).WithContext(ctx)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -123,6 +125,7 @@ func (suite *DescribeBranchSuite) TestDescribeBranchArgs() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := DescribeCmd(suite.h)
+			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)

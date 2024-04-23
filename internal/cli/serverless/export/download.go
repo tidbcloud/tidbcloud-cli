@@ -106,6 +106,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			ctx := cmd.Context()
 
 			var exportID, clusterID, path string
 			if opts.interactive {
@@ -114,17 +115,17 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				clusterID = cluster.ID
 
-				export, err := cloud.GetSelectedLocalExport(clusterID, h.QueryPageSize, d)
+				export, err := cloud.GetSelectedLocalExport(ctx, clusterID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -159,7 +160,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			params := exportApi.NewExportServiceDownloadExportParams().
-				WithClusterID(clusterID).WithExportID(exportID)
+				WithClusterID(clusterID).WithExportID(exportID).WithContext(ctx)
 			resp, err := d.DownloadExport(params)
 			if err != nil {
 				return errors.Trace(err)
