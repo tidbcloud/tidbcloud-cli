@@ -128,8 +128,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			// for other terminals, json format is the default format.
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
 				res := &importModel.V1beta1ListImportsResp{
-					Imports: importTasks,
-					Total:   int64(total),
+					Imports:   importTasks,
+					TotalSize: total,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)
 				if err != nil {
