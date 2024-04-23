@@ -33,7 +33,7 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/ui/concurrency"
+	uiConcurrency "tidbcloud-cli/internal/ui/concurrency"
 	"tidbcloud-cli/internal/util"
 	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
 	exportModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/models"
@@ -235,25 +235,25 @@ func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1Download
 
 	// init the concurrency progress model
 	var p *tea.Program
-	urlMsgs := make([]ui_concurrency.URLMsg, 0)
+	urlMsgs := make([]uiConcurrency.URLMsg, 0)
 	for _, u := range urls {
-		url := ui_concurrency.URLMsg{
+		url := uiConcurrency.URLMsg{
 			Name: u.Name,
 			Url:  u.URL,
 			Path: path,
 		}
 		urlMsgs = append(urlMsgs, url)
 	}
-	m := ui_concurrency.NewModel(
+	m := uiConcurrency.NewModel(
 		urlMsgs,
 		func(id int, ratio float64) {
 			if p != nil {
-				p.Send(ui_concurrency.NewProgressMsg(id, ratio))
+				p.Send(uiConcurrency.NewProgressMsg(id, ratio))
 			}
 		},
 		func(id int, err error) {
 			if p != nil {
-				p.Send(ui_concurrency.NewProgressErrMsg(id, err))
+				p.Send(uiConcurrency.NewProgressErrMsg(id, err))
 			}
 		},
 		concurrency,
@@ -265,7 +265,7 @@ func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1Download
 	if err != nil {
 		return errors.Trace(err)
 	}
-	if m, _ := model.(ui_concurrency.Model); m.Interrupted {
+	if m, _ := model.(uiConcurrency.Model); m.Interrupted {
 		return util.InterruptError
 	}
 	return nil
