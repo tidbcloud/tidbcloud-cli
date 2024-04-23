@@ -51,6 +51,11 @@ type V1beta1Export struct {
 	// Optional. The failed reason of the export.
 	Reason *string `json:"reason,omitempty"`
 
+	// OUTPUT_ONLY. Snapshot time of the export.
+	// Read Only: true
+	// Format: date-time
+	SnapshotTime *strfmt.DateTime `json:"snapshotTime,omitempty"`
+
 	// Output_only. The state of the export.
 	// Read Only: true
 	State V1beta1ExportState `json:"state,omitempty"`
@@ -81,6 +86,10 @@ func (m *V1beta1Export) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateExportOptions(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSnapshotTime(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -149,6 +158,18 @@ func (m *V1beta1Export) validateExportOptions(formats strfmt.Registry) error {
 			}
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (m *V1beta1Export) validateSnapshotTime(formats strfmt.Registry) error {
+	if swag.IsZero(m.SnapshotTime) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("snapshotTime", "body", "date-time", m.SnapshotTime.String(), formats); err != nil {
+		return err
 	}
 
 	return nil
@@ -230,6 +251,10 @@ func (m *V1beta1Export) ContextValidate(ctx context.Context, formats strfmt.Regi
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateSnapshotTime(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateState(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -308,6 +333,15 @@ func (m *V1beta1Export) contextValidateExportOptions(ctx context.Context, format
 func (m *V1beta1Export) contextValidateName(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "name", "body", string(m.Name)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *V1beta1Export) contextValidateSnapshotTime(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "snapshotTime", "body", m.SnapshotTime); err != nil {
 		return err
 	}
 
