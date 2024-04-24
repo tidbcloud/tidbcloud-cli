@@ -17,7 +17,6 @@ package cloud
 import (
 	"fmt"
 	"net/http"
-	"os"
 
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
@@ -40,7 +39,6 @@ import (
 	apiClient "github.com/c4pt0r/go-tidbcloud-sdk-v1/client"
 	httpTransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
-	"github.com/go-resty/resty/v2"
 	"github.com/icholy/digest"
 )
 
@@ -123,11 +121,7 @@ type ClientDelegate struct {
 
 func NewClientDelegateWithToken(token string, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*ClientDelegate, error) {
 	transport := NewBearTokenTransport(token)
-	client := resty.New()
-	client.SetAuthToken(token)
-	debug := os.Getenv(config.DebugEnv) != ""
-	client.SetDebug(debug)
-	bc, sc, pc, brc, sic, ec, ic, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint, client)
+	bc, sc, pc, brc, sic, ec, ic, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -144,9 +138,7 @@ func NewClientDelegateWithToken(token string, apiUrl string, serverlessEndpoint 
 
 func NewClientDelegateWithApiKey(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*ClientDelegate, error) {
 	transport := NewDigestTransport(publicKey, privateKey)
-	client := resty.New()
-	client.SetDigestAuth(publicKey, privateKey)
-	bc, sc, pc, brc, sic, ec, ic, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint, client)
+	bc, sc, pc, brc, sic, ec, ic, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -281,7 +273,7 @@ func (d *ClientDelegate) DownloadExport(params *expOp.ExportServiceDownloadExpor
 	return d.ec.ExportService.ExportServiceDownloadExport(params, opts...)
 }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string, client *resty.Client) (*branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *serverlessImportClient.TidbcloudServerless, *expClient.TidbcloudServerless, *iamClient.TidbcloudServerless, error) {
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *serverlessImportClient.TidbcloudServerless, *expClient.TidbcloudServerless, *iamClient.TidbcloudServerless, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}

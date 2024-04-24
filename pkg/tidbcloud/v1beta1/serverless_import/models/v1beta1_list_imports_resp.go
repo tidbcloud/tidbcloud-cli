@@ -24,9 +24,12 @@ type V1beta1ListImportsResp struct {
 	// Read Only: true
 	Imports []*V1beta1Import `json:"imports"`
 
-	// total
+	// next page token
+	NextPageToken string `json:"nextPageToken,omitempty"`
+
+	// total size
 	// Read Only: true
-	Total int64 `json:"total,omitempty"`
+	TotalSize int64 `json:"totalSize,omitempty"`
 }
 
 // Validate validates this v1beta1 list imports resp
@@ -77,7 +80,7 @@ func (m *V1beta1ListImportsResp) ContextValidate(ctx context.Context, formats st
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateTotal(ctx, formats); err != nil {
+	if err := m.contextValidateTotalSize(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -116,9 +119,9 @@ func (m *V1beta1ListImportsResp) contextValidateImports(ctx context.Context, for
 	return nil
 }
 
-func (m *V1beta1ListImportsResp) contextValidateTotal(ctx context.Context, formats strfmt.Registry) error {
+func (m *V1beta1ListImportsResp) contextValidateTotalSize(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "total", "body", int64(m.Total)); err != nil {
+	if err := validate.ReadOnly(ctx, "totalSize", "body", int64(m.TotalSize)); err != nil {
 		return err
 	}
 
