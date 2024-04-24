@@ -22,13 +22,10 @@ import (
 
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/util"
 )
-
-var helpStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#626262")).Render
 
 const (
 	padding  = 2
