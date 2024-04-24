@@ -15,6 +15,7 @@
 package ui_concurrency
 
 import (
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -23,6 +24,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
+	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/util"
 )
 
@@ -77,7 +79,6 @@ type Model struct {
 	onError     func(int, error)
 	Interrupted bool
 	outputPath  string
-	debug       bool
 }
 
 type URLMsg struct {
@@ -85,7 +86,7 @@ type URLMsg struct {
 	Url  string
 }
 
-func NewModel(urls []URLMsg, onProgress func(int, float64), onError func(int, error), concurrency int, path string, debug bool) Model {
+func NewModel(urls []URLMsg, onProgress func(int, float64), onError func(int, error), concurrency int, path string) Model {
 	jobs := make(chan *FileJob, len(urls))
 	idToJob := make(map[int]*FileJob)
 
@@ -107,7 +108,6 @@ func NewModel(urls []URLMsg, onProgress func(int, float64), onError func(int, er
 		onProgress:  onProgress,
 		onError:     onError,
 		outputPath:  path,
-		debug:       debug,
 	}
 }
 
@@ -232,7 +232,7 @@ func (m *Model) consume(jobs <-chan *FileJob) {
 			m.jobInfo.lock.Unlock()
 
 			// request the url
-			resp, err := util.GetResponse(job.url, m.debug)
+			resp, err := util.GetResponse(job.url, os.Getenv(config.DebugEnv) != "")
 			if err != nil {
 				m.onError(job.id, err)
 				return

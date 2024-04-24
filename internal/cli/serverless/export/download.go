@@ -17,6 +17,7 @@ package export
 import (
 	"fmt"
 	"io"
+	"os"
 	"sync"
 
 	"github.com/AlecAivazis/survey/v2"
@@ -199,15 +200,13 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				fmt.Fprintf(h.IOStreams.Out, "\n%s\n", color.BlueString(fileMessage))
 			}
 
-			debug, err := cmd.Flags().GetBool(flag.Debug)
-
 			if h.IOStreams.CanPrompt {
-				err = DownloadFilesPrompt(h, resp.Payload.Downloads, path, concurrency, debug)
+				err = DownloadFilesPrompt(h, resp.Payload.Downloads, path, concurrency)
 				if err != nil {
 					return errors.Trace(err)
 				}
 			} else {
-				err = DownloadFilesWithoutPrompt(h, resp.Payload.Downloads, path, concurrency, debug)
+				err = DownloadFilesWithoutPrompt(h, resp.Payload.Downloads, path, concurrency)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -226,7 +225,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 	return downloadCmd
 }
 
-func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int, debug bool) error {
+func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int) error {
 	if concurrency <= 0 {
 		concurrency = DefaultConcurrency
 	}
@@ -261,7 +260,6 @@ func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1Download
 		},
 		concurrency,
 		path,
-		debug,
 	)
 
 	// run the program
@@ -313,7 +311,7 @@ type downloadJob struct {
 	path string
 }
 
-func DownloadFilesWithoutPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int, debug bool) error {
+func DownloadFilesWithoutPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int) error {
 	if concurrency <= 0 {
 		concurrency = DefaultConcurrency
 	}
@@ -327,7 +325,7 @@ func DownloadFilesWithoutPrompt(h *internal.Helper, urls []*exportModel.V1beta1D
 	// Start consumers:
 	for i := 0; i < concurrency; i++ {
 		wg.Add(1)
-		go consume(h, jobs, debug)
+		go consume(h, jobs)
 	}
 	// Start producing
 	for _, u := range urls {
@@ -338,14 +336,14 @@ func DownloadFilesWithoutPrompt(h *internal.Helper, urls []*exportModel.V1beta1D
 	return nil
 }
 
-func consume(h *internal.Helper, jobs <-chan *downloadJob, debug bool) {
+func consume(h *internal.Helper, jobs <-chan *downloadJob) {
 	defer wg.Done()
 	for job := range jobs {
 		func() {
 			fmt.Fprintf(h.IOStreams.Out, "Downloading %s\n", job.url.Name)
 
 			// request the url
-			resp, err := util.GetResponse(job.url.URL, debug)
+			resp, err := util.GetResponse(job.url.URL, os.Getenv(config.DebugEnv) != "")
 			if err != nil {
 				fmt.Fprintf(h.IOStreams.Out, "download fail: %s\n", err.Error())
 				return
