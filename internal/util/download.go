@@ -16,10 +16,11 @@ package util
 
 import (
 	"fmt"
-	"github.com/go-resty/resty/v2"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/go-resty/resty/v2"
 )
 
 // GetResponse returns the response of a given URL
