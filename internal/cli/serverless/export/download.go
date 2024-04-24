@@ -39,6 +39,8 @@ import (
 	exportModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/models"
 )
 
+const DefaultConcurrency = 3
+
 var DownloadPathInputFields = map[string]int{
 	flag.OutputPath: 0,
 }
@@ -197,13 +199,15 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				fmt.Fprintf(h.IOStreams.Out, "\n%s\n", color.BlueString(fileMessage))
 			}
 
+			debug, err := cmd.Flags().GetBool(flag.Debug)
+
 			if h.IOStreams.CanPrompt {
-				err = DownloadFilesPrompt(h, resp.Payload.Downloads, path, concurrency)
+				err = DownloadFilesPrompt(h, resp.Payload.Downloads, path, concurrency, debug)
 				if err != nil {
 					return errors.Trace(err)
 				}
 			} else {
-				err = DownloadFilesWithoutPrompt(h, resp.Payload.Downloads, path, concurrency)
+				err = DownloadFilesWithoutPrompt(h, resp.Payload.Downloads, path, concurrency, debug)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -222,9 +226,9 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 	return downloadCmd
 }
 
-func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int) error {
+func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int, debug bool) error {
 	if concurrency <= 0 {
-		concurrency = 3
+		concurrency = DefaultConcurrency
 	}
 
 	// create the path if not exist
@@ -240,7 +244,6 @@ func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1Download
 		url := uiConcurrency.URLMsg{
 			Name: u.Name,
 			Url:  u.URL,
-			Path: path,
 		}
 		urlMsgs = append(urlMsgs, url)
 	}
@@ -257,6 +260,8 @@ func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1Download
 			}
 		},
 		concurrency,
+		path,
+		debug,
 	)
 
 	// run the program
@@ -303,41 +308,44 @@ func GetDownloadPathInput() (tea.Model, error) {
 
 var wg sync.WaitGroup
 
-type DownloadJob struct {
+type downloadJob struct {
 	url  *exportModel.V1beta1DownloadURL
 	path string
 }
 
-func DownloadFilesWithoutPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int) error {
+func DownloadFilesWithoutPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int, debug bool) error {
+	if concurrency <= 0 {
+		concurrency = DefaultConcurrency
+	}
 	// create the path if not exist
 	err := util.CreateFolder(path)
 	if err != nil {
 		return err
 	}
 
-	jobs := make(chan *DownloadJob, len(urls))
+	jobs := make(chan *downloadJob, len(urls))
 	// Start consumers:
 	for i := 0; i < concurrency; i++ {
 		wg.Add(1)
-		go consume(h, jobs)
+		go consume(h, jobs, debug)
 	}
 	// Start producing
 	for _, u := range urls {
-		jobs <- &DownloadJob{url: u, path: path}
+		jobs <- &downloadJob{url: u, path: path}
 	}
 	close(jobs)
 	wg.Wait()
 	return nil
 }
 
-func consume(h *internal.Helper, jobs <-chan *DownloadJob) {
+func consume(h *internal.Helper, jobs <-chan *downloadJob, debug bool) {
 	defer wg.Done()
 	for job := range jobs {
 		func() {
 			fmt.Fprintf(h.IOStreams.Out, "Downloading %s\n", job.url.Name)
 
 			// request the url
-			resp, err := util.GetResponse(job.url.URL)
+			resp, err := util.GetResponse(job.url.URL, debug)
 			if err != nil {
 				fmt.Fprintf(h.IOStreams.Out, "download fail: %s\n", err.Error())
 				return

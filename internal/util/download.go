@@ -19,11 +19,15 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/go-resty/resty/v2"
 )
 
 // GetResponse returns the response of a given URL
-func GetResponse(url string) (*http.Response, error) {
-	resp, err := http.Get(url) // nolint:gosec
+func GetResponse(url string, debug bool) (*http.Response, error) {
+	httpClient := resty.New()
+	httpClient.SetDebug(debug)
+	resp, err := httpClient.GetClient().Get(url) // nolint:gosec
 	if err != nil {
 		return nil, err
 	}

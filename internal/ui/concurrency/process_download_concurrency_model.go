@@ -53,7 +53,6 @@ func NewProgressErrMsg(id int, err error) ProgressErrMsg {
 
 type FileJob struct {
 	id      int
-	path    string
 	name    string
 	url     string
 	process progress.Model
@@ -77,20 +76,21 @@ type Model struct {
 	onProgress  func(int, float64)
 	onError     func(int, error)
 	Interrupted bool
+	outputPath  string
+	debug       bool
 }
 
 type URLMsg struct {
 	Name string
-	Path string
 	Url  string
 }
 
-func NewModel(urls []URLMsg, onProgress func(int, float64), onError func(int, error), concurrency int) Model {
+func NewModel(urls []URLMsg, onProgress func(int, float64), onError func(int, error), concurrency int, path string, debug bool) Model {
 	jobs := make(chan *FileJob, len(urls))
 	idToJob := make(map[int]*FileJob)
 
 	for i, url := range urls {
-		job := &FileJob{id: i, name: url.Name, url: url.Url, path: url.Path}
+		job := &FileJob{id: i, name: url.Name, url: url.Url}
 		idToJob[i] = job
 	}
 
@@ -106,11 +106,9 @@ func NewModel(urls []URLMsg, onProgress func(int, float64), onError func(int, er
 		concurrency: concurrency,
 		onProgress:  onProgress,
 		onError:     onError,
+		outputPath:  path,
+		debug:       debug,
 	}
-}
-
-func NewDefaultModel(urls []URLMsg, onProgress func(int, float64), onError func(int, error)) Model {
-	return NewModel(urls, onProgress, onError, 2)
 }
 
 func (m Model) Init() tea.Cmd {
@@ -164,6 +162,11 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case ProgressMsg:
 		var cmds []tea.Cmd
 
+		f, ok := m.jobInfo.idToJob[msg.id]
+		if ok {
+			cmds = append(cmds, f.process.SetPercent(msg.percent))
+		}
+
 		if msg.percent >= 1.0 {
 			m.jobInfo.lock.Lock()
 			m.jobInfo.finishedCount++
@@ -171,11 +174,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if m.jobInfo.finishedCount >= m.jobInfo.total {
 				cmds = append(cmds, tea.Sequence(finalPause(), tea.Quit))
 			}
-		}
-
-		f, ok := m.jobInfo.idToJob[msg.id]
-		if ok {
-			cmds = append(cmds, f.process.SetPercent(msg.percent))
 		}
 		return m, tea.Batch(cmds...)
 
@@ -208,7 +206,6 @@ func (m Model) View() string {
 		}
 		viewString += pad + f.process.View() + "\n\n"
 	}
-	viewString += pad + helpStyle("Press ctrl+c key to quit")
 
 	return viewString
 }
@@ -222,6 +219,7 @@ func (m *Model) consume(jobs <-chan *FileJob) {
 		func() {
 			// create progress bar before download
 			pro := progress.New(progress.WithDefaultGradient())
+
 			pro.Width = m.width - padding*2 - 4
 			if pro.Width > maxWidth {
 				pro.Width = maxWidth
@@ -234,7 +232,7 @@ func (m *Model) consume(jobs <-chan *FileJob) {
 			m.jobInfo.lock.Unlock()
 
 			// request the url
-			resp, err := util.GetResponse(job.url)
+			resp, err := util.GetResponse(job.url, m.debug)
 			if err != nil {
 				m.onError(job.id, err)
 				return
@@ -242,7 +240,7 @@ func (m *Model) consume(jobs <-chan *FileJob) {
 			defer resp.Body.Close()
 
 			// create file
-			file, err := util.CreateFile(job.path, job.name)
+			file, err := util.CreateFile(m.outputPath, job.name)
 			if err != nil {
 				m.onError(job.id, err)
 				return
