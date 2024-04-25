@@ -19,6 +19,7 @@ import (
 	"tidbcloud-cli/internal/cli/serverless/branch"
 	"tidbcloud-cli/internal/cli/serverless/dataimport"
 	"tidbcloud-cli/internal/cli/serverless/export"
+	"tidbcloud-cli/internal/cli/serverless/sqluser"
 
 	"github.com/spf13/cobra"
 )
@@ -43,5 +44,7 @@ func Cmd(h *internal.Helper) *cobra.Command {
 	serverlessCmd.AddCommand(export.Cmd(h))
 	serverlessCmd.AddCommand(SpendingLimitCmd(h))
 	serverlessCmd.AddCommand(RegionCmd(h))
+	
+	serverlessCmd.AddCommand(sqluser.SQLUserCmd(h))
 	return serverlessCmd
 }

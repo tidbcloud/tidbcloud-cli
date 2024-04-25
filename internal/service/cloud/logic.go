@@ -113,6 +113,15 @@ func (i Import) String() string {
 	return fmt.Sprintf("%s(%s)", i.ID, *i.Status)
 }
 
+type SQLUser struct {
+	UserName string
+	Role     string
+}
+
+func (s SQLUser) String() string {
+	return fmt.Sprintf("%s(%s)", s.UserName, s.Role)
+}
+
 func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error) {
 	_, projectItems, err := RetrieveProjects(pageSize, client)
 	if err != nil {
@@ -484,6 +493,73 @@ func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client T
 	return res.(*Import), nil
 }
 
+func GetSelectedBuildinRole() (string, error) {
+	items := []interface{}{
+		util.ADMIN,
+		util.READWRITE,
+		util.READONLY,
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the role:")
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+
+	model.EnableFilter()
+	p := tea.NewProgram(model)
+	bModel, err := p.Run()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	role := bModel.(ui.SelectModel).GetSelectedItem()
+	if role == nil {
+		return "", errors.New("no role selected")
+	}
+	return role.(string), nil
+}
+
+func GetSelectedSQLUser(clusterID string, pageSize int64, client TiDBCloudClient) (string, error) {
+	_, sqlUserItems, err := RetrieveSQLUsers(clusterID, pageSize, client)
+	if err != nil {
+		return "", err
+	}
+
+	var items = make([]interface{}, 0, len(sqlUserItems))
+	for _, item := range sqlUserItems {
+		items = append(items, &SQLUser{
+			UserName: item.UserName,
+			Role:     item.BuiltinRole,
+		})
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the SQL user:")
+	if err != nil {
+		return "", err
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	sqlUserModel, err := p.Run()
+	if err != nil {
+		return "", err
+	}
+	if m, _ := sqlUserModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	res := sqlUserModel.(ui.SelectModel).GetSelectedItem()
+	if res == nil {
+		return "", errors.New("no SQL user selected")
+	}
+
+	return res.(*SQLUser).UserName, nil
+
+}
+
 func RetrieveProjects(pageSize int64, d TiDBCloudClient) (int64, []*iamModel.APIProject, error) {
 	var items []*iamModel.APIProject
 	var pageToken string
@@ -635,4 +711,29 @@ func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDB
 		items = append(items, imports.Payload.Imports...)
 	}
 	return total, items, nil
+}
+
+func RetrieveSQLUsers(cID string, pageSize int64, d TiDBCloudClient) (int64, []*iamModel.APISQLUser, error) {
+	var items []*iamModel.APISQLUser
+	var pageToken string
+
+	params := iamApi.NewGetV1beta1ClustersClusterIDSQLUsersParams().WithClusterID(cID).WithPageSize(&pageSize)
+	users, err := d.ListSQLUsers(params)
+	if err != nil {
+		return 0, nil, errors.Trace(err)
+	}
+	items = append(items, users.Payload.SQLUsers...)
+	// loop to get all SQL users
+	for {
+		pageToken = users.Payload.NextPageToken
+		if pageToken == "" {
+			break
+		}
+		users, err = d.ListSQLUsers(params.WithPageSize(&pageSize).WithPageToken(&pageToken))
+		if err != nil {
+			return 0, nil, errors.Trace(err)
+		}
+		items = append(items, users.Payload.SQLUsers...)
+	}
+	return int64(len(items)), items, nil
 }

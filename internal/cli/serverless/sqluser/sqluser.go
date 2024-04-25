@@ -12,28 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package util
+package sqluser
 
-// Cluster type
-const (
-	SERVERLESS = "SERVERLESS"
-	DEDICATED  = "DEDICATED"
+import (
+	"tidbcloud-cli/internal"
+
+	"github.com/spf13/cobra"
 )
 
-// Built-in SQL User Role types
-const (
-	ADMIN     = "admin"
-	READWRITE = "readwrite"
-	READONLY  = "readonly"
-)
+func SQLUserCmd(h *internal.Helper) *cobra.Command {
+	var SQLUserCmd = &cobra.Command{
+		Use:   "sql-user",
+		Short: "Manage SQL users",
+	}
 
-// Server accepted built-in SQL User Role types
-const (
-	ADMIN_ROLE     = "role_admin"
-	READWRITE_ROLE = "role_readwrite"
-	READONLY_ROLE  = "role_readonly"
-)
+	SQLUserCmd.AddCommand(ListCmd(h))
+	SQLUserCmd.AddCommand(CreateCmd(h))
+	SQLUserCmd.AddCommand(DeleteCmd(h))
 
-const (
-	MYSQLNATIVEPASSWORD = "mysql_native_password"
-)
+	return SQLUserCmd
+}

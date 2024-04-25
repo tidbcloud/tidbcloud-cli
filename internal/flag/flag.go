@@ -70,6 +70,8 @@ const (
 	Encryption            string = "encryption"
 	Compression           string = "compression"
 	SourceType            string = "source-type"
+	UserName			  string = "name"
+	UserRole			  string = "role"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."

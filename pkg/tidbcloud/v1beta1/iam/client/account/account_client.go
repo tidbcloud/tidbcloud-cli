@@ -30,46 +30,46 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
-	DeleteV1beta1SqluserUserName(params *DeleteV1beta1SqluserUserNameParams, opts ...ClientOption) (*DeleteV1beta1SqluserUserNameOK, error)
+	DeleteV1beta1ClustersClusterIDSQLUsersUserName(params *DeleteV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...ClientOption) (*DeleteV1beta1ClustersClusterIDSQLUsersUserNameOK, error)
 
 	GetMspCustomers(params *GetMspCustomersParams, opts ...ClientOption) (*GetMspCustomersOK, error)
 
 	GetMspCustomersCustomerOrgID(params *GetMspCustomersCustomerOrgIDParams, opts ...ClientOption) (*GetMspCustomersCustomerOrgIDOK, error)
 
+	GetV1beta1ClustersClusterIDSQLUsers(params *GetV1beta1ClustersClusterIDSQLUsersParams, opts ...ClientOption) (*GetV1beta1ClustersClusterIDSQLUsersOK, error)
+
+	GetV1beta1ClustersClusterIDSQLUsersUserName(params *GetV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...ClientOption) (*GetV1beta1ClustersClusterIDSQLUsersUserNameOK, error)
+
 	GetV1beta1Projects(params *GetV1beta1ProjectsParams, opts ...ClientOption) (*GetV1beta1ProjectsOK, error)
 
-	GetV1beta1Sqluser(params *GetV1beta1SqluserParams, opts ...ClientOption) (*GetV1beta1SqluserOK, error)
-
-	GetV1beta1SqluserUserName(params *GetV1beta1SqluserUserNameParams, opts ...ClientOption) (*GetV1beta1SqluserUserNameOK, error)
-
-	PatchV1beta1SqluserUserName(params *PatchV1beta1SqluserUserNameParams, opts ...ClientOption) (*PatchV1beta1SqluserUserNameOK, error)
+	PatchV1beta1ClustersClusterIDSQLUsersUserName(params *PatchV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...ClientOption) (*PatchV1beta1ClustersClusterIDSQLUsersUserNameOK, error)
 
 	PostCustomerSignupURL(params *PostCustomerSignupURLParams, opts ...ClientOption) (*PostCustomerSignupURLOK, error)
 
-	PostV1beta1Sqluser(params *PostV1beta1SqluserParams, opts ...ClientOption) (*PostV1beta1SqluserOK, error)
+	PostV1beta1ClustersClusterIDSQLUsers(params *PostV1beta1ClustersClusterIDSQLUsersParams, opts ...ClientOption) (*PostV1beta1ClustersClusterIDSQLUsersOK, error)
 
 	SetTransport(transport runtime.ClientTransport)
 }
 
 /*
-DeleteV1beta1SqluserUserName gets one sqluser
+DeleteV1beta1ClustersClusterIDSQLUsersUserName deletes one sql user
 
 This endpoint delete the sql user by user name.
 */
-func (a *Client) DeleteV1beta1SqluserUserName(params *DeleteV1beta1SqluserUserNameParams, opts ...ClientOption) (*DeleteV1beta1SqluserUserNameOK, error) {
+func (a *Client) DeleteV1beta1ClustersClusterIDSQLUsersUserName(params *DeleteV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...ClientOption) (*DeleteV1beta1ClustersClusterIDSQLUsersUserNameOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewDeleteV1beta1SqluserUserNameParams()
+		params = NewDeleteV1beta1ClustersClusterIDSQLUsersUserNameParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "DeleteV1beta1SqluserUserName",
+		ID:                 "DeleteV1beta1ClustersClusterIDSQLUsersUserName",
 		Method:             "DELETE",
-		PathPattern:        "/v1beta1/sqluser/{userName}",
+		PathPattern:        "/v1beta1/clusters/{clusterId}/sqlUsers/{userName}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
 		Params:             params,
-		Reader:             &DeleteV1beta1SqluserUserNameReader{formats: a.formats},
+		Reader:             &DeleteV1beta1ClustersClusterIDSQLUsersUserNameReader{formats: a.formats},
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	}
@@ -81,13 +81,13 @@ func (a *Client) DeleteV1beta1SqluserUserName(params *DeleteV1beta1SqluserUserNa
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*DeleteV1beta1SqluserUserNameOK)
+	success, ok := result.(*DeleteV1beta1ClustersClusterIDSQLUsersUserNameOK)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
 	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
-	msg := fmt.Sprintf("unexpected success response for DeleteV1beta1SqluserUserName: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	msg := fmt.Sprintf("unexpected success response for DeleteV1beta1ClustersClusterIDSQLUsersUserName: API contract not enforced by server. Client expected to get an error, but got: %T", result)
 	panic(msg)
 }
 
@@ -172,6 +172,86 @@ func (a *Client) GetMspCustomersCustomerOrgID(params *GetMspCustomersCustomerOrg
 }
 
 /*
+GetV1beta1ClustersClusterIDSQLUsers gets all sql users
+
+This endpoint retrieves all sql users  in the cluster.
+*/
+func (a *Client) GetV1beta1ClustersClusterIDSQLUsers(params *GetV1beta1ClustersClusterIDSQLUsersParams, opts ...ClientOption) (*GetV1beta1ClustersClusterIDSQLUsersOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetV1beta1ClustersClusterIDSQLUsersParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "GetV1beta1ClustersClusterIDSQLUsers",
+		Method:             "GET",
+		PathPattern:        "/v1beta1/clusters/{clusterId}/sqlUsers",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &GetV1beta1ClustersClusterIDSQLUsersReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetV1beta1ClustersClusterIDSQLUsersOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for GetV1beta1ClustersClusterIDSQLUsers: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+GetV1beta1ClustersClusterIDSQLUsersUserName queries sql user
+
+This endpoint retrieves a sql user by user name.
+*/
+func (a *Client) GetV1beta1ClustersClusterIDSQLUsersUserName(params *GetV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...ClientOption) (*GetV1beta1ClustersClusterIDSQLUsersUserNameOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetV1beta1ClustersClusterIDSQLUsersUserNameParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "GetV1beta1ClustersClusterIDSQLUsersUserName",
+		Method:             "GET",
+		PathPattern:        "/v1beta1/clusters/{clusterId}/sqlUsers/{userName}",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &GetV1beta1ClustersClusterIDSQLUsersUserNameReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetV1beta1ClustersClusterIDSQLUsersUserNameOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for GetV1beta1ClustersClusterIDSQLUsersUserName: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
 GetV1beta1Projects gets list of org projects
 
 This endpoint returns a list of org projects.
@@ -212,104 +292,24 @@ func (a *Client) GetV1beta1Projects(params *GetV1beta1ProjectsParams, opts ...Cl
 }
 
 /*
-GetV1beta1Sqluser gets one sqluser
+PatchV1beta1ClustersClusterIDSQLUsersUserName updates one sql user
 
-This endpoint retrieves all sqlusers  of the cluster.
+This endpoint update one sql user in the cluster.
 */
-func (a *Client) GetV1beta1Sqluser(params *GetV1beta1SqluserParams, opts ...ClientOption) (*GetV1beta1SqluserOK, error) {
+func (a *Client) PatchV1beta1ClustersClusterIDSQLUsersUserName(params *PatchV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...ClientOption) (*PatchV1beta1ClustersClusterIDSQLUsersUserNameOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewGetV1beta1SqluserParams()
+		params = NewPatchV1beta1ClustersClusterIDSQLUsersUserNameParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "GetV1beta1Sqluser",
-		Method:             "GET",
-		PathPattern:        "/v1beta1/sqluser",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http"},
-		Params:             params,
-		Reader:             &GetV1beta1SqluserReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*GetV1beta1SqluserOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
-	msg := fmt.Sprintf("unexpected success response for GetV1beta1Sqluser: API contract not enforced by server. Client expected to get an error, but got: %T", result)
-	panic(msg)
-}
-
-/*
-GetV1beta1SqluserUserName queries one sql user
-
-This endpoint retrieves a sql user by username.
-*/
-func (a *Client) GetV1beta1SqluserUserName(params *GetV1beta1SqluserUserNameParams, opts ...ClientOption) (*GetV1beta1SqluserUserNameOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewGetV1beta1SqluserUserNameParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "GetV1beta1SqluserUserName",
-		Method:             "GET",
-		PathPattern:        "/v1beta1/sqluser/{userName}",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http"},
-		Params:             params,
-		Reader:             &GetV1beta1SqluserUserNameReader{formats: a.formats},
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*GetV1beta1SqluserUserNameOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
-	msg := fmt.Sprintf("unexpected success response for GetV1beta1SqluserUserName: API contract not enforced by server. Client expected to get an error, but got: %T", result)
-	panic(msg)
-}
-
-/*
-PatchV1beta1SqluserUserName updates one sql user
-
-This endpoint update one sql user.
-*/
-func (a *Client) PatchV1beta1SqluserUserName(params *PatchV1beta1SqluserUserNameParams, opts ...ClientOption) (*PatchV1beta1SqluserUserNameOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewPatchV1beta1SqluserUserNameParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "PatchV1beta1SqluserUserName",
+		ID:                 "PatchV1beta1ClustersClusterIDSQLUsersUserName",
 		Method:             "PATCH",
-		PathPattern:        "/v1beta1/sqluser/{userName}",
+		PathPattern:        "/v1beta1/clusters/{clusterId}/sqlUsers/{userName}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
 		Params:             params,
-		Reader:             &PatchV1beta1SqluserUserNameReader{formats: a.formats},
+		Reader:             &PatchV1beta1ClustersClusterIDSQLUsersUserNameReader{formats: a.formats},
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	}
@@ -321,13 +321,13 @@ func (a *Client) PatchV1beta1SqluserUserName(params *PatchV1beta1SqluserUserName
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*PatchV1beta1SqluserUserNameOK)
+	success, ok := result.(*PatchV1beta1ClustersClusterIDSQLUsersUserNameOK)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
 	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
-	msg := fmt.Sprintf("unexpected success response for PatchV1beta1SqluserUserName: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	msg := fmt.Sprintf("unexpected success response for PatchV1beta1ClustersClusterIDSQLUsersUserName: API contract not enforced by server. Client expected to get an error, but got: %T", result)
 	panic(msg)
 }
 
@@ -372,24 +372,24 @@ func (a *Client) PostCustomerSignupURL(params *PostCustomerSignupURLParams, opts
 }
 
 /*
-PostV1beta1Sqluser creates one sqluser
+PostV1beta1ClustersClusterIDSQLUsers creates one sql user
 
 This endpoint will create one sql user int the cluster.
 */
-func (a *Client) PostV1beta1Sqluser(params *PostV1beta1SqluserParams, opts ...ClientOption) (*PostV1beta1SqluserOK, error) {
+func (a *Client) PostV1beta1ClustersClusterIDSQLUsers(params *PostV1beta1ClustersClusterIDSQLUsersParams, opts ...ClientOption) (*PostV1beta1ClustersClusterIDSQLUsersOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
-		params = NewPostV1beta1SqluserParams()
+		params = NewPostV1beta1ClustersClusterIDSQLUsersParams()
 	}
 	op := &runtime.ClientOperation{
-		ID:                 "PostV1beta1Sqluser",
+		ID:                 "PostV1beta1ClustersClusterIDSQLUsers",
 		Method:             "POST",
-		PathPattern:        "/v1beta1/sqluser",
+		PathPattern:        "/v1beta1/clusters/{clusterId}/sqlUsers",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
 		Params:             params,
-		Reader:             &PostV1beta1SqluserReader{formats: a.formats},
+		Reader:             &PostV1beta1ClustersClusterIDSQLUsersReader{formats: a.formats},
 		Context:            params.Context,
 		Client:             params.HTTPClient,
 	}
@@ -401,13 +401,13 @@ func (a *Client) PostV1beta1Sqluser(params *PostV1beta1SqluserParams, opts ...Cl
 	if err != nil {
 		return nil, err
 	}
-	success, ok := result.(*PostV1beta1SqluserOK)
+	success, ok := result.(*PostV1beta1ClustersClusterIDSQLUsersOK)
 	if ok {
 		return success, nil
 	}
 	// unexpected success response
 	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
-	msg := fmt.Sprintf("unexpected success response for PostV1beta1Sqluser: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	msg := fmt.Sprintf("unexpected success response for PostV1beta1ClustersClusterIDSQLUsers: API contract not enforced by server. Client expected to get an error, but got: %T", result)
 	panic(msg)
 }
 
