@@ -112,12 +112,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
 
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 
-				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -147,7 +147,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 			params := branchApi.NewBranchServiceCreateBranchParams().WithClusterID(clusterId).WithBranch(&branchModel.V1beta1Branch{
 				DisplayName: &branchName,
-			})
+			}).WithContext(ctx)
 
 			if h.IOStreams.CanPrompt {
 				err := CreateAndSpinnerWait(ctx, d, params, h)
@@ -155,7 +155,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 			} else {
-				err := CreateAndWaitReady(h, d, params)
+				err := CreateAndWaitReady(ctx, h, d, params)
 				if err != nil {
 					return err
 				}
@@ -170,7 +170,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	return createCmd
 }
 
-func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, params *branchApi.BranchServiceCreateBranchParams) error {
+func CreateAndWaitReady(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, params *branchApi.BranchServiceCreateBranchParams) error {
 	createBranchResult, err := d.CreateBranch(params)
 	if err != nil {
 		return errors.Trace(err)
@@ -188,7 +188,8 @@ func CreateAndWaitReady(h *internal.Helper, d cloud.TiDBCloudClient, params *bra
 		case <-ticker.C:
 			clusterResult, err := d.GetBranch(branchApi.NewBranchServiceGetBranchParams().
 				WithClusterID(params.ClusterID).
-				WithBranchID(newBranchID))
+				WithBranchID(newBranchID).
+				WithContext(ctx))
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -220,7 +221,8 @@ func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, params *
 			case <-ticker.C:
 				clusterResult, err := d.GetBranch(branchApi.NewBranchServiceGetBranchParams().
 					WithClusterID(params.ClusterID).
-					WithBranchID(newBranchID))
+					WithBranchID(newBranchID).
+					WithContext(ctx))
 				if err != nil {
 					return errors.Trace(err)
 				}

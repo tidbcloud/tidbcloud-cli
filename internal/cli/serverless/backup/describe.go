@@ -16,6 +16,7 @@ package backup
 
 import (
 	"fmt"
+
 	"tidbcloud-cli/internal/output"
 
 	"tidbcloud-cli/internal"
@@ -87,6 +88,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			ctx := cmd.Context()
 
 			var backupID string
 			var clusterID string
@@ -96,17 +98,17 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				clusterID = cluster.ID
 
-				backup, err := cloud.GetSelectedServerlessBackup(clusterID, int32(h.QueryPageSize), d)
+				backup, err := cloud.GetSelectedServerlessBackup(ctx, clusterID, int32(h.QueryPageSize), d)
 				if err != nil {
 					return err
 				}
@@ -119,7 +121,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := brAPI.NewBackupRestoreServiceGetBackupParams().WithBackupID(backupID)
+			params := brAPI.NewBackupRestoreServiceGetBackupParams().WithBackupID(backupID).WithContext(ctx)
 			if err != nil {
 				return errors.Trace(err)
 			}

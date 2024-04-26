@@ -67,15 +67,13 @@ type ImportServiceListImportsParams struct {
 	// Format: uint64
 	ClusterID string
 
-	// Page.
-	//
-	// Format: int32
-	Page *int32
-
 	// PageSize.
 	//
 	// Format: int32
 	PageSize *int32
+
+	// PageToken.
+	PageToken *string
 
 	timeout    time.Duration
 	Context    context.Context
@@ -141,17 +139,6 @@ func (o *ImportServiceListImportsParams) SetClusterID(clusterID string) {
 	o.ClusterID = clusterID
 }
 
-// WithPage adds the page to the import service list imports params
-func (o *ImportServiceListImportsParams) WithPage(page *int32) *ImportServiceListImportsParams {
-	o.SetPage(page)
-	return o
-}
-
-// SetPage adds the page to the import service list imports params
-func (o *ImportServiceListImportsParams) SetPage(page *int32) {
-	o.Page = page
-}
-
 // WithPageSize adds the pageSize to the import service list imports params
 func (o *ImportServiceListImportsParams) WithPageSize(pageSize *int32) *ImportServiceListImportsParams {
 	o.SetPageSize(pageSize)
@@ -161,6 +148,17 @@ func (o *ImportServiceListImportsParams) WithPageSize(pageSize *int32) *ImportSe
 // SetPageSize adds the pageSize to the import service list imports params
 func (o *ImportServiceListImportsParams) SetPageSize(pageSize *int32) {
 	o.PageSize = pageSize
+}
+
+// WithPageToken adds the pageToken to the import service list imports params
+func (o *ImportServiceListImportsParams) WithPageToken(pageToken *string) *ImportServiceListImportsParams {
+	o.SetPageToken(pageToken)
+	return o
+}
+
+// SetPageToken adds the pageToken to the import service list imports params
+func (o *ImportServiceListImportsParams) SetPageToken(pageToken *string) {
+	o.PageToken = pageToken
 }
 
 // WriteToRequest writes these params to a swagger request
@@ -176,23 +174,6 @@ func (o *ImportServiceListImportsParams) WriteToRequest(r runtime.ClientRequest,
 		return err
 	}
 
-	if o.Page != nil {
-
-		// query param page
-		var qrPage int32
-
-		if o.Page != nil {
-			qrPage = *o.Page
-		}
-		qPage := swag.FormatInt32(qrPage)
-		if qPage != "" {
-
-			if err := r.SetQueryParam("page", qPage); err != nil {
-				return err
-			}
-		}
-	}
-
 	if o.PageSize != nil {
 
 		// query param pageSize
@@ -205,6 +186,23 @@ func (o *ImportServiceListImportsParams) WriteToRequest(r runtime.ClientRequest,
 		if qPageSize != "" {
 
 			if err := r.SetQueryParam("pageSize", qPageSize); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.PageToken != nil {
+
+		// query param pageToken
+		var qrPageToken string
+
+		if o.PageToken != nil {
+			qrPageToken = *o.PageToken
+		}
+		qPageToken := qrPageToken
+		if qPageToken != "" {
+
+			if err := r.SetQueryParam("pageToken", qPageToken); err != nil {
 				return err
 			}
 		}

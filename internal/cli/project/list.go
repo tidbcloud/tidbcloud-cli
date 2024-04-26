@@ -45,7 +45,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			_, items, err := cloud.RetrieveProjects(h.QueryPageSize, d)
+			_, items, err := cloud.RetrieveProjects(cmd.Context(), h.QueryPageSize, d)
 			if err != nil {
 				return err
 			}

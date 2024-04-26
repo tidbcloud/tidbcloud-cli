@@ -80,6 +80,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			d, err := h.Client()
 			if err != nil {
 				return err
@@ -93,13 +94,13 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				projectID := project.ID
 
-				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, projectID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -113,7 +114,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cID
 			}
 
-			_, items, err := cloud.RetrieveSQLUsers(clusterID, h.QueryPageSize, d)
+			_, items, err := cloud.RetrieveSQLUsers(ctx, clusterID, h.QueryPageSize, d)
 			if err != nil {
 				return err
 			}

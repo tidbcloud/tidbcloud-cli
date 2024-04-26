@@ -89,6 +89,7 @@ func SpendingLimitCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			ctx := cmd.Context()
 
 			var clusterID string
 			var monthly int32
@@ -98,12 +99,12 @@ func SpendingLimitCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 
-				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -151,7 +152,8 @@ func SpendingLimitCmd(h *internal.Helper) *cobra.Command {
 			}
 			body.UpdateMask = &SpendingLimitMonthlyMask
 			body.Cluster.SpendingLimit.Monthly = monthly
-			params := serverlessApi.NewServerlessServicePartialUpdateClusterParams().WithClusterClusterID(clusterID).WithBody(*body)
+			params := serverlessApi.NewServerlessServicePartialUpdateClusterParams().WithClusterClusterID(clusterID).
+				WithBody(*body).WithContext(ctx)
 			_, err = d.PartialUpdateCluster(params)
 			if err != nil {
 				return errors.Trace(err)

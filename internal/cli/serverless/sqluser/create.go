@@ -107,6 +107,7 @@ $ %[1]s serverless sql-user create --name <user-name> --password <password> --ro
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			d, err := h.Client()
 			if err != nil {
 				return err
@@ -123,13 +124,13 @@ $ %[1]s serverless sql-user create --name <user-name> --password <password> --ro
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				projectID := project.ID
 
-				cluster, err := cloud.GetSelectedCluster(projectID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, projectID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -194,7 +195,8 @@ $ %[1]s serverless sql-user create --name <user-name> --password <password> --ro
 						Password:    password,
 						BuiltinRole: builtinRole,
 					},
-				)
+				).
+				WithContext(ctx)
 
 			_, err = d.CreateSQLUser(params)
 			if err != nil {

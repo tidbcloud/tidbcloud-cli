@@ -131,6 +131,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			ctx := cmd.Context()
 
 			var clusterId string
 			var bucketURI, accessKeyID, secretAccessKey, database, table, targetType, fileType, compression string
@@ -139,12 +140,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
 
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 
-				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -263,7 +264,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					ExportOptions: &exportModel.V1beta1ExportOptions{
 						Database: database,
 						Table:    table,
-						FileType: exportModel.ExportOptionsFileType(fileType),
+						FileType: exportModel.V1beta1ExportOptionsFileType(fileType),
 					},
 					Target: &exportModel.V1beta1Target{
 						Type: exportModel.TargetTargetType(targetType),
@@ -275,7 +276,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 							},
 						},
 					},
-				})
+				}).WithContext(ctx)
 			if compression != "" {
 				params.Body.ExportOptions.Compression = exportModel.ExportOptionsCompressionType(compression)
 			}

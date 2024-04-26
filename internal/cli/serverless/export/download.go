@@ -17,12 +17,11 @@ package export
 import (
 	"fmt"
 	"io"
-	"net/http"
 	"os"
+	"sync"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
-	"github.com/charmbracelet/bubbles/progress"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/dustin/go-humanize"
@@ -35,10 +34,13 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
+	uiConcurrency "tidbcloud-cli/internal/ui/concurrency"
 	"tidbcloud-cli/internal/util"
 	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
 	exportModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/models"
 )
+
+const DefaultConcurrency = 3
 
 var DownloadPathInputFields = map[string]int{
 	flag.OutputPath: 0,
@@ -107,6 +109,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			ctx := cmd.Context()
 
 			var exportID, clusterID, path string
 			if opts.interactive {
@@ -115,17 +118,17 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				clusterID = cluster.ID
 
-				export, err := cloud.GetSelectedLocalExport(clusterID, h.QueryPageSize, d)
+				export, err := cloud.GetSelectedLocalExport(ctx, clusterID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -154,8 +157,13 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
+			concurrency, err := cmd.Flags().GetInt(flag.Concurrency)
+			if err != nil {
+				return errors.Trace(err)
+			}
+
 			params := exportApi.NewExportServiceDownloadExportParams().
-				WithClusterID(clusterID).WithExportID(exportID)
+				WithClusterID(clusterID).WithExportID(exportID).WithContext(ctx)
 			resp, err := d.DownloadExport(params)
 			if err != nil {
 				return errors.Trace(err)
@@ -192,10 +200,18 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				fmt.Fprintf(h.IOStreams.Out, "\n%s\n", color.BlueString(fileMessage))
 			}
 
-			err = DownloadFiles(h, resp.Payload.Downloads, path)
-			if err != nil {
-				return errors.Trace(err)
+			if h.IOStreams.CanPrompt {
+				err = DownloadFilesPrompt(h, resp.Payload.Downloads, path, concurrency)
+				if err != nil {
+					return errors.Trace(err)
+				}
+			} else {
+				err = DownloadFilesWithoutPrompt(h, resp.Payload.Downloads, path, concurrency)
+				if err != nil {
+					return errors.Trace(err)
+				}
 			}
+			fmt.Fprintf(h.IOStreams.Out, "download finished\n")
 			return nil
 		},
 	}
@@ -204,87 +220,55 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 	downloadCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the export.")
 	downloadCmd.Flags().String(flag.OutputPath, "", "Where you want to download to. If not specified, download to the current directory.")
 	downloadCmd.Flags().BoolVar(&force, flag.Force, false, "Download without confirmation.")
+	downloadCmd.Flags().Int(flag.Concurrency, 3, "Download concurrency.")
 	downloadCmd.MarkFlagsRequiredTogether(flag.ExportID, flag.ClusterID)
 	return downloadCmd
 }
 
-func DownloadFiles(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string) error {
-	if path == "" {
-		path = "."
+func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int) error {
+	if concurrency <= 0 {
+		concurrency = DefaultConcurrency
 	}
 
 	// create the path if not exist
-	if _, err := os.Stat(path); err != nil {
-		if os.IsNotExist(err) {
-			err = os.MkdirAll(path, 0755)
-		}
-		if err != nil {
-			return err
-		}
+	err := util.CreateFolder(path)
+	if err != nil {
+		return err
 	}
-	interrupt := false
-	for _, downloadUrl := range urls {
-		if interrupt {
-			return util.InterruptError
+
+	// init the concurrency progress model
+	var p *tea.Program
+	urlMsgs := make([]uiConcurrency.URLMsg, 0)
+	for _, u := range urls {
+		url := uiConcurrency.URLMsg{
+			Name: u.Name,
+			Url:  u.URL,
 		}
-		func() {
-			fileName := downloadUrl.Name
-			url := downloadUrl.URL
-			size := humanize.IBytes(uint64(downloadUrl.Size))
-			fmt.Fprintf(h.IOStreams.Out, "\ndownload %s(%s) to %s\n", fileName, size, path+"/"+fileName)
-
-			// send the request
-			resp, err := http.Get(url) // nolint:gosec
-			if err != nil {
-				fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
-				return
-			}
-			if resp.StatusCode != http.StatusOK {
-				fmt.Fprintf(h.IOStreams.Out, "download file error with status code: %d\n", resp.StatusCode)
-				return
-			}
-			defer resp.Body.Close()
-
-			// check the response
-			if resp.ContentLength <= 0 {
-				fmt.Fprintf(h.IOStreams.Out, "content length less than 0, aborting download")
-				return
-			}
-
-			// skip if the file exists
-			if _, err := os.Stat(path + "/" + fileName); err == nil {
-				fmt.Fprintf(h.IOStreams.Out, "file %s already exists, skipping download\n", path+"/"+fileName)
-				return
-			}
-
-			// create the file and download
-			file, err := os.Create(path + "/" + fileName)
-			if err != nil {
-				fmt.Fprintf(h.IOStreams.Out, "create file error: %v\n", err)
-				return
-			}
-			defer file.Close()
-
-			if h.IOStreams.CanPrompt {
-				err = processDownload(int(resp.ContentLength), file, resp.Body)
-				if err != nil {
-					if err == util.InterruptError {
-						interrupt = true
-						return
-					}
-					fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
-					return
-				}
-			} else {
-				_, err = io.Copy(file, resp.Body)
-				if err != nil {
-					fmt.Fprintf(h.IOStreams.Out, "download file error: %v\n", err)
-					return
-				}
-			}
-		}()
+		urlMsgs = append(urlMsgs, url)
 	}
-	if interrupt {
+	m := uiConcurrency.NewModel(
+		urlMsgs,
+		func(id int, ratio float64) {
+			if p != nil {
+				p.Send(uiConcurrency.NewProgressMsg(id, ratio))
+			}
+		},
+		func(id int, err error) {
+			if p != nil {
+				p.Send(uiConcurrency.NewProgressErrMsg(id, err))
+			}
+		},
+		concurrency,
+		path,
+	)
+
+	// run the program
+	p = tea.NewProgram(m)
+	model, err := p.Run()
+	if err != nil {
+		return errors.Trace(err)
+	}
+	if m, _ := model.(uiConcurrency.Model); m.Interrupted {
 		return util.InterruptError
 	}
 	return nil
@@ -320,33 +304,65 @@ func GetDownloadPathInput() (tea.Model, error) {
 	return inputModel, nil
 }
 
-func processDownload(contentType int, file *os.File, reader io.Reader) error {
-	var p *tea.Program
-	pw := &ui.ProgressWriter{
-		Total:  contentType,
-		File:   file,
-		Reader: reader,
-		OnProgress: func(ratio float64) {
-			p.Send(ui.ProgressMsg(ratio))
-		},
+var wg sync.WaitGroup
+
+type downloadJob struct {
+	url  *exportModel.V1beta1DownloadURL
+	path string
+}
+
+func DownloadFilesWithoutPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int) error {
+	if concurrency <= 0 {
+		concurrency = DefaultConcurrency
+	}
+	// create the path if not exist
+	err := util.CreateFolder(path)
+	if err != nil {
+		return err
 	}
 
-	m := ui.ProcessModel{
-		Progress: progress.New(progress.WithDefaultGradient()),
+	jobs := make(chan *downloadJob, len(urls))
+	// Start consumers:
+	for i := 0; i < concurrency; i++ {
+		wg.Add(1)
+		go consume(h, jobs)
 	}
-	// Start Bubble Tea
-	p = tea.NewProgram(m)
-	// Start the download
-	go pw.Start()
-	processModel, err := p.Run()
-	if err != nil {
-		return errors.Trace(err)
+	// Start producing
+	for _, u := range urls {
+		jobs <- &downloadJob{url: u, path: path}
 	}
-	if processModel.(ui.ProcessModel).Interrupted {
-		return util.InterruptError
-	}
-	if processModel.(ui.ProcessModel).Err != nil {
-		return processModel.(ui.ProcessModel).Err
-	}
+	close(jobs)
+	wg.Wait()
 	return nil
+}
+
+func consume(h *internal.Helper, jobs <-chan *downloadJob) {
+	defer wg.Done()
+	for job := range jobs {
+		func() {
+			fmt.Fprintf(h.IOStreams.Out, "Downloading %s\n", job.url.Name)
+
+			// request the url
+			resp, err := util.GetResponse(job.url.URL, os.Getenv(config.DebugEnv) != "")
+			if err != nil {
+				fmt.Fprintf(h.IOStreams.Out, "download fail: %s\n", err.Error())
+				return
+			}
+			defer resp.Body.Close()
+
+			file, err := util.CreateFile(job.path, job.url.Name)
+			if err != nil {
+				fmt.Fprintf(h.IOStreams.Out, "download fail: %s\n", err.Error())
+				return
+			}
+			defer file.Close()
+
+			_, err = io.Copy(file, resp.Body)
+			if err != nil {
+				fmt.Fprintf(h.IOStreams.Out, "download fail: %s\n", err.Error())
+				return
+			}
+			fmt.Fprintf(h.IOStreams.Out, "Download %s successfully\n", job.url.Name)
+		}()
+	}
 }

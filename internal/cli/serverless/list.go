@@ -73,6 +73,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			var pID string
+			context := cmd.Context()
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
@@ -80,7 +81,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(context, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -94,7 +95,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 			cmd.Annotations[telemetry.ProjectID] = pID
 
-			total, items, err := cloud.RetrieveClusters(pID, h.QueryPageSize, d)
+			total, items, err := cloud.RetrieveClusters(context, pID, h.QueryPageSize, d)
 			if err != nil {
 				return err
 			}

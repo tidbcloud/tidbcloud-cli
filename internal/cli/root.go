@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"tidbcloud-cli/internal"
@@ -131,7 +132,8 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			if debugMode {
 				log.InitLogger("DEBUG")
-				// enable debug for go-openapi
+				// enable debug for go-openapi, will output http request/response details, but won't output header
+				// added in roundtrip
 				err := os.Setenv("SWAGGER_DEBUG", "1")
 				if err != nil {
 					return err
@@ -241,8 +243,8 @@ func initConfig() {
 	// Find home directory.
 	home, err := os.UserHomeDir()
 	cobra.CheckErr(err)
-	path := home + "/" + config.HomePath
-	err = os.MkdirAll(path+"/cache", 0700)
+	path := filepath.Join(home, config.HomePath)
+	err = os.MkdirAll(path, 0700)
 	if err != nil {
 		color.Red("Failed to create home directory: %s", err)
 		os.Exit(1)

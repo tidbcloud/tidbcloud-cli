@@ -72,6 +72,7 @@ const (
 	SourceType            string = "source-type"
 	UserName			  string = "name"
 	UserRole			  string = "role"
+	Concurrency           string = "concurrency"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."

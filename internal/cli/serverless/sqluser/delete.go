@@ -88,6 +88,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx := cmd.Context()
 			d, err := h.Client()
 			if err != nil {
 				return err
@@ -101,17 +102,17 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				clusterID = cluster.ID
 
-				user, err := cloud.GetSelectedSQLUser(clusterID, h.QueryPageSize, d)
+				user, err := cloud.GetSelectedSQLUser(ctx, clusterID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -158,7 +159,9 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			params := iamApi.NewDeleteV1beta1ClustersClusterIDSQLUsersUserNameParams().
-				WithClusterID(clusterID).WithUserName(userName)
+				WithClusterID(clusterID).
+				WithUserName(userName).
+				WithContext(ctx)
 			_, err = d.DeleteSQLUser(params)
 			if err != nil {
 				return errors.Trace(err)

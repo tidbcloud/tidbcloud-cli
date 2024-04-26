@@ -87,6 +87,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			ctx := cmd.Context()
 
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
@@ -96,12 +97,12 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(h.QueryPageSize, d)
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 
-				cluster, err := cloud.GetSelectedCluster(project.ID, h.QueryPageSize, d)
+				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -127,8 +128,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			// for other terminals, json format is the default format.
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
 				res := &importModel.V1beta1ListImportsResp{
-					Imports: importTasks,
-					Total:   int64(total),
+					Imports:   importTasks,
+					TotalSize: total,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)
 				if err != nil {

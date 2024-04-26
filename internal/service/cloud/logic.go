@@ -17,7 +17,6 @@ package cloud
 import (
 	"context"
 	"fmt"
-	"math"
 
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
@@ -122,8 +121,8 @@ func (s SQLUser) String() string {
 	return fmt.Sprintf("%s(%s)", s.UserName, s.Role)
 }
 
-func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error) {
-	_, projectItems, err := RetrieveProjects(pageSize, client)
+func GetSelectedProject(ctx context.Context, pageSize int64, client TiDBCloudClient) (*Project, error) {
+	_, projectItems, err := RetrieveProjects(ctx, pageSize, client)
 	if err != nil {
 		return nil, err
 	}
@@ -166,8 +165,8 @@ func GetSelectedProject(pageSize int64, client TiDBCloudClient) (*Project, error
 	return res.(*Project), nil
 }
 
-func GetSelectedCluster(projectID string, pageSize int64, client TiDBCloudClient) (*Cluster, error) {
-	_, clusterItems, err := RetrieveClusters(projectID, pageSize, client)
+func GetSelectedCluster(ctx context.Context, projectID string, pageSize int64, client TiDBCloudClient) (*Cluster, error) {
+	_, clusterItems, err := RetrieveClusters(ctx, projectID, pageSize, client)
 	if err != nil {
 		return nil, err
 	}
@@ -262,8 +261,8 @@ func GetSpendingLimitField(mutableFields []string) (string, error) {
 	return field.(string), nil
 }
 
-func GetSelectedBranch(clusterID string, pageSize int64, client TiDBCloudClient) (*Branch, error) {
-	_, branchItems, err := RetrieveBranches(clusterID, pageSize, client)
+func GetSelectedBranch(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*Branch, error) {
+	_, branchItems, err := RetrieveBranches(ctx, clusterID, pageSize, client)
 	if err != nil {
 		return nil, err
 	}
@@ -303,8 +302,8 @@ func GetSelectedBranch(clusterID string, pageSize int64, client TiDBCloudClient)
 	return branch.(*Branch), nil
 }
 
-func GetSelectedExport(clusterID string, pageSize int64, client TiDBCloudClient) (*Export, error) {
-	_, exportItems, err := RetrieveExports(clusterID, pageSize, client)
+func GetSelectedExport(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*Export, error) {
+	_, exportItems, err := RetrieveExports(ctx, clusterID, pageSize, client)
 	if err != nil {
 		return nil, err
 	}
@@ -342,8 +341,8 @@ func GetSelectedExport(clusterID string, pageSize int64, client TiDBCloudClient)
 	return export.(*Export), nil
 }
 
-func GetSelectedLocalExport(clusterID string, pageSize int64, client TiDBCloudClient) (*Export, error) {
-	_, exportItems, err := RetrieveExports(clusterID, pageSize, client)
+func GetSelectedLocalExport(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*Export, error) {
+	_, exportItems, err := RetrieveExports(ctx, clusterID, pageSize, client)
 	if err != nil {
 		return nil, err
 	}
@@ -383,8 +382,8 @@ func GetSelectedLocalExport(clusterID string, pageSize int64, client TiDBCloudCl
 	return export.(*Export), nil
 }
 
-func GetSelectedServerlessBackup(clusterID string, pageSize int32, client TiDBCloudClient) (*ServerlessBackup, error) {
-	_, backupItems, err := RetrieveServerlessBackups(clusterID, pageSize, client)
+func GetSelectedServerlessBackup(ctx context.Context, clusterID string, pageSize int32, client TiDBCloudClient) (*ServerlessBackup, error) {
+	_, backupItems, err := RetrieveServerlessBackups(ctx, clusterID, pageSize, client)
 	if err != nil {
 		return nil, err
 	}
@@ -521,8 +520,8 @@ func GetSelectedBuildinRole() (string, error) {
 	return role.(string), nil
 }
 
-func GetSelectedSQLUser(clusterID string, pageSize int64, client TiDBCloudClient) (string, error) {
-	_, sqlUserItems, err := RetrieveSQLUsers(clusterID, pageSize, client)
+func GetSelectedSQLUser(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (string, error) {
+	_, sqlUserItems, err := RetrieveSQLUsers(ctx, clusterID, pageSize, client)
 	if err != nil {
 		return "", err
 	}
@@ -560,11 +559,11 @@ func GetSelectedSQLUser(clusterID string, pageSize int64, client TiDBCloudClient
 
 }
 
-func RetrieveProjects(pageSize int64, d TiDBCloudClient) (int64, []*iamModel.APIProject, error) {
+func RetrieveProjects(ctx context.Context, pageSize int64, d TiDBCloudClient) (int64, []*iamModel.APIProject, error) {
 	var items []*iamModel.APIProject
 	var pageToken string
 
-	params := iamApi.NewGetV1beta1ProjectsParams().WithPageSize(&pageSize)
+	params := iamApi.NewGetV1beta1ProjectsParams().WithPageSize(&pageSize).WithContext(ctx)
 	projects, err := d.ListProjects(params)
 	if err != nil {
 		return 0, nil, errors.Trace(err)
@@ -585,8 +584,8 @@ func RetrieveProjects(pageSize int64, d TiDBCloudClient) (int64, []*iamModel.API
 	return int64(len(items)), items, nil
 }
 
-func RetrieveClusters(pID string, pageSize int64, d TiDBCloudClient) (int64, []*serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
-	params := serverlessApi.NewServerlessServiceListClustersParams()
+func RetrieveClusters(ctx context.Context, pID string, pageSize int64, d TiDBCloudClient) (int64, []*serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+	params := serverlessApi.NewServerlessServiceListClustersParams().WithContext(ctx)
 	if pID != "" {
 		projectFilter := fmt.Sprintf("projectId=%s", pID)
 		params.WithFilter(&projectFilter)
@@ -613,12 +612,12 @@ func RetrieveClusters(pID string, pageSize int64, d TiDBCloudClient) (int64, []*
 	return int64(len(items)), items, nil
 }
 
-func RetrieveBranches(cID string, pageSize int64, d TiDBCloudClient) (int64, []*branchModel.V1beta1Branch, error) {
+func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*branchModel.V1beta1Branch, error) {
 	var items []*branchModel.V1beta1Branch
 	pageSizeInt32 := int32(pageSize)
 	var pageToken string
 
-	params := branchApi.NewBranchServiceListBranchesParams().WithClusterID(cID)
+	params := branchApi.NewBranchServiceListBranchesParams().WithClusterID(cID).WithContext(ctx)
 	branches, err := d.ListBranches(params.WithPageSize(&pageSizeInt32))
 	if err != nil {
 		return 0, nil, errors.Trace(err)
@@ -639,12 +638,12 @@ func RetrieveBranches(cID string, pageSize int64, d TiDBCloudClient) (int64, []*
 	return int64(len(items)), items, nil
 }
 
-func RetrieveExports(cID string, pageSize int64, d TiDBCloudClient) (int64, []*exportModel.V1beta1Export, error) {
+func RetrieveExports(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*exportModel.V1beta1Export, error) {
 	var items []*exportModel.V1beta1Export
 	pageSizeInt32 := int32(pageSize)
 	var pageToken string
 
-	params := exportApi.NewExportServiceListExportsParams().WithClusterID(cID).WithPageSize(&pageSizeInt32)
+	params := exportApi.NewExportServiceListExportsParams().WithClusterID(cID).WithPageSize(&pageSizeInt32).WithContext(ctx)
 	exports, err := d.ListExports(params)
 	if err != nil {
 		return 0, nil, errors.Trace(err)
@@ -665,11 +664,11 @@ func RetrieveExports(cID string, pageSize int64, d TiDBCloudClient) (int64, []*e
 	return int64(len(items)), items, nil
 }
 
-func RetrieveServerlessBackups(cID string, pageSize int32, d TiDBCloudClient) (int64, []*brModel.V1beta1Backup, error) {
+func RetrieveServerlessBackups(ctx context.Context, cID string, pageSize int32, d TiDBCloudClient) (int64, []*brModel.V1beta1Backup, error) {
 	var items []*brModel.V1beta1Backup
 	var pageToken string
 
-	params := brApi.NewBackupRestoreServiceListBackupsParams().WithClusterID(cID)
+	params := brApi.NewBackupRestoreServiceListBackupsParams().WithClusterID(cID).WithContext(ctx)
 	backups, err := d.ListBackups(params.WithPageSize(&pageSize))
 	if err != nil {
 		return 0, nil, errors.Trace(err)
@@ -690,34 +689,38 @@ func RetrieveServerlessBackups(cID string, pageSize int32, d TiDBCloudClient) (i
 	return int64(len(items)), items, nil
 }
 
-func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDBCloudClient) (uint64, []*importModel.V1beta1Import, error) {
-	params := importApi.NewImportServiceListImportsParams().WithClusterID(cID)
+func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*importModel.V1beta1Import, error) {
+	params := importApi.NewImportServiceListImportsParams().WithClusterID(cID).WithContext(context)
 	ps := int32(pageSize)
-	var total uint64 = math.MaxUint64
-	var page int32 = 1
 	var items []*importModel.V1beta1Import
-	// loop to get all clusters
-	for uint64((page-1)*ps) < total {
-		imports, err := d.ListImports(params.WithPage(&page).WithPageSize(&ps).WithContext(context))
+	imports, err := d.ListImports(params.WithPageSize(&ps))
+	if err != nil {
+		return 0, nil, errors.Trace(err)
+	}
+	items = append(items, imports.Payload.Imports...)
+	var pageToken string
+	for {
+		pageToken = imports.Payload.NextPageToken
+		if pageToken == "" {
+			break
+		}
+		imports, err = d.ListImports(params.WithPageToken(&pageToken).WithPageSize(&ps))
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
-
-		total = uint64(imports.Payload.Total)
-		if err != nil {
-			return 0, nil, errors.Annotate(err, " failed parse total import number.")
-		}
-		page += 1
 		items = append(items, imports.Payload.Imports...)
 	}
-	return total, items, nil
+	return int64(len(items)), items, nil
 }
 
-func RetrieveSQLUsers(cID string, pageSize int64, d TiDBCloudClient) (int64, []*iamModel.APISQLUser, error) {
+func RetrieveSQLUsers(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*iamModel.APISQLUser, error) {
 	var items []*iamModel.APISQLUser
 	var pageToken string
 
-	params := iamApi.NewGetV1beta1ClustersClusterIDSQLUsersParams().WithClusterID(cID).WithPageSize(&pageSize)
+	params := iamApi.NewGetV1beta1ClustersClusterIDSQLUsersParams().
+		WithClusterID(cID).
+		WithPageSize(&pageSize).
+		WithContext(ctx)
 	users, err := d.ListSQLUsers(params)
 	if err != nil {
 		return 0, nil, errors.Trace(err)
