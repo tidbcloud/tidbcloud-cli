@@ -78,7 +78,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless sql-user delete
 
   Delete a SQL user in non-interactive mode:
-  $ %[1]s serverless sql-user delete -c <cluster-id> --name <user-name>`, config.CliName),
+  $ %[1]s serverless sql-user delete -c <cluster-id> --user <user-name>`, config.CliName),
 		Aliases: []string{"rm"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			err := opts.MarkInteractive(cmd)

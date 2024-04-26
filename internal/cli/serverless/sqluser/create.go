@@ -83,7 +83,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 $ %[1]s serverless sql-user create
 
 Create a TiDB Serverless SQL user in non-interactive mode:
-$ %[1]s serverless sql-user create --name <user-name> --password <password> --role <role> --cluster-id <cluster-id>`,
+$ %[1]s serverless sql-user create --user <user-name> --password <password> --role <role> --cluster-id <cluster-id>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
