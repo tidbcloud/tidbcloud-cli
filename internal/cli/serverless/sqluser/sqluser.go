@@ -23,7 +23,7 @@ import (
 func SQLUserCmd(h *internal.Helper) *cobra.Command {
 	var SQLUserCmd = &cobra.Command{
 		Use:   "sql-user",
-		Short: "Manage SQL users",
+		Short: "Manage cluster SQL users",
 	}
 
 	SQLUserCmd.AddCommand(ListCmd(h))

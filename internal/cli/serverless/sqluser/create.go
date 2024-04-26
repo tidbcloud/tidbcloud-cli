@@ -77,10 +77,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	var CreateCmd = &cobra.Command{
 		Use:         "create",
-		Short:       "Create a SQL users",
+		Short:       "Create a SQL user",
 		Aliases:     []string{"c"},
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Create a TiDB Serverless SQL user in interactive mode:
+		Example: fmt.Sprintf(`  Create a SQL user in interactive mode:
 $ %[1]s serverless sql-user create
 
 Create a TiDB Serverless SQL user in non-interactive mode:
@@ -184,7 +184,7 @@ $ %[1]s serverless sql-user create --name <user-name> --password <password> --ro
 			}
 
 			// generate the built-in role
-			builtinRole := GetBuiltInRole(userRole)
+			builtinRole := GetBuiltinRole(userRole)
 
 			params := iamApi.NewPostV1beta1ClustersClusterIDSQLUsersParams().
 				WithClusterID(clusterID).
@@ -212,7 +212,6 @@ $ %[1]s serverless sql-user create --name <user-name> --password <password> --ro
 		},
 	}
 
-	CreateCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, flag.OutputHelp)
 	CreateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
 	CreateCmd.Flags().StringP(flag.UserName, "", "", "The name of the SQL user.")
 	CreateCmd.Flags().StringP(flag.Password, "", "", "The password of the SQL user.")
@@ -221,7 +220,7 @@ $ %[1]s serverless sql-user create --name <user-name> --password <password> --ro
 	return CreateCmd
 }
 
-func GetBuiltInRole(userRole string) string {
+func GetBuiltinRole(userRole string) string {
 	role := strings.ToLower(userRole)
 	switch role {
 	case util.ADMIN:
