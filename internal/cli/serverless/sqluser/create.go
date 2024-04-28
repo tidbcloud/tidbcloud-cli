@@ -15,6 +15,7 @@
 package sqluser
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -29,6 +30,7 @@ import (
 
 	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
 	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
+	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -116,6 +118,8 @@ $ %[1]s serverless sql-user create --user <user-name> --password <password> --ro
 			var userName string
 			var password string
 			var userRole string
+			var userPrefix string
+			var customRoles []string
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
@@ -134,8 +138,12 @@ $ %[1]s serverless sql-user create --user <user-name> --password <password> --ro
 					return err
 				}
 				clusterID = cluster.ID
+				userPrefix, err = GetUserPrefix(ctx, d, clusterID)
+				if err != nil {
+					return errors.Trace(err)
+				}
 
-				userRole, err = cloud.GetSelectedBuildinRole()
+				userRole, err = cloud.GetSelectedBuiltinRole()
 				if err != nil {
 					return err
 				}
@@ -143,7 +151,7 @@ $ %[1]s serverless sql-user create --user <user-name> --password <password> --ro
 				// variables for input
 				fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following options"))
 
-				p := tea.NewProgram(initialCreateInputModel())
+				p := tea.NewProgram(initialCreateInputModel(userPrefix))
 				inputModel, err := p.Run()
 				if err != nil {
 					return errors.Trace(err)
@@ -162,6 +170,11 @@ $ %[1]s serverless sql-user create --user <user-name> --password <password> --ro
 					return errors.Trace(err)
 				}
 				clusterID = cID
+
+				userPrefix, err = GetUserPrefix(ctx, d, clusterID)
+				if err != nil {
+					return errors.Trace(err)
+				}
 
 				uName, err := cmd.Flags().GetString(flag.UserName)
 				if err != nil {
@@ -183,18 +196,17 @@ $ %[1]s serverless sql-user create --user <user-name> --password <password> --ro
 			}
 
 			// generate the built-in role
-			builtinRole := GetBuiltinRole(userRole)
+			builtinRole, customRoles := GetBuiltinRoleAndCustomRoles(userRole)
 
 			params := iamApi.NewPostV1beta1ClustersClusterIDSQLUsersParams().
 				WithClusterID(clusterID).
-				WithSQLUser(
-					&iamModel.APICreateSQLUserReq{
-						AuthMethod:  util.MYSQLNATIVEPASSWORD,
-						UserName:    userName,
-						Password:    password,
-						BuiltinRole: builtinRole,
-					},
-				).
+				WithSQLUser(&iamModel.APICreateSQLUserReq{
+					AuthMethod:  util.MYSQLNATIVEPASSWORD,
+					UserName:    userName,
+					Password:    password,
+					BuiltinRole: builtinRole,
+					CustomRoles: customRoles,
+				}).
 				WithContext(ctx)
 
 			_, err = d.CreateSQLUser(params)
@@ -202,7 +214,7 @@ $ %[1]s serverless sql-user create --user <user-name> --password <password> --ro
 				return errors.Trace(err)
 			}
 
-			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("SQL user %s is created", userName))
+			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("SQL user %s.%s is created", userPrefix, userName))
 			if err != nil {
 				return err
 			}
@@ -219,23 +231,23 @@ $ %[1]s serverless sql-user create --user <user-name> --password <password> --ro
 	return CreateCmd
 }
 
-func GetBuiltinRole(userRole string) string {
-	role := strings.ToLower(userRole)
-	switch role {
-	case util.ADMIN:
-		role = util.ADMIN_ROLE
-	case util.READWRITE:
-		role = util.READWRITE_ROLE
-	case util.READONLY:
-		role = util.READONLY_ROLE
-	default:
-		role = userRole
-	}
+// func GetBuiltinRole(userRole string) string {
+// 	role := strings.ToLower(userRole)
+// 	switch role {
+// 	case util.ADMIN:
+// 		role = util.ADMIN_ROLE
+// 	case util.READWRITE:
+// 		role = util.READWRITE_ROLE
+// 	case util.READONLY:
+// 		role = util.READONLY_ROLE
+// 	default:
+// 		role = userRole
+// 	}
 
-	return role
-}
+// 	return role
+// }
 
-func initialCreateInputModel() ui.TextInputModel {
+func initialCreateInputModel(userPrefix string) ui.TextInputModel {
 	m := ui.TextInputModel{
 		Inputs: make([]textinput.Model, len(createSQLUserField)),
 	}
@@ -247,14 +259,44 @@ func initialCreateInputModel() ui.TextInputModel {
 
 		switch k {
 		case flag.UserName:
+			// add a prefix showing the user prefix
 			t.Placeholder = "User Name"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
+			t.Prompt = userPrefix + "."
 		case flag.Password:
 			t.Placeholder = "Password"
+			t.EchoMode = textinput.EchoPassword
+			t.EchoCharacter = '•'
 		}
 		m.Inputs[v] = t
 	}
 	return m
+}
+
+func GetUserPrefix(ctx context.Context, d cloud.TiDBCloudClient, clusterID string) (string, error) {
+	params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID).WithContext(ctx)
+
+	cluster, err := d.GetCluster(params)
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+
+	return cluster.Payload.UserPrefix, nil
+}
+
+func GetBuiltinRoleAndCustomRoles(userRole string) (string, []string) {
+	lowerRole := strings.ToLower(userRole)
+	switch lowerRole {
+	case util.ADMIN:
+		return util.ADMIN_ROLE, nil
+	case util.READWRITE:
+		return util.READWRITE_ROLE, nil
+	case util.READONLY:
+		return util.READONLY_ROLE, nil
+	default:
+		roles := strings.Split(userRole, ",")
+		return "", roles
+	}
 }

@@ -23,6 +23,7 @@ import (
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
+	"tidbcloud-cli/internal/util"
 
 	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
 
@@ -141,7 +142,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				for _, item := range items {
 					rows = append(rows, output.Row{
 						item.UserName,
-						item.BuiltinRole,
+						util.GetDisplayRole(item.BuiltinRole, item.CustomRoles),
 					})
 				}
 

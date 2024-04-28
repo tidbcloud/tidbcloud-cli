@@ -15,6 +15,7 @@
 package util
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -40,4 +41,41 @@ func IsUnderTiUP(binpath string) bool {
 	}
 
 	return false
+}
+
+func GetDisplayRole(builtinRole string, customRoles []string) string {
+	if builtinRole != "" {
+		customRoles = append(customRoles, TrimRolePrefix(builtinRole))
+	}
+	displayRoles := make([]string, 0, len(customRoles))
+
+	for _, role := range customRoles {
+		var displayRole string
+		switch role {
+		case ADMIN_ROLE, ADMIN:
+			displayRole = ADMIN_DISPLAY
+		case READWRITE_ROLE, READWRITE:
+			displayRole = READWRITE_DISPLAY
+		case READONLY_ROLE, READONLY:
+			displayRole = READONLY_DISPLAY
+		default:
+			displayRole = role
+		}
+
+		displayRoles = append(displayRoles, displayRole)
+		fmt.Println(displayRoles)
+	}
+	return strings.Join(displayRoles, ", ")
+}
+
+// TrimRolePrefix trims the role prefix user, only read_write, read_only started with the role prefix.
+func TrimRolePrefix(role string) string {
+	roleTrimmed := role
+	dotIndex := strings.Index(role, ".")
+	if dotIndex != -1 {
+		trimmedStr := role[dotIndex+1:]
+		roleTrimmed = trimmedStr
+	}
+
+	return roleTrimmed
 }

@@ -51,6 +51,7 @@ type Cluster struct {
 	ID          string
 	Name        string
 	DisplayName string
+	UserPrefix  string
 }
 
 type Branch struct {
@@ -176,6 +177,7 @@ func GetSelectedCluster(ctx context.Context, projectID string, pageSize int64, c
 		items = append(items, &Cluster{
 			ID:          item.ClusterID,
 			DisplayName: *item.DisplayName,
+			UserPrefix:  item.UserPrefix,
 		})
 	}
 	if len(items) == 0 {
@@ -492,11 +494,11 @@ func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client T
 	return res.(*Import), nil
 }
 
-func GetSelectedBuildinRole() (string, error) {
+func GetSelectedBuiltinRole() (string, error) {
 	items := []interface{}{
-		util.ADMIN,
-		util.READWRITE,
-		util.READONLY,
+		util.GetDisplayRole(util.ADMIN, []string{}),
+		util.GetDisplayRole(util.READWRITE, []string{}),
+		util.GetDisplayRole(util.READONLY, []string{}),
 	}
 
 	model, err := ui.InitialSelectModel(items, "Choose the role:")
@@ -530,7 +532,7 @@ func GetSelectedSQLUser(ctx context.Context, clusterID string, pageSize int64, c
 	for _, item := range sqlUserItems {
 		items = append(items, &SQLUser{
 			UserName: item.UserName,
-			Role:     item.BuiltinRole,
+			Role:     util.GetDisplayRole(item.BuiltinRole, item.CustomRoles),
 		})
 	}
 
