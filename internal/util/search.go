@@ -63,7 +63,6 @@ func GetDisplayRole(builtinRole string, customRoles []string) string {
 		}
 
 		displayRoles = append(displayRoles, displayRole)
-		fmt.Println(displayRoles)
 	}
 	return strings.Join(displayRoles, ", ")
 }
