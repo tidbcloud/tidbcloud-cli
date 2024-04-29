@@ -15,7 +15,6 @@
 package util
 
 import (
-	"fmt"
 	"strings"
 )
 
