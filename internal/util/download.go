@@ -15,7 +15,9 @@
 package util
 
 import (
+	"encoding/xml"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -23,7 +25,7 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-// GetResponse returns the response of a given URL
+// GetResponse returns the response of a given AWS per-signed URL
 func GetResponse(url string, debug bool) (*http.Response, error) {
 	httpClient := resty.New()
 	httpClient.SetDebug(debug)
@@ -32,8 +34,22 @@ func GetResponse(url string, debug bool) (*http.Response, error) {
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK {
+		// read the body to get the error message
+		body, err := io.ReadAll(resp.Body)
 		resp.Body.Close()
-		return nil, fmt.Errorf("receiving status of %d", resp.StatusCode)
+		if err != nil {
+			return nil, fmt.Errorf("receiving status of %d", resp.StatusCode)
+		}
+		type AwsError struct {
+			Code    string `xml:"Code"`
+			Message string `xml:"Message"`
+		}
+		v := AwsError{}
+		err = xml.Unmarshal(body, &v)
+		if err != nil {
+			return nil, fmt.Errorf("receiving status of %d", resp.StatusCode)
+		}
+		return nil, fmt.Errorf("receiving status of %d. code:%s, message: %s", resp.StatusCode, v.Code, v.Message)
 	}
 	if resp.ContentLength <= 0 {
 		resp.Body.Close()
