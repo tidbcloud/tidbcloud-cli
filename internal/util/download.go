@@ -33,7 +33,7 @@ func GetResponse(url string, debug bool) (*http.Response, error) {
 	}
 	if resp.StatusCode != http.StatusOK {
 		resp.Body.Close()
-		return nil, fmt.Errorf("receiving status of %d for url: %s", resp.StatusCode, url)
+		return nil, fmt.Errorf("receiving status of %d", resp.StatusCode)
 	}
 	if resp.ContentLength <= 0 {
 		resp.Body.Close()
