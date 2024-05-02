@@ -52,4 +52,3 @@ func IsBuiltinRole(role string) bool {
 	return role == ADMIN_ROLE || role == READWRITE_ROLE || role == READONLY_ROLE ||
 		role == ADMIN_DISPLAY || role == READWRITE_DISPLAY || role == READONLY_DISPLAY
 }
-
