@@ -39,7 +39,7 @@ type DeleteOpts struct {
 func (c DeleteOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.UserName,
+		flag.User,
 	}
 }
 
@@ -119,7 +119,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				userName = user
 			} else {
 				// non-interactive mode, get values from flags
-				uName, err := cmd.Flags().GetString(flag.UserName)
+				uName, err := cmd.Flags().GetString(flag.User)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -173,7 +173,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a SQL user without confirmation.")
-	deleteCmd.Flags().StringP(flag.UserName, "", "", "The name of the SQL user to be deleted.")
+	deleteCmd.Flags().StringP(flag.User, flag.UserShort, "", "The name of the SQL user to be deleted.")
 	deleteCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the SQL user to be deleted.")
 
 	return deleteCmd

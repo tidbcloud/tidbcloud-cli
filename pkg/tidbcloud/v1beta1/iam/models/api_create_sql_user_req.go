@@ -17,19 +17,22 @@ import (
 // swagger:model api.CreateSqlUserReq
 type APICreateSQLUserReq struct {
 
-	// auth method
+	// available values [mysql_native_password] .
 	AuthMethod string `json:"authMethod,omitempty"`
 
-	// builtin role
+	// if autoPrefix is true ,username and  builtinRole will automatically add the serverless token prefix.
+	AutoPrefix bool `json:"autoPrefix,omitempty"`
+
+	// The builtinRole of the sql user,available values [role_admin,role_readonly,role_readwrite] . if cluster is serverless and autoPrefix is false, the builtinRole[role_readonly,role_readwrite] must be start with serverless token.
 	BuiltinRole string `json:"builtinRole,omitempty"`
 
-	// custom roles
+	// if cluster is serverless ,customRoles roles do not need to be prefixed.
 	CustomRoles []string `json:"customRoles"`
 
 	// password
 	Password string `json:"password,omitempty"`
 
-	// user name
+	// The username of the sql user, if cluster is serverless and autoPrefix is false, the userName must be start with serverless token.
 	UserName string `json:"userName,omitempty"`
 }
 

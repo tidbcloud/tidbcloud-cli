@@ -51,7 +51,7 @@ PostV1beta1ClustersClusterIDSQLUsersOK describes a response with status code 200
 OK
 */
 type PostV1beta1ClustersClusterIDSQLUsersOK struct {
-	Payload *models.CentralSQLUser
+	Payload *models.APISQLUser
 }
 
 // IsSuccess returns true when this post v1beta1 clusters cluster Id Sql users o k response has a 2xx status code
@@ -92,13 +92,13 @@ func (o *PostV1beta1ClustersClusterIDSQLUsersOK) String() string {
 	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/sqlUsers][%d] postV1beta1ClustersClusterIdSqlUsersOK  %+v", 200, o.Payload)
 }
 
-func (o *PostV1beta1ClustersClusterIDSQLUsersOK) GetPayload() *models.CentralSQLUser {
+func (o *PostV1beta1ClustersClusterIDSQLUsersOK) GetPayload() *models.APISQLUser {
 	return o.Payload
 }
 
 func (o *PostV1beta1ClustersClusterIDSQLUsersOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.CentralSQLUser)
+	o.Payload = new(models.APISQLUser)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

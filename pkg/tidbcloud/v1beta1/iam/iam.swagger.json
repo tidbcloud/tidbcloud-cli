@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is the sql user related API.",
-        "title": "Sql User OPENAPI",
+        "description": "This is account open api.",
+        "title": "Acccount OPENAPI",
         "contact": {},
         "version": "v1beta1"
     },
@@ -129,6 +129,44 @@
                 }
             }
         },
+        "/v1beta1/clusters/{clusterId}/dbuser": {
+            "get": {
+                "description": "This endpoint retrieves a db user by apikey or access token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "get one dbuser",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The id of the cluster.",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetDbuserRsp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            }
+        },
         "/v1beta1/clusters/{clusterId}/sqlUsers": {
             "get": {
                 "description": "This endpoint retrieves all sql users  in the cluster.",
@@ -212,7 +250,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/central.SqlUser"
+                            "$ref": "#/definitions/api.SqlUser"
                         }
                     },
                     "400": {
@@ -257,7 +295,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/central.SqlUser"
+                            "$ref": "#/definitions/api.SqlUser"
                         }
                     },
                     "400": {
@@ -352,7 +390,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/central.SqlUser"
+                            "$ref": "#/definitions/api.SqlUser"
                         }
                     },
                     "400": {
@@ -424,12 +462,19 @@
             "type": "object",
             "properties": {
                 "authMethod": {
+                    "description": "available values [mysql_native_password] .",
                     "type": "string"
                 },
+                "autoPrefix": {
+                    "description": "if autoPrefix is true ,username and  builtinRole will automatically add the serverless token prefix.",
+                    "type": "boolean"
+                },
                 "builtinRole": {
+                    "description": "The builtinRole of the sql user,available values [role_admin,role_readonly,role_readwrite] . if cluster is serverless and autoPrefix is false, the builtinRole[role_readonly,role_readwrite] must be start with serverless token.",
                     "type": "string"
                 },
                 "customRoles": {
+                    "description": "if cluster is serverless ,customRoles roles do not need to be prefixed.",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -439,6 +484,20 @@
                     "type": "string"
                 },
                 "userName": {
+                    "description": "The username of the sql user, if cluster is serverless and autoPrefix is false, the userName must be start with serverless token.",
+                    "type": "string"
+                }
+            }
+        },
+        "api.GetDbuserRsp": {
+            "type": "object",
+            "properties": {
+                "dbuser": {
+                    "description": "The username connect to the cluster",
+                    "type": "string"
+                },
+                "jwt": {
+                    "description": "JWT to connect to the cluster",
                     "type": "string"
                 }
             }
@@ -646,26 +705,6 @@
                     }
                 },
                 "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "central.SqlUser": {
-            "type": "object",
-            "properties": {
-                "auth_method": {
-                    "type": "string"
-                },
-                "builtin_role": {
-                    "type": "string"
-                },
-                "custom_role": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "user_name": {
                     "type": "string"
                 }
             }

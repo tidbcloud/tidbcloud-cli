@@ -20,13 +20,6 @@ const (
 	DEDICATED  = "DEDICATED"
 )
 
-// Built-in SQL User Role types
-const (
-	ADMIN     = "admin"
-	READWRITE = "readwrite"
-	READONLY  = "readonly"
-)
-
 // Server accepted built-in SQL User Role types
 const (
 	ADMIN_ROLE     = "role_admin"

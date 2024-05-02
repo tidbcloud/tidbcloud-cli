@@ -36,6 +36,8 @@ type ClientService interface {
 
 	GetMspCustomersCustomerOrgID(params *GetMspCustomersCustomerOrgIDParams, opts ...ClientOption) (*GetMspCustomersCustomerOrgIDOK, error)
 
+	GetV1beta1ClustersClusterIDDbuser(params *GetV1beta1ClustersClusterIDDbuserParams, opts ...ClientOption) (*GetV1beta1ClustersClusterIDDbuserOK, error)
+
 	GetV1beta1ClustersClusterIDSQLUsers(params *GetV1beta1ClustersClusterIDSQLUsersParams, opts ...ClientOption) (*GetV1beta1ClustersClusterIDSQLUsersOK, error)
 
 	GetV1beta1ClustersClusterIDSQLUsersUserName(params *GetV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...ClientOption) (*GetV1beta1ClustersClusterIDSQLUsersUserNameOK, error)
@@ -168,6 +170,46 @@ func (a *Client) GetMspCustomersCustomerOrgID(params *GetMspCustomersCustomerOrg
 	// unexpected success response
 	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
 	msg := fmt.Sprintf("unexpected success response for GetMspCustomersCustomerOrgID: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+GetV1beta1ClustersClusterIDDbuser gets one dbuser
+
+This endpoint retrieves a db user by apikey or access token.
+*/
+func (a *Client) GetV1beta1ClustersClusterIDDbuser(params *GetV1beta1ClustersClusterIDDbuserParams, opts ...ClientOption) (*GetV1beta1ClustersClusterIDDbuserOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewGetV1beta1ClustersClusterIDDbuserParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "GetV1beta1ClustersClusterIDDbuser",
+		Method:             "GET",
+		PathPattern:        "/v1beta1/clusters/{clusterId}/dbuser",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &GetV1beta1ClustersClusterIDDbuserReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*GetV1beta1ClustersClusterIDDbuserOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for GetV1beta1ClustersClusterIDDbuser: API contract not enforced by server. Client expected to get an error, but got: %T", result)
 	panic(msg)
 }
 

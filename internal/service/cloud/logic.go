@@ -496,9 +496,9 @@ func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client T
 
 func GetSelectedBuiltinRole() (string, error) {
 	items := []interface{}{
-		util.GetDisplayRole(util.ADMIN, []string{}),
-		util.GetDisplayRole(util.READWRITE, []string{}),
-		util.GetDisplayRole(util.READONLY, []string{}),
+		util.GetDisplayRole(util.ADMIN_ROLE, []string{}),
+		util.GetDisplayRole(util.READWRITE_ROLE, []string{}),
+		util.GetDisplayRole(util.READONLY_ROLE, []string{}),
 	}
 
 	model, err := ui.InitialSelectModel(items, "Choose the role:")

@@ -49,14 +49,14 @@ const (
 )
 
 var createSQLUserField = map[string]int{
-	flag.UserName: 0,
+	flag.User:     0,
 	flag.Password: 1,
 }
 
 func (c CreateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.UserName,
+		flag.User,
 		flag.Password,
 		flag.UserRole,
 	}
@@ -65,7 +65,7 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 func (c CreateOpts) RequiredFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.UserName,
+		flag.User,
 		flag.Password,
 		flag.UserRole,
 	}
@@ -138,10 +138,7 @@ $ %[1]s serverless sql-user create --user <user-name> --password <password> --ro
 					return err
 				}
 				clusterID = cluster.ID
-				userPrefix, err = GetUserPrefix(ctx, d, clusterID)
-				if err != nil {
-					return errors.Trace(err)
-				}
+				userPrefix = cluster.UserPrefix
 
 				userRole, err = cloud.GetSelectedBuiltinRole()
 				if err != nil {
@@ -160,7 +157,7 @@ $ %[1]s serverless sql-user create --user <user-name> --password <password> --ro
 					return util.InterruptError
 				}
 
-				userName = inputModel.(ui.TextInputModel).Inputs[createSQLUserField[flag.UserName]].Value()
+				userName = inputModel.(ui.TextInputModel).Inputs[createSQLUserField[flag.User]].Value()
 				password = inputModel.(ui.TextInputModel).Inputs[createSQLUserField[flag.Password]].Value()
 
 			} else {
@@ -171,12 +168,12 @@ $ %[1]s serverless sql-user create --user <user-name> --password <password> --ro
 				}
 				clusterID = cID
 
-				userPrefix, err = GetUserPrefix(ctx, d, clusterID)
+				userPrefix, err = getUserPrefix(ctx, d, clusterID)
 				if err != nil {
 					return errors.Trace(err)
 				}
 
-				uName, err := cmd.Flags().GetString(flag.UserName)
+				uName, err := cmd.Flags().GetString(flag.User)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -194,10 +191,11 @@ $ %[1]s serverless sql-user create --user <user-name> --password <password> --ro
 				}
 				userRole = uRole
 			}
-
 			// generate the built-in role
-			builtinRole, customRoles := GetBuiltinRoleAndCustomRoles(userRole)
-
+			builtinRole, customRoles, err := getBuiltinRoleAndCustomRoles(userRole)
+			if err != nil {
+				return errors.Trace(err)
+			}
 			params := iamApi.NewPostV1beta1ClustersClusterIDSQLUsersParams().
 				WithClusterID(clusterID).
 				WithSQLUser(&iamModel.APICreateSQLUserReq{
@@ -224,28 +222,12 @@ $ %[1]s serverless sql-user create --user <user-name> --password <password> --ro
 	}
 
 	CreateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
-	CreateCmd.Flags().StringP(flag.UserName, "", "", "The name of the SQL user.")
+	CreateCmd.Flags().StringP(flag.User, flag.UserShort, "", "The name of the SQL user.")
 	CreateCmd.Flags().StringP(flag.Password, "", "", "The password of the SQL user.")
 	CreateCmd.Flags().StringP(flag.UserRole, "", "", "The built-in role of the SQL user.")
 
 	return CreateCmd
 }
-
-// func GetBuiltinRole(userRole string) string {
-// 	role := strings.ToLower(userRole)
-// 	switch role {
-// 	case util.ADMIN:
-// 		role = util.ADMIN_ROLE
-// 	case util.READWRITE:
-// 		role = util.READWRITE_ROLE
-// 	case util.READONLY:
-// 		role = util.READONLY_ROLE
-// 	default:
-// 		role = userRole
-// 	}
-
-// 	return role
-// }
 
 func initialCreateInputModel(userPrefix string) ui.TextInputModel {
 	m := ui.TextInputModel{
@@ -258,13 +240,13 @@ func initialCreateInputModel(userPrefix string) ui.TextInputModel {
 		t.CharLimit = 32
 
 		switch k {
-		case flag.UserName:
+		case flag.User:
 			// add a prefix showing the user prefix
 			t.Placeholder = "User Name"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
-			t.Prompt = userPrefix + "."
+			t.Prompt = "> " + userPrefix + "."
 		case flag.Password:
 			t.Placeholder = "Password"
 			t.EchoMode = textinput.EchoPassword
@@ -275,7 +257,7 @@ func initialCreateInputModel(userPrefix string) ui.TextInputModel {
 	return m
 }
 
-func GetUserPrefix(ctx context.Context, d cloud.TiDBCloudClient, clusterID string) (string, error) {
+func getUserPrefix(ctx context.Context, d cloud.TiDBCloudClient, clusterID string) (string, error) {
 	params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID).WithContext(ctx)
 
 	cluster, err := d.GetCluster(params)
@@ -286,17 +268,28 @@ func GetUserPrefix(ctx context.Context, d cloud.TiDBCloudClient, clusterID strin
 	return cluster.Payload.UserPrefix, nil
 }
 
-func GetBuiltinRoleAndCustomRoles(userRole string) (string, []string) {
-	lowerRole := strings.ToLower(userRole)
-	switch lowerRole {
-	case util.ADMIN:
-		return util.ADMIN_ROLE, nil
-	case util.READWRITE:
-		return util.READWRITE_ROLE, nil
-	case util.READONLY:
-		return util.READONLY_ROLE, nil
-	default:
-		roles := strings.Split(userRole, ",")
-		return "", roles
+func getBuiltinRoleAndCustomRoles(userRole string) (string, []string, error) {
+	// split roles to recognize built-in roles and custom roles
+	roles := strings.Split(userRole, ",")
+	builtinRole := ""
+	customRoles := make([]string, 0, len(roles))
+	for _, role := range roles {
+		if util.IsBuiltinRole(role) {
+			if builtinRole == "" {
+				switch role {
+				case util.ADMIN_ROLE, util.ADMIN_DISPLAY:
+					builtinRole = util.ADMIN_ROLE
+				case util.READWRITE_ROLE, util.READWRITE_DISPLAY:
+					builtinRole = util.READWRITE_ROLE
+				case util.READONLY_ROLE, util.READONLY_DISPLAY:
+					builtinRole = util.READONLY_ROLE
+				}
+			} else {
+				return "", []string{}, errors.New("only one built-in role is allowed")
+			}
+		} else {
+			customRoles = append(customRoles, role)
+		}
 	}
+	return builtinRole, customRoles, nil
 }

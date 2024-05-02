@@ -70,7 +70,6 @@ const (
 	Encryption            string = "encryption"
 	Compression           string = "compression"
 	SourceType            string = "source-type"
-	UserName              string = "user"
 	UserRole              string = "role"
 	Concurrency           string = "concurrency"
 )
