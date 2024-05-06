@@ -149,7 +149,7 @@ func (suite *ListBackupSuite) TestListBackups() {
 
 func (suite *ListBackupSuite) TestListBackupsWithMultiPages() {
 	assert := require.New(suite.T())
-	
+
 	ctx := context.Background()
 
 	pageSize := int32(suite.pageSize)
