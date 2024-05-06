@@ -19,9 +19,9 @@ import (
 )
 
 func GetDisplayRole(builtinRole string, customRoles []string) string {
+	displayRole := ""
 	if builtinRole != "" {
 		builtinRole = trimRolePrefix(builtinRole)
-		displayRole := builtinRole
 		switch builtinRole {
 		case ADMIN_ROLE:
 			displayRole = ADMIN_DISPLAY
@@ -30,10 +30,17 @@ func GetDisplayRole(builtinRole string, customRoles []string) string {
 		case READONLY_ROLE:
 			displayRole = READONLY_DISPLAY
 		}
-		customRoles = append(customRoles, displayRole)
 	}
 
-	return strings.Join(customRoles, ", ")
+	// put built-in role in the first place
+	allRoles := make([]string, 0, len(customRoles)+1)
+	if displayRole != "" {
+		allRoles = append(allRoles, displayRole)
+	}
+	allRoles = append(allRoles, customRoles...)
+
+	joinedRoles := strings.Join(allRoles, ", ")
+	return joinedRoles
 }
 
 // trimRolePrefix trims the role prefix user, only read_write, read_only started with the role prefix.
