@@ -15,6 +15,7 @@
 package ui_concurrency
 
 import (
+	"fmt"
 	"os"
 	"strings"
 	"sync"
@@ -22,6 +23,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/dustin/go-humanize"
 
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/util"
@@ -54,6 +56,7 @@ type FileJob struct {
 	id      int
 	name    string
 	url     string
+	size    int64
 	process progress.Model
 	err     error
 }
@@ -81,6 +84,7 @@ type Model struct {
 type URLMsg struct {
 	Name string
 	Url  string
+	Size int64
 }
 
 func NewModel(urls []URLMsg, onProgress func(int, float64), onError func(int, error), concurrency int, path string) Model {
@@ -88,7 +92,7 @@ func NewModel(urls []URLMsg, onProgress func(int, float64), onError func(int, er
 	idToJob := make(map[int]*FileJob)
 
 	for i, url := range urls {
-		job := &FileJob{id: i, name: url.Name, url: url.Url}
+		job := &FileJob{id: i, name: url.Name, url: url.Url, size: url.Size}
 		idToJob[i] = job
 	}
 
@@ -196,11 +200,11 @@ func (m Model) View() string {
 	pad := strings.Repeat(" ", padding)
 	for _, f := range m.jobInfo.viewJobs {
 		if f.process.Percent() >= 1.0 {
-			viewString += "download " + f.name + " success" + "\n"
+			viewString += fmt.Sprintf("download %s(%s) succeeded\n", f.name, humanize.IBytes(uint64(f.size)))
 		} else if f.err != nil {
-			viewString += "download " + f.name + " failed: " + f.err.Error() + "\n"
+			viewString += fmt.Sprintf("download %s(%s) failed: %s\n", f.name, humanize.IBytes(uint64(f.size)), f.err.Error())
 		} else {
-			viewString += "downloading " + f.name + "\n"
+			viewString += fmt.Sprintf("downloading %s(%s)\n", f.name, humanize.IBytes(uint64(f.size)))
 		}
 		viewString += pad + f.process.View() + "\n\n"
 	}

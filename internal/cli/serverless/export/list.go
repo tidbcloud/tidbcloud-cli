@@ -133,33 +133,29 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				columns := []output.Column{
 					"ID",
 					"State",
+					"Type",
 					"Database",
 					"Table",
 					"Compression",
 					"CreateTime",
-					"CompleteTime",
-					"SnapshotTime",
+					"ExpireTime",
 				}
 
 				var rows []output.Row
 				for _, item := range items {
-					completeTime := ""
-					if item.UpdateTime != nil {
-						completeTime = item.CompleteTime.String()
-					}
-					snapshotTime := ""
-					if item.SnapshotTime != nil {
-						snapshotTime = item.SnapshotTime.String()
+					expireTime := ""
+					if item.ExpireTime != nil {
+						expireTime = item.ExpireTime.String()
 					}
 					rows = append(rows, output.Row{
 						item.ExportID,
 						string(item.State),
+						string(item.Target.Type),
 						item.ExportOptions.Database,
 						item.ExportOptions.Table,
 						string(item.ExportOptions.Compression),
 						item.CreateTime.String(),
-						completeTime,
-						snapshotTime,
+						expireTime,
 					})
 				}
 
