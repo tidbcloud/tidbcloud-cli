@@ -176,6 +176,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
+				// if the user name has the prefix, remove it
+				uName = util.TrimUserNamePrefix(uName, userPrefix)
 				userName = uName
 
 				pw, err := cmd.Flags().GetString(flag.Password)

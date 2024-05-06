@@ -59,3 +59,11 @@ func IsBuiltinRole(role string) bool {
 	return role == ADMIN_ROLE || role == READWRITE_ROLE || role == READONLY_ROLE ||
 		role == ADMIN_DISPLAY || role == READWRITE_DISPLAY || role == READONLY_DISPLAY
 }
+
+func TrimUserNamePrefix(userName string, prefix string) string {
+	prefix = prefix + "."
+	if strings.HasPrefix(userName, prefix) {
+		return userName[len(prefix):]
+	}
+	return userName
+}
