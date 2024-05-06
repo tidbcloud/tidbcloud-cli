@@ -27,6 +27,7 @@ type progressConcurrencyWriter struct {
 	reader     io.Reader
 	onProgress func(int, float64)
 	onError    func(int, error)
+	count      int
 }
 
 func (pw *progressConcurrencyWriter) Start() {
@@ -40,7 +41,10 @@ func (pw *progressConcurrencyWriter) Start() {
 func (pw *progressConcurrencyWriter) Write(p []byte) (int, error) {
 	pw.downloaded += len(p)
 	if pw.total > 0 && pw.onProgress != nil {
-		pw.onProgress(pw.id, float64(pw.downloaded)/float64(pw.total))
+		pw.count++
+		if float64(pw.downloaded)/float64(pw.total) > 0.9 || pw.count%10 == 0 {
+			pw.onProgress(pw.id, float64(pw.downloaded)/float64(pw.total))
+		}
 	}
 	return len(p), nil
 }
