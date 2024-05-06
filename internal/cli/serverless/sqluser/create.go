@@ -224,7 +224,7 @@ $ %[1]s serverless sql-user create --user <user-name> --password <password> --ro
 	CreateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
 	CreateCmd.Flags().StringP(flag.User, flag.UserShort, "", "The name of the SQL user.")
 	CreateCmd.Flags().StringP(flag.Password, "", "", "The password of the SQL user.")
-	CreateCmd.Flags().StringP(flag.UserRole, "", "", "The built-in role of the SQL user.")
+	CreateCmd.Flags().StringP(flag.UserRole, "", "", "The role of the SQL user.")
 
 	return CreateCmd
 }
