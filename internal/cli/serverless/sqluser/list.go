@@ -51,14 +51,14 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		Short:       "List all accessible SQL users",
 		Aliases:     []string{"ls"},
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  List the SQL users:
+		Example: fmt.Sprintf(`  List all SQL users in interactive mode:
   $ %[1]s user list
 
-  Get a TiDB Serverless cluster in non-interactive mode:
-  $ %[1]s serverless describe -c <cluster-id>
+ List all SQL users in non-interactive mode:
+  $ %[1]s serverless sql-user list -c <cluster-id>
 
-  List the SQL users with json format:
-  $ %[1]s user list -o json`, config.CliName),
+  List all SQL users with json format:
+  $ %[1]s serverless sql-user list -o json`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {

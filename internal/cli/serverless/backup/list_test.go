@@ -98,7 +98,6 @@ func (suite *ListBackupSuite) TestListBackups() {
 	result := &brApi.BackupRestoreServiceListBackupsOK{
 		Payload: body,
 	}
-
 	pageSize := int32(suite.pageSize)
 	clusterID := "10048930788495339885"
 	suite.mockClient.On("ListBackups", brApi.NewBackupRestoreServiceListBackupsParams().
@@ -150,6 +149,7 @@ func (suite *ListBackupSuite) TestListBackups() {
 
 func (suite *ListBackupSuite) TestListBackupsWithMultiPages() {
 	assert := require.New(suite.T())
+	
 	ctx := context.Background()
 
 	pageSize := int32(suite.pageSize)

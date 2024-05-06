@@ -38,6 +38,7 @@ func Cmd(h *internal.Helper) *cobra.Command {
 	serverlessCmd.AddCommand(DeleteCmd(h))
 	serverlessCmd.AddCommand(branch.Cmd(h))
 	serverlessCmd.AddCommand(ShellCmd(h))
+	serverlessCmd.AddCommand(sqluser.SQLUserCmd(h))
 	//serverlessCmd.AddCommand(backup.Cmd(h))
 	//serverlessCmd.AddCommand(RestoreCmd(h))
 	serverlessCmd.AddCommand(dataimport.ImportCmd(h))
@@ -45,6 +46,5 @@ func Cmd(h *internal.Helper) *cobra.Command {
 	serverlessCmd.AddCommand(SpendingLimitCmd(h))
 	serverlessCmd.AddCommand(RegionCmd(h))
 
-	serverlessCmd.AddCommand(sqluser.SQLUserCmd(h))
 	return serverlessCmd
 }
