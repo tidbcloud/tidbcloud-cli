@@ -19,3 +19,20 @@ const (
 	SERVERLESS = "SERVERLESS"
 	DEDICATED  = "DEDICATED"
 )
+
+// Server accepted built-in SQL User Role types
+const (
+	ADMIN_ROLE     = "role_admin"
+	READWRITE_ROLE = "role_readwrite"
+	READONLY_ROLE  = "role_readonly"
+)
+
+const (
+	ADMIN_DISPLAY     = "Database Admin"
+	READWRITE_DISPLAY = "Database Read-Write"
+	READONLY_DISPLAY  = "Database Read-Only"
+)
+
+const (
+	MYSQLNATIVEPASSWORD = "mysql_native_password"
+)

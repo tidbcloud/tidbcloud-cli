@@ -144,7 +144,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				if userInput != confirmed {
-					return errors.New("incorrect confirm string entered, skipping branch deletion")
+					return errors.New("incorrect confirm string entered, skipping backup deletion")
 				}
 			}
 

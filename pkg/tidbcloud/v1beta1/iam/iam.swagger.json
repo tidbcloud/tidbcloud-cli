@@ -1,222 +1,13 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is the sql user related API.",
-        "title": "Sql User OPENAPI",
+        "description": "This is account open api.",
+        "title": "Acccount OPENAPI",
         "contact": {},
         "version": "v1beta1"
     },
     "host": "iam.tidbapi.com",
     "paths": {
-        "/v1beta1/projects": {
-            "get": {
-                "description": "This endpoint returns a list of org projects.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Account"
-                ],
-                "summary": "Get  list of org projects",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "The page token of the next page.",
-                        "name": "pageToken",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "The page size of the next page. If `pageSize` is set to 0, it returns 100 records in one page.",
-                        "name": "pageSize",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.ListProjectsRsp"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/api.OpenApiError"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1beta1/sqluser": {
-            "get": {
-                "description": "This endpoint retrieves all sqlusers  of the cluster.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Account"
-                ],
-                "summary": "get one sqluser",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.ListSqlUsersRsp"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/api.OpenApiError"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "This endpoint will create one sql user int the cluster.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Account"
-                ],
-                "summary": "create one sqluser",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/central.SqlUser"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/api.OpenApiError"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1beta1/sqluser/{userName}": {
-            "get": {
-                "description": "This endpoint retrieves a sql user by username.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Account"
-                ],
-                "summary": "query one sql user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "The name of the sql user.",
-                        "name": "userName",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/central.SqlUser"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/api.OpenApiError"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "This endpoint delete the sql user by user name.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Account"
-                ],
-                "summary": "get one sqluser",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "The name of the sql user.",
-                        "name": "userName",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/api.BasicResp"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/api.OpenApiError"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "description": "This endpoint update one sql user.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Account"
-                ],
-                "summary": "update one sql user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "The name of the sql user.",
-                        "name": "userName",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/central.SqlUser"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/api.OpenApiError"
-                        }
-                    }
-                }
-            }
-        },
         "/customerSignupUrl": {
             "post": {
                 "description": "This endpoint creates a new signup URL for an MSP customer.",
@@ -337,6 +128,322 @@
                     }
                 }
             }
+        },
+        "/v1beta1/clusters/{clusterId}/dbuser": {
+            "get": {
+                "description": "This endpoint retrieves a db user by apikey or access token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "get one dbuser",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The id of the cluster.",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetDbuserRsp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1beta1/clusters/{clusterId}/sqlUsers": {
+            "get": {
+                "description": "This endpoint retrieves all sql users  in the cluster.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Get all sql users",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The id of the cluster.",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The page token of the next page.",
+                        "name": "pageToken",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The page size of the next page. If `pageSize` is set to 0, it returns 100 records in one page.",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.ListSqlUsersRsp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "This endpoint will create one sql user int the cluster.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Create one sql user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The id of the cluster.",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "create sql user request",
+                        "name": "sqlUser",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.CreateSqlUserReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.SqlUser"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1beta1/clusters/{clusterId}/sqlUsers/{userName}": {
+            "get": {
+                "description": "This endpoint retrieves a sql user by user name.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Query sql user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The id of the cluster.",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The name of the sql user.",
+                        "name": "userName",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.SqlUser"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "This endpoint delete the sql user by user name.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Delete one sql user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The id of the cluster.",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The name of the sql user.",
+                        "name": "userName",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.BasicResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "This endpoint update one sql user in the cluster.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Update one sql user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The id of the cluster.",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The name of the sql user.",
+                        "name": "userName",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "update sql user request",
+                        "name": "sqlUser",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.UpdateSqlUserReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.SqlUser"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1beta1/projects": {
+            "get": {
+                "description": "This endpoint returns a list of org projects.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Get  list of org projects",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The page token of the next page.",
+                        "name": "pageToken",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The page size of the next page. If `pageSize` is set to 0, it returns 100 records in one page.",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.ListProjectsRsp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -347,6 +454,50 @@
                     "type": "integer"
                 },
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.CreateSqlUserReq": {
+            "type": "object",
+            "properties": {
+                "authMethod": {
+                    "description": "available values [mysql_native_password] .",
+                    "type": "string"
+                },
+                "autoPrefix": {
+                    "description": "if autoPrefix is true ,username and  builtinRole will automatically add the serverless token prefix.",
+                    "type": "boolean"
+                },
+                "builtinRole": {
+                    "description": "The builtinRole of the sql user,available values [role_admin,role_readonly,role_readwrite] . if cluster is serverless and autoPrefix is false, the builtinRole[role_readonly,role_readwrite] must be start with serverless token.",
+                    "type": "string"
+                },
+                "customRoles": {
+                    "description": "if cluster is serverless ,customRoles roles do not need to be prefixed.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "password": {
+                    "type": "string"
+                },
+                "userName": {
+                    "description": "The username of the sql user, if cluster is serverless and autoPrefix is false, the userName must be start with serverless token.",
+                    "type": "string"
+                }
+            }
+        },
+        "api.GetDbuserRsp": {
+            "type": "object",
+            "properties": {
+                "dbuser": {
+                    "description": "The username connect to the cluster",
+                    "type": "string"
+                },
+                "jwt": {
+                    "description": "JWT to connect to the cluster",
                     "type": "string"
                 }
             }
@@ -541,22 +692,19 @@
                 }
             }
         },
-        "central.SqlUser": {
+        "api.UpdateSqlUserReq": {
             "type": "object",
             "properties": {
-                "auth_method": {
+                "builtinRole": {
                     "type": "string"
                 },
-                "builtin_role": {
-                    "type": "string"
-                },
-                "custom_role": {
+                "customRoles": {
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
-                "user_name": {
+                "password": {
                     "type": "string"
                 }
             }
