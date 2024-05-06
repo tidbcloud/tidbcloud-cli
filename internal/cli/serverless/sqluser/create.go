@@ -81,10 +81,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		Short:       "Create a SQL user",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Create a SQL user in interactive mode:
-$ %[1]s serverless sql-user create
+  $ %[1]s serverless sql-user create
 
-Create a SQL user in non-interactive mode:
-$ %[1]s serverless sql-user create --user <user-name> --password <password> --role <role> --cluster-id <cluster-id>`,
+  Create a SQL user in non-interactive mode:
+  $ %[1]s serverless sql-user create --user <user-name> --password <password> --role <role> --cluster-id <cluster-id>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()

@@ -54,7 +54,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		Example: fmt.Sprintf(`  List all SQL users in interactive mode:
   $ %[1]s user list
 
- List all SQL users in non-interactive mode:
+  List all SQL users in non-interactive mode:
   $ %[1]s serverless sql-user list -c <cluster-id>
 
   List all SQL users with json format:
