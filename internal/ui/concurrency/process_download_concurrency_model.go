@@ -200,11 +200,11 @@ func (m Model) View() string {
 	pad := strings.Repeat(" ", padding)
 	for _, f := range m.jobInfo.viewJobs {
 		if f.process.Percent() >= 1.0 {
-			viewString += fmt.Sprintf("download %s(%s) succeeded\n", f.name, humanize.IBytes(uint64(f.size)))
+			viewString += fmt.Sprintf("download %s succeeded\n", f.name)
 		} else if f.err != nil {
-			viewString += fmt.Sprintf("download %s(%s) failed: %s\n", f.name, humanize.IBytes(uint64(f.size)), f.err.Error())
+			viewString += fmt.Sprintf("download %s failed: %s\n", f.name, f.err.Error())
 		} else {
-			viewString += fmt.Sprintf("downloading %s(%s)\n", f.name, humanize.IBytes(uint64(f.size)))
+			viewString += fmt.Sprintf("downloading %s | %s\n", f.name, humanize.IBytes(uint64(f.size)))
 		}
 		viewString += pad + f.process.View() + "\n\n"
 	}
