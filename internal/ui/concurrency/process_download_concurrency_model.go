@@ -201,7 +201,7 @@ func (m Model) View() string {
 	viewString := "\n"
 	pad := strings.Repeat(" ", padding)
 	for _, f := range m.jobInfo.viewJobs {
-		if f.process.Percent() >= 1.0 {
+		if f.percent >= 1.0 {
 			viewString += fmt.Sprintf("download %s succeeded\n", f.name)
 		} else if f.err != nil {
 			viewString += fmt.Sprintf("download %s failed: %s\n", f.name, f.err.Error())
