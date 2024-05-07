@@ -278,12 +278,13 @@ func finalPause() tea.Cmd {
 }
 
 func (m *Model) Watch() {
-	for m.jobInfo.finishedCount < m.jobInfo.total {
+	for m != nil && m.jobInfo.finishedCount < m.jobInfo.total {
 		time.Sleep(200 * time.Millisecond)
 		for _, job := range m.jobInfo.viewJobs {
 			if job.pw != nil {
 				percent := float64(job.pw.downloaded) / float64(job.pw.total)
-				if percent != job.pw.percent {
+				// ensure >=1 percent will only be sent once
+				if percent != job.pw.percent && job.pw.percent < 1 {
 					job.pw.percent = percent
 					m.onProgress(job.pw.id, job.pw.percent)
 				}
