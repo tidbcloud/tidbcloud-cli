@@ -341,26 +341,26 @@ func consume(h *internal.Helper, jobs <-chan *downloadJob) {
 	defer wg.Done()
 	for job := range jobs {
 		func() {
-			fmt.Fprintf(h.IOStreams.Out, "downloading %s(%s)\n", job.url.Name, humanize.IBytes(uint64(job.url.Size)))
+			fmt.Fprintf(h.IOStreams.Out, "downloading %s | %s\n", job.url.Name, humanize.IBytes(uint64(job.url.Size)))
 
 			// request the url
 			resp, err := util.GetResponse(job.url.URL, os.Getenv(config.DebugEnv) != "")
 			if err != nil {
-				fmt.Fprintf(h.IOStreams.Out, "download failed: %s\n", err.Error())
+				fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
 				return
 			}
 			defer resp.Body.Close()
 
 			file, err := util.CreateFile(job.path, job.url.Name)
 			if err != nil {
-				fmt.Fprintf(h.IOStreams.Out, "download failed: %s\n", err.Error())
+				fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
 				return
 			}
 			defer file.Close()
 
 			_, err = io.Copy(file, resp.Body)
 			if err != nil {
-				fmt.Fprintf(h.IOStreams.Out, "download failed: %s\n", err.Error())
+				fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
 				return
 			}
 			fmt.Fprintf(h.IOStreams.Out, "download %s succeeded\n", job.url.Name)
