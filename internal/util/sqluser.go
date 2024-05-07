@@ -16,6 +16,7 @@ package util
 
 import (
 	"strings"
+	"slices"
 )
 
 func GetDisplayRole(builtinRole string, customRoles []string) string {
@@ -33,13 +34,8 @@ func GetDisplayRole(builtinRole string, customRoles []string) string {
 	}
 
 	// put built-in role in the first place
-	allRoles := make([]string, 0, len(customRoles)+1)
-	if displayRole != "" {
-		allRoles = append(allRoles, displayRole)
-	}
-	allRoles = append(allRoles, customRoles...)
-
-	joinedRoles := strings.Join(allRoles, ", ")
+	customRoles = slices.Insert(customRoles, 0, displayRole)
+	joinedRoles := strings.Join(customRoles, ", ")
 	return joinedRoles
 }
 
