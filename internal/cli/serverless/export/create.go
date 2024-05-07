@@ -50,7 +50,7 @@ const (
 )
 
 var S3InputFields = map[string]int{
-	flag.S3BucketURI:       0,
+	flag.S3URI:             0,
 	flag.S3AccessKeyID:     1,
 	flag.S3SecretAccessKey: 2,
 }
@@ -71,7 +71,7 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 		flag.Table,
 		flag.FileType,
 		flag.TargetType,
-		flag.S3BucketURI,
+		flag.S3URI,
 		flag.S3AccessKeyID,
 		flag.S3SecretAccessKey,
 		flag.Compression,
@@ -121,7 +121,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless export create -c <cluster-id> --database <database> --table <table>
 
   Create an export with s3 type in non-interactive mode:
-  $ %[1]s serverless export create -c <cluster-id> --s3.bucket-uri <bucket-uri> --s3.access-key-id <access-key-id> --s3.secret-access-key <secret-access-key>`,
+  $ %[1]s serverless export create -c <cluster-id> --s3.uri <s3-uri> --s3.access-key-id <access-key-id> --s3.secret-access-key <secret-access-key>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
@@ -134,7 +134,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			ctx := cmd.Context()
 
 			var clusterId string
-			var bucketURI, accessKeyID, secretAccessKey, database, table, targetType, fileType, compression string
+			var s3URI, accessKeyID, secretAccessKey, database, table, targetType, fileType, compression string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -165,9 +165,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if err != nil {
 						return err
 					}
-					bucketURI = s3InputModel.(ui.TextInputModel).Inputs[S3InputFields[flag.S3BucketURI]].Value()
-					if bucketURI == "" {
-						return errors.New("bucket URI is required when target type is S3")
+					s3URI = s3InputModel.(ui.TextInputModel).Inputs[S3InputFields[flag.S3URI]].Value()
+					if s3URI == "" {
+						return errors.New("s3 uri is required when target type is S3")
 					}
 					accessKeyID = s3InputModel.(ui.TextInputModel).Inputs[S3InputFields[flag.S3AccessKeyID]].Value()
 					if accessKeyID == "" {
@@ -220,12 +220,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if targetType == string(TargetTypeS3) {
-					bucketURI, err = cmd.Flags().GetString(flag.S3BucketURI)
+					s3URI, err = cmd.Flags().GetString(flag.S3URI)
 					if err != nil {
 						return errors.Trace(err)
 					}
-					if bucketURI == "" {
-						return errors.New("bucket URI is required when target type is S3")
+					if s3URI == "" {
+						return errors.New("s3 uri is required when target type is S3")
 					}
 					accessKeyID, err = cmd.Flags().GetString(flag.S3AccessKeyID)
 					if err != nil {
@@ -269,7 +269,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					Target: &exportModel.V1beta1Target{
 						Type: exportModel.TargetTargetType(targetType),
 						S3: &exportModel.TargetS3Target{
-							BucketURI: bucketURI,
+							URI: s3URI,
 							AccessKey: &exportModel.S3TargetAccessKey{
 								ID:     accessKeyID,
 								Secret: secretAccessKey,
@@ -297,9 +297,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.Table, "*", "The table name you want to export.")
 	createCmd.Flags().String(flag.FileType, "CSV", "The export file type. One of [\"CSV\" \"SQL\"].")
 	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export target. One of [\"LOCAL\" \"S3\"].")
-	createCmd.Flags().String(flag.S3BucketURI, "", "The bucket URI of the S3. Required when target type is S3.")
-	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3 bucket. Required when target type is S3.")
-	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3 bucket. Required when target type is S3.")
+	createCmd.Flags().String(flag.S3URI, "", "The s3 uri in s3://<bucket>/<path> format. Required when target type is S3.")
+	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3. Required when target type is S3.")
+	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3. Required when target type is S3.")
 	createCmd.Flags().String(flag.Compression, "GZIP", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"].")
 	return createCmd
 }
@@ -380,8 +380,8 @@ func initialS3InputModel() ui.TextInputModel {
 	for k, v := range S3InputFields {
 		t := textinput.New()
 		switch k {
-		case flag.S3BucketURI:
-			t.Placeholder = "Bucket URI"
+		case flag.S3URI:
+			t.Placeholder = "S3 URI in s3://<bucket>/<path> format"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
