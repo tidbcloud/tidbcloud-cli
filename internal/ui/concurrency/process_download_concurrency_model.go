@@ -58,6 +58,7 @@ type FileJob struct {
 	url     string
 	size    int64
 	process progress.Model
+	percent float64
 	err     error
 }
 
@@ -166,7 +167,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		f, ok := m.jobInfo.idToJob[msg.id]
 		if ok {
-			cmds = append(cmds, f.process.SetPercent(msg.percent))
+			f.percent = msg.percent
+			//cmds = append(cmds, f.process.SetPercent(msg.percent))
 		}
 
 		if msg.percent >= 1.0 {
@@ -180,16 +182,16 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, tea.Batch(cmds...)
 
 	// FrameMsg is sent when the progress bar wants to animate itself
-	case progress.FrameMsg:
-		// we can not find which one send the FrameMsg, so we just update all in viewJobs
-		for _, f := range m.jobInfo.viewJobs {
-			progressModel, cmd := f.process.Update(msg)
-			if cmd != nil {
-				f.process = progressModel.(progress.Model)
-				return m, cmd
-			}
-		}
-		return m, nil
+	//case progress.FrameMsg:
+	//	// we can not find which one send the FrameMsg, so we just update all in viewJobs
+	//	for _, f := range m.jobInfo.viewJobs {
+	//		progressModel, cmd := f.process.Update(msg)
+	//		if cmd != nil {
+	//			f.process = progressModel.(progress.Model)
+	//			return m, cmd
+	//		}
+	//	}
+	//	return m, nil
 	default:
 		return m, nil
 	}
@@ -206,7 +208,7 @@ func (m Model) View() string {
 		} else {
 			viewString += fmt.Sprintf("downloading %s | %s\n", f.name, humanize.IBytes(uint64(f.size)))
 		}
-		viewString += pad + f.process.View() + "\n\n"
+		viewString += pad + f.process.ViewAs(f.percent) + "\n\n"
 	}
 
 	return viewString
