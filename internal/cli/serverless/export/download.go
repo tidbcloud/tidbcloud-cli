@@ -180,7 +180,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to download")
 				}
 
-				confirmationMessage := fmt.Sprintf("\n%s %s %s %s", color.BlueString(fileMessage), color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to download:"))
+				confirmationMessage := fmt.Sprintf("%s %s %s %s", color.BlueString(fileMessage), color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to download:"))
 				prompt := &survey.Input{
 					Message: confirmationMessage,
 				}
@@ -197,7 +197,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 					return errors.New("incorrect confirm string entered, skipping download")
 				}
 			} else {
-				fmt.Fprintf(h.IOStreams.Out, "\n%s\n", color.BlueString(fileMessage))
+				fmt.Fprintf(h.IOStreams.Out, "%s\n", color.BlueString(fileMessage))
 			}
 
 			if h.IOStreams.CanPrompt {
@@ -243,6 +243,7 @@ func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1Download
 		url := uiConcurrency.URLMsg{
 			Name: u.Name,
 			Url:  u.URL,
+			Size: u.Size,
 		}
 		urlMsgs = append(urlMsgs, url)
 	}
@@ -340,29 +341,29 @@ func consume(h *internal.Helper, jobs <-chan *downloadJob) {
 	defer wg.Done()
 	for job := range jobs {
 		func() {
-			fmt.Fprintf(h.IOStreams.Out, "Downloading %s\n", job.url.Name)
+			fmt.Fprintf(h.IOStreams.Out, "downloading %s(%s)\n", job.url.Name, humanize.IBytes(uint64(job.url.Size)))
 
 			// request the url
 			resp, err := util.GetResponse(job.url.URL, os.Getenv(config.DebugEnv) != "")
 			if err != nil {
-				fmt.Fprintf(h.IOStreams.Out, "download fail: %s\n", err.Error())
+				fmt.Fprintf(h.IOStreams.Out, "download failed: %s\n", err.Error())
 				return
 			}
 			defer resp.Body.Close()
 
 			file, err := util.CreateFile(job.path, job.url.Name)
 			if err != nil {
-				fmt.Fprintf(h.IOStreams.Out, "download fail: %s\n", err.Error())
+				fmt.Fprintf(h.IOStreams.Out, "download failed: %s\n", err.Error())
 				return
 			}
 			defer file.Close()
 
 			_, err = io.Copy(file, resp.Body)
 			if err != nil {
-				fmt.Fprintf(h.IOStreams.Out, "download fail: %s\n", err.Error())
+				fmt.Fprintf(h.IOStreams.Out, "download failed: %s\n", err.Error())
 				return
 			}
-			fmt.Fprintf(h.IOStreams.Out, "Download %s successfully\n", job.url.Name)
+			fmt.Fprintf(h.IOStreams.Out, "download %s succeeded\n", job.url.Name)
 		}()
 	}
 }

@@ -457,6 +457,13 @@
           "x-nullable": true,
           "description": "OUTPUT_ONLY. Snapshot time of the export.",
           "readOnly": true
+        },
+        "expireTime": {
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true,
+          "description": "OUTPUT_ONLY. Expire time of the export.",
+          "readOnly": true
         }
       },
       "description": "Message for export resource.",
