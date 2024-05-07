@@ -60,6 +60,7 @@ type FileJob struct {
 	process progress.Model
 	percent float64
 	err     error
+	pw      *progressConcurrencyWriter
 }
 
 type JobInfo struct {
@@ -120,6 +121,7 @@ func (m Model) Init() tea.Cmd {
 // InitPool use pointer receiver to ensure m.once works
 func (m *Model) InitPool() {
 	m.once.Do(func() {
+		go m.Watch()
 		// start consumer goroutine
 		for i := 0; i < m.concurrency; i++ {
 			go m.consume(m.jobsCh)
@@ -257,13 +259,11 @@ func (m *Model) consume(jobs <-chan *FileJob) {
 				total:  int(resp.ContentLength),
 				file:   file,
 				reader: resp.Body,
-				onProgress: func(id int, ratio float64) {
-					m.onProgress(id, ratio)
-				},
 				onError: func(id int, err error) {
 					m.onError(id, err)
 				},
 			}
+			job.pw = pw
 			pw.Start()
 		}()
 	}
@@ -275,4 +275,19 @@ func finalPause() tea.Cmd {
 	return tea.Tick(time.Second*1, func(_ time.Time) tea.Msg {
 		return nil
 	})
+}
+
+func (m *Model) Watch() {
+	for m.jobInfo.finishedCount < m.jobInfo.total {
+		time.Sleep(200 * time.Millisecond)
+		for _, job := range m.jobInfo.viewJobs {
+			if job.pw != nil {
+				percent := float64(job.pw.downloaded) / float64(job.pw.total)
+				if percent != job.pw.percent {
+					job.pw.percent = percent
+					m.onProgress(job.pw.id, job.pw.percent)
+				}
+			}
+		}
+	}
 }
