@@ -28,7 +28,6 @@ type progressConcurrencyWriter struct {
 	reader     io.Reader
 	onProgress func(int, float64)
 	onError    func(int, error)
-	prePercent float64
 	percent    float64
 }
 
@@ -63,6 +62,9 @@ func (pw *progressConcurrencyWriter) Watch() {
 	for {
 		time.Sleep(500 * time.Millisecond)
 		percentNow := float64(pw.downloaded) / float64(pw.total)
+		if percentNow == pw.percent {
+			continue
+		}
 		if percentNow > 0.9 || percentNow-pw.percent > 0.05 {
 			pw.percent = percentNow
 			pw.onProgress(pw.id, pw.percent)
