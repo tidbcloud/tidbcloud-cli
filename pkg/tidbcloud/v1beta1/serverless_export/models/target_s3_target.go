@@ -24,7 +24,7 @@ type TargetS3Target struct {
 	// Optional. The bucket URI of the s3.
 	BucketURI string `json:"bucketUri,omitempty"`
 
-	// Optional. The uri of the s3 bucket.
+	// Optional. The URI of the s3 folder.
 	URI string `json:"uri,omitempty"`
 }
 

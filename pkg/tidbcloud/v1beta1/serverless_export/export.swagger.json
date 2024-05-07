@@ -320,7 +320,7 @@
         },
         "uri": {
           "type": "string",
-          "description": "Optional. The uri of the s3 bucket."
+          "description": "Optional. The URI of the s3 folder."
         },
         "accessKey": {
           "$ref": "#/definitions/S3TargetAccessKey",
