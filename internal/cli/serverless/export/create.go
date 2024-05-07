@@ -297,7 +297,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.Table, "*", "The table name you want to export.")
 	createCmd.Flags().String(flag.FileType, "CSV", "The export file type. One of [\"CSV\" \"SQL\"].")
 	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export target. One of [\"LOCAL\" \"S3\"].")
-	createCmd.Flags().String(flag.S3URI, "", "The s3 uri with s3://<bucket>/<path> format. Required when target type is S3.")
+	createCmd.Flags().String(flag.S3URI, "", "The s3 uri in s3://<bucket>/<path> format. Required when target type is S3.")
 	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3. Required when target type is S3.")
 	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3. Required when target type is S3.")
 	createCmd.Flags().String(flag.Compression, "GZIP", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"].")
@@ -381,7 +381,7 @@ func initialS3InputModel() ui.TextInputModel {
 		t := textinput.New()
 		switch k {
 		case flag.S3URI:
-			t.Placeholder = "S3 URI with s3://<bucket>/<path> format"
+			t.Placeholder = "S3 URI in s3://<bucket>/<path> format"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
