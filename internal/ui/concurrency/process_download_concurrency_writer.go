@@ -17,6 +17,7 @@ package ui_concurrency
 import (
 	"io"
 	"os"
+	"time"
 )
 
 type progressConcurrencyWriter struct {
@@ -27,12 +28,20 @@ type progressConcurrencyWriter struct {
 	reader     io.Reader
 	onProgress func(int, float64)
 	onError    func(int, error)
+	prePercent float64
 	percent    float64
+}
+
+func (pw *progressConcurrencyWriter) Read(p []byte) (n int, err error) {
+	n, err = pw.reader.Read(p)
+	pw.downloaded += len(p)
+	return
 }
 
 func (pw *progressConcurrencyWriter) Start() {
 	// TeeReader calls pw.Write() each time a new response is received
-	_, err := io.Copy(pw.file, io.TeeReader(pw.reader, pw))
+	go pw.Watch()
+	_, err := io.Copy(pw.file, pw)
 	if err != nil {
 		pw.onError(pw.id, err)
 	}
@@ -48,4 +57,18 @@ func (pw *progressConcurrencyWriter) Write(p []byte) (int, error) {
 		}
 	}
 	return len(p), nil
+}
+
+func (pw *progressConcurrencyWriter) Watch() {
+	for {
+		time.Sleep(500 * time.Millisecond)
+		percentNow := float64(pw.downloaded) / float64(pw.total)
+		if percentNow > 0.9 || percentNow-pw.percent > 0.05 {
+			pw.percent = percentNow
+			pw.onProgress(pw.id, pw.percent)
+		}
+		if percentNow >= 1 {
+			break
+		}
+	}
 }
