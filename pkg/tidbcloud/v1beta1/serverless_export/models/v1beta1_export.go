@@ -37,6 +37,11 @@ type V1beta1Export struct {
 	// Read Only: true
 	CreatedBy string `json:"createdBy,omitempty"`
 
+	// OUTPUT_ONLY. Expire time of the export.
+	// Read Only: true
+	// Format: date-time
+	ExpireTime *strfmt.DateTime `json:"expireTime,omitempty"`
+
 	// Output_only. The unique ID of the export.
 	// Read Only: true
 	ExportID string `json:"exportId,omitempty"`
@@ -82,6 +87,10 @@ func (m *V1beta1Export) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateCreateTime(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateExpireTime(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -138,6 +147,18 @@ func (m *V1beta1Export) validateCreateTime(formats strfmt.Registry) error {
 	}
 
 	if err := validate.FormatOf("createTime", "body", "date-time", m.CreateTime.String(), formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *V1beta1Export) validateExpireTime(formats strfmt.Registry) error {
+	if swag.IsZero(m.ExpireTime) { // not required
+		return nil
+	}
+
+	if err := validate.FormatOf("expireTime", "body", "date-time", m.ExpireTime.String(), formats); err != nil {
 		return err
 	}
 
@@ -239,6 +260,10 @@ func (m *V1beta1Export) ContextValidate(ctx context.Context, formats strfmt.Regi
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateExpireTime(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateExportID(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -294,6 +319,15 @@ func (m *V1beta1Export) contextValidateCreateTime(ctx context.Context, formats s
 func (m *V1beta1Export) contextValidateCreatedBy(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "createdBy", "body", string(m.CreatedBy)); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *V1beta1Export) contextValidateExpireTime(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "expireTime", "body", m.ExpireTime); err != nil {
 		return err
 	}
 

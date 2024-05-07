@@ -471,6 +471,10 @@ func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client T
 			Status: &item.State,
 		})
 	}
+	if len(items) == 0 {
+		return nil, fmt.Errorf("no available imports found")
+	}
+
 	model, err := ui.InitialSelectModel(items, "Choose the import task:")
 	if err != nil {
 		return nil, err
@@ -534,6 +538,9 @@ func GetSelectedSQLUser(ctx context.Context, clusterID string, pageSize int64, c
 			UserName: item.UserName,
 			Role:     util.GetDisplayRole(item.BuiltinRole, item.CustomRoles),
 		})
+	}
+	if len(items) == 0 {
+		return "", fmt.Errorf("no available sql-users found")
 	}
 
 	model, err := ui.InitialSelectModel(items, "Choose the SQL user:")
