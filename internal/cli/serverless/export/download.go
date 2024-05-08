@@ -201,7 +201,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if h.IOStreams.CanPrompt {
-				err = DownloadFilesPrompt(h, resp.Payload.Downloads, path, concurrency)
+				err = DownloadFilesPrompt(h, resp.Payload.Downloads, path, concurrency, totalSize)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -211,7 +211,6 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 			}
-			fmt.Fprintf(h.IOStreams.Out, "download finished\n")
 			return nil
 		},
 	}
@@ -225,7 +224,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 	return downloadCmd
 }
 
-func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int) error {
+func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int, totalSize int64) error {
 	if concurrency <= 0 {
 		concurrency = DefaultConcurrency
 	}
@@ -249,28 +248,27 @@ func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1Download
 	}
 	m := uiConcurrency.NewModel(
 		urlMsgs,
-		func(id int, ratio float64) {
-			if p != nil {
-				p.Send(uiConcurrency.NewProgressMsg(id, ratio))
-			}
-		},
-		func(id int, err error) {
-			if p != nil {
-				p.Send(uiConcurrency.NewProgressErrMsg(id, err))
-			}
-		},
 		concurrency,
 		path,
 	)
 
 	// run the program
 	p = tea.NewProgram(m)
+	m.SetProgram(p)
 	model, err := p.Run()
 	if err != nil {
 		return errors.Trace(err)
 	}
-	if m, _ := model.(uiConcurrency.Model); m.Interrupted {
+	if m, _ := model.(*uiConcurrency.Model); m.Interrupted {
 		return util.InterruptError
+	}
+	if len(m.GetFailedJobs()) > 0 {
+		fmt.Fprintf(h.IOStreams.Out, "fail to download the following files:\n")
+		for _, f := range m.GetFailedJobs() {
+			fmt.Fprintf(h.IOStreams.Out, f.GetErrorString()+"\n")
+		}
+	} else {
+		fmt.Fprintf(h.IOStreams.Out, "download finished\n")
 	}
 	return nil
 }
@@ -334,6 +332,7 @@ func DownloadFilesWithoutPrompt(h *internal.Helper, urls []*exportModel.V1beta1D
 	}
 	close(jobs)
 	wg.Wait()
+	fmt.Fprintf(h.IOStreams.Out, "download finished\n")
 	return nil
 }
 

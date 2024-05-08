@@ -25,66 +25,19 @@ type progressConcurrencyWriter struct {
 	downloaded int
 	file       *os.File
 	reader     io.Reader
-	// onProgress func(int, float64)
-	onError func(int, error)
-	percent float64
+	onResult   func(int, error)
 }
 
 func (pw *progressConcurrencyWriter) Read(p []byte) (n int, err error) {
 	n, err = pw.reader.Read(p)
-	if err != nil && err != io.EOF {
-		return
+	if err == nil || err == io.EOF {
+		pw.downloaded += n
 	}
-	pw.downloaded += n
 	return
 }
 
 func (pw *progressConcurrencyWriter) Start() {
 	// TeeReader calls pw.Write() each time a new response is received
-	//	go pw.Watch()
 	_, err := io.Copy(pw.file, pw)
-	if err != nil {
-		pw.onError(pw.id, err)
-	}
+	pw.onResult(pw.id, err)
 }
-
-//func (pw *progressConcurrencyWriter) Write(n int) error {
-//	pw.downloaded += n
-//	if pw.total > 0 && pw.onProgress != nil {
-//		percentNow := float64(pw.downloaded) / float64(pw.total)
-//		if percentNow > 0.9 || percentNow-pw.percent > 0.05 {
-//			pw.percent = percentNow
-//			pw.onProgress(pw.id, pw.percent)
-//		}
-//	}
-//	return nil
-//}
-
-//func (pw *progressConcurrencyWriter) Write(p []byte) (int, error) {
-//	pw.downloaded += len(p)
-//	if pw.total > 0 && pw.onProgress != nil {
-//		percentNow := float64(pw.downloaded) / float64(pw.total)
-//		if percentNow > 0.9 || percentNow-pw.percent > 0.05 {
-//			pw.percent = percentNow
-//			pw.onProgress(pw.id, pw.percent)
-//		}
-//	}
-//	return len(p), nil
-//}
-
-//func (pw *progressConcurrencyWriter) Watch() {
-//	for {
-//		time.Sleep(500 * time.Millisecond)
-//		percentNow := float64(pw.downloaded) / float64(pw.total)
-//		if percentNow == pw.percent {
-//			continue
-//		}
-//		if percentNow > 0.9 || percentNow-pw.percent > 0.05 {
-//			pw.percent = percentNow
-//			pw.onProgress(pw.id, pw.percent)
-//		}
-//		if percentNow >= 1 {
-//			break
-//		}
-//	}
-//}
