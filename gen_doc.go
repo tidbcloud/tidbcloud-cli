@@ -26,6 +26,8 @@ import (
 func main() {
 	h := &internal.Helper{}
 	ticloud := cli.RootCmd(h)
+	ticloud.DisableAutoGenTag = true
+	ticloud.InitDefaultCompletionCmd()
 	err := doc.GenMarkdownTree(ticloud, "./docs/generate_doc")
 	if err != nil {
 		log.Fatal(err)
