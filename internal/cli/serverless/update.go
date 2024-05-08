@@ -71,13 +71,13 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 		Short:       "Update a TiDB Serverless cluster",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Update a TiDB Serverless cluster in interactive mode:
- $ %[1]s serverless update
+  $ %[1]s serverless update
 
- Update displayName of a TiDB Serverless cluster in non-interactive mode:
- $ %[1]s serverless update -c <cluster-id> --display-name <new-cluster-mame>
+  Update displayName of a TiDB Serverless cluster in non-interactive mode:
+  $ %[1]s serverless update -c <cluster-id> --display-name <new-cluster-name>
  
- Update labels of a TiDB Serverless cluster in non-interactive mode:
- $ %[1]s serverless update -c <cluster-id> --labels "{\"label1\":\"value1\"}"`, config.CliName),
+  Update labels of a TiDB Serverless cluster in non-interactive mode:
+  $ %[1]s serverless update -c <cluster-id> --labels "{\"label1\":\"value1\"}"`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {
@@ -135,15 +135,15 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				fidleValue := inputModel.(ui.TextInputModel).Inputs[0].Value()
+				fieldValue := inputModel.(ui.TextInputModel).Inputs[0].Value()
 
 				switch fieldName {
 				case string(DisplayName):
-					displayName = fidleValue
+					displayName = fieldValue
 				case string(Annotations):
-					annotations = fidleValue
+					annotations = fieldValue
 				case string(Labels):
-					labels = fidleValue
+					labels = fieldValue
 				default:
 					return errors.Errorf("invalid field %s", fieldName)
 				}
@@ -206,8 +206,8 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 
 	updateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster to be updated.")
 	updateCmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "The new displayName of the cluster to be updated.")
-	updateCmd.Flags().String(flag.ServerlessLabels, "", "The labels of the cluster to be added or updated.\nInteractive example: {\"label1\":\"value1\",\"label2\":\"value2\"}\nNonInteractive example: \"{\\\"label1\\\":\\\"value1\\\",\\\"label2\\\":\\\"value2\\\"}\".")
-	updateCmd.Flags().String(flag.ServerlessAnnotations, "", "The annotations of the cluster to be added or updated.\nInteractive example: {\"annotation1\":\"value1\",\"annotation2\":\"value2\"}\nNonInteractive example: \"{\\\"annotation1\\\":\\\"value1\\\",\\\"annotation2\\\":\\\"value2\\\"}\".")
+	updateCmd.Flags().String(flag.ServerlessLabels, "", "The labels of the cluster to be added or updated.\nInteractive example: {\"label1\":\"value1\",\"label2\":\"value2\"}.\nNonInteractive example: \"{\\\"label1\\\":\\\"value1\\\",\\\"label2\\\":\\\"value2\\\"}\".")
+	updateCmd.Flags().String(flag.ServerlessAnnotations, "", "The annotations of the cluster to be added or updated.\nInteractive example: {\"annotation1\":\"value1\",\"annotation2\":\"value2\"}.\nNonInteractive example: \"{\\\"annotation1\\\":\\\"value1\\\",\\\"annotation2\\\":\\\"value2\\\"}\".")
 	return updateCmd
 }
 
