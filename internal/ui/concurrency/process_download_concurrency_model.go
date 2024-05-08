@@ -16,13 +16,13 @@ package ui_concurrency
 
 import (
 	"fmt"
-	"github.com/dustin/go-humanize"
 	"os"
 	"sync"
 	"time"
 
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/dustin/go-humanize"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/util"
 )
@@ -35,10 +35,6 @@ const (
 type ResultMsg struct {
 	id  int
 	err error
-}
-
-func NewResultMsg(id int, err error) ResultMsg {
-	return ResultMsg{id: id, err: err}
 }
 
 type jobStatus int
