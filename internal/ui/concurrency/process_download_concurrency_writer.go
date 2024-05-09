@@ -25,7 +25,7 @@ type progressConcurrencyWriter struct {
 	downloaded int
 	file       *os.File
 	reader     io.Reader
-	onResult   func(int, error)
+	onResult   func(int, error, jobStatus)
 }
 
 func (pw *progressConcurrencyWriter) Read(p []byte) (n int, err error) {
@@ -39,5 +39,10 @@ func (pw *progressConcurrencyWriter) Read(p []byte) (n int, err error) {
 func (pw *progressConcurrencyWriter) Start() {
 	// TeeReader calls pw.Write() each time a new response is received
 	_, err := io.Copy(pw.file, pw)
-	pw.onResult(pw.id, err)
+	if err != nil {
+		pw.onResult(pw.id, err, failed)
+		return
+	} else {
+		pw.onResult(pw.id, nil, succeed)
+	}
 }

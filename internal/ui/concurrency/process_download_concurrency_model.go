@@ -17,6 +17,7 @@ package ui_concurrency
 import (
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -33,17 +34,19 @@ const (
 )
 
 type ResultMsg struct {
-	id  int
-	err error
+	id     int
+	err    error
+	status jobStatus
 }
 
-type jobStatus int
+type jobStatus string
 
 const (
-	pending jobStatus = iota
-	running
-	succeed
-	failed
+	pending jobStatus = "pending"
+	running jobStatus = "running"
+	succeed jobStatus = "succeed"
+	failed  jobStatus = "failed"
+	skipped jobStatus = "skipped"
 )
 
 type FileJob struct {
@@ -57,7 +60,11 @@ type FileJob struct {
 }
 
 func (f *FileJob) GetErrorString() string {
-	return fmt.Sprintf("%s: %s", f.name, f.err.Error())
+	return fmt.Sprintf("%s %s: %s", f.name, f.status, f.err.Error())
+}
+
+func (f *FileJob) GetStatus() string {
+	return string(f.status)
 }
 
 type JobInfo struct {
@@ -65,8 +72,6 @@ type JobInfo struct {
 	// viewJobs is the jobs that are start (running and finished jobs)
 	startJobs    []*FileJob
 	finishedJobs []*FileJob
-	// count is the number of finished jobs
-	count int
 	// total is the total number of jobs
 	total int
 	lock  sync.Mutex
@@ -100,14 +105,8 @@ func (m *Model) SetProgram(p *tea.Program) {
 	m.p = p
 }
 
-func (m *Model) GetFailedJobs() []*FileJob {
-	result := make([]*FileJob, 0)
-	for _, job := range m.jobInfo.finishedJobs {
-		if job.status == failed {
-			result = append(result, job)
-		}
-	}
-	return result
+func (m *Model) GetFinishedJobs() []*FileJob {
+	return m.jobInfo.finishedJobs
 }
 
 func NewModel(urls []URLMsg, concurrency int, path string) *Model {
@@ -121,7 +120,6 @@ func NewModel(urls []URLMsg, concurrency int, path string) *Model {
 		idToJob:      idToJob,
 		startJobs:    make([]*FileJob, 0, len(urls)),
 		finishedJobs: make([]*FileJob, 0),
-		count:        0,
 		total:        len(urls),
 	}
 	totalSize := 0
@@ -180,21 +178,16 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 		// update job status
-		if msg.err != nil {
-			f.err = msg.err
-			f.status = failed
-		} else {
-			f.status = succeed
-		}
+		f.status = msg.status
+		f.err = msg.err
 		// increase count
 		m.jobInfo.lock.Lock()
-		m.jobInfo.count++
 		m.jobInfo.finishedJobs = append(m.jobInfo.finishedJobs, f)
-		m.jobInfo.lock.Unlock()
-		if m.jobInfo.count >= m.jobInfo.total {
+		if len(m.jobInfo.finishedJobs) >= m.jobInfo.total {
 			// stop when all jobs are finished
 			cmds = append(cmds, tea.Sequence(finalPause(), tea.Quit))
 		}
+		m.jobInfo.lock.Unlock()
 		return m, tea.Batch(cmds...)
 	default:
 		return m, nil
@@ -202,26 +195,30 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m *Model) View() string {
-	viewString := "\n"
+	viewString := ""
 	// print finished jobs
 	succeedCount := 0
-	testcount := 0
 	for _, f := range m.jobInfo.finishedJobs {
-		testcount++
 		if f.status == succeed {
 			succeedCount++
-			viewString += fmt.Sprintf("%d: download %s succeeded\n", testcount, f.name)
+			viewString += fmt.Sprintf("download %s succeeded\n", f.name)
 		} else if f.status == failed {
 			var errMsg string
 			if f.err != nil {
 				errMsg = f.err.Error()
 			}
-			viewString += fmt.Sprintf("%d: download %s failed: %s\n", testcount, f.name, errMsg)
+			viewString += fmt.Sprintf("download %s failed: %s\n", f.name, errMsg)
+		} else if f.status == skipped {
+			var errMsg string
+			if f.err != nil {
+				errMsg = f.err.Error()
+			}
+			viewString += fmt.Sprintf("download %s skipped: %s\n", f.name, errMsg)
 		}
 	}
 	// print process bar
-	viewString += fmt.Sprintf("%s/～%s ｜ (%s/s)\n", humanize.IBytes(uint64(m.ui.downloadSize)),
-		humanize.IBytes(uint64(m.ui.totalSize)), humanize.IBytes(uint64(m.ui.speed)))
+	viewString += fmt.Sprintf("%s/~%s (%s/s) with ~%d files(s) remaining\n", humanize.IBytes(uint64(m.ui.downloadSize)),
+		humanize.IBytes(uint64(m.ui.totalSize)), humanize.IBytes(uint64(m.ui.speed)), m.jobInfo.total-len(m.jobInfo.finishedJobs))
 	percent := float64(m.ui.downloadSize) / float64(m.ui.totalSize)
 	// workaround: set to 100% when all jobs are finished in case totalSize is not accurate
 	if succeedCount == m.jobInfo.total && percent < 1 {
@@ -246,7 +243,7 @@ func (m *Model) consume(jobs <-chan *FileJob) {
 			// request the url
 			resp, err := util.GetResponse(job.url, os.Getenv(config.DebugEnv) != "")
 			if err != nil {
-				m.sendMsg(ResultMsg{job.id, err})
+				m.sendMsg(ResultMsg{job.id, err, failed})
 				return
 			}
 			defer resp.Body.Close()
@@ -254,7 +251,11 @@ func (m *Model) consume(jobs <-chan *FileJob) {
 			// create file
 			file, err := util.CreateFile(m.outputPath, job.name)
 			if err != nil {
-				m.sendMsg(ResultMsg{job.id, err})
+				if strings.Contains(err.Error(), "file already exists") {
+					m.sendMsg(ResultMsg{job.id, err, skipped})
+				} else {
+					m.sendMsg(ResultMsg{job.id, err, failed})
+				}
 				return
 			}
 			defer file.Close()
@@ -265,8 +266,8 @@ func (m *Model) consume(jobs <-chan *FileJob) {
 				total:  int(resp.ContentLength),
 				file:   file,
 				reader: resp.Body,
-				onResult: func(id int, err error) {
-					m.sendMsg(ResultMsg{id: id, err: err})
+				onResult: func(id int, err error, status jobStatus) {
+					m.sendMsg(ResultMsg{id: id, err: err, status: status})
 				},
 			}
 			job.pw = pw

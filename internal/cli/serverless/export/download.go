@@ -262,14 +262,33 @@ func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1Download
 	if m, _ := model.(*uiConcurrency.Model); m.Interrupted {
 		return util.InterruptError
 	}
-	if len(m.GetFailedJobs()) > 0 {
-		fmt.Fprintf(h.IOStreams.Out, "fail to download the following files:\n")
-		for _, f := range m.GetFailedJobs() {
+
+	succeedCount := 0
+	failedCount := 0
+	skippedCount := 0
+	for _, f := range m.GetFinishedJobs() {
+		switch f.GetStatus() {
+		case "succeed":
+			succeedCount++
+		case "failed":
+			failedCount++
+		case "skipped":
+			skippedCount++
+		}
+	}
+	summaryMessage := fmt.Sprintf("%s %s %s", "download finished:", color.GreenString("succeed: %d", succeedCount), fmt.Sprintf("skipped: %d", skippedCount))
+	if failedCount > 0 {
+		summaryMessage += color.RedString(" failed: %d", failedCount)
+	} else {
+		summaryMessage += fmt.Sprintf(" failed: %d", failedCount)
+	}
+	fmt.Fprintf(h.IOStreams.Out, summaryMessage+"\n")
+	for _, f := range m.GetFinishedJobs() {
+		if f.GetStatus() != "succeed" {
 			fmt.Fprintf(h.IOStreams.Out, f.GetErrorString()+"\n")
 		}
-	} else {
-		fmt.Fprintf(h.IOStreams.Out, "download finished\n")
 	}
+
 	return nil
 }
 
