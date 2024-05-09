@@ -148,9 +148,7 @@ func (m *Model) Init() tea.Cmd {
 		go m.consume(m.jobsCh)
 	}
 	// start produce
-	for _, job := range m.jobInfo.idToJob {
-		go m.produce(job, m.jobsCh)
-	}
+	go m.produce(m.jobsCh)
 	return m.doTick()
 }
 
@@ -231,8 +229,10 @@ func (m *Model) View() string {
 	return viewString
 }
 
-func (m *Model) produce(job *FileJob, jobsCh chan<- *FileJob) {
-	jobsCh <- job
+func (m *Model) produce(jobsCh chan<- *FileJob) {
+	for _, job := range m.jobInfo.idToJob {
+		jobsCh <- job
+	}
 }
 
 func (m *Model) consume(jobs <-chan *FileJob) {
