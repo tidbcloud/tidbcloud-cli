@@ -318,6 +318,10 @@
           "type": "string",
           "description": "Optional. The bucket URI of the s3."
         },
+        "uri": {
+          "type": "string",
+          "description": "Optional. The URI of the s3 folder."
+        },
         "accessKey": {
           "$ref": "#/definitions/S3TargetAccessKey",
           "description": "Optional. The access_key of the s3."

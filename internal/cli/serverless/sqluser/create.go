@@ -205,6 +205,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					Password:    password,
 					BuiltinRole: builtinRole,
 					CustomRoles: customRoles,
+					AutoPrefix:  true,
 				}).
 				WithContext(ctx)
 
