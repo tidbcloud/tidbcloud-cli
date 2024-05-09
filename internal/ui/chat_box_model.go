@@ -60,8 +60,6 @@ type ChatBoxModel struct {
 	sendMsgFunc func(messages []ChatMessage) bubbletea.Msg
 }
 
-type TickMsg time.Time
-
 type EndSendingMsg struct {
 	Err error
 	Msg ChatMessage

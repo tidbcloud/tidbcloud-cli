@@ -35,7 +35,6 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
-	uiConcurrency "tidbcloud-cli/internal/ui/concurrency"
 	"tidbcloud-cli/internal/util"
 	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
 	exportModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/models"
@@ -238,16 +237,16 @@ func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1Download
 
 	// init the concurrency progress model
 	var p *tea.Program
-	urlMsgs := make([]uiConcurrency.URLMsg, 0)
+	urlMsgs := make([]ui.URLMsg, 0)
 	for _, u := range urls {
-		url := uiConcurrency.URLMsg{
+		url := ui.URLMsg{
 			Name: u.Name,
 			Url:  u.URL,
 			Size: u.Size,
 		}
 		urlMsgs = append(urlMsgs, url)
 	}
-	m := uiConcurrency.NewModel(
+	m := ui.NewProcessDownloadModel(
 		urlMsgs,
 		concurrency,
 		path,
@@ -260,7 +259,7 @@ func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1Download
 	if err != nil {
 		return errors.Trace(err)
 	}
-	if m, _ := model.(*uiConcurrency.Model); m.Interrupted {
+	if m, _ := model.(*ui.ProcessDownloadModel); m.Interrupted {
 		return util.InterruptError
 	}
 
@@ -269,18 +268,18 @@ func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1Download
 	skippedCount := 0
 	for _, f := range m.GetFinishedJobs() {
 		switch f.GetStatus() {
-		case uiConcurrency.Succeeded:
+		case ui.Succeeded:
 			succeededCount++
-		case uiConcurrency.Failed:
+		case ui.Failed:
 			failedCount++
-		case uiConcurrency.Skipped:
+		case ui.Skipped:
 			skippedCount++
 		}
 	}
 	fmt.Fprintf(h.IOStreams.Out, generateDownloadSummary(succeededCount, skippedCount, failedCount))
 	index := 0
 	for _, f := range m.GetFinishedJobs() {
-		if f.GetStatus() != uiConcurrency.Succeeded {
+		if f.GetStatus() != ui.Succeeded {
 			index++
 			fmt.Fprintf(h.IOStreams.Out, "%d.%s\n", index, f.GetErrorString())
 		}
@@ -332,11 +331,11 @@ type downloadJob struct {
 type downloadResult struct {
 	name   string
 	err    error
-	status uiConcurrency.JobStatus
+	status ui.JobStatus
 }
 
 func (r *downloadResult) GetErrorString() string {
-	if r.status == uiConcurrency.Succeeded {
+	if r.status == ui.Succeeded {
 		return ""
 	}
 	if r.err == nil {
@@ -376,11 +375,11 @@ func DownloadFilesWithoutPrompt(h *internal.Helper, urls []*exportModel.V1beta1D
 	downloadResults := make([]*downloadResult, 0)
 	for result := range results {
 		switch result.status {
-		case uiConcurrency.Succeeded:
+		case ui.Succeeded:
 			succeededCount++
-		case uiConcurrency.Failed:
+		case ui.Failed:
 			failedCount++
-		case uiConcurrency.Skipped:
+		case ui.Skipped:
 			skippedCount++
 		}
 		downloadResults = append(downloadResults, result)
@@ -388,7 +387,7 @@ func DownloadFilesWithoutPrompt(h *internal.Helper, urls []*exportModel.V1beta1D
 	fmt.Fprintf(h.IOStreams.Out, generateDownloadSummary(succeededCount, skippedCount, failedCount))
 	index := 0
 	for _, f := range downloadResults {
-		if f.status != uiConcurrency.Succeeded {
+		if f.status != ui.Succeeded {
 			index++
 			fmt.Fprintf(h.IOStreams.Out, "%d.%s\n", index, f.GetErrorString())
 		}
@@ -408,14 +407,14 @@ func consume(h *internal.Helper, jobs <-chan *downloadJob, results chan *downloa
 				if err != nil {
 					if strings.Contains(err.Error(), "file already exists") {
 						fmt.Fprintf(h.IOStreams.Out, "download %s skipped: %s\n", job.url.Name, err.Error())
-						results <- &downloadResult{name: job.url.Name, err: err, status: uiConcurrency.Skipped}
+						results <- &downloadResult{name: job.url.Name, err: err, status: ui.Skipped}
 					} else {
 						fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
-						results <- &downloadResult{name: job.url.Name, err: err, status: uiConcurrency.Failed}
+						results <- &downloadResult{name: job.url.Name, err: err, status: ui.Failed}
 					}
 				} else {
 					fmt.Fprintf(h.IOStreams.Out, "download %s succeeded\n", job.url.Name)
-					results <- &downloadResult{name: job.url.Name, err: nil, status: uiConcurrency.Succeeded}
+					results <- &downloadResult{name: job.url.Name, err: nil, status: ui.Succeeded}
 				}
 			}()
 
