@@ -234,6 +234,7 @@ func (m *Model) produce(jobsCh chan<- *FileJob) {
 	for _, job := range m.jobInfo.idToJob {
 		jobsCh <- job
 	}
+	close(jobsCh)
 }
 
 func (m *Model) consume(jobs <-chan *FileJob) {
