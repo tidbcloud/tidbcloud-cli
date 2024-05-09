@@ -430,11 +430,11 @@ func consume(h *internal.Helper, jobs <-chan *downloadJob, results chan *downloa
 			_, err = io.Copy(file, resp.Body)
 			if err != nil {
 				fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
-				results <- &downloadResult{name: job.url.Name, err: nil, status: uiConcurrency.Failed}
+				results <- &downloadResult{name: job.url.Name, err: err, status: uiConcurrency.Failed}
 				return
 			}
 			fmt.Fprintf(h.IOStreams.Out, "download %s succeeded\n", job.url.Name)
-			results <- &downloadResult{name: job.url.Name, err: err, status: uiConcurrency.Succeeded}
+			results <- &downloadResult{name: job.url.Name, err: nil, status: uiConcurrency.Succeeded}
 		}()
 	}
 }

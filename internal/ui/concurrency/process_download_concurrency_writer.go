@@ -39,7 +39,6 @@ func (pw *progressConcurrencyWriter) Start() {
 	_, err := io.Copy(pw.file, pw)
 	if err != nil {
 		pw.onResult(pw.id, err, Failed)
-		return
 	} else {
 		pw.onResult(pw.id, nil, Succeeded)
 	}
