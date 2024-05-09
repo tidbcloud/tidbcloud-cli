@@ -77,7 +77,7 @@ type JobInfo struct {
 	// startedJobs is the jobs that are started (running and finished jobs)
 	startedJobs  []*FileJob
 	finishedJobs []*FileJob
-	// total is the total number of jobs
+	// totalNumber is the total number of jobs
 	totalNumber int
 	lock        sync.Mutex
 }
