@@ -21,11 +21,12 @@ import (
 	"sync"
 	"time"
 
+	"tidbcloud-cli/internal/config"
+	"tidbcloud-cli/internal/util"
+
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/dustin/go-humanize"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/util"
 )
 
 const (
@@ -84,7 +85,6 @@ type ui struct {
 	progress     *progress.Model
 	downloadSize int
 	totalSize    int
-	width        int
 	speed        int
 }
 

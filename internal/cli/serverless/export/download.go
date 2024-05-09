@@ -202,7 +202,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if h.IOStreams.CanPrompt {
-				err = DownloadFilesPrompt(h, resp.Payload.Downloads, path, concurrency, totalSize)
+				err = DownloadFilesPrompt(h, resp.Payload.Downloads, path, concurrency)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -225,7 +225,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 	return downloadCmd
 }
 
-func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int, totalSize int64) error {
+func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int) error {
 	if concurrency <= 0 {
 		concurrency = DefaultConcurrency
 	}
