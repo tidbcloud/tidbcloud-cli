@@ -15,9 +15,10 @@
 package ui
 
 import (
+	"strings"
+
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
-	"strings"
 )
 
 const (
