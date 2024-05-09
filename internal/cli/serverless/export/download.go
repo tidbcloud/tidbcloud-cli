@@ -264,25 +264,25 @@ func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1Download
 		return util.InterruptError
 	}
 
-	succeedCount := 0
+	succeededCount := 0
 	failedCount := 0
 	skippedCount := 0
 	for _, f := range m.GetFinishedJobs() {
 		switch f.GetStatus() {
-		case "succeed":
-			succeedCount++
-		case "failed":
+		case uiConcurrency.Succeeded:
+			succeededCount++
+		case uiConcurrency.Failed:
 			failedCount++
-		case "skipped":
+		case uiConcurrency.Skipped:
 			skippedCount++
 		}
 	}
-	fmt.Fprintf(h.IOStreams.Out, generateDownloadSummary(succeedCount, skippedCount, failedCount))
-	count := 0
+	fmt.Fprintf(h.IOStreams.Out, generateDownloadSummary(succeededCount, skippedCount, failedCount))
+	index := 0
 	for _, f := range m.GetFinishedJobs() {
-		if f.GetStatus() != "succeed" {
-			count++
-			fmt.Fprintf(h.IOStreams.Out, "%d.%s\n", count, f.GetErrorString())
+		if f.GetStatus() != uiConcurrency.Succeeded {
+			index++
+			fmt.Fprintf(h.IOStreams.Out, "%d.%s\n", index, f.GetErrorString())
 		}
 	}
 
@@ -332,11 +332,14 @@ type downloadJob struct {
 type downloadResult struct {
 	name   string
 	err    error
-	status string
+	status uiConcurrency.JobStatus
 }
 
 func (r *downloadResult) GetErrorString() string {
-	if r.status == "succeed" {
+	if r.status == uiConcurrency.Succeeded {
+		return ""
+	}
+	if r.err == nil {
 		return fmt.Sprintf("%s %s", r.name, r.status)
 	}
 	return fmt.Sprintf("%s %s: %s", r.name, r.status, r.err.Error())
@@ -367,27 +370,27 @@ func DownloadFilesWithoutPrompt(h *internal.Helper, urls []*exportModel.V1beta1D
 	wg.Wait()
 	close(results)
 
-	succeedCount := 0
+	succeededCount := 0
 	failedCount := 0
 	skippedCount := 0
 	downloadResults := make([]*downloadResult, 0)
 	for result := range results {
 		switch result.status {
-		case "succeed":
-			succeedCount++
-		case "failed":
+		case uiConcurrency.Succeeded:
+			succeededCount++
+		case uiConcurrency.Failed:
 			failedCount++
-		case "skipped":
+		case uiConcurrency.Skipped:
 			skippedCount++
 		}
 		downloadResults = append(downloadResults, result)
 	}
-	fmt.Fprintf(h.IOStreams.Out, generateDownloadSummary(succeedCount, skippedCount, failedCount))
-	count := 0
+	fmt.Fprintf(h.IOStreams.Out, generateDownloadSummary(succeededCount, skippedCount, failedCount))
+	index := 0
 	for _, f := range downloadResults {
-		if f.status != "succeed" {
-			count++
-			fmt.Fprintf(h.IOStreams.Out, "%d.%s\n", count, f.GetErrorString())
+		if f.status != uiConcurrency.Succeeded {
+			index++
+			fmt.Fprintf(h.IOStreams.Out, "%d.%s\n", index, f.GetErrorString())
 		}
 	}
 	if failedCount > 0 {
@@ -406,7 +409,7 @@ func consume(h *internal.Helper, jobs <-chan *downloadJob, results chan *downloa
 			resp, err := util.GetResponse(job.url.URL, os.Getenv(config.DebugEnv) != "")
 			if err != nil {
 				fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
-				results <- &downloadResult{name: job.url.Name, err: nil, status: "failed"}
+				results <- &downloadResult{name: job.url.Name, err: nil, status: uiConcurrency.Failed}
 				return
 			}
 			defer resp.Body.Close()
@@ -415,10 +418,10 @@ func consume(h *internal.Helper, jobs <-chan *downloadJob, results chan *downloa
 			if err != nil {
 				if strings.Contains(err.Error(), "file already exists") {
 					fmt.Fprintf(h.IOStreams.Out, "download %s skipped: %s\n", job.url.Name, err.Error())
-					results <- &downloadResult{name: job.url.Name, err: err, status: "skipped"}
+					results <- &downloadResult{name: job.url.Name, err: err, status: uiConcurrency.Skipped}
 				} else {
 					fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
-					results <- &downloadResult{name: job.url.Name, err: nil, status: "failed"}
+					results <- &downloadResult{name: job.url.Name, err: nil, status: uiConcurrency.Failed}
 				}
 				return
 			}
@@ -427,17 +430,17 @@ func consume(h *internal.Helper, jobs <-chan *downloadJob, results chan *downloa
 			_, err = io.Copy(file, resp.Body)
 			if err != nil {
 				fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
-				results <- &downloadResult{name: job.url.Name, err: nil, status: "failed"}
+				results <- &downloadResult{name: job.url.Name, err: nil, status: uiConcurrency.Failed}
 				return
 			}
 			fmt.Fprintf(h.IOStreams.Out, "download %s succeeded\n", job.url.Name)
-			results <- &downloadResult{name: job.url.Name, err: err, status: "failed"}
+			results <- &downloadResult{name: job.url.Name, err: err, status: uiConcurrency.Succeeded}
 		}()
 	}
 }
 
-func generateDownloadSummary(succeedCount, skippedCount, failedCount int) string {
-	summaryMessage := fmt.Sprintf("%s %s %s", color.BlueString("download summary:"), color.GreenString("succeed: %d", succeedCount), color.GreenString("skipped: %d", skippedCount))
+func generateDownloadSummary(succeededCount, skippedCount, failedCount int) string {
+	summaryMessage := fmt.Sprintf("%s %s %s", color.BlueString("download summary:"), color.GreenString("succeeded: %d", succeededCount), color.GreenString("skipped: %d", skippedCount))
 	if failedCount > 0 {
 		summaryMessage += color.RedString(" failed: %d", failedCount)
 	} else {

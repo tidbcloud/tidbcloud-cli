@@ -37,17 +37,15 @@ const (
 type ResultMsg struct {
 	id     int
 	err    error
-	status jobStatus
+	status JobStatus
 }
 
-type jobStatus string
+type JobStatus string
 
 const (
-	pending jobStatus = "pending"
-	running jobStatus = "running"
-	succeed jobStatus = "succeed"
-	failed  jobStatus = "failed"
-	skipped jobStatus = "skipped"
+	Succeeded JobStatus = "succeeded"
+	Failed    JobStatus = "failed"
+	Skipped   JobStatus = "skipped"
 )
 
 type FileJob struct {
@@ -55,37 +53,40 @@ type FileJob struct {
 	name   string
 	url    string
 	size   int64
-	status jobStatus
+	status JobStatus
 	err    error
 	pw     *progressConcurrencyWriter
 }
 
 func (f *FileJob) GetErrorString() string {
-	if f.status == succeed {
+	if f.status == Succeeded {
+		return ""
+	}
+	if f.err == nil {
 		return fmt.Sprintf("%s %s", f.name, f.status)
 	}
 	return fmt.Sprintf("%s %s: %s", f.name, f.status, f.err.Error())
 }
 
-func (f *FileJob) GetStatus() string {
-	return string(f.status)
+func (f *FileJob) GetStatus() JobStatus {
+	return f.status
 }
 
 type JobInfo struct {
 	idToJob map[int]*FileJob
-	// startJobs is the jobs that are start (running and finished jobs)
-	startJobs    []*FileJob
+	// startedJobs is the jobs that are started (running and finished jobs)
+	startedJobs  []*FileJob
 	finishedJobs []*FileJob
 	// total is the total number of jobs
-	total int
-	lock  sync.Mutex
+	totalNumber int
+	lock        sync.Mutex
 }
 
 type ui struct {
-	progress     *progress.Model
-	downloadSize int
-	totalSize    int
-	speed        int
+	progress       *progress.Model
+	downloadedSize int
+	totalSize      int
+	speed          int
 }
 
 type Model struct {
@@ -121,9 +122,9 @@ func NewModel(urls []URLMsg, concurrency int, path string) *Model {
 	}
 	jobInfo := &JobInfo{
 		idToJob:      idToJob,
-		startJobs:    make([]*FileJob, 0, len(urls)),
+		startedJobs:  make([]*FileJob, 0, len(urls)),
 		finishedJobs: make([]*FileJob, 0),
-		total:        len(urls),
+		totalNumber:  len(urls),
 	}
 	totalSize := 0
 	for _, url := range urls {
@@ -184,7 +185,7 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// increase count
 		m.jobInfo.lock.Lock()
 		m.jobInfo.finishedJobs = append(m.jobInfo.finishedJobs, f)
-		if len(m.jobInfo.finishedJobs) >= m.jobInfo.total {
+		if len(m.jobInfo.finishedJobs) >= m.jobInfo.totalNumber {
 			// stop when all jobs are finished
 			cmds = append(cmds, tea.Sequence(finalPause(), tea.Quit))
 		}
@@ -198,18 +199,18 @@ func (m *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m *Model) View() string {
 	viewString := ""
 	// print finished jobs
-	succeedCount := 0
+	succeededCount := 0
 	for _, f := range m.jobInfo.finishedJobs {
-		if f.status == succeed {
-			succeedCount++
+		if f.status == Succeeded {
+			succeededCount++
 			viewString += fmt.Sprintf("download %s succeeded\n", f.name)
-		} else if f.status == failed {
+		} else if f.status == Failed {
 			var errMsg string
 			if f.err != nil {
 				errMsg = f.err.Error()
 			}
 			viewString += fmt.Sprintf("download %s failed: %s\n", f.name, errMsg)
-		} else if f.status == skipped {
+		} else if f.status == Skipped {
 			var errMsg string
 			if f.err != nil {
 				errMsg = f.err.Error()
@@ -218,11 +219,11 @@ func (m *Model) View() string {
 		}
 	}
 	// print process bar
-	viewString += fmt.Sprintf("%s/~%s (%s/s) with ~%d files(s) remaining\n", humanize.IBytes(uint64(m.ui.downloadSize)),
-		humanize.IBytes(uint64(m.ui.totalSize)), humanize.IBytes(uint64(m.ui.speed)), m.jobInfo.total-len(m.jobInfo.finishedJobs))
-	percent := float64(m.ui.downloadSize) / float64(m.ui.totalSize)
+	viewString += fmt.Sprintf("%s/~%s (%s/s) with ~%d files(s) remaining\n", humanize.IBytes(uint64(m.ui.downloadedSize)),
+		humanize.IBytes(uint64(m.ui.totalSize)), humanize.IBytes(uint64(m.ui.speed)), m.jobInfo.totalNumber-len(m.jobInfo.finishedJobs))
+	percent := float64(m.ui.downloadedSize) / float64(m.ui.totalSize)
 	// workaround: set to 100% when all jobs are finished in case totalSize is not accurate
-	if succeedCount == m.jobInfo.total && percent < 1 {
+	if succeededCount == m.jobInfo.totalNumber && percent < 1 {
 		percent = 1
 	}
 	viewString += m.ui.progress.ViewAs(percent) + "\n\n"
@@ -240,13 +241,13 @@ func (m *Model) consume(jobs <-chan *FileJob) {
 		func() {
 			// add job to startJobs
 			m.jobInfo.lock.Lock()
-			m.jobInfo.startJobs = append(m.jobInfo.startJobs, job)
+			m.jobInfo.startedJobs = append(m.jobInfo.startedJobs, job)
 			m.jobInfo.lock.Unlock()
 
 			// request the url
 			resp, err := util.GetResponse(job.url, os.Getenv(config.DebugEnv) != "")
 			if err != nil {
-				m.sendMsg(ResultMsg{job.id, err, failed})
+				m.sendMsg(ResultMsg{job.id, err, Failed})
 				return
 			}
 			defer resp.Body.Close()
@@ -255,9 +256,9 @@ func (m *Model) consume(jobs <-chan *FileJob) {
 			file, err := util.CreateFile(m.outputPath, job.name)
 			if err != nil {
 				if strings.Contains(err.Error(), "file already exists") {
-					m.sendMsg(ResultMsg{job.id, err, skipped})
+					m.sendMsg(ResultMsg{job.id, err, Skipped})
 				} else {
-					m.sendMsg(ResultMsg{job.id, err, failed})
+					m.sendMsg(ResultMsg{job.id, err, Failed})
 				}
 				return
 			}
@@ -266,10 +267,9 @@ func (m *Model) consume(jobs <-chan *FileJob) {
 			// create progress writer
 			pw := &progressConcurrencyWriter{
 				id:     job.id,
-				total:  int(resp.ContentLength),
 				file:   file,
 				reader: resp.Body,
-				onResult: func(id int, err error, status jobStatus) {
+				onResult: func(id int, err error, status JobStatus) {
 					m.sendMsg(ResultMsg{id: id, err: err, status: status})
 				},
 			}
@@ -291,14 +291,14 @@ type TickMsg time.Time
 
 func (m *Model) doTick() tea.Cmd {
 	return tea.Tick(time.Millisecond*100, func(t time.Time) tea.Msg {
-		count := 0
-		for _, job := range m.jobInfo.startJobs {
+		totalDownloaded := 0
+		for _, job := range m.jobInfo.startedJobs {
 			if job.pw != nil {
-				count += job.pw.downloaded
+				totalDownloaded += job.pw.downloadedSize
 			}
 		}
-		m.ui.speed = (count - m.ui.downloadSize) * 10
-		m.ui.downloadSize = count
+		m.ui.speed = (totalDownloaded - m.ui.downloadedSize) * 10
+		m.ui.downloadedSize = totalDownloaded
 		return TickMsg(t)
 	})
 }
