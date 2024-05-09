@@ -20,27 +20,26 @@ import (
 )
 
 type progressConcurrencyWriter struct {
-	id         int
-	total      int
-	downloaded int
-	file       *os.File
-	reader     io.Reader
-	onProgress func(int, float64)
-	onError    func(int, error)
+	id             int
+	downloadedSize int
+	file           *os.File
+	reader         io.Reader
+	onResult       func(int, error, JobStatus)
+}
+
+func (pw *progressConcurrencyWriter) Read(p []byte) (n int, err error) {
+	n, err = pw.reader.Read(p)
+	if err == nil || err == io.EOF {
+		pw.downloadedSize += n
+	}
+	return
 }
 
 func (pw *progressConcurrencyWriter) Start() {
-	// TeeReader calls pw.Write() each time a new response is received
-	_, err := io.Copy(pw.file, io.TeeReader(pw.reader, pw))
+	_, err := io.Copy(pw.file, pw)
 	if err != nil {
-		pw.onError(pw.id, err)
+		pw.onResult(pw.id, err, Failed)
+	} else {
+		pw.onResult(pw.id, nil, Succeeded)
 	}
-}
-
-func (pw *progressConcurrencyWriter) Write(p []byte) (int, error) {
-	pw.downloaded += len(p)
-	if pw.total > 0 && pw.onProgress != nil {
-		pw.onProgress(pw.id, float64(pw.downloaded)/float64(pw.total))
-	}
-	return len(p), nil
 }
