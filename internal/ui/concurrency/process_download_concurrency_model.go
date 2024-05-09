@@ -73,7 +73,7 @@ func (f *FileJob) GetStatus() string {
 
 type JobInfo struct {
 	idToJob map[int]*FileJob
-	// viewJobs is the jobs that are start (running and finished jobs)
+	// startJobs is the jobs that are start (running and finished jobs)
 	startJobs    []*FileJob
 	finishedJobs []*FileJob
 	// total is the total number of jobs
@@ -238,7 +238,7 @@ func (m *Model) produce(job *FileJob, jobsCh chan<- *FileJob) {
 func (m *Model) consume(jobs <-chan *FileJob) {
 	for job := range jobs {
 		func() {
-			// add job to viewJobs
+			// add job to startJobs
 			m.jobInfo.lock.Lock()
 			m.jobInfo.startJobs = append(m.jobInfo.startJobs, job)
 			m.jobInfo.lock.Unlock()
