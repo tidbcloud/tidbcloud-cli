@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"sync"
 
 	"github.com/AlecAivazis/survey/v2"
@@ -276,19 +277,18 @@ func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1Download
 			skippedCount++
 		}
 	}
-	summaryMessage := fmt.Sprintf("%s %s %s", "download finished:", color.GreenString("succeed: %d", succeedCount), fmt.Sprintf("skipped: %d", skippedCount))
-	if failedCount > 0 {
-		summaryMessage += color.RedString(" failed: %d", failedCount)
-	} else {
-		summaryMessage += fmt.Sprintf(" failed: %d", failedCount)
-	}
-	fmt.Fprintf(h.IOStreams.Out, summaryMessage+"\n")
+	fmt.Fprintf(h.IOStreams.Out, generateDownloadSummary(succeedCount, skippedCount, failedCount))
+	count := 0
 	for _, f := range m.GetFinishedJobs() {
 		if f.GetStatus() != "succeed" {
-			fmt.Fprintf(h.IOStreams.Out, f.GetErrorString()+"\n")
+			count++
+			fmt.Fprintf(h.IOStreams.Out, "%d.%s\n", count, f.GetErrorString())
 		}
 	}
 
+	if failedCount > 0 {
+		return errors.New(fmt.Sprintf("%d file(s) failed to download", failedCount))
+	}
 	return nil
 }
 
@@ -329,6 +329,19 @@ type downloadJob struct {
 	path string
 }
 
+type downloadResult struct {
+	name   string
+	err    error
+	status string
+}
+
+func (r *downloadResult) GetErrorString() string {
+	if r.status == "succeed" {
+		return fmt.Sprintf("%s %s", r.name, r.status)
+	}
+	return fmt.Sprintf("%s %s: %s", r.name, r.status, r.err.Error())
+}
+
 func DownloadFilesWithoutPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int) error {
 	if concurrency <= 0 {
 		concurrency = DefaultConcurrency
@@ -340,10 +353,11 @@ func DownloadFilesWithoutPrompt(h *internal.Helper, urls []*exportModel.V1beta1D
 	}
 
 	jobs := make(chan *downloadJob, len(urls))
+	results := make(chan *downloadResult, len(urls))
 	// Start consumers:
 	for i := 0; i < concurrency; i++ {
 		wg.Add(1)
-		go consume(h, jobs)
+		go consume(h, jobs, results)
 	}
 	// Start producing
 	for _, u := range urls {
@@ -351,11 +365,38 @@ func DownloadFilesWithoutPrompt(h *internal.Helper, urls []*exportModel.V1beta1D
 	}
 	close(jobs)
 	wg.Wait()
-	fmt.Fprintf(h.IOStreams.Out, "download finished\n")
+	close(results)
+
+	succeedCount := 0
+	failedCount := 0
+	skippedCount := 0
+	downloadResults := make([]*downloadResult, 0)
+	for result := range results {
+		switch result.status {
+		case "succeed":
+			succeedCount++
+		case "failed":
+			failedCount++
+		case "skipped":
+			skippedCount++
+		}
+		downloadResults = append(downloadResults, result)
+	}
+	fmt.Fprintf(h.IOStreams.Out, generateDownloadSummary(succeedCount, skippedCount, failedCount))
+	count := 0
+	for _, f := range downloadResults {
+		if f.status != "succeed" {
+			count++
+			fmt.Fprintf(h.IOStreams.Out, "%d.%s\n", count, f.GetErrorString())
+		}
+	}
+	if failedCount > 0 {
+		return errors.New(fmt.Sprintf("%d file(s) failed to download", failedCount))
+	}
 	return nil
 }
 
-func consume(h *internal.Helper, jobs <-chan *downloadJob) {
+func consume(h *internal.Helper, jobs <-chan *downloadJob, results chan *downloadResult) {
 	defer wg.Done()
 	for job := range jobs {
 		func() {
@@ -365,13 +406,20 @@ func consume(h *internal.Helper, jobs <-chan *downloadJob) {
 			resp, err := util.GetResponse(job.url.URL, os.Getenv(config.DebugEnv) != "")
 			if err != nil {
 				fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
+				results <- &downloadResult{name: job.url.Name, err: nil, status: "failed"}
 				return
 			}
 			defer resp.Body.Close()
 
 			file, err := util.CreateFile(job.path, job.url.Name)
 			if err != nil {
-				fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
+				if strings.Contains(err.Error(), "file already exists") {
+					fmt.Fprintf(h.IOStreams.Out, "download %s skipped: %s\n", job.url.Name, err.Error())
+					results <- &downloadResult{name: job.url.Name, err: err, status: "skipped"}
+				} else {
+					fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
+					results <- &downloadResult{name: job.url.Name, err: nil, status: "failed"}
+				}
 				return
 			}
 			defer file.Close()
@@ -379,9 +427,21 @@ func consume(h *internal.Helper, jobs <-chan *downloadJob) {
 			_, err = io.Copy(file, resp.Body)
 			if err != nil {
 				fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
+				results <- &downloadResult{name: job.url.Name, err: nil, status: "failed"}
 				return
 			}
 			fmt.Fprintf(h.IOStreams.Out, "download %s succeeded\n", job.url.Name)
+			results <- &downloadResult{name: job.url.Name, err: err, status: "failed"}
 		}()
 	}
+}
+
+func generateDownloadSummary(succeedCount, skippedCount, failedCount int) string {
+	summaryMessage := fmt.Sprintf("%s %s %s", color.BlueString("download summary:"), color.GreenString("succeed: %d", succeedCount), color.GreenString("skipped: %d", skippedCount))
+	if failedCount > 0 {
+		summaryMessage += color.RedString(" failed: %d", failedCount)
+	} else {
+		summaryMessage += fmt.Sprintf(" failed: %d", failedCount)
+	}
+	return summaryMessage + "\n"
 }

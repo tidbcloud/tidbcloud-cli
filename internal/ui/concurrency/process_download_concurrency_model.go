@@ -60,6 +60,9 @@ type FileJob struct {
 }
 
 func (f *FileJob) GetErrorString() string {
+	if f.status == succeed {
+		return fmt.Sprintf("%s %s", f.name, f.status)
+	}
 	return fmt.Sprintf("%s %s: %s", f.name, f.status, f.err.Error())
 }
 
