@@ -403,38 +403,37 @@ func consume(h *internal.Helper, jobs <-chan *downloadJob, results chan *downloa
 	defer wg.Done()
 	for job := range jobs {
 		func() {
+			var err error
+			defer func() {
+				if err != nil {
+					if strings.Contains(err.Error(), "file already exists") {
+						fmt.Fprintf(h.IOStreams.Out, "download %s skipped: %s\n", job.url.Name, err.Error())
+						results <- &downloadResult{name: job.url.Name, err: err, status: uiConcurrency.Skipped}
+					} else {
+						fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
+						results <- &downloadResult{name: job.url.Name, err: err, status: uiConcurrency.Failed}
+					}
+				} else {
+					fmt.Fprintf(h.IOStreams.Out, "download %s succeeded\n", job.url.Name)
+					results <- &downloadResult{name: job.url.Name, err: nil, status: uiConcurrency.Succeeded}
+				}
+			}()
+
 			fmt.Fprintf(h.IOStreams.Out, "downloading %s | %s\n", job.url.Name, humanize.IBytes(uint64(job.url.Size)))
 
 			// request the url
 			resp, err := util.GetResponse(job.url.URL, os.Getenv(config.DebugEnv) != "")
 			if err != nil {
-				fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
-				results <- &downloadResult{name: job.url.Name, err: nil, status: uiConcurrency.Failed}
 				return
 			}
 			defer resp.Body.Close()
 
 			file, err := util.CreateFile(job.path, job.url.Name)
 			if err != nil {
-				if strings.Contains(err.Error(), "file already exists") {
-					fmt.Fprintf(h.IOStreams.Out, "download %s skipped: %s\n", job.url.Name, err.Error())
-					results <- &downloadResult{name: job.url.Name, err: err, status: uiConcurrency.Skipped}
-				} else {
-					fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
-					results <- &downloadResult{name: job.url.Name, err: nil, status: uiConcurrency.Failed}
-				}
 				return
 			}
 			defer file.Close()
-
 			_, err = io.Copy(file, resp.Body)
-			if err != nil {
-				fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
-				results <- &downloadResult{name: job.url.Name, err: err, status: uiConcurrency.Failed}
-				return
-			}
-			fmt.Fprintf(h.IOStreams.Out, "download %s succeeded\n", job.url.Name)
-			results <- &downloadResult{name: job.url.Name, err: nil, status: uiConcurrency.Succeeded}
 		}()
 	}
 }
