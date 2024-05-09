@@ -15,8 +15,9 @@
 package util
 
 import (
-	"strings"
+	"fmt"
 	"slices"
+	"strings"
 )
 
 func GetDisplayRole(builtinRole string, customRoles []string) string {
@@ -62,4 +63,12 @@ func TrimUserNamePrefix(userName string, prefix string) string {
 		return userName[len(prefix):]
 	}
 	return userName
+}
+
+func AddPrefix(s string, prefix string) string {
+	prefix = prefix + "."
+	if strings.HasPrefix(s, prefix) {
+		return s
+	}
+	return fmt.Sprintf("%s%s", prefix, s)
 }

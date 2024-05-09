@@ -192,7 +192,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 				userRole = uRole
 			}
-			// generate the built-in role
+			
 			builtinRole, customRoles, err := getBuiltinRoleAndCustomRoles(userRole)
 			if err != nil {
 				return errors.Trace(err)

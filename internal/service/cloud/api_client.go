@@ -115,6 +115,8 @@ type TiDBCloudClient interface {
 	GetSQLUser(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameOK, error)
 
 	DeleteSQLUser(params *iamOp.DeleteV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.DeleteV1beta1ClustersClusterIDSQLUsersUserNameOK, error)
+
+	UpdateSQLUser(params *iamOp.PatchV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.PatchV1beta1ClustersClusterIDSQLUsersUserNameOK, error)
 }
 
 type ClientDelegate struct {
@@ -295,6 +297,10 @@ func (d *ClientDelegate) GetSQLUser(params *iamOp.GetV1beta1ClustersClusterIDSQL
 
 func (d *ClientDelegate) DeleteSQLUser(params *iamOp.DeleteV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.DeleteV1beta1ClustersClusterIDSQLUsersUserNameOK, error) {
 	return d.ic.Account.DeleteV1beta1ClustersClusterIDSQLUsersUserName(params, opts...)
+}
+
+func (d *ClientDelegate) UpdateSQLUser(params *iamOp.PatchV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.PatchV1beta1ClustersClusterIDSQLUsersUserNameOK, error) {
+	return d.ic.Account.PatchV1beta1ClustersClusterIDSQLUsersUserName(params, opts...)
 }
 
 func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *serverlessImportClient.TidbcloudServerless, *expClient.TidbcloudServerless, *iamClient.TidbcloudServerless, error) {
