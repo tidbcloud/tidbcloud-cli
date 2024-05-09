@@ -93,6 +93,7 @@ func (suite *CreateSQLUserSuite) TestCreateSQLUserArgs() {
 		CustomRoles: customRole,
 		Password:    password,
 		AuthMethod:  util.MYSQLNATIVEPASSWORD,
+		AutoPrefix:  true,
 	}
 	body := &iamModel.APISQLUser{}
 	err := json.Unmarshal([]byte(getSQLUserResultStr), body)
