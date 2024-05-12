@@ -298,6 +298,35 @@
       ],
       "description": " - Compression_UNSPECIFIED: The type of the compression is unknown."
     },
+    "ExportOptionsFilter": {
+      "type": "object",
+      "properties": {
+        "sql": {
+          "type": "string",
+          "description": "Optional. Use SQL to filter the export."
+        },
+        "table": {
+          "$ref": "#/definitions/FilterTable",
+          "description": "Optional. Use DBTable to filter the export."
+        }
+      }
+    },
+    "FilterTable": {
+      "type": "object",
+      "properties": {
+        "patterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional. The table filter expressions."
+        },
+        "where": {
+          "type": "string",
+          "description": "Optional. The specify table of the export."
+        }
+      }
+    },
     "S3TargetAccessKey": {
       "type": "object",
       "properties": {
@@ -316,7 +345,7 @@
       "properties": {
         "bucketUri": {
           "type": "string",
-          "description": "Optional. The bucket URI of the s3."
+          "description": "Optional. The bucket URI of the s3. DEPRECATED, use uri instead."
         },
         "uri": {
           "type": "string",
@@ -484,15 +513,19 @@
         },
         "database": {
           "type": "string",
-          "description": "Optional. The specify database of the export."
+          "title": "Optional. The specify database of the export. DEPRECATED, use filter instead"
         },
         "table": {
           "type": "string",
-          "description": "Optional. The specify table of the export."
+          "title": "Optional. The specify table of the export. DEPRECATED, use filter instead"
         },
         "compression": {
           "$ref": "#/definitions/ExportOptionsCompressionType",
           "description": "Optional. The compression of the export."
+        },
+        "filter": {
+          "$ref": "#/definitions/ExportOptionsFilter",
+          "description": "Optional. The filter of the export."
         }
       }
     },

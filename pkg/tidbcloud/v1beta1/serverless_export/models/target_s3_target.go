@@ -21,7 +21,7 @@ type TargetS3Target struct {
 	// Optional. The access_key of the s3.
 	AccessKey *S3TargetAccessKey `json:"accessKey,omitempty"`
 
-	// Optional. The bucket URI of the s3.
+	// Optional. The bucket URI of the s3. DEPRECATED, use uri instead.
 	BucketURI string `json:"bucketUri,omitempty"`
 
 	// Optional. The URI of the s3 folder.

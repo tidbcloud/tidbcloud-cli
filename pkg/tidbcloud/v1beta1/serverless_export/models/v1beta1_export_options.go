@@ -21,13 +21,16 @@ type V1beta1ExportOptions struct {
 	// Optional. The compression of the export.
 	Compression ExportOptionsCompressionType `json:"compression,omitempty"`
 
-	// Optional. The specify database of the export.
+	// Optional. The specify database of the export. DEPRECATED, use filter instead
 	Database string `json:"database,omitempty"`
 
 	// Optional. The exported file type.
 	FileType V1beta1ExportOptionsFileType `json:"fileType,omitempty"`
 
-	// Optional. The specify table of the export.
+	// Optional. The filter of the export.
+	Filter *ExportOptionsFilter `json:"filter,omitempty"`
+
+	// Optional. The specify table of the export. DEPRECATED, use filter instead
 	Table string `json:"table,omitempty"`
 }
 
@@ -40,6 +43,10 @@ func (m *V1beta1ExportOptions) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateFileType(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateFilter(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -83,6 +90,25 @@ func (m *V1beta1ExportOptions) validateFileType(formats strfmt.Registry) error {
 	return nil
 }
 
+func (m *V1beta1ExportOptions) validateFilter(formats strfmt.Registry) error {
+	if swag.IsZero(m.Filter) { // not required
+		return nil
+	}
+
+	if m.Filter != nil {
+		if err := m.Filter.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("filter")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("filter")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
 // ContextValidate validate this v1beta1 export options based on the context it is used
 func (m *V1beta1ExportOptions) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
@@ -92,6 +118,10 @@ func (m *V1beta1ExportOptions) ContextValidate(ctx context.Context, formats strf
 	}
 
 	if err := m.contextValidateFileType(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateFilter(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -132,6 +162,27 @@ func (m *V1beta1ExportOptions) contextValidateFileType(ctx context.Context, form
 			return ce.ValidateName("fileType")
 		}
 		return err
+	}
+
+	return nil
+}
+
+func (m *V1beta1ExportOptions) contextValidateFilter(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Filter != nil {
+
+		if swag.IsZero(m.Filter) { // not required
+			return nil
+		}
+
+		if err := m.Filter.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("filter")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("filter")
+			}
+			return err
+		}
 	}
 
 	return nil
