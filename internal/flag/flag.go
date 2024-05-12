@@ -72,6 +72,9 @@ const (
 	SourceType            string = "source-type"
 	UserRole              string = "role"
 	Concurrency           string = "concurrency"
+	SQL                   string = "filter.sql"
+	TableWhere            string = "filter.table.where"
+	TablePatterns         string = "filter.table.patterns"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."
