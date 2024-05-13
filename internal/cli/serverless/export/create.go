@@ -15,22 +15,24 @@
 package export
 
 import (
+	"encoding/csv"
 	"fmt"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
-
-	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
 	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
 	exportModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/models"
+
+	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/flag"
+	"tidbcloud-cli/internal/ui"
+	"tidbcloud-cli/internal/util"
 )
 
 type TargetType string
@@ -121,11 +123,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		Example: fmt.Sprintf(`  Create an export in interactive mode:
   $ %[1]s serverless export create
 
-  Create an export with local type in non-interactive mode:
-  $ %[1]s serverless export create -c <cluster-id> --database <database> --table <table>
+  Export all data with local type in non-interactive mode:
+  $ %[1]s serverless export create -c <cluster-id>
 
-  Create an export with s3 type in non-interactive mode:
-  $ %[1]s serverless export create -c <cluster-id> --s3.uri <s3-uri> --s3.access-key-id <access-key-id> --s3.secret-access-key <secret-access-key>`,
+  Export all data with s3 type in non-interactive mode:
+  $ %[1]s serverless export create -c <cluster-id> --s3.uri <s3-uri> --s3.access-key-id <access-key-id> --s3.secret-access-key <secret-access-key>
+
+  Export <test,>.<t1> and <"test>.<t1> in non-interactive mode:
+  $ %[1]s serverless export create -c <cluster-id> --filter.table.patterns '"test1,.t1","""test.t1"'`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
@@ -137,7 +142,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			var s3URI, accessKeyID, secretAccessKey, database, table, targetType, fileType, compression string
+			var s3URI, accessKeyID, secretAccessKey, targetType, fileType, compression string
 			var clusterId, sql, where string
 			var patterns []string
 			if opts.interactive {
@@ -184,20 +189,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 				}
 
-				selectedFileType, err := GetSelectedFileType()
-				if err != nil {
-					return err
-				}
-				if selectedFileType == FileTypeUnknown {
-					return errors.New("file type must be LOCAL or S3")
-				}
-				fileType = string(selectedFileType)
-
-				compression, err = GetSelectedCompression()
-				if err != nil {
-					return err
-				}
-
 				filterType, err := GetSelectedFilterType()
 				if err != nil {
 					return err
@@ -216,8 +207,30 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return err
 					}
 					// TODO input slice
-					patterns = filterInputModel.(ui.TextInputModel).Inputs[FilterTableInputFields[flag.TablePatterns]].Value()
+					patternString := filterInputModel.(ui.TextInputModel).Inputs[FilterTableInputFields[flag.TablePatterns]].Value()
+					patterns, err = stringSliceConv(patternString)
+					if err != nil {
+						return err
+					}
 					where = filterInputModel.(ui.TextInputModel).Inputs[FilterTableInputFields[flag.TableWhere]].Value()
+				}
+
+				if filterType == FilterSQL {
+					fileType = string(FileTypeCSV)
+				} else {
+					selectedFileType, err := GetSelectedFileType()
+					if err != nil {
+						return err
+					}
+					if selectedFileType == FileTypeUnknown {
+						return errors.New("file type must be LOCAL or S3")
+					}
+					fileType = string(selectedFileType)
+				}
+
+				compression, err = GetSelectedCompression()
+				if err != nil {
+					return err
 				}
 			} else {
 				// non-interactive mode, get values from flags
@@ -256,17 +269,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if secretAccessKey == "" {
 						return errors.New("secretAccessKey is required when target type is S3")
 					}
-				}
-				database, err = cmd.Flags().GetString(flag.Database)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				table, err = cmd.Flags().GetString(flag.Table)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				if (database == "" || database == "*") && targetType == string(TargetTypeLOCAL) {
-					return errors.New("you must specify the database when target type is LOCAL")
 				}
 				compression, err = cmd.Flags().GetString(flag.Compression)
 				if err != nil {
@@ -331,15 +333,13 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster, in which the export will be created.")
-	createCmd.Flags().String(flag.Database, "*", "The database name you want to export.")
-	createCmd.Flags().String(flag.Table, "*", "The table name you want to export.")
 	createCmd.Flags().String(flag.FileType, "CSV", "The export file type. One of [\"CSV\" \"SQL\"].")
 	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export target. One of [\"LOCAL\" \"S3\"].")
 	createCmd.Flags().String(flag.S3URI, "", "The s3 uri in s3://<bucket>/<path> format. Required when target type is S3.")
 	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3. Required when target type is S3.")
 	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3. Required when target type is S3.")
 	createCmd.Flags().String(flag.Compression, "GZIP", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"].")
-	createCmd.Flags().StringSlice(flag.TablePatterns, nil, "Filter the exported table with table filter patterns. See xxx for more details")
+	createCmd.Flags().StringSlice(flag.TablePatterns, nil, "Filter the exported table with table filter patterns. See https://docs.pingcap.com/tidb/stable/table-filter to learn table filters")
 	createCmd.Flags().String(flag.TableWhere, "", "Filter the exported table with the where condition")
 	createCmd.Flags().String(flag.SQL, "", "Filter the exported data with SQL SELECT statement")
 	return createCmd
@@ -500,7 +500,7 @@ func initialFilterInputModel(filterType FilterType) ui.TextInputModel {
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
 		case flag.TablePatterns:
-			t.Placeholder = "Table filter patterns"
+			t.Placeholder = "Table filter patterns. Example: \"test1,.t1\",\"\"\"test.t1\" means export `test, `.`t1` and `\"test`.`t1`."
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
@@ -522,4 +522,21 @@ func GetFilterInput(filterType FilterType) (tea.Model, error) {
 		return nil, util.InterruptError
 	}
 	return inputModel, nil
+}
+
+func stringSliceConv(sval string) ([]string, error) {
+	// An empty string would cause a slice with one (empty) string
+	if len(sval) == 0 {
+		return []string{}, nil
+	}
+	return readAsCSV(sval)
+}
+
+func readAsCSV(val string) ([]string, error) {
+	if val == "" {
+		return []string{}, nil
+	}
+	stringReader := strings.NewReader(val)
+	csvReader := csv.NewReader(stringReader)
+	return csvReader.Read()
 }
