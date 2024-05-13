@@ -16,10 +16,13 @@ package sqluser
 
 import (
 	"fmt"
+	"slices"
+	"strings"
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 
 	// "tidbcloud-cli/internal/util"
@@ -28,6 +31,8 @@ import (
 
 	// "github.com/AlecAivazis/survey/v2"
 	// "github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/charmbracelet/bubbles/textinput"
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -35,6 +40,11 @@ import (
 
 type UpdateOpts struct {
 	interactive bool
+}
+
+var updateSQLUserField = map[string]int{
+	flag.Password: 0,
+	flag.UserRole: 1,
 }
 
 func (c UpdateOpts) NonInteractiveFlags() []string {
@@ -85,6 +95,23 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
+
+			if !opts.interactive {
+				err := cmd.MarkFlagRequired(flag.ClusterID)
+				if err != nil {
+					return err
+				}
+				cmd.MarkFlagsMutuallyExclusive(flag.UserRole, flag.AddRole, flag.DeleteRole)
+
+				// check if at least one of the SQL user artributes is set
+				flag1 := cmd.Flags().Lookup(flag.Password)
+				flag2 := cmd.Flags().Lookup(flag.UserRole)
+				flag3 := cmd.Flags().Lookup(flag.AddRole)
+				flag4 := cmd.Flags().Lookup(flag.DeleteRole)
+				if !flag1.Changed && !flag2.Changed && !flag3.Changed && !flag4.Changed {
+					return errors.New(fmt.Sprintf("at least one of %s, %s, %s, %s must be set", flag.Password, flag.UserRole, flag.AddRole, flag.DeleteRole))
+				}
+			}
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -98,7 +125,9 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 			var userName string
 			var userPrefix string
 			var password string
-			var userRole string
+			var userRole []string
+			var addRole []string
+			var deleteRole []string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -109,17 +138,44 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
+
 				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				clusterID = cluster.ID
+				userPrefix = cluster.UserPrefix
 
 				user, err := cloud.GetSelectedSQLUser(ctx, clusterID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				userName = user
+
+				// variables for input
+				fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following update options"))
+
+				p := tea.NewProgram(initialUpdateInputModel())
+				inputModel, err := p.Run()
+				if err != nil {
+					return errors.Trace(err)
+				}
+				if inputModel.(ui.TextInputModel).Interrupted {
+					return util.InterruptError
+				}
+
+				password = inputModel.(ui.TextInputModel).Inputs[updateSQLUserField[flag.Password]].Value()
+				inputUserRole := inputModel.(ui.TextInputModel).Inputs[updateSQLUserField[flag.UserRole]].Value()
+
+				userRole = strings.Split(inputUserRole, ",")
+				// if inputUserRole is "", set userRole to nil
+				if len(userRole) == 1 && userRole[0] == "" {
+					userRole = nil
+				}
+
+				if password == "" && len(userRole) == 0 {
+					return errors.New("At least one of password and user role must be set")
+				}
 
 			} else {
 				// non-interactive mode doesn't need projectID
@@ -148,19 +204,78 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				}
 				password = pw
 
-				uRole, err := cmd.Flags().GetString(flag.UserRole)
+				uRole, err := cmd.Flags().GetStringSlice(flag.UserRole)
 				if err != nil {
 					return errors.Trace(err)
 				}
 				userRole = uRole
+
+				aRole, err := cmd.Flags().GetStringSlice(flag.AddRole)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				addRole = aRole
+
+				dRole, err := cmd.Flags().GetStringSlice(flag.DeleteRole)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				deleteRole = dRole
 			}
 
-			builtinRole, customRoles, err := getBuiltinRoleAndCustomRoles(userRole)
+			getUserParams := iamApi.NewGetV1beta1ClustersClusterIDSQLUsersUserNameParams().
+				WithClusterID(clusterID).
+				WithUserName(userName).
+				WithContext(ctx)
+			getSQLUserResult, err := d.GetSQLUser(getUserParams)
 			if err != nil {
 				return errors.Trace(err)
 			}
+			u := getSQLUserResult.GetPayload()
 
-			fmt.Println("customRoles: ", customRoles)
+			originBuiltinRole := u.BuiltinRole
+			originCustomRoles := u.CustomRoles
+
+			var builtinRole string
+			var customRoles []string
+
+			if len(userRole) != 0 {
+				builtinRole, customRoles, err = getBuiltinRoleAndCustomRoles(userRole)
+				if err != nil {
+					return errors.Trace(err)
+				}
+			}
+
+			if len(addRole) != 0 {
+				addBuiltinRole, addCustomRoles, err := getBuiltinRoleAndCustomRoles(addRole)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				if addBuiltinRole != "" {
+					return errors.New("Built-in role can't be added when updating SQL user")
+				}
+				builtinRole = originBuiltinRole
+				customRoles = append(originCustomRoles, addCustomRoles...)
+			}
+
+			if len(deleteRole) != 0 {
+				deleteBuiltinRole, deleteCustomRoles, err := getBuiltinRoleAndCustomRoles(deleteRole)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				if deleteBuiltinRole != "" {
+					return errors.New("Built-in role can't be deleted when updating SQL user")
+				}
+				for _, role := range deleteCustomRoles {
+					index := slices.Index(originCustomRoles, role)
+					if index == -1 {
+						return errors.New(fmt.Sprintf("Role %s doesn't exist in the SQL user", role))
+					}
+					originCustomRoles = slices.Delete(originCustomRoles, index, index+1)
+				}
+				builtinRole = originBuiltinRole
+				customRoles = originCustomRoles
+			}
 
 			body := &iamModel.APIUpdateSQLUserReq{}
 
@@ -177,7 +292,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 			if password != "" {
 				body.Password = password
 			}
-			fmt.Println(body)
+
 			params := iamApi.NewPatchV1beta1ClustersClusterIDSQLUsersUserNameParams().
 				WithClusterID(clusterID).
 				WithUserName(userName).
@@ -196,7 +311,36 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 	updateCmd.Flags().StringP(flag.User, flag.UserShort, "", "The name of the SQL user to be updated.")
 	updateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the SQL user to be updated.")
 	updateCmd.Flags().StringP(flag.Password, "", "", "The new password of the SQL user.")
-	updateCmd.Flags().StringP(flag.UserRole, "", "", "The new role of the SQL user.")
+	updateCmd.Flags().StringSliceP(flag.UserRole, "", nil, "The new role of the SQL user.")
+	updateCmd.Flags().StringSliceP(flag.AddRole, "", nil, "The role to be added to the SQL user.")
+	updateCmd.Flags().StringSliceP(flag.DeleteRole, "", nil, "The role to be deleted from the SQL user.")
 
 	return updateCmd
+}
+
+func initialUpdateInputModel() ui.TextInputModel {
+	m := ui.TextInputModel{
+		Inputs: make([]textinput.Model, len(updateSQLUserField)),
+	}
+
+	for k, v := range updateSQLUserField {
+		t := textinput.New()
+		t.Cursor.Style = config.CursorStyle
+		t.CharLimit = 32
+
+		switch k {
+		case flag.Password:
+			// add a prefix showing the user prefix
+			t.Placeholder = "New Password"
+			t.Focus()
+			t.PromptStyle = config.FocusedStyle
+			t.TextStyle = config.FocusedStyle
+			t.EchoMode = textinput.EchoPassword
+			t.EchoCharacter = '•'
+		case flag.UserRole:
+			t.Placeholder = "New SQL User Roles, separated by comma"
+		}
+		m.Inputs[v] = t
+	}
+	return m
 }
