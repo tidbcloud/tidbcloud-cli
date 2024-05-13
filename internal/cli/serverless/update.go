@@ -94,6 +94,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				cmd.MarkFlagsMutuallyExclusive(flag.DisplayName, flag.ServerlessAnnotations, flag.ServerlessLabels)
+				cmd.MarkFlagsOneRequired(flag.DisplayName, flag.ServerlessAnnotations, flag.ServerlessLabels)
 			}
 			return nil
 		},
