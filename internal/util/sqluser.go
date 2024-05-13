@@ -21,21 +21,12 @@ import (
 )
 
 func GetDisplayRole(builtinRole string, customRoles []string) string {
-	displayRole := ""
 	if builtinRole != "" {
 		builtinRole = trimRolePrefix(builtinRole)
-		switch builtinRole {
-		case ADMIN_ROLE:
-			displayRole = ADMIN_DISPLAY
-		case READWRITE_ROLE:
-			displayRole = READWRITE_DISPLAY
-		case READONLY_ROLE:
-			displayRole = READONLY_DISPLAY
-		}
 	}
 
 	// put built-in role in the first place
-	customRoles = slices.Insert(customRoles, 0, displayRole)
+	customRoles = slices.Insert(customRoles, 0, builtinRole)
 	joinedRoles := strings.Join(customRoles, ", ")
 	return joinedRoles
 }
@@ -53,8 +44,7 @@ func trimRolePrefix(role string) string {
 }
 
 func IsBuiltinRole(role string) bool {
-	return role == ADMIN_ROLE || role == READWRITE_ROLE || role == READONLY_ROLE ||
-		role == ADMIN_DISPLAY || role == READWRITE_DISPLAY || role == READONLY_DISPLAY
+	return role == ADMIN_ROLE || role == READWRITE_ROLE || role == READONLY_ROLE
 }
 
 func TrimUserNamePrefix(userName string, prefix string) string {

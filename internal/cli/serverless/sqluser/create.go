@@ -279,11 +279,11 @@ func getBuiltinRoleAndCustomRoles(roles []string) (string, []string, error) {
 		if util.IsBuiltinRole(role) {
 			if builtinRole == "" {
 				switch role {
-				case util.ADMIN_ROLE, util.ADMIN_DISPLAY:
+				case util.ADMIN_ROLE:
 					builtinRole = util.ADMIN_ROLE
-				case util.READWRITE_ROLE, util.READWRITE_DISPLAY:
+				case util.READWRITE_ROLE:
 					builtinRole = util.READWRITE_ROLE
-				case util.READONLY_ROLE, util.READONLY_DISPLAY:
+				case util.READONLY_ROLE:
 					builtinRole = util.READONLY_ROLE
 				}
 			} else {
