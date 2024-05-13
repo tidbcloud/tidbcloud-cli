@@ -73,14 +73,15 @@ type CreateOpts struct {
 func (c CreateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.Database,
-		flag.Table,
 		flag.FileType,
 		flag.TargetType,
 		flag.S3URI,
 		flag.S3AccessKeyID,
 		flag.S3SecretAccessKey,
 		flag.Compression,
+		flag.SQL,
+		flag.TablePatterns,
+		flag.TableWhere,
 	}
 }
 
