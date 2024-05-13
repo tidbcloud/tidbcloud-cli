@@ -330,7 +330,6 @@ func initialUpdateInputModel() ui.TextInputModel {
 
 		switch k {
 		case flag.Password:
-			// add a prefix showing the user prefix
 			t.Placeholder = "New Password"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
