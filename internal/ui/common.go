@@ -15,31 +15,17 @@
 package ui
 
 import (
-	"io"
-	"os"
+	"time"
+
+	tea "github.com/charmbracelet/bubbletea"
 )
 
-type progressWriter struct {
-	id             int
-	downloadedSize int
-	file           *os.File
-	reader         io.Reader
-	onResult       func(int, error, JobStatus)
-}
+type TickMsg time.Time
 
-func (pw *progressWriter) Read(p []byte) (n int, err error) {
-	n, err = pw.reader.Read(p)
-	if err == nil || err == io.EOF {
-		pw.downloadedSize += n
-	}
-	return
-}
-
-func (pw *progressWriter) Start() {
-	_, err := io.Copy(pw.file, pw)
-	if err != nil {
-		pw.onResult(pw.id, err, Failed)
-	} else {
-		pw.onResult(pw.id, nil, Succeeded)
-	}
+// finalPause prevent the progress bar from exiting before it reaches 100%.
+// See https://github.com/charmbracelet/bubbletea/blob/702b43d6b06287363b72836c88be35d985624a2b/examples/progress-download/tui.go#L23
+func finalPause() tea.Cmd {
+	return tea.Tick(time.Second*1, func(_ time.Time) tea.Msg {
+		return nil
+	})
 }
