@@ -86,7 +86,6 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 
   Update a SQL user in non-interactive mode:
   $ %[1]s serverless sql-user update -c <cluster-id> --user <user-name> --password <password> --role <role>`, config.CliName),
-		Aliases: []string{"rm"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			err := opts.MarkInteractive(cmd)
 			if err != nil {
