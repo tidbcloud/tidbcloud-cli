@@ -156,10 +156,10 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				password = inputModel.(ui.TextInputModel).Inputs[updateSQLUserField[flag.Password]].Value()
 				inputUserRole := inputModel.(ui.TextInputModel).Inputs[updateSQLUserField[flag.UserRole]].Value()
 
-				userRole = strings.Split(inputUserRole, ",")
-				// if inputUserRole is "", set userRole to nil
-				if len(userRole) == 1 && userRole[0] == "" {
+				if inputUserRole == "" {
 					userRole = nil
+				} else {
+					userRole = strings.Split(inputUserRole, ",")
 				}
 
 				if password == "" && len(userRole) == 0 {
