@@ -27,7 +27,7 @@ func GetDisplayRole(builtinRole string, customRoles []string) string {
 
 	// put built-in role in the first place
 	customRoles = slices.Insert(customRoles, 0, builtinRole)
-	joinedRoles := strings.Join(customRoles, ", ")
+	joinedRoles := strings.Join(customRoles, ",")
 	return joinedRoles
 }
 

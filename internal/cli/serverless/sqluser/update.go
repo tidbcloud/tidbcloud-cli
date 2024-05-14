@@ -18,19 +18,16 @@ import (
 	"fmt"
 	"slices"
 	"strings"
+
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-
-	// "tidbcloud-cli/internal/util"
 	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
 	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
 
-	// "github.com/AlecAivazis/survey/v2"
-	// "github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
@@ -88,7 +85,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless sql-user update
 
   Update a SQL user in non-interactive mode:
-  $ %[1]s serverless sql-user update -c <cluster-id> --user <user-name>`, config.CliName),
+  $ %[1]s serverless sql-user update -c <cluster-id> --user <user-name> --password <password> --role <role>`, config.CliName),
 		Aliases: []string{"rm"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			err := opts.MarkInteractive(cmd)
@@ -102,15 +99,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				cmd.MarkFlagsMutuallyExclusive(flag.UserRole, flag.AddRole, flag.DeleteRole)
-
-				// check if at least one of the SQL user artributes is set
-				flag1 := cmd.Flags().Lookup(flag.Password)
-				flag2 := cmd.Flags().Lookup(flag.UserRole)
-				flag3 := cmd.Flags().Lookup(flag.AddRole)
-				flag4 := cmd.Flags().Lookup(flag.DeleteRole)
-				if !flag1.Changed && !flag2.Changed && !flag3.Changed && !flag4.Changed {
-					return errors.New(fmt.Sprintf("at least one of %s, %s, %s, %s must be set", flag.Password, flag.UserRole, flag.AddRole, flag.DeleteRole))
-				}
+				cmd.MarkFlagsOneRequired(flag.Password, flag.UserRole, flag.AddRole, flag.DeleteRole)
 			}
 			return nil
 		},
@@ -174,7 +163,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				if password == "" && len(userRole) == 0 {
-					return errors.New("At least one of password and user role must be set")
+					return errors.New("at least one of password and user role must be set")
 				}
 
 			} else {
@@ -231,16 +220,11 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
+
 			u := getSQLUserResult.GetPayload()
 
-			originBuiltinRole := u.BuiltinRole
-			originCustomRoles := u.CustomRoles
-
-			var builtinRole string
-			var customRoles []string
-
 			if len(userRole) != 0 {
-				builtinRole, customRoles, err = getBuiltinRoleAndCustomRoles(userRole)
+				u.BuiltinRole, u.CustomRoles, err = getBuiltinRoleAndCustomRoles(userRole)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -251,11 +235,12 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if addBuiltinRole != "" {
-					return errors.New("Built-in role can't be added when updating SQL user")
+				if u.BuiltinRole != "" && addBuiltinRole != "" {
+					return errors.New("built-in role already exists in the SQL user")
+				} else if u.BuiltinRole == "" && addBuiltinRole != "" {
+					u.BuiltinRole = addBuiltinRole
 				}
-				builtinRole = originBuiltinRole
-				customRoles = append(originCustomRoles, addCustomRoles...)
+				u.CustomRoles = append(u.CustomRoles, addCustomRoles...)
 			}
 
 			if len(deleteRole) != 0 {
@@ -264,30 +249,30 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				if deleteBuiltinRole != "" {
-					return errors.New("Built-in role can't be deleted when updating SQL user")
+					deleteBuiltinRole = util.AddPrefix(deleteBuiltinRole, userPrefix)
+					if deleteBuiltinRole == u.BuiltinRole {
+						// it doesn't work yet, because the API doesn't support to delete the builtin role
+						u.BuiltinRole = ""
+					} else {
+						return errors.New(fmt.Sprintf("role %s doesn't exist in the SQL user", deleteBuiltinRole))
+					}
 				}
 				for _, role := range deleteCustomRoles {
-					index := slices.Index(originCustomRoles, role)
+					index := slices.Index(u.CustomRoles, role)
 					if index == -1 {
-						return errors.New(fmt.Sprintf("Role %s doesn't exist in the SQL user", role))
+						return errors.New(fmt.Sprintf("role %s doesn't exist in the SQL user", role))
 					}
-					originCustomRoles = slices.Delete(originCustomRoles, index, index+1)
+					u.CustomRoles = slices.Delete(u.CustomRoles, index, index+1)
 				}
-				builtinRole = originBuiltinRole
-				customRoles = originCustomRoles
 			}
 
 			body := &iamModel.APIUpdateSQLUserReq{}
-
-			if builtinRole != "" {
-				// if the role is role_readonly or role_readwrite, add the prefix
-				if builtinRole != util.ADMIN_ROLE {
-					builtinRole = util.AddPrefix(builtinRole, userPrefix)
-				}
-				body.BuiltinRole = builtinRole
+			if u.BuiltinRole != util.ADMIN_ROLE {
+				body.BuiltinRole = util.AddPrefix(u.BuiltinRole, userPrefix)
+			} else {
+				body.BuiltinRole = u.BuiltinRole
 			}
-
-			body.CustomRoles = customRoles
+			body.CustomRoles = u.CustomRoles
 
 			if password != "" {
 				body.Password = password
@@ -311,9 +296,9 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 	updateCmd.Flags().StringP(flag.User, flag.UserShort, "", "The name of the SQL user to be updated.")
 	updateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the SQL user to be updated.")
 	updateCmd.Flags().StringP(flag.Password, "", "", "The new password of the SQL user.")
-	updateCmd.Flags().StringSliceP(flag.UserRole, "", nil, "The new role of the SQL user.")
-	updateCmd.Flags().StringSliceP(flag.AddRole, "", nil, "The role to be added to the SQL user.")
-	updateCmd.Flags().StringSliceP(flag.DeleteRole, "", nil, "The role to be deleted from the SQL user.")
+	updateCmd.Flags().StringSliceP(flag.UserRole, "", nil, "The new role(s) of the SQL user. Passing this flag replaces preexisting data.")
+	updateCmd.Flags().StringSliceP(flag.AddRole, "", nil, "The role(s) to be added to the SQL user.")
+	updateCmd.Flags().StringSliceP(flag.DeleteRole, "", nil, "The role(s) to be deleted from the SQL user.")
 
 	return updateCmd
 }
@@ -330,14 +315,14 @@ func initialUpdateInputModel() ui.TextInputModel {
 
 		switch k {
 		case flag.Password:
-			t.Placeholder = "New Password"
+			t.Placeholder = "New password"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
 			t.EchoMode = textinput.EchoPassword
 			t.EchoCharacter = '•'
 		case flag.UserRole:
-			t.Placeholder = "New SQL User Roles, separated by comma"
+			t.Placeholder = "New SQL user roles which replaces preexisting data, separated by comma"
 		}
 		m.Inputs[v] = t
 	}

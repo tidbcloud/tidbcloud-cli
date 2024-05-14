@@ -227,7 +227,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	CreateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
 	CreateCmd.Flags().StringP(flag.User, flag.UserShort, "", "The name of the SQL user.")
 	CreateCmd.Flags().StringP(flag.Password, "", "", "The password of the SQL user.")
-	CreateCmd.Flags().StringSliceP(flag.UserRole, "", nil, "The role of the SQL user.")
+	CreateCmd.Flags().StringSliceP(flag.UserRole, "", nil, "The role(s) of the SQL user.")
 
 	return CreateCmd
 }
