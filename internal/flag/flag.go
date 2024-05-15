@@ -69,6 +69,8 @@ const (
 	Compression           string = "compression"
 	SourceType            string = "source-type"
 	UserRole              string = "role"
+	AddRole               string = "add-role"
+	DeleteRole            string = "delete-role"
 	Concurrency           string = "concurrency"
 	SQL                   string = "sql"
 	TableWhere            string = "where"

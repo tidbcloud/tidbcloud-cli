@@ -116,7 +116,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			var clusterID string
 			var userName string
 			var password string
-			var userRole string
+			var userRole []string
 			var userPrefix string
 			var customRoles []string
 			if opts.interactive {
@@ -139,10 +139,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cluster.ID
 				userPrefix = cluster.UserPrefix
 
-				userRole, err = cloud.GetSelectedBuiltinRole()
+				uRole, err := cloud.GetSelectedBuiltinRole()
 				if err != nil {
 					return err
 				}
+				userRole = append(userRole, uRole)
 
 				// variables for input
 				fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following options"))
@@ -186,13 +187,13 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 				password = pw
 
-				uRole, err := cmd.Flags().GetString(flag.UserRole)
+				uRole, err := cmd.Flags().GetStringSlice(flag.UserRole)
 				if err != nil {
 					return errors.Trace(err)
 				}
 				userRole = uRole
 			}
-			// generate the built-in role
+
 			builtinRole, customRoles, err := getBuiltinRoleAndCustomRoles(userRole)
 			if err != nil {
 				return errors.Trace(err)
@@ -226,7 +227,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	CreateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
 	CreateCmd.Flags().StringP(flag.User, flag.UserShort, "", "The name of the SQL user.")
 	CreateCmd.Flags().StringP(flag.Password, "", "", "The password of the SQL user.")
-	CreateCmd.Flags().StringP(flag.UserRole, "", "", "The role of the SQL user.")
+	CreateCmd.Flags().StringSliceP(flag.UserRole, "", nil, "The role(s) of the SQL user.")
 
 	return CreateCmd
 }
@@ -270,20 +271,19 @@ func getUserPrefix(ctx context.Context, d cloud.TiDBCloudClient, clusterID strin
 	return cluster.Payload.UserPrefix, nil
 }
 
-func getBuiltinRoleAndCustomRoles(userRole string) (string, []string, error) {
-	// split roles to recognize built-in roles and custom roles
-	roles := strings.Split(userRole, ",")
+func getBuiltinRoleAndCustomRoles(roles []string) (string, []string, error) {
 	builtinRole := ""
 	customRoles := make([]string, 0, len(roles))
 	for _, role := range roles {
+		role = strings.TrimSpace(role)
 		if util.IsBuiltinRole(role) {
 			if builtinRole == "" {
 				switch role {
-				case util.ADMIN_ROLE, util.ADMIN_DISPLAY:
+				case util.ADMIN_ROLE:
 					builtinRole = util.ADMIN_ROLE
-				case util.READWRITE_ROLE, util.READWRITE_DISPLAY:
+				case util.READWRITE_ROLE:
 					builtinRole = util.READWRITE_ROLE
-				case util.READONLY_ROLE, util.READONLY_DISPLAY:
+				case util.READONLY_ROLE:
 					builtinRole = util.READONLY_ROLE
 				}
 			} else {

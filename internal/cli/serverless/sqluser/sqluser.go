@@ -30,6 +30,7 @@ func SQLUserCmd(h *internal.Helper) *cobra.Command {
 	SQLUserCmd.AddCommand(ListCmd(h))
 	SQLUserCmd.AddCommand(CreateCmd(h))
 	SQLUserCmd.AddCommand(DeleteCmd(h))
+	SQLUserCmd.AddCommand(UpdateCmd(h))
 
 	return SQLUserCmd
 }

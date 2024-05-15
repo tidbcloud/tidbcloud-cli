@@ -28,11 +28,5 @@ const (
 )
 
 const (
-	ADMIN_DISPLAY     = "Database Admin"
-	READWRITE_DISPLAY = "Database Read-Write"
-	READONLY_DISPLAY  = "Database Read-Only"
-)
-
-const (
 	MYSQLNATIVEPASSWORD = "mysql_native_password"
 )

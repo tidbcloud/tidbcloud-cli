@@ -22,4 +22,5 @@ Manage cluster SQL users
 * [ticloud serverless sql-user create](ticloud_serverless_sql-user_create.md)	 - Create a SQL user
 * [ticloud serverless sql-user delete](ticloud_serverless_sql-user_delete.md)	 - Delete a SQL user
 * [ticloud serverless sql-user list](ticloud_serverless_sql-user_list.md)	 - List all accessible SQL users
+* [ticloud serverless sql-user update](ticloud_serverless_sql-user_update.md)	 - Update a SQL user
 
