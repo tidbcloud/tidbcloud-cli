@@ -17,7 +17,6 @@ package sqluser
 import (
 	"fmt"
 	"slices"
-	"strings"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -141,7 +140,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				userName = user
 
 				// variables for input
-				fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following update options"))
+				fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following update options, required at least one field"))
 
 				p := tea.NewProgram(initialUpdateInputModel())
 				inputModel, err := p.Run()
@@ -155,10 +154,9 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				password = inputModel.(ui.TextInputModel).Inputs[updateSQLUserField[flag.Password]].Value()
 				inputUserRole := inputModel.(ui.TextInputModel).Inputs[updateSQLUserField[flag.UserRole]].Value()
 
-				if inputUserRole == "" {
-					userRole = nil
-				} else {
-					userRole = strings.Split(inputUserRole, ",")
+				userRole, err = util.StringSliceConv(inputUserRole)
+				if err != nil {
+					return errors.Trace(err)
 				}
 
 				if password == "" && len(userRole) == 0 {

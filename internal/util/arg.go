@@ -15,6 +15,7 @@
 package util
 
 import (
+	"encoding/csv"
 	"fmt"
 	"strings"
 
@@ -38,4 +39,21 @@ func RequiredArgs(reqArgs ...string) cobra.PositionalArgs {
 
 		return fmt.Errorf("missing %s \n\n%s", a, cmd.UsageString())
 	}
+}
+
+func StringSliceConv(sval string) ([]string, error) {
+	// An empty string would cause a slice with one (empty) string
+	if len(sval) == 0 {
+		return []string{}, nil
+	}
+	return readAsCSV(sval)
+}
+
+func readAsCSV(val string) ([]string, error) {
+	if val == "" {
+		return []string{}, nil
+	}
+	stringReader := strings.NewReader(val)
+	csvReader := csv.NewReader(stringReader)
+	return csvReader.Read()
 }
