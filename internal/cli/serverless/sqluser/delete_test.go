@@ -64,9 +64,6 @@ func (suite *DeleteSQLUserSuite) TestDeleteSQLUserArgs() {
 	userNamePrefix := "4TGJD6zA3Nn2333"
 	fullUserName := fmt.Sprintf("%s.%s", userNamePrefix, userName)
 
-	// deleteSQLUserBody := &iamModel.APICreateSQLUserReq{
-	// 	UserName: userName,
-	// }
 	suite.mockClient.On("DeleteSQLUser", iamApi.NewDeleteV1beta1ClustersClusterIDSQLUsersUserNameParams().
 		WithClusterID(clusterID).WithUserName(fullUserName).WithContext(ctx)).
 		Return(&iamApi.DeleteV1beta1ClustersClusterIDSQLUsersUserNameOK{}, nil)

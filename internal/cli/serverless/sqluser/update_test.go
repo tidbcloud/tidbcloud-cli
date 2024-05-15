@@ -38,25 +38,13 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-const getSQLUserResultStr = `{
-	"authMethod": "mysql_native_password",
-	"builtinRole": "role_admin",
-	"customRoles": ["my_role"],
-	"userName": "4TGJD6zA3Nn2333.test"
-}`
-
-const getClusterResultStr = `{
-	"clusterID": "12345",
-	"userPrefix": "4TGJD6zA3Nn2333"
-}`
-
-type CreateSQLUserSuite struct {
+type UpdateSQLUserSuite struct {
 	suite.Suite
 	h          *internal.Helper
 	mockClient *mock.TiDBCloudClient
 }
 
-func (suite *CreateSQLUserSuite) SetupTest() {
+func (suite *UpdateSQLUserSuite) SetupTest() {
 	if err := os.Setenv("NO_COLOR", "true"); err != nil {
 		suite.T().Error(err)
 	}
@@ -72,37 +60,32 @@ func (suite *CreateSQLUserSuite) SetupTest() {
 	}
 }
 
-func (suite *CreateSQLUserSuite) TestCreateSQLUserArgs() {
+func (suite *UpdateSQLUserSuite) TestUpdateSQLUserArgs() {
 	assert := require.New(suite.T())
 	ctx := context.Background()
 
 	clusterID := "12345"
 	userName := "test"
 	builtinRole := util.ADMIN_ROLE
-	customRole := []string{"my_role"}
+	customRole := []string{"my_role", "my_role2"}
 	password := "123"
 	userNamePrefix := "4TGJD6zA3Nn2333"
+	nonExistRole := "non-exist-role"
 	fullUserName := fmt.Sprintf("%s.%s", userNamePrefix, userName)
 	customRoleStr := strings.Join(customRole, ",")
 	roleStr := fmt.Sprintf("%s,%s", builtinRole, customRoleStr)
 
-	createSQLUserBody := &iamModel.APICreateSQLUserReq{
-		UserName:    userName,
-		BuiltinRole: builtinRole,
-		CustomRoles: customRole,
-		Password:    password,
-		AuthMethod:  util.MYSQLNATIVEPASSWORD,
-		AutoPrefix:  true,
-	}
 	body := &iamModel.APISQLUser{}
 	err := json.Unmarshal([]byte(getSQLUserResultStr), body)
 	assert.Nil(err)
-	result := &iamApi.PostV1beta1ClustersClusterIDSQLUsersOK{
+	result := &iamApi.GetV1beta1ClustersClusterIDSQLUsersUserNameOK{
 		Payload: body,
 	}
 
-	suite.mockClient.On("CreateSQLUser", iamApi.NewPostV1beta1ClustersClusterIDSQLUsersParams().
-		WithClusterID(clusterID).WithSQLUser(createSQLUserBody).WithContext(ctx)).
+	suite.mockClient.On("GetSQLUser", iamApi.NewGetV1beta1ClustersClusterIDSQLUsersUserNameParams().
+		WithClusterID(clusterID).
+		WithUserName(fullUserName).
+		WithContext(ctx)).
 		Return(result, nil)
 
 	clusterBody := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{}
@@ -115,6 +98,19 @@ func (suite *CreateSQLUserSuite) TestCreateSQLUserArgs() {
 		WithClusterID(clusterID).WithContext(ctx)).
 		Return(res, nil)
 
+	updateBody := &iamModel.APIUpdateSQLUserReq{
+		BuiltinRole: builtinRole,
+		CustomRoles: customRole,
+		Password:    password,
+	}
+
+	suite.mockClient.On("UpdateSQLUser", iamApi.NewPatchV1beta1ClustersClusterIDSQLUsersUserNameParams().
+		WithClusterID(clusterID).
+		WithUserName(fullUserName).
+		WithSQLUser(updateBody).
+		WithContext(ctx)).
+		Return(&iamApi.PatchV1beta1ClustersClusterIDSQLUsersUserNameOK{}, nil)
+
 	tests := []struct {
 		name         string
 		args         []string
@@ -123,20 +119,35 @@ func (suite *CreateSQLUserSuite) TestCreateSQLUserArgs() {
 		stderrString string
 	}{
 		{
-			name:         "delete SQL user success",
+			name:         "update SQL user success",
 			args:         []string{"--cluster-id", clusterID, "--user", userName, "--password", password, "--role", roleStr},
-			stdoutString: fmt.Sprintf("SQL user %s is created\n", fullUserName),
+			stdoutString: fmt.Sprintf("SQL user %s is updated\n", fullUserName),
 		},
 		{
-			name: "multi built-in roles",
-			args: []string{"--cluster-id", clusterID, "--user", userName, "--password", password, "--role", fmt.Sprintf("%s,%s", util.ADMIN_ROLE, util.READONLY_ROLE)},
-			err:  errors.New("only one built-in role is allowed"),
+			name: "no SQL user attribute",
+			args: []string{"--cluster-id", clusterID, "--user", userName},
+			err:  errors.New("at least one of the flags in the group [password role add-role delete-role] is required"),
+		},
+		{
+			name: "multi role flags",
+			args: []string{"--cluster-id", clusterID, "--user", userName, "--role", roleStr, "--delete-role", roleStr},
+			err:  errors.New("if any flags in the group [role add-role delete-role] are set none of the others can be; [delete-role role] were all set"),
+		},
+		{
+			name: "delete non-exist role",
+			args: []string{"--cluster-id", clusterID, "--user", userName, "--delete-role", nonExistRole},
+			err:  errors.New(fmt.Sprintf("role %s doesn't exist in the SQL user", nonExistRole)),
+		},
+		{
+			name: "add built-in role to user with built-in role",
+			args: []string{"--cluster-id", clusterID, "--user", userName, "--add-role", builtinRole},
+			err:  errors.New("built-in role already exists in the SQL user"),
 		},
 	}
 
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
-			cmd := CreateCmd(suite.h)
+			cmd := UpdateCmd(suite.h)
 			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
@@ -157,6 +168,6 @@ func (suite *CreateSQLUserSuite) TestCreateSQLUserArgs() {
 	}
 }
 
-func TestCreateSQLUserSuite(t *testing.T) {
-	suite.Run(t, new(CreateSQLUserSuite))
+func TestUpdateSQLUserSuite(t *testing.T) {
+	suite.Run(t, new(UpdateSQLUserSuite))
 }

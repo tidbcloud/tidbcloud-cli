@@ -1244,6 +1244,43 @@ func (_m *TiDBCloudClient) StartUpload(params *import_service.ImportServiceStart
 	return r0, r1
 }
 
+// UpdateSQLUser provides a mock function with given fields: params, opts
+func (_m *TiDBCloudClient) UpdateSQLUser(params *account.PatchV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...account.ClientOption) (*account.PatchV1beta1ClustersClusterIDSQLUsersUserNameOK, error) {
+	_va := make([]interface{}, len(opts))
+	for _i := range opts {
+		_va[_i] = opts[_i]
+	}
+	var _ca []interface{}
+	_ca = append(_ca, params)
+	_ca = append(_ca, _va...)
+	ret := _m.Called(_ca...)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateSQLUser")
+	}
+
+	var r0 *account.PatchV1beta1ClustersClusterIDSQLUsersUserNameOK
+	var r1 error
+	if rf, ok := ret.Get(0).(func(*account.PatchV1beta1ClustersClusterIDSQLUsersUserNameParams, ...account.ClientOption) (*account.PatchV1beta1ClustersClusterIDSQLUsersUserNameOK, error)); ok {
+		return rf(params, opts...)
+	}
+	if rf, ok := ret.Get(0).(func(*account.PatchV1beta1ClustersClusterIDSQLUsersUserNameParams, ...account.ClientOption) *account.PatchV1beta1ClustersClusterIDSQLUsersUserNameOK); ok {
+		r0 = rf(params, opts...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*account.PatchV1beta1ClustersClusterIDSQLUsersUserNameOK)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(*account.PatchV1beta1ClustersClusterIDSQLUsersUserNameParams, ...account.ClientOption) error); ok {
+		r1 = rf(params, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // NewTiDBCloudClient creates a new instance of TiDBCloudClient. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewTiDBCloudClient(t interface {
