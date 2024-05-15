@@ -17,22 +17,22 @@ package export
 import (
 	"encoding/csv"
 	"fmt"
-	"strings"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
-
-	"tidbcloud-cli/internal"
+	"strings"
 	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
 	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
 	exportModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/models"
+
+	"tidbcloud-cli/internal"
+	"tidbcloud-cli/internal/flag"
+	"tidbcloud-cli/internal/ui"
+	"tidbcloud-cli/internal/util"
 )
 
 type TargetType string
@@ -130,9 +130,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   Export all data with s3 type in non-interactive mode:
   $ %[1]s serverless export create -c <cluster-id> --s3.uri <s3-uri> --s3.access-key-id <access-key-id> --s3.secret-access-key <secret-access-key>
 
-  Export <test,>.<t1> and <"test>.<t1> in non-interactive mode:
-  $ %[1]s serverless export create -c <cluster-id> --filter.table.patterns '"test1,.t1","""test.t1"'`,
-			config.CliName),
+  Export %[2]stest,%[2]s.%[2]st1%[2]s and %[2]s"test%[2]s.%[2]st1%[2]s in non-interactive mode:
+		$ %[1]s serverless export create -c <cluster-id> --filter.table.patterns '"%[2]stest1,%[2]s.t1","%[2]s""test%[2]s.t1"'`,
+			config.CliName, "`"),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
@@ -321,6 +321,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					},
 				}
 			}
+
 			resp, err := d.CreateExport(params)
 			if err != nil {
 				return errors.Trace(err)
@@ -503,7 +504,7 @@ func initialFilterInputModel(filterType FilterType) ui.TextInputModel {
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
 		case flag.TableFilter:
-			t.Placeholder = "Table filter patterns. Example: \"test1,.t1\",\"\"\"test.t1\" means export `test, `.`t1` and `\"test`.`t1`."
+			t.Placeholder = "Table filter patterns. Example: \"`test1,`.t1\",\"`\"\"test`.t1\" means export `test,`.`t1` and `\"test`.`t1`."
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
