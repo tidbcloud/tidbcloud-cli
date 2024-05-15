@@ -62,8 +62,8 @@ var FilterSQLInputFields = map[string]int{
 }
 
 var FilterTableInputFields = map[string]int{
-	flag.TablePatterns: 0,
-	flag.TableWhere:    1,
+	flag.TableFilter: 0,
+	flag.TableWhere:  1,
 }
 
 type CreateOpts struct {
@@ -80,7 +80,7 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 		flag.S3SecretAccessKey,
 		flag.Compression,
 		flag.SQL,
-		flag.TablePatterns,
+		flag.TableFilter,
 		flag.TableWhere,
 	}
 }
@@ -208,7 +208,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return err
 					}
 					// TODO input slice
-					patternString := filterInputModel.(ui.TextInputModel).Inputs[FilterTableInputFields[flag.TablePatterns]].Value()
+					patternString := filterInputModel.(ui.TextInputModel).Inputs[FilterTableInputFields[flag.TableFilter]].Value()
 					patterns, err = stringSliceConv(patternString)
 					if err != nil {
 						return err
@@ -283,7 +283,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				patterns, err = cmd.Flags().GetStringSlice(flag.TablePatterns)
+				patterns, err = cmd.Flags().GetStringSlice(flag.TableFilter)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -340,9 +340,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3. Required when target type is S3.")
 	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3. Required when target type is S3.")
 	createCmd.Flags().String(flag.Compression, "GZIP", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"].")
-	createCmd.Flags().StringSlice(flag.TablePatterns, nil, "Filter the exported table with table filter patterns. See https://docs.pingcap.com/tidb/stable/table-filter to learn table filters")
+	createCmd.Flags().StringSlice(flag.TableFilter, nil, "Filter the exported table with table filter patterns. See https://docs.pingcap.com/tidb/stable/table-filter to learn table filters")
 	createCmd.Flags().String(flag.TableWhere, "", "Filter the exported table with the where condition")
 	createCmd.Flags().String(flag.SQL, "", "Filter the exported data with SQL SELECT statement")
+	createCmd.MarkFlagsMutuallyExclusive(flag.TableFilter, flag.SQL)
+	createCmd.MarkFlagsMutuallyExclusive(flag.TableWhere, flag.SQL)
 	return createCmd
 }
 
@@ -500,7 +502,7 @@ func initialFilterInputModel(filterType FilterType) ui.TextInputModel {
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
-		case flag.TablePatterns:
+		case flag.TableFilter:
 			t.Placeholder = "Table filter patterns. Example: \"test1,.t1\",\"\"\"test.t1\" means export `test, `.`t1` and `\"test`.`t1`."
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
