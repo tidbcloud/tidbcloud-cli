@@ -17,7 +17,6 @@ package ui
 import (
 	"fmt"
 	"os"
-	"strings"
 	"sync"
 	"time"
 
@@ -253,23 +252,12 @@ func (m *ProcessDownloadModel) consume(jobs <-chan *FileJob) {
 			}
 			defer resp.Body.Close()
 
-			// create file
-			file, err := util.CreateFile(m.outputPath, job.name)
-			if err != nil {
-				if strings.Contains(err.Error(), "file already exists") {
-					m.sendMsg(ResultMsg{job.id, err, Skipped})
-				} else {
-					m.sendMsg(ResultMsg{job.id, err, Failed})
-				}
-				return
-			}
-			defer file.Close()
-
 			// create progress writer
 			pw := &progressWriter{
-				id:     job.id,
-				file:   file,
-				reader: resp.Body,
+				id:       job.id,
+				fileName: job.name,
+				path:     m.outputPath,
+				reader:   resp.Body,
 				onResult: func(id int, err error, status JobStatus) {
 					m.sendMsg(ResultMsg{id: id, err: err, status: status})
 				},

@@ -71,6 +71,41 @@ func CreateFile(path, fileName string) (*os.File, error) {
 	return file, nil
 }
 
+// CreateTempFile create a temp file if it does not exist
+func CreateTempFile(path, fileName string) (*os.File, error) {
+	// check the original file
+	filePath := filepath.Join(path, fileName)
+	if _, err := os.Stat(filePath); err == nil {
+		return nil, fmt.Errorf("file already exists")
+	}
+	// try to delete the temp file if it exists
+	tempFile := filepath.Join(path, fileName+".tmp")
+	if _, err := os.Stat(filePath); err == nil {
+		err = DeleteFile(path, fileName+".tmp")
+		if err != nil {
+			return nil, err
+		}
+	}
+	// create the temp file
+	file, err := os.Create(tempFile)
+	if err != nil {
+		return nil, err
+	}
+	return file, nil
+}
+
+func RenameFile(path, oldFileName, newFileName string) error {
+	oldFilePath := filepath.Join(path, oldFileName)
+	newFilePath := filepath.Join(path, newFileName)
+
+	return os.Rename(oldFilePath, newFilePath)
+}
+
+func DeleteFile(path, fileName string) error {
+	filePath := filepath.Join(path, fileName)
+	return os.RemoveAll(filePath)
+}
+
 // CreateFolder creates a folder if it does not exist
 func CreateFolder(path string) error {
 	if path == "" {
