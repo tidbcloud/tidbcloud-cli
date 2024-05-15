@@ -15,7 +15,6 @@
 package export
 
 import (
-	"encoding/csv"
 	"fmt"
 
 	"github.com/charmbracelet/bubbles/textinput"
@@ -23,7 +22,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
-	"strings"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/service/cloud"
 	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
@@ -209,7 +207,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 					// TODO input slice
 					patternString := filterInputModel.(ui.TextInputModel).Inputs[FilterTableInputFields[flag.TableFilter]].Value()
-					patterns, err = stringSliceConv(patternString)
+					patterns, err = util.StringSliceConv(patternString)
 					if err != nil {
 						return err
 					}
@@ -321,7 +319,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					},
 				}
 			}
-
 			resp, err := d.CreateExport(params)
 			if err != nil {
 				return errors.Trace(err)
@@ -526,21 +523,4 @@ func GetFilterInput(filterType FilterType) (tea.Model, error) {
 		return nil, util.InterruptError
 	}
 	return inputModel, nil
-}
-
-func stringSliceConv(sval string) ([]string, error) {
-	// An empty string would cause a slice with one (empty) string
-	if len(sval) == 0 {
-		return []string{}, nil
-	}
-	return readAsCSV(sval)
-}
-
-func readAsCSV(val string) ([]string, error) {
-	if val == "" {
-		return []string{}, nil
-	}
-	stringReader := strings.NewReader(val)
-	csvReader := csv.NewReader(stringReader)
-	return csvReader.Read()
 }
