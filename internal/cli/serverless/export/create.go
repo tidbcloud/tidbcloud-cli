@@ -506,7 +506,7 @@ func initialFilterInputModel(filterType FilterType) ui.TextInputModel {
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
 		case flag.TableWhere:
-			t.Placeholder = "Where condition"
+			t.Placeholder = "Where condition (optional)"
 		}
 		m.Inputs[v] = t
 	}
