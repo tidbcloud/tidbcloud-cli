@@ -140,7 +140,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				userName = user
 
 				// variables for input
-				fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following update options, required at least one field"))
+				fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following update options, require at least one field"))
 
 				p := tea.NewProgram(initialUpdateInputModel())
 				inputModel, err := p.Run()
