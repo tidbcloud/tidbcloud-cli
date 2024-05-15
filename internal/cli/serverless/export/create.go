@@ -419,7 +419,7 @@ type FilterType string
 
 const (
 	FilterNone  FilterType = "None (export all data without filter)"
-	FilterTable FilterType = "Table (export specify database or table using table filter)"
+	FilterTable FilterType = "Table (export specfic database or table using table filter)"
 	FilterSQL   FilterType = "SQL (export data using SELECT SQL statement)"
 )
 
