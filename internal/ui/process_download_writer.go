@@ -16,7 +16,6 @@ package ui
 
 import (
 	"io"
-	"os"
 	"strings"
 	"tidbcloud-cli/internal/util"
 )
@@ -24,7 +23,6 @@ import (
 type progressWriter struct {
 	id             int
 	downloadedSize int
-	file           *os.File
 	reader         io.Reader
 	onResult       func(int, error, JobStatus)
 	path           string
@@ -51,7 +49,7 @@ func (pw *progressWriter) Start() {
 		return
 	}
 	defer tempFile.Close()
-	_, err = io.Copy(pw.file, pw)
+	_, err = io.Copy(tempFile, pw)
 	if err != nil {
 		_ = util.DeleteFile(pw.path, tempFile.Name())
 		pw.onResult(pw.id, err, Failed)
