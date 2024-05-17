@@ -16,6 +16,8 @@ package export
 
 import (
 	"fmt"
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -111,6 +113,7 @@ func (c *CreateOpts) MarkInteractive(cmd *cobra.Command) error {
 }
 
 func CreateCmd(h *internal.Helper) *cobra.Command {
+	var force bool
 	opts := CreateOpts{
 		interactive: true,
 	}
@@ -129,7 +132,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless export create -c <cluster-id> --s3.uri <s3-uri> --s3.access-key-id <access-key-id> --s3.secret-access-key <secret-access-key>
 
   Export %[2]stest,%[2]s.%[2]st1%[2]s and %[2]s"test%[2]s.%[2]st1%[2]s in non-interactive mode:
-		$ %[1]s serverless export create -c <cluster-id> --filter.table.patterns '"%[2]stest1,%[2]s.t1","%[2]s""test%[2]s.t1"'`,
+  $ %[1]s serverless export create -c <cluster-id> --filter '"%[2]stest1,%[2]s.t1","%[2]s""test%[2]s.t1"'`,
 			config.CliName, "`"),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
@@ -287,6 +290,29 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
+			if !opts.interactive && sql == "" && len(patterns) == 0 && !force {
+				if !h.IOStreams.CanPrompt {
+					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to create export")
+				}
+
+				confirmationMessage := fmt.Sprintf("%s %s %s %s", color.BlueString("You will export the whole cluster."), color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to continue:"))
+				prompt := &survey.Input{
+					Message: confirmationMessage,
+				}
+				var userInput string
+				err := survey.AskOne(prompt, &userInput)
+				if err != nil {
+					if err == terminal.InterruptErr {
+						return util.InterruptError
+					} else {
+						return err
+					}
+				}
+				if userInput != confirmed {
+					return errors.New("incorrect confirm string entered, skipping create")
+				}
+			}
+
 			params := exportApi.NewExportServiceCreateExportParams().WithClusterID(clusterId).WithBody(
 				exportApi.ExportServiceCreateExportBody{
 					ExportOptions: &exportModel.V1beta1ExportOptions{
@@ -341,6 +367,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().StringSlice(flag.TableFilter, nil, "Filter the exported table with table filter patterns. See https://docs.pingcap.com/tidb/stable/table-filter to learn table filters")
 	createCmd.Flags().String(flag.TableWhere, "", "Filter the exported table with the where condition")
 	createCmd.Flags().String(flag.SQL, "", "Filter the exported data with SQL SELECT statement")
+	createCmd.Flags().BoolVar(&force, flag.Force, false, "Create without confirmation. You need to confirm when you want to export the whole cluster.")
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableFilter, flag.SQL)
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableWhere, flag.SQL)
 	return createCmd
@@ -418,15 +445,15 @@ func GetSelectedCompression() (string, error) {
 type FilterType string
 
 const (
-	FilterNone  FilterType = "None (export all data without filter)"
-	FilterTable FilterType = "Table (export specfic database or table using table filter)"
+	FilterNone  FilterType = "Export all data"
+	FilterTable FilterType = "Table (export specific database or table using table filter)"
 	FilterSQL   FilterType = "SQL (export data using SELECT SQL statement)"
 )
 
 func GetSelectedFilterType() (FilterType, error) {
 	filterTypes := make([]interface{}, 0, 3)
 
-	filterTypes = append(filterTypes, FilterNone, FilterTable, FilterSQL)
+	filterTypes = append(filterTypes, FilterTable, FilterSQL, FilterNone)
 	model, err := ui.InitialSelectModel(filterTypes, "Choose the filter type")
 	if err != nil {
 		return "", errors.Trace(err)
