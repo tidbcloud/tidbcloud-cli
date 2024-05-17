@@ -446,7 +446,7 @@ type FilterType string
 
 const (
 	FilterNone  FilterType = "Export all data"
-	FilterTable FilterType = "Table (export specific database or table using table filter)"
+	FilterTable FilterType = "Table (export specific database(s) or table(s) using table filter)"
 	FilterSQL   FilterType = "SQL (export data using SELECT SQL statement)"
 )
 
