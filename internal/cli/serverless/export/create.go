@@ -131,7 +131,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   Export all data with s3 type in non-interactive mode:
   $ %[1]s serverless export create -c <cluster-id> --s3.uri <s3-uri> --s3.access-key-id <access-key-id> --s3.secret-access-key <secret-access-key>
 
-  Export %[2]stest,%[2]s.%[2]st1%[2]s and %[2]s"test%[2]s.%[2]st1%[2]s in non-interactive mode:
+  Export test.t1 and test.t2 in non-interactive mode:
+  $ %[1]s serverless export create -c <cluster-id> --filter 'test.t1,test.t2'
+
+  Export tables with special characters, for example, if you want to export %[2]stest,%[2]s.%[2]st1%[2]s and %[2]s"test%[2]s.%[2]st1%[2]s:
   $ %[1]s serverless export create -c <cluster-id> --filter '"%[2]stest1,%[2]s.t1","%[2]s""test%[2]s.t1"'`,
 			config.CliName, "`"),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -203,6 +206,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return err
 					}
 					sql = filterInputModel.(ui.TextInputModel).Inputs[FilterSQLInputFields[flag.SQL]].Value()
+					if sql == "" {
+						return errors.New("sql is empty")
+					}
 				case FilterTable:
 					filterInputModel, err := GetFilterInput(FilterTable)
 					if err != nil {
@@ -215,6 +221,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return err
 					}
 					where = filterInputModel.(ui.TextInputModel).Inputs[FilterTableInputFields[flag.TableWhere]].Value()
+					if len(patterns) == 0 && where == "" {
+						return errors.New("both patterns and where are empty")
+					}
 				}
 
 				if filterType == FilterSQL {
@@ -364,7 +373,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3. Required when target type is S3.")
 	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3. Required when target type is S3.")
 	createCmd.Flags().String(flag.Compression, "GZIP", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"].")
-	createCmd.Flags().StringSlice(flag.TableFilter, nil, "Filter the exported table with table filter patterns. See https://docs.pingcap.com/tidb/stable/table-filter to learn table filters.")
+	createCmd.Flags().StringSlice(flag.TableFilter, nil, "Filter the exported table with table filter patterns(comma separated). See https://docs.pingcap.com/tidb/stable/table-filter to learn table filter.")
 	createCmd.Flags().String(flag.TableWhere, "", "Filter the exported table with the where condition.")
 	createCmd.Flags().String(flag.SQL, "", "Filter the exported data with SQL SELECT statement.")
 	createCmd.Flags().BoolVar(&force, flag.Force, false, "Create without confirmation. You need to confirm when you want to export the whole cluster.")
@@ -528,12 +537,12 @@ func initialFilterInputModel(filterType FilterType) ui.TextInputModel {
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
 		case flag.TableFilter:
-			t.Placeholder = "Table filter patterns. Example: \"`test1,`.t1\",\"`\"\"test`.t1\" means export `test,`.`t1` and `\"test`.`t1`."
+			t.Placeholder = "Table filter patterns(comma separated). Example: test1.t1,test.*"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
 		case flag.TableWhere:
-			t.Placeholder = "Where condition (optional)"
+			t.Placeholder = "Where condition, skip it to export whole table(s)"
 		}
 		m.Inputs[v] = t
 	}
