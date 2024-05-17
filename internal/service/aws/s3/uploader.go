@@ -348,7 +348,7 @@ func (u *singerUploader) upload(r io.ReadSeeker, cleanup func()) (string, error)
 	if !resp.IsSuccess() {
 		u.fail()
 		return "", &uploadError{
-			err:      fmt.Errorf("upload failed, code:%s, reason: %s", resp.Status(), string(resp.Body())),
+			err:      fmt.Errorf("upload failed, code: %s, reason: %s", resp.Status(), string(resp.Body())),
 			uploadID: res.Payload.UploadID,
 		}
 	}
@@ -537,7 +537,7 @@ func (u *multiUploader) send(c chunk) error {
 		return err
 	}
 	if !resp.IsSuccess() {
-		return fmt.Errorf("upload failed, code:%s, reason: %s", resp.Status(), string(resp.Body()))
+		return fmt.Errorf("upload failed, code: %s, reason: %s", resp.Status(), string(resp.Body()))
 	}
 
 	var completed serverlessImportModels.V1beta1CompletePart
