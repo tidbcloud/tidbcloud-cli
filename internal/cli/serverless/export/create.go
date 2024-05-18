@@ -374,7 +374,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3. Required when target type is S3.")
 	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3. Required when target type is S3.")
 	createCmd.Flags().String(flag.Compression, "GZIP", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"].")
-	createCmd.Flags().StringSlice(flag.TableFilter, nil, "Filter the exported table with table filter patterns(comma separated). See https://docs.pingcap.com/tidb/stable/table-filter to learn table filter.")
+	createCmd.Flags().StringSlice(flag.TableFilter, nil, "Filter the exported table with table filter patterns. See https://docs.pingcap.com/tidb/stable/table-filter to learn table filter.")
 	createCmd.Flags().String(flag.TableWhere, "", "Filter the exported table with the where condition.")
 	createCmd.Flags().String(flag.SQL, "", "Filter the exported data with SQL SELECT statement.")
 	createCmd.Flags().BoolVar(&force, flag.Force, false, "Create without confirmation. You need to confirm when you want to export the whole cluster.")
