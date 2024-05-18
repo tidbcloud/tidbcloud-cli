@@ -16,9 +16,9 @@ package export
 
 import (
 	"fmt"
+
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
-
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
@@ -210,6 +210,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.New("sql is empty")
 					}
 				case FilterTable:
+					fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following options, require at least one field"))
 					filterInputModel, err := GetFilterInput(FilterTable)
 					if err != nil {
 						return err
@@ -542,7 +543,7 @@ func initialFilterInputModel(filterType FilterType) ui.TextInputModel {
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
 		case flag.TableWhere:
-			t.Placeholder = "Where condition, skip it to export whole table(s)"
+			t.Placeholder = "Where condition. Example: id > 10"
 		}
 		m.Inputs[v] = t
 	}
