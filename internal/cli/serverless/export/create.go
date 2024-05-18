@@ -17,6 +17,8 @@ package export
 import (
 	"fmt"
 
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
@@ -55,9 +57,13 @@ var S3InputFields = map[string]int{
 	flag.S3SecretAccessKey: 2,
 }
 
-var FilterInputFields = map[string]int{
-	flag.Database: 0,
-	flag.Table:    1,
+var FilterSQLInputFields = map[string]int{
+	flag.SQL: 0,
+}
+
+var FilterTableInputFields = map[string]int{
+	flag.TableFilter: 0,
+	flag.TableWhere:  1,
 }
 
 type CreateOpts struct {
@@ -67,14 +73,15 @@ type CreateOpts struct {
 func (c CreateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.Database,
-		flag.Table,
 		flag.FileType,
 		flag.TargetType,
 		flag.S3URI,
 		flag.S3AccessKeyID,
 		flag.S3SecretAccessKey,
 		flag.Compression,
+		flag.SQL,
+		flag.TableFilter,
+		flag.TableWhere,
 	}
 }
 
@@ -106,6 +113,7 @@ func (c *CreateOpts) MarkInteractive(cmd *cobra.Command) error {
 }
 
 func CreateCmd(h *internal.Helper) *cobra.Command {
+	var force bool
 	opts := CreateOpts{
 		interactive: true,
 	}
@@ -117,12 +125,18 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		Example: fmt.Sprintf(`  Create an export in interactive mode:
   $ %[1]s serverless export create
 
-  Create an export with local type in non-interactive mode:
-  $ %[1]s serverless export create -c <cluster-id> --database <database> --table <table>
+  Export all data with local type in non-interactive mode:
+  $ %[1]s serverless export create -c <cluster-id>
 
-  Create an export with s3 type in non-interactive mode:
-  $ %[1]s serverless export create -c <cluster-id> --s3.uri <s3-uri> --s3.access-key-id <access-key-id> --s3.secret-access-key <secret-access-key>`,
-			config.CliName),
+  Export all data with s3 type in non-interactive mode:
+  $ %[1]s serverless export create -c <cluster-id> --s3.uri <s3-uri> --s3.access-key-id <access-key-id> --s3.secret-access-key <secret-access-key>
+
+  Export test.t1 and test.t2 in non-interactive mode:
+  $ %[1]s serverless export create -c <cluster-id> --filter 'test.t1,test.t2'
+
+  Export tables with special characters, for example, if you want to export %[2]stest,%[2]s.%[2]st1%[2]s and %[2]s"test%[2]s.%[2]st1%[2]s:
+  $ %[1]s serverless export create -c <cluster-id> --filter '"%[2]stest1,%[2]s.t1","%[2]s""test%[2]s.t1"'`,
+			config.CliName, "`"),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
@@ -133,8 +147,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			var clusterId string
-			var s3URI, accessKeyID, secretAccessKey, database, table, targetType, fileType, compression string
+			var s3URI, accessKeyID, secretAccessKey, targetType, fileType, compression string
+			var clusterId, sql, where string
+			var patterns []string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -179,31 +194,56 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 				}
 
-				selectedFileType, err := GetSelectedFileType()
+				filterType, err := GetSelectedFilterType()
 				if err != nil {
 					return err
 				}
-				if selectedFileType == FileTypeUnknown {
-					return errors.New("file type must be LOCAL or S3")
+				switch filterType {
+				case FilterNone:
+				case FilterSQL:
+					filterInputModel, err := GetFilterInput(FilterSQL)
+					if err != nil {
+						return err
+					}
+					sql = filterInputModel.(ui.TextInputModel).Inputs[FilterSQLInputFields[flag.SQL]].Value()
+					if sql == "" {
+						return errors.New("sql is empty")
+					}
+				case FilterTable:
+					fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following options, require at least one field"))
+					filterInputModel, err := GetFilterInput(FilterTable)
+					if err != nil {
+						return err
+					}
+					// TODO input slice
+					patternString := filterInputModel.(ui.TextInputModel).Inputs[FilterTableInputFields[flag.TableFilter]].Value()
+					patterns, err = util.StringSliceConv(patternString)
+					if err != nil {
+						return err
+					}
+					where = filterInputModel.(ui.TextInputModel).Inputs[FilterTableInputFields[flag.TableWhere]].Value()
+					if len(patterns) == 0 && where == "" {
+						return errors.New("both patterns and where are empty, require at least one field")
+					}
 				}
-				fileType = string(selectedFileType)
+
+				if filterType == FilterSQL {
+					fileType = string(FileTypeCSV)
+				} else {
+					selectedFileType, err := GetSelectedFileType()
+					if err != nil {
+						return err
+					}
+					if selectedFileType == FileTypeUnknown {
+						return errors.New("file type must be LOCAL or S3")
+					}
+					fileType = string(selectedFileType)
+				}
 
 				compression, err = GetSelectedCompression()
 				if err != nil {
 					return err
 				}
-
-				fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following options"))
-
-				filterInputModel, err := GetFilterInput(targetType)
-				if err != nil {
-					return err
-				}
-				database = filterInputModel.(ui.TextInputModel).Inputs[FilterInputFields[flag.Database]].Value()
-				if (database == "" || database == "*") && selectedTargetType == TargetTypeLOCAL {
-					return errors.New("you must specify the database when target type is LOCAL")
-				}
-				table = filterInputModel.(ui.TextInputModel).Inputs[FilterInputFields[flag.Table]].Value()
 			} else {
 				// non-interactive mode, get values from flags
 				var err error
@@ -242,28 +282,50 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.New("secretAccessKey is required when target type is S3")
 					}
 				}
-				database, err = cmd.Flags().GetString(flag.Database)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				table, err = cmd.Flags().GetString(flag.Table)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				if (database == "" || database == "*") && targetType == string(TargetTypeLOCAL) {
-					return errors.New("you must specify the database when target type is LOCAL")
-				}
 				compression, err = cmd.Flags().GetString(flag.Compression)
 				if err != nil {
 					return errors.Trace(err)
+				}
+				sql, err = cmd.Flags().GetString(flag.SQL)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				where, err = cmd.Flags().GetString(flag.TableWhere)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				patterns, err = cmd.Flags().GetStringSlice(flag.TableFilter)
+				if err != nil {
+					return errors.Trace(err)
+				}
+			}
+
+			if !opts.interactive && sql == "" && len(patterns) == 0 && !force {
+				if !h.IOStreams.CanPrompt {
+					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to create export")
+				}
+
+				confirmationMessage := fmt.Sprintf("%s %s %s %s", color.BlueString("You will export the whole cluster."), color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to continue:"))
+				prompt := &survey.Input{
+					Message: confirmationMessage,
+				}
+				var userInput string
+				err := survey.AskOne(prompt, &userInput)
+				if err != nil {
+					if err == terminal.InterruptErr {
+						return util.InterruptError
+					} else {
+						return err
+					}
+				}
+				if userInput != confirmed {
+					return errors.New("incorrect confirm string entered, skipping create")
 				}
 			}
 
 			params := exportApi.NewExportServiceCreateExportParams().WithClusterID(clusterId).WithBody(
 				exportApi.ExportServiceCreateExportBody{
 					ExportOptions: &exportModel.V1beta1ExportOptions{
-						Database: database,
-						Table:    table,
 						FileType: exportModel.V1beta1ExportOptionsFileType(fileType),
 					},
 					Target: &exportModel.V1beta1Target{
@@ -280,6 +342,19 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if compression != "" {
 				params.Body.ExportOptions.Compression = exportModel.ExportOptionsCompressionType(compression)
 			}
+			if sql != "" {
+				params.Body.ExportOptions.Filter = &exportModel.ExportOptionsFilter{
+					SQL: sql,
+				}
+			}
+			if len(patterns) > 0 || where != "" {
+				params.Body.ExportOptions.Filter = &exportModel.ExportOptionsFilter{
+					Table: &exportModel.FilterTable{
+						Where:    where,
+						Patterns: patterns,
+					},
+				}
+			}
 			resp, err := d.CreateExport(params)
 			if err != nil {
 				return errors.Trace(err)
@@ -293,14 +368,18 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster, in which the export will be created.")
-	createCmd.Flags().String(flag.Database, "*", "The database name you want to export.")
-	createCmd.Flags().String(flag.Table, "*", "The table name you want to export.")
 	createCmd.Flags().String(flag.FileType, "CSV", "The export file type. One of [\"CSV\" \"SQL\"].")
 	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export target. One of [\"LOCAL\" \"S3\"].")
 	createCmd.Flags().String(flag.S3URI, "", "The s3 uri in s3://<bucket>/<path> format. Required when target type is S3.")
 	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3. Required when target type is S3.")
 	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3. Required when target type is S3.")
 	createCmd.Flags().String(flag.Compression, "GZIP", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"].")
+	createCmd.Flags().StringSlice(flag.TableFilter, nil, "Specify the exported table(s) with table filter patterns. See https://docs.pingcap.com/tidb/stable/table-filter to learn table filter.")
+	createCmd.Flags().String(flag.TableWhere, "", "Filter the exported table(s) with the where condition.")
+	createCmd.Flags().String(flag.SQL, "", "Filter the exported data with SQL SELECT statement.")
+	createCmd.Flags().BoolVar(&force, flag.Force, false, "Create without confirmation. You need to confirm when you want to export the whole cluster.")
+	createCmd.MarkFlagsMutuallyExclusive(flag.TableFilter, flag.SQL)
+	createCmd.MarkFlagsMutuallyExclusive(flag.TableWhere, flag.SQL)
 	return createCmd
 }
 
@@ -373,6 +452,38 @@ func GetSelectedCompression() (string, error) {
 	return compression.(string), nil
 }
 
+type FilterType string
+
+const (
+	FilterNone  FilterType = "Export all data"
+	FilterTable FilterType = "Table (export specific database(s) or table(s) using table filter)"
+	FilterSQL   FilterType = "SQL (export data using SELECT SQL statement)"
+)
+
+func GetSelectedFilterType() (FilterType, error) {
+	filterTypes := make([]interface{}, 0, 3)
+
+	filterTypes = append(filterTypes, FilterTable, FilterSQL, FilterNone)
+	model, err := ui.InitialSelectModel(filterTypes, "Choose the filter type")
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+
+	p := tea.NewProgram(model)
+	fileTypeModel, err := p.Run()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := fileTypeModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	filterType := fileTypeModel.(ui.SelectModel).GetSelectedItem()
+	if filterType == nil {
+		return "", errors.New("no filter type selected")
+	}
+	return filterType.(FilterType), nil
+}
+
 func initialS3InputModel() ui.TextInputModel {
 	m := ui.TextInputModel{
 		Inputs: make([]textinput.Model, len(S3InputFields)),
@@ -407,32 +518,40 @@ func GetS3Input() (tea.Model, error) {
 	return inputModel, nil
 }
 
-func initialFilterInputModel(targetType string) ui.TextInputModel {
-	m := ui.TextInputModel{
-		Inputs: make([]textinput.Model, len(FilterInputFields)),
+func initialFilterInputModel(filterType FilterType) ui.TextInputModel {
+	var inputFields map[string]int
+	switch filterType {
+	case FilterTable:
+		inputFields = FilterTableInputFields
+	case FilterSQL:
+		inputFields = FilterSQLInputFields
 	}
-	for k, v := range FilterInputFields {
+	m := ui.TextInputModel{
+		Inputs: make([]textinput.Model, len(inputFields)),
+	}
+	for k, v := range inputFields {
 		t := textinput.New()
 		switch k {
-		case flag.Database:
-			if targetType == string(TargetTypeLOCAL) {
-				t.Placeholder = "Database Name (Required)."
-			} else {
-				t.Placeholder = "Database Name. Press Enter to skip and export all databases."
-			}
+		case flag.SQL:
+			t.Placeholder = "SELECT SQL statement"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
-		case flag.Table:
-			t.Placeholder = "Table Name. Press Enter to skip and export all tables."
+		case flag.TableFilter:
+			t.Placeholder = "Table filter patterns (comma separated). Example: test1.t1,test.*"
+			t.Focus()
+			t.PromptStyle = config.FocusedStyle
+			t.TextStyle = config.FocusedStyle
+		case flag.TableWhere:
+			t.Placeholder = "Where condition. Example: id > 10"
 		}
 		m.Inputs[v] = t
 	}
 	return m
 }
 
-func GetFilterInput(targetType string) (tea.Model, error) {
-	p := tea.NewProgram(initialFilterInputModel(targetType))
+func GetFilterInput(filterType FilterType) (tea.Model, error) {
+	p := tea.NewProgram(initialFilterInputModel(filterType))
 	inputModel, err := p.Run()
 	if err != nil {
 		return nil, errors.Trace(err)

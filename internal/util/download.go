@@ -49,7 +49,7 @@ func GetResponse(url string, debug bool) (*http.Response, error) {
 		if err != nil {
 			return nil, fmt.Errorf("receiving status of %d", resp.StatusCode)
 		}
-		return nil, fmt.Errorf("receiving status of %d. code:%s, message: %s", resp.StatusCode, v.Code, v.Message)
+		return nil, fmt.Errorf("receiving status of %d. code: %s, message: %s", resp.StatusCode, v.Code, v.Message)
 	}
 	if resp.ContentLength <= 0 {
 		resp.Body.Close()
