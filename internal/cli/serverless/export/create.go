@@ -223,7 +223,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 					where = filterInputModel.(ui.TextInputModel).Inputs[FilterTableInputFields[flag.TableWhere]].Value()
 					if len(patterns) == 0 && where == "" {
-						return errors.New("both patterns and where are empty")
+						return errors.New("both patterns and where are empty, require at least one field")
 					}
 				}
 
@@ -538,7 +538,7 @@ func initialFilterInputModel(filterType FilterType) ui.TextInputModel {
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
 		case flag.TableFilter:
-			t.Placeholder = "Table filter patterns(comma separated). Example: test1.t1,test.*"
+			t.Placeholder = "Table filter patterns (comma separated). Example: test1.t1,test.*"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
