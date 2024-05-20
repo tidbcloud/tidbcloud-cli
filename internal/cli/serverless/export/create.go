@@ -538,7 +538,7 @@ func initialFilterInputModel(filterType FilterType) ui.TextInputModel {
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
 		case flag.TableFilter:
-			t.Placeholder = "Table filter patterns (comma separated). Example: test1.t1,test.*"
+			t.Placeholder = "Table filter patterns (comma separated). Example: test.t,test1.*,`test-2`.`t-2`"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
