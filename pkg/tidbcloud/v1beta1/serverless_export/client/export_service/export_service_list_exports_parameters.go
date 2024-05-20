@@ -70,7 +70,7 @@ type ExportServiceListExportsParams struct {
 
 	/* OrderBy.
 
-	   Optional. List exports order by, separated by comma, default is ascending. Example: "foo, bar desc". Supported filed: create_time
+	   Optional. List exports order by, separated by comma, default is ascending. Example: "foo, bar desc". Supported field: create_time
 	*/
 	OrderBy *string
 

@@ -64,7 +64,7 @@
           },
           {
             "name": "orderBy",
-            "description": "Optional. List exports order by, separated by comma, default is ascending. Example: \"foo, bar desc\". Supported filed: create_time",
+            "description": "Optional. List exports order by, separated by comma, default is ascending. Example: \"foo, bar desc\". Supported field: create_time",
             "in": "query",
             "required": false,
             "type": "string"
