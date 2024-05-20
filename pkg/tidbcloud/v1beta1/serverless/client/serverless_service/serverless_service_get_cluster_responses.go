@@ -6,6 +6,7 @@ package serverless_service
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -86,11 +87,13 @@ func (o *ServerlessServiceGetClusterOK) Code() int {
 }
 
 func (o *ServerlessServiceGetClusterOK) Error() string {
-	return fmt.Sprintf("[GET /clusters/{clusterId}][%d] serverlessServiceGetClusterOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /clusters/{clusterId}][%d] serverlessServiceGetClusterOK %s", 200, payload)
 }
 
 func (o *ServerlessServiceGetClusterOK) String() string {
-	return fmt.Sprintf("[GET /clusters/{clusterId}][%d] serverlessServiceGetClusterOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /clusters/{clusterId}][%d] serverlessServiceGetClusterOK %s", 200, payload)
 }
 
 func (o *ServerlessServiceGetClusterOK) GetPayload() *models.TidbCloudOpenApiserverlessv1beta1Cluster {
@@ -158,11 +161,13 @@ func (o *ServerlessServiceGetClusterDefault) Code() int {
 }
 
 func (o *ServerlessServiceGetClusterDefault) Error() string {
-	return fmt.Sprintf("[GET /clusters/{clusterId}][%d] ServerlessService_GetCluster default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /clusters/{clusterId}][%d] ServerlessService_GetCluster default %s", o._statusCode, payload)
 }
 
 func (o *ServerlessServiceGetClusterDefault) String() string {
-	return fmt.Sprintf("[GET /clusters/{clusterId}][%d] ServerlessService_GetCluster default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /clusters/{clusterId}][%d] ServerlessService_GetCluster default %s", o._statusCode, payload)
 }
 
 func (o *ServerlessServiceGetClusterDefault) GetPayload() *models.GooglerpcStatus {

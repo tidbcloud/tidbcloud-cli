@@ -6,6 +6,7 @@ package export_service
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -86,11 +87,13 @@ func (o *ExportServiceDownloadExportOK) Code() int {
 }
 
 func (o *ExportServiceDownloadExportOK) Error() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:download][%d] exportServiceDownloadExportOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:download][%d] exportServiceDownloadExportOK %s", 200, payload)
 }
 
 func (o *ExportServiceDownloadExportOK) String() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:download][%d] exportServiceDownloadExportOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:download][%d] exportServiceDownloadExportOK %s", 200, payload)
 }
 
 func (o *ExportServiceDownloadExportOK) GetPayload() *models.V1beta1DownloadExportsResponse {
@@ -158,11 +161,13 @@ func (o *ExportServiceDownloadExportDefault) Code() int {
 }
 
 func (o *ExportServiceDownloadExportDefault) Error() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:download][%d] ExportService_DownloadExport default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:download][%d] ExportService_DownloadExport default %s", o._statusCode, payload)
 }
 
 func (o *ExportServiceDownloadExportDefault) String() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:download][%d] ExportService_DownloadExport default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:download][%d] ExportService_DownloadExport default %s", o._statusCode, payload)
 }
 
 func (o *ExportServiceDownloadExportDefault) GetPayload() *models.RPCStatus {

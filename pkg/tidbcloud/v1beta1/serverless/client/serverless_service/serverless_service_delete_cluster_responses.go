@@ -6,6 +6,7 @@ package serverless_service
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -86,11 +87,13 @@ func (o *ServerlessServiceDeleteClusterOK) Code() int {
 }
 
 func (o *ServerlessServiceDeleteClusterOK) Error() string {
-	return fmt.Sprintf("[DELETE /clusters/{clusterId}][%d] serverlessServiceDeleteClusterOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[DELETE /clusters/{clusterId}][%d] serverlessServiceDeleteClusterOK %s", 200, payload)
 }
 
 func (o *ServerlessServiceDeleteClusterOK) String() string {
-	return fmt.Sprintf("[DELETE /clusters/{clusterId}][%d] serverlessServiceDeleteClusterOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[DELETE /clusters/{clusterId}][%d] serverlessServiceDeleteClusterOK %s", 200, payload)
 }
 
 func (o *ServerlessServiceDeleteClusterOK) GetPayload() *models.TidbCloudOpenApiserverlessv1beta1Cluster {
@@ -158,11 +161,13 @@ func (o *ServerlessServiceDeleteClusterDefault) Code() int {
 }
 
 func (o *ServerlessServiceDeleteClusterDefault) Error() string {
-	return fmt.Sprintf("[DELETE /clusters/{clusterId}][%d] ServerlessService_DeleteCluster default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[DELETE /clusters/{clusterId}][%d] ServerlessService_DeleteCluster default %s", o._statusCode, payload)
 }
 
 func (o *ServerlessServiceDeleteClusterDefault) String() string {
-	return fmt.Sprintf("[DELETE /clusters/{clusterId}][%d] ServerlessService_DeleteCluster default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[DELETE /clusters/{clusterId}][%d] ServerlessService_DeleteCluster default %s", o._statusCode, payload)
 }
 
 func (o *ServerlessServiceDeleteClusterDefault) GetPayload() *models.GooglerpcStatus {

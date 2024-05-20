@@ -6,6 +6,7 @@ package import_service
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -86,11 +87,13 @@ func (o *ImportServiceListImportsOK) Code() int {
 }
 
 func (o *ImportServiceListImportsOK) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/imports][%d] importServiceListImportsOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/imports][%d] importServiceListImportsOK %s", 200, payload)
 }
 
 func (o *ImportServiceListImportsOK) String() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/imports][%d] importServiceListImportsOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/imports][%d] importServiceListImportsOK %s", 200, payload)
 }
 
 func (o *ImportServiceListImportsOK) GetPayload() *models.V1beta1ListImportsResp {
@@ -158,11 +161,13 @@ func (o *ImportServiceListImportsDefault) Code() int {
 }
 
 func (o *ImportServiceListImportsDefault) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/imports][%d] ImportService_ListImports default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/imports][%d] ImportService_ListImports default %s", o._statusCode, payload)
 }
 
 func (o *ImportServiceListImportsDefault) String() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/imports][%d] ImportService_ListImports default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/imports][%d] ImportService_ListImports default %s", o._statusCode, payload)
 }
 
 func (o *ImportServiceListImportsDefault) GetPayload() *models.RPCStatus {

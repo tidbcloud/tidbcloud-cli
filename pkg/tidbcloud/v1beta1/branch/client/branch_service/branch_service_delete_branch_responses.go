@@ -6,6 +6,7 @@ package branch_service
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -86,11 +87,13 @@ func (o *BranchServiceDeleteBranchOK) Code() int {
 }
 
 func (o *BranchServiceDeleteBranchOK) Error() string {
-	return fmt.Sprintf("[DELETE /v1beta1/clusters/{clusterId}/branches/{branchId}][%d] branchServiceDeleteBranchOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[DELETE /v1beta1/clusters/{clusterId}/branches/{branchId}][%d] branchServiceDeleteBranchOK %s", 200, payload)
 }
 
 func (o *BranchServiceDeleteBranchOK) String() string {
-	return fmt.Sprintf("[DELETE /v1beta1/clusters/{clusterId}/branches/{branchId}][%d] branchServiceDeleteBranchOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[DELETE /v1beta1/clusters/{clusterId}/branches/{branchId}][%d] branchServiceDeleteBranchOK %s", 200, payload)
 }
 
 func (o *BranchServiceDeleteBranchOK) GetPayload() *models.V1beta1Branch {
@@ -158,11 +161,13 @@ func (o *BranchServiceDeleteBranchDefault) Code() int {
 }
 
 func (o *BranchServiceDeleteBranchDefault) Error() string {
-	return fmt.Sprintf("[DELETE /v1beta1/clusters/{clusterId}/branches/{branchId}][%d] BranchService_DeleteBranch default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[DELETE /v1beta1/clusters/{clusterId}/branches/{branchId}][%d] BranchService_DeleteBranch default %s", o._statusCode, payload)
 }
 
 func (o *BranchServiceDeleteBranchDefault) String() string {
-	return fmt.Sprintf("[DELETE /v1beta1/clusters/{clusterId}/branches/{branchId}][%d] BranchService_DeleteBranch default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[DELETE /v1beta1/clusters/{clusterId}/branches/{branchId}][%d] BranchService_DeleteBranch default %s", o._statusCode, payload)
 }
 
 func (o *BranchServiceDeleteBranchDefault) GetPayload() *models.RPCStatus {

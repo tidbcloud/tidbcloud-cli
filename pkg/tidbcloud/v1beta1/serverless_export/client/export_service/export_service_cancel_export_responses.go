@@ -6,6 +6,7 @@ package export_service
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -86,11 +87,13 @@ func (o *ExportServiceCancelExportOK) Code() int {
 }
 
 func (o *ExportServiceCancelExportOK) Error() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:cancel][%d] exportServiceCancelExportOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:cancel][%d] exportServiceCancelExportOK %s", 200, payload)
 }
 
 func (o *ExportServiceCancelExportOK) String() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:cancel][%d] exportServiceCancelExportOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:cancel][%d] exportServiceCancelExportOK %s", 200, payload)
 }
 
 func (o *ExportServiceCancelExportOK) GetPayload() *models.V1beta1Export {
@@ -158,11 +161,13 @@ func (o *ExportServiceCancelExportDefault) Code() int {
 }
 
 func (o *ExportServiceCancelExportDefault) Error() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:cancel][%d] ExportService_CancelExport default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:cancel][%d] ExportService_CancelExport default %s", o._statusCode, payload)
 }
 
 func (o *ExportServiceCancelExportDefault) String() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:cancel][%d] ExportService_CancelExport default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports/{exportId}:cancel][%d] ExportService_CancelExport default %s", o._statusCode, payload)
 }
 
 func (o *ExportServiceCancelExportDefault) GetPayload() *models.RPCStatus {

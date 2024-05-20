@@ -7,6 +7,7 @@ package export_service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -89,11 +90,13 @@ func (o *ExportServiceCreateExportOK) Code() int {
 }
 
 func (o *ExportServiceCreateExportOK) Error() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports][%d] exportServiceCreateExportOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports][%d] exportServiceCreateExportOK %s", 200, payload)
 }
 
 func (o *ExportServiceCreateExportOK) String() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports][%d] exportServiceCreateExportOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports][%d] exportServiceCreateExportOK %s", 200, payload)
 }
 
 func (o *ExportServiceCreateExportOK) GetPayload() *models.V1beta1Export {
@@ -161,11 +164,13 @@ func (o *ExportServiceCreateExportDefault) Code() int {
 }
 
 func (o *ExportServiceCreateExportDefault) Error() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports][%d] ExportService_CreateExport default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports][%d] ExportService_CreateExport default %s", o._statusCode, payload)
 }
 
 func (o *ExportServiceCreateExportDefault) String() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports][%d] ExportService_CreateExport default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/exports][%d] ExportService_CreateExport default %s", o._statusCode, payload)
 }
 
 func (o *ExportServiceCreateExportDefault) GetPayload() *models.RPCStatus {

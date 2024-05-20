@@ -17,10 +17,10 @@ import (
 // swagger:model FilterTable
 type FilterTable struct {
 
-	// Optional. The table filter expressions.
+	// Optional. The table-filter expressions.
 	Patterns []string `json:"patterns"`
 
-	// Optional. The specify table of the export.
+	// Optional. Export only selected records.
 	Where string `json:"where,omitempty"`
 }
 

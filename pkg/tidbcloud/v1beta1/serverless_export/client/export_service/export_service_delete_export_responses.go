@@ -6,6 +6,7 @@ package export_service
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -86,11 +87,13 @@ func (o *ExportServiceDeleteExportOK) Code() int {
 }
 
 func (o *ExportServiceDeleteExportOK) Error() string {
-	return fmt.Sprintf("[DELETE /v1beta1/clusters/{clusterId}/exports/{exportId}][%d] exportServiceDeleteExportOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[DELETE /v1beta1/clusters/{clusterId}/exports/{exportId}][%d] exportServiceDeleteExportOK %s", 200, payload)
 }
 
 func (o *ExportServiceDeleteExportOK) String() string {
-	return fmt.Sprintf("[DELETE /v1beta1/clusters/{clusterId}/exports/{exportId}][%d] exportServiceDeleteExportOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[DELETE /v1beta1/clusters/{clusterId}/exports/{exportId}][%d] exportServiceDeleteExportOK %s", 200, payload)
 }
 
 func (o *ExportServiceDeleteExportOK) GetPayload() *models.V1beta1Export {
@@ -158,11 +161,13 @@ func (o *ExportServiceDeleteExportDefault) Code() int {
 }
 
 func (o *ExportServiceDeleteExportDefault) Error() string {
-	return fmt.Sprintf("[DELETE /v1beta1/clusters/{clusterId}/exports/{exportId}][%d] ExportService_DeleteExport default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[DELETE /v1beta1/clusters/{clusterId}/exports/{exportId}][%d] ExportService_DeleteExport default %s", o._statusCode, payload)
 }
 
 func (o *ExportServiceDeleteExportDefault) String() string {
-	return fmt.Sprintf("[DELETE /v1beta1/clusters/{clusterId}/exports/{exportId}][%d] ExportService_DeleteExport default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[DELETE /v1beta1/clusters/{clusterId}/exports/{exportId}][%d] ExportService_DeleteExport default %s", o._statusCode, payload)
 }
 
 func (o *ExportServiceDeleteExportDefault) GetPayload() *models.RPCStatus {

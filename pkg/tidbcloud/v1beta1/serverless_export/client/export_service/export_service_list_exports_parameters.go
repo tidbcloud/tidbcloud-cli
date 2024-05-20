@@ -68,6 +68,12 @@ type ExportServiceListExportsParams struct {
 	*/
 	ClusterID string
 
+	/* OrderBy.
+
+	   Optional. List exports order by, separated by comma, default is ascending. Example: "foo, bar desc". Supported field: create_time
+	*/
+	OrderBy *string
+
 	/* PageSize.
 
 	   Optional. The maximum number of clusters to return.
@@ -146,6 +152,17 @@ func (o *ExportServiceListExportsParams) SetClusterID(clusterID string) {
 	o.ClusterID = clusterID
 }
 
+// WithOrderBy adds the orderBy to the export service list exports params
+func (o *ExportServiceListExportsParams) WithOrderBy(orderBy *string) *ExportServiceListExportsParams {
+	o.SetOrderBy(orderBy)
+	return o
+}
+
+// SetOrderBy adds the orderBy to the export service list exports params
+func (o *ExportServiceListExportsParams) SetOrderBy(orderBy *string) {
+	o.OrderBy = orderBy
+}
+
 // WithPageSize adds the pageSize to the export service list exports params
 func (o *ExportServiceListExportsParams) WithPageSize(pageSize *int32) *ExportServiceListExportsParams {
 	o.SetPageSize(pageSize)
@@ -179,6 +196,23 @@ func (o *ExportServiceListExportsParams) WriteToRequest(r runtime.ClientRequest,
 	// path param clusterId
 	if err := r.SetPathParam("clusterId", o.ClusterID); err != nil {
 		return err
+	}
+
+	if o.OrderBy != nil {
+
+		// query param orderBy
+		var qrOrderBy string
+
+		if o.OrderBy != nil {
+			qrOrderBy = *o.OrderBy
+		}
+		qOrderBy := qrOrderBy
+		if qOrderBy != "" {
+
+			if err := r.SetQueryParam("orderBy", qOrderBy); err != nil {
+				return err
+			}
+		}
 	}
 
 	if o.PageSize != nil {

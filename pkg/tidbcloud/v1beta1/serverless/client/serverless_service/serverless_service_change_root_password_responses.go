@@ -7,6 +7,7 @@ package serverless_service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -90,11 +91,13 @@ func (o *ServerlessServiceChangeRootPasswordOK) Code() int {
 }
 
 func (o *ServerlessServiceChangeRootPasswordOK) Error() string {
-	return fmt.Sprintf("[PUT /clusters/{clusterId}/password][%d] serverlessServiceChangeRootPasswordOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[PUT /clusters/{clusterId}/password][%d] serverlessServiceChangeRootPasswordOK %s", 200, payload)
 }
 
 func (o *ServerlessServiceChangeRootPasswordOK) String() string {
-	return fmt.Sprintf("[PUT /clusters/{clusterId}/password][%d] serverlessServiceChangeRootPasswordOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[PUT /clusters/{clusterId}/password][%d] serverlessServiceChangeRootPasswordOK %s", 200, payload)
 }
 
 func (o *ServerlessServiceChangeRootPasswordOK) GetPayload() models.V1beta1ChangeRootPasswordResponse {
@@ -160,11 +163,13 @@ func (o *ServerlessServiceChangeRootPasswordDefault) Code() int {
 }
 
 func (o *ServerlessServiceChangeRootPasswordDefault) Error() string {
-	return fmt.Sprintf("[PUT /clusters/{clusterId}/password][%d] ServerlessService_ChangeRootPassword default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[PUT /clusters/{clusterId}/password][%d] ServerlessService_ChangeRootPassword default %s", o._statusCode, payload)
 }
 
 func (o *ServerlessServiceChangeRootPasswordDefault) String() string {
-	return fmt.Sprintf("[PUT /clusters/{clusterId}/password][%d] ServerlessService_ChangeRootPassword default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[PUT /clusters/{clusterId}/password][%d] ServerlessService_ChangeRootPassword default %s", o._statusCode, payload)
 }
 
 func (o *ServerlessServiceChangeRootPasswordDefault) GetPayload() *models.GooglerpcStatus {

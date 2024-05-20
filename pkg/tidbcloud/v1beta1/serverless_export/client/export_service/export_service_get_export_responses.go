@@ -6,6 +6,7 @@ package export_service
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -86,11 +87,13 @@ func (o *ExportServiceGetExportOK) Code() int {
 }
 
 func (o *ExportServiceGetExportOK) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/exports/{exportId}][%d] exportServiceGetExportOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/exports/{exportId}][%d] exportServiceGetExportOK %s", 200, payload)
 }
 
 func (o *ExportServiceGetExportOK) String() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/exports/{exportId}][%d] exportServiceGetExportOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/exports/{exportId}][%d] exportServiceGetExportOK %s", 200, payload)
 }
 
 func (o *ExportServiceGetExportOK) GetPayload() *models.V1beta1Export {
@@ -158,11 +161,13 @@ func (o *ExportServiceGetExportDefault) Code() int {
 }
 
 func (o *ExportServiceGetExportDefault) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/exports/{exportId}][%d] ExportService_GetExport default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/exports/{exportId}][%d] ExportService_GetExport default %s", o._statusCode, payload)
 }
 
 func (o *ExportServiceGetExportDefault) String() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/exports/{exportId}][%d] ExportService_GetExport default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/exports/{exportId}][%d] ExportService_GetExport default %s", o._statusCode, payload)
 }
 
 func (o *ExportServiceGetExportDefault) GetPayload() *models.RPCStatus {
