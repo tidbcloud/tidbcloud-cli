@@ -21,7 +21,7 @@ type ExportOptionsFilter struct {
 	// Optional. Use SQL to filter the export.
 	SQL string `json:"sql,omitempty"`
 
-	// Optional. Use DBTable to filter the export.
+	// Optional. Use table-filter to filter the export.
 	Table *FilterTable `json:"table,omitempty"`
 }
 

@@ -6,6 +6,7 @@ package account
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -85,11 +86,13 @@ func (o *GetV1beta1ClustersClusterIDSQLUsersUserNameOK) Code() int {
 }
 
 func (o *GetV1beta1ClustersClusterIDSQLUsersUserNameOK) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/sqlUsers/{userName}][%d] getV1beta1ClustersClusterIdSqlUsersUserNameOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/sqlUsers/{userName}][%d] getV1beta1ClustersClusterIdSqlUsersUserNameOK %s", 200, payload)
 }
 
 func (o *GetV1beta1ClustersClusterIDSQLUsersUserNameOK) String() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/sqlUsers/{userName}][%d] getV1beta1ClustersClusterIdSqlUsersUserNameOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/sqlUsers/{userName}][%d] getV1beta1ClustersClusterIdSqlUsersUserNameOK %s", 200, payload)
 }
 
 func (o *GetV1beta1ClustersClusterIDSQLUsersUserNameOK) GetPayload() *models.APISQLUser {
@@ -153,11 +156,13 @@ func (o *GetV1beta1ClustersClusterIDSQLUsersUserNameBadRequest) Code() int {
 }
 
 func (o *GetV1beta1ClustersClusterIDSQLUsersUserNameBadRequest) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/sqlUsers/{userName}][%d] getV1beta1ClustersClusterIdSqlUsersUserNameBadRequest  %+v", 400, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/sqlUsers/{userName}][%d] getV1beta1ClustersClusterIdSqlUsersUserNameBadRequest %s", 400, payload)
 }
 
 func (o *GetV1beta1ClustersClusterIDSQLUsersUserNameBadRequest) String() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/sqlUsers/{userName}][%d] getV1beta1ClustersClusterIdSqlUsersUserNameBadRequest  %+v", 400, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/sqlUsers/{userName}][%d] getV1beta1ClustersClusterIdSqlUsersUserNameBadRequest %s", 400, payload)
 }
 
 func (o *GetV1beta1ClustersClusterIDSQLUsersUserNameBadRequest) GetPayload() *models.APIOpenAPIError {

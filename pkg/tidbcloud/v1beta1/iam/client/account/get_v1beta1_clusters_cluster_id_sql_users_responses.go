@@ -6,6 +6,7 @@ package account
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -85,11 +86,13 @@ func (o *GetV1beta1ClustersClusterIDSQLUsersOK) Code() int {
 }
 
 func (o *GetV1beta1ClustersClusterIDSQLUsersOK) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/sqlUsers][%d] getV1beta1ClustersClusterIdSqlUsersOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/sqlUsers][%d] getV1beta1ClustersClusterIdSqlUsersOK %s", 200, payload)
 }
 
 func (o *GetV1beta1ClustersClusterIDSQLUsersOK) String() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/sqlUsers][%d] getV1beta1ClustersClusterIdSqlUsersOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/sqlUsers][%d] getV1beta1ClustersClusterIdSqlUsersOK %s", 200, payload)
 }
 
 func (o *GetV1beta1ClustersClusterIDSQLUsersOK) GetPayload() *models.APIListSQLUsersRsp {
@@ -153,11 +156,13 @@ func (o *GetV1beta1ClustersClusterIDSQLUsersBadRequest) Code() int {
 }
 
 func (o *GetV1beta1ClustersClusterIDSQLUsersBadRequest) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/sqlUsers][%d] getV1beta1ClustersClusterIdSqlUsersBadRequest  %+v", 400, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/sqlUsers][%d] getV1beta1ClustersClusterIdSqlUsersBadRequest %s", 400, payload)
 }
 
 func (o *GetV1beta1ClustersClusterIDSQLUsersBadRequest) String() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/sqlUsers][%d] getV1beta1ClustersClusterIdSqlUsersBadRequest  %+v", 400, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/sqlUsers][%d] getV1beta1ClustersClusterIdSqlUsersBadRequest %s", 400, payload)
 }
 
 func (o *GetV1beta1ClustersClusterIDSQLUsersBadRequest) GetPayload() *models.APIOpenAPIError {

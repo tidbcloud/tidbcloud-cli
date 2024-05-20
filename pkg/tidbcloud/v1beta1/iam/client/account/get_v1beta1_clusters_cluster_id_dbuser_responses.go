@@ -6,6 +6,7 @@ package account
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -85,11 +86,13 @@ func (o *GetV1beta1ClustersClusterIDDbuserOK) Code() int {
 }
 
 func (o *GetV1beta1ClustersClusterIDDbuserOK) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/dbuser][%d] getV1beta1ClustersClusterIdDbuserOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/dbuser][%d] getV1beta1ClustersClusterIdDbuserOK %s", 200, payload)
 }
 
 func (o *GetV1beta1ClustersClusterIDDbuserOK) String() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/dbuser][%d] getV1beta1ClustersClusterIdDbuserOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/dbuser][%d] getV1beta1ClustersClusterIdDbuserOK %s", 200, payload)
 }
 
 func (o *GetV1beta1ClustersClusterIDDbuserOK) GetPayload() *models.APIGetDbuserRsp {
@@ -153,11 +156,13 @@ func (o *GetV1beta1ClustersClusterIDDbuserBadRequest) Code() int {
 }
 
 func (o *GetV1beta1ClustersClusterIDDbuserBadRequest) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/dbuser][%d] getV1beta1ClustersClusterIdDbuserBadRequest  %+v", 400, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/dbuser][%d] getV1beta1ClustersClusterIdDbuserBadRequest %s", 400, payload)
 }
 
 func (o *GetV1beta1ClustersClusterIDDbuserBadRequest) String() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/dbuser][%d] getV1beta1ClustersClusterIdDbuserBadRequest  %+v", 400, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/dbuser][%d] getV1beta1ClustersClusterIdDbuserBadRequest %s", 400, payload)
 }
 
 func (o *GetV1beta1ClustersClusterIDDbuserBadRequest) GetPayload() *models.APIOpenAPIError {

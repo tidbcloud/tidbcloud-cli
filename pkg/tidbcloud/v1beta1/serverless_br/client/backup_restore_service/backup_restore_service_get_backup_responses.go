@@ -6,6 +6,7 @@ package backup_restore_service
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -86,11 +87,13 @@ func (o *BackupRestoreServiceGetBackupOK) Code() int {
 }
 
 func (o *BackupRestoreServiceGetBackupOK) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/backups/{backupId}][%d] backupRestoreServiceGetBackupOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/backups/{backupId}][%d] backupRestoreServiceGetBackupOK %s", 200, payload)
 }
 
 func (o *BackupRestoreServiceGetBackupOK) String() string {
-	return fmt.Sprintf("[GET /v1beta1/backups/{backupId}][%d] backupRestoreServiceGetBackupOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/backups/{backupId}][%d] backupRestoreServiceGetBackupOK %s", 200, payload)
 }
 
 func (o *BackupRestoreServiceGetBackupOK) GetPayload() *models.V1beta1Backup {
@@ -158,11 +161,13 @@ func (o *BackupRestoreServiceGetBackupDefault) Code() int {
 }
 
 func (o *BackupRestoreServiceGetBackupDefault) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/backups/{backupId}][%d] BackupRestoreService_GetBackup default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/backups/{backupId}][%d] BackupRestoreService_GetBackup default %s", o._statusCode, payload)
 }
 
 func (o *BackupRestoreServiceGetBackupDefault) String() string {
-	return fmt.Sprintf("[GET /v1beta1/backups/{backupId}][%d] BackupRestoreService_GetBackup default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/backups/{backupId}][%d] BackupRestoreService_GetBackup default %s", o._statusCode, payload)
 }
 
 func (o *BackupRestoreServiceGetBackupDefault) GetPayload() *models.RPCStatus {

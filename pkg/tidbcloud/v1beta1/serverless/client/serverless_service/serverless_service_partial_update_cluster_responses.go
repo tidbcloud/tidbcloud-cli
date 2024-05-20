@@ -7,6 +7,7 @@ package serverless_service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -90,11 +91,13 @@ func (o *ServerlessServicePartialUpdateClusterOK) Code() int {
 }
 
 func (o *ServerlessServicePartialUpdateClusterOK) Error() string {
-	return fmt.Sprintf("[PATCH /clusters/{cluster.clusterId}][%d] serverlessServicePartialUpdateClusterOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[PATCH /clusters/{cluster.clusterId}][%d] serverlessServicePartialUpdateClusterOK %s", 200, payload)
 }
 
 func (o *ServerlessServicePartialUpdateClusterOK) String() string {
-	return fmt.Sprintf("[PATCH /clusters/{cluster.clusterId}][%d] serverlessServicePartialUpdateClusterOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[PATCH /clusters/{cluster.clusterId}][%d] serverlessServicePartialUpdateClusterOK %s", 200, payload)
 }
 
 func (o *ServerlessServicePartialUpdateClusterOK) GetPayload() *models.TidbCloudOpenApiserverlessv1beta1Cluster {
@@ -162,11 +165,13 @@ func (o *ServerlessServicePartialUpdateClusterDefault) Code() int {
 }
 
 func (o *ServerlessServicePartialUpdateClusterDefault) Error() string {
-	return fmt.Sprintf("[PATCH /clusters/{cluster.clusterId}][%d] ServerlessService_PartialUpdateCluster default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[PATCH /clusters/{cluster.clusterId}][%d] ServerlessService_PartialUpdateCluster default %s", o._statusCode, payload)
 }
 
 func (o *ServerlessServicePartialUpdateClusterDefault) String() string {
-	return fmt.Sprintf("[PATCH /clusters/{cluster.clusterId}][%d] ServerlessService_PartialUpdateCluster default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[PATCH /clusters/{cluster.clusterId}][%d] ServerlessService_PartialUpdateCluster default %s", o._statusCode, payload)
 }
 
 func (o *ServerlessServicePartialUpdateClusterDefault) GetPayload() *models.GooglerpcStatus {

@@ -6,6 +6,7 @@ package branch_service
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -86,11 +87,13 @@ func (o *BranchServiceGetBranchOK) Code() int {
 }
 
 func (o *BranchServiceGetBranchOK) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/branches/{branchId}][%d] branchServiceGetBranchOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/branches/{branchId}][%d] branchServiceGetBranchOK %s", 200, payload)
 }
 
 func (o *BranchServiceGetBranchOK) String() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/branches/{branchId}][%d] branchServiceGetBranchOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/branches/{branchId}][%d] branchServiceGetBranchOK %s", 200, payload)
 }
 
 func (o *BranchServiceGetBranchOK) GetPayload() *models.V1beta1Branch {
@@ -158,11 +161,13 @@ func (o *BranchServiceGetBranchDefault) Code() int {
 }
 
 func (o *BranchServiceGetBranchDefault) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/branches/{branchId}][%d] BranchService_GetBranch default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/branches/{branchId}][%d] BranchService_GetBranch default %s", o._statusCode, payload)
 }
 
 func (o *BranchServiceGetBranchDefault) String() string {
-	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/branches/{branchId}][%d] BranchService_GetBranch default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/branches/{branchId}][%d] BranchService_GetBranch default %s", o._statusCode, payload)
 }
 
 func (o *BranchServiceGetBranchDefault) GetPayload() *models.RPCStatus {

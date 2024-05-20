@@ -6,6 +6,7 @@ package account
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -85,11 +86,13 @@ func (o *PostCustomerSignupURLOK) Code() int {
 }
 
 func (o *PostCustomerSignupURLOK) Error() string {
-	return fmt.Sprintf("[POST /customerSignupUrl][%d] postCustomerSignupUrlOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /customerSignupUrl][%d] postCustomerSignupUrlOK %s", 200, payload)
 }
 
 func (o *PostCustomerSignupURLOK) String() string {
-	return fmt.Sprintf("[POST /customerSignupUrl][%d] postCustomerSignupUrlOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /customerSignupUrl][%d] postCustomerSignupUrlOK %s", 200, payload)
 }
 
 func (o *PostCustomerSignupURLOK) GetPayload() *models.APIOpenAPIMspCustomerSignupURL {
@@ -153,11 +156,13 @@ func (o *PostCustomerSignupURLBadRequest) Code() int {
 }
 
 func (o *PostCustomerSignupURLBadRequest) Error() string {
-	return fmt.Sprintf("[POST /customerSignupUrl][%d] postCustomerSignupUrlBadRequest  %+v", 400, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /customerSignupUrl][%d] postCustomerSignupUrlBadRequest %s", 400, payload)
 }
 
 func (o *PostCustomerSignupURLBadRequest) String() string {
-	return fmt.Sprintf("[POST /customerSignupUrl][%d] postCustomerSignupUrlBadRequest  %+v", 400, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /customerSignupUrl][%d] postCustomerSignupUrlBadRequest %s", 400, payload)
 }
 
 func (o *PostCustomerSignupURLBadRequest) GetPayload() *models.APIOpenAPIError {

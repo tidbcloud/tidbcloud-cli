@@ -61,6 +61,13 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "orderBy",
+            "description": "Optional. List exports order by, separated by comma, default is ascending. Example: \"foo, bar desc\". Supported filed: create_time",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -307,7 +314,7 @@
         },
         "table": {
           "$ref": "#/definitions/FilterTable",
-          "description": "Optional. Use DBTable to filter the export."
+          "description": "Optional. Use table-filter to filter the export."
         }
       }
     },
@@ -319,11 +326,11 @@
           "items": {
             "type": "string"
           },
-          "description": "Optional. The table filter expressions."
+          "description": "Optional. The table-filter expressions."
         },
         "where": {
           "type": "string",
-          "description": "Optional. The specify table of the export."
+          "description": "Optional. Export only selected records."
         }
       }
     },
@@ -566,7 +573,7 @@
         "totalSize": {
           "type": "integer",
           "format": "int64",
-          "description": "Total number of backups."
+          "description": "Total number of exports."
         }
       }
     },
