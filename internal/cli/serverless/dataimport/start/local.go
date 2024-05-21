@@ -25,7 +25,6 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/aws/s3"
-	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
@@ -82,12 +81,12 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		}
 
 		// interactive mode
-		project, err := cloud.GetSelectedProject(ctx, o.h.QueryPageSize, d)
+		project, err := ui.GetSelectedProject(ctx, o.h.QueryPageSize, d)
 		if err != nil {
 			return err
 		}
 
-		cluster, err := cloud.GetSelectedCluster(ctx, project.ID, o.h.QueryPageSize, d)
+		cluster, err := ui.GetSelectedCluster(ctx, project.ID, o.h.QueryPageSize, d)
 		if err != nil {
 			return err
 		}

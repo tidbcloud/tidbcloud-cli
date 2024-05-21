@@ -16,12 +16,12 @@ package sqluser
 
 import (
 	"fmt"
+	"tidbcloud-cli/internal/ui"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
-	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/util"
 
@@ -96,13 +96,13 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
+				project, err := ui.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				projectID := project.ID
 
-				cluster, err := cloud.GetSelectedCluster(ctx, projectID, h.QueryPageSize, d)
+				cluster, err := ui.GetSelectedCluster(ctx, projectID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -116,7 +116,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cID
 			}
 
-			_, items, err := cloud.RetrieveSQLUsers(ctx, clusterID, h.QueryPageSize, d)
+			_, items, err := ui.RetrieveSQLUsers(ctx, clusterID, h.QueryPageSize, d)
 			if err != nil {
 				return err
 			}

@@ -16,12 +16,12 @@ package serverless
 
 import (
 	"fmt"
+	"tidbcloud-cli/internal/ui"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
-	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 
@@ -82,7 +82,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(context, h.QueryPageSize, d)
+				project, err := ui.GetSelectedProject(context, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -96,7 +96,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 			cmd.Annotations[telemetry.ProjectID] = pID
 
-			total, items, err := cloud.RetrieveClusters(context, pID, h.QueryPageSize, d)
+			total, items, err := ui.RetrieveClusters(context, pID, h.QueryPageSize, d)
 			if err != nil {
 				return err
 			}

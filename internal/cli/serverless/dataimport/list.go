@@ -17,12 +17,12 @@ package dataimport
 import (
 	"fmt"
 	"strconv"
+	"tidbcloud-cli/internal/ui"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
-	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
@@ -98,12 +98,12 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
+				project, err := ui.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 
-				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
+				cluster, err := ui.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -115,7 +115,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 			cmd.Annotations[telemetry.ClusterID] = clusterID
 
-			total, importTasks, err := cloud.RetrieveImports(cmd.Context(), clusterID, h.QueryPageSize, d)
+			total, importTasks, err := ui.RetrieveImports(cmd.Context(), clusterID, h.QueryPageSize, d)
 			if err != nil {
 				return err
 			}

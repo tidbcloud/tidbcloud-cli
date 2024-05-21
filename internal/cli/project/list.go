@@ -17,13 +17,12 @@ package project
 import (
 	"fmt"
 	"strconv"
+	"tidbcloud-cli/internal/ui"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
-	"tidbcloud-cli/internal/service/cloud"
-
 	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
 
 	"github.com/juju/errors"
@@ -46,7 +45,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			_, items, err := cloud.RetrieveProjects(cmd.Context(), h.QueryPageSize, d)
+			_, items, err := ui.RetrieveProjects(cmd.Context(), h.QueryPageSize, d)
 			if err != nil {
 				return err
 			}

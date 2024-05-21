@@ -17,11 +17,11 @@ package dataimport
 import (
 	"encoding/json"
 	"fmt"
+	"tidbcloud-cli/internal/ui"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
@@ -94,18 +94,18 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
+				project, err := ui.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 
-				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
+				cluster, err := ui.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				clusterID = cluster.ID
 
-				selectedImport, err := cloud.GetSelectedImport(ctx, clusterID, h.QueryPageSize, d, []importModel.V1beta1ImportState{})
+				selectedImport, err := ui.GetSelectedImport(ctx, clusterID, h.QueryPageSize, d, []importModel.V1beta1ImportState{})
 				if err != nil {
 					return err
 				}

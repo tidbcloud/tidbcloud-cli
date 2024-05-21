@@ -62,7 +62,11 @@ type ClientService interface {
 
 	ExportServiceDownloadExport(params *ExportServiceDownloadExportParams, opts ...ClientOption) (*ExportServiceDownloadExportOK, error)
 
+	ExportServiceDownloadExportFiles(params *ExportServiceDownloadExportFilesParams, opts ...ClientOption) (*ExportServiceDownloadExportFilesOK, error)
+
 	ExportServiceGetExport(params *ExportServiceGetExportParams, opts ...ClientOption) (*ExportServiceGetExportOK, error)
+
+	ExportServiceListExportFiles(params *ExportServiceListExportFilesParams, opts ...ClientOption) (*ExportServiceListExportFilesOK, error)
 
 	ExportServiceListExports(params *ExportServiceListExportsParams, opts ...ClientOption) (*ExportServiceListExportsOK, error)
 
@@ -218,6 +222,43 @@ func (a *Client) ExportServiceDownloadExport(params *ExportServiceDownloadExport
 }
 
 /*
+ExportServiceDownloadExportFiles generates export files download url
+*/
+func (a *Client) ExportServiceDownloadExportFiles(params *ExportServiceDownloadExportFilesParams, opts ...ClientOption) (*ExportServiceDownloadExportFilesOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewExportServiceDownloadExportFilesParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "ExportService_DownloadExportFiles",
+		Method:             "POST",
+		PathPattern:        "/v1beta1/clusters/{clusterId}/exports/{exportId}/files:download",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ExportServiceDownloadExportFilesReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ExportServiceDownloadExportFilesOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ExportServiceDownloadExportFilesDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
 ExportServiceGetExport retrieves details of an export job
 */
 func (a *Client) ExportServiceGetExport(params *ExportServiceGetExportParams, opts ...ClientOption) (*ExportServiceGetExportOK, error) {
@@ -251,6 +292,43 @@ func (a *Client) ExportServiceGetExport(params *ExportServiceGetExportParams, op
 	}
 	// unexpected success response
 	unexpectedSuccess := result.(*ExportServiceGetExportDefault)
+	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
+}
+
+/*
+ExportServiceListExportFiles lists export files
+*/
+func (a *Client) ExportServiceListExportFiles(params *ExportServiceListExportFilesParams, opts ...ClientOption) (*ExportServiceListExportFilesOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewExportServiceListExportFilesParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "ExportService_ListExportFiles",
+		Method:             "GET",
+		PathPattern:        "/v1beta1/clusters/{clusterId}/exports/{exportId}/files",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"https"},
+		Params:             params,
+		Reader:             &ExportServiceListExportFilesReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*ExportServiceListExportFilesOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	unexpectedSuccess := result.(*ExportServiceListExportFilesDefault)
 	return nil, runtime.NewAPIError("unexpected success response: content available as default response in error", unexpectedSuccess, unexpectedSuccess.Code())
 }
 

@@ -16,11 +16,11 @@ package dataimport
 
 import (
 	"fmt"
+	"tidbcloud-cli/internal/ui"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/util"
 	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
@@ -97,19 +97,19 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
+				project, err := ui.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 
-				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
+				cluster, err := ui.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				clusterID = cluster.ID
 
 				// Only task status is pending or importing can be canceled.
-				selectedImport, err := cloud.GetSelectedImport(ctx, clusterID, h.QueryPageSize, d, []importModel.V1beta1ImportState{
+				selectedImport, err := ui.GetSelectedImport(ctx, clusterID, h.QueryPageSize, d, []importModel.V1beta1ImportState{
 					importModel.V1beta1ImportStatePREPARING,
 					importModel.V1beta1ImportStateIMPORTING,
 				})

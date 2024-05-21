@@ -16,11 +16,11 @@ package backup
 
 import (
 	"fmt"
+	"tidbcloud-cli/internal/ui"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
 	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 
@@ -101,15 +101,15 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
+				project, err := ui.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
+				cluster, err := ui.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				backup, err := cloud.GetSelectedServerlessBackup(ctx, cluster.ID, int32(h.QueryPageSize), d)
+				backup, err := ui.GetSelectedServerlessBackup(ctx, cluster.ID, int32(h.QueryPageSize), d)
 				if err != nil {
 					return err
 				}

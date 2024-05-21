@@ -17,6 +17,7 @@ package export
 import (
 	"encoding/json"
 	"fmt"
+	"tidbcloud-cli/internal/ui"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -24,7 +25,6 @@ import (
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
 	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
 )
 
@@ -93,17 +93,17 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
+				project, err := ui.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
+				cluster, err := ui.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				clusterID = cluster.ID
 
-				export, err := cloud.GetSelectedExport(ctx, clusterID, h.QueryPageSize, d)
+				export, err := ui.GetSelectedExport(ctx, clusterID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}

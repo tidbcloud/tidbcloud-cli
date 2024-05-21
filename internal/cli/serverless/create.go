@@ -152,7 +152,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				regionSet := hashset.New()
 				for _, provider := range opts.serverlessProviders {
 					if string(*provider.Provider) == cloudProvider {
-						regionSet.Add(cloud.Region{
+						regionSet.Add(ui.Region{
 							Name:        *provider.Name,
 							DisplayName: provider.DisplayName,
 							Provider:    string(*provider.Provider),
@@ -164,7 +164,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 
-				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
+				project, err := ui.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -474,6 +474,6 @@ func GetRegion(regionSet *hashset.Set) (string, error) {
 	if m, _ := regionModel.(ui.SelectModel); m.Interrupted {
 		return region, util.InterruptError
 	}
-	region = regionModel.(ui.SelectModel).Choices[regionModel.(ui.SelectModel).Selected].(cloud.Region).Name
+	region = regionModel.(ui.SelectModel).Choices[regionModel.(ui.SelectModel).Selected].(ui.Region).Name
 	return region, nil
 }

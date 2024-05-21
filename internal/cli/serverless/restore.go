@@ -20,7 +20,6 @@ import (
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
@@ -103,31 +102,31 @@ func RestoreCmd(h *internal.Helper) *cobra.Command {
 			var backupTimeStr string
 			var restoreMode string
 			if opts.interactive {
-				restoreMode, err = cloud.GetSelectedRestoreMode()
+				restoreMode, err = ui.GetSelectedRestoreMode()
 				if err != nil {
 					return err
 				}
 
-				if restoreMode == cloud.RestoreModeSnapshot {
-					project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
+				if restoreMode == ui.RestoreModeSnapshot {
+					project, err := ui.GetSelectedProject(ctx, h.QueryPageSize, d)
 					if err != nil {
 						return err
 					}
-					cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
+					cluster, err := ui.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 					if err != nil {
 						return err
 					}
-					backup, err := cloud.GetSelectedServerlessBackup(ctx, cluster.ID, int32(h.QueryPageSize), d)
+					backup, err := ui.GetSelectedServerlessBackup(ctx, cluster.ID, int32(h.QueryPageSize), d)
 					if err != nil {
 						return err
 					}
 					backupID = backup.ID
-				} else if restoreMode == cloud.RestoreModePointInTime {
-					project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
+				} else if restoreMode == ui.RestoreModePointInTime {
+					project, err := ui.GetSelectedProject(ctx, h.QueryPageSize, d)
 					if err != nil {
 						return err
 					}
-					cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
+					cluster, err := ui.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 					if err != nil {
 						return err
 					}

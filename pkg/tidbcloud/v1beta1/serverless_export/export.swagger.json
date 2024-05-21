@@ -199,6 +199,119 @@
         ]
       }
     },
+    "/v1beta1/clusters/{clusterId}/exports/{exportId}/files": {
+      "get": {
+        "summary": "List export files",
+        "operationId": "ExportService_ListExportFiles",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1ListExportFilesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "exportId",
+            "description": "Required. The ID of the export to be retrieved.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "Optional. The maximum number to return.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "Optional. The page token from the previous response for pagination.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ExportService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/exports/{exportId}/files:download": {
+      "post": {
+        "summary": "Generate export files download url",
+        "operationId": "ExportService_DownloadExportFiles",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1DownloadExportFilesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "exportId",
+            "description": "Required. The ID of the export to be retrieved.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "fileNames": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Required. The name of the files to be downloaded."
+                }
+              },
+              "required": [
+                "fileNames"
+              ]
+            }
+          }
+        ],
+        "tags": [
+          "ExportService"
+        ]
+      }
+    },
     "/v1beta1/clusters/{clusterId}/exports/{exportId}:cancel": {
       "post": {
         "summary": "Cancel a specific export job.",
@@ -400,6 +513,19 @@
         }
       }
     },
+    "v1beta1DownloadExportFilesResponse": {
+      "type": "object",
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1beta1ExportFile"
+          },
+          "description": "The files with download url of the export."
+        }
+      }
+    },
     "v1beta1DownloadExportsResponse": {
       "type": "object",
       "properties": {
@@ -427,7 +553,7 @@
         "size": {
           "type": "integer",
           "format": "int64",
-          "description": "The size in bytes of the the download file."
+          "description": "The size in bytes of the download file."
         }
       }
     },
@@ -511,6 +637,25 @@
         "clusterId"
       ]
     },
+    "v1beta1ExportFile": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the file."
+        },
+        "size": {
+          "type": "integer",
+          "format": "int64",
+          "title": "The size in bytes of the file. It will be set to 0 when returned from files:download API"
+        },
+        "downloadUrl": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "download url of the file."
+        }
+      }
+    },
     "v1beta1ExportOptions": {
       "type": "object",
       "properties": {
@@ -582,6 +727,28 @@
         "DELETED"
       ],
       "description": "Output Only. Export State.\n\n - STATE_UNSPECIFIED: The state of the export is unknown.\n - RUNNING: The export job is being created.\n - SUCCEEDED: The export job is success.\n - FAILED: The export job is failed.\n - CANCELED: The export job is canceled.\n - DELETED: The export job is deleted."
+    },
+    "v1beta1ListExportFilesResponse": {
+      "type": "object",
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1beta1ExportFile"
+          },
+          "description": "The files of the export."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Token provided to retrieve the next page of results."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int64",
+          "description": "Total number of export files."
+        }
+      }
     },
     "v1beta1ListExportsResponse": {
       "type": "object",

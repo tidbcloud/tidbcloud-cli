@@ -16,10 +16,9 @@ package iostream
 
 import (
 	"bytes"
+	"github.com/mattn/go-isatty"
 	"io"
 	"os"
-
-	"github.com/mattn/go-isatty"
 )
 
 type IOStreams struct {
