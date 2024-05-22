@@ -15,10 +15,8 @@
 package store
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
-	"os"
 
 	"github.com/zalando/go-keyring"
 )
@@ -59,14 +57,6 @@ func Delete(profile string) error {
 		if !errors.Is(err, keyring.ErrNotFound) {
 			return fmt.Errorf("failed to delete token: %s", err)
 		}
-	}
-	return nil
-}
-
-func assertKeyringSupported() error {
-	// Suggested check: https://github.com/microsoft/WSL/issues/423
-	if f, err := os.ReadFile("/proc/sys/kernel/osrelease"); err == nil && bytes.Contains(f, []byte("WSL")) {
-		return ErrNotSupported
 	}
 	return nil
 }
