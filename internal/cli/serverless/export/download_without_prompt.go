@@ -22,8 +22,6 @@ import (
 	"strings"
 	"sync"
 
-	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
-
 	"github.com/dustin/go-humanize"
 	"github.com/fatih/color"
 
@@ -32,6 +30,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
+	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
 )
 
 var wg = sync.WaitGroup{}
@@ -78,7 +77,7 @@ func NewDownloadPool(h *internal.Helper, files []string, path string,
 		exportID:    exportID,
 		jobs:        jobs,
 		results:     results,
-		batchSize:   5,
+		batchSize:   20,
 	}, nil
 }
 
@@ -153,7 +152,6 @@ func (d *downloadPool) Start() error {
 }
 
 func (d *downloadPool) produce() {
-	// not produce when there are pending jobs
 	if d.pendingJobsNumber != 0 {
 		return
 	}

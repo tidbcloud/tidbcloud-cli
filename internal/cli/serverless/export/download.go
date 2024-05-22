@@ -196,12 +196,6 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				fileNames = append(fileNames, file.Name)
 			}
 			if h.IOStreams.CanPrompt {
-				//params := exportApi.NewExportServiceDownloadExportParams().
-				//	WithClusterID(clusterID).WithExportID(exportID).WithContext(ctx)
-				//resp, err := d.DownloadExport(params)
-				if err != nil {
-					return errors.Trace(err)
-				}
 				err = DownloadFilesPrompt(h, fileNames, path, concurrency, exportID, clusterID, d, totalSize)
 				if err != nil {
 					return errors.Trace(err)

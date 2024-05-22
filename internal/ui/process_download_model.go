@@ -140,7 +140,7 @@ func NewProcessDownloadModel(fileNames []string, concurrency int, path string,
 		exportID:  exportID,
 		clusterID: clusterID,
 		client:    client,
-		batchSize: 5,
+		batchSize: 20,
 	}
 }
 
@@ -234,14 +234,13 @@ func (m *ProcessDownloadModel) View() string {
 }
 
 func (m *ProcessDownloadModel) produce() {
-	// not produce when there are pending jobs
 	if m.jobInfo.pendingJobsNumber != 0 {
 		return
 	}
 	// close the jobs channel when all files are downloaded
 	if len(m.jobInfo.fileNames) == 0 {
 		close(m.jobsCh)
-		// -1 means finished
+		// -1 means no more files needs to get download url
 		m.jobInfo.pendingJobsNumber = -1
 		return
 	}
