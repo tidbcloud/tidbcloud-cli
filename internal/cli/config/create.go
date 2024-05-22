@@ -27,10 +27,9 @@ import (
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 
-	"github.com/fatih/color"
-
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

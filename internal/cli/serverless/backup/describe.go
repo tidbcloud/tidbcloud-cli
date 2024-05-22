@@ -16,17 +16,15 @@ package backup
 
 import (
 	"fmt"
+
 	"tidbcloud-cli/internal/ui"
-
 	"tidbcloud-cli/internal/output"
-
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	brAPI "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 
 	"github.com/spf13/cobra"
-
 	"github.com/juju/errors"
 )
 

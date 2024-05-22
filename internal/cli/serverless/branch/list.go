@@ -16,8 +16,8 @@ package branch
 
 import (
 	"fmt"
-	"tidbcloud-cli/internal/ui"
 
+	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"

@@ -16,8 +16,6 @@ package export
 
 import (
 	"fmt"
-	"tidbcloud-cli/internal/ui"
-
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 
@@ -25,6 +23,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
+	"tidbcloud-cli/internal/ui"
 	exportModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/models"
 )
 

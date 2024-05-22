@@ -16,8 +16,8 @@ package export
 
 import (
 	"fmt"
-	"tidbcloud-cli/internal/ui"
 
+	"tidbcloud-cli/internal/ui"
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/fatih/color"

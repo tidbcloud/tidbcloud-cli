@@ -16,12 +16,12 @@ package dataimport
 
 import (
 	"fmt"
-	"tidbcloud-cli/internal/ui"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/telemetry"
+	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
