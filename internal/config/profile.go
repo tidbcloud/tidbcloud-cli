@@ -26,7 +26,6 @@ import (
 	"tidbcloud-cli/internal/util"
 	"tidbcloud-cli/internal/version"
 
-	"github.com/fatih/color"
 	"github.com/pelletier/go-toml"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
@@ -170,10 +169,11 @@ func (p *Profile) SaveAccessToken(expireAt time.Time, tokenType string, token st
 	if !insecureStorageUsed {
 		err := store.Set(p.name, token)
 		if err != nil {
-			log.Debug("failed to save access token to keyring", zap.Error(err))
-			color.Yellow("failed to save access token to keyring, save to config file instead")
-			// If failed to save to keyring, fallback to save to config file.
-			insecureStorageUsed = true
+			if stderrors.Is(err, store.ErrNotSupported) {
+				return errors.New("keyring is not supported, please add `--insecure-storage true` to save token to config file instead")
+			} else {
+				return errors.Annotate(err, "failed to save access token to keyring")
+			}
 		}
 	}
 

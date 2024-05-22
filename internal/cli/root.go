@@ -30,6 +30,7 @@ import (
 	"tidbcloud-cli/internal/cli/upgrade"
 	"tidbcloud-cli/internal/cli/version"
 	"tidbcloud-cli/internal/config"
+	"tidbcloud-cli/internal/config/store"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/log"
@@ -87,7 +88,7 @@ func Execute(ctx context.Context) {
 				}
 				token, err := config.GetAccessToken()
 				if err != nil {
-					if errors.Is(err, keyring.ErrNotFound) {
+					if errors.Is(err, keyring.ErrNotFound) || errors.Is(err, store.ErrNotSupported) {
 						return nil, ErrMissingCredentials
 					}
 					return nil, err
