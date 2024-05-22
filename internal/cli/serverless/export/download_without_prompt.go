@@ -22,9 +22,10 @@ import (
 	"strings"
 	"sync"
 
+	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
+
 	"github.com/dustin/go-humanize"
 	"github.com/fatih/color"
-	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -146,7 +147,7 @@ func (d *downloadPool) Start() error {
 		}
 	}
 	if failedCount > 0 {
-		return errors.New(fmt.Sprintf("%d file(s) failed to download", failedCount))
+		return fmt.Errorf("%d file(s) failed to download", failedCount)
 	}
 	return nil
 }
