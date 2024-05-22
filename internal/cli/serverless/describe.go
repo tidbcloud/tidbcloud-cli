@@ -18,11 +18,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/telemetry"
+	"tidbcloud-cli/internal/ui"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 
 	"github.com/juju/errors"

@@ -18,10 +18,10 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
+	"tidbcloud-cli/internal/ui"
 	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 
 	"github.com/juju/errors"

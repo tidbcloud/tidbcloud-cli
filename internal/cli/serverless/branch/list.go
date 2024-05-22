@@ -17,11 +17,11 @@ package branch
 import (
 	"fmt"
 
-	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
+	"tidbcloud-cli/internal/ui"
 	branchModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/models"
 
 	"github.com/juju/errors"

@@ -17,12 +17,12 @@ package serverless
 import (
 	"fmt"
 
-	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/telemetry"
+	"tidbcloud-cli/internal/ui"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 
 	"github.com/juju/errors"

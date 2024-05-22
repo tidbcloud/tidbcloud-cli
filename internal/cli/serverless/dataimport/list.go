@@ -18,12 +18,12 @@ import (
 	"fmt"
 	"strconv"
 
-	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/telemetry"
+	"tidbcloud-cli/internal/ui"
 	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
 	"github.com/dustin/go-humanize"

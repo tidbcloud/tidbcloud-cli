@@ -18,10 +18,10 @@ import (
 	"fmt"
 	"strconv"
 
-	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
+	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 
