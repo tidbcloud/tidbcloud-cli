@@ -17,14 +17,14 @@ import (
 // swagger:model v1beta1ExportFile
 type V1beta1ExportFile struct {
 
-	// download url of the file.
+	// download url of the file. It will be set to nil when returned from list files API.
 	DownloadURL *string `json:"downloadUrl,omitempty"`
 
 	// The name of the file.
 	Name string `json:"name,omitempty"`
 
-	// The size in bytes of the file. It will be set to 0 when returned from files:download API
-	Size int64 `json:"size,omitempty"`
+	// The size in bytes of the file. It will be set to nil when returned from files:download API.
+	Size *int64 `json:"size,omitempty"`
 }
 
 // Validate validates this v1beta1 export file

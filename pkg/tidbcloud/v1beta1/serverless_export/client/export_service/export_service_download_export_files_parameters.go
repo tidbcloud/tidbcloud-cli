@@ -72,7 +72,7 @@ type ExportServiceDownloadExportFilesParams struct {
 
 	/* ExportID.
 
-	   Required. The ID of the export to be retrieved.
+	   Required. The ID of the export.
 	*/
 	ExportID string
 

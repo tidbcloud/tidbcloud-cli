@@ -227,7 +227,7 @@
           },
           {
             "name": "exportId",
-            "description": "Required. The ID of the export to be retrieved.",
+            "description": "Required. The ID of the export.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -281,7 +281,7 @@
           },
           {
             "name": "exportId",
-            "description": "Required. The ID of the export to be retrieved.",
+            "description": "Required. The ID of the export.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -647,12 +647,13 @@
         "size": {
           "type": "integer",
           "format": "int64",
-          "title": "The size in bytes of the file. It will be set to 0 when returned from files:download API"
+          "x-nullable": true,
+          "description": "The size in bytes of the file. It will be set to nil when returned from files:download API."
         },
         "downloadUrl": {
           "type": "string",
           "x-nullable": true,
-          "description": "download url of the file."
+          "description": "download url of the file. It will be set to nil when returned from list files API."
         }
       }
     },

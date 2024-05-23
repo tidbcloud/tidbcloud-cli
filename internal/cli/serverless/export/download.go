@@ -162,7 +162,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 
 			var totalSize int64
 			for _, file := range files {
-				totalSize += file.Size
+				totalSize += *file.Size
 			}
 			fileMessage := fmt.Sprintf("There are %d files to download, total size is %s.", len(files), humanize.IBytes(uint64(totalSize)))
 
