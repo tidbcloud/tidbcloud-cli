@@ -272,7 +272,7 @@ func DownloadFilesPrompt(h *internal.Helper, fileNames []string, path string,
 	for _, f := range m.GetFinishedJobs() {
 		if f.GetStatus() != ui.Succeeded {
 			index++
-			fmt.Fprintf(h.IOStreams.Out, "%d.%s\n", index, f.GetErrorString())
+			fmt.Fprintf(h.IOStreams.Out, "%d.%s\n", index, f.GetResult())
 		}
 	}
 

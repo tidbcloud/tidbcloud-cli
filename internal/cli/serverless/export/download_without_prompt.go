@@ -35,6 +35,8 @@ import (
 
 var wg = sync.WaitGroup{}
 
+const BatchSize = 20
+
 // downloadPool download export files concurrently
 type downloadPool struct {
 	path        string
@@ -49,10 +51,9 @@ type downloadPool struct {
 	jobs    chan *downloadJob
 	results chan *downloadResult
 
-	// The number of pending jobs, it used to decide whether to request the next batch
-	pendingJobsNumber int
-	batchSize         int
-	lock              sync.Mutex
+	// fileJobs is a list of jobs that will be set to the jobs channel
+	fileJobs  []*downloadJob
+	batchSize int
 }
 
 func NewDownloadPool(h *internal.Helper, files []string, path string,
@@ -64,7 +65,11 @@ func NewDownloadPool(h *internal.Helper, files []string, path string,
 		concurrency = DefaultConcurrency
 	}
 
-	jobs := make(chan *downloadJob, len(files))
+	jobBufferSize := 2 * concurrency
+	if jobBufferSize > len(files) {
+		jobBufferSize = len(files)
+	}
+	jobs := make(chan *downloadJob, jobBufferSize)
 	results := make(chan *downloadResult, len(files))
 
 	return &downloadPool{
@@ -77,7 +82,7 @@ func NewDownloadPool(h *internal.Helper, files []string, path string,
 		exportID:    exportID,
 		jobs:        jobs,
 		results:     results,
-		batchSize:   20,
+		batchSize:   BatchSize,
 	}, nil
 }
 
@@ -94,9 +99,9 @@ type downloadResult struct {
 	status ui.JobStatus
 }
 
-func (r *downloadResult) GetErrorString() string {
+func (r *downloadResult) GetResult() string {
 	if r.status == ui.Succeeded {
-		return ""
+		return fmt.Sprintf("%s success", r.name)
 	}
 	if r.err == nil {
 		return fmt.Sprintf("%s %s", r.name, r.status)
@@ -112,7 +117,7 @@ func (d *downloadPool) Start() error {
 	}
 	fmt.Fprintf(d.h.IOStreams.Out, color.GreenString("start to download files to %s:\n", d.path))
 	// start produce
-	d.produce()
+	go d.produce()
 	// start consumers:
 	for i := 0; i < d.concurrency; i++ {
 		wg.Add(1)
@@ -142,7 +147,7 @@ func (d *downloadPool) Start() error {
 	for _, f := range downloadResults {
 		if f.status != ui.Succeeded {
 			index++
-			fmt.Fprintf(d.h.IOStreams.Out, "%d.%s\n", index, f.GetErrorString())
+			fmt.Fprintf(d.h.IOStreams.Out, "%d.%s\n", index, f.GetResult())
 		}
 	}
 	if failedCount > 0 {
@@ -152,55 +157,45 @@ func (d *downloadPool) Start() error {
 }
 
 func (d *downloadPool) produce() {
-	if d.pendingJobsNumber != 0 {
-		return
-	}
-	// close the jobs channel when all files are downloaded
-	if len(d.fileNames) == 0 {
-		close(d.jobs)
-		// -1 means finished
-		d.pendingJobsNumber = -1
-		return
-	}
-	// get download url for the next batch
-	size := d.batchSize
-	if size > len(d.fileNames) {
-		size = len(d.fileNames)
-	}
-	downloadFileNames := d.fileNames[:size]
-	d.fileNames = d.fileNames[size:]
-	body := exportApi.ExportServiceDownloadExportFilesBody{
-		FileNames: downloadFileNames,
-	}
-	params := exportApi.NewExportServiceDownloadExportFilesParams().WithClusterID(d.clusterID).
-		WithExportID(d.exportID).WithBody(body)
-	resp, err := d.client.DownloadExportFiles(params)
-	if err != nil {
-		for _, file := range downloadFileNames {
-			d.jobs <- &downloadJob{fileName: file, err: err}
-			d.pendingJobsNumber++
+	jobSize := len(d.fileNames)
+	for i := 0; i < jobSize; i++ {
+		// request the next batch when the fileJobs are not enough
+		if len(d.fileJobs) < i+1 {
+			size := d.batchSize
+			if size > len(d.fileNames) {
+				size = len(d.fileNames)
+			}
+			downloadFileNames := d.fileNames[:size]
+			d.fileNames = d.fileNames[size:]
+			body := exportApi.ExportServiceDownloadExportFilesBody{
+				FileNames: downloadFileNames,
+			}
+			params := exportApi.NewExportServiceDownloadExportFilesParams().WithClusterID(d.clusterID).
+				WithExportID(d.exportID).WithBody(body)
+			resp, err := d.client.DownloadExportFiles(params)
+			if err != nil {
+				for _, file := range downloadFileNames {
+					d.fileJobs = append(d.fileJobs, &downloadJob{fileName: file, err: err})
+				}
+				return
+			}
+			for _, file := range resp.Payload.Files {
+				job := &downloadJob{
+					fileName:    file.Name,
+					downloadUrl: file.DownloadURL,
+				}
+				d.fileJobs = append(d.fileJobs, job)
+			}
 		}
-		return
+		d.jobs <- d.fileJobs[i]
 	}
-	// produce jobs
-	for _, file := range resp.Payload.Files {
-		job := &downloadJob{
-			fileName:    file.Name,
-			downloadUrl: file.DownloadURL,
-		}
-		d.jobs <- job
-		d.pendingJobsNumber++
-	}
+	close(d.jobs)
 }
 
 func (d *downloadPool) consume() {
 	defer wg.Done()
 	for job := range d.jobs {
 		func() {
-			// decrease pending job number first
-			d.lock.Lock()
-			d.pendingJobsNumber--
-			d.lock.Unlock()
 			var err error
 			defer func() {
 				// record result
@@ -215,13 +210,6 @@ func (d *downloadPool) consume() {
 				} else {
 					fmt.Fprintf(d.h.IOStreams.Out, "download %s succeeded | %s\n", job.fileName, humanize.IBytes(uint64(job.size)))
 					d.results <- &downloadResult{name: job.fileName, err: nil, status: ui.Succeeded}
-				}
-
-				// produce more jobs if there is no pending job
-				d.lock.Lock()
-				defer d.lock.Unlock()
-				if d.pendingJobsNumber == 0 {
-					d.produce()
 				}
 			}()
 

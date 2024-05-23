@@ -35,6 +35,7 @@ import (
 const (
 	processDownloadModelPadding  = 2
 	processDownloadModelMaxWidth = 80
+	BatchSize                    = 20
 )
 
 type ResultMsg struct {
@@ -60,9 +61,9 @@ type FileJob struct {
 	pw     *progressWriter
 }
 
-func (f *FileJob) GetErrorString() string {
+func (f *FileJob) GetResult() string {
 	if f.status == Succeeded {
-		return ""
+		return fmt.Sprintf("%s success", f.name)
 	}
 	if f.err == nil {
 		return fmt.Sprintf("%s %s", f.name, f.status)
@@ -86,8 +87,8 @@ type JobInfo struct {
 
 	// fileNames is the name of the files that need to be downloaded
 	fileNames []string
-	// pendingJobsNumber is the number of jobs that waiting to be executed, used to decide whether to request the next batch
-	pendingJobsNumber int
+	// fileJobs is a list of jobs that will be set to the jobs channel
+	fileJobs []*FileJob
 }
 
 type ui struct {
@@ -129,8 +130,12 @@ func NewProcessDownloadModel(fileNames []string, concurrency int, path string,
 		totalNumber:  len(fileNames),
 		fileNames:    fileNames,
 	}
+	jobBufferSize := 2 * concurrency
+	if jobBufferSize > len(fileNames) {
+		jobBufferSize = len(fileNames)
+	}
 	return &ProcessDownloadModel{
-		jobsCh:      make(chan *FileJob, len(fileNames)),
+		jobsCh:      make(chan *FileJob, jobBufferSize),
 		jobInfo:     jobInfo,
 		concurrency: concurrency,
 		outputPath:  path,
@@ -140,7 +145,7 @@ func NewProcessDownloadModel(fileNames []string, concurrency int, path string,
 		exportID:  exportID,
 		clusterID: clusterID,
 		client:    client,
-		batchSize: 20,
+		batchSize: BatchSize,
 	}
 }
 
@@ -148,7 +153,7 @@ func (m *ProcessDownloadModel) Init() tea.Cmd {
 	pro := progress.New(progress.WithDefaultGradient())
 	m.ui.progress = &pro
 	// start produce
-	m.produce()
+	go m.produce()
 	// start consumer goroutine
 	for i := 0; i < m.concurrency; i++ {
 		go m.consume(m.jobsCh)
@@ -234,51 +239,46 @@ func (m *ProcessDownloadModel) View() string {
 }
 
 func (m *ProcessDownloadModel) produce() {
-	if m.jobInfo.pendingJobsNumber != 0 {
-		return
-	}
-	// close the jobs channel when all files are downloaded
-	if len(m.jobInfo.fileNames) == 0 {
-		close(m.jobsCh)
-		// -1 means no more files needs to get download url
-		m.jobInfo.pendingJobsNumber = -1
-		return
-	}
-	// get download url for the next batch
-	size := m.batchSize
-	if size > len(m.jobInfo.fileNames) {
-		size = len(m.jobInfo.fileNames)
-	}
-	downloadFileNames := m.jobInfo.fileNames[:size]
-	m.jobInfo.fileNames = m.jobInfo.fileNames[size:]
-	body := exportApi.ExportServiceDownloadExportFilesBody{
-		FileNames: downloadFileNames,
-	}
-	params := exportApi.NewExportServiceDownloadExportFilesParams().WithClusterID(m.clusterID).
-		WithExportID(m.exportID).WithBody(body)
-	resp, err := m.client.DownloadExportFiles(params)
-	if err != nil {
-		for _, name := range downloadFileNames {
-			id := len(m.jobInfo.idToJob) + 1
-			job := &FileJob{id: id, name: name, err: err}
-			m.jobInfo.idToJob[id] = job
-			m.jobInfo.pendingJobsNumber++
-			m.jobsCh <- job
+	jobSize := len(m.jobInfo.fileNames)
+	jobId := 0
+	for i := 0; i < jobSize; i++ {
+		// request the next batch when the fileJobs are not enough
+		if len(m.jobInfo.fileJobs) < i+1 {
+			size := m.batchSize
+			if size > len(m.jobInfo.fileNames) {
+				size = len(m.jobInfo.fileNames)
+			}
+			downloadFileNames := m.jobInfo.fileNames[:size]
+			m.jobInfo.fileNames = m.jobInfo.fileNames[size:]
+			body := exportApi.ExportServiceDownloadExportFilesBody{
+				FileNames: downloadFileNames,
+			}
+			params := exportApi.NewExportServiceDownloadExportFilesParams().WithClusterID(m.clusterID).
+				WithExportID(m.exportID).WithBody(body)
+			resp, err := m.client.DownloadExportFiles(params)
+			if err != nil {
+				for _, name := range downloadFileNames {
+					jobId++
+					job := &FileJob{id: jobId, name: name, err: err}
+					m.jobInfo.idToJob[jobId] = job
+					m.jobInfo.fileJobs = append(m.jobInfo.fileJobs, job)
+				}
+				return
+			}
+			for _, file := range resp.Payload.Files {
+				jobId++
+				job := &FileJob{
+					id:   jobId,
+					name: file.Name,
+					url:  file.DownloadURL,
+				}
+				m.jobInfo.idToJob[jobId] = job
+				m.jobInfo.fileJobs = append(m.jobInfo.fileJobs, job)
+			}
 		}
-		return
+		m.jobsCh <- m.jobInfo.fileJobs[i]
 	}
-	// produce jobs
-	for _, file := range resp.Payload.Files {
-		id := len(m.jobInfo.idToJob) + 1
-		job := &FileJob{
-			id:   id,
-			name: file.Name,
-			url:  file.DownloadURL,
-		}
-		m.jobInfo.idToJob[id] = job
-		m.jobInfo.pendingJobsNumber++
-		m.jobsCh <- job
-	}
+	close(m.jobsCh)
 }
 
 func (m *ProcessDownloadModel) consume(jobs <-chan *FileJob) {
@@ -287,16 +287,7 @@ func (m *ProcessDownloadModel) consume(jobs <-chan *FileJob) {
 			// add job to startJobs
 			m.jobInfo.lock.Lock()
 			m.jobInfo.startedJobs = append(m.jobInfo.startedJobs, job)
-			m.jobInfo.pendingJobsNumber--
 			m.jobInfo.lock.Unlock()
-
-			defer func() {
-				m.jobInfo.lock.Lock()
-				defer m.jobInfo.lock.Unlock()
-				if m.jobInfo.pendingJobsNumber == 0 {
-					m.produce()
-				}
-			}()
 
 			// check job
 			if job.err != nil {
