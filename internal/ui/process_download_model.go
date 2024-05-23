@@ -86,7 +86,7 @@ type JobInfo struct {
 
 	// fileNames is the name of the files that need to be downloaded
 	fileNames []string
-	// pendingJobsNumber the number of jobs that waiting to be started, used to decide whether to request the next batch
+	// pendingJobsNumber is the number of jobs that waiting to be executed, used to decide whether to request the next batch
 	pendingJobsNumber int
 }
 

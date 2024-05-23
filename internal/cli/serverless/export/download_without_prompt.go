@@ -111,7 +111,7 @@ func (d *downloadPool) Start() error {
 		return err
 	}
 	fmt.Fprintf(d.h.IOStreams.Out, color.GreenString("start to download files to %s:\n", d.path))
-	// Start produce
+	// start produce
 	d.produce()
 	// start consumers:
 	for i := 0; i < d.concurrency; i++ {
