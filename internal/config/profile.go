@@ -228,8 +228,8 @@ func (p *Profile) DeleteAccessToken() error {
 	}
 
 	if t.Has(fmt.Sprintf("%s.%s", p.name, prop.AccessToken)) {
-		// Delete() will treat the key as toml key, so we need to quote the key. But other functions in Tree treat the key
-		// as a string path, so we need to quote the key here.
+		// Delete() will treat the key as a toml key, so we need to quote the key. Other functions in Tree treat the key
+		// as a string path.
 		// see https://github.com/pelletier/go-toml/blob/v1.9.5/toml.go#L409,
 		// https://github.com/pelletier/go-toml/blob/v1.9.5/toml.go#L57.
 		err := t.Delete(fmt.Sprintf("'%s'.%s", p.name, prop.AccessToken))
