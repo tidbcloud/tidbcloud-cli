@@ -97,7 +97,7 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 				openCmd.Stderr = &stderr
 				err = openCmd.Run()
 				if err != nil {
-					fmt.Fprintf(h.IOStreams.Err, "Failed to open a browser: %s\n%s\n", err.Error(), stderr.String())
+					fmt.Fprintf(h.IOStreams.Err, "\nFailed to open a browser: %s\n%s\n", err.Error(), stderr.String())
 				}
 			} else {
 				fmt.Fprintln(h.IOStreams.Out, "Please open the following URL in your browser:")
