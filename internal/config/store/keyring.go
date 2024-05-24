@@ -24,7 +24,7 @@ import (
 const namespace = "ticloud_access_token"
 
 var ErrNotSupported = errors.New("keyring is not supported, you can add `--insecure-storage true` to save token to config file instead.\n" +
-	"or see https://github.com/zalando/go-keyring#dependencies for more details of keyring dependencies")
+	"Or see https://github.com/zalando/go-keyring#dependencies for more details of keyring dependencies.")
 
 func Get(profile string) (string, error) {
 	if err := AssertKeyringSupported(); err != nil {
