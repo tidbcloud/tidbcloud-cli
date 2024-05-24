@@ -15,7 +15,6 @@
 package util
 
 import (
-	"os"
 	"strings"
 
 	exec "golang.org/x/sys/execabs"
@@ -38,7 +37,6 @@ func OpenBrowser(goos, url string) *exec.Cmd {
 	}
 
 	cmd := exec.Command(exe, args...)
-	cmd.Stderr = os.Stderr
 	return cmd
 }
 

@@ -16,6 +16,6 @@
 
 package store
 
-func assertKeyringSupported() error {
+func AssertKeyringSupported() error {
 	return nil
 }

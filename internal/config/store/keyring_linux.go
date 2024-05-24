@@ -25,7 +25,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func assertKeyringSupported() error {
+func AssertKeyringSupported() error {
 	// Suggested check: https://github.com/microsoft/WSL/issues/423
 	if f, err := os.ReadFile("/proc/sys/kernel/osrelease"); err == nil {
 		if bytes.Contains(f, []byte("WSL")) || bytes.Contains(f, []byte("Microsoft")) {

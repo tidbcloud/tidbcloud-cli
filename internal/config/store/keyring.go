@@ -23,10 +23,11 @@ import (
 
 const namespace = "ticloud_access_token"
 
-var ErrNotSupported = errors.New("keyring is not supported, please see https://github.com/zalando/go-keyring#dependencies for more details")
+var ErrNotSupported = errors.New("keyring is not supported, you can add `--insecure-storage true` to save token to config file instead.\n" +
+	"or see https://github.com/zalando/go-keyring#dependencies for more details of keyring dependencies")
 
 func Get(profile string) (string, error) {
-	if err := assertKeyringSupported(); err != nil {
+	if err := AssertKeyringSupported(); err != nil {
 		return "", err
 	}
 	val, err := keyring.Get(namespace, profile)
@@ -40,7 +41,7 @@ func Get(profile string) (string, error) {
 }
 
 func Set(profile, token string) error {
-	if err := assertKeyringSupported(); err != nil {
+	if err := AssertKeyringSupported(); err != nil {
 		return err
 	}
 	if err := keyring.Set(namespace, profile, token); err != nil {
@@ -50,7 +51,7 @@ func Set(profile, token string) error {
 }
 
 func Delete(profile string) error {
-	if err := assertKeyringSupported(); err != nil {
+	if err := AssertKeyringSupported(); err != nil {
 		return err
 	}
 	if err := keyring.Delete(namespace, profile); err != nil {

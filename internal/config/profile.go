@@ -170,7 +170,7 @@ func (p *Profile) SaveAccessToken(expireAt time.Time, tokenType string, token st
 		err := store.Set(p.name, token)
 		if err != nil {
 			if stderrors.Is(err, store.ErrNotSupported) {
-				return errors.New("keyring is not supported, please add `--insecure-storage true` to save token to config file instead")
+				return err
 			} else {
 				return errors.Annotate(err, "failed to save access token to keyring")
 			}

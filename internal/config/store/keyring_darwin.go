@@ -23,7 +23,7 @@ import (
 
 const execPathKeychain = "/usr/bin/security"
 
-func assertKeyringSupported() error {
+func AssertKeyringSupported() error {
 	if errors.Is(exec.Command(execPathKeychain).Run(), exec.ErrNotFound) {
 		return ErrNotSupported
 	}
