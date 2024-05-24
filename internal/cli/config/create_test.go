@@ -79,6 +79,29 @@ func (suite *CreateConfigSuite) TestCreateConfigArgs() {
 			args:         []string{"--profile-name", "teSt1", "--public-key", publicKey, "--private-key", privateKey},
 			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\nCurrent profile has been changed to test1\n",
 		},
+		{
+			name:         "create config with special characters",
+			args:         []string{"--profile-name", "~`!@#$%^&*()_+-={}[]\\|;:,<>/?", "--public-key", publicKey, "--private-key", privateKey},
+			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\nCurrent profile has been changed to ~`!@#$%^&*()_+-={}[]\\|;:,<>/?\n",
+		},
+		{
+			name:         "create config with invalid characters '",
+			args:         []string{"--profile-name", "'", "--public-key", publicKey, "--private-key", privateKey},
+			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\n",
+			err:          fmt.Errorf("profile name cannot contain periods, single quotes and double quotes"),
+		},
+		{
+			name:         "create config with invalid characters \"",
+			args:         []string{"--profile-name", "\"", "--public-key", publicKey, "--private-key", privateKey},
+			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\n",
+			err:          fmt.Errorf("profile name cannot contain periods, single quotes and double quotes"),
+		},
+		{
+			name:         "create config with invalid characters .",
+			args:         []string{"--profile-name", "'", "--public-key", publicKey, "--private-key", privateKey},
+			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\n",
+			err:          fmt.Errorf("profile name cannot contain periods, single quotes and double quotes"),
+		},
 	}
 
 	for _, tt := range tests {

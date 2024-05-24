@@ -61,7 +61,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	var createCmd = &cobra.Command{
 		Use:         "create",
 		Short:       "Configure a user profile to store settings",
-		Long:        "Configure a user profile to store settings, where profile names are case-insensitive and do not contain '.' (periods).",
+		Long:        "Configure a user profile to store settings, where profile names are case-insensitive and do not contain periods, single quotes and double quotes.",
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  To configure a new user profile in interactive mode:
   $ %[1]s config create
@@ -141,6 +141,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				privateKey = priKey
 			}
 
+			if strings.Contains(profileName, ".") || strings.Contains(profileName, "'") || strings.Contains(profileName, `"`) {
+				return fmt.Errorf("profile name cannot contain periods, single quotes and double quotes")
+			}
+
 			// viper treats all key names as case-insensitive see https://github.com/spf13/viper#does-viper-support-case-sensitive-keys
 			// and lowercases all keys  https://github.com/spf13/viper/blob/d9cca5ef33035202efb1586825bdbb15ff9ec3ba/viper.go#L1303
 			profileName = strings.ToLower(profileName)
@@ -167,7 +171,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	createCmd.Flags().String(flag.ProfileName, "", "The name of the profile, must not contain '.'.")
+	createCmd.Flags().String(flag.ProfileName, "", "The name of the profile, must not contain contain periods, single quotes and double quotes.")
 	createCmd.Flags().String(flag.PublicKey, "", "The public key of the TiDB Cloud API. (optional)")
 	createCmd.Flags().String(flag.PrivateKey, "", "The private key of the TiDB Cloud API. (optional)")
 	return createCmd
@@ -191,10 +195,10 @@ func initialCreationInputModel() ui.TextInputModel {
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
-			t.Placeholder = "Profile Name must not contain '.'"
+			t.Placeholder = "Profile Name must not contain contain periods, single quotes and double quotes"
 			t.Validate = func(value string) error {
-				if strings.Contains(value, ".") {
-					return fmt.Errorf("profile name cannot contain '.'")
+				if strings.Contains(value, ".") || strings.Contains(value, "'") || strings.Contains(value, `"`) {
+					return fmt.Errorf("profile name cannot contain contain periods, single quotes and double quotes")
 				}
 				return nil
 			}

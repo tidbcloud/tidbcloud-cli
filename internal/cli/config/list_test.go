@@ -66,6 +66,8 @@ func (suite *ListConfigSuite) TestListConfigArgs() {
 	viper.Set("current-profile", profile)
 	viper.Set("test1.public-key", publicKey)
 	viper.Set("test1.private-key", privateKey)
+	viper.Set("~`!@#$%^&*()_+-={}[]\\|;:,<>/?.public-key", publicKey)
+	viper.Set("~`!@#$%^&*()_+-={}[]\\|;:,<>/?.private-key", privateKey)
 	err := viper.WriteConfig()
 	if err != nil {
 		suite.T().Error(err)
@@ -81,7 +83,7 @@ func (suite *ListConfigSuite) TestListConfigArgs() {
 		{
 			name:         "list config",
 			args:         []string{},
-			stdoutString: "Profile Name\ntest\t(active)\ntest1\n",
+			stdoutString: "Profile Name\ntest\t(active)\ntest1\n~`!@#$%^&*()_+-={}[]\\|;:,<>/?\n",
 		},
 	}
 

@@ -185,6 +185,61 @@ func (suite *DeleteConfigSuite) TestDeleteConfigWithActiveProfile() {
 	}
 }
 
+func (suite *DeleteConfigSuite) TestDeleteConfigWithSpecialCharacters() {
+	assert := require.New(suite.T())
+	newProfile := "~`!@#$%^&*()_+-={}[]\\|;:,<>/?"
+	publicKey := "SDIWODIJQNDKJQW"
+	privateKey := "SDWIOUEOSDSDC"
+
+	viper.Set("~`!@#$%^&*()_+-={}[]\\|;:,<>/?.public-key", publicKey)
+	viper.Set("~`!@#$%^&*()_+-={}[]\\|;:,<>/?.private-key", privateKey)
+	viper.Set("current-profile", newProfile)
+
+	err := viper.WriteConfig()
+	if err != nil {
+		suite.T().Error(err)
+	}
+
+	tests := []struct {
+		name         string
+		args         []string
+		err          error
+		stdoutString string
+		stderrString string
+	}{
+		{
+			name:         "delete active profile",
+			args:         []string{"~`!@#$%^&*()_+-={}[]\\|;:,<>/?", "--force"},
+			stdoutString: "Profile ~`!@#$%^&*()_+-={}[]\\|;:,<>/? deleted successfully\n",
+		},
+	}
+
+	for _, tt := range tests {
+		suite.T().Run(tt.name, func(t *testing.T) {
+			cmd := DeleteCmd(suite.h)
+			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
+			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
+			cmd.SetArgs(tt.args)
+			err = cmd.Execute()
+			assert.Equal(tt.err, err)
+
+			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
+			assert.Equal(tt.stderrString, suite.h.IOStreams.Err.(*bytes.Buffer).String())
+
+			viper.Reset()
+			viper.AddConfigPath(".")
+			viper.SetConfigType("toml")
+			viper.SetConfigName(".tidbcloud-cli")
+			err = viper.ReadInConfig()
+			assert.Nil(err)
+			assert.Equal("test", viper.GetString("current-profile"))
+			assert.Equal("", viper.GetString(tt.args[0]+".public-key"))
+			assert.Equal("", viper.GetString(tt.args[0]+".private-key"))
+			assert.Equal("", viper.GetString(tt.args[0]))
+		})
+	}
+}
+
 func TestDeleteConfigSuite(t *testing.T) {
 	suite.Run(t, new(DeleteConfigSuite))
 }
