@@ -23,7 +23,7 @@ import (
 
 const namespace = "ticloud_access_token"
 
-var ErrNotSupported = errors.New("keyring is not supported on WSL")
+var ErrNotSupported = errors.New("keyring is not supported, please see https://github.com/zalando/go-keyring#dependencies for more details")
 
 func Get(profile string) (string, error) {
 	if err := assertKeyringSupported(); err != nil {
