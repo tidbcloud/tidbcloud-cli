@@ -91,7 +91,7 @@ func (suite *SetConfigSuite) TestSetConfigArgs() {
 		{
 			name: "set config with no args",
 			args: []string{},
-			err:  fmt.Errorf("missing arguments <property-name, value> \n\nUsage:\n  set <property-name> <value> [flags]\n\nExamples:\n  Set the value of the public-key in active profile:\n  $ ticloud config set public-key <public-key>\n\n  Set the value of the public-key in the specific profile \"test\":\n  $ ticloud config set public-key <public-key> -P test\n\nFlags:\n  -h, --help   help for set\n"),
+			err:  fmt.Errorf("accepts 2 arg(s), received 0"),
 		},
 		{
 			name: "set config with unknown property",

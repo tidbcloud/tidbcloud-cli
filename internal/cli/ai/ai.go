@@ -59,6 +59,7 @@ func AICmd(h *internal.Helper) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:         "ai",
 		Short:       "Chat with TiDB Bot",
+		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Chat with TiDB Bot in interactive mode:
   $ %[1]s ai

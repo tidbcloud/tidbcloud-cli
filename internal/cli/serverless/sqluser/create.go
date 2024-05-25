@@ -79,6 +79,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	var CreateCmd = &cobra.Command{
 		Use:         "create",
 		Short:       "Create a SQL user",
+		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Create a SQL user in interactive mode:
   $ %[1]s serverless sql-user create

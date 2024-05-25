@@ -29,6 +29,7 @@ import (
 func VersionCmd(h *internal.Helper) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:    "version",
+		Args:   cobra.NoArgs,
 		Hidden: true,
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Fprintln(h.IOStreams.Out, Format(version.Version, version.Commit, version.Date))

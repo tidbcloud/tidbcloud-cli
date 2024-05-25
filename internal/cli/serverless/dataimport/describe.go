@@ -50,6 +50,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		Use:         "describe",
 		Short:       "Describe a data import task",
 		Aliases:     []string{"get"},
+		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Describe an import task in interactive mode:
   $ %[1]s serverless import describe

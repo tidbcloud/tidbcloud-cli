@@ -39,6 +39,7 @@ func Cmd(h *internal.Helper) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "upgrade",
 		Short: "Upgrade the CLI to the latest version",
+		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			// If is managed by TiUP, we should disable the update command since binpath is different.

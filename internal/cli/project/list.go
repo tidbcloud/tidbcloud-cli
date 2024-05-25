@@ -35,6 +35,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		Use:     "list",
 		Short:   "List all accessible projects",
 		Aliases: []string{"ls"},
+		Args:    cobra.NoArgs,
 		Example: fmt.Sprintf(`  List the projects:
   $ %[1]s project list
 

@@ -50,6 +50,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		Use:         "list",
 		Short:       "List data import tasks",
 		Aliases:     []string{"ls"},
+		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  List import tasks in interactive mode:
   $ %[1]s serverless import list

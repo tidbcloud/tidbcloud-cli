@@ -67,6 +67,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:   "list",
 		Short: "List branches",
+		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  List all branches in interactive mode:
   $ %[1]s serverless branch list
 
