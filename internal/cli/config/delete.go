@@ -83,7 +83,10 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			err = t.Delete(fmt.Sprintf("'%s'", curProfileName))
+			if !t.Has(curProfileName) {
+				return fmt.Errorf("profile `%s` does not exist", curProfileName)
+			}
+			err = t.Delete(string(util.EncodeTomlKey(curProfileName)))
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -110,7 +113,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 				if newP == "" {
 					// If there is no other profile, unset current profile
-					err = t.Delete(fmt.Sprintf("'%s'", prop.CurProfile))
+					err = t.Delete(string(util.EncodeTomlKey(prop.CurProfile)))
 					if err != nil {
 						return errors.Trace(err)
 					}

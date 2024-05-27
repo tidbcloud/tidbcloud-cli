@@ -90,22 +90,25 @@ func (suite *CreateConfigSuite) TestCreateConfigArgs() {
 			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\nCurrent profile has been changed to ~`!@#$%^&*()_+-={}[]\\|;:,<>/?\n",
 		},
 		{
-			name:         "create config with invalid characters '",
+			name:         "create config with special character '",
 			args:         []string{"--profile-name", "'", "--public-key", publicKey, "--private-key", privateKey},
-			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\n",
-			err:          fmt.Errorf("profile name cannot contain periods, single quotes and double quotes"),
+			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\nCurrent profile has been changed to '\n",
 		},
 		{
-			name:         "create config with invalid characters \"",
+			name:         "create config with special character \"",
 			args:         []string{"--profile-name", "\"", "--public-key", publicKey, "--private-key", privateKey},
-			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\n",
-			err:          fmt.Errorf("profile name cannot contain periods, single quotes and double quotes"),
+			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\nCurrent profile has been changed to \"\n",
 		},
 		{
-			name:         "create config with invalid characters .",
-			args:         []string{"--profile-name", "'", "--public-key", publicKey, "--private-key", privateKey},
+			name:         "create config with both \" and '",
+			args:         []string{"--profile-name", "'\"", "--public-key", publicKey, "--private-key", privateKey},
 			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\n",
-			err:          fmt.Errorf("profile name cannot contain periods, single quotes and double quotes"),
+			err:          fmt.Errorf("profile name cannot contain both single and double quotes"),
+		}, {
+			name:         "create config with invalid characters .",
+			args:         []string{"--profile-name", ".", "--public-key", publicKey, "--private-key", privateKey},
+			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\n",
+			err:          fmt.Errorf("profile name cannot contain periods"),
 		},
 	}
 
