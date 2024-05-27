@@ -14,6 +14,7 @@
 
 package util
 
+// These code is copied from https://github.com/pelletier/go-toml/blob/v2/marshaler.go
 const literalQuote = '\''
 
 func EncodeTomlKey(k string) []byte {

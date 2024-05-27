@@ -143,7 +143,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				privateKey = priKey
 			}
 
-			if strings.ContainsAny(profileName, `.`) {
+			if strings.Contains(profileName, `.`) {
 				return fmt.Errorf("profile name cannot contain periods")
 			}
 			if strings.Contains(profileName, "\"") && strings.Contains(profileName, "'") {
@@ -202,7 +202,7 @@ func initialCreationInputModel() ui.TextInputModel {
 			t.TextStyle = config.FocusedStyle
 			t.Placeholder = "Profile Name must not contain periods"
 			t.Validate = func(value string) error {
-				if strings.ContainsAny(value, `.`) {
+				if strings.Contains(value, `.`) {
 					return fmt.Errorf("profile name cannot contain periods")
 				}
 				return nil
