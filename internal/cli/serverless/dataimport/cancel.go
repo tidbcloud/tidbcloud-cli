@@ -53,6 +53,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 	var cancelCmd = &cobra.Command{
 		Use:         "cancel",
 		Short:       "Cancel a data import task",
+		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Cancel an import task in interactive mode:
   $ %[1]s serverless import cancel

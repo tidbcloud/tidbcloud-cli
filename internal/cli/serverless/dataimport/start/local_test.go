@@ -330,7 +330,6 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 			cmd := StartCmd(suite.h)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
-			tt.args = append([]string{"local"}, tt.args...)
 			cmd.SetArgs(tt.args)
 			err = cmd.Execute()
 			assert.Equal(tt.err, err)

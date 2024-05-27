@@ -81,6 +81,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 		Use:         "start",
 		Short:       "Start a data import task",
 		Aliases:     []string{"create"},
+		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Start an import task in interactive mode:
   $ %[1]s serverless import start

@@ -76,6 +76,7 @@ func ShellCmd(h *internal.Helper) *cobra.Command {
 		Short: "Connect to a branch",
 		Long: `Connect to a branch. 
 The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_ansi) for the session.`,
+		Args: cobra.NoArgs,
 		Example: fmt.Sprintf(`  Connect to a branch in interactive mode:
   $ %[1]s serverless branch shell
 

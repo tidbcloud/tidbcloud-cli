@@ -16,6 +16,7 @@ package config
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"testing"
 
@@ -82,6 +83,11 @@ func (suite *ListConfigSuite) TestListConfigArgs() {
 			name:         "list config",
 			args:         []string{},
 			stdoutString: "Profile Name\ntest\t(active)\ntest1\n",
+		},
+		{
+			name: "list config with 1 arg",
+			args: []string{"arg1"},
+			err:  fmt.Errorf(`unknown command "arg1" for "list"`),
 		},
 	}
 

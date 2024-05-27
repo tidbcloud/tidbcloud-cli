@@ -79,6 +79,11 @@ func (suite *CreateConfigSuite) TestCreateConfigArgs() {
 			args:         []string{"--profile-name", "teSt1", "--public-key", publicKey, "--private-key", privateKey},
 			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\nCurrent profile has been changed to test1\n",
 		},
+		{
+			name: "create config with 1 arg",
+			args: []string{"arg1"},
+			err:  fmt.Errorf(`unknown command "arg1" for "create"`),
+		},
 	}
 
 	for _, tt := range tests {

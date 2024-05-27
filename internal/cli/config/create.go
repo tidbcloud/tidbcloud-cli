@@ -16,6 +16,7 @@ package config
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"tidbcloud-cli/internal"
@@ -63,6 +64,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		Short:       "Configure a user profile to store settings",
 		Long:        "Configure a user profile to store settings, where profile names are case-insensitive and do not contain '.' (periods).",
 		Annotations: make(map[string]string),
+		Args:        cobra.NoArgs,
 		Example: fmt.Sprintf(`  To configure a new user profile in interactive mode:
   $ %[1]s config create
 
@@ -148,7 +150,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
-			if util.ElemInSlice(profiles, profileName) {
+			if slices.Contains(profiles, profileName) {
 				return fmt.Errorf("profile %s already exists, use `config set` to modify", profileName)
 			}
 

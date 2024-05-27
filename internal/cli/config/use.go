@@ -22,7 +22,6 @@ import (
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
-	"tidbcloud-cli/internal/util"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -35,7 +34,7 @@ func UseCmd(h *internal.Helper) *cobra.Command {
 		Short: "Use the specified profile as the active profile",
 		Example: fmt.Sprintf(`  Use the "test" profile as the active profile:
   $ %[1]s config use test`, config.CliName),
-		Args: util.RequiredArgs("profile-name"),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			profileName := strings.ToLower(args[0])
 			err := SetProfile(h.IOStreams.Out, profileName)
