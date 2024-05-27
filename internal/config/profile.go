@@ -18,12 +18,12 @@ import (
 	stderrors "errors"
 	"fmt"
 	"os"
+	"slices"
 	"sort"
 	"time"
 
 	"tidbcloud-cli/internal/config/store"
 	"tidbcloud-cli/internal/prop"
-	"tidbcloud-cli/internal/util"
 	"tidbcloud-cli/internal/version"
 
 	"github.com/pelletier/go-toml"
@@ -48,7 +48,7 @@ func ValidateProfile(profileName string) error {
 		return err
 	}
 
-	if !util.ElemInSlice(profiles, profileName) {
+	if !slices.Contains(profiles, profileName) {
 		return fmt.Errorf("profile %s not found", profileName)
 	}
 
@@ -60,7 +60,7 @@ func GetAllProfiles() ([]string, error) {
 	keys := make([]string, 0, len(s))
 	// Profile names and global properties are at the same level in the config file, filter out global properties.
 	for k := range s {
-		if !util.ElemInSlice(prop.GlobalProperties(), k) {
+		if !slices.Contains(prop.GlobalProperties(), k) {
 			keys = append(keys, k)
 		}
 	}

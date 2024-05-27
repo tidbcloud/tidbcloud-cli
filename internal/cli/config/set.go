@@ -16,11 +16,11 @@ package config
 
 import (
 	"fmt"
+	"slices"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
-	"tidbcloud-cli/internal/util"
 
 	"github.com/fatih/color"
 	"github.com/juju/errors"
@@ -42,13 +42,13 @@ If not, the config in the active profile will be set`, prop.ProfileProperties())
 
   Set the value of the public-key in the specific profile "test":
   $ %[1]s config set public-key <public-key> -P test`, config.CliName),
-		Args: util.RequiredArgs("property-name", "value"),
+		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			propertyName := args[0]
 			value := args[1]
 
 			var res string
-			if util.ElemInSlice(prop.ProfileProperties(), propertyName) {
+			if slices.Contains(prop.ProfileProperties(), propertyName) {
 				curP := config.ActiveProfileName()
 				if curP == "" {
 					return fmt.Errorf("no profile is configured, please use `config create` to create a profile")

@@ -91,7 +91,7 @@ func (suite *DeleteConfigSuite) TestDeleteConfigArgs() {
 		{
 			name: "delete config with no args",
 			args: []string{"--force"},
-			err:  fmt.Errorf("missing argument <profile-name> \n\nUsage:\n  delete <profile-name> [flags]\n\nAliases:\n  delete, rm\n\nExamples:\n  Delete the profile configuration:\n  $ ticloud config delete <profile-name>\n\nFlags:\n      --force   Delete a profile without confirmation.\n  -h, --help    help for delete\n"),
+			err:  fmt.Errorf("accepts 1 arg(s), received 0"),
 		},
 		{
 			name:         "delete config with non-existed profile",

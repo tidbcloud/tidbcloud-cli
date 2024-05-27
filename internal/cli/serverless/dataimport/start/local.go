@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"slices"
 	"time"
 
 	"tidbcloud-cli/internal"
@@ -141,7 +142,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		// non-interactive mode
 		clusterID = cmd.Flag(flag.ClusterID).Value.String()
 		fileType = cmd.Flag(flag.FileType).Value.String()
-		if !util.ElemInSlice(o.SupportedFileTypes(), fileType) {
+		if !slices.Contains(o.SupportedFileTypes(), fileType) {
 			return fmt.Errorf("file type \"%s\" is not supported, please use one of %q", fileType, o.SupportedFileTypes())
 		}
 		targetDatabase = cmd.Flag(flag.LocalTargetDatabase).Value.String()
@@ -340,7 +341,7 @@ func spinnerWaitUploadOp(ctx context.Context, h *internal.Helper, u s3.Uploader,
 		input.OnProgress(1.0)
 	}()
 
-	fmt.Fprintf(h.IOStreams.Out, color.GreenString("Start uploading...\n"))
+	fmt.Fprint(h.IOStreams.Out, color.GreenString("Start uploading...\n"))
 
 	processModel, err := p.Run()
 	if err != nil {

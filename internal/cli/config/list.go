@@ -32,6 +32,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		Use:     "list",
 		Short:   "List all profiles",
 		Aliases: []string{"ls"},
+		Args:    cobra.NoArgs,
 		Example: fmt.Sprintf(`  List all available profiles:
   $ %[1]s config list`, config.CliName),
 		RunE: func(cmd *cobra.Command, args []string) error {

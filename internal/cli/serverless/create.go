@@ -81,6 +81,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	var createCmd = &cobra.Command{
 		Use:         "create",
 		Short:       "Create a TiDB Serverless cluster",
+		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Create a TiDB Serverless cluster in interactive mode:
   $ %[1]s serverless create

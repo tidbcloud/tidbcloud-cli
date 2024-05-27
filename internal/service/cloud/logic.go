@@ -17,6 +17,7 @@ package cloud
 import (
 	"context"
 	"fmt"
+	"slices"
 
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
@@ -462,7 +463,7 @@ func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client T
 
 	var items = make([]interface{}, 0, len(importItems))
 	for _, item := range importItems {
-		if len(statusFilter) != 0 && !util.ElemInSlice(statusFilter, item.State) {
+		if len(statusFilter) != 0 && !slices.Contains(statusFilter, item.State) {
 			continue
 		}
 

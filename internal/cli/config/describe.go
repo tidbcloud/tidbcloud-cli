@@ -21,7 +21,6 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/util"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -35,7 +34,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		Short:   "Describe a specific profile",
 		Example: fmt.Sprintf(`  Describe the profile configuration:
   $ %[1]s config describe <profile-name>`, config.CliName),
-		Args: util.RequiredArgs("profile-name"),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			name := strings.ToLower(args[0])
 			err := config.ValidateProfile(name)

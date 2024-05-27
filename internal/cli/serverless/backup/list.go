@@ -67,6 +67,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:   "list",
 		Short: "List backups",
+		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  List the backups in interactive mode:
   $ %[1]s serverless backup list
 
