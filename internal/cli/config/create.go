@@ -141,7 +141,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				privateKey = priKey
 			}
 
-			if strings.Contains(profileName, ".") || strings.Contains(profileName, "'") || strings.Contains(profileName, `"`) {
+			if strings.ContainsAny(profileName, `.'"`) {
 				return fmt.Errorf("profile name cannot contain periods, single quotes and double quotes")
 			}
 
@@ -197,7 +197,7 @@ func initialCreationInputModel() ui.TextInputModel {
 			t.TextStyle = config.FocusedStyle
 			t.Placeholder = "Profile Name must not contain contain periods, single quotes and double quotes"
 			t.Validate = func(value string) error {
-				if strings.Contains(value, ".") || strings.Contains(value, "'") || strings.Contains(value, `"`) {
+				if strings.ContainsAny(value, `.'"`) {
 					return fmt.Errorf("profile name cannot contain contain periods, single quotes and double quotes")
 				}
 				return nil
