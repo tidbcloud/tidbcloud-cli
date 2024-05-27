@@ -19,6 +19,7 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
+	"tidbcloud-cli/internal/config/store"
 	"tidbcloud-cli/internal/flag"
 	ver "tidbcloud-cli/internal/version"
 
@@ -55,7 +56,7 @@ func LogoutCmd(h *internal.Helper) *cobra.Command {
 			ctx := cmd.Context()
 			token, err := config.GetAccessToken()
 			if err != nil {
-				if errors.Is(err, keyring.ErrNotFound) {
+				if errors.Is(err, keyring.ErrNotFound) || errors.Is(err, store.ErrNotSupported) {
 					fmt.Fprintln(h.IOStreams.Out, color.YellowString("You are not logged in."))
 					return nil
 				}

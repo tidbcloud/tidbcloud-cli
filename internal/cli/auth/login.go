@@ -15,6 +15,7 @@
 package auth
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"runtime"
@@ -22,6 +23,7 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
+	"tidbcloud-cli/internal/config/store"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/util"
 	ver "tidbcloud-cli/internal/version"
@@ -58,6 +60,14 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
+
+			// fail fast if keyring is not supported
+			if !opts.insecureStorage {
+				if err := store.AssertKeyringSupported(); err != nil {
+					return err
+				}
+			}
+
 			body := AuthRequest{
 				ClientID: config.GetOAuthClientID(),
 			}
@@ -83,9 +93,11 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 				fmt.Fprintln(h.IOStreams.Out, "\n", result.VerificationURIComplete)
 				fmt.Fprintln(h.IOStreams.Out, "\n", "Confirmation Code: ", color.GreenString(result.UserCode))
 				openCmd := util.OpenBrowser(runtime.GOOS, result.VerificationURIComplete)
+				stderr := bytes.Buffer{}
+				openCmd.Stderr = &stderr
 				err = openCmd.Run()
 				if err != nil {
-					fmt.Fprintln(h.IOStreams.Err, "Failed to open a browser: ", err.Error())
+					fmt.Fprintf(h.IOStreams.Err, "\nFailed to open a browser: %s\n%s\n", err.Error(), stderr.String())
 				}
 			} else {
 				fmt.Fprintln(h.IOStreams.Out, "Please open the following URL in your browser:")
