@@ -42,12 +42,12 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			}
 			curP := viper.Get(prop.CurProfile)
 
-			fmt.Fprintf(h.IOStreams.Out, "Profile Name\n")
+			fmt.Fprintln(h.IOStreams.Out, "Profile Name")
 			for _, key := range profiles {
 				if key == curP {
-					fmt.Fprint(h.IOStreams.Out, color.GreenString(key+"\t(active)\n"))
+					fmt.Fprintln(h.IOStreams.Out, color.GreenString(key+"\t(active)"))
 				} else {
-					fmt.Fprint(h.IOStreams.Out, color.GreenString(key+"\n"))
+					fmt.Fprintln(h.IOStreams.Out, color.GreenString(key))
 				}
 			}
 			return nil

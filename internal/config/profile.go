@@ -24,6 +24,7 @@ import (
 
 	"tidbcloud-cli/internal/config/store"
 	"tidbcloud-cli/internal/prop"
+	"tidbcloud-cli/internal/util"
 	"tidbcloud-cli/internal/version"
 
 	"github.com/pelletier/go-toml"
@@ -227,22 +228,27 @@ func (p *Profile) DeleteAccessToken() error {
 		return errors.Trace(err)
 	}
 
+	key := util.EncodeTomlKey(p.name)
 	if t.Has(fmt.Sprintf("%s.%s", p.name, prop.AccessToken)) {
-		err := t.Delete(fmt.Sprintf("%s.%s", p.name, prop.AccessToken))
+		// Delete() will treat the key as a toml key, so we need to quote the key. Other functions in Tree treat the key
+		// as a string path.
+		// see https://github.com/pelletier/go-toml/blob/v1.9.5/toml.go#L409,
+		// https://github.com/pelletier/go-toml/blob/v1.9.5/toml.go#L57.
+		err := t.Delete(fmt.Sprintf("%s.%s", key, prop.AccessToken))
 		if err != nil {
 			return err
 		}
 	}
 
 	if t.Has(fmt.Sprintf("%s.%s", p.name, prop.TokenType)) {
-		err = t.Delete(fmt.Sprintf("%s.%s", p.name, prop.TokenType))
+		err = t.Delete(fmt.Sprintf("%s.%s", key, prop.TokenType))
 		if err != nil {
 			return err
 		}
 	}
 
 	if t.Has(fmt.Sprintf("%s.%s", p.name, prop.TokenExpiredAt)) {
-		err = t.Delete(fmt.Sprintf("%s.%s", p.name, prop.TokenExpiredAt))
+		err = t.Delete(fmt.Sprintf("%s.%s", key, prop.TokenExpiredAt))
 		if err != nil {
 			return err
 		}
