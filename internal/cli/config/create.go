@@ -176,7 +176,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	createCmd.Flags().String(flag.ProfileName, "", "The name of the profile, must not contain contain periods.")
+	createCmd.Flags().String(flag.ProfileName, "", "The name of the profile, must not contain periods.")
 	createCmd.Flags().String(flag.PublicKey, "", "The public key of the TiDB Cloud API. (optional)")
 	createCmd.Flags().String(flag.PrivateKey, "", "The private key of the TiDB Cloud API. (optional)")
 	return createCmd
@@ -200,10 +200,10 @@ func initialCreationInputModel() ui.TextInputModel {
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
-			t.Placeholder = "Profile Name must not contain contain periods"
+			t.Placeholder = "Profile Name must not contain periods"
 			t.Validate = func(value string) error {
 				if strings.ContainsAny(value, `.`) {
-					return fmt.Errorf("profile name cannot contain contain periods")
+					return fmt.Errorf("profile name cannot contain periods")
 				}
 				return nil
 			}
