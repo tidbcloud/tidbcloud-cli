@@ -91,12 +91,12 @@ func (suite *DeleteConfigSuite) TestDeleteConfigArgs() {
 		{
 			name: "delete config with no args",
 			args: []string{"--force"},
-			err:  fmt.Errorf("missing argument <profile-name> \n\nUsage:\n  delete <profile-name> [flags]\n\nAliases:\n  delete, rm\n\nExamples:\n  Delete the profile configuration:\n  $ ticloud config delete <profile-name>\n\nFlags:\n      --force   Delete a profile without confirmation.\n  -h, --help    help for delete\n"),
+			err:  fmt.Errorf("accepts 1 arg(s), received 0"),
 		},
 		{
-			name:         "delete config with non-existed profile",
-			args:         []string{"test1", "--force"},
-			stdoutString: "Profile test1 deleted successfully\n",
+			name: "delete config with non-existed profile",
+			args: []string{"test1", "--force"},
+			err:  fmt.Errorf("profile `test1` does not exist"),
 		},
 	}
 
@@ -156,6 +156,116 @@ func (suite *DeleteConfigSuite) TestDeleteConfigWithActiveProfile() {
 			name:         "delete active profile",
 			args:         []string{"newtest", "--force"},
 			stdoutString: "Profile newtest deleted successfully\n",
+		},
+	}
+
+	for _, tt := range tests {
+		suite.T().Run(tt.name, func(t *testing.T) {
+			cmd := DeleteCmd(suite.h)
+			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
+			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
+			cmd.SetArgs(tt.args)
+			err = cmd.Execute()
+			assert.Equal(tt.err, err)
+
+			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
+			assert.Equal(tt.stderrString, suite.h.IOStreams.Err.(*bytes.Buffer).String())
+
+			viper.Reset()
+			viper.AddConfigPath(".")
+			viper.SetConfigType("toml")
+			viper.SetConfigName(".tidbcloud-cli")
+			err = viper.ReadInConfig()
+			assert.Nil(err)
+			assert.Equal("test", viper.GetString("current-profile"))
+			assert.Equal("", viper.GetString(tt.args[0]+".public-key"))
+			assert.Equal("", viper.GetString(tt.args[0]+".private-key"))
+			assert.Equal("", viper.GetString(tt.args[0]))
+		})
+	}
+}
+
+func (suite *DeleteConfigSuite) TestDeleteConfigWithSpecialCharactersSingleQuote() {
+	assert := require.New(suite.T())
+	newProfile := "'~`!'@#$%^&*()_+-={}[]\\|;:,<>/?'"
+	publicKey := "SDIWODIJQNDKJQW"
+	privateKey := "SDWIOUEOSDSDC"
+
+	viper.Set(fmt.Sprintf("%s.public-key", newProfile), publicKey)
+	viper.Set(fmt.Sprintf("%s.private-key", newProfile), privateKey)
+	viper.Set("current-profile", newProfile)
+
+	err := viper.WriteConfig()
+	if err != nil {
+		suite.T().Error(err)
+	}
+
+	tests := []struct {
+		name         string
+		args         []string
+		err          error
+		stdoutString string
+		stderrString string
+	}{
+		{
+			name:         "delete active profile",
+			args:         []string{newProfile, "--force"},
+			stdoutString: "Profile '~`!'@#$%^&*()_+-={}[]\\|;:,<>/?' deleted successfully\n",
+		},
+	}
+
+	for _, tt := range tests {
+		suite.T().Run(tt.name, func(t *testing.T) {
+			cmd := DeleteCmd(suite.h)
+			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
+			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
+			cmd.SetArgs(tt.args)
+			err = cmd.Execute()
+			assert.Equal(tt.err, err)
+
+			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
+			assert.Equal(tt.stderrString, suite.h.IOStreams.Err.(*bytes.Buffer).String())
+
+			viper.Reset()
+			viper.AddConfigPath(".")
+			viper.SetConfigType("toml")
+			viper.SetConfigName(".tidbcloud-cli")
+			err = viper.ReadInConfig()
+			assert.Nil(err)
+			assert.Equal("test", viper.GetString("current-profile"))
+			assert.Equal("", viper.GetString(tt.args[0]+".public-key"))
+			assert.Equal("", viper.GetString(tt.args[0]+".private-key"))
+			assert.Equal("", viper.GetString(tt.args[0]))
+		})
+	}
+}
+
+func (suite *DeleteConfigSuite) TestDeleteConfigWithSpecialCharactersDoubleQuote() {
+	assert := require.New(suite.T())
+	newProfile := "\"~`!\"@#$%^&*()_+-={}[]\\|;:,<>/?\""
+	publicKey := "SDIWODIJQNDKJQW"
+	privateKey := "SDWIOUEOSDSDC"
+
+	viper.Set(fmt.Sprintf("%s.public-key", newProfile), publicKey)
+	viper.Set(fmt.Sprintf("%s.private-key", newProfile), privateKey)
+	viper.Set("current-profile", newProfile)
+
+	err := viper.WriteConfig()
+	if err != nil {
+		suite.T().Error(err)
+	}
+
+	tests := []struct {
+		name         string
+		args         []string
+		err          error
+		stdoutString string
+		stderrString string
+	}{
+		{
+			name:         "delete active profile",
+			args:         []string{newProfile, "--force"},
+			stdoutString: "Profile \"~`!\"@#$%^&*()_+-={}[]\\|;:,<>/?\" deleted successfully\n",
 		},
 	}
 

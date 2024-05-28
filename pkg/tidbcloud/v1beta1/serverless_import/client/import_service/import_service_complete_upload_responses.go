@@ -6,6 +6,7 @@ package import_service
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -86,11 +87,13 @@ func (o *ImportServiceCompleteUploadOK) Code() int {
 }
 
 func (o *ImportServiceCompleteUploadOK) Error() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:completeUpload][%d] importServiceCompleteUploadOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:completeUpload][%d] importServiceCompleteUploadOK %s", 200, payload)
 }
 
 func (o *ImportServiceCompleteUploadOK) String() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:completeUpload][%d] importServiceCompleteUploadOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:completeUpload][%d] importServiceCompleteUploadOK %s", 200, payload)
 }
 
 func (o *ImportServiceCompleteUploadOK) GetPayload() interface{} {
@@ -156,11 +159,13 @@ func (o *ImportServiceCompleteUploadDefault) Code() int {
 }
 
 func (o *ImportServiceCompleteUploadDefault) Error() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:completeUpload][%d] ImportService_CompleteUpload default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:completeUpload][%d] ImportService_CompleteUpload default %s", o._statusCode, payload)
 }
 
 func (o *ImportServiceCompleteUploadDefault) String() string {
-	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:completeUpload][%d] ImportService_CompleteUpload default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:completeUpload][%d] ImportService_CompleteUpload default %s", o._statusCode, payload)
 }
 
 func (o *ImportServiceCompleteUploadDefault) GetPayload() *models.RPCStatus {

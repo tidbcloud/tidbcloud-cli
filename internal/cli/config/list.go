@@ -32,6 +32,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		Use:     "list",
 		Short:   "List all profiles",
 		Aliases: []string{"ls"},
+		Args:    cobra.NoArgs,
 		Example: fmt.Sprintf(`  List all available profiles:
   $ %[1]s config list`, config.CliName),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -41,12 +42,12 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			}
 			curP := viper.Get(prop.CurProfile)
 
-			fmt.Fprintf(h.IOStreams.Out, "Profile Name\n")
+			fmt.Fprintln(h.IOStreams.Out, "Profile Name")
 			for _, key := range profiles {
 				if key == curP {
-					fmt.Fprintf(h.IOStreams.Out, color.GreenString(key+"\t(active)\n"))
+					fmt.Fprintln(h.IOStreams.Out, color.GreenString(key+"\t(active)"))
 				} else {
-					fmt.Fprintf(h.IOStreams.Out, color.GreenString(key+"\n"))
+					fmt.Fprintln(h.IOStreams.Out, color.GreenString(key))
 				}
 			}
 			return nil

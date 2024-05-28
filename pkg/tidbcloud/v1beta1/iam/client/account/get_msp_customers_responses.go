@@ -6,6 +6,7 @@ package account
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -85,11 +86,13 @@ func (o *GetMspCustomersOK) Code() int {
 }
 
 func (o *GetMspCustomersOK) Error() string {
-	return fmt.Sprintf("[GET /mspCustomers][%d] getMspCustomersOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /mspCustomers][%d] getMspCustomersOK %s", 200, payload)
 }
 
 func (o *GetMspCustomersOK) String() string {
-	return fmt.Sprintf("[GET /mspCustomers][%d] getMspCustomersOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /mspCustomers][%d] getMspCustomersOK %s", 200, payload)
 }
 
 func (o *GetMspCustomersOK) GetPayload() *models.APIOpenAPIListMspCustomerRsp {
@@ -153,11 +156,13 @@ func (o *GetMspCustomersBadRequest) Code() int {
 }
 
 func (o *GetMspCustomersBadRequest) Error() string {
-	return fmt.Sprintf("[GET /mspCustomers][%d] getMspCustomersBadRequest  %+v", 400, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /mspCustomers][%d] getMspCustomersBadRequest %s", 400, payload)
 }
 
 func (o *GetMspCustomersBadRequest) String() string {
-	return fmt.Sprintf("[GET /mspCustomers][%d] getMspCustomersBadRequest  %+v", 400, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /mspCustomers][%d] getMspCustomersBadRequest %s", 400, payload)
 }
 
 func (o *GetMspCustomersBadRequest) GetPayload() *models.APIOpenAPIError {

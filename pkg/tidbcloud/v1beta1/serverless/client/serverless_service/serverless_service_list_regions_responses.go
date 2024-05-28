@@ -6,6 +6,7 @@ package serverless_service
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -86,11 +87,13 @@ func (o *ServerlessServiceListRegionsOK) Code() int {
 }
 
 func (o *ServerlessServiceListRegionsOK) Error() string {
-	return fmt.Sprintf("[GET /regions][%d] serverlessServiceListRegionsOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /regions][%d] serverlessServiceListRegionsOK %s", 200, payload)
 }
 
 func (o *ServerlessServiceListRegionsOK) String() string {
-	return fmt.Sprintf("[GET /regions][%d] serverlessServiceListRegionsOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /regions][%d] serverlessServiceListRegionsOK %s", 200, payload)
 }
 
 func (o *ServerlessServiceListRegionsOK) GetPayload() *models.TidbCloudOpenApiserverlessv1beta1ListRegionsResponse {
@@ -158,11 +161,13 @@ func (o *ServerlessServiceListRegionsDefault) Code() int {
 }
 
 func (o *ServerlessServiceListRegionsDefault) Error() string {
-	return fmt.Sprintf("[GET /regions][%d] ServerlessService_ListRegions default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /regions][%d] ServerlessService_ListRegions default %s", o._statusCode, payload)
 }
 
 func (o *ServerlessServiceListRegionsDefault) String() string {
-	return fmt.Sprintf("[GET /regions][%d] ServerlessService_ListRegions default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /regions][%d] ServerlessService_ListRegions default %s", o._statusCode, payload)
 }
 
 func (o *ServerlessServiceListRegionsDefault) GetPayload() *models.GooglerpcStatus {

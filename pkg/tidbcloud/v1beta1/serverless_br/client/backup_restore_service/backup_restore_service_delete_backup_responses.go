@@ -6,6 +6,7 @@ package backup_restore_service
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -86,11 +87,13 @@ func (o *BackupRestoreServiceDeleteBackupOK) Code() int {
 }
 
 func (o *BackupRestoreServiceDeleteBackupOK) Error() string {
-	return fmt.Sprintf("[DELETE /v1beta1/backups/{backupId}][%d] backupRestoreServiceDeleteBackupOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[DELETE /v1beta1/backups/{backupId}][%d] backupRestoreServiceDeleteBackupOK %s", 200, payload)
 }
 
 func (o *BackupRestoreServiceDeleteBackupOK) String() string {
-	return fmt.Sprintf("[DELETE /v1beta1/backups/{backupId}][%d] backupRestoreServiceDeleteBackupOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[DELETE /v1beta1/backups/{backupId}][%d] backupRestoreServiceDeleteBackupOK %s", 200, payload)
 }
 
 func (o *BackupRestoreServiceDeleteBackupOK) GetPayload() *models.V1beta1Backup {
@@ -158,11 +161,13 @@ func (o *BackupRestoreServiceDeleteBackupDefault) Code() int {
 }
 
 func (o *BackupRestoreServiceDeleteBackupDefault) Error() string {
-	return fmt.Sprintf("[DELETE /v1beta1/backups/{backupId}][%d] BackupRestoreService_DeleteBackup default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[DELETE /v1beta1/backups/{backupId}][%d] BackupRestoreService_DeleteBackup default %s", o._statusCode, payload)
 }
 
 func (o *BackupRestoreServiceDeleteBackupDefault) String() string {
-	return fmt.Sprintf("[DELETE /v1beta1/backups/{backupId}][%d] BackupRestoreService_DeleteBackup default  %+v", o._statusCode, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[DELETE /v1beta1/backups/{backupId}][%d] BackupRestoreService_DeleteBackup default %s", o._statusCode, payload)
 }
 
 func (o *BackupRestoreServiceDeleteBackupDefault) GetPayload() *models.RPCStatus {

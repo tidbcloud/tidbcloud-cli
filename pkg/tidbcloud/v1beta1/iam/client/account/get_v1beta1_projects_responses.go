@@ -6,6 +6,7 @@ package account
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -85,11 +86,13 @@ func (o *GetV1beta1ProjectsOK) Code() int {
 }
 
 func (o *GetV1beta1ProjectsOK) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/projects][%d] getV1beta1ProjectsOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/projects][%d] getV1beta1ProjectsOK %s", 200, payload)
 }
 
 func (o *GetV1beta1ProjectsOK) String() string {
-	return fmt.Sprintf("[GET /v1beta1/projects][%d] getV1beta1ProjectsOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/projects][%d] getV1beta1ProjectsOK %s", 200, payload)
 }
 
 func (o *GetV1beta1ProjectsOK) GetPayload() *models.APIListProjectsRsp {
@@ -153,11 +156,13 @@ func (o *GetV1beta1ProjectsBadRequest) Code() int {
 }
 
 func (o *GetV1beta1ProjectsBadRequest) Error() string {
-	return fmt.Sprintf("[GET /v1beta1/projects][%d] getV1beta1ProjectsBadRequest  %+v", 400, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/projects][%d] getV1beta1ProjectsBadRequest %s", 400, payload)
 }
 
 func (o *GetV1beta1ProjectsBadRequest) String() string {
-	return fmt.Sprintf("[GET /v1beta1/projects][%d] getV1beta1ProjectsBadRequest  %+v", 400, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /v1beta1/projects][%d] getV1beta1ProjectsBadRequest %s", 400, payload)
 }
 
 func (o *GetV1beta1ProjectsBadRequest) GetPayload() *models.APIOpenAPIError {

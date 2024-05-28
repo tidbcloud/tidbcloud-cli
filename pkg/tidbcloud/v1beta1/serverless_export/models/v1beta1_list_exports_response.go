@@ -25,7 +25,7 @@ type V1beta1ListExportsResponse struct {
 	// Token provided to retrieve the next page of results.
 	NextPageToken string `json:"nextPageToken,omitempty"`
 
-	// Total number of backups.
+	// Total number of exports.
 	TotalSize int64 `json:"totalSize,omitempty"`
 }
 

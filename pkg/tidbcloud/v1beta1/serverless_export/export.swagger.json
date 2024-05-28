@@ -61,6 +61,13 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "orderBy",
+            "description": "Optional. List exports order by, separated by comma, default is ascending. Example: \"foo, bar desc\". Supported field: create_time",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -298,6 +305,35 @@
       ],
       "description": " - Compression_UNSPECIFIED: The type of the compression is unknown."
     },
+    "ExportOptionsFilter": {
+      "type": "object",
+      "properties": {
+        "sql": {
+          "type": "string",
+          "description": "Optional. Use SQL to filter the export."
+        },
+        "table": {
+          "$ref": "#/definitions/FilterTable",
+          "description": "Optional. Use table-filter to filter the export."
+        }
+      }
+    },
+    "FilterTable": {
+      "type": "object",
+      "properties": {
+        "patterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional. The table-filter expressions."
+        },
+        "where": {
+          "type": "string",
+          "description": "Optional. Export only selected records."
+        }
+      }
+    },
     "S3TargetAccessKey": {
       "type": "object",
       "properties": {
@@ -316,7 +352,7 @@
       "properties": {
         "bucketUri": {
           "type": "string",
-          "description": "Optional. The bucket URI of the s3."
+          "description": "Optional. The bucket URI of the s3. DEPRECATED, use uri instead."
         },
         "uri": {
           "type": "string",
@@ -484,15 +520,19 @@
         },
         "database": {
           "type": "string",
-          "description": "Optional. The specify database of the export."
+          "title": "Optional. The specify database of the export. DEPRECATED, use filter instead"
         },
         "table": {
           "type": "string",
-          "description": "Optional. The specify table of the export."
+          "title": "Optional. The specify table of the export. DEPRECATED, use filter instead"
         },
         "compression": {
           "$ref": "#/definitions/ExportOptionsCompressionType",
           "description": "Optional. The compression of the export."
+        },
+        "filter": {
+          "$ref": "#/definitions/ExportOptionsFilter",
+          "description": "Optional. The filter of the export."
         }
       }
     },
@@ -533,7 +573,7 @@
         "totalSize": {
           "type": "integer",
           "format": "int64",
-          "description": "Total number of backups."
+          "description": "Total number of exports."
         }
       }
     },
