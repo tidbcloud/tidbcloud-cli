@@ -91,7 +91,7 @@ func (suite *DescribeConfigSuite) TestDescribeConfigArgs() {
 		{
 			name: "describe config with no args",
 			args: []string{},
-			err:  fmt.Errorf("missing argument <profile-name> \n\nUsage:\n  describe <profile-name> [flags]\n\nAliases:\n  describe, get\n\nExamples:\n  Describe the profile configuration:\n  $ ticloud config describe <profile-name>\n\nFlags:\n  -h, --help   help for describe\n"),
+			err:  fmt.Errorf("accepts 1 arg(s), received 0"),
 		},
 		{
 			name: "describe config with non-existed profile",
@@ -105,6 +105,50 @@ func (suite *DescribeConfigSuite) TestDescribeConfigArgs() {
 			err := viper.ReadInConfig()
 			assert.Nil(err)
 
+			cmd := DescribeCmd(suite.h)
+			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
+			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
+			cmd.SetArgs(tt.args)
+			err = cmd.Execute()
+			assert.Equal(tt.err, err)
+
+			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
+			assert.Equal(tt.stderrString, suite.h.IOStreams.Err.(*bytes.Buffer).String())
+		})
+	}
+}
+
+func (suite *DescribeConfigSuite) TestDescribeConfigWithSpecialCharacters() {
+	assert := require.New(suite.T())
+	newProfile := "~`!@#$%^&*()_+-={}[]\\|;:,<>/?"
+	publicKey := "SDIWODIJQNDKJQW"
+	privateKey := "SDWIOUEOSDSDC"
+
+	viper.Set("~`!@#$%^&*()_+-={}[]\\|;:,<>/?.public-key", publicKey)
+	viper.Set("~`!@#$%^&*()_+-={}[]\\|;:,<>/?.private-key", privateKey)
+	viper.Set("current-profile", newProfile)
+
+	err := viper.WriteConfig()
+	if err != nil {
+		suite.T().Error(err)
+	}
+
+	tests := []struct {
+		name         string
+		args         []string
+		err          error
+		stdoutString string
+		stderrString string
+	}{
+		{
+			name:         "describe active profile",
+			args:         []string{"~`!@#$%^&*()_+-={}[]\\|;:,<>/?"},
+			stdoutString: "{\n  \"private-key\": \"SDWIOUEOSDSDC\",\n  \"public-key\": \"SDIWODIJQNDKJQW\"\n}\n",
+		},
+	}
+
+	for _, tt := range tests {
+		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := DescribeCmd(suite.h)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()

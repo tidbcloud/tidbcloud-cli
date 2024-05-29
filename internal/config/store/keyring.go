@@ -15,20 +15,19 @@
 package store
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
-	"os"
 
 	"github.com/zalando/go-keyring"
 )
 
 const namespace = "ticloud_access_token"
 
-var ErrNotSupported = errors.New("keyring is not supported on WSL")
+var ErrNotSupported = errors.New("keyring is not supported, you can add `--insecure-storage true` to save token to config file instead.\n" +
+	"Or see https://github.com/zalando/go-keyring#dependencies for more details of keyring dependencies.")
 
 func Get(profile string) (string, error) {
-	if err := assertKeyringSupported(); err != nil {
+	if err := AssertKeyringSupported(); err != nil {
 		return "", err
 	}
 	val, err := keyring.Get(namespace, profile)
@@ -42,7 +41,7 @@ func Get(profile string) (string, error) {
 }
 
 func Set(profile, token string) error {
-	if err := assertKeyringSupported(); err != nil {
+	if err := AssertKeyringSupported(); err != nil {
 		return err
 	}
 	if err := keyring.Set(namespace, profile, token); err != nil {
@@ -52,21 +51,13 @@ func Set(profile, token string) error {
 }
 
 func Delete(profile string) error {
-	if err := assertKeyringSupported(); err != nil {
+	if err := AssertKeyringSupported(); err != nil {
 		return err
 	}
 	if err := keyring.Delete(namespace, profile); err != nil {
 		if !errors.Is(err, keyring.ErrNotFound) {
 			return fmt.Errorf("failed to delete token: %s", err)
 		}
-	}
-	return nil
-}
-
-func assertKeyringSupported() error {
-	// Suggested check: https://github.com/microsoft/WSL/issues/423
-	if f, err := os.ReadFile("/proc/sys/kernel/osrelease"); err == nil && bytes.Contains(f, []byte("WSL")) {
-		return ErrNotSupported
 	}
 	return nil
 }

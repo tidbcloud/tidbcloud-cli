@@ -67,6 +67,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:   "list",
 		Short: "List export tasks",
+		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  List all exports in interactive mode:
   $ %[1]s serverless export list
 

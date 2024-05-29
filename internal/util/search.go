@@ -20,15 +20,6 @@ import (
 
 const tiupBinPrefix = "/.tiup/components/"
 
-func ElemInSlice[T comparable](slice []T, o T) bool {
-	for _, b := range slice {
-		if b == o {
-			return true
-		}
-	}
-	return false
-}
-
 // IsUnderTiUP checks whether the given binary is under the TiUP path.
 func IsUnderTiUP(binpath string) bool {
 	if binpath == "" {

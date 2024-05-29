@@ -75,6 +75,7 @@ func RestoreCmd(h *internal.Helper) *cobra.Command {
 		Use:         "restore",
 		Short:       "Restore a TiDB Serverless cluster",
 		Annotations: make(map[string]string),
+		Args:        cobra.NoArgs,
 		Example: fmt.Sprintf(`  Restore a TiDB Serverless cluster in interactive mode:
  $ %[1]s serverless restore
 

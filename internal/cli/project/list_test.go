@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"testing"
 
@@ -139,6 +140,11 @@ func (suite *ListProjectSuite) TestListProjectArgs() {
 			name:         "list projects with output shorthand flag",
 			args:         []string{"-o", "json"},
 			stdoutString: resultStr,
+		},
+		{
+			name: "list config with 1 arg",
+			args: []string{"arg1"},
+			err:  fmt.Errorf(`unknown command "arg1" for "list"`),
 		},
 	}
 

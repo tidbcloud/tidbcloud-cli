@@ -53,6 +53,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 	var deleteCmd = &cobra.Command{
 		Use:         "delete",
 		Short:       "Delete a TiDB Serverless cluster",
+		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Delete a TiDB Serverless cluster in interactive mode:
  $ %[1]s serverless delete

@@ -276,7 +276,7 @@ func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1Download
 			skippedCount++
 		}
 	}
-	fmt.Fprintf(h.IOStreams.Out, generateDownloadSummary(succeededCount, skippedCount, failedCount))
+	fmt.Fprint(h.IOStreams.Out, generateDownloadSummary(succeededCount, skippedCount, failedCount))
 	index := 0
 	for _, f := range m.GetFinishedJobs() {
 		if f.GetStatus() != ui.Succeeded {
@@ -384,7 +384,7 @@ func DownloadFilesWithoutPrompt(h *internal.Helper, urls []*exportModel.V1beta1D
 		}
 		downloadResults = append(downloadResults, result)
 	}
-	fmt.Fprintf(h.IOStreams.Out, generateDownloadSummary(succeededCount, skippedCount, failedCount))
+	fmt.Fprint(h.IOStreams.Out, generateDownloadSummary(succeededCount, skippedCount, failedCount))
 	index := 0
 	for _, f := range downloadResults {
 		if f.status != ui.Succeeded {

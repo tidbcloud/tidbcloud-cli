@@ -18,6 +18,7 @@ import (
 	stderrors "errors"
 	"fmt"
 	"os"
+	"slices"
 	"sort"
 	"time"
 
@@ -26,7 +27,6 @@ import (
 	"tidbcloud-cli/internal/util"
 	"tidbcloud-cli/internal/version"
 
-	"github.com/fatih/color"
 	"github.com/pelletier/go-toml"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
@@ -49,7 +49,7 @@ func ValidateProfile(profileName string) error {
 		return err
 	}
 
-	if !util.ElemInSlice(profiles, profileName) {
+	if !slices.Contains(profiles, profileName) {
 		return fmt.Errorf("profile %s not found", profileName)
 	}
 
@@ -61,7 +61,7 @@ func GetAllProfiles() ([]string, error) {
 	keys := make([]string, 0, len(s))
 	// Profile names and global properties are at the same level in the config file, filter out global properties.
 	for k := range s {
-		if !util.ElemInSlice(prop.GlobalProperties(), k) {
+		if !slices.Contains(prop.GlobalProperties(), k) {
 			keys = append(keys, k)
 		}
 	}
@@ -170,10 +170,11 @@ func (p *Profile) SaveAccessToken(expireAt time.Time, tokenType string, token st
 	if !insecureStorageUsed {
 		err := store.Set(p.name, token)
 		if err != nil {
-			log.Debug("failed to save access token to keyring", zap.Error(err))
-			color.Yellow("failed to save access token to keyring, save to config file instead")
-			// If failed to save to keyring, fallback to save to config file.
-			insecureStorageUsed = true
+			if stderrors.Is(err, store.ErrNotSupported) {
+				return err
+			} else {
+				return errors.Annotate(err, "failed to save access token to keyring")
+			}
 		}
 	}
 
@@ -227,22 +228,27 @@ func (p *Profile) DeleteAccessToken() error {
 		return errors.Trace(err)
 	}
 
+	key := util.EncodeTomlKey(p.name)
 	if t.Has(fmt.Sprintf("%s.%s", p.name, prop.AccessToken)) {
-		err := t.Delete(fmt.Sprintf("%s.%s", p.name, prop.AccessToken))
+		// Delete() will treat the key as a toml key, so we need to quote the key. Other functions in Tree treat the key
+		// as a string path.
+		// see https://github.com/pelletier/go-toml/blob/v1.9.5/toml.go#L409,
+		// https://github.com/pelletier/go-toml/blob/v1.9.5/toml.go#L57.
+		err := t.Delete(fmt.Sprintf("%s.%s", key, prop.AccessToken))
 		if err != nil {
 			return err
 		}
 	}
 
 	if t.Has(fmt.Sprintf("%s.%s", p.name, prop.TokenType)) {
-		err = t.Delete(fmt.Sprintf("%s.%s", p.name, prop.TokenType))
+		err = t.Delete(fmt.Sprintf("%s.%s", key, prop.TokenType))
 		if err != nil {
 			return err
 		}
 	}
 
 	if t.Has(fmt.Sprintf("%s.%s", p.name, prop.TokenExpiredAt)) {
-		err = t.Delete(fmt.Sprintf("%s.%s", p.name, prop.TokenExpiredAt))
+		err = t.Delete(fmt.Sprintf("%s.%s", key, prop.TokenExpiredAt))
 		if err != nil {
 			return err
 		}

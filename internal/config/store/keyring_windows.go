@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+// http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,26 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package util
+//go:build windows
 
-import (
-	"encoding/csv"
-	"strings"
-)
+package store
 
-func StringSliceConv(sval string) ([]string, error) {
-	// An empty string would cause a slice with one (empty) string
-	if len(sval) == 0 {
-		return []string{}, nil
-	}
-	return readAsCSV(sval)
-}
-
-func readAsCSV(val string) ([]string, error) {
-	if val == "" {
-		return []string{}, nil
-	}
-	stringReader := strings.NewReader(val)
-	csvReader := csv.NewReader(stringReader)
-	return csvReader.Read()
+func AssertKeyringSupported() error {
+	return nil
 }

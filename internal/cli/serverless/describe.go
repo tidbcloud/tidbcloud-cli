@@ -47,6 +47,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 	var describeCmd = &cobra.Command{
 		Use:         "describe",
 		Short:       "Describe a TiDB Serverless cluster",
+		Args:        cobra.NoArgs,
 		Aliases:     []string{"get"},
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Get a TiDB Serverless cluster in interactive mode:

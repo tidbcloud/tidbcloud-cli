@@ -69,6 +69,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 	var updateCmd = &cobra.Command{
 		Use:         "update",
 		Short:       "Update a TiDB Serverless cluster",
+		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  Update a TiDB Serverless cluster in interactive mode:
   $ %[1]s serverless update

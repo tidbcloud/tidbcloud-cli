@@ -49,6 +49,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	var listCmd = &cobra.Command{
 		Use:         "list",
 		Short:       "List all accessible SQL users",
+		Args:        cobra.NoArgs,
 		Aliases:     []string{"ls"},
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  List all SQL users in interactive mode:

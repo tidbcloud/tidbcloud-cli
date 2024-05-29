@@ -19,6 +19,7 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
+	"tidbcloud-cli/internal/config/store"
 	"tidbcloud-cli/internal/flag"
 	ver "tidbcloud-cli/internal/version"
 
@@ -41,6 +42,7 @@ func LogoutCmd(h *internal.Helper) *cobra.Command {
 	var logoutCmd = &cobra.Command{
 		Use:   "logout",
 		Short: "Log out of TiDB Cloud",
+		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  To log out of TiDB Cloud:
   $ %[1]s auth logout`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -55,7 +57,7 @@ func LogoutCmd(h *internal.Helper) *cobra.Command {
 			ctx := cmd.Context()
 			token, err := config.GetAccessToken()
 			if err != nil {
-				if errors.Is(err, keyring.ErrNotFound) {
+				if errors.Is(err, keyring.ErrNotFound) || errors.Is(err, store.ErrNotSupported) {
 					fmt.Fprintln(h.IOStreams.Out, color.YellowString("You are not logged in."))
 					return nil
 				}
