@@ -58,6 +58,13 @@
             "required": false,
             "type": "integer",
             "format": "int32"
+          },
+          {
+            "name": "orderBy",
+            "description": "Optional. List imports order by, separated by comma, default is ascending. Example: \"foo, bar desc\". Supported field: create_time",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -373,6 +380,14 @@
         }
       }
     },
+    "v1beta1AuthType": {
+      "type": "string",
+      "enum": [
+        "ROLE_ARN",
+        "ACCESS_KEY"
+      ],
+      "description": " - ACCESS_UNSPECIFIED: The access method is unknown.\n - ROLE_ARN: The access method is role arn.\n - ACCESS_KEY: The access method is access key."
+    },
     "v1beta1CSVFormat": {
       "type": "object",
       "properties": {
@@ -504,7 +519,10 @@
     "v1beta1ImportOptionsFileType": {
       "type": "string",
       "enum": [
-        "CSV"
+        "CSV",
+        "Sql",
+        "AuroraSnapshot",
+        "Parquet"
       ],
       "description": " - TYPE_UNSPECIFIED: The type of the file is unknown.\n - CSV: CSV type."
     },
@@ -517,6 +535,20 @@
         },
         "local": {
           "$ref": "#/definitions/v1beta1ImportSourceLocalSource"
+        },
+        "s3": {
+          "$ref": "#/definitions/v1beta1ImportSourceS3Source"
+        }
+      }
+    },
+    "v1beta1ImportSourceAccessKey": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "secret": {
+          "type": "string"
         }
       }
     },
@@ -535,12 +567,42 @@
         }
       }
     },
+    "v1beta1ImportSourceRoleArn": {
+      "type": "object",
+      "properties": {
+        "roleArn": {
+          "type": "string"
+        }
+      }
+    },
+    "v1beta1ImportSourceS3Source": {
+      "type": "object",
+      "properties": {
+        "s3Uri": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/v1beta1AuthType"
+        },
+        "roleArn": {
+          "$ref": "#/definitions/v1beta1ImportSourceRoleArn"
+        },
+        "accessKey": {
+          "$ref": "#/definitions/v1beta1ImportSourceAccessKey"
+        },
+        "targetDatabase": {
+          "type": "string",
+          "x-nullable": true
+        }
+      }
+    },
     "v1beta1ImportSourceType": {
       "type": "string",
       "enum": [
-        "LOCAL"
+        "LOCAL",
+        "S3"
       ],
-      "description": " - TARGET_UNSPECIFIED: The target of the import is unknown.\n - LOCAL: Local target."
+      "description": " - TARGET_UNSPECIFIED: The source of the import is unknown.\n - LOCAL: Local source.\n - S3: S3 source."
     },
     "v1beta1ImportSourceView": {
       "type": "object",
@@ -553,6 +615,17 @@
         "local": {
           "$ref": "#/definitions/v1beta1ImportSourceViewLocalSource",
           "readOnly": true
+        },
+        "s3": {
+          "$ref": "#/definitions/v1beta1ImportSourceViewS3Source"
+        }
+      }
+    },
+    "v1beta1ImportSourceViewAccessKey": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
         }
       }
     },
@@ -576,6 +649,35 @@
           "type": "string",
           "description": "Optional. The file name of import source file.",
           "readOnly": true
+        }
+      }
+    },
+    "v1beta1ImportSourceViewRoleArn": {
+      "type": "object",
+      "properties": {
+        "roleArn": {
+          "type": "string"
+        }
+      }
+    },
+    "v1beta1ImportSourceViewS3Source": {
+      "type": "object",
+      "properties": {
+        "s3Uri": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/v1beta1AuthType"
+        },
+        "roleArn": {
+          "$ref": "#/definitions/v1beta1ImportSourceViewRoleArn"
+        },
+        "accessKey": {
+          "$ref": "#/definitions/v1beta1ImportSourceViewAccessKey"
+        },
+        "targetDatabase": {
+          "type": "string",
+          "x-nullable": true
         }
       }
     },

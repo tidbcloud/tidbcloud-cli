@@ -154,6 +154,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 						st = string(item.CreationDetails.Source.Type)
 						if item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeLOCAL {
 							source = item.CreationDetails.Source.Local.FileName
+						} else if item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeS3 {
+							source = item.CreationDetails.Source.S3.S3URI
 						}
 					}
 					if item.CreationDetails != nil && item.CreationDetails.ImportOptions != nil {

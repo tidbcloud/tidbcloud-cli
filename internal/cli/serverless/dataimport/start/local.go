@@ -112,7 +112,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		fileType = formatModel.(ui.SelectModel).Choices[formatModel.(ui.SelectModel).Selected].(string)
 
 		// variables for input
-		p = tea.NewProgram(initialLocalInputModel())
+		p = tea.NewProgram(o.initialInputModel())
 		inputModel, err := p.Run()
 		if err != nil {
 			return errors.Trace(err)
@@ -257,7 +257,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 	return nil
 }
 
-func initialLocalInputModel() ui.TextInputModel {
+func (o LocalOpts) initialInputModel() ui.TextInputModel {
 	m := ui.TextInputModel{
 		Inputs: make([]textinput.Model, 3),
 	}

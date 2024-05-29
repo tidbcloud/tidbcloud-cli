@@ -14,8 +14,9 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// V1beta1ImportSourceType  - TARGET_UNSPECIFIED: The target of the import is unknown.
-//   - LOCAL: Local target.
+// V1beta1ImportSourceType  - TARGET_UNSPECIFIED: The source of the import is unknown.
+//   - LOCAL: Local source.
+//   - S3: S3 source.
 //
 // swagger:model v1beta1ImportSourceType
 type V1beta1ImportSourceType string
@@ -33,6 +34,9 @@ const (
 
 	// V1beta1ImportSourceTypeLOCAL captures enum value "LOCAL"
 	V1beta1ImportSourceTypeLOCAL V1beta1ImportSourceType = "LOCAL"
+
+	// V1beta1ImportSourceTypeS3 captures enum value "S3"
+	V1beta1ImportSourceTypeS3 V1beta1ImportSourceType = "S3"
 )
 
 // for schema
@@ -40,7 +44,7 @@ var v1beta1ImportSourceTypeEnum []interface{}
 
 func init() {
 	var res []V1beta1ImportSourceType
-	if err := json.Unmarshal([]byte(`["LOCAL"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["LOCAL","S3"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {

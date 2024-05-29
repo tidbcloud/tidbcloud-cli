@@ -21,6 +21,9 @@ type V1beta1ImportSource struct {
 	// local
 	Local *V1beta1ImportSourceLocalSource `json:"local,omitempty"`
 
+	// s3
+	S3 *V1beta1ImportSourceS3Source `json:"s3,omitempty"`
+
 	// Optional. The import source type.
 	Type V1beta1ImportSourceType `json:"type,omitempty"`
 }
@@ -30,6 +33,10 @@ func (m *V1beta1ImportSource) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateLocal(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateS3(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -54,6 +61,25 @@ func (m *V1beta1ImportSource) validateLocal(formats strfmt.Registry) error {
 				return ve.ValidateName("local")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("local")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *V1beta1ImportSource) validateS3(formats strfmt.Registry) error {
+	if swag.IsZero(m.S3) { // not required
+		return nil
+	}
+
+	if m.S3 != nil {
+		if err := m.S3.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("s3")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("s3")
 			}
 			return err
 		}
@@ -87,6 +113,10 @@ func (m *V1beta1ImportSource) ContextValidate(ctx context.Context, formats strfm
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateS3(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateType(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -110,6 +140,27 @@ func (m *V1beta1ImportSource) contextValidateLocal(ctx context.Context, formats 
 				return ve.ValidateName("local")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("local")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *V1beta1ImportSource) contextValidateS3(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.S3 != nil {
+
+		if swag.IsZero(m.S3) { // not required
+			return nil
+		}
+
+		if err := m.S3.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("s3")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("s3")
 			}
 			return err
 		}

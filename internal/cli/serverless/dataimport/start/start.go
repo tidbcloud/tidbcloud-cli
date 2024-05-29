@@ -52,6 +52,7 @@ type SourceType string
 
 const (
 	SourceTypeLOCAL   SourceType = "LOCAL"
+	SourceTypeS3      SourceType = "S3"
 	SourceTypeUnknown SourceType = "UNKNOWN"
 )
 
@@ -140,6 +141,12 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 					interactive: opts.interactive,
 				}
 				return localOpts.Run(cmd)
+			} else if sourceType == SourceTypeS3 {
+				s3Opts := S3Opts{
+					h:           h,
+					interactive: opts.interactive,
+				}
+				return s3Opts.Run(cmd)
 			} else {
 				return errors.New("unsupported import source type")
 			}
@@ -147,13 +154,22 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	startCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID.")
-	startCmd.Flags().String(flag.SourceType, "LOCAL", fmt.Sprintf("The import source type, one of %q.", []string{string(SourceTypeLOCAL)}))
+	startCmd.Flags().String(flag.SourceType, "LOCAL", fmt.Sprintf("The import source type, one of %q.", []string{string(SourceTypeLOCAL), string(SourceTypeS3)}))
 	startCmd.Flags().String(flag.FileType, "", fmt.Sprintf("The import file type, one of %q.", opts.SupportedFileTypes()))
 
 	startCmd.Flags().String(flag.LocalFilePath, "", "The local file path to import.")
 	startCmd.Flags().String(flag.LocalTargetDatabase, "", "Target database to which import data.")
 	startCmd.Flags().String(flag.LocalTargetTable, "", "Target table to which import data.")
 	startCmd.Flags().IntVar(&concurrency, flag.LocalConcurrency, 5, "The concurrency for uploading file.")
+
+	startCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID for S3.")
+	startCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key for S3.")
+	startCmd.Flags().String(flag.S3TargetDatabase, "", "Target database to which import data.")
+	startCmd.Flags().String(flag.S3RoleArn, "", "The role ARN for S3.")
+	startCmd.Flags().String(flag.S3URI, "", "The S3 folder URI for import.")
+	startCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3AccessKeyID)
+	startCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3SecretAccessKey)
+	startCmd.MarkFlagsRequiredTogether(flag.S3AccessKeyID, flag.S3SecretAccessKey)
 
 	startCmd.Flags().String(flag.CSVDelimiter, "\"", "The delimiter used for quoting of CSV file.")
 	startCmd.Flags().String(flag.CSVSeparator, ",", "The field separator of CSV file.")
@@ -164,8 +180,8 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 }
 
 func getSelectedSourceType() (SourceType, error) {
-	SourceTypes := make([]interface{}, 0, 1)
-	SourceTypes = append(SourceTypes, SourceTypeLOCAL)
+	SourceTypes := make([]interface{}, 0, 2)
+	SourceTypes = append(SourceTypes, SourceTypeLOCAL, SourceTypeS3)
 	model, err := ui.InitialSelectModel(SourceTypes, "Choose import source type:")
 	if err != nil {
 		return SourceTypeUnknown, errors.Trace(err)
@@ -258,7 +274,7 @@ func getCSVFormat() (separator string, delimiter string, backslashEscape bool, t
 	}
 	err := survey.AskOne(prompt, &needCustomCSV)
 	if err != nil {
-		if err == terminal.InterruptErr {
+		if errors.Is(err, terminal.InterruptErr) {
 			errToReturn = util.InterruptError
 			return
 		} else {

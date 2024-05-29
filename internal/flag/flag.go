@@ -60,6 +60,8 @@ const (
 	S3URI                 string = "s3.uri"
 	S3AccessKeyID         string = "s3.access-key-id"
 	S3SecretAccessKey     string = "s3.secret-access-key"
+	S3RoleArn             string = "s3.role-arn"
+	S3TargetDatabase      string = "s3.target-database"
 	TargetType            string = "target-type"
 	FileType              string = "file-type"
 	ExportID              string = "export-id"
