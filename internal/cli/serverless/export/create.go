@@ -16,6 +16,8 @@ package export
 
 import (
 	"fmt"
+	"slices"
+	"strings"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -49,6 +51,12 @@ const (
 	FileTypeSQL     FileType = "SQL"
 	FileTypeCSV     FileType = "CSV"
 	FileTypeUnknown FileType = "UNKNOWN"
+)
+
+var (
+	supportedFileType    = []string{string(FileTypeSQL), string(FileTypeCSV)}
+	supportedTargetType  = []string{string(TargetTypeS3), string(TargetTypeLOCAL)}
+	supportedCompression = []string{"GZIP", "SNAPPY", "ZSTD", "NONE"}
 )
 
 var S3InputFields = map[string]int{
@@ -384,10 +392,21 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				if csvSeparator != "," || csvDelimiter != "\"" || csvNullValue != "\\N" || csvSkipHeader {
-					if fileType != string(FileTypeCSV) {
+					if strings.ToUpper(fileType) != string(FileTypeCSV) {
 						return errors.New("csv options are only available when file type is CSV")
 					}
 				}
+			}
+
+			// check param
+			if fileType != "" && !slices.Contains(supportedFileType, strings.ToUpper(fileType)) {
+				return errors.New("unsupported file type: " + fileType)
+			}
+			if targetType != "" && !slices.Contains(supportedTargetType, strings.ToUpper(targetType)) {
+				return errors.New("unsupported target type: " + targetType)
+			}
+			if compression != "" && !slices.Contains(supportedCompression, strings.ToUpper(compression)) {
+				return errors.New("unsupported compression: " + compression)
 			}
 
 			if !opts.interactive && sql == "" && len(patterns) == 0 && !force {
@@ -416,10 +435,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			params := exportApi.NewExportServiceCreateExportParams().WithClusterID(clusterId).WithBody(
 				exportApi.ExportServiceCreateExportBody{
 					ExportOptions: &exportModel.V1beta1ExportOptions{
-						FileType: exportModel.V1beta1ExportOptionsFileType(fileType),
+						FileType: exportModel.V1beta1ExportOptionsFileType(strings.ToUpper(fileType)),
 					},
 					Target: &exportModel.V1beta1Target{
-						Type: exportModel.TargetTargetType(targetType),
+						Type: exportModel.TargetTargetType(strings.ToUpper(targetType)),
 						S3: &exportModel.TargetS3Target{
 							URI: s3URI,
 							AccessKey: &exportModel.S3TargetAccessKey{
@@ -430,7 +449,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					},
 				}).WithContext(ctx)
 			if compression != "" {
-				params.Body.ExportOptions.Compression = exportModel.ExportOptionsCompressionType(compression)
+				params.Body.ExportOptions.Compression = exportModel.ExportOptionsCompressionType(strings.ToUpper(compression))
 			}
 			if sql != "" {
 				params.Body.ExportOptions.Filter = &exportModel.ExportOptionsFilter{
