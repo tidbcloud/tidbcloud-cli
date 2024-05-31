@@ -340,9 +340,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
+				if targetType != "" && !slices.Contains(supportedTargetType, strings.ToUpper(targetType)) {
+					return errors.New("unsupported target type: " + targetType)
+				}
 				fileType, err = cmd.Flags().GetString(flag.FileType)
 				if err != nil {
 					return errors.Trace(err)
+				}
+				if fileType != "" && !slices.Contains(supportedFileType, strings.ToUpper(fileType)) {
+					return errors.New("unsupported file type: " + fileType)
 				}
 				if strings.ToUpper(targetType) == string(TargetTypeS3) {
 					s3URI, err = cmd.Flags().GetString(flag.S3URI)
@@ -367,9 +373,33 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.New("secretAccessKey is required when target type is S3")
 					}
 				}
+				if strings.ToUpper(fileType) == string(FileTypeCSV) {
+					csvSeparator, err = cmd.Flags().GetString(flag.CSVSeparator)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					if len(csvSeparator) == 0 {
+						return errors.New("csv separator can not be empty")
+					}
+					csvDelimiter, err = cmd.Flags().GetString(flag.CSVDelimiter)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					csvNullValue, err = cmd.Flags().GetString(flag.CSVNullValue)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					csvSkipHeader, err = cmd.Flags().GetBool(flag.CSVSkipHeader)
+					if err != nil {
+						return errors.Trace(err)
+					}
+				}
 				compression, err = cmd.Flags().GetString(flag.Compression)
 				if err != nil {
 					return errors.Trace(err)
+				}
+				if compression != "" && !slices.Contains(supportedCompression, strings.ToUpper(compression)) {
+					return errors.New("unsupported compression: " + compression)
 				}
 				sql, err = cmd.Flags().GetString(flag.SQL)
 				if err != nil {
@@ -382,43 +412,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				patterns, err = cmd.Flags().GetStringSlice(flag.TableFilter)
 				if err != nil {
 					return errors.Trace(err)
-				}
-				// csv format
-				csvSeparator, err = cmd.Flags().GetString(flag.CSVSeparator)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				csvDelimiter, err = cmd.Flags().GetString(flag.CSVDelimiter)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				csvNullValue, err = cmd.Flags().GetString(flag.CSVNullValue)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				csvSkipHeader, err = cmd.Flags().GetBool(flag.CSVSkipHeader)
-				if err != nil {
-					return errors.Trace(err)
-				}
-
-				// check param
-				if csvSeparator != CSVSeparatorDefaultValue || csvDelimiter != CSVDelimiterDefaultValue ||
-					csvNullValue != CSVNullValueDefaultValue || csvSkipHeader {
-					if strings.ToUpper(fileType) != string(FileTypeCSV) {
-						return errors.New("csv options are only available when file type is CSV")
-					}
-				}
-				if fileType != "" && !slices.Contains(supportedFileType, strings.ToUpper(fileType)) {
-					return errors.New("unsupported file type: " + fileType)
-				}
-				if targetType != "" && !slices.Contains(supportedTargetType, strings.ToUpper(targetType)) {
-					return errors.New("unsupported target type: " + targetType)
-				}
-				if compression != "" && !slices.Contains(supportedCompression, strings.ToUpper(compression)) {
-					return errors.New("unsupported compression: " + compression)
-				}
-				if len(csvSeparator) == 0 {
-					return errors.New("csv separator can not be empty")
 				}
 			}
 
