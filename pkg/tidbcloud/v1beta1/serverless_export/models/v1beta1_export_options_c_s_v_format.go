@@ -18,10 +18,10 @@ import (
 type V1beta1ExportOptionsCSVFormat struct {
 
 	// Delimiter of string type variables in CSV files. Default is '"'.
-	Delimiter string `json:"delimiter,omitempty"`
+	Delimiter *string `json:"delimiter,omitempty"`
 
 	// Representation of null values in CSV files. Default is "\N".
-	NullValue string `json:"nullValue,omitempty"`
+	NullValue *string `json:"nullValue,omitempty"`
 
 	// Separator of each value in CSV files. It is recommended to use '|+|' or other uncommon character combinations. Default is ','.
 	Separator string `json:"separator,omitempty"`

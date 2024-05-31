@@ -157,8 +157,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			var s3URI, accessKeyID, secretAccessKey, targetType, fileType, compression string
-			var clusterId, sql, where string
+			var s3URI, accessKeyID, secretAccessKey, targetType, fileType, compression, clusterId, sql, where string
 			var patterns []string
 			var csvSeparator, csvDelimiter, csvNullValue string
 			var csvSkipHeader bool
@@ -280,6 +279,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						} else {
 							csvSkipHeader = false
 						}
+						if csvSeparator == "" {
+							csvSeparator = ","
+						}
+						if csvDelimiter == "" {
+							csvDelimiter = "\""
+						}
+						if csvNullValue == "" {
+							csvDelimiter = "\\N"
+						}
 					}
 				}
 
@@ -375,7 +383,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 
-				if csvSeparator != "" || csvDelimiter != "" || csvNullValue != "" || csvSkipHeader {
+				println(csvSeparator, csvDelimiter, csvNullValue, csvSkipHeader)
+				if csvSeparator != "," || csvDelimiter != "\"" || csvNullValue != "\\N" || csvSkipHeader {
 					if fileType != string(FileTypeCSV) {
 						return errors.New("csv options are only available when file type is CSV")
 					}
@@ -437,11 +446,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					},
 				}
 			}
-			if csvSeparator != "" || csvDelimiter != "" || csvNullValue != "" || csvSkipHeader {
+			if len(csvSeparator) == 0 {
+				return errors.New("csv separator can not be empty")
+			}
+			if csvSeparator != "," || csvDelimiter != "\"" || csvNullValue != "\\N" || csvSkipHeader {
 				params.Body.ExportOptions.CsvFormat = &exportModel.V1beta1ExportOptionsCSVFormat{
 					Separator:  csvSeparator,
-					Delimiter:  csvDelimiter,
-					NullValue:  csvNullValue,
+					Delimiter:  &csvDelimiter,
+					NullValue:  &csvNullValue,
 					SkipHeader: csvSkipHeader,
 				}
 			}
@@ -468,9 +480,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.TableWhere, "", "Filter the exported table(s) with the where condition.")
 	createCmd.Flags().String(flag.SQL, "", "Filter the exported data with SQL SELECT statement.")
 	createCmd.Flags().BoolVar(&force, flag.Force, false, "Create without confirmation. You need to confirm when you want to export the whole cluster in non-interactive mode.")
-	createCmd.Flags().String(flag.CSVDelimiter, "\"", "Delimiter of string type variables in CSV files.")
+	createCmd.Flags().String(flag.CSVDelimiter, "\"", "Delimiter of string type variables in CSV files. To set an empty string, use non-interactive mode")
 	createCmd.Flags().String(flag.CSVSeparator, ",", "Separator of each value in CSV files.")
-	createCmd.Flags().String(flag.CSVNullValue, "\\N", "Representation of null values in CSV files.")
+	createCmd.Flags().String(flag.CSVNullValue, "\\N", "Representation of null values in CSV files. To set an empty string, use non-interactive mode")
 	createCmd.Flags().Bool(flag.CSVSkipHeader, false, "Export CSV files of the tables without header.")
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableFilter, flag.SQL)
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableWhere, flag.SQL)

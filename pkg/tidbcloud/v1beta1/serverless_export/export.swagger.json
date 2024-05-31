@@ -550,10 +550,12 @@
         },
         "delimiter": {
           "type": "string",
+          "x-nullable": true,
           "description": "Delimiter of string type variables in CSV files. Default is '\"'."
         },
         "nullValue": {
           "type": "string",
+          "x-nullable": true,
           "description": "Representation of null values in CSV files. Default is \"\\N\"."
         },
         "skipHeader": {
