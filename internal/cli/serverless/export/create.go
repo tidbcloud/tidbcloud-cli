@@ -103,6 +103,10 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 		flag.SQL,
 		flag.TableFilter,
 		flag.TableWhere,
+		flag.CSVDelimiter,
+		flag.CSVNullValue,
+		flag.CSVSkipHeader,
+		flag.CSVSeparator,
 	}
 }
 
