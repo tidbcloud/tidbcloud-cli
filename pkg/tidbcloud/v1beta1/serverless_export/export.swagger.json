@@ -533,6 +533,34 @@
         "filter": {
           "$ref": "#/definitions/ExportOptionsFilter",
           "description": "Optional. The filter of the export."
+        },
+        "csvFormat": {
+          "$ref": "#/definitions/v1beta1ExportOptionsCSVFormat",
+          "x-nullable": true,
+          "description": "Optional. The format of the csv."
+        }
+      }
+    },
+    "v1beta1ExportOptionsCSVFormat": {
+      "type": "object",
+      "properties": {
+        "separator": {
+          "type": "string",
+          "description": "Separator of each value in CSV files. It is recommended to use '|+|' or other uncommon character combinations. Default is ','."
+        },
+        "delimiter": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "Delimiter of string type variables in CSV files. Default is '\"'."
+        },
+        "nullValue": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "Representation of null values in CSV files. Default is \"\\N\"."
+        },
+        "skipHeader": {
+          "type": "boolean",
+          "description": "Export CSV files of the tables without header. Default is false."
         }
       }
     },
