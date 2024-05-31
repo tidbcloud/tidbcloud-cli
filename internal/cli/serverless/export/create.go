@@ -59,6 +59,12 @@ var (
 	supportedCompression = []string{"GZIP", "SNAPPY", "ZSTD", "NONE"}
 )
 
+const (
+	CSVSeparatorDefaultValue = ","
+	CSVDelimiterDefaultValue = "\""
+	CSVNullValueDefaultValue = "\\N"
+)
+
 var S3InputFields = map[string]int{
 	flag.S3URI:             0,
 	flag.S3AccessKeyID:     1,
@@ -289,13 +295,13 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						}
 					}
 					if csvSeparator == "" {
-						csvSeparator = ","
+						csvSeparator = CSVSeparatorDefaultValue
 					}
 					if csvDelimiter == "" {
-						csvDelimiter = "\""
+						csvDelimiter = CSVDelimiterDefaultValue
 					}
 					if csvNullValue == "" {
-						csvDelimiter = "\\N"
+						csvDelimiter = CSVNullValueDefaultValue
 					}
 				}
 
@@ -391,25 +397,25 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 
-				if csvSeparator != "," || csvDelimiter != "\"" || csvNullValue != "\\N" || csvSkipHeader {
+				// check param
+				if csvSeparator != CSVSeparatorDefaultValue || csvDelimiter != CSVDelimiterDefaultValue ||
+					csvNullValue != CSVNullValueDefaultValue || csvSkipHeader {
 					if strings.ToUpper(fileType) != string(FileTypeCSV) {
 						return errors.New("csv options are only available when file type is CSV")
 					}
 				}
-			}
-
-			// check param
-			if fileType != "" && !slices.Contains(supportedFileType, strings.ToUpper(fileType)) {
-				return errors.New("unsupported file type: " + fileType)
-			}
-			if targetType != "" && !slices.Contains(supportedTargetType, strings.ToUpper(targetType)) {
-				return errors.New("unsupported target type: " + targetType)
-			}
-			if compression != "" && !slices.Contains(supportedCompression, strings.ToUpper(compression)) {
-				return errors.New("unsupported compression: " + compression)
-			}
-			if len(csvSeparator) == 0 {
-				return errors.New("csv separator can not be empty")
+				if fileType != "" && !slices.Contains(supportedFileType, strings.ToUpper(fileType)) {
+					return errors.New("unsupported file type: " + fileType)
+				}
+				if targetType != "" && !slices.Contains(supportedTargetType, strings.ToUpper(targetType)) {
+					return errors.New("unsupported target type: " + targetType)
+				}
+				if compression != "" && !slices.Contains(supportedCompression, strings.ToUpper(compression)) {
+					return errors.New("unsupported compression: " + compression)
+				}
+				if len(csvSeparator) == 0 {
+					return errors.New("csv separator can not be empty")
+				}
 			}
 
 			if !opts.interactive && sql == "" && len(patterns) == 0 && !force {
@@ -498,9 +504,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.TableWhere, "", "Filter the exported table(s) with the where condition.")
 	createCmd.Flags().String(flag.SQL, "", "Filter the exported data with SQL SELECT statement.")
 	createCmd.Flags().BoolVar(&force, flag.Force, false, "Create without confirmation. You need to confirm when you want to export the whole cluster in non-interactive mode.")
-	createCmd.Flags().String(flag.CSVDelimiter, "\"", "Delimiter of string type variables in CSV files. To set an empty string, use non-interactive mode")
-	createCmd.Flags().String(flag.CSVSeparator, ",", "Separator of each value in CSV files.")
-	createCmd.Flags().String(flag.CSVNullValue, "\\N", "Representation of null values in CSV files. To set an empty string, use non-interactive mode")
+	createCmd.Flags().String(flag.CSVDelimiter, CSVDelimiterDefaultValue, "Delimiter of string type variables in CSV files.")
+	createCmd.Flags().String(flag.CSVSeparator, CSVSeparatorDefaultValue, "Separator of each value in CSV files.")
+	createCmd.Flags().String(flag.CSVNullValue, CSVNullValueDefaultValue, "Representation of null values in CSV files.")
 	createCmd.Flags().Bool(flag.CSVSkipHeader, false, "Export CSV files of the tables without header.")
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableFilter, flag.SQL)
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableWhere, flag.SQL)
@@ -694,16 +700,16 @@ func initialCSVFormatInputModel() ui.TextInputModel {
 		t := textinput.New()
 		switch k {
 		case flag.CSVSeparator:
-			t.Placeholder = "CSV separator: separator of each value in CSV files, skip to use default value <,>"
+			t.Placeholder = "CSV separator: separator of each value in CSV files, skip to use default value (,)"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
 		case flag.CSVDelimiter:
-			t.Placeholder = "CSV delimiter: delimiter of string type variables in CSV files, skip to use default value <\">. If you want to set empty string, please use non-interactive mode"
+			t.Placeholder = "CSV delimiter: delimiter of string type variables in CSV files, skip to use default value (\"). If you want to set empty string, please use non-interactive mode"
 		case flag.CSVNullValue:
-			t.Placeholder = "CSV null value: representation of null values in CSV files, skip to use default value <\\N>. If you want to set empty string, please use non-interactive mode"
+			t.Placeholder = "CSV null value: representation of null values in CSV files, skip to use default value (\\N). If you want to set empty string, please use non-interactive mode"
 		case flag.CSVSkipHeader:
-			t.Placeholder = "CSV skip header: Export CSV files of the tables without header. Type <true> to skip header, others will not skip header"
+			t.Placeholder = "CSV skip header: export CSV files of the tables without header. Type `true` to skip header, others will not skip header"
 		}
 		m.Inputs[v] = t
 	}
