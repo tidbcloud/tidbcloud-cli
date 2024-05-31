@@ -334,7 +334,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if targetType == string(TargetTypeS3) {
+				if strings.ToUpper(targetType) == string(TargetTypeS3) {
 					s3URI, err = cmd.Flags().GetString(flag.S3URI)
 					if err != nil {
 						return errors.Trace(err)
