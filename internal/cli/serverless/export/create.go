@@ -477,14 +477,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					},
 				}
 			}
-			if csvSeparator != "," || csvDelimiter != "\"" || csvNullValue != "\\N" || csvSkipHeader {
-				params.Body.ExportOptions.CsvFormat = &exportModel.V1beta1ExportOptionsCSVFormat{
-					Separator:  csvSeparator,
-					Delimiter:  &csvDelimiter,
-					NullValue:  &csvNullValue,
-					SkipHeader: csvSkipHeader,
-				}
+
+			params.Body.ExportOptions.CsvFormat = &exportModel.V1beta1ExportOptionsCSVFormat{
+				Separator:  csvSeparator,
+				Delimiter:  &csvDelimiter,
+				NullValue:  &csvNullValue,
+				SkipHeader: csvSkipHeader,
 			}
+
 			resp, err := d.CreateExport(params)
 			if err != nil {
 				return errors.Trace(err)
