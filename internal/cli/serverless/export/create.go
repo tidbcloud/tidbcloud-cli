@@ -262,7 +262,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if fileType == string(FileTypeCSV) {
 					customCSVFormat := false
 					prompt := &survey.Confirm{
-						Message: "Do you want to customize the CSV format (Default: No)",
+						Message: "Do you want to customize the CSV format",
 						Default: false,
 					}
 					err = survey.AskOne(prompt, &customCSVFormat)
@@ -302,7 +302,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				// get compression
 				changeCompression := false
 				prompt := &survey.Confirm{
-					Message: "Do you want to change the default compression algorithm GZIP (Default: No)",
+					Message: "Do you want to change the default compression algorithm GZIP",
 					Default: false,
 				}
 				err = survey.AskOne(prompt, &changeCompression)
@@ -396,6 +396,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.New("csv options are only available when file type is CSV")
 					}
 				}
+				if len(csvSeparator) == 0 {
+					return errors.New("csv separator can not be empty")
+				}
 			}
 
 			// check param
@@ -463,9 +466,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						Patterns: patterns,
 					},
 				}
-			}
-			if len(csvSeparator) == 0 {
-				return errors.New("csv separator can not be empty")
 			}
 			if csvSeparator != "," || csvDelimiter != "\"" || csvNullValue != "\\N" || csvSkipHeader {
 				params.Body.ExportOptions.CsvFormat = &exportModel.V1beta1ExportOptionsCSVFormat{
