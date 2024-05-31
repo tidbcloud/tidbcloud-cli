@@ -287,15 +287,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						} else {
 							csvSkipHeader = false
 						}
-						if csvSeparator == "" {
-							csvSeparator = ","
-						}
-						if csvDelimiter == "" {
-							csvDelimiter = "\""
-						}
-						if csvNullValue == "" {
-							csvDelimiter = "\\N"
-						}
+					}
+					if csvSeparator == "" {
+						csvSeparator = ","
+					}
+					if csvDelimiter == "" {
+						csvDelimiter = "\""
+					}
+					if csvNullValue == "" {
+						csvDelimiter = "\\N"
 					}
 				}
 
@@ -396,9 +396,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.New("csv options are only available when file type is CSV")
 					}
 				}
-				if len(csvSeparator) == 0 {
-					return errors.New("csv separator can not be empty")
-				}
 			}
 
 			// check param
@@ -410,6 +407,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 			if compression != "" && !slices.Contains(supportedCompression, strings.ToUpper(compression)) {
 				return errors.New("unsupported compression: " + compression)
+			}
+			if len(csvSeparator) == 0 {
+				return errors.New("csv separator can not be empty")
 			}
 
 			if !opts.interactive && sql == "" && len(patterns) == 0 && !force {
