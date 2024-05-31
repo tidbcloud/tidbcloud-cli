@@ -383,7 +383,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 
-				println(csvSeparator, csvDelimiter, csvNullValue, csvSkipHeader)
 				if csvSeparator != "," || csvDelimiter != "\"" || csvNullValue != "\\N" || csvSkipHeader {
 					if fileType != string(FileTypeCSV) {
 						return errors.New("csv options are only available when file type is CSV")
@@ -676,14 +675,14 @@ func initialCSVFormatInputModel() ui.TextInputModel {
 		t := textinput.New()
 		switch k {
 		case flag.CSVSeparator:
-			t.Placeholder = "CSV separator: separator of each value in CSV files. Skip to use default value <,>"
+			t.Placeholder = "CSV separator: separator of each value in CSV files, skip to use default value <,>"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
 		case flag.CSVDelimiter:
-			t.Placeholder = "CSV delimiter: delimiter of string type variables in CSV files. Skip to use default value <\">"
+			t.Placeholder = "CSV delimiter: delimiter of string type variables in CSV files, skip to use default value <\">. If you want to set empty string, please use non-interactive mode"
 		case flag.CSVNullValue:
-			t.Placeholder = "CSV null value: representation of null values in CSV files. Skip to use default value <\\N>"
+			t.Placeholder = "CSV null value: representation of null values in CSV files, skip to use default value <\\N>. If you want to set empty string, please use non-interactive mode"
 		case flag.CSVSkipHeader:
 			t.Placeholder = "CSV skip header: Export CSV files of the tables without header. Type <true> to skip header, others will not skip header"
 		}
