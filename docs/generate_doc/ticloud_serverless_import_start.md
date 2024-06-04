@@ -37,7 +37,12 @@ ticloud serverless import start [flags]
       --local.file-path string         The local file path to import.
       --local.target-database string   Target database to which import data.
       --local.target-table string      Target table to which import data.
-      --source-type string             The import source type, one of ["LOCAL"]. (default "LOCAL")
+      --s3.access-key-id string        The access key ID for S3.
+      --s3.role-arn string             The role ARN for S3.
+      --s3.secret-access-key string    The secret access key for S3.
+      --s3.target-database string      Target database to which import data.
+      --s3.uri string                  The S3 folder URI for import.
+      --source-type string             The import source type, one of ["LOCAL" "S3"]. (default "LOCAL")
 ```
 
 ### Options inherited from parent commands
