@@ -22,6 +22,8 @@ const (
 	CSVDelimiter          string = "csv.delimiter"
 	CSVSeparator          string = "csv.separator"
 	CSVTrimLastSeparator  string = "csv.trim-last-separator"
+	CSVNullValue          string = "csv.null-value"
+	CSVSkipHeader         string = "csv.skip-header"
 	DisplayName           string = "display-name"
 	DisplayNameShort      string = "n"
 	ClusterType           string = "cluster-type"
