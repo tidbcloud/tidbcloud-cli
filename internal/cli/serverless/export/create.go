@@ -16,6 +16,8 @@ package export
 
 import (
 	"fmt"
+	"slices"
+	"strings"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -51,6 +53,18 @@ const (
 	FileTypeUnknown FileType = "UNKNOWN"
 )
 
+var (
+	supportedFileType    = []string{string(FileTypeSQL), string(FileTypeCSV)}
+	supportedTargetType  = []string{string(TargetTypeS3), string(TargetTypeLOCAL)}
+	supportedCompression = []string{"GZIP", "SNAPPY", "ZSTD", "NONE"}
+)
+
+const (
+	CSVSeparatorDefaultValue = ","
+	CSVDelimiterDefaultValue = "\""
+	CSVNullValueDefaultValue = "\\N"
+)
+
 var S3InputFields = map[string]int{
 	flag.S3URI:             0,
 	flag.S3AccessKeyID:     1,
@@ -64,6 +78,13 @@ var FilterSQLInputFields = map[string]int{
 var FilterTableInputFields = map[string]int{
 	flag.TableFilter: 0,
 	flag.TableWhere:  1,
+}
+
+var CSVformatInputFields = map[string]int{
+	flag.CSVSeparator:  0,
+	flag.CSVDelimiter:  1,
+	flag.CSVNullValue:  2,
+	flag.CSVSkipHeader: 3,
 }
 
 type CreateOpts struct {
@@ -82,6 +103,10 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 		flag.SQL,
 		flag.TableFilter,
 		flag.TableWhere,
+		flag.CSVDelimiter,
+		flag.CSVNullValue,
+		flag.CSVSkipHeader,
+		flag.CSVSeparator,
 	}
 }
 
@@ -129,7 +154,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless export create -c <cluster-id>
 
   Export all data with s3 type in non-interactive mode:
-  $ %[1]s serverless export create -c <cluster-id> --s3.uri <s3-uri> --s3.access-key-id <access-key-id> --s3.secret-access-key <secret-access-key>
+  $ %[1]s serverless export create -c <cluster-id> --target-type S3 --s3.uri <s3-uri> --s3.access-key-id <access-key-id> --s3.secret-access-key <secret-access-key>
+
+  Export all data and customize csv format in non-interactive mode:
+  $ %[1]s serverless export create -c <cluster-id> --file-type CSV --csv.separator ";" --csv.delimiter "\"" --csv.null-value 'NaN' --csv.skip-header
 
   Export test.t1 and test.t2 in non-interactive mode:
   $ %[1]s serverless export create -c <cluster-id> --filter 'test.t1,test.t2'
@@ -147,9 +175,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			var s3URI, accessKeyID, secretAccessKey, targetType, fileType, compression string
-			var clusterId, sql, where string
+			var s3URI, accessKeyID, secretAccessKey, targetType, fileType, compression, clusterId, sql, where string
 			var patterns []string
+			var csvSeparator, csvDelimiter, csvNullValue string
+			var csvSkipHeader bool
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -235,14 +264,70 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return err
 					}
 					if selectedFileType == FileTypeUnknown {
-						return errors.New("file type must be LOCAL or S3")
+						return errors.New("file type must be SQL or CSV")
 					}
 					fileType = string(selectedFileType)
 				}
 
-				compression, err = GetSelectedCompression()
+				if fileType == string(FileTypeCSV) {
+					customCSVFormat := false
+					prompt := &survey.Confirm{
+						Message: "Do you want to customize the CSV format",
+						Default: false,
+					}
+					err = survey.AskOne(prompt, &customCSVFormat)
+					if err != nil {
+						if err == terminal.InterruptErr {
+							return util.InterruptError
+						} else {
+							return err
+						}
+					}
+					if customCSVFormat {
+						csvFormatInput, err := GetCSVFormatInput()
+						if err != nil {
+							return err
+						}
+						csvSeparator = csvFormatInput.(ui.TextInputModel).Inputs[CSVformatInputFields[flag.CSVSeparator]].Value()
+						csvDelimiter = csvFormatInput.(ui.TextInputModel).Inputs[CSVformatInputFields[flag.CSVDelimiter]].Value()
+						csvNullValue = csvFormatInput.(ui.TextInputModel).Inputs[CSVformatInputFields[flag.CSVNullValue]].Value()
+						skipHeader := csvFormatInput.(ui.TextInputModel).Inputs[CSVformatInputFields[flag.CSVSkipHeader]].Value()
+						if skipHeader == "true" {
+							csvSkipHeader = true
+						} else {
+							csvSkipHeader = false
+						}
+					}
+					if csvSeparator == "" {
+						csvSeparator = CSVSeparatorDefaultValue
+					}
+					if csvDelimiter == "" {
+						csvDelimiter = CSVDelimiterDefaultValue
+					}
+					if csvNullValue == "" {
+						csvNullValue = CSVNullValueDefaultValue
+					}
+				}
+
+				// get compression
+				changeCompression := false
+				prompt := &survey.Confirm{
+					Message: "Do you want to change the default compression algorithm GZIP",
+					Default: false,
+				}
+				err = survey.AskOne(prompt, &changeCompression)
 				if err != nil {
-					return err
+					if err == terminal.InterruptErr {
+						return util.InterruptError
+					} else {
+						return err
+					}
+				}
+				if changeCompression {
+					compression, err = GetSelectedCompression()
+					if err != nil {
+						return err
+					}
 				}
 			} else {
 				// non-interactive mode, get values from flags
@@ -255,11 +340,17 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
+				if targetType != "" && !slices.Contains(supportedTargetType, strings.ToUpper(targetType)) {
+					return errors.New("unsupported target type: " + targetType)
+				}
 				fileType, err = cmd.Flags().GetString(flag.FileType)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if targetType == string(TargetTypeS3) {
+				if fileType != "" && !slices.Contains(supportedFileType, strings.ToUpper(fileType)) {
+					return errors.New("unsupported file type: " + fileType)
+				}
+				if strings.ToUpper(targetType) == string(TargetTypeS3) {
 					s3URI, err = cmd.Flags().GetString(flag.S3URI)
 					if err != nil {
 						return errors.Trace(err)
@@ -282,9 +373,33 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.New("secretAccessKey is required when target type is S3")
 					}
 				}
+				if strings.ToUpper(fileType) == string(FileTypeCSV) {
+					csvSeparator, err = cmd.Flags().GetString(flag.CSVSeparator)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					if len(csvSeparator) == 0 {
+						return errors.New("csv separator can not be empty")
+					}
+					csvDelimiter, err = cmd.Flags().GetString(flag.CSVDelimiter)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					csvNullValue, err = cmd.Flags().GetString(flag.CSVNullValue)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					csvSkipHeader, err = cmd.Flags().GetBool(flag.CSVSkipHeader)
+					if err != nil {
+						return errors.Trace(err)
+					}
+				}
 				compression, err = cmd.Flags().GetString(flag.Compression)
 				if err != nil {
 					return errors.Trace(err)
+				}
+				if compression != "" && !slices.Contains(supportedCompression, strings.ToUpper(compression)) {
+					return errors.New("unsupported compression: " + compression)
 				}
 				sql, err = cmd.Flags().GetString(flag.SQL)
 				if err != nil {
@@ -326,10 +441,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			params := exportApi.NewExportServiceCreateExportParams().WithClusterID(clusterId).WithBody(
 				exportApi.ExportServiceCreateExportBody{
 					ExportOptions: &exportModel.V1beta1ExportOptions{
-						FileType: exportModel.V1beta1ExportOptionsFileType(fileType),
+						FileType: exportModel.V1beta1ExportOptionsFileType(strings.ToUpper(fileType)),
 					},
 					Target: &exportModel.V1beta1Target{
-						Type: exportModel.TargetTargetType(targetType),
+						Type: exportModel.TargetTargetType(strings.ToUpper(targetType)),
 						S3: &exportModel.TargetS3Target{
 							URI: s3URI,
 							AccessKey: &exportModel.S3TargetAccessKey{
@@ -340,7 +455,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					},
 				}).WithContext(ctx)
 			if compression != "" {
-				params.Body.ExportOptions.Compression = exportModel.ExportOptionsCompressionType(compression)
+				params.Body.ExportOptions.Compression = exportModel.ExportOptionsCompressionType(strings.ToUpper(compression))
 			}
 			if sql != "" {
 				params.Body.ExportOptions.Filter = &exportModel.ExportOptionsFilter{
@@ -355,6 +470,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					},
 				}
 			}
+			if strings.ToUpper(fileType) == string(FileTypeCSV) {
+				params.Body.ExportOptions.CsvFormat = &exportModel.V1beta1ExportOptionsCSVFormat{
+					Separator:  csvSeparator,
+					Delimiter:  &csvDelimiter,
+					NullValue:  &csvNullValue,
+					SkipHeader: csvSkipHeader,
+				}
+			}
+
 			resp, err := d.CreateExport(params)
 			if err != nil {
 				return errors.Trace(err)
@@ -368,7 +492,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster, in which the export will be created.")
-	createCmd.Flags().String(flag.FileType, "CSV", "The export file type. One of [\"CSV\" \"SQL\"].")
+	createCmd.Flags().String(flag.FileType, "SQL", "The export file type. One of [\"CSV\" \"SQL\"].")
 	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export target. One of [\"LOCAL\" \"S3\"].")
 	createCmd.Flags().String(flag.S3URI, "", "The s3 uri in s3://<bucket>/<path> format. Required when target type is S3.")
 	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3. Required when target type is S3.")
@@ -377,7 +501,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().StringSlice(flag.TableFilter, nil, "Specify the exported table(s) with table filter patterns. See https://docs.pingcap.com/tidb/stable/table-filter to learn table filter.")
 	createCmd.Flags().String(flag.TableWhere, "", "Filter the exported table(s) with the where condition.")
 	createCmd.Flags().String(flag.SQL, "", "Filter the exported data with SQL SELECT statement.")
-	createCmd.Flags().BoolVar(&force, flag.Force, false, "Create without confirmation. You need to confirm when you want to export the whole cluster.")
+	createCmd.Flags().BoolVar(&force, flag.Force, false, "Create without confirmation. You need to confirm when you want to export the whole cluster in non-interactive mode.")
+	createCmd.Flags().String(flag.CSVDelimiter, CSVDelimiterDefaultValue, "Delimiter of string type variables in CSV files.")
+	createCmd.Flags().String(flag.CSVSeparator, CSVSeparatorDefaultValue, "Separator of each value in CSV files.")
+	createCmd.Flags().String(flag.CSVNullValue, CSVNullValueDefaultValue, "Representation of null values in CSV files.")
+	createCmd.Flags().Bool(flag.CSVSkipHeader, false, "Export CSV files of the tables without header.")
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableFilter, flag.SQL)
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableWhere, flag.SQL)
 	return createCmd
@@ -386,7 +514,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 func GetSelectedTargetType() (TargetType, error) {
 	targetTypes := make([]interface{}, 0, 2)
 	targetTypes = append(targetTypes, TargetTypeLOCAL, TargetTypeS3)
-	model, err := ui.InitialSelectModel(targetTypes, "Choose export target:")
+	model, err := ui.InitialSelectModel(targetTypes, "Choose where to export:")
 	if err != nil {
 		return TargetTypeUnknown, errors.Trace(err)
 	}
@@ -409,7 +537,7 @@ func GetSelectedTargetType() (TargetType, error) {
 func GetSelectedFileType() (FileType, error) {
 	fileTypes := make([]interface{}, 0, 2)
 	fileTypes = append(fileTypes, FileTypeSQL, FileTypeCSV)
-	model, err := ui.InitialSelectModel(fileTypes, "Choose export file type:")
+	model, err := ui.InitialSelectModel(fileTypes, "Choose the exported file type:")
 	if err != nil {
 		return FileTypeUnknown, errors.Trace(err)
 	}
@@ -431,7 +559,7 @@ func GetSelectedFileType() (FileType, error) {
 
 func GetSelectedCompression() (string, error) {
 	compressions := make([]interface{}, 0, 4)
-	compressions = append(compressions, "GZIP", "SNAPPY", "ZSTD", "NONE")
+	compressions = append(compressions, "SNAPPY", "ZSTD", "NONE")
 	model, err := ui.InitialSelectModel(compressions, "Choose the compression algorithm:")
 	if err != nil {
 		return "", errors.Trace(err)
@@ -464,7 +592,7 @@ func GetSelectedFilterType() (FilterType, error) {
 	filterTypes := make([]interface{}, 0, 3)
 
 	filterTypes = append(filterTypes, FilterTable, FilterSQL, FilterNone)
-	model, err := ui.InitialSelectModel(filterTypes, "Choose the filter type")
+	model, err := ui.InitialSelectModel(filterTypes, "Choose the filter type:")
 	if err != nil {
 		return "", errors.Trace(err)
 	}
@@ -552,6 +680,42 @@ func initialFilterInputModel(filterType FilterType) ui.TextInputModel {
 
 func GetFilterInput(filterType FilterType) (tea.Model, error) {
 	p := tea.NewProgram(initialFilterInputModel(filterType))
+	inputModel, err := p.Run()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if inputModel.(ui.TextInputModel).Interrupted {
+		return nil, util.InterruptError
+	}
+	return inputModel, nil
+}
+
+func initialCSVFormatInputModel() ui.TextInputModel {
+	m := ui.TextInputModel{
+		Inputs: make([]textinput.Model, len(CSVformatInputFields)),
+	}
+	for k, v := range CSVformatInputFields {
+		t := textinput.New()
+		switch k {
+		case flag.CSVSeparator:
+			t.Placeholder = "CSV separator: separator of each value in CSV files, skip to use default value (,)"
+			t.Focus()
+			t.PromptStyle = config.FocusedStyle
+			t.TextStyle = config.FocusedStyle
+		case flag.CSVDelimiter:
+			t.Placeholder = "CSV delimiter: delimiter of string type variables in CSV files, skip to use default value (\"). If you want to set empty string, please use non-interactive mode"
+		case flag.CSVNullValue:
+			t.Placeholder = "CSV null value: representation of null values in CSV files, skip to use default value (\\N). If you want to set empty string, please use non-interactive mode"
+		case flag.CSVSkipHeader:
+			t.Placeholder = "CSV skip header: export CSV files of the tables without header. Type `true` to skip header, others will not skip header"
+		}
+		m.Inputs[v] = t
+	}
+	return m
+}
+
+func GetCSVFormatInput() (tea.Model, error) {
+	p := tea.NewProgram(initialCSVFormatInputModel())
 	inputModel, err := p.Run()
 	if err != nil {
 		return nil, errors.Trace(err)

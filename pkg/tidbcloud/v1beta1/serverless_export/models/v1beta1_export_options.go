@@ -21,6 +21,9 @@ type V1beta1ExportOptions struct {
 	// Optional. The compression of the export.
 	Compression ExportOptionsCompressionType `json:"compression,omitempty"`
 
+	// Optional. The format of the csv.
+	CsvFormat *V1beta1ExportOptionsCSVFormat `json:"csvFormat,omitempty"`
+
 	// Optional. The specify database of the export. DEPRECATED, use filter instead
 	Database string `json:"database,omitempty"`
 
@@ -39,6 +42,10 @@ func (m *V1beta1ExportOptions) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateCompression(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateCsvFormat(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -68,6 +75,25 @@ func (m *V1beta1ExportOptions) validateCompression(formats strfmt.Registry) erro
 			return ce.ValidateName("compression")
 		}
 		return err
+	}
+
+	return nil
+}
+
+func (m *V1beta1ExportOptions) validateCsvFormat(formats strfmt.Registry) error {
+	if swag.IsZero(m.CsvFormat) { // not required
+		return nil
+	}
+
+	if m.CsvFormat != nil {
+		if err := m.CsvFormat.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("csvFormat")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("csvFormat")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -117,6 +143,10 @@ func (m *V1beta1ExportOptions) ContextValidate(ctx context.Context, formats strf
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateCsvFormat(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateFileType(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -144,6 +174,27 @@ func (m *V1beta1ExportOptions) contextValidateCompression(ctx context.Context, f
 			return ce.ValidateName("compression")
 		}
 		return err
+	}
+
+	return nil
+}
+
+func (m *V1beta1ExportOptions) contextValidateCsvFormat(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.CsvFormat != nil {
+
+		if swag.IsZero(m.CsvFormat) { // not required
+			return nil
+		}
+
+		if err := m.CsvFormat.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("csvFormat")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("csvFormat")
+			}
+			return err
+		}
 	}
 
 	return nil

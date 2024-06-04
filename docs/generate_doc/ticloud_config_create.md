@@ -4,7 +4,7 @@ Configure a user profile to store settings
 
 ### Synopsis
 
-Configure a user profile to store settings, where profile names are case-insensitive and do not contain '.' (periods).
+Configure a user profile to store settings, where profile names are case-insensitive and do not contain periods.
 
 ```
 ticloud config create [flags]
@@ -28,7 +28,7 @@ ticloud config create [flags]
 ```
   -h, --help                  help for create
       --private-key string    The private key of the TiDB Cloud API. (optional)
-      --profile-name string   The name of the profile, must not contain '.'.
+      --profile-name string   The name of the profile, must not contain periods.
       --public-key string     The public key of the TiDB Cloud API. (optional)
 ```
 
