@@ -166,7 +166,6 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 
 	startCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID for S3.")
 	startCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key for S3.")
-	startCmd.Flags().String(flag.S3TargetDatabase, "", "Target database to which import data.")
 	startCmd.Flags().String(flag.S3RoleArn, "", "The role ARN for S3.")
 	startCmd.Flags().String(flag.S3URI, "", "The S3 folder URI for import.")
 	startCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3AccessKeyID)

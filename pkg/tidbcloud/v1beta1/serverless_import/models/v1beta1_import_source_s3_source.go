@@ -27,9 +27,6 @@ type V1beta1ImportSourceS3Source struct {
 	// s3 Uri
 	S3URI string `json:"s3Uri,omitempty"`
 
-	// target database
-	TargetDatabase *string `json:"targetDatabase,omitempty"`
-
 	// type
 	Type V1beta1AuthType `json:"type,omitempty"`
 }

@@ -591,10 +591,6 @@
         },
         "accessKey": {
           "$ref": "#/definitions/v1beta1ImportSourceAccessKey"
-        },
-        "targetDatabase": {
-          "type": "string",
-          "x-nullable": true
         }
       }
     },

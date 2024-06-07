@@ -37,11 +37,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var s3ImportField = map[string]int{
-	flag.S3URI:            0,
-	flag.S3TargetDatabase: 1,
-}
-
 var accessKeyImportField = map[string]int{
 	flag.S3AccessKeyID:     0,
 	flag.S3SecretAccessKey: 1,
@@ -63,7 +58,7 @@ func (o S3Opts) SupportedFileTypes() []string {
 
 func (o S3Opts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
-	var clusterID, fileType, targetDatabase, s3Uri, s3Arn, accessKeyID, secretAccessKey string
+	var clusterID, fileType, s3Uri, s3Arn, accessKeyID, secretAccessKey string
 	var authType importModel.V1beta1AuthType
 	var format *importModel.V1beta1CSVFormat
 	d, err := o.h.Client()
@@ -89,48 +84,24 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		}
 		clusterID = cluster.ID
 
-		var fileTypes []interface{}
-		for _, f := range o.SupportedFileTypes() {
-			fileTypes = append(fileTypes, f)
+		input := &survey.Input{
+			Message: "Please input the s3 fold uri:",
 		}
-		model, err := ui.InitialSelectModel(fileTypes, "Choose the source file type:")
+		err = survey.AskOne(input, &s3Uri, survey.WithValidator(survey.Required))
+		if err != nil {
+			if stdErr.Is(err, terminal.InterruptErr) {
+				return util.InterruptError
+			} else {
+				return err
+			}
+		}
+
+		authTypes := []interface{}{importModel.V1beta1AuthTypeROLEARN, importModel.V1beta1AuthTypeACCESSKEY}
+		model, err := ui.InitialSelectModel(authTypes, "Choose the auth type:")
 		if err != nil {
 			return err
 		}
 		p := tea.NewProgram(model)
-		fileTypeModel, err := p.Run()
-		if err != nil {
-			return errors.Trace(err)
-		}
-		if m, _ := fileTypeModel.(ui.SelectModel); m.Interrupted {
-			return util.InterruptError
-		}
-		fileType = fileTypeModel.(ui.SelectModel).Choices[fileTypeModel.(ui.SelectModel).Selected].(string)
-
-		// variables for input
-		p = tea.NewProgram(o.initialInputModel())
-		inputModel, err := p.Run()
-		if err != nil {
-			return errors.Trace(err)
-		}
-		if inputModel.(ui.TextInputModel).Interrupted {
-			return util.InterruptError
-		}
-		s3Uri = inputModel.(ui.TextInputModel).Inputs[s3ImportField[flag.S3URI]].Value()
-		if len(s3Uri) == 0 {
-			return errors.New("S3 fold path is required")
-		}
-		targetDatabase = inputModel.(ui.TextInputModel).Inputs[s3ImportField[flag.S3TargetDatabase]].Value()
-		if len(targetDatabase) == 0 {
-			return errors.New("Target database is required")
-		}
-
-		authTypes := []interface{}{importModel.V1beta1AuthTypeROLEARN, importModel.V1beta1AuthTypeACCESSKEY}
-		model, err = ui.InitialSelectModel(authTypes, "Choose the auth type:")
-		if err != nil {
-			return err
-		}
-		p = tea.NewProgram(model)
 		authTypeModel, err := p.Run()
 		if err != nil {
 			return errors.Trace(err)
@@ -162,17 +133,35 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 			if inputModel.(ui.TextInputModel).Interrupted {
 				return util.InterruptError
 			}
-			accessKeyID = inputModel.(ui.TextInputModel).Inputs[s3ImportField[flag.S3AccessKeyID]].Value()
+			accessKeyID = inputModel.(ui.TextInputModel).Inputs[accessKeyImportField[flag.S3AccessKeyID]].Value()
 			if len(accessKeyID) == 0 {
 				return errors.New("S3 access key id is required")
 			}
-			secretAccessKey = inputModel.(ui.TextInputModel).Inputs[s3ImportField[flag.S3SecretAccessKey]].Value()
+			secretAccessKey = inputModel.(ui.TextInputModel).Inputs[accessKeyImportField[flag.S3SecretAccessKey]].Value()
 			if len(secretAccessKey) == 0 {
 				return errors.New("S3 secret access key is required")
 			}
 		} else {
 			return fmt.Errorf("invalid auth type :%s", authType)
 		}
+
+		var fileTypes []interface{}
+		for _, f := range o.SupportedFileTypes() {
+			fileTypes = append(fileTypes, f)
+		}
+		model, err = ui.InitialSelectModel(fileTypes, "Choose the source file type:")
+		if err != nil {
+			return err
+		}
+		p = tea.NewProgram(model)
+		fileTypeModel, err := p.Run()
+		if err != nil {
+			return errors.Trace(err)
+		}
+		if m, _ := fileTypeModel.(ui.SelectModel); m.Interrupted {
+			return util.InterruptError
+		}
+		fileType = fileTypeModel.(ui.SelectModel).Choices[fileTypeModel.(ui.SelectModel).Selected].(string)
 
 		format, err = getCSVFormat()
 		if err != nil {
@@ -190,10 +179,6 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		}
 		if !slices.Contains(o.SupportedFileTypes(), fileType) {
 			return fmt.Errorf("file type \"%s\" is not supported, please use one of %q", fileType, o.SupportedFileTypes())
-		}
-		targetDatabase, err = cmd.Flags().GetString(flag.S3TargetDatabase)
-		if err != nil {
-			return errors.Trace(err)
 		}
 		s3Uri, err = cmd.Flags().GetString(flag.S3URI)
 		if err != nil {
@@ -235,12 +220,11 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 			},
 			"source": {
 				"s3": {
-					"s3Uri": "%s",
-					"targetDatabase": "%s"
+					"s3Uri": "%s"
 				},
 				"type": "S3"
 			}
-			}`, fileType, s3Uri, targetDatabase)))
+			}`, fileType, s3Uri)))
 	if err != nil {
 		return errors.Trace(err)
 	}
@@ -274,33 +258,6 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 	}
 
 	return nil
-}
-
-func (o S3Opts) initialInputModel() ui.TextInputModel {
-	m := ui.TextInputModel{
-		Inputs: make([]textinput.Model, len(s3ImportField)),
-	}
-
-	var t textinput.Model
-	for k, v := range s3ImportField {
-		t = textinput.New()
-		t.Cursor.Style = config.FocusedStyle
-		t.CharLimit = 0
-
-		switch k {
-		case flag.S3URI:
-			t.Placeholder = "S3 fold uri"
-			t.Focus()
-			t.PromptStyle = config.FocusedStyle
-			t.TextStyle = config.FocusedStyle
-		case flag.S3TargetDatabase:
-			t.Placeholder = "Target database"
-		}
-
-		m.Inputs[v] = t
-	}
-
-	return m
 }
 
 func (o S3Opts) initialAccessKeyInputModel() ui.TextInputModel {
