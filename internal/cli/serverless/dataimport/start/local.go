@@ -134,9 +134,11 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 			return errors.New("Target table is required")
 		}
 
-		format, err = getCSVFormat()
-		if err != nil {
-			return err
+		if fileType == string(importModel.V1beta1ImportOptionsFileTypeCSV) {
+			format, err = getCSVFormat()
+			if err != nil {
+				return err
+			}
 		}
 	} else {
 		// non-interactive mode

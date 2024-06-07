@@ -163,9 +163,11 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		}
 		fileType = fileTypeModel.(ui.SelectModel).Choices[fileTypeModel.(ui.SelectModel).Selected].(string)
 
-		format, err = getCSVFormat()
-		if err != nil {
-			return err
+		if fileType == string(importModel.V1beta1ImportOptionsFileTypeCSV) {
+			format, err = getCSVFormat()
+			if err != nil {
+				return err
+			}
 		}
 	} else {
 		// non-interactive mode
