@@ -184,9 +184,10 @@ func (suite *ListImportSuite) TestListImportArgs() {
 	result := &importOp.ImportServiceListImportsOK{
 		Payload: body,
 	}
+	orderBy := "create_time desc"
 	clusterID := "12345"
 	suite.mockClient.On("ListImports", importOp.NewImportServiceListImportsParams().
-		WithClusterID(clusterID).WithPageSize(&pageSize).WithContext(ctx)).
+		WithClusterID(clusterID).WithPageSize(&pageSize).WithOrderBy(&orderBy).WithContext(ctx)).
 		Return(result, nil)
 
 	tests := []struct {
@@ -249,9 +250,10 @@ func (suite *ListImportSuite) TestListImportWithMultiPages() {
 		Offset: 1,
 	}
 	result.Payload.NextPageToken = nextPageToken.String()
+	orderBy := "create_time desc"
 
 	suite.mockClient.On("ListImports", importOp.NewImportServiceListImportsParams().
-		WithClusterID(clusterID).WithPageSize(&pageSize).WithContext(ctx)).
+		WithClusterID(clusterID).WithPageSize(&pageSize).WithOrderBy(&orderBy).WithContext(ctx)).
 		Return(result, nil)
 
 	body2 := &importModel.V1beta1ListImportsResp{}
@@ -260,7 +262,7 @@ func (suite *ListImportSuite) TestListImportWithMultiPages() {
 	result2 := &importOp.ImportServiceListImportsOK{
 		Payload: body2,
 	}
-	suite.mockClient.On("ListImports", importOp.NewImportServiceListImportsParams().
+	suite.mockClient.On("ListImports", importOp.NewImportServiceListImportsParams().WithOrderBy(&orderBy).
 		WithClusterID(clusterID).WithPageToken(aws.String(nextPageToken.String())).WithPageSize(&pageSize).WithContext(ctx)).
 		Return(result2, nil)
 	cmd := ListCmd(suite.h)

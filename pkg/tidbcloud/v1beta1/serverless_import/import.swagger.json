@@ -395,7 +395,8 @@
           "type": "string"
         },
         "delimiter": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
         },
         "header": {
           "type": "boolean",
@@ -406,7 +407,8 @@
           "x-nullable": true
         },
         "null": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
         },
         "backslashEscape": {
           "type": "boolean",
@@ -520,7 +522,7 @@
       "type": "string",
       "enum": [
         "CSV",
-        "Sql",
+        "SQL",
         "AuroraSnapshot",
         "Parquet"
       ],

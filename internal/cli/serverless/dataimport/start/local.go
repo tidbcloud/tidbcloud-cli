@@ -63,8 +63,8 @@ func (o LocalOpts) SupportedFileTypes() []string {
 
 func (o LocalOpts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
-	var clusterID, fileType, targetDatabase, targetTable, separator, delimiter, filePath string
-	var backslashEscape, trimLastSeparator bool
+	var clusterID, fileType, targetDatabase, targetTable, filePath string
+	var format *importModel.V1beta1CSVFormat
 	d, err := o.h.Client()
 	if err != nil {
 		return err
@@ -134,7 +134,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 			return errors.New("Target table is required")
 		}
 
-		separator, delimiter, backslashEscape, trimLastSeparator, err = getCSVFormat()
+		format, err = getCSVFormat()
 		if err != nil {
 			return err
 		}
@@ -153,20 +153,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		}
 		filePath = f.Value.String()
 
-		// optional flags
-		backslashEscape, err = cmd.Flags().GetBool(flag.CSVBackslashEscape)
-		if err != nil {
-			return errors.Trace(err)
-		}
-		separator, err = cmd.Flags().GetString(flag.CSVSeparator)
-		if err != nil {
-			return errors.Trace(err)
-		}
-		delimiter, err = cmd.Flags().GetString(flag.CSVDelimiter)
-		if err != nil {
-			return errors.Trace(err)
-		}
-		trimLastSeparator, err = cmd.Flags().GetBool(flag.CSVTrimLastSeparator)
+		format, err = getCSVFlagValue(cmd)
 		if err != nil {
 			return errors.Trace(err)
 		}
@@ -211,16 +198,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 	body := importOp.ImportServiceCreateImportBody{}
 	err = body.UnmarshalBinary([]byte(fmt.Sprintf(`{
 			"importOptions": {
-				"fileType": "%s",
-				"csvFormat": {
-                	"separator": ",",
-					"delimiter": "\"",
-					"header": true,
-					"backslashEscape": true,
-					"null": "\\N",
-					"trimLastSeparator": false,
-					"notNull": false
-				}
+				"fileType": "%s"
 			},
 			"source": {
 				"local": {
@@ -234,11 +212,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 	if err != nil {
 		return errors.Trace(err)
 	}
-
-	body.ImportOptions.CsvFormat.Separator = separator
-	body.ImportOptions.CsvFormat.Delimiter = delimiter
-	body.ImportOptions.CsvFormat.BackslashEscape = aws.Bool(backslashEscape)
-	body.ImportOptions.CsvFormat.TrimLastSeparator = aws.Bool(trimLastSeparator)
+	body.ImportOptions.CsvFormat = format
 
 	params := importOp.NewImportServiceCreateImportParams().WithClusterID(clusterID).
 		WithBody(body).WithContext(ctx)

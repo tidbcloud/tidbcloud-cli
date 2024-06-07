@@ -34,8 +34,8 @@ const (
 	// V1beta1ImportOptionsFileTypeCSV captures enum value "CSV"
 	V1beta1ImportOptionsFileTypeCSV V1beta1ImportOptionsFileType = "CSV"
 
-	// V1beta1ImportOptionsFileTypeSQL captures enum value "Sql"
-	V1beta1ImportOptionsFileTypeSQL V1beta1ImportOptionsFileType = "Sql"
+	// V1beta1ImportOptionsFileTypeSQL captures enum value "SQL"
+	V1beta1ImportOptionsFileTypeSQL V1beta1ImportOptionsFileType = "SQL"
 
 	// V1beta1ImportOptionsFileTypeAuroraSnapshot captures enum value "AuroraSnapshot"
 	V1beta1ImportOptionsFileTypeAuroraSnapshot V1beta1ImportOptionsFileType = "AuroraSnapshot"
@@ -49,7 +49,7 @@ var v1beta1ImportOptionsFileTypeEnum []interface{}
 
 func init() {
 	var res []V1beta1ImportOptionsFileType
-	if err := json.Unmarshal([]byte(`["CSV","Sql","AuroraSnapshot","Parquet"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["CSV","SQL","AuroraSnapshot","Parquet"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {

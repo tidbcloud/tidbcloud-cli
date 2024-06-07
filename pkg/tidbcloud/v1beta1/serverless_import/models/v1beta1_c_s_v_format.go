@@ -21,7 +21,7 @@ type V1beta1CSVFormat struct {
 	BackslashEscape *bool `json:"backslashEscape,omitempty"`
 
 	// delimiter
-	Delimiter string `json:"delimiter,omitempty"`
+	Delimiter *string `json:"delimiter,omitempty"`
 
 	// header
 	Header *bool `json:"header,omitempty"`
@@ -30,7 +30,7 @@ type V1beta1CSVFormat struct {
 	NotNull *bool `json:"notNull,omitempty"`
 
 	// null
-	Null string `json:"null,omitempty"`
+	Null *string `json:"null,omitempty"`
 
 	// separator
 	Separator string `json:"separator,omitempty"`

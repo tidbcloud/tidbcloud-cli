@@ -32,6 +32,7 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
@@ -39,14 +40,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type csvFormatField int
-
-const (
-	separatorIdx csvFormatField = iota
-	delimiterIdx
-	backslashEscapeIdx
-	trimLastSeparatorIdx
-)
+var CSVFormatInputFields = map[string]int{
+	flag.CSVSeparator:         0,
+	flag.CSVDelimiter:         1,
+	flag.CSVSkipHeader:        2,
+	flag.CSVNotNull:           3,
+	flag.CSVNullValue:         4,
+	flag.CSVBackslashEscape:   5,
+	flag.CSVTrimLastSeparator: 6,
+}
 
 type SourceType string
 
@@ -173,9 +175,11 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 
 	startCmd.Flags().String(flag.CSVDelimiter, "\"", "The delimiter used for quoting of CSV file.")
 	startCmd.Flags().String(flag.CSVSeparator, ",", "The field separator of CSV file.")
-	startCmd.Flags().Bool(flag.CSVTrimLastSeparator, false, "In CSV file whether to treat separator as the line terminator and trim all trailing separators.")
-	startCmd.Flags().Bool(flag.CSVBackslashEscape, true, "In CSV file whether to parse backslash inside fields as escape characters.")
-
+	startCmd.Flags().Bool(flag.CSVTrimLastSeparator, false, "Specifies whether to treat separator as the line terminator and trim all trailing separators in the CSV file.")
+	startCmd.Flags().Bool(flag.CSVBackslashEscape, true, "Specifies whether to parse backslash inside fields as escape characters in the CSV file.")
+	startCmd.Flags().Bool(flag.CSVNotNull, false, "Specifies whether a CSV file can contain any NULL values.")
+	startCmd.Flags().String(flag.CSVNullValue, `\N`, "The representation of NULL values in the CSV file.")
+	startCmd.Flags().Bool(flag.CSVSkipHeader, false, "Specifies whether the CSV file contains a header line.")
 	return startCmd
 }
 
@@ -264,9 +268,9 @@ func spinnerWaitStartOp(ctx context.Context, h *internal.Helper, d cloud.TiDBClo
 	return nil
 }
 
-func getCSVFormat() (separator string, delimiter string, backslashEscape bool, trimLastSeparator bool, errToReturn error) {
-	separator, delimiter = ",", "\""
-	backslashEscape, trimLastSeparator = true, false
+func getCSVFormat() (format *importModel.V1beta1CSVFormat, errToReturn error) {
+	separator, delimiter, nullValue := ",", `"`, `\N`
+	backslashEscape, trimLastSeparator, skipHeader, notNull := true, false, false, false
 
 	needCustomCSV := false
 	prompt := &survey.Confirm{
@@ -297,62 +301,143 @@ func getCSVFormat() (separator string, delimiter string, backslashEscape bool, t
 		}
 
 		// If user input is blank, use the default value.
-		v := inputModel.(ui.TextInputModel).Inputs[separatorIdx].Value()
+		v := inputModel.(ui.TextInputModel).Inputs[CSVFormatInputFields[flag.CSVSeparator]].Value()
 		if len(v) > 0 {
 			separator = v
 		}
-		v = inputModel.(ui.TextInputModel).Inputs[delimiterIdx].Value()
+		v = inputModel.(ui.TextInputModel).Inputs[CSVFormatInputFields[flag.CSVDelimiter]].Value()
 		if len(v) > 0 {
 			delimiter = v
 		}
-		v = inputModel.(ui.TextInputModel).Inputs[backslashEscapeIdx].Value()
+		v = inputModel.(ui.TextInputModel).Inputs[CSVFormatInputFields[flag.CSVBackslashEscape]].Value()
 		if len(v) > 0 {
 			backslashEscape, err = strconv.ParseBool(v)
 			if err != nil {
-				errToReturn = errors.Annotate(err, "backslash escape must be true or false")
+				errToReturn = errors.Annotate(err, "backslashEscape must be true or false")
 				return
 			}
 		}
-		v = inputModel.(ui.TextInputModel).Inputs[trimLastSeparatorIdx].Value()
+		v = inputModel.(ui.TextInputModel).Inputs[CSVFormatInputFields[flag.CSVTrimLastSeparator]].Value()
 		if len(v) > 0 {
 			trimLastSeparator, err = strconv.ParseBool(v)
 			if err != nil {
-				errToReturn = errors.Annotate(err, "backslash escape must be true or false")
+				errToReturn = errors.Annotate(err, "trimLastSeparator must be true or false")
 				return
 			}
 		}
+		v = inputModel.(ui.TextInputModel).Inputs[CSVFormatInputFields[flag.CSVNotNull]].Value()
+		if len(v) > 0 {
+			notNull, err = strconv.ParseBool(v)
+			if err != nil {
+				errToReturn = errors.Annotate(err, "notNull must be true or false")
+				return
+			}
+		}
+		v = inputModel.(ui.TextInputModel).Inputs[CSVFormatInputFields[flag.CSVNullValue]].Value()
+		if len(v) > 0 {
+			nullValue = v
+		}
+		v = inputModel.(ui.TextInputModel).Inputs[CSVFormatInputFields[flag.CSVSkipHeader]].Value()
+		if len(v) > 0 {
+			skipHeader, err = strconv.ParseBool(v)
+			if err != nil {
+				errToReturn = errors.Annotate(err, "skipHeader must be true or false")
+				return
+			}
+		}
+	}
+
+	format = &importModel.V1beta1CSVFormat{
+		Separator:         separator,
+		Delimiter:         aws.String(delimiter),
+		BackslashEscape:   aws.Bool(backslashEscape),
+		TrimLastSeparator: aws.Bool(trimLastSeparator),
+		Null:              aws.String(nullValue),
+		Header:            aws.Bool(!skipHeader),
+		NotNull:           aws.Bool(notNull),
 	}
 	return
 }
 
 func initialCSVFormatInputModel() ui.TextInputModel {
 	m := ui.TextInputModel{
-		Inputs: make([]textinput.Model, 4),
+		Inputs: make([]textinput.Model, len(CSVFormatInputFields)),
 	}
 
 	var t textinput.Model
-	for i := range m.Inputs {
+	for k, v := range CSVFormatInputFields {
 		t = textinput.New()
 		t.Cursor.Style = config.FocusedStyle
 		t.CharLimit = 0
-		f := csvFormatField(i)
 
-		switch f {
-		case separatorIdx:
-			t.Placeholder = "separator, default is ',', empty to use default"
+		switch k {
+		case flag.CSVSeparator:
+			t.Placeholder = "CSV separator: separator of each value in CSV files, skip to use default value (,)"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
-		case delimiterIdx:
-			t.Placeholder = "delimiter, default is '\"', empty to use default"
-		case backslashEscapeIdx:
-			t.Placeholder = "backslashEscape, default is true, empty to use default"
-		case trimLastSeparatorIdx:
-			t.Placeholder = "trimLastSeparator, default is false, empty to use default"
+		case flag.CSVDelimiter:
+			t.Placeholder = "CSV delimiter: delimiter of string type variables in CSV files, skip to use default value (\"). If you want to set empty string, please use non-interactive mode"
+		case flag.CSVBackslashEscape:
+			t.Placeholder = "CSV backslash-escape: whether to interpret backslash escapes inside fields, skip to use default value (true)"
+		case flag.CSVTrimLastSeparator:
+			t.Placeholder = "CSV trim-last-separator: remove the last separator when a line ends with a separator, skip to use default value (false)"
+		case flag.CSVNotNull:
+			t.Placeholder = "CSV not-null: whether the CSV can contains any NULL value, skip to use default value (false)"
+		case flag.CSVNullValue:
+			t.Placeholder = "CSV null-value: representation of null values in CSV files(only work when `not-null` is false), skip to use default value (\\N). If you want to set empty string, please use non-interactive mode"
+		case flag.CSVSkipHeader:
+			t.Placeholder = "CSV skip-header: whether the CSV file contains a header line, if `true`, the first row is also imported as CSV data ,skip to use default value (false)"
 		}
 
-		m.Inputs[i] = t
+		m.Inputs[v] = t
 	}
 
 	return m
+}
+
+func getCSVFlagValue(cmd *cobra.Command) (*importModel.V1beta1CSVFormat, error) {
+	// optional flags
+	backslashEscape, err := cmd.Flags().GetBool(flag.CSVBackslashEscape)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	separator, err := cmd.Flags().GetString(flag.CSVSeparator)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if len(separator) == 0 {
+		return nil, fmt.Errorf("CSV separator must not be empty")
+	}
+	delimiter, err := cmd.Flags().GetString(flag.CSVDelimiter)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	trimLastSeparator, err := cmd.Flags().GetBool(flag.CSVTrimLastSeparator)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	nullValue, err := cmd.Flags().GetString(flag.CSVNullValue)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	skipHeader, err := cmd.Flags().GetBool(flag.CSVSkipHeader)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	notNull, err := cmd.Flags().GetBool(flag.CSVNotNull)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+
+	format := &importModel.V1beta1CSVFormat{
+		Separator:         separator,
+		Delimiter:         aws.String(delimiter),
+		BackslashEscape:   aws.Bool(backslashEscape),
+		TrimLastSeparator: aws.Bool(trimLastSeparator),
+		Null:              aws.String(nullValue),
+		Header:            aws.Bool(!skipHeader),
+		NotNull:           aws.Bool(notNull),
+	}
+	return format, nil
 }
