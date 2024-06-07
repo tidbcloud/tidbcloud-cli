@@ -204,7 +204,7 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			}
 
 			// Set prompt style, see https://github.com/xo/usql/commit/d5db12eaa6fe48cd0a697831ad03d61611290576
-			err = env.Set("PROMPT1", "%n"+"@"+name+"%/%R%#")
+			err = env.Set("PROMPT1", "%n"+"@"+name+"%R%#")
 			if err != nil {
 				return err
 			}
