@@ -304,7 +304,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						csvDelimiter = CSVDelimiterDefaultValue
 					}
 					if csvNullValue == "" {
-						csvDelimiter = CSVNullValueDefaultValue
+						csvNullValue = CSVNullValueDefaultValue
 					}
 				}
 

@@ -23,6 +23,7 @@ import (
 	"os/user"
 
 	"github.com/go-sql-driver/mysql"
+	isatty "github.com/mattn/go-isatty"
 	"github.com/xo/usql/env"
 	"github.com/xo/usql/handler"
 	"github.com/xo/usql/rline"
@@ -33,7 +34,10 @@ func ExecuteSqlDialog(ctx context.Context, clusterType, userName, host, port str
 	if err != nil {
 		return fmt.Errorf("can't get current user: %s", err.Error())
 	}
-	l, err := rline.New(false, "", env.HistoryFile(u))
+	// https://github.com/xo/usql/commit/074448a65adcebe1391879a15ffe8c16493bf9fa
+	interactive := isatty.IsTerminal(os.Stdout.Fd()) && isatty.IsTerminal(os.Stdin.Fd())
+	cygwin := isatty.IsCygwinTerminal(os.Stdout.Fd()) && isatty.IsCygwinTerminal(os.Stdin.Fd())
+	l, err := rline.New(interactive, cygwin, false, "", env.HistoryFile(u))
 	if err != nil {
 		return fmt.Errorf("can't open history file: %s", err.Error())
 	}
@@ -76,9 +80,9 @@ func generateDsnWithPassword(clusterType string, userName string, host string, p
 		if err != nil {
 			return "", err
 		}
-		dsn = fmt.Sprintf("tidb://%s:%s@%s:%s/test?tls=tidb", userName, pass, host, port)
+		dsn = fmt.Sprintf("tidb://%s:%s@%s:%s?tls=tidb", userName, pass, host, port)
 	} else if clusterType == DEDICATED {
-		dsn = fmt.Sprintf("tidb://%s:%s@%s:%s/test?tls=skip-verify", userName, pass, host, port)
+		dsn = fmt.Sprintf("tidb://%s:%s@%s:%s?tls=skip-verify", userName, pass, host, port)
 	} else {
 		return "", fmt.Errorf("unsupproted cluster type: %s", clusterType)
 	}
@@ -95,9 +99,9 @@ func generateDsnWithoutPassword(clusterType string, userName string, host string
 		if err != nil {
 			return "", err
 		}
-		dsn = fmt.Sprintf("tidb://%s@%s:%s/test?tls=tidb", userName, host, port)
+		dsn = fmt.Sprintf("tidb://%s@%s:%s?tls=tidb", userName, host, port)
 	} else if clusterType == DEDICATED {
-		dsn = fmt.Sprintf("tidb://%s@%s:%s/test?tls=skip-verify", userName, host, port)
+		dsn = fmt.Sprintf("tidb://%s@%s:%s?tls=skip-verify", userName, host, port)
 	} else {
 		return "", fmt.Errorf("unsupproted cluster type: %s", clusterType)
 	}
