@@ -19,7 +19,7 @@ import (
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
 
@@ -102,17 +102,17 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
+				project, err := ui.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
+				cluster, err := ui.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
 				clusterID = cluster.ID
 
-				user, err := cloud.GetSelectedSQLUser(ctx, clusterID, h.QueryPageSize, d)
+				user, err := ui.GetSelectedSQLUser(ctx, clusterID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}

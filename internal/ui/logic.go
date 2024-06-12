@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cloud
+package ui
 
 import (
 	"context"
 	"fmt"
 	"slices"
 
-	"tidbcloud-cli/internal/ui"
+	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
 	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 	branchModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/models"
@@ -123,7 +123,7 @@ func (s SQLUser) String() string {
 	return fmt.Sprintf("%s(%s)", s.UserName, s.Role)
 }
 
-func GetSelectedProject(ctx context.Context, pageSize int64, client TiDBCloudClient) (*Project, error) {
+func GetSelectedProject(ctx context.Context, pageSize int64, client cloud.TiDBCloudClient) (*Project, error) {
 	_, projectItems, err := RetrieveProjects(ctx, pageSize, client)
 	if err != nil {
 		return nil, err
@@ -144,7 +144,7 @@ func GetSelectedProject(ctx context.Context, pageSize int64, client TiDBCloudCli
 			Name: item.Name,
 		})
 	}
-	model, err := ui.InitialSelectModel(items, "Choose the project:")
+	model, err := InitialSelectModel(items, "Choose the project:")
 	if err != nil {
 		return nil, err
 	}
@@ -157,17 +157,17 @@ func GetSelectedProject(ctx context.Context, pageSize int64, client TiDBCloudCli
 	if err != nil {
 		return nil, err
 	}
-	if m, _ := projectModel.(ui.SelectModel); m.Interrupted {
+	if m, _ := projectModel.(SelectModel); m.Interrupted {
 		return nil, util.InterruptError
 	}
-	res := projectModel.(ui.SelectModel).GetSelectedItem()
+	res := projectModel.(SelectModel).GetSelectedItem()
 	if res == nil {
 		return nil, errors.New("no project selected")
 	}
 	return res.(*Project), nil
 }
 
-func GetSelectedCluster(ctx context.Context, projectID string, pageSize int64, client TiDBCloudClient) (*Cluster, error) {
+func GetSelectedCluster(ctx context.Context, projectID string, pageSize int64, client cloud.TiDBCloudClient) (*Cluster, error) {
 	_, clusterItems, err := RetrieveClusters(ctx, projectID, pageSize, client)
 	if err != nil {
 		return nil, err
@@ -185,7 +185,7 @@ func GetSelectedCluster(ctx context.Context, projectID string, pageSize int64, c
 		return nil, fmt.Errorf("no available clusters found")
 	}
 
-	model, err := ui.InitialSelectModel(items, "Choose the cluster:")
+	model, err := InitialSelectModel(items, "Choose the cluster:")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -198,10 +198,10 @@ func GetSelectedCluster(ctx context.Context, projectID string, pageSize int64, c
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
-	if m, _ := clusterModel.(ui.SelectModel); m.Interrupted {
+	if m, _ := clusterModel.(SelectModel); m.Interrupted {
 		return nil, util.InterruptError
 	}
-	cluster := clusterModel.(ui.SelectModel).GetSelectedItem()
+	cluster := clusterModel.(SelectModel).GetSelectedItem()
 	if cluster == nil {
 		return nil, errors.New("no cluster selected")
 	}
@@ -213,7 +213,7 @@ func GetSelectedField(mutableFields []string) (string, error) {
 	for _, item := range mutableFields {
 		items = append(items, item)
 	}
-	model, err := ui.InitialSelectModel(items, "Choose the field to update:")
+	model, err := InitialSelectModel(items, "Choose the field to update:")
 	if err != nil {
 		return "", errors.Trace(err)
 	}
@@ -226,10 +226,10 @@ func GetSelectedField(mutableFields []string) (string, error) {
 	if err != nil {
 		return "", errors.Trace(err)
 	}
-	if m, _ := fieldModel.(ui.SelectModel); m.Interrupted {
+	if m, _ := fieldModel.(SelectModel); m.Interrupted {
 		return "", util.InterruptError
 	}
-	field := fieldModel.(ui.SelectModel).GetSelectedItem()
+	field := fieldModel.(SelectModel).GetSelectedItem()
 	if field == nil {
 		return "", errors.New("no field selected")
 	}
@@ -241,7 +241,7 @@ func GetSpendingLimitField(mutableFields []string) (string, error) {
 	for _, item := range mutableFields {
 		items = append(items, item)
 	}
-	model, err := ui.InitialSelectModel(items, "Choose the type of spending limit:")
+	model, err := InitialSelectModel(items, "Choose the type of spending limit:")
 	if err != nil {
 		return "", errors.Trace(err)
 	}
@@ -254,17 +254,17 @@ func GetSpendingLimitField(mutableFields []string) (string, error) {
 	if err != nil {
 		return "", errors.Trace(err)
 	}
-	if m, _ := fieldModel.(ui.SelectModel); m.Interrupted {
+	if m, _ := fieldModel.(SelectModel); m.Interrupted {
 		return "", util.InterruptError
 	}
-	field := fieldModel.(ui.SelectModel).GetSelectedItem()
+	field := fieldModel.(SelectModel).GetSelectedItem()
 	if field == nil {
 		return "", errors.New("no type selected")
 	}
 	return field.(string), nil
 }
 
-func GetSelectedBranch(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*Branch, error) {
+func GetSelectedBranch(ctx context.Context, clusterID string, pageSize int64, client cloud.TiDBCloudClient) (*Branch, error) {
 	_, branchItems, err := RetrieveBranches(ctx, clusterID, pageSize, client)
 	if err != nil {
 		return nil, err
@@ -282,7 +282,7 @@ func GetSelectedBranch(ctx context.Context, clusterID string, pageSize int64, cl
 		return nil, fmt.Errorf("no available branches found")
 	}
 
-	model, err := ui.InitialSelectModel(items, "Choose the branch:")
+	model, err := InitialSelectModel(items, "Choose the branch:")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -295,17 +295,17 @@ func GetSelectedBranch(ctx context.Context, clusterID string, pageSize int64, cl
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
-	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
+	if m, _ := bModel.(SelectModel); m.Interrupted {
 		return nil, util.InterruptError
 	}
-	branch := bModel.(ui.SelectModel).GetSelectedItem()
+	branch := bModel.(SelectModel).GetSelectedItem()
 	if branch == nil {
 		return nil, errors.New("no branch selected")
 	}
 	return branch.(*Branch), nil
 }
 
-func GetSelectedExport(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*Export, error) {
+func GetSelectedExport(ctx context.Context, clusterID string, pageSize int64, client cloud.TiDBCloudClient) (*Export, error) {
 	_, exportItems, err := RetrieveExports(ctx, clusterID, pageSize, client)
 	if err != nil {
 		return nil, err
@@ -321,7 +321,7 @@ func GetSelectedExport(ctx context.Context, clusterID string, pageSize int64, cl
 		return nil, fmt.Errorf("no available exports found")
 	}
 
-	model, err := ui.InitialSelectModel(items, "Choose the export:")
+	model, err := InitialSelectModel(items, "Choose the export:")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -334,17 +334,17 @@ func GetSelectedExport(ctx context.Context, clusterID string, pageSize int64, cl
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
-	if m, _ := eModel.(ui.SelectModel); m.Interrupted {
+	if m, _ := eModel.(SelectModel); m.Interrupted {
 		return nil, util.InterruptError
 	}
-	export := eModel.(ui.SelectModel).GetSelectedItem()
+	export := eModel.(SelectModel).GetSelectedItem()
 	if export == nil {
 		return nil, errors.New("no export selected")
 	}
 	return export.(*Export), nil
 }
 
-func GetSelectedLocalExport(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*Export, error) {
+func GetSelectedLocalExport(ctx context.Context, clusterID string, pageSize int64, client cloud.TiDBCloudClient) (*Export, error) {
 	_, exportItems, err := RetrieveExports(ctx, clusterID, pageSize, client)
 	if err != nil {
 		return nil, err
@@ -362,7 +362,7 @@ func GetSelectedLocalExport(ctx context.Context, clusterID string, pageSize int6
 		return nil, fmt.Errorf("no available exports found")
 	}
 
-	model, err := ui.InitialSelectModel(items, "Choose the succeeded local type export:")
+	model, err := InitialSelectModel(items, "Choose the succeeded local type export:")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -375,17 +375,17 @@ func GetSelectedLocalExport(ctx context.Context, clusterID string, pageSize int6
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
-	if m, _ := eModel.(ui.SelectModel); m.Interrupted {
+	if m, _ := eModel.(SelectModel); m.Interrupted {
 		return nil, util.InterruptError
 	}
-	export := eModel.(ui.SelectModel).GetSelectedItem()
+	export := eModel.(SelectModel).GetSelectedItem()
 	if export == nil {
 		return nil, errors.New("no export selected")
 	}
 	return export.(*Export), nil
 }
 
-func GetSelectedServerlessBackup(ctx context.Context, clusterID string, pageSize int32, client TiDBCloudClient) (*ServerlessBackup, error) {
+func GetSelectedServerlessBackup(ctx context.Context, clusterID string, pageSize int32, client cloud.TiDBCloudClient) (*ServerlessBackup, error) {
 	_, backupItems, err := RetrieveServerlessBackups(ctx, clusterID, pageSize, client)
 	if err != nil {
 		return nil, err
@@ -403,7 +403,7 @@ func GetSelectedServerlessBackup(ctx context.Context, clusterID string, pageSize
 		return nil, fmt.Errorf("no available backups found")
 	}
 
-	model, err := ui.InitialSelectModel(items, "Choose the backup:")
+	model, err := InitialSelectModel(items, "Choose the backup:")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -416,10 +416,10 @@ func GetSelectedServerlessBackup(ctx context.Context, clusterID string, pageSize
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
-	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
+	if m, _ := bModel.(SelectModel); m.Interrupted {
 		return nil, util.InterruptError
 	}
-	backup := bModel.(ui.SelectModel).GetSelectedItem()
+	backup := bModel.(SelectModel).GetSelectedItem()
 	if backup == nil {
 		return nil, errors.New("no backup selected")
 	}
@@ -432,7 +432,7 @@ func GetSelectedRestoreMode() (string, error) {
 		RestoreModePointInTime,
 	}
 
-	model, err := ui.InitialSelectModel(items, "Choose the restore mode:")
+	model, err := InitialSelectModel(items, "Choose the restore mode:")
 	if err != nil {
 		return "", errors.Trace(err)
 	}
@@ -443,10 +443,10 @@ func GetSelectedRestoreMode() (string, error) {
 	if err != nil {
 		return "", errors.Trace(err)
 	}
-	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
+	if m, _ := bModel.(SelectModel); m.Interrupted {
 		return "", util.InterruptError
 	}
-	restoreMode := bModel.(ui.SelectModel).GetSelectedItem()
+	restoreMode := bModel.(SelectModel).GetSelectedItem()
 	if restoreMode == nil {
 		return "", errors.New("no restore mode selected")
 	}
@@ -455,7 +455,7 @@ func GetSelectedRestoreMode() (string, error) {
 
 // GetSelectedImport get the selected import task. statusFilter is used to filter the available options, only imports has status in statusFilter will be available.
 // statusFilter with no filter will mark all the import tasks as available options just like statusFilter with all status.
-func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client TiDBCloudClient, statusFilter []importModel.V1beta1ImportState) (*Import, error) {
+func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client cloud.TiDBCloudClient, statusFilter []importModel.V1beta1ImportState) (*Import, error) {
 	_, importItems, err := RetrieveImports(ctx, cID, pageSize, client)
 	if err != nil {
 		return nil, err
@@ -476,7 +476,7 @@ func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client T
 		return nil, fmt.Errorf("no available imports found")
 	}
 
-	model, err := ui.InitialSelectModel(items, "Choose the import task:")
+	model, err := InitialSelectModel(items, "Choose the import task:")
 	if err != nil {
 		return nil, err
 	}
@@ -489,10 +489,10 @@ func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client T
 	if err != nil {
 		return nil, err
 	}
-	if m, _ := importModel.(ui.SelectModel); m.Interrupted {
+	if m, _ := importModel.(SelectModel); m.Interrupted {
 		return nil, util.InterruptError
 	}
-	res := importModel.(ui.SelectModel).GetSelectedItem()
+	res := importModel.(SelectModel).GetSelectedItem()
 	if res == nil {
 		return nil, errors.New("no import task selected")
 	}
@@ -506,7 +506,7 @@ func GetSelectedBuiltinRole() (string, error) {
 		util.GetDisplayRole(util.READONLY_ROLE, []string{}),
 	}
 
-	model, err := ui.InitialSelectModel(items, "Choose the role:")
+	model, err := InitialSelectModel(items, "Choose the role:")
 	if err != nil {
 		return "", errors.Trace(err)
 	}
@@ -517,17 +517,17 @@ func GetSelectedBuiltinRole() (string, error) {
 	if err != nil {
 		return "", errors.Trace(err)
 	}
-	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
+	if m, _ := bModel.(SelectModel); m.Interrupted {
 		return "", util.InterruptError
 	}
-	role := bModel.(ui.SelectModel).GetSelectedItem()
+	role := bModel.(SelectModel).GetSelectedItem()
 	if role == nil {
 		return "", errors.New("no role selected")
 	}
 	return role.(string), nil
 }
 
-func GetSelectedSQLUser(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (string, error) {
+func GetSelectedSQLUser(ctx context.Context, clusterID string, pageSize int64, client cloud.TiDBCloudClient) (string, error) {
 	_, sqlUserItems, err := RetrieveSQLUsers(ctx, clusterID, pageSize, client)
 	if err != nil {
 		return "", err
@@ -544,7 +544,7 @@ func GetSelectedSQLUser(ctx context.Context, clusterID string, pageSize int64, c
 		return "", fmt.Errorf("no available sql-users found")
 	}
 
-	model, err := ui.InitialSelectModel(items, "Choose the SQL user:")
+	model, err := InitialSelectModel(items, "Choose the SQL user:")
 	if err != nil {
 		return "", err
 	}
@@ -557,10 +557,10 @@ func GetSelectedSQLUser(ctx context.Context, clusterID string, pageSize int64, c
 	if err != nil {
 		return "", err
 	}
-	if m, _ := sqlUserModel.(ui.SelectModel); m.Interrupted {
+	if m, _ := sqlUserModel.(SelectModel); m.Interrupted {
 		return "", util.InterruptError
 	}
-	res := sqlUserModel.(ui.SelectModel).GetSelectedItem()
+	res := sqlUserModel.(SelectModel).GetSelectedItem()
 	if res == nil {
 		return "", errors.New("no SQL user selected")
 	}
@@ -569,7 +569,7 @@ func GetSelectedSQLUser(ctx context.Context, clusterID string, pageSize int64, c
 
 }
 
-func RetrieveProjects(ctx context.Context, pageSize int64, d TiDBCloudClient) (int64, []*iamModel.APIProject, error) {
+func RetrieveProjects(ctx context.Context, pageSize int64, d cloud.TiDBCloudClient) (int64, []*iamModel.APIProject, error) {
 	var items []*iamModel.APIProject
 	var pageToken string
 
@@ -594,7 +594,7 @@ func RetrieveProjects(ctx context.Context, pageSize int64, d TiDBCloudClient) (i
 	return int64(len(items)), items, nil
 }
 
-func RetrieveClusters(ctx context.Context, pID string, pageSize int64, d TiDBCloudClient) (int64, []*serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+func RetrieveClusters(ctx context.Context, pID string, pageSize int64, d cloud.TiDBCloudClient) (int64, []*serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
 	params := serverlessApi.NewServerlessServiceListClustersParams().WithContext(ctx)
 	if pID != "" {
 		projectFilter := fmt.Sprintf("projectId=%s", pID)
@@ -622,7 +622,7 @@ func RetrieveClusters(ctx context.Context, pID string, pageSize int64, d TiDBClo
 	return int64(len(items)), items, nil
 }
 
-func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*branchModel.V1beta1Branch, error) {
+func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d cloud.TiDBCloudClient) (int64, []*branchModel.V1beta1Branch, error) {
 	var items []*branchModel.V1beta1Branch
 	pageSizeInt32 := int32(pageSize)
 	var pageToken string
@@ -648,7 +648,7 @@ func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBClo
 	return int64(len(items)), items, nil
 }
 
-func RetrieveExports(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*exportModel.V1beta1Export, error) {
+func RetrieveExports(ctx context.Context, cID string, pageSize int64, d cloud.TiDBCloudClient) (int64, []*exportModel.V1beta1Export, error) {
 	var items []*exportModel.V1beta1Export
 	pageSizeInt32 := int32(pageSize)
 	var pageToken string
@@ -661,7 +661,7 @@ func RetrieveExports(ctx context.Context, cID string, pageSize int64, d TiDBClou
 		return 0, nil, errors.Trace(err)
 	}
 	items = append(items, exports.Payload.Exports...)
-	// loop to get all branches
+	// loop to get all exports
 	for {
 		pageToken = exports.Payload.NextPageToken
 		if pageToken == "" {
@@ -676,7 +676,7 @@ func RetrieveExports(ctx context.Context, cID string, pageSize int64, d TiDBClou
 	return int64(len(items)), items, nil
 }
 
-func RetrieveServerlessBackups(ctx context.Context, cID string, pageSize int32, d TiDBCloudClient) (int64, []*brModel.V1beta1Backup, error) {
+func RetrieveServerlessBackups(ctx context.Context, cID string, pageSize int32, d cloud.TiDBCloudClient) (int64, []*brModel.V1beta1Backup, error) {
 	var items []*brModel.V1beta1Backup
 	var pageToken string
 
@@ -701,7 +701,7 @@ func RetrieveServerlessBackups(ctx context.Context, cID string, pageSize int32, 
 	return int64(len(items)), items, nil
 }
 
-func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*importModel.V1beta1Import, error) {
+func RetrieveImports(context context.Context, cID string, pageSize int64, d cloud.TiDBCloudClient) (int64, []*importModel.V1beta1Import, error) {
 	params := importApi.NewImportServiceListImportsParams().WithClusterID(cID).WithContext(context)
 	ps := int32(pageSize)
 	var items []*importModel.V1beta1Import
@@ -725,7 +725,7 @@ func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDB
 	return int64(len(items)), items, nil
 }
 
-func RetrieveSQLUsers(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*iamModel.APISQLUser, error) {
+func RetrieveSQLUsers(ctx context.Context, cID string, pageSize int64, d cloud.TiDBCloudClient) (int64, []*iamModel.APISQLUser, error) {
 	var items []*iamModel.APISQLUser
 	var pageToken string
 
@@ -751,4 +751,29 @@ func RetrieveSQLUsers(ctx context.Context, cID string, pageSize int64, d TiDBClo
 		items = append(items, users.Payload.SQLUsers...)
 	}
 	return int64(len(items)), items, nil
+}
+
+func GetAllExportFiles(context context.Context, cID string, eID string, d cloud.TiDBCloudClient) ([]*exportModel.V1beta1ExportFile, error) {
+	var items []*exportModel.V1beta1ExportFile
+	var pageSize int32 = 1000
+	var pageToken string
+	params := exportApi.NewExportServiceListExportFilesParams().WithClusterID(cID).WithExportID(eID).
+		WithPageSize(&pageSize).WithContext(context)
+	exportFilesResp, err := d.ListExportFiles(params)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	items = append(items, exportFilesResp.Payload.Files...)
+	for {
+		pageToken = exportFilesResp.Payload.NextPageToken
+		if pageToken == "" {
+			break
+		}
+		exportFilesResp, err = d.ListExportFiles(params.WithPageToken(&pageToken))
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		items = append(items, exportFilesResp.Payload.Files...)
+	}
+	return items, nil
 }

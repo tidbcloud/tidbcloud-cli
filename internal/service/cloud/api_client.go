@@ -108,6 +108,10 @@ type TiDBCloudClient interface {
 
 	DownloadExport(params *expOp.ExportServiceDownloadExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDownloadExportOK, error)
 
+	DownloadExportFiles(params *expOp.ExportServiceDownloadExportFilesParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDownloadExportFilesOK, error)
+
+	ListExportFiles(params *expOp.ExportServiceListExportFilesParams, opts ...expOp.ClientOption) (*expOp.ExportServiceListExportFilesOK, error)
+
 	ListSQLUsers(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersOK, error)
 
 	CreateSQLUser(params *iamOp.PostV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.PostV1beta1ClustersClusterIDSQLUsersOK, error)
@@ -281,6 +285,14 @@ func (d *ClientDelegate) ListExports(params *expOp.ExportServiceListExportsParam
 
 func (d *ClientDelegate) DownloadExport(params *expOp.ExportServiceDownloadExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDownloadExportOK, error) {
 	return d.ec.ExportService.ExportServiceDownloadExport(params, opts...)
+}
+
+func (d *ClientDelegate) DownloadExportFiles(params *expOp.ExportServiceDownloadExportFilesParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDownloadExportFilesOK, error) {
+	return d.ec.ExportService.ExportServiceDownloadExportFiles(params, opts...)
+}
+
+func (d *ClientDelegate) ListExportFiles(params *expOp.ExportServiceListExportFilesParams, opts ...expOp.ClientOption) (*expOp.ExportServiceListExportFilesOK, error) {
+	return d.ec.ExportService.ExportServiceListExportFiles(params, opts...)
 }
 
 func (d *ClientDelegate) ListSQLUsers(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersOK, error) {

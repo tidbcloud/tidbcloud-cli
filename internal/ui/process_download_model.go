@@ -15,6 +15,7 @@
 package ui
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -22,7 +23,9 @@ import (
 	"time"
 
 	"tidbcloud-cli/internal/config"
+	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
+	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
 
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
@@ -32,6 +35,7 @@ import (
 const (
 	processDownloadModelPadding  = 2
 	processDownloadModelMaxWidth = 80
+	BatchSize                    = 20
 )
 
 type ResultMsg struct {
@@ -51,16 +55,15 @@ const (
 type FileJob struct {
 	id     int
 	name   string
-	url    string
-	size   int64
+	url    *string
 	status JobStatus
 	err    error
 	pw     *progressWriter
 }
 
-func (f *FileJob) GetErrorString() string {
+func (f *FileJob) GetResult() string {
 	if f.status == Succeeded {
-		return ""
+		return fmt.Sprintf("%s success", f.name)
 	}
 	if f.err == nil {
 		return fmt.Sprintf("%s %s", f.name, f.status)
@@ -74,12 +77,18 @@ func (f *FileJob) GetStatus() JobStatus {
 
 type JobInfo struct {
 	idToJob map[int]*FileJob
-	// startedJobs is the jobs that are started (running and finished jobs)
-	startedJobs  []*FileJob
+	// startedJobs is the jobs that are started (running and finished jobs), used to calculate the downloaded size
+	startedJobs []*FileJob
+	// finishedJobs is the jobs that are finished, used to display the ui
 	finishedJobs []*FileJob
 	// totalNumber is the total number of jobs
 	totalNumber int
 	lock        sync.Mutex
+
+	// fileNames is the name of the files that need to be downloaded
+	fileNames []string
+	// fileJobs is a list of jobs that will be set to the jobs channel
+	fileJobs []*FileJob
 }
 
 type ui struct {
@@ -97,12 +106,11 @@ type ProcessDownloadModel struct {
 	outputPath  string
 	ui          *ui
 	p           *tea.Program
-}
 
-type URLMsg struct {
-	Name string
-	Url  string
-	Size int64
+	exportID  string
+	clusterID string
+	client    cloud.TiDBCloudClient
+	batchSize int
 }
 
 func (m *ProcessDownloadModel) SetProgram(p *tea.Program) {
@@ -113,43 +121,43 @@ func (m *ProcessDownloadModel) GetFinishedJobs() []*FileJob {
 	return m.jobInfo.finishedJobs
 }
 
-func NewProcessDownloadModel(urls []URLMsg, concurrency int, path string) *ProcessDownloadModel {
-	jobs := make(chan *FileJob, len(urls))
-	idToJob := make(map[int]*FileJob)
-	for i, url := range urls {
-		job := &FileJob{id: i, name: url.Name, url: url.Url, size: url.Size}
-		idToJob[i] = job
-	}
+func NewProcessDownloadModel(fileNames []string, concurrency int, path string,
+	exportID, clusterID string, client cloud.TiDBCloudClient, totalSize int) *ProcessDownloadModel {
 	jobInfo := &JobInfo{
-		idToJob:      idToJob,
-		startedJobs:  make([]*FileJob, 0, len(urls)),
+		idToJob:      make(map[int]*FileJob),
+		startedJobs:  make([]*FileJob, 0, len(fileNames)),
 		finishedJobs: make([]*FileJob, 0),
-		totalNumber:  len(urls),
+		totalNumber:  len(fileNames),
+		fileNames:    fileNames,
 	}
-	totalSize := 0
-	for _, url := range urls {
-		totalSize += int(url.Size)
+	jobBufferSize := 2 * concurrency
+	if jobBufferSize > len(fileNames) {
+		jobBufferSize = len(fileNames)
 	}
 	return &ProcessDownloadModel{
-		jobsCh:      jobs,
+		jobsCh:      make(chan *FileJob, jobBufferSize),
 		jobInfo:     jobInfo,
 		concurrency: concurrency,
 		outputPath:  path,
 		ui: &ui{
 			totalSize: totalSize,
 		},
+		exportID:  exportID,
+		clusterID: clusterID,
+		client:    client,
+		batchSize: BatchSize,
 	}
 }
 
 func (m *ProcessDownloadModel) Init() tea.Cmd {
 	pro := progress.New(progress.WithDefaultGradient())
 	m.ui.progress = &pro
+	// start produce
+	go m.produce()
 	// start consumer goroutine
 	for i := 0; i < m.concurrency; i++ {
 		go m.consume(m.jobsCh)
 	}
-	// start produce
-	go m.produce(m.jobsCh)
 	return m.doTick()
 }
 
@@ -230,11 +238,47 @@ func (m *ProcessDownloadModel) View() string {
 	return viewString
 }
 
-func (m *ProcessDownloadModel) produce(jobsCh chan<- *FileJob) {
-	for _, job := range m.jobInfo.idToJob {
-		jobsCh <- job
+func (m *ProcessDownloadModel) produce() {
+	jobSize := len(m.jobInfo.fileNames)
+	jobId := 0
+	for i := 0; i < jobSize; i++ {
+		// request the next batch when the fileJobs are not enough
+		if len(m.jobInfo.fileJobs) < i+1 {
+			size := m.batchSize
+			if size > len(m.jobInfo.fileNames) {
+				size = len(m.jobInfo.fileNames)
+			}
+			downloadFileNames := m.jobInfo.fileNames[:size]
+			m.jobInfo.fileNames = m.jobInfo.fileNames[size:]
+			body := exportApi.ExportServiceDownloadExportFilesBody{
+				FileNames: downloadFileNames,
+			}
+			params := exportApi.NewExportServiceDownloadExportFilesParams().WithClusterID(m.clusterID).
+				WithExportID(m.exportID).WithBody(body)
+			resp, err := m.client.DownloadExportFiles(params)
+			if err != nil {
+				for _, name := range downloadFileNames {
+					jobId++
+					job := &FileJob{id: jobId, name: name, err: err}
+					m.jobInfo.idToJob[jobId] = job
+					m.jobInfo.fileJobs = append(m.jobInfo.fileJobs, job)
+				}
+				return
+			}
+			for _, file := range resp.Payload.Files {
+				jobId++
+				job := &FileJob{
+					id:   jobId,
+					name: file.Name,
+					url:  file.DownloadURL,
+				}
+				m.jobInfo.idToJob[jobId] = job
+				m.jobInfo.fileJobs = append(m.jobInfo.fileJobs, job)
+			}
+		}
+		m.jobsCh <- m.jobInfo.fileJobs[i]
 	}
-	close(jobsCh)
+	close(m.jobsCh)
 }
 
 func (m *ProcessDownloadModel) consume(jobs <-chan *FileJob) {
@@ -245,8 +289,17 @@ func (m *ProcessDownloadModel) consume(jobs <-chan *FileJob) {
 			m.jobInfo.startedJobs = append(m.jobInfo.startedJobs, job)
 			m.jobInfo.lock.Unlock()
 
+			// check job
+			if job.err != nil {
+				m.sendMsg(ResultMsg{job.id, job.err, Failed})
+				return
+			}
+			if job.url == nil {
+				m.sendMsg(ResultMsg{job.id, errors.New("empty download url"), Failed})
+				return
+			}
 			// request the url
-			resp, err := util.GetResponse(job.url, os.Getenv(config.DebugEnv) != "")
+			resp, err := util.GetResponse(*job.url, os.Getenv(config.DebugEnv) != "")
 			if err != nil {
 				m.sendMsg(ResultMsg{job.id, err, Failed})
 				return
@@ -280,6 +333,7 @@ func (m *ProcessDownloadModel) consume(jobs <-chan *FileJob) {
 	}
 }
 
+// doTick update the download size and speed every 100ms
 func (m *ProcessDownloadModel) doTick() tea.Cmd {
 	return tea.Tick(time.Millisecond*100, func(t time.Time) tea.Msg {
 		totalDownloaded := 0

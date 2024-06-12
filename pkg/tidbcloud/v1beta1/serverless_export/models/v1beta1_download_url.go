@@ -20,7 +20,7 @@ type V1beta1DownloadURL struct {
 	// The name of the download file.
 	Name string `json:"name,omitempty"`
 
-	// The size in bytes of the the download file.
+	// The size in bytes of the download file.
 	Size int64 `json:"size,omitempty"`
 
 	// The download url.

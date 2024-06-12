@@ -21,7 +21,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
-	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/internal/ui"
 	branchModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/models"
 
 	"github.com/juju/errors"
@@ -97,11 +97,11 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
 
-				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
+				project, err := ui.GetSelectedProject(ctx, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
+				cluster, err := ui.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -113,7 +113,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			total, items, err := cloud.RetrieveBranches(ctx, clusterID, h.QueryPageSize, d)
+			total, items, err := ui.RetrieveBranches(ctx, clusterID, h.QueryPageSize, d)
 			if err != nil {
 				return err
 			}
