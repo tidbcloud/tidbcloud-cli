@@ -15,6 +15,7 @@
 package flag
 
 const (
+	AzureBlobSASUrl       string = "azure.blob-sas-url"
 	ClusterID             string = "cluster-id"
 	ClusterIDShort        string = "c"
 	LocalConcurrency      string = "local.concurrency"
@@ -33,6 +34,8 @@ const (
 	DebugShort            string = "D"
 	LocalFilePath         string = "local.file-path"
 	Force                 string = "force"
+	GCSUri                string = "gcs.uri"
+	GCSCredentialsPath    string = "gcs.credentials-path"
 	ImportID              string = "import-id"
 	NoColor               string = "no-color"
 	Output                string = "output"

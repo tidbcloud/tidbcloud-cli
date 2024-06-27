@@ -156,6 +156,10 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 							source = item.CreationDetails.Source.Local.FileName
 						} else if item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeS3 {
 							source = item.CreationDetails.Source.S3.S3URI
+						} else if item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeGCS {
+							source = item.CreationDetails.Source.Gcs.GcsURI
+						} else if item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeAzBlob {
+							source = item.CreationDetails.Source.AzureBlob.BlobURI
 						}
 					}
 					if item.CreationDetails != nil && item.CreationDetails.ImportOptions != nil {

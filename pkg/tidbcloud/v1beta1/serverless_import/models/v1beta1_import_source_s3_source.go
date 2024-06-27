@@ -28,7 +28,7 @@ type V1beta1ImportSourceS3Source struct {
 	S3URI string `json:"s3Uri,omitempty"`
 
 	// type
-	Type V1beta1AuthType `json:"type,omitempty"`
+	Type V1beta1ImportSourceS3SourceAuthType `json:"type,omitempty"`
 }
 
 // Validate validates this v1beta1 import source s3 source

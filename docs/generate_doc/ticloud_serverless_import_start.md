@@ -26,12 +26,18 @@ ticloud serverless import start [flags]
 ### Options
 
 ```
+      --azure.blob-sas-url string      The SAS URL for Azure Blob.
   -c, --cluster-id string              Cluster ID.
-      --csv.backslash-escape           In CSV file whether to parse backslash inside fields as escape characters. (default true)
+      --csv.backslash-escape           Specifies whether to parse backslash inside fields as escape characters in the CSV file. (default true)
       --csv.delimiter string           The delimiter used for quoting of CSV file. (default "\"")
+      --csv.not-null                   Specifies whether a CSV file can contain any NULL values.
+      --csv.null-value string          The representation of NULL values in the CSV file. (default "\\N")
       --csv.separator string           The field separator of CSV file. (default ",")
-      --csv.trim-last-separator        In CSV file whether to treat separator as the line terminator and trim all trailing separators.
+      --csv.skip-header                Specifies whether the CSV file contains a header line.
+      --csv.trim-last-separator        Specifies whether to treat separator as the line terminator and trim all trailing separators in the CSV file.
       --file-type string               The import file type, one of ["CSV"].
+      --gcs.credentials-path string    The local path of GCS credentials.
+      --gcs.uri string                 The GCS folder URI for import.
   -h, --help                           help for start
       --local.concurrency int          The concurrency for uploading file. (default 5)
       --local.file-path string         The local file path to import.
@@ -40,9 +46,8 @@ ticloud serverless import start [flags]
       --s3.access-key-id string        The access key ID for S3.
       --s3.role-arn string             The role ARN for S3.
       --s3.secret-access-key string    The secret access key for S3.
-      --s3.target-database string      Target database to which import data.
       --s3.uri string                  The S3 folder URI for import.
-      --source-type string             The import source type, one of ["LOCAL" "S3"]. (default "LOCAL")
+      --source-type string             The import source type, one of ["S3" "LOCAL" "GCS" "AzBlob"]. (default "LOCAL")
 ```
 
 ### Options inherited from parent commands

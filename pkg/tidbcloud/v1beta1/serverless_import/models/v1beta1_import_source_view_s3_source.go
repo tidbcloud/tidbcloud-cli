@@ -31,7 +31,7 @@ type V1beta1ImportSourceViewS3Source struct {
 	TargetDatabase *string `json:"targetDatabase,omitempty"`
 
 	// type
-	Type V1beta1AuthType `json:"type,omitempty"`
+	Type V1beta1ImportSourceViewS3SourceAuthType `json:"type,omitempty"`
 }
 
 // Validate validates this v1beta1 import source view s3 source

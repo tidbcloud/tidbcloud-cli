@@ -50,13 +50,12 @@ var CSVFormatInputFields = map[string]int{
 	flag.CSVTrimLastSeparator: 6,
 }
 
-type SourceType string
-
-const (
-	SourceTypeLOCAL   SourceType = "LOCAL"
-	SourceTypeS3      SourceType = "S3"
-	SourceTypeUnknown SourceType = "UNKNOWN"
-)
+var sourceTypes = []importModel.V1beta1ImportSourceType{
+	importModel.V1beta1ImportSourceTypeS3,
+	importModel.V1beta1ImportSourceTypeLOCAL,
+	importModel.V1beta1ImportSourceTypeGCS,
+	importModel.V1beta1ImportSourceTypeAzBlob,
+}
 
 type StartOpts struct {
 	interactive bool
@@ -121,7 +120,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var sourceType SourceType
+			var sourceType importModel.V1beta1ImportSourceType
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
@@ -133,22 +132,34 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 			} else {
-				sourceType = SourceType(cmd.Flag(flag.SourceType).Value.String())
+				sourceType = importModel.V1beta1ImportSourceType(cmd.Flag(flag.SourceType).Value.String())
 			}
 
-			if sourceType == SourceTypeLOCAL {
+			if sourceType == importModel.V1beta1ImportSourceTypeLOCAL {
 				localOpts := LocalOpts{
 					concurrency: concurrency,
 					h:           h,
 					interactive: opts.interactive,
 				}
 				return localOpts.Run(cmd)
-			} else if sourceType == SourceTypeS3 {
+			} else if sourceType == importModel.V1beta1ImportSourceTypeS3 {
 				s3Opts := S3Opts{
 					h:           h,
 					interactive: opts.interactive,
 				}
 				return s3Opts.Run(cmd)
+			} else if sourceType == importModel.V1beta1ImportSourceTypeGCS {
+				gcsOpts := GCSOpts{
+					h:           h,
+					interactive: opts.interactive,
+				}
+				return gcsOpts.Run(cmd)
+			} else if sourceType == importModel.V1beta1ImportSourceTypeAzBlob {
+				azBlobOpts := AzBlobOpts{
+					h:           h,
+					interactive: opts.interactive,
+				}
+				return azBlobOpts.Run(cmd)
 			} else {
 				return errors.New("unsupported import source type")
 			}
@@ -156,7 +167,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	startCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID.")
-	startCmd.Flags().String(flag.SourceType, "LOCAL", fmt.Sprintf("The import source type, one of %q.", []string{string(SourceTypeLOCAL), string(SourceTypeS3)}))
+	startCmd.Flags().String(flag.SourceType, "LOCAL", fmt.Sprintf("The import source type, one of %q.", sourceTypes))
 	startCmd.Flags().String(flag.FileType, "", fmt.Sprintf("The import file type, one of %q.", opts.SupportedFileTypes()))
 
 	startCmd.Flags().String(flag.LocalFilePath, "", "The local file path to import.")
@@ -172,6 +183,11 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	startCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3SecretAccessKey)
 	startCmd.MarkFlagsRequiredTogether(flag.S3AccessKeyID, flag.S3SecretAccessKey)
 
+	startCmd.Flags().String(flag.GCSUri, "", "The GCS folder URI for import.")
+	startCmd.Flags().String(flag.GCSCredentialsPath, "", "The local path of GCS credentials.")
+
+	startCmd.Flags().String(flag.AzureBlobSASUrl, "", "The SAS URL for Azure Blob.")
+
 	startCmd.Flags().String(flag.CSVDelimiter, "\"", "The delimiter used for quoting of CSV file.")
 	startCmd.Flags().String(flag.CSVSeparator, ",", "The field separator of CSV file.")
 	startCmd.Flags().Bool(flag.CSVTrimLastSeparator, false, "Specifies whether to treat separator as the line terminator and trim all trailing separators in the CSV file.")
@@ -182,27 +198,29 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	return startCmd
 }
 
-func getSelectedSourceType() (SourceType, error) {
-	SourceTypes := make([]interface{}, 0, 2)
-	SourceTypes = append(SourceTypes, SourceTypeLOCAL, SourceTypeS3)
+func getSelectedSourceType() (importModel.V1beta1ImportSourceType, error) {
+	SourceTypes := make([]interface{}, 0, len(sourceTypes))
+	for _, sourceType := range sourceTypes {
+		SourceTypes = append(SourceTypes, sourceType)
+	}
 	model, err := ui.InitialSelectModel(SourceTypes, "Choose import source type:")
 	if err != nil {
-		return SourceTypeUnknown, errors.Trace(err)
+		return "", errors.Trace(err)
 	}
 
 	p := tea.NewProgram(model)
 	SourceTypeModel, err := p.Run()
 	if err != nil {
-		return SourceTypeUnknown, errors.Trace(err)
+		return "", errors.Trace(err)
 	}
 	if m, _ := SourceTypeModel.(ui.SelectModel); m.Interrupted {
-		return SourceTypeUnknown, util.InterruptError
+		return "", util.InterruptError
 	}
-	fileType := SourceTypeModel.(ui.SelectModel).GetSelectedItem()
-	if fileType == nil {
-		return SourceTypeUnknown, errors.New("no source type selected")
+	sourceType := SourceTypeModel.(ui.SelectModel).GetSelectedItem()
+	if sourceType == nil {
+		return "", errors.New("no source type selected")
 	}
-	return fileType.(SourceType), nil
+	return sourceType.(importModel.V1beta1ImportSourceType), nil
 }
 
 func waitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.ImportServiceCreateImportParams) error {

@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//      http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,12 +15,13 @@
 package start
 
 import (
+	"encoding/base64"
 	stdErr "errors"
 	"fmt"
+	"os"
 	"slices"
 
 	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
@@ -31,23 +32,17 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
-	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/pingcap/errors"
+	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
 
-var accessKeyImportField = map[string]int{
-	flag.S3AccessKeyID:     0,
-	flag.S3SecretAccessKey: 1,
-}
-
-type S3Opts struct {
+type GCSOpts struct {
 	h           *internal.Helper
 	interactive bool
 }
 
-func (o S3Opts) SupportedFileTypes() []string {
+func (o GCSOpts) SupportedFileTypes() []string {
 	return []string{
 		string(importModel.V1beta1ImportOptionsFileTypeCSV),
 		string(importModel.V1beta1ImportOptionsFileTypeParquet),
@@ -56,10 +51,10 @@ func (o S3Opts) SupportedFileTypes() []string {
 	}
 }
 
-func (o S3Opts) Run(cmd *cobra.Command) error {
+func (o GCSOpts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
-	var clusterID, fileType, s3Uri, s3Arn, accessKeyID, secretAccessKey string
-	var authType importModel.V1beta1ImportSourceS3SourceAuthType
+	var clusterID, fileType, gcsUri, credentialsPath string
+	var authType importModel.V1beta1ImportSourceGCSSourceAuthType
 	var format *importModel.V1beta1CSVFormat
 	d, err := o.h.Client()
 	if err != nil {
@@ -85,9 +80,9 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		clusterID = cluster.ID
 
 		input := &survey.Input{
-			Message: "Please input the s3 fold uri:",
+			Message: "Please input the gcs fold uri:",
 		}
-		err = survey.AskOne(input, &s3Uri, survey.WithValidator(survey.Required))
+		err = survey.AskOne(input, &gcsUri, survey.WithValidator(survey.Required))
 		if err != nil {
 			if stdErr.Is(err, terminal.InterruptErr) {
 				return util.InterruptError
@@ -96,7 +91,7 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 			}
 		}
 
-		authTypes := []interface{}{importModel.V1beta1ImportSourceS3SourceAuthTypeROLEARN, importModel.V1beta1ImportSourceS3SourceAuthTypeACCESSKEY}
+		authTypes := []interface{}{importModel.V1beta1ImportSourceGCSSourceAuthTypeCREDENTIALS}
 		model, err := ui.InitialSelectModel(authTypes, "Choose the auth type:")
 		if err != nil {
 			return err
@@ -109,37 +104,19 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		if m, _ := authTypeModel.(ui.SelectModel); m.Interrupted {
 			return util.InterruptError
 		}
-		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(importModel.V1beta1ImportSourceS3SourceAuthType)
+		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(importModel.V1beta1ImportSourceGCSSourceAuthType)
 
-		if authType == importModel.V1beta1ImportSourceS3SourceAuthTypeROLEARN {
+		if authType == importModel.V1beta1ImportSourceGCSSourceAuthTypeCREDENTIALS {
 			input := &survey.Input{
-				Message: "Please input the arn:",
+				Message: "Please input the gcs credentialsPath:",
 			}
-			err = survey.AskOne(input, &s3Arn, survey.WithValidator(survey.Required))
+			err = survey.AskOne(input, &credentialsPath, survey.WithValidator(survey.Required))
 			if err != nil {
 				if stdErr.Is(err, terminal.InterruptErr) {
 					return util.InterruptError
 				} else {
 					return err
 				}
-			}
-		} else if authType == importModel.V1beta1ImportSourceS3SourceAuthTypeACCESSKEY {
-			// variables for input
-			p = tea.NewProgram(o.initialAccessKeyInputModel())
-			inputModel, err := p.Run()
-			if err != nil {
-				return errors.Trace(err)
-			}
-			if inputModel.(ui.TextInputModel).Interrupted {
-				return util.InterruptError
-			}
-			accessKeyID = inputModel.(ui.TextInputModel).Inputs[accessKeyImportField[flag.S3AccessKeyID]].Value()
-			if len(accessKeyID) == 0 {
-				return errors.New("S3 access key id is required")
-			}
-			secretAccessKey = inputModel.(ui.TextInputModel).Inputs[accessKeyImportField[flag.S3SecretAccessKey]].Value()
-			if len(secretAccessKey) == 0 {
-				return errors.New("S3 secret access key is required")
 			}
 		} else {
 			return fmt.Errorf("invalid auth type :%s", authType)
@@ -182,35 +159,31 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		if !slices.Contains(o.SupportedFileTypes(), fileType) {
 			return fmt.Errorf("file type \"%s\" is not supported, please use one of %q", fileType, o.SupportedFileTypes())
 		}
-		s3Uri, err = cmd.Flags().GetString(flag.S3URI)
+		gcsUri, err = cmd.Flags().GetString(flag.GCSUri)
 		if err != nil {
 			return errors.Trace(err)
 		}
+
+		credentialsPath, err = cmd.Flags().GetString(flag.GCSCredentialsPath)
+		if err != nil {
+			return errors.Trace(err)
+		}
+
+		if credentialsPath == "" {
+			return fmt.Errorf("gcs credentials path is required")
+		}
+		authType = importModel.V1beta1ImportSourceGCSSourceAuthTypeCREDENTIALS
 
 		// optional flags
 		format, err = getCSVFlagValue(cmd)
 		if err != nil {
 			return errors.Trace(err)
 		}
-		s3Arn, err = cmd.Flags().GetString(flag.S3RoleArn)
-		if err != nil {
-			return errors.Trace(err)
-		}
-		accessKeyID, err = cmd.Flags().GetString(flag.S3AccessKeyID)
-		if err != nil {
-			return errors.Trace(err)
-		}
-		secretAccessKey, err = cmd.Flags().GetString(flag.S3SecretAccessKey)
-		if err != nil {
-			return errors.Trace(err)
-		}
-		if s3Arn != "" {
-			authType = importModel.V1beta1ImportSourceS3SourceAuthTypeROLEARN
-		} else if accessKeyID != "" && secretAccessKey != "" {
-			authType = importModel.V1beta1ImportSourceS3SourceAuthTypeACCESSKEY
-		} else {
-			return fmt.Errorf("either role arn or access key id and secret access key must be provided")
-		}
+	}
+
+	credentials, err := os.ReadFile(credentialsPath)
+	if err != nil {
+		return err
 	}
 
 	cmd.Annotations[telemetry.ClusterID] = clusterID
@@ -221,28 +194,20 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 				"fileType": "%s"
 			},
 			"source": {
-				"s3": {
-					"s3Uri": "%s"
+				"gcs": {
+					"gcsUri": "%s"
 				},
-				"type": "S3"
+				"type": "GCS"
 			}
-			}`, fileType, s3Uri)))
+			}`, fileType, gcsUri)))
 	if err != nil {
 		return errors.Trace(err)
 	}
 	body.ImportOptions.CsvFormat = format
 
-	if authType == importModel.V1beta1ImportSourceS3SourceAuthTypeROLEARN {
-		body.Source.S3.Type = authType
-		body.Source.S3.RoleArn = &importModel.V1beta1ImportSourceRoleArn{
-			RoleArn: s3Arn,
-		}
-	} else {
-		body.Source.S3.Type = authType
-		body.Source.S3.AccessKey = &importModel.V1beta1ImportSourceAccessKey{
-			ID:     accessKeyID,
-			Secret: secretAccessKey,
-		}
+	body.Source.Gcs.Type = authType
+	body.Source.Gcs.Credentials = &importModel.V1beta1ImportSourceCredentials{
+		JSONString: base64.URLEncoding.EncodeToString(credentials),
 	}
 
 	params := importOp.NewImportServiceCreateImportParams().WithClusterID(clusterID).
@@ -260,31 +225,4 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 	}
 
 	return nil
-}
-
-func (o S3Opts) initialAccessKeyInputModel() ui.TextInputModel {
-	m := ui.TextInputModel{
-		Inputs: make([]textinput.Model, len(accessKeyImportField)),
-	}
-
-	var t textinput.Model
-	for k, v := range accessKeyImportField {
-		t = textinput.New()
-		t.Cursor.Style = config.FocusedStyle
-		t.CharLimit = 0
-
-		switch k {
-		case flag.S3AccessKeyID:
-			t.Placeholder = "S3 access key id"
-			t.Focus()
-			t.PromptStyle = config.FocusedStyle
-			t.TextStyle = config.FocusedStyle
-		case flag.S3SecretAccessKey:
-			t.Placeholder = "S3 secret access key"
-		}
-
-		m.Inputs[v] = t
-	}
-
-	return m
 }
