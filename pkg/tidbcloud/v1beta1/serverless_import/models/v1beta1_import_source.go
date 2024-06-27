@@ -18,6 +18,12 @@ import (
 // swagger:model v1beta1ImportSource
 type V1beta1ImportSource struct {
 
+	// azure blob
+	AzureBlob *V1beta1ImportSourceAzBlobSource `json:"azureBlob,omitempty"`
+
+	// gcs
+	Gcs *V1beta1ImportSourceGCSSource `json:"gcs,omitempty"`
+
 	// local
 	Local *V1beta1ImportSourceLocalSource `json:"local,omitempty"`
 
@@ -31,6 +37,14 @@ type V1beta1ImportSource struct {
 // Validate validates this v1beta1 import source
 func (m *V1beta1ImportSource) Validate(formats strfmt.Registry) error {
 	var res []error
+
+	if err := m.validateAzureBlob(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateGcs(formats); err != nil {
+		res = append(res, err)
+	}
 
 	if err := m.validateLocal(formats); err != nil {
 		res = append(res, err)
@@ -47,6 +61,44 @@ func (m *V1beta1ImportSource) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *V1beta1ImportSource) validateAzureBlob(formats strfmt.Registry) error {
+	if swag.IsZero(m.AzureBlob) { // not required
+		return nil
+	}
+
+	if m.AzureBlob != nil {
+		if err := m.AzureBlob.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("azureBlob")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("azureBlob")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *V1beta1ImportSource) validateGcs(formats strfmt.Registry) error {
+	if swag.IsZero(m.Gcs) { // not required
+		return nil
+	}
+
+	if m.Gcs != nil {
+		if err := m.Gcs.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("gcs")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("gcs")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -109,6 +161,14 @@ func (m *V1beta1ImportSource) validateType(formats strfmt.Registry) error {
 func (m *V1beta1ImportSource) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateAzureBlob(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateGcs(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateLocal(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -124,6 +184,48 @@ func (m *V1beta1ImportSource) ContextValidate(ctx context.Context, formats strfm
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *V1beta1ImportSource) contextValidateAzureBlob(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.AzureBlob != nil {
+
+		if swag.IsZero(m.AzureBlob) { // not required
+			return nil
+		}
+
+		if err := m.AzureBlob.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("azureBlob")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("azureBlob")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *V1beta1ImportSource) contextValidateGcs(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Gcs != nil {
+
+		if swag.IsZero(m.Gcs) { // not required
+			return nil
+		}
+
+		if err := m.Gcs.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("gcs")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("gcs")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 
