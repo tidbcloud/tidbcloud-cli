@@ -58,6 +58,13 @@
             "required": false,
             "type": "integer",
             "format": "int32"
+          },
+          {
+            "name": "orderBy",
+            "description": "Optional. List imports order by, separated by comma, default is ascending. Example: \"foo, bar desc\". Supported field: create_time",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -380,7 +387,8 @@
           "type": "string"
         },
         "delimiter": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
         },
         "header": {
           "type": "boolean",
@@ -391,7 +399,8 @@
           "x-nullable": true
         },
         "null": {
-          "type": "string"
+          "type": "string",
+          "x-nullable": true
         },
         "backslashEscape": {
           "type": "boolean",
@@ -504,7 +513,10 @@
     "v1beta1ImportOptionsFileType": {
       "type": "string",
       "enum": [
-        "CSV"
+        "CSV",
+        "SQL",
+        "AuroraSnapshot",
+        "Parquet"
       ],
       "description": " - TYPE_UNSPECIFIED: The type of the file is unknown.\n - CSV: CSV type."
     },
@@ -517,8 +529,75 @@
         },
         "local": {
           "$ref": "#/definitions/v1beta1ImportSourceLocalSource"
+        },
+        "s3": {
+          "$ref": "#/definitions/v1beta1ImportSourceS3Source"
+        },
+        "gcs": {
+          "$ref": "#/definitions/v1beta1ImportSourceGCSSource"
+        },
+        "azureBlob": {
+          "$ref": "#/definitions/v1beta1ImportSourceAzBlobSource"
         }
       }
+    },
+    "v1beta1ImportSourceAccessKey": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "secret": {
+          "type": "string"
+        }
+      }
+    },
+    "v1beta1ImportSourceAzBlobSource": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/v1beta1ImportSourceAzBlobSourceAuthType"
+        },
+        "sasToken": {
+          "$ref": "#/definitions/v1beta1ImportSourceSASToken"
+        }
+      }
+    },
+    "v1beta1ImportSourceAzBlobSourceAuthType": {
+      "type": "string",
+      "enum": [
+        "SAS_TOKEN"
+      ],
+      "description": " - ACCESS_UNSPECIFIED: The access method is unknown.\n - SAS_TOKEN: The access method is sas token."
+    },
+    "v1beta1ImportSourceCredentials": {
+      "type": "object",
+      "properties": {
+        "jsonString": {
+          "type": "string"
+        }
+      }
+    },
+    "v1beta1ImportSourceGCSSource": {
+      "type": "object",
+      "properties": {
+        "gcsUri": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/v1beta1ImportSourceGCSSourceAuthType"
+        },
+        "credentials": {
+          "$ref": "#/definitions/v1beta1ImportSourceCredentials"
+        }
+      }
+    },
+    "v1beta1ImportSourceGCSSourceAuthType": {
+      "type": "string",
+      "enum": [
+        "CREDENTIALS"
+      ],
+      "description": " - ACCESS_UNSPECIFIED: The access method is unknown.\n - CREDENTIALS: The access method is credentials."
     },
     "v1beta1ImportSourceLocalSource": {
       "type": "object",
@@ -535,12 +614,56 @@
         }
       }
     },
+    "v1beta1ImportSourceRoleArn": {
+      "type": "object",
+      "properties": {
+        "roleArn": {
+          "type": "string"
+        }
+      }
+    },
+    "v1beta1ImportSourceS3Source": {
+      "type": "object",
+      "properties": {
+        "s3Uri": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/v1beta1ImportSourceS3SourceAuthType"
+        },
+        "roleArn": {
+          "$ref": "#/definitions/v1beta1ImportSourceRoleArn"
+        },
+        "accessKey": {
+          "$ref": "#/definitions/v1beta1ImportSourceAccessKey"
+        }
+      }
+    },
+    "v1beta1ImportSourceS3SourceAuthType": {
+      "type": "string",
+      "enum": [
+        "ROLE_ARN",
+        "ACCESS_KEY"
+      ],
+      "description": " - ACCESS_UNSPECIFIED: The access method is unknown.\n - ROLE_ARN: The access method is role arn.\n - ACCESS_KEY: The access method is access key."
+    },
+    "v1beta1ImportSourceSASToken": {
+      "type": "object",
+      "properties": {
+        "sasUrl": {
+          "type": "string"
+        }
+      }
+    },
     "v1beta1ImportSourceType": {
       "type": "string",
       "enum": [
-        "LOCAL"
+        "LOCAL",
+        "S3",
+        "GCS",
+        "AzBlob"
       ],
-      "description": " - TARGET_UNSPECIFIED: The target of the import is unknown.\n - LOCAL: Local target."
+      "title": "- TARGET_UNSPECIFIED: The source of the import is unknown.\n - LOCAL: Local source.\n - S3: S3 source.\n - GCS: gcs source\n - AzBlob: azure blob source"
     },
     "v1beta1ImportSourceView": {
       "type": "object",
@@ -553,8 +676,70 @@
         "local": {
           "$ref": "#/definitions/v1beta1ImportSourceViewLocalSource",
           "readOnly": true
+        },
+        "s3": {
+          "$ref": "#/definitions/v1beta1ImportSourceViewS3Source"
+        },
+        "gcs": {
+          "$ref": "#/definitions/v1beta1ImportSourceViewGCSSource"
+        },
+        "azureBlob": {
+          "$ref": "#/definitions/v1beta1ImportSourceViewAzBlobSource"
         }
       }
+    },
+    "v1beta1ImportSourceViewAccessKey": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "v1beta1ImportSourceViewAzBlobSource": {
+      "type": "object",
+      "properties": {
+        "blobUri": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/v1beta1ImportSourceViewAzBlobSourceAuthType"
+        },
+        "sasToken": {
+          "$ref": "#/definitions/v1beta1ImportSourceViewSASToken"
+        }
+      }
+    },
+    "v1beta1ImportSourceViewAzBlobSourceAuthType": {
+      "type": "string",
+      "enum": [
+        "SAS_TOKEN"
+      ],
+      "description": " - ACCESS_UNSPECIFIED: The access method is unknown.\n - SAS_TOKEN: The access method is sas token."
+    },
+    "v1beta1ImportSourceViewCredentials": {
+      "type": "object"
+    },
+    "v1beta1ImportSourceViewGCSSource": {
+      "type": "object",
+      "properties": {
+        "gcsUri": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/v1beta1ImportSourceViewGCSSourceAuthType"
+        },
+        "credentials": {
+          "$ref": "#/definitions/v1beta1ImportSourceViewCredentials"
+        }
+      }
+    },
+    "v1beta1ImportSourceViewGCSSourceAuthType": {
+      "type": "string",
+      "enum": [
+        "CREDENTIALS"
+      ],
+      "description": " - ACCESS_UNSPECIFIED: The access method is unknown.\n - CREDENTIALS: The access method is credentials."
     },
     "v1beta1ImportSourceViewLocalSource": {
       "type": "object",
@@ -578,6 +763,46 @@
           "readOnly": true
         }
       }
+    },
+    "v1beta1ImportSourceViewRoleArn": {
+      "type": "object",
+      "properties": {
+        "roleArn": {
+          "type": "string"
+        }
+      }
+    },
+    "v1beta1ImportSourceViewS3Source": {
+      "type": "object",
+      "properties": {
+        "s3Uri": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/v1beta1ImportSourceViewS3SourceAuthType"
+        },
+        "roleArn": {
+          "$ref": "#/definitions/v1beta1ImportSourceViewRoleArn"
+        },
+        "accessKey": {
+          "$ref": "#/definitions/v1beta1ImportSourceViewAccessKey"
+        },
+        "targetDatabase": {
+          "type": "string",
+          "x-nullable": true
+        }
+      }
+    },
+    "v1beta1ImportSourceViewS3SourceAuthType": {
+      "type": "string",
+      "enum": [
+        "ROLE_ARN",
+        "ACCESS_KEY"
+      ],
+      "description": " - ACCESS_UNSPECIFIED: The access method is unknown.\n - ROLE_ARN: The access method is role arn.\n - ACCESS_KEY: The access method is access key."
+    },
+    "v1beta1ImportSourceViewSASToken": {
+      "type": "object"
     },
     "v1beta1ImportState": {
       "type": "string",

@@ -18,9 +18,18 @@ import (
 // swagger:model v1beta1ImportSourceView
 type V1beta1ImportSourceView struct {
 
+	// azure blob
+	AzureBlob *V1beta1ImportSourceViewAzBlobSource `json:"azureBlob,omitempty"`
+
+	// gcs
+	Gcs *V1beta1ImportSourceViewGCSSource `json:"gcs,omitempty"`
+
 	// local
 	// Read Only: true
 	Local *V1beta1ImportSourceViewLocalSource `json:"local,omitempty"`
+
+	// s3
+	S3 *V1beta1ImportSourceViewS3Source `json:"s3,omitempty"`
 
 	// Optional. The import source type.
 	// Read Only: true
@@ -31,7 +40,19 @@ type V1beta1ImportSourceView struct {
 func (m *V1beta1ImportSourceView) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.validateAzureBlob(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateGcs(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.validateLocal(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateS3(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -42,6 +63,44 @@ func (m *V1beta1ImportSourceView) Validate(formats strfmt.Registry) error {
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *V1beta1ImportSourceView) validateAzureBlob(formats strfmt.Registry) error {
+	if swag.IsZero(m.AzureBlob) { // not required
+		return nil
+	}
+
+	if m.AzureBlob != nil {
+		if err := m.AzureBlob.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("azureBlob")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("azureBlob")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *V1beta1ImportSourceView) validateGcs(formats strfmt.Registry) error {
+	if swag.IsZero(m.Gcs) { // not required
+		return nil
+	}
+
+	if m.Gcs != nil {
+		if err := m.Gcs.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("gcs")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("gcs")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -56,6 +115,25 @@ func (m *V1beta1ImportSourceView) validateLocal(formats strfmt.Registry) error {
 				return ve.ValidateName("local")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("local")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *V1beta1ImportSourceView) validateS3(formats strfmt.Registry) error {
+	if swag.IsZero(m.S3) { // not required
+		return nil
+	}
+
+	if m.S3 != nil {
+		if err := m.S3.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("s3")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("s3")
 			}
 			return err
 		}
@@ -85,7 +163,19 @@ func (m *V1beta1ImportSourceView) validateType(formats strfmt.Registry) error {
 func (m *V1beta1ImportSourceView) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
+	if err := m.contextValidateAzureBlob(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateGcs(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateLocal(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.contextValidateS3(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -96,6 +186,48 @@ func (m *V1beta1ImportSourceView) ContextValidate(ctx context.Context, formats s
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+func (m *V1beta1ImportSourceView) contextValidateAzureBlob(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.AzureBlob != nil {
+
+		if swag.IsZero(m.AzureBlob) { // not required
+			return nil
+		}
+
+		if err := m.AzureBlob.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("azureBlob")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("azureBlob")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *V1beta1ImportSourceView) contextValidateGcs(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.Gcs != nil {
+
+		if swag.IsZero(m.Gcs) { // not required
+			return nil
+		}
+
+		if err := m.Gcs.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("gcs")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("gcs")
+			}
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -112,6 +244,27 @@ func (m *V1beta1ImportSourceView) contextValidateLocal(ctx context.Context, form
 				return ve.ValidateName("local")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
 				return ce.ValidateName("local")
+			}
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (m *V1beta1ImportSourceView) contextValidateS3(ctx context.Context, formats strfmt.Registry) error {
+
+	if m.S3 != nil {
+
+		if swag.IsZero(m.S3) { // not required
+			return nil
+		}
+
+		if err := m.S3.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("s3")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("s3")
 			}
 			return err
 		}

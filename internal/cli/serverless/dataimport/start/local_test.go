@@ -247,10 +247,10 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
       "fileType": "%s",
       "csvFormat": {
         "backslashEscape": false,
-        "delimiter": ",",
-        "header": true,
-		"notNull": false,
+        "delimiter": "",
+        "header": false,
         "null": "\\N",
+		"notNull": false,
         "separator": "\"",
 		"trimLastSeparator": true
       }
@@ -277,9 +277,10 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
       "fileType": "CSV",
       "csvFormat": {
         "backslashEscape": false,
-        "delimiter": ",",
-        "header": true,
+        "delimiter": "",
+        "header": false,
         "null": "\\N",
+		"notNull": false,
         "separator": "\"",
 		"trimLastSeparator": true
       }
@@ -319,8 +320,10 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 		stderrString string
 	}{
 		{
-			name:         "start import success",
-			args:         []string{"--source-type", "LOCAL", "--local.file-path", fileName, "--cluster-id", clusterID, "--file-type", fileType, "--local.target-database", targetDatabase, "--local.target-table", targetTable, "--csv.separator", "\"", "--csv.delimiter", ",", "--csv.backslash-escape=false", "--csv.trim-last-separator=true"},
+			name: "start import success",
+			args: []string{"--source-type", "LOCAL", "--local.file-path", fileName, "--cluster-id", clusterID, "--file-type", fileType, "--local.target-database", targetDatabase, "--local.target-table", targetTable,
+				"--csv.separator", "\"", "--csv.delimiter", "", "--csv.backslash-escape=false", "--csv.trim-last-separator=true",
+				"--csv.skip-header=true", "--csv.null-value", `\N`, "--csv.not-null=false"},
 			stdoutString: fmt.Sprintf("... Uploading file\nFile has been uploaded\n... Starting the import task\nImport task %s started.\n", importID),
 		},
 	}
