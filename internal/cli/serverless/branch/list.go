@@ -138,6 +138,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				columns := []output.Column{
 					"ID",
 					"DisplayName",
+					"ParentDisplayName",
 					"State",
 					"CreateTime",
 					"UpdateTime",
@@ -148,6 +149,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					rows = append(rows, output.Row{
 						item.BranchID,
 						*item.DisplayName,
+						item.ParentDisplayName,
 						string(item.State),
 						item.CreateTime.String(),
 						item.UpdateTime.String(),

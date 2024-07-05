@@ -204,24 +204,16 @@
       "properties": {
         "public": {
           "$ref": "#/definitions/EndpointsPublic",
+          "x-nullable": true,
           "description": "Optional . Public Endpoint for this branch."
         },
         "private": {
           "$ref": "#/definitions/EndpointsPrivate",
+          "x-nullable": true,
           "description": "Optional . Private Endpoint for this branch."
         }
       },
       "description": "Message for the Endpoints for this branch."
-    },
-    "BranchState": {
-      "type": "string",
-      "enum": [
-        "CREATING",
-        "ACTIVE",
-        "DELETED",
-        "MAINTENANCE"
-      ],
-      "description": "Output Only. Branch State.\n\n - STATE_UNSPECIFIED: The state of the branch is unknown.\n - CREATING: The branch is being created.\n - ACTIVE: The branch is active and running.\n - DELETED: The branch is being deleted.\n - MAINTENANCE: The branch is under maintenance."
     },
     "BranchUsage": {
       "type": "object",
@@ -377,8 +369,7 @@
         },
         "parentId": {
           "type": "string",
-          "description": "Output only. The parent ID of this branch.",
-          "readOnly": true
+          "description": "OPTIONAL. The parent ID of this branch."
         },
         "createdBy": {
           "type": "string",
@@ -386,21 +377,24 @@
           "readOnly": true
         },
         "state": {
-          "$ref": "#/definitions/BranchState",
+          "$ref": "#/definitions/v1beta1BranchState",
           "description": "Output only. The state of this branch.",
           "readOnly": true
         },
         "endpoints": {
           "$ref": "#/definitions/BranchEndpoints",
+          "x-nullable": true,
           "description": "Optional. The endpoints of this branch. Only display in FULL view."
         },
         "userPrefix": {
           "type": "string",
+          "x-nullable": true,
           "description": "Output only. User name prefix of this branch. Only display in FULL view. For each TiDB Serverless branch,\nTiDB Cloud generates a unique prefix to distinguish it from other branches.\nWhenever you use or set a database user name, you must include the prefix in the user name.",
           "readOnly": true
         },
         "usage": {
           "$ref": "#/definitions/BranchUsage",
+          "x-nullable": true,
           "description": "OPTIONAL. Usage metrics of this branch. Only display in FULL view."
         },
         "createTime": {
@@ -421,12 +415,26 @@
             "type": "string"
           },
           "description": "Optional. The annotations of this branch. Only display in FULL view."
+        },
+        "parentDisplayName": {
+          "type": "string",
+          "description": "OPTIONAL. The parent display name of this branch."
         }
       },
       "title": "Message for branch",
       "required": [
         "displayName"
       ]
+    },
+    "v1beta1BranchState": {
+      "type": "string",
+      "enum": [
+        "CREATING",
+        "ACTIVE",
+        "DELETED",
+        "MAINTENANCE"
+      ],
+      "description": "Output Only. Branch State.\n\n - STATE_UNSPECIFIED: The state of the branch is unknown.\n - CREATING: The branch is being created.\n - ACTIVE: The branch is active and running.\n - DELETED: The branch is being deleted.\n - MAINTENANCE: The branch is under maintenance."
     },
     "v1beta1BranchView": {
       "type": "string",
