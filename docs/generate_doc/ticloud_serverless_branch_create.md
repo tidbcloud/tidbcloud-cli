@@ -13,7 +13,7 @@ ticloud serverless branch create [flags]
   $ ticloud serverless branch create
 
   Create a branch in non-interactive mode:
-  $ ticloud serverless branch create --cluster-id <cluster-id> --display-name <branch-name>
+  $ ticloud serverless branch create --cluster-id <cluster-id> --display-name <branch-name> --parent-id <parent-id>
 ```
 
 ### Options
@@ -22,6 +22,7 @@ ticloud serverless branch create [flags]
   -c, --cluster-id string     The ID of the cluster, in which the branch will be created.
   -n, --display-name string   The displayName of the branch to be created.
   -h, --help                  help for create
+      --parent-id string      The ID of the branch parent, default is cluster id.
 ```
 
 ### Options inherited from parent commands

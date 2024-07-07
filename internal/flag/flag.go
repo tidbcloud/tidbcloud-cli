@@ -77,6 +77,7 @@ const (
 	SQL                   string = "sql"
 	TableWhere            string = "where"
 	TableFilter           string = "filter"
+	ParentID              string = "parent-id"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."
