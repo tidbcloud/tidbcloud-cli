@@ -194,7 +194,7 @@ func CreateAndWaitReady(ctx context.Context, h *internal.Helper, d cloud.TiDBClo
 				return errors.Trace(err)
 			}
 			s := clusterResult.GetPayload().State
-			if s == branchModel.BranchStateACTIVE {
+			if s == branchModel.V1beta1BranchStateACTIVE {
 				fmt.Fprint(h.IOStreams.Out, color.GreenString("Branch %s is ready.", newBranchID))
 				return nil
 			}
@@ -227,7 +227,7 @@ func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, params *
 					return errors.Trace(err)
 				}
 				s := clusterResult.GetPayload().State
-				if s == branchModel.BranchStateACTIVE {
+				if s == branchModel.V1beta1BranchStateACTIVE {
 					return ui.Result(fmt.Sprintf("Branch %s is ready.", newBranchID))
 				}
 			case <-ctx.Done():

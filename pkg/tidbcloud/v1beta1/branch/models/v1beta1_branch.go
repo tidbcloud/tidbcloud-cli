@@ -43,20 +43,22 @@ type V1beta1Branch struct {
 	// Required: true
 	DisplayName *string `json:"displayName"`
 
-	// Optional. The endpoints of this branch. Only display in FULL view.
+	// Optional. The endpoints of this branch.
 	Endpoints *BranchEndpoints `json:"endpoints,omitempty"`
 
 	// Output Only. The name of the resource.
 	// Read Only: true
 	Name string `json:"name,omitempty"`
 
-	// Output only. The parent ID of this branch.
-	// Read Only: true
+	// OPTIONAL. The parent display name of this branch.
+	ParentDisplayName string `json:"parentDisplayName,omitempty"`
+
+	// OPTIONAL. The parent ID of this branch.
 	ParentID string `json:"parentId,omitempty"`
 
 	// Output only. The state of this branch.
 	// Read Only: true
-	State BranchState `json:"state,omitempty"`
+	State V1beta1BranchState `json:"state,omitempty"`
 
 	// Output only. Update timestamp
 	// Read Only: true
@@ -66,11 +68,11 @@ type V1beta1Branch struct {
 	// OPTIONAL. Usage metrics of this branch. Only display in FULL view.
 	Usage *BranchUsage `json:"usage,omitempty"`
 
-	// Output only. User name prefix of this branch. Only display in FULL view. For each TiDB Serverless branch,
+	// Output only. User name prefix of this branch. For each TiDB Serverless branch,
 	// TiDB Cloud generates a unique prefix to distinguish it from other branches.
 	// Whenever you use or set a database user name, you must include the prefix in the user name.
 	// Read Only: true
-	UserPrefix string `json:"userPrefix,omitempty"`
+	UserPrefix *string `json:"userPrefix,omitempty"`
 }
 
 // Validate validates this v1beta1 branch
@@ -223,10 +225,6 @@ func (m *V1beta1Branch) ContextValidate(ctx context.Context, formats strfmt.Regi
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateParentID(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
 	if err := m.contextValidateState(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -315,15 +313,6 @@ func (m *V1beta1Branch) contextValidateName(ctx context.Context, formats strfmt.
 	return nil
 }
 
-func (m *V1beta1Branch) contextValidateParentID(ctx context.Context, formats strfmt.Registry) error {
-
-	if err := validate.ReadOnly(ctx, "parentId", "body", string(m.ParentID)); err != nil {
-		return err
-	}
-
-	return nil
-}
-
 func (m *V1beta1Branch) contextValidateState(ctx context.Context, formats strfmt.Registry) error {
 
 	if swag.IsZero(m.State) { // not required
@@ -374,7 +363,7 @@ func (m *V1beta1Branch) contextValidateUsage(ctx context.Context, formats strfmt
 
 func (m *V1beta1Branch) contextValidateUserPrefix(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "userPrefix", "body", string(m.UserPrefix)); err != nil {
+	if err := validate.ReadOnly(ctx, "userPrefix", "body", m.UserPrefix); err != nil {
 		return err
 	}
 
