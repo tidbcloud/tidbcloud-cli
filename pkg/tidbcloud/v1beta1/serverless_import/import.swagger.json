@@ -573,7 +573,7 @@
     "v1beta1ImportSourceCredentials": {
       "type": "object",
       "properties": {
-        "jsonString": {
+        "base64UrlEncoded": {
           "type": "string"
         }
       }

@@ -207,7 +207,7 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 
 	body.Source.Gcs.Type = authType
 	body.Source.Gcs.Credentials = &importModel.V1beta1ImportSourceCredentials{
-		JSONString: base64.URLEncoding.EncodeToString(credentials),
+		Base64URLEncoded: base64.URLEncoding.EncodeToString(credentials),
 	}
 
 	params := importOp.NewImportServiceCreateImportParams().WithClusterID(clusterID).

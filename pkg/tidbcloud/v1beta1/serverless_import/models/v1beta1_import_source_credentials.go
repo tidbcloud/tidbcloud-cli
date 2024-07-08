@@ -17,8 +17,8 @@ import (
 // swagger:model v1beta1ImportSourceCredentials
 type V1beta1ImportSourceCredentials struct {
 
-	// json string
-	JSONString string `json:"jsonString,omitempty"`
+	// base64 Url encoded
+	Base64URLEncoded string `json:"base64UrlEncoded,omitempty"`
 }
 
 // Validate validates this v1beta1 import source credentials
