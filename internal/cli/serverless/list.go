@@ -125,7 +125,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					"Version",
 					"Cloud",
 					"Region",
-					"Type",
+					"CreateTime",
 				}
 
 				var rows []output.Row
@@ -137,7 +137,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 						item.Version,
 						string(*item.Region.Provider),
 						item.Region.DisplayName,
-						serverlessType,
+						item.CreateTime.String(),
 					})
 				}
 
