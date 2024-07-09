@@ -37,7 +37,6 @@ import (
 
 var createBranchField = map[string]int{
 	flag.DisplayName: 0,
-	flag.ParentID:    1,
 }
 
 const (
@@ -125,15 +124,17 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterId = cluster.ID
 
-				// variables for input
-				fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following options"))
+				parentID, err = cloud.GetSelectedParentID(ctx, cluster, h.QueryPageSize, d)
+				if err != nil {
+					return err
+				}
 
+				// variables for input
 				inputModel, err := GetCreateBranchInput()
 				if err != nil {
 					return err
 				}
 				branchName = inputModel.(ui.TextInputModel).Inputs[createBranchField[flag.DisplayName]].Value()
-				parentID = inputModel.(ui.TextInputModel).Inputs[createBranchField[flag.ParentID]].Value()
 				if len(branchName) == 0 {
 					return errors.New("branch name is required")
 				}
@@ -279,13 +280,10 @@ func initialCreateBranchInputModel() ui.TextInputModel {
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
-		case flag.ParentID:
-			t.Placeholder = "Parent ID"
+
+			m.Inputs[v] = t
 		}
-
-		m.Inputs[v] = t
 	}
-
 	return m
 }
 

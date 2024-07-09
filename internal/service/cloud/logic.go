@@ -752,3 +752,50 @@ func RetrieveSQLUsers(ctx context.Context, cID string, pageSize int64, d TiDBClo
 	}
 	return int64(len(items)), items, nil
 }
+
+func GetSelectedParentID(ctx context.Context, cluster *Cluster, pageSize int64, client TiDBCloudClient) (string, error) {
+	clusterID := cluster.ID
+	_, branchItems, err := RetrieveBranches(ctx, clusterID, pageSize, client)
+	if err != nil {
+		return "", err
+	}
+
+	var items = make([]interface{}, 0, len(branchItems)+1)
+	items = append(items, &Branch{
+		ID:          clusterID,
+		DisplayName: cluster.DisplayName,
+		IsCluster:   true,
+	})
+	for _, item := range branchItems {
+		items = append(items, &Branch{
+			ID:          item.BranchID,
+			DisplayName: *item.DisplayName,
+			IsCluster:   false,
+		})
+	}
+	if len(items) == 0 {
+		return "", fmt.Errorf("no available parent found")
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the parent:")
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	bModel, err := p.Run()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	parent := bModel.(ui.SelectModel).GetSelectedItem()
+	if parent == nil {
+		return "", errors.New("no parent selected")
+	}
+	return parent.(*Branch).ID, nil
+}
