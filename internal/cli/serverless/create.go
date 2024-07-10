@@ -46,9 +46,8 @@ var createClusterField = map[string]int{
 }
 
 const (
-	serverlessType = "SERVERLESS"
-	WaitInterval   = 5 * time.Second
-	WaitTimeout    = 2 * time.Minute
+	WaitInterval = 5 * time.Second
+	WaitTimeout  = 2 * time.Minute
 )
 
 type CreateOpts struct {
