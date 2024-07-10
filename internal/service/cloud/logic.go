@@ -759,6 +759,10 @@ func GetSelectedParentID(ctx context.Context, cluster *Cluster, pageSize int64, 
 	if err != nil {
 		return "", err
 	}
+	// If there is no branch, return the clusterID directly.
+	if len(branchItems) == 0 {
+		return clusterID, nil
+	}
 
 	var items = make([]interface{}, 0, len(branchItems)+1)
 	items = append(items, &Branch{
@@ -772,9 +776,6 @@ func GetSelectedParentID(ctx context.Context, cluster *Cluster, pageSize int64, 
 			DisplayName: *item.DisplayName,
 			IsCluster:   false,
 		})
-	}
-	if len(items) == 0 {
-		return "", fmt.Errorf("no available parent found")
 	}
 
 	model, err := ui.InitialSelectModel(items, "Choose the parent:")
