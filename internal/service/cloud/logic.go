@@ -92,7 +92,7 @@ func (r Region) String() string {
 
 func (b Branch) String() string {
 	if b.IsCluster {
-		return "main(the cluster)"
+		return fmt.Sprintf("%s(main)", b.DisplayName)
 	}
 	return fmt.Sprintf("%s(%s)", b.DisplayName, b.ID)
 }
