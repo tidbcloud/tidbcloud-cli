@@ -43,7 +43,7 @@ type V1beta1Branch struct {
 	// Required: true
 	DisplayName *string `json:"displayName"`
 
-	// Optional. The endpoints of this branch. Only display in FULL view.
+	// Optional. The endpoints of this branch.
 	Endpoints *BranchEndpoints `json:"endpoints,omitempty"`
 
 	// Output Only. The name of the resource.
@@ -68,7 +68,7 @@ type V1beta1Branch struct {
 	// OPTIONAL. Usage metrics of this branch. Only display in FULL view.
 	Usage *BranchUsage `json:"usage,omitempty"`
 
-	// Output only. User name prefix of this branch. Only display in FULL view. For each TiDB Serverless branch,
+	// Output only. User name prefix of this branch. For each TiDB Serverless branch,
 	// TiDB Cloud generates a unique prefix to distinguish it from other branches.
 	// Whenever you use or set a database user name, you must include the prefix in the user name.
 	// Read Only: true

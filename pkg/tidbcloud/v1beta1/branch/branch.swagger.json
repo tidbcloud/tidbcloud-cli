@@ -384,12 +384,12 @@
         "endpoints": {
           "$ref": "#/definitions/BranchEndpoints",
           "x-nullable": true,
-          "description": "Optional. The endpoints of this branch. Only display in FULL view."
+          "description": "Optional. The endpoints of this branch."
         },
         "userPrefix": {
           "type": "string",
           "x-nullable": true,
-          "description": "Output only. User name prefix of this branch. Only display in FULL view. For each TiDB Serverless branch,\nTiDB Cloud generates a unique prefix to distinguish it from other branches.\nWhenever you use or set a database user name, you must include the prefix in the user name.",
+          "description": "Output only. User name prefix of this branch. For each TiDB Serverless branch,\nTiDB Cloud generates a unique prefix to distinguish it from other branches.\nWhenever you use or set a database user name, you must include the prefix in the user name.",
           "readOnly": true
         },
         "usage": {
