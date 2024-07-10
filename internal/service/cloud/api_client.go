@@ -222,7 +222,7 @@ func (d *ClientDelegate) ListBranches(ctx context.Context, clusterId string, pag
 
 func (d *ClientDelegate) CreateBranch(ctx context.Context, clusterId string, displayName string) (*branch.V1beta1Branch, error) {
 	r := d.bc.BranchServiceAPI.BranchServiceCreateBranch(ctx, clusterId)
-	r.Branch(*branch.NewV1beta1Branch(displayName))
+	r = r.Branch(*branch.NewV1beta1Branch(displayName))
 	b, _, err := r.Execute()
 	return b, err
 }
