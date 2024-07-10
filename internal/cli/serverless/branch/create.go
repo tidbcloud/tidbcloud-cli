@@ -89,7 +89,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless branch create
 
   Create a branch in non-interactive mode:
-  $ %[1]s serverless branch create --cluster-id <cluster-id> --display-name <branch-name>`,
+  $ %[1]s serverless branch create --cluster-id <cluster-id> --display-name <branch-name> --parent-id <parent-id>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			err := opts.MarkInteractive(cmd)
@@ -107,6 +107,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 			var branchName string
 			var clusterId string
+			var parentID string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -122,6 +123,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				clusterId = cluster.ID
+
+				parentID, err = cloud.GetSelectedParentID(ctx, cluster, h.QueryPageSize, d)
+				if err != nil {
+					return err
+				}
 
 				// variables for input
 				inputModel, err := GetCreateBranchInput()
@@ -143,10 +149,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
+				parentID, err = cmd.Flags().GetString(flag.ParentID)
+				if err != nil {
+					return errors.Trace(err)
+				}
 			}
 
 			params := branchApi.NewBranchServiceCreateBranchParams().WithClusterID(clusterId).WithBranch(&branchModel.V1beta1Branch{
 				DisplayName: &branchName,
+				ParentID:    parentID,
 			}).WithContext(ctx)
 
 			if h.IOStreams.CanPrompt {
@@ -167,6 +178,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	createCmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "The displayName of the branch to be created.")
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster, in which the branch will be created.")
+	createCmd.Flags().StringP(flag.ParentID, "", "", "The ID of the branch parent, default is cluster id.")
 	return createCmd
 }
 
@@ -268,11 +280,10 @@ func initialCreateBranchInputModel() ui.TextInputModel {
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
+
+			m.Inputs[v] = t
 		}
-
-		m.Inputs[v] = t
 	}
-
 	return m
 }
 
