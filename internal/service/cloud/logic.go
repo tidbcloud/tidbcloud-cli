@@ -623,7 +623,7 @@ func RetrieveClusters(ctx context.Context, pID string, pageSize int64, d TiDBClo
 
 func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []branch.V1beta1Branch, error) {
 	var items []branch.V1beta1Branch
-	var pageToken *string
+	var pageToken string
 
 	resp, err := d.ListBranches(ctx, cID, int32(pageSize), "")
 	if err != nil {
@@ -632,11 +632,11 @@ func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBClo
 	items = append(items, resp.Branches...)
 	// loop to get all branches
 	for {
-		pageToken = resp.NextPageToken
-		if pageToken == nil {
+		pageToken = *resp.NextPageToken
+		if pageToken == "" {
 			break
 		}
-		resp, err = d.ListBranches(ctx, cID, int32(pageSize), *pageToken)
+		resp, err = d.ListBranches(ctx, cID, int32(pageSize), pageToken)
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}

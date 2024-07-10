@@ -337,6 +337,7 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 
 	cfg := branch.NewConfiguration()
 	cfg.HTTPClient = httpclient
+	cfg.Debug = true
 	return branch.NewAPIClient(cfg), serverlessClient.New(serverlessTransport, strfmt.Default),
 		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default),
 		serverlessImportClient.New(importTransport, strfmt.Default), expClient.New(exportTransport, strfmt.Default),
