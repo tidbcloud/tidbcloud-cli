@@ -23,7 +23,6 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
-	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -190,16 +189,15 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			}
 
 			var host, name, port string
-			params := branchApi.NewBranchServiceGetBranchParams().WithClusterID(clusterID).WithBranchID(branchID).WithContext(ctx)
-			branchInfo, err := d.GetBranch(params)
+			branchInfo, err := d.GetBranch(ctx, clusterID, branchID)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			host = branchInfo.Payload.Endpoints.Public.Host
-			port = strconv.Itoa(int(branchInfo.Payload.Endpoints.Public.Port))
-			name = *branchInfo.Payload.DisplayName
+			host = *branchInfo.Endpoints.Public.Host
+			port = strconv.Itoa(int(*branchInfo.Endpoints.Public.Port))
+			name = branchInfo.DisplayName
 			if userName == "" {
-				userName = fmt.Sprintf("%s.root", *branchInfo.Payload.UserPrefix)
+				userName = fmt.Sprintf("%s.root", branchInfo.UserPrefix)
 				fmt.Fprintln(h.IOStreams.Out, color.GreenString("Current user: ")+color.HiGreenString(userName))
 			}
 

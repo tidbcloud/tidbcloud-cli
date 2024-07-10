@@ -21,10 +21,9 @@ import (
 
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
-	branchModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/models"
 	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
 	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
@@ -273,8 +272,8 @@ func GetSelectedBranch(ctx context.Context, clusterID string, pageSize int64, cl
 	var items = make([]interface{}, 0, len(branchItems))
 	for _, item := range branchItems {
 		items = append(items, &Branch{
-			ID:          item.BranchID,
-			DisplayName: *item.DisplayName,
+			ID:          *item.BranchId,
+			DisplayName: item.DisplayName,
 			IsCluster:   false,
 		})
 	}
@@ -622,28 +621,26 @@ func RetrieveClusters(ctx context.Context, pID string, pageSize int64, d TiDBClo
 	return int64(len(items)), items, nil
 }
 
-func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*branchModel.V1beta1Branch, error) {
-	var items []*branchModel.V1beta1Branch
-	pageSizeInt32 := int32(pageSize)
-	var pageToken string
+func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []branch.V1beta1Branch, error) {
+	var items []branch.V1beta1Branch
+	var pageToken *string
 
-	params := branchApi.NewBranchServiceListBranchesParams().WithClusterID(cID).WithContext(ctx)
-	branches, err := d.ListBranches(params.WithPageSize(&pageSizeInt32))
+	resp, err := d.ListBranches(ctx, cID, int32(pageSize), "")
 	if err != nil {
 		return 0, nil, errors.Trace(err)
 	}
-	items = append(items, branches.Payload.Branches...)
+	items = append(items, resp.Branches...)
 	// loop to get all branches
 	for {
-		pageToken = branches.Payload.NextPageToken
-		if pageToken == "" {
+		pageToken = resp.NextPageToken
+		if pageToken == nil {
 			break
 		}
-		branches, err = d.ListBranches(params.WithPageSize(&pageSizeInt32).WithPageToken(&pageToken))
+		resp, err = d.ListBranches(ctx, cID, int32(pageSize), *pageToken)
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
-		items = append(items, branches.Payload.Branches...)
+		items = append(items, resp.Branches...)
 	}
 	return int64(len(items)), items, nil
 }
@@ -772,8 +769,8 @@ func GetSelectedParentID(ctx context.Context, cluster *Cluster, pageSize int64, 
 	})
 	for _, item := range branchItems {
 		items = append(items, &Branch{
-			ID:          item.BranchID,
-			DisplayName: *item.DisplayName,
+			ID:          *item.BranchId,
+			DisplayName: item.DisplayName,
 			IsCluster:   false,
 		})
 	}

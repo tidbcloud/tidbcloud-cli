@@ -15,6 +15,7 @@
 package cloud
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -23,10 +24,9 @@ import (
 	"tidbcloud-cli/internal/version"
 	pingchatClient "tidbcloud-cli/pkg/tidbcloud/pingchat/client"
 	pingchatOp "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
-	branchClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client"
-	branchOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client"
 	iamOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 	serverlessClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client"
 	serverlessOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 	brClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client"
@@ -72,13 +72,13 @@ type TiDBCloudClient interface {
 
 	ListImports(params *serverlessImportOp.ImportServiceListImportsParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceListImportsOK, error)
 
-	GetBranch(params *branchOp.BranchServiceGetBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceGetBranchOK, error)
+	GetBranch(ctx context.Context, clusterId, parentId string) (*branch.V1beta1Branch, error)
 
-	ListBranches(params *branchOp.BranchServiceListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceListBranchesOK, error)
+	ListBranches(ctx context.Context, clusterId string, pageSize int32, pageToken string) (*branch.V1beta1ListBranchesResponse, error)
 
-	CreateBranch(params *branchOp.BranchServiceCreateBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceCreateBranchOK, error)
+	CreateBranch(ctx context.Context, clusterId, displayName string) (*branch.V1beta1Branch, error)
 
-	DeleteBranch(params *branchOp.BranchServiceDeleteBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceDeleteBranchOK, error)
+	DeleteBranch(ctx context.Context, clusterId string, branchId string) (*branch.V1beta1Branch, error)
 
 	Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.ClientOption) (*pingchatOp.ChatOK, error)
 
@@ -121,7 +121,7 @@ type TiDBCloudClient interface {
 
 type ClientDelegate struct {
 	ic  *iamClient.TidbcloudServerless
-	bc  *branchClient.TidbcloudServerless
+	bc  *branch.APIClient
 	pc  *pingchatClient.TidbcloudPingchat
 	sc  *serverlessClient.TidbcloudServerless
 	brc *brClient.TidbcloudServerless
@@ -207,24 +207,29 @@ func (d *ClientDelegate) ListImports(params *serverlessImportOp.ImportServiceLis
 	return d.sic.ImportService.ImportServiceListImports(params, opts...)
 }
 
-func (d *ClientDelegate) GetBranch(params *branchOp.BranchServiceGetBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceGetBranchOK, error) {
-	r, err := d.bc.BranchService.BranchServiceGetBranch(params, opts...)
-	return r, err
+func (d *ClientDelegate) GetBranch(ctx context.Context, clusterId, parentId string) (*branch.V1beta1Branch, error) {
+	b, _, err := d.bc.BranchServiceAPI.BranchServiceGetBranch(ctx, clusterId, parentId).Execute()
+	return b, err
 }
 
-func (d *ClientDelegate) ListBranches(params *branchOp.BranchServiceListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceListBranchesOK, error) {
-	r, err := d.bc.BranchService.BranchServiceListBranches(params, opts...)
-	return r, err
+func (d *ClientDelegate) ListBranches(ctx context.Context, clusterId string, pageSize int32, pageToken string) (*branch.V1beta1ListBranchesResponse, error) {
+	r := d.bc.BranchServiceAPI.BranchServiceListBranches(ctx, clusterId)
+	r.PageSize(pageSize)
+	r.PageToken(pageToken)
+	bs, _, err := r.Execute()
+	return bs, err
 }
 
-func (d *ClientDelegate) CreateBranch(params *branchOp.BranchServiceCreateBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceCreateBranchOK, error) {
-	r, err := d.bc.BranchService.BranchServiceCreateBranch(params, opts...)
-	return r, err
+func (d *ClientDelegate) CreateBranch(ctx context.Context, clusterId string, displayName string) (*branch.V1beta1Branch, error) {
+	r := d.bc.BranchServiceAPI.BranchServiceCreateBranch(ctx, clusterId)
+	r.Branch(*branch.NewV1beta1Branch(displayName))
+	b, _, err := r.Execute()
+	return b, err
 }
 
-func (d *ClientDelegate) DeleteBranch(params *branchOp.BranchServiceDeleteBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceDeleteBranchOK, error) {
-	r, err := d.bc.BranchService.BranchServiceDeleteBranch(params, opts...)
-	return r, err
+func (d *ClientDelegate) DeleteBranch(ctx context.Context, clusterId string, branchId string) (*branch.V1beta1Branch, error) {
+	b, _, err := d.bc.BranchServiceAPI.BranchServiceDeleteBranch(ctx, clusterId, branchId).Execute()
+	return b, err
 }
 
 func (d *ClientDelegate) Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.ClientOption) (*pingchatOp.ChatOK, error) {
@@ -303,7 +308,7 @@ func (d *ClientDelegate) UpdateSQLUser(params *iamOp.PatchV1beta1ClustersCluster
 	return d.ic.Account.PatchV1beta1ClustersClusterIDSQLUsersUserName(params, opts...)
 }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *serverlessImportClient.TidbcloudServerless, *expClient.TidbcloudServerless, *iamClient.TidbcloudServerless, error) {
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *serverlessImportClient.TidbcloudServerless, *expClient.TidbcloudServerless, *iamClient.TidbcloudServerless, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}
@@ -325,13 +330,14 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 		return nil, nil, nil, nil, nil, nil, nil, err
 	}
 	serverlessTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
-	branchTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	backRestoreTransport := httpTransport.NewWithClient(serverlessURL.Host, brClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	importTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessImportClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	exportTransport := httpTransport.NewWithClient(serverlessURL.Host, expClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	iamTransport := httpTransport.NewWithClient(iamUrl.Host, iamClient.DefaultBasePath, []string{iamUrl.Scheme}, httpclient)
 
-	return branchClient.New(branchTransport, strfmt.Default), serverlessClient.New(serverlessTransport, strfmt.Default),
+	cfg := branch.NewConfiguration()
+	cfg.HTTPClient = httpclient
+	return branch.NewAPIClient(cfg), serverlessClient.New(serverlessTransport, strfmt.Default),
 		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default),
 		serverlessImportClient.New(importTransport, strfmt.Default), expClient.New(exportTransport, strfmt.Default),
 		iamClient.New(iamTransport, strfmt.Default), nil
