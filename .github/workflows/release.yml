@@ -71,9 +71,13 @@ jobs:
             'linux arm64'
           )
           
+          # check if the tag name is nightly
+          if [[ $REL_VER == *"-nightly"* ]]; then
+            export VER="nightly"
+          else
           # skip the first letter v in the tag name
-          export VER="${REL_VER:1}"
-          
+            export VER="${REL_VER:1}"
+          fi
             for item in "${matrix[@]}" ; do
               os_arch=($item)
               os=(${os_arch[0]})
