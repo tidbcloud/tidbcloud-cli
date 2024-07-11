@@ -632,7 +632,7 @@ func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBClo
 	items = append(items, resp.Branches...)
 	// loop to get all branches
 	for {
-		pageToken = *resp.NextPageToken
+		pageToken = resp.GetNextPageToken()
 		if pageToken == "" {
 			break
 		}
