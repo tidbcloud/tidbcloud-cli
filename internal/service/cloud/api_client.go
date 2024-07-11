@@ -214,8 +214,8 @@ func (d *ClientDelegate) GetBranch(ctx context.Context, clusterId, parentId stri
 
 func (d *ClientDelegate) ListBranches(ctx context.Context, clusterId string, pageSize int32, pageToken string) (*branch.V1beta1ListBranchesResponse, error) {
 	r := d.bc.BranchServiceAPI.BranchServiceListBranches(ctx, clusterId)
-	r.PageSize(pageSize)
-	r.PageToken(pageToken)
+	r = r.PageSize(pageSize)
+	r = r.PageToken(pageToken)
 	bs, _, err := r.Execute()
 	return bs, err
 }
