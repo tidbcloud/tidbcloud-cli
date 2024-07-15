@@ -52,7 +52,7 @@ jobs:
           tar -zxf $TMP_DIR/tiup-linux-amd64.tar.gz -C $TIUP_HOME/bin && chmod 755 $TIUP_HOME/bin/tiup
           curl -s https://tiup-mirrors.pingcap.com/root.json -o $TIUP_HOME/bin/root.json
             
-          TIUP_MIRRORS=${{ secrets.TIUP_SERVER_PROD }}
+          TIUP_MIRRORS=${{ secrets.TIUP_SERVER_STAGING }}
           $TIUP_HOME/bin/tiup mirror set ${TIUP_MIRRORS}
           echo ${{ secrets.TIUP_COMP_KEY_PINGCAP }} | base64 -d > $TIUP_HOME/keys/private.json
 
