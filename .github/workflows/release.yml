@@ -34,7 +34,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v5
         with:
           version: v1.12.3
-          args: release --release-notes=.CHANGELOG.md
+          args: release ${{ contains(github.ref, 'nightly') && '--skip==publish' || '--release-notes=.CHANGELOG.md' }}
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           GORELEASER_CURRENT_TAG: ${{steps.changelog.outputs.TAG_NAME}}
