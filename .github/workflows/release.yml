@@ -33,8 +33,8 @@ jobs:
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v5
         with:
-          version: v1.12.3
-          args: release ${{ contains(github.ref, 'nightly') && '--skip==publish' || '--release-notes=.CHANGELOG.md' }}
+          version: v2.1.0
+          args: release ${{ contains(github.ref, 'nightly') && '--snapshot' || '--release-notes=.CHANGELOG.md' }}
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           GORELEASER_CURRENT_TAG: ${{steps.changelog.outputs.TAG_NAME}}
