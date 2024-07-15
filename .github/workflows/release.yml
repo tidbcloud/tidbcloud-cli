@@ -73,7 +73,7 @@ jobs:
           )
           
           # check if the tag name is nightly
-          if [[ $REL_VER == "*nightly-*" ]]; then
+          if [[ "$REL_VER" == *nightly-* ]]; then
             export VER="${REL_VER}"
           else
           # skip the first letter v in the tag name

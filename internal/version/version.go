@@ -14,7 +14,10 @@
 
 package version
 
-const DevVersion = "dev"
+const (
+	DevVersion     = "dev"
+	NightlyVersion = "nightly"
+)
 
 var (
 	Version = DevVersion
