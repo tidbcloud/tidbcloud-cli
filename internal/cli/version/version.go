@@ -41,7 +41,6 @@ func VersionCmd(h *internal.Helper) *cobra.Command {
 
 // Format formats a version string with the given information.
 func Format(ver, commit, buildDate string) string {
-	fmt.Println("ver:", ver)
 	if ver == version.DevVersion && buildDate == "" && commit == "" {
 		return fmt.Sprintf("%s version (built from source)", config.CliName)
 	}
