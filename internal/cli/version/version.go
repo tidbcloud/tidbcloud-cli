@@ -46,7 +46,7 @@ func Format(ver, commit, buildDate string) string {
 	}
 
 	if strings.Contains(ver, version.NightlyVersion) {
-		return fmt.Sprintf("%s version %s-%s (commit: %s)\n", config.CliName, ver, buildDate, commit)
+		return fmt.Sprintf("%s version %s (build date: %s commit: %s)\n", config.CliName, ver, buildDate, commit)
 	}
 
 	ver = strings.TrimPrefix(ver, "v")
