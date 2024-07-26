@@ -14,8 +14,12 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// V1beta1ImportOptionsFileType  - TYPE_UNSPECIFIED: The type of the file is unknown.
+// V1beta1ImportOptionsFileType The format of the file.
+//
 //   - CSV: CSV type.
+//   - SQL: SQL type.
+//   - AURORA_SNAPSHOT: Aurora snapshot type.
+//   - PARQUET: Parquet type.
 //
 // swagger:model v1beta1ImportOptionsFileType
 type V1beta1ImportOptionsFileType string
@@ -37,11 +41,11 @@ const (
 	// V1beta1ImportOptionsFileTypeSQL captures enum value "SQL"
 	V1beta1ImportOptionsFileTypeSQL V1beta1ImportOptionsFileType = "SQL"
 
-	// V1beta1ImportOptionsFileTypeAuroraSnapshot captures enum value "AuroraSnapshot"
-	V1beta1ImportOptionsFileTypeAuroraSnapshot V1beta1ImportOptionsFileType = "AuroraSnapshot"
+	// V1beta1ImportOptionsFileTypeAURORASNAPSHOT captures enum value "AURORA_SNAPSHOT"
+	V1beta1ImportOptionsFileTypeAURORASNAPSHOT V1beta1ImportOptionsFileType = "AURORA_SNAPSHOT"
 
-	// V1beta1ImportOptionsFileTypeParquet captures enum value "Parquet"
-	V1beta1ImportOptionsFileTypeParquet V1beta1ImportOptionsFileType = "Parquet"
+	// V1beta1ImportOptionsFileTypePARQUET captures enum value "PARQUET"
+	V1beta1ImportOptionsFileTypePARQUET V1beta1ImportOptionsFileType = "PARQUET"
 )
 
 // for schema
@@ -49,7 +53,7 @@ var v1beta1ImportOptionsFileTypeEnum []interface{}
 
 func init() {
 	var res []V1beta1ImportOptionsFileType
-	if err := json.Unmarshal([]byte(`["CSV","SQL","AuroraSnapshot","Parquet"]`), &res); err != nil {
+	if err := json.Unmarshal([]byte(`["CSV","SQL","AURORA_SNAPSHOT","PARQUET"]`), &res); err != nil {
 		panic(err)
 	}
 	for _, v := range res {

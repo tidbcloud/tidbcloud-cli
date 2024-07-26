@@ -407,7 +407,7 @@ type completedParts []*serverlessImportModels.V1beta1CompletePart
 func (a completedParts) Len() int      { return len(a) }
 func (a completedParts) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a completedParts) Less(i, j int) bool {
-	return a[i].PartNumber < a[j].PartNumber
+	return *a[i].PartNumber < *a[j].PartNumber
 }
 
 // upload will perform a multipart upload using the firstBuf buffer containing
@@ -541,8 +541,9 @@ func (u *multiUploader) send(c chunk) error {
 	}
 
 	var completed serverlessImportModels.V1beta1CompletePart
-	completed.PartNumber = c.num
-	completed.Etag = resp.Header().Get("ETag")
+	completed.PartNumber = &c.num
+	etag := resp.Header().Get("ETag")
+	completed.Etag = &etag
 
 	u.m.Lock()
 	u.parts = append(u.parts, &completed)

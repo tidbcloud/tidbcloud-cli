@@ -54,7 +54,7 @@ var sourceTypes = []importModel.V1beta1ImportSourceType{
 	importModel.V1beta1ImportSourceTypeS3,
 	importModel.V1beta1ImportSourceTypeLOCAL,
 	importModel.V1beta1ImportSourceTypeGCS,
-	importModel.V1beta1ImportSourceTypeAzBlob,
+	importModel.V1beta1ImportSourceTypeAZUREBLOB,
 }
 
 type StartOpts struct {
@@ -154,7 +154,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 					interactive: opts.interactive,
 				}
 				return gcsOpts.Run(cmd)
-			} else if sourceType == importModel.V1beta1ImportSourceTypeAzBlob {
+			} else if sourceType == importModel.V1beta1ImportSourceTypeAZUREBLOB {
 				azBlobOpts := AzBlobOpts{
 					h:           h,
 					interactive: opts.interactive,

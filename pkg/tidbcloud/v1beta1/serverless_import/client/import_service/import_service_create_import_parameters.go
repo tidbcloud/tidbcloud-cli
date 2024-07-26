@@ -14,6 +14,8 @@ import (
 	"github.com/go-openapi/runtime"
 	cr "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
+
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 )
 
 // NewImportServiceCreateImportParams creates a new ImportServiceCreateImportParams object,
@@ -62,11 +64,14 @@ ImportServiceCreateImportParams contains all the parameters to send to the API e
 type ImportServiceCreateImportParams struct {
 
 	// Body.
-	Body ImportServiceCreateImportBody
+	Body *models.ImportServiceCreateImportBody
 
-	// ClusterID.
-	//
-	// Format: uint64
+	/* ClusterID.
+
+	   The ID of the cluster to import into.
+
+	   Format: uint64
+	*/
 	ClusterID string
 
 	timeout    time.Duration
@@ -123,13 +128,13 @@ func (o *ImportServiceCreateImportParams) SetHTTPClient(client *http.Client) {
 }
 
 // WithBody adds the body to the import service create import params
-func (o *ImportServiceCreateImportParams) WithBody(body ImportServiceCreateImportBody) *ImportServiceCreateImportParams {
+func (o *ImportServiceCreateImportParams) WithBody(body *models.ImportServiceCreateImportBody) *ImportServiceCreateImportParams {
 	o.SetBody(body)
 	return o
 }
 
 // SetBody adds the body to the import service create import params
-func (o *ImportServiceCreateImportParams) SetBody(body ImportServiceCreateImportBody) {
+func (o *ImportServiceCreateImportParams) SetBody(body *models.ImportServiceCreateImportBody) {
 	o.Body = body
 }
 
@@ -151,8 +156,10 @@ func (o *ImportServiceCreateImportParams) WriteToRequest(r runtime.ClientRequest
 		return err
 	}
 	var res []error
-	if err := r.SetBodyParam(o.Body); err != nil {
-		return err
+	if o.Body != nil {
+		if err := r.SetBodyParam(o.Body); err != nil {
+			return err
+		}
 	}
 
 	// path param clusterId

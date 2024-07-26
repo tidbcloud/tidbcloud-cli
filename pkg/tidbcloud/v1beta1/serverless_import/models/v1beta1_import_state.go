@@ -14,7 +14,12 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// V1beta1ImportState v1beta1 import state
+// V1beta1ImportState  - PREPARING: The import is preparing.
+//   - IMPORTING: The import is importing.
+//   - COMPLETED: The import is completed.
+//   - FAILED: The import is failed.
+//   - CANCELING: The import is canceling.
+//   - CANCELED: The import is canceled.
 //
 // swagger:model v1beta1ImportState
 type V1beta1ImportState string

@@ -8,8 +8,10 @@ package models
 import (
 	"context"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // V1beta1CompletePart v1beta1 complete part
@@ -18,14 +20,47 @@ import (
 type V1beta1CompletePart struct {
 
 	// The ETag of the part
-	Etag string `json:"etag,omitempty"`
+	// Required: true
+	Etag *string `json:"etag"`
 
 	// The part number
-	PartNumber int32 `json:"partNumber,omitempty"`
+	// Required: true
+	PartNumber *int32 `json:"partNumber"`
 }
 
 // Validate validates this v1beta1 complete part
 func (m *V1beta1CompletePart) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateEtag(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validatePartNumber(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *V1beta1CompletePart) validateEtag(formats strfmt.Registry) error {
+
+	if err := validate.Required("etag", "body", m.Etag); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *V1beta1CompletePart) validatePartNumber(formats strfmt.Registry) error {
+
+	if err := validate.Required("partNumber", "body", m.PartNumber); err != nil {
+		return err
+	}
+
 	return nil
 }
 

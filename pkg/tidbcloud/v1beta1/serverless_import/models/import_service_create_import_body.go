@@ -11,24 +11,25 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
-// V1beta1CreationDetails v1beta1 creation details
+// ImportServiceCreateImportBody import service create import body
 //
-// swagger:model v1beta1CreationDetails
-type V1beta1CreationDetails struct {
+// swagger:model ImportServiceCreateImportBody
+type ImportServiceCreateImportBody struct {
 
-	// Optional. The options of the import.
-	// Read Only: true
-	ImportOptions *V1beta1ImportOptions `json:"importOptions,omitempty"`
+	// The options of the import.
+	// Required: true
+	ImportOptions *V1beta1ImportOptions `json:"importOptions"`
 
-	// Optional. The source of the import.
-	// Read Only: true
-	Source *V1beta1ImportSource `json:"source,omitempty"`
+	// The source of the import.
+	// Required: true
+	Source *V1beta1ImportSource `json:"source"`
 }
 
-// Validate validates this v1beta1 creation details
-func (m *V1beta1CreationDetails) Validate(formats strfmt.Registry) error {
+// Validate validates this import service create import body
+func (m *ImportServiceCreateImportBody) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateImportOptions(formats); err != nil {
@@ -45,9 +46,10 @@ func (m *V1beta1CreationDetails) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1CreationDetails) validateImportOptions(formats strfmt.Registry) error {
-	if swag.IsZero(m.ImportOptions) { // not required
-		return nil
+func (m *ImportServiceCreateImportBody) validateImportOptions(formats strfmt.Registry) error {
+
+	if err := validate.Required("importOptions", "body", m.ImportOptions); err != nil {
+		return err
 	}
 
 	if m.ImportOptions != nil {
@@ -64,9 +66,10 @@ func (m *V1beta1CreationDetails) validateImportOptions(formats strfmt.Registry) 
 	return nil
 }
 
-func (m *V1beta1CreationDetails) validateSource(formats strfmt.Registry) error {
-	if swag.IsZero(m.Source) { // not required
-		return nil
+func (m *ImportServiceCreateImportBody) validateSource(formats strfmt.Registry) error {
+
+	if err := validate.Required("source", "body", m.Source); err != nil {
+		return err
 	}
 
 	if m.Source != nil {
@@ -83,8 +86,8 @@ func (m *V1beta1CreationDetails) validateSource(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this v1beta1 creation details based on the context it is used
-func (m *V1beta1CreationDetails) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this import service create import body based on the context it is used
+func (m *ImportServiceCreateImportBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateImportOptions(ctx, formats); err != nil {
@@ -101,13 +104,9 @@ func (m *V1beta1CreationDetails) ContextValidate(ctx context.Context, formats st
 	return nil
 }
 
-func (m *V1beta1CreationDetails) contextValidateImportOptions(ctx context.Context, formats strfmt.Registry) error {
+func (m *ImportServiceCreateImportBody) contextValidateImportOptions(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.ImportOptions != nil {
-
-		if swag.IsZero(m.ImportOptions) { // not required
-			return nil
-		}
 
 		if err := m.ImportOptions.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
@@ -122,13 +121,9 @@ func (m *V1beta1CreationDetails) contextValidateImportOptions(ctx context.Contex
 	return nil
 }
 
-func (m *V1beta1CreationDetails) contextValidateSource(ctx context.Context, formats strfmt.Registry) error {
+func (m *ImportServiceCreateImportBody) contextValidateSource(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Source != nil {
-
-		if swag.IsZero(m.Source) { // not required
-			return nil
-		}
 
 		if err := m.Source.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
@@ -144,7 +139,7 @@ func (m *V1beta1CreationDetails) contextValidateSource(ctx context.Context, form
 }
 
 // MarshalBinary interface implementation
-func (m *V1beta1CreationDetails) MarshalBinary() ([]byte, error) {
+func (m *ImportServiceCreateImportBody) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -152,8 +147,8 @@ func (m *V1beta1CreationDetails) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1beta1CreationDetails) UnmarshalBinary(b []byte) error {
-	var res V1beta1CreationDetails
+func (m *ImportServiceCreateImportBody) UnmarshalBinary(b []byte) error {
+	var res ImportServiceCreateImportBody
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

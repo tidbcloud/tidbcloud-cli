@@ -17,25 +17,25 @@ import (
 // swagger:model v1beta1CSVFormat
 type V1beta1CSVFormat struct {
 
-	// backslash escape
+	// Whether to escape backslashes in CSV files. Default is true.
 	BackslashEscape *bool `json:"backslashEscape,omitempty"`
 
-	// delimiter
+	// Delimiter of string type variables in CSV files. Default is '"'.
 	Delimiter *string `json:"delimiter,omitempty"`
 
-	// header
+	// Import CSV files of the tables with header. Default is true.
 	Header *bool `json:"header,omitempty"`
 
-	// not null
+	// Whether the columns in CSV files can be null. Default is false.
 	NotNull *bool `json:"notNull,omitempty"`
 
-	// null
+	// Representation of null values in CSV files. Default is "\N".
 	Null *string `json:"null,omitempty"`
 
-	// separator
+	// Separator of each value in CSV files. Default is ','.
 	Separator string `json:"separator,omitempty"`
 
-	// trim last separator
+	// Whether to trim the last separator in CSV files. Default is false.
 	TrimLastSeparator *bool `json:"trimLastSeparator,omitempty"`
 }
 

@@ -6,16 +6,12 @@ package import_service
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 
-	"github.com/go-openapi/errors"
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
-	"github.com/go-openapi/swag"
-	"github.com/go-openapi/validate"
 
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 )
@@ -187,148 +183,5 @@ func (o *ImportServiceCreateImportDefault) readResponse(response runtime.ClientR
 		return err
 	}
 
-	return nil
-}
-
-/*
-ImportServiceCreateImportBody import service create import body
-swagger:model ImportServiceCreateImportBody
-*/
-type ImportServiceCreateImportBody struct {
-
-	// The options of the import.
-	// Required: true
-	ImportOptions *models.V1beta1ImportOptions `json:"importOptions"`
-
-	// The source of the import.
-	// Required: true
-	Source *models.V1beta1ImportSource `json:"source"`
-}
-
-// Validate validates this import service create import body
-func (o *ImportServiceCreateImportBody) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.validateImportOptions(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := o.validateSource(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *ImportServiceCreateImportBody) validateImportOptions(formats strfmt.Registry) error {
-
-	if err := validate.Required("body"+"."+"importOptions", "body", o.ImportOptions); err != nil {
-		return err
-	}
-
-	if o.ImportOptions != nil {
-		if err := o.ImportOptions.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "importOptions")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "importOptions")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (o *ImportServiceCreateImportBody) validateSource(formats strfmt.Registry) error {
-
-	if err := validate.Required("body"+"."+"source", "body", o.Source); err != nil {
-		return err
-	}
-
-	if o.Source != nil {
-		if err := o.Source.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "source")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "source")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-// ContextValidate validate this import service create import body based on the context it is used
-func (o *ImportServiceCreateImportBody) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	var res []error
-
-	if err := o.contextValidateImportOptions(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := o.contextValidateSource(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (o *ImportServiceCreateImportBody) contextValidateImportOptions(ctx context.Context, formats strfmt.Registry) error {
-
-	if o.ImportOptions != nil {
-
-		if err := o.ImportOptions.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "importOptions")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "importOptions")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-func (o *ImportServiceCreateImportBody) contextValidateSource(ctx context.Context, formats strfmt.Registry) error {
-
-	if o.Source != nil {
-
-		if err := o.Source.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("body" + "." + "source")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("body" + "." + "source")
-			}
-			return err
-		}
-	}
-
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (o *ImportServiceCreateImportBody) MarshalBinary() ([]byte, error) {
-	if o == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(o)
-}
-
-// UnmarshalBinary interface implementation
-func (o *ImportServiceCreateImportBody) UnmarshalBinary(b []byte) error {
-	var res ImportServiceCreateImportBody
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*o = res
 	return nil
 }

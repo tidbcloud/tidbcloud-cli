@@ -197,7 +197,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		}
 	}
 
-	body := importOp.ImportServiceCreateImportBody{}
+	body := &importModel.ImportServiceCreateImportBody{}
 	err = body.UnmarshalBinary([]byte(fmt.Sprintf(`{
 			"importOptions": {
 				"fileType": "%s"

@@ -61,12 +61,18 @@ ImportServiceCancelImportParams contains all the parameters to send to the API e
 */
 type ImportServiceCancelImportParams struct {
 
-	// ClusterID.
-	//
-	// Format: uint64
+	/* ClusterID.
+
+	   The ID of the cluster to import into.
+
+	   Format: uint64
+	*/
 	ClusterID string
 
-	// ID.
+	/* ID.
+
+	   The ID of the import.
+	*/
 	ID string
 
 	timeout    time.Duration

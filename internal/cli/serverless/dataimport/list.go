@@ -151,19 +151,19 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				for _, item := range importTasks {
 					var source, st, ft string
 					if item.CreationDetails != nil && item.CreationDetails.Source != nil {
-						st = string(item.CreationDetails.Source.Type)
-						if item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeLOCAL {
+						st = string(*item.CreationDetails.Source.Type)
+						if *item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeLOCAL {
 							source = item.CreationDetails.Source.Local.FileName
-						} else if item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeS3 {
-							source = item.CreationDetails.Source.S3.S3URI
-						} else if item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeGCS {
-							source = item.CreationDetails.Source.Gcs.GcsURI
-						} else if item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeAzBlob {
-							source = item.CreationDetails.Source.AzureBlob.BlobURI
+						} else if *item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeS3 {
+							source = *item.CreationDetails.Source.S3.URI
+						} else if *item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeGCS {
+							source = *item.CreationDetails.Source.Gcs.URI
+						} else if *item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeAZUREBLOB {
+							source = item.CreationDetails.Source.AzureBlob.URI
 						}
 					}
 					if item.CreationDetails != nil && item.CreationDetails.ImportOptions != nil {
-						ft = string(item.CreationDetails.ImportOptions.FileType)
+						ft = string(*item.CreationDetails.ImportOptions.FileType)
 					}
 					rows = append(rows, output.Row{
 						item.ID,

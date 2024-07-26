@@ -11,6 +11,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // V1beta1ImportOptions v1beta1 import options
@@ -18,11 +19,12 @@ import (
 // swagger:model v1beta1ImportOptions
 type V1beta1ImportOptions struct {
 
-	// csv format
+	// Optional. The CSV format.
 	CsvFormat *V1beta1CSVFormat `json:"csvFormat,omitempty"`
 
-	// Optional. The exported file type.
-	FileType V1beta1ImportOptionsFileType `json:"fileType,omitempty"`
+	// The exported file type.
+	// Required: true
+	FileType *V1beta1ImportOptionsFileType `json:"fileType"`
 }
 
 // Validate validates this v1beta1 import options
@@ -63,17 +65,24 @@ func (m *V1beta1ImportOptions) validateCsvFormat(formats strfmt.Registry) error 
 }
 
 func (m *V1beta1ImportOptions) validateFileType(formats strfmt.Registry) error {
-	if swag.IsZero(m.FileType) { // not required
-		return nil
+
+	if err := validate.Required("fileType", "body", m.FileType); err != nil {
+		return err
 	}
 
-	if err := m.FileType.Validate(formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("fileType")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
-			return ce.ValidateName("fileType")
-		}
+	if err := validate.Required("fileType", "body", m.FileType); err != nil {
 		return err
+	}
+
+	if m.FileType != nil {
+		if err := m.FileType.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("fileType")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("fileType")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -120,17 +129,16 @@ func (m *V1beta1ImportOptions) contextValidateCsvFormat(ctx context.Context, for
 
 func (m *V1beta1ImportOptions) contextValidateFileType(ctx context.Context, formats strfmt.Registry) error {
 
-	if swag.IsZero(m.FileType) { // not required
-		return nil
-	}
+	if m.FileType != nil {
 
-	if err := m.FileType.ContextValidate(ctx, formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("fileType")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
-			return ce.ValidateName("fileType")
+		if err := m.FileType.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("fileType")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("fileType")
+			}
+			return err
 		}
-		return err
 	}
 
 	return nil

@@ -20,14 +20,15 @@ import (
 // swagger:model v1beta1ListImportsResp
 type V1beta1ListImportsResp struct {
 
-	// imports
+	// The imports.
 	// Read Only: true
 	Imports []*V1beta1Import `json:"imports"`
 
-	// next page token
+	// The next page token.
+	// Read Only: true
 	NextPageToken string `json:"nextPageToken,omitempty"`
 
-	// total size
+	// The total size of the imports.
 	// Read Only: true
 	TotalSize int64 `json:"totalSize,omitempty"`
 }
@@ -80,6 +81,10 @@ func (m *V1beta1ListImportsResp) ContextValidate(ctx context.Context, formats st
 		res = append(res, err)
 	}
 
+	if err := m.contextValidateNextPageToken(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
 	if err := m.contextValidateTotalSize(ctx, formats); err != nil {
 		res = append(res, err)
 	}
@@ -114,6 +119,15 @@ func (m *V1beta1ListImportsResp) contextValidateImports(ctx context.Context, for
 			}
 		}
 
+	}
+
+	return nil
+}
+
+func (m *V1beta1ListImportsResp) contextValidateNextPageToken(ctx context.Context, formats strfmt.Registry) error {
+
+	if err := validate.ReadOnly(ctx, "nextPageToken", "body", string(m.NextPageToken)); err != nil {
+		return err
 	}
 
 	return nil

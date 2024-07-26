@@ -62,9 +62,12 @@ ImportServiceListImportsParams contains all the parameters to send to the API en
 */
 type ImportServiceListImportsParams struct {
 
-	// ClusterID.
-	//
-	// Format: uint64
+	/* ClusterID.
+
+	   The ID of the cluster to import into.
+
+	   Format: uint64
+	*/
 	ClusterID string
 
 	/* OrderBy.
@@ -73,12 +76,18 @@ type ImportServiceListImportsParams struct {
 	*/
 	OrderBy *string
 
-	// PageSize.
-	//
-	// Format: int32
+	/* PageSize.
+
+	   Optional. The page size, default is 10.
+
+	   Format: int32
+	*/
 	PageSize *int32
 
-	// PageToken.
+	/* PageToken.
+
+	   Optional. The page token, default is empty.
+	*/
 	PageToken *string
 
 	timeout    time.Duration

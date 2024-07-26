@@ -11,6 +11,7 @@ import (
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
+	"github.com/go-openapi/validate"
 )
 
 // V1beta1ImportSource v1beta1 import source
@@ -19,19 +20,20 @@ import (
 type V1beta1ImportSource struct {
 
 	// azure blob
-	AzureBlob *V1beta1ImportSourceAzBlobSource `json:"azureBlob,omitempty"`
+	AzureBlob *V1beta1AzureBlobSource `json:"azureBlob,omitempty"`
 
 	// gcs
-	Gcs *V1beta1ImportSourceGCSSource `json:"gcs,omitempty"`
+	Gcs *V1beta1GCSSource `json:"gcs,omitempty"`
 
 	// local
-	Local *V1beta1ImportSourceLocalSource `json:"local,omitempty"`
+	Local *V1beta1LocalSource `json:"local,omitempty"`
 
 	// s3
-	S3 *V1beta1ImportSourceS3Source `json:"s3,omitempty"`
+	S3 *V1beta1S3Source `json:"s3,omitempty"`
 
-	// Optional. The import source type.
-	Type V1beta1ImportSourceType `json:"type,omitempty"`
+	// The import source type.
+	// Required: true
+	Type *V1beta1ImportSourceType `json:"type"`
 }
 
 // Validate validates this v1beta1 import source
@@ -141,17 +143,24 @@ func (m *V1beta1ImportSource) validateS3(formats strfmt.Registry) error {
 }
 
 func (m *V1beta1ImportSource) validateType(formats strfmt.Registry) error {
-	if swag.IsZero(m.Type) { // not required
-		return nil
+
+	if err := validate.Required("type", "body", m.Type); err != nil {
+		return err
 	}
 
-	if err := m.Type.Validate(formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("type")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
-			return ce.ValidateName("type")
-		}
+	if err := validate.Required("type", "body", m.Type); err != nil {
 		return err
+	}
+
+	if m.Type != nil {
+		if err := m.Type.Validate(formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("type")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("type")
+			}
+			return err
+		}
 	}
 
 	return nil
@@ -273,17 +282,16 @@ func (m *V1beta1ImportSource) contextValidateS3(ctx context.Context, formats str
 
 func (m *V1beta1ImportSource) contextValidateType(ctx context.Context, formats strfmt.Registry) error {
 
-	if swag.IsZero(m.Type) { // not required
-		return nil
-	}
+	if m.Type != nil {
 
-	if err := m.Type.ContextValidate(ctx, formats); err != nil {
-		if ve, ok := err.(*errors.Validation); ok {
-			return ve.ValidateName("type")
-		} else if ce, ok := err.(*errors.CompositeError); ok {
-			return ce.ValidateName("type")
+		if err := m.Type.ContextValidate(ctx, formats); err != nil {
+			if ve, ok := err.(*errors.Validation); ok {
+				return ve.ValidateName("type")
+			} else if ce, ok := err.(*errors.CompositeError); ok {
+				return ce.ValidateName("type")
+			}
+			return err
 		}
-		return err
 	}
 
 	return nil

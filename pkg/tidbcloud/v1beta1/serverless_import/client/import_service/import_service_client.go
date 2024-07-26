@@ -72,7 +72,7 @@ type ClientService interface {
 }
 
 /*
-ImportServiceCancelImport import service cancel import API
+ImportServiceCancelImport cancels an import job
 */
 func (a *Client) ImportServiceCancelImport(params *ImportServiceCancelImportParams, opts ...ClientOption) (*ImportServiceCancelImportOK, error) {
 	// TODO: Validate the params before sending
@@ -109,7 +109,7 @@ func (a *Client) ImportServiceCancelImport(params *ImportServiceCancelImportPara
 }
 
 /*
-ImportServiceCancelUpload import service cancel upload API
+ImportServiceCancelUpload cancels the upload
 */
 func (a *Client) ImportServiceCancelUpload(params *ImportServiceCancelUploadParams, opts ...ClientOption) (*ImportServiceCancelUploadOK, error) {
 	// TODO: Validate the params before sending
@@ -146,7 +146,7 @@ func (a *Client) ImportServiceCancelUpload(params *ImportServiceCancelUploadPara
 }
 
 /*
-ImportServiceCompleteUpload import service complete upload API
+ImportServiceCompleteUpload completes the upload
 */
 func (a *Client) ImportServiceCompleteUpload(params *ImportServiceCompleteUploadParams, opts ...ClientOption) (*ImportServiceCompleteUploadOK, error) {
 	// TODO: Validate the params before sending
@@ -183,7 +183,7 @@ func (a *Client) ImportServiceCompleteUpload(params *ImportServiceCompleteUpload
 }
 
 /*
-ImportServiceCreateImport import service create import API
+ImportServiceCreateImport creates an import job
 */
 func (a *Client) ImportServiceCreateImport(params *ImportServiceCreateImportParams, opts ...ClientOption) (*ImportServiceCreateImportOK, error) {
 	// TODO: Validate the params before sending
@@ -220,7 +220,7 @@ func (a *Client) ImportServiceCreateImport(params *ImportServiceCreateImportPara
 }
 
 /*
-ImportServiceGetImport import service get import API
+ImportServiceGetImport gets an import detailed information
 */
 func (a *Client) ImportServiceGetImport(params *ImportServiceGetImportParams, opts ...ClientOption) (*ImportServiceGetImportOK, error) {
 	// TODO: Validate the params before sending
@@ -257,7 +257,7 @@ func (a *Client) ImportServiceGetImport(params *ImportServiceGetImportParams, op
 }
 
 /*
-ImportServiceListImports import service list imports API
+ImportServiceListImports provides a list of import jobs
 */
 func (a *Client) ImportServiceListImports(params *ImportServiceListImportsParams, opts ...ClientOption) (*ImportServiceListImportsOK, error) {
 	// TODO: Validate the params before sending

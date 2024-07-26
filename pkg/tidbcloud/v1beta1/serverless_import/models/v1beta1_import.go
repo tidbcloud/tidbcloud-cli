@@ -19,7 +19,7 @@ import (
 // swagger:model v1beta1Import
 type V1beta1Import struct {
 
-	// cluster Id
+	// The ID of the cluster to import into.
 	// Read Only: true
 	ClusterID string `json:"clusterId,omitempty"`
 
@@ -27,37 +27,37 @@ type V1beta1Import struct {
 	// Read Only: true
 	CompletePercent int64 `json:"completePercent,omitempty"`
 
-	// complete time
+	// The time the import was completed.
 	// Read Only: true
 	// Format: date-time
 	CompleteTime *strfmt.DateTime `json:"completeTime,omitempty"`
 
-	// create time
+	// The time the import was created.
 	// Read Only: true
 	// Format: date-time
 	CreateTime strfmt.DateTime `json:"createTime,omitempty"`
 
-	// created by
+	// The user who created the import.
 	// Read Only: true
 	CreatedBy string `json:"createdBy,omitempty"`
 
-	// creation details
+	// The creation details of the import.
 	// Read Only: true
 	CreationDetails *V1beta1CreationDetails `json:"creationDetails,omitempty"`
 
-	// id
+	// The ID of the import.
 	// Read Only: true
 	ID string `json:"id,omitempty"`
 
-	// message
+	// The output message of the import.
 	// Read Only: true
 	Message string `json:"message,omitempty"`
 
-	// name
+	// The name of the import.
 	// Read Only: true
 	Name string `json:"name,omitempty"`
 
-	// state
+	// The state of the import.
 	// Read Only: true
 	State V1beta1ImportState `json:"state,omitempty"`
 
