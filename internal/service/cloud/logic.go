@@ -702,7 +702,9 @@ func RetrieveServerlessBackups(ctx context.Context, cID string, pageSize int32, 
 }
 
 func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*importModel.V1beta1Import, error) {
-	params := importApi.NewImportServiceListImportsParams().WithClusterID(cID).WithContext(context)
+	orderBy := "create_time desc"
+	params := importApi.NewImportServiceListImportsParams().WithClusterID(cID).WithContext(context).WithOrderBy(&orderBy)
+
 	ps := int32(pageSize)
 	var items []*importModel.V1beta1Import
 	imports, err := d.ListImports(params.WithPageSize(&ps))

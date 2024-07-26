@@ -67,6 +67,12 @@ type ImportServiceListImportsParams struct {
 	// Format: uint64
 	ClusterID string
 
+	/* OrderBy.
+
+	   Optional. List imports order by, separated by comma, default is ascending. Example: "foo, bar desc". Supported field: create_time
+	*/
+	OrderBy *string
+
 	// PageSize.
 	//
 	// Format: int32
@@ -139,6 +145,17 @@ func (o *ImportServiceListImportsParams) SetClusterID(clusterID string) {
 	o.ClusterID = clusterID
 }
 
+// WithOrderBy adds the orderBy to the import service list imports params
+func (o *ImportServiceListImportsParams) WithOrderBy(orderBy *string) *ImportServiceListImportsParams {
+	o.SetOrderBy(orderBy)
+	return o
+}
+
+// SetOrderBy adds the orderBy to the import service list imports params
+func (o *ImportServiceListImportsParams) SetOrderBy(orderBy *string) {
+	o.OrderBy = orderBy
+}
+
 // WithPageSize adds the pageSize to the import service list imports params
 func (o *ImportServiceListImportsParams) WithPageSize(pageSize *int32) *ImportServiceListImportsParams {
 	o.SetPageSize(pageSize)
@@ -172,6 +189,23 @@ func (o *ImportServiceListImportsParams) WriteToRequest(r runtime.ClientRequest,
 	// path param clusterId
 	if err := r.SetPathParam("clusterId", o.ClusterID); err != nil {
 		return err
+	}
+
+	if o.OrderBy != nil {
+
+		// query param orderBy
+		var qrOrderBy string
+
+		if o.OrderBy != nil {
+			qrOrderBy = *o.OrderBy
+		}
+		qOrderBy := qrOrderBy
+		if qOrderBy != "" {
+
+			if err := r.SetQueryParam("orderBy", qOrderBy); err != nil {
+				return err
+			}
+		}
 	}
 
 	if o.PageSize != nil {
