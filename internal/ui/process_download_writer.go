@@ -16,15 +16,17 @@ package ui
 
 import (
 	"io"
-	"os"
+	"strings"
+	"tidbcloud-cli/internal/util"
 )
 
 type progressWriter struct {
 	id             int
 	downloadedSize int
-	file           *os.File
 	reader         io.Reader
 	onResult       func(int, error, JobStatus)
+	path           string
+	fileName       string
 }
 
 func (pw *progressWriter) Read(p []byte) (n int, err error) {
@@ -36,10 +38,32 @@ func (pw *progressWriter) Read(p []byte) (n int, err error) {
 }
 
 func (pw *progressWriter) Start() {
-	_, err := io.Copy(pw.file, pw)
+	var err error
+	defer func() {
+		if err == nil {
+			pw.onResult(pw.id, nil, Succeeded)
+			return
+		}
+		if strings.Contains(err.Error(), "file already exists") {
+			pw.onResult(pw.id, err, Skipped)
+		} else {
+			pw.onResult(pw.id, err, Failed)
+		}
+	}()
+	// create temp file
+	tempFile, err := util.CreateTempFile(pw.path, pw.fileName)
 	if err != nil {
-		pw.onResult(pw.id, err, Failed)
-	} else {
-		pw.onResult(pw.id, nil, Succeeded)
+		return
+	}
+	defer tempFile.Close()
+	_, err = io.Copy(tempFile, pw)
+	if err != nil {
+		_ = util.DeleteFile(pw.path, tempFile.Name())
+		return
+	}
+
+	err = util.RenameFile(pw.path, tempFile.Name(), pw.fileName)
+	if err != nil {
+		return
 	}
 }

@@ -427,12 +427,17 @@ func consume(h *internal.Helper, jobs <-chan *downloadJob, results chan *downloa
 			}
 			defer resp.Body.Close()
 
-			file, err := util.CreateFile(job.path, job.url.Name)
+			tmpFile, err := util.CreateTempFile(job.path, job.url.Name)
 			if err != nil {
 				return
 			}
-			defer file.Close()
-			_, err = io.Copy(file, resp.Body)
+			defer tmpFile.Close()
+			_, err = io.Copy(tmpFile, resp.Body)
+			if err != nil {
+				_ = util.DeleteFile(job.path, tmpFile.Name())
+				return
+			}
+			err = util.RenameFile(job.path, tmpFile.Name(), job.url.Name)
 		}()
 	}
 }
