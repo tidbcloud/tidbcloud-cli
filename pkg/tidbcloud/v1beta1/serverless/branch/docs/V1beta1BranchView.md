@@ -1,0 +1,13 @@
+# V1beta1BranchView
+
+## Enum
+
+
+* `BASIC` (value: `"BASIC"`)
+
+* `FULL` (value: `"FULL"`)
+
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

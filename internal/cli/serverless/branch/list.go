@@ -22,7 +22,7 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
-	branchModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -126,9 +126,9 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			// for terminal which can prompt, humanFormat is the default format.
 			// for other terminals, json format is the default format.
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				res := &branchModel.V1beta1ListBranchesResponse{
+				res := branch.V1beta1ListBranchesResponse{
 					Branches:  items,
-					TotalSize: total,
+					TotalSize: &total,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)
 				if err != nil {
@@ -147,11 +147,11 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				var rows []output.Row
 				for _, item := range items {
 					rows = append(rows, output.Row{
-						item.BranchID,
-						*item.DisplayName,
-						item.ParentID,
-						item.ParentDisplayName,
-						string(item.State),
+						*item.BranchId,
+						item.DisplayName,
+						*item.ParentId,
+						*item.ParentDisplayName,
+						string(*item.State),
 						item.CreateTime.String(),
 					})
 				}

@@ -22,7 +22,6 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
-	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -125,14 +124,12 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := branchApi.NewBranchServiceGetBranchParams().
-				WithClusterID(clusterID).WithBranchID(branchID).WithContext(ctx)
-			branch, err := d.GetBranch(params)
+			branch, err := d.GetBranch(ctx, clusterID, branchID)
 			if err != nil {
 				return errors.Trace(err)
 			}
 
-			v, err := json.MarshalIndent(branch.Payload, "", "  ")
+			v, err := json.MarshalIndent(branch, "", "  ")
 			if err != nil {
 				return errors.Trace(err)
 			}
