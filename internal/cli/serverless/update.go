@@ -26,6 +26,7 @@ import (
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -50,9 +51,10 @@ func (c UpdateOpts) NonInteractiveFlags() []string {
 type mutableField string
 
 const (
-	DisplayName mutableField = "displayName"
-	Annotations mutableField = "annotations"
-	Labels      mutableField = "labels"
+	DisplayName            mutableField = "displayName"
+	Annotations            mutableField = "annotations"
+	Labels                 mutableField = "labels"
+	PublicEndpointDisabled mutableField = "endpoints.public.disabled"
 )
 
 var mutableFields = []string{
@@ -94,8 +96,8 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				cmd.MarkFlagsMutuallyExclusive(flag.DisplayName, flag.ServerlessAnnotations, flag.ServerlessLabels)
-				cmd.MarkFlagsOneRequired(flag.DisplayName, flag.ServerlessAnnotations, flag.ServerlessLabels)
+				cmd.MarkFlagsMutuallyExclusive(flag.DisplayName, flag.ServerlessAnnotations, flag.ServerlessLabels, flag.PublicEndpointDisabled)
+				cmd.MarkFlagsOneRequired(flag.DisplayName, flag.ServerlessAnnotations, flag.ServerlessLabels, flag.PublicEndpointDisabled)
 			}
 			return nil
 		},
@@ -109,6 +111,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 			var clusterID string
 			var fieldName string
 			var displayName, labels, annotations string
+			var publicEndpointDisabled bool
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
@@ -168,6 +171,10 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
+				publicEndpointDisabled, err = cmd.Flags().GetBool(flag.PublicEndpointDisabled)
+				if err != nil {
+					return errors.Trace(err)
+				}
 			}
 
 			body := &serverlessApi.ServerlessServicePartialUpdateClusterBody{
@@ -193,8 +200,15 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				body.Cluster.Annotations = annotationsMap
 				fieldName = string(Annotations)
 			}
+			if cmd.Flags().Changed(flag.PublicEndpointDisabled) {
+				body.Cluster.Endpoints = &serverlessModel.TidbCloudOpenApiserverlessv1beta1ClusterEndpoints{
+					Public: &serverlessModel.EndpointsPublic{
+						Disabled: publicEndpointDisabled,
+					},
+				}
+				fieldName = string(PublicEndpointDisabled)
+			}
 			body.UpdateMask = &fieldName
-
 			params := serverlessApi.NewServerlessServicePartialUpdateClusterParams().WithClusterClusterID(clusterID).
 				WithBody(*body).WithContext(ctx)
 			_, err = d.PartialUpdateCluster(params)
@@ -210,6 +224,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 	updateCmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "The new displayName of the cluster to be updated.")
 	updateCmd.Flags().String(flag.ServerlessLabels, "", "The labels of the cluster to be added or updated.\nInteractive example: {\"label1\":\"value1\",\"label2\":\"value2\"}.\nNonInteractive example: \"{\\\"label1\\\":\\\"value1\\\",\\\"label2\\\":\\\"value2\\\"}\".")
 	updateCmd.Flags().String(flag.ServerlessAnnotations, "", "The annotations of the cluster to be added or updated.\nInteractive example: {\"annotation1\":\"value1\",\"annotation2\":\"value2\"}.\nNonInteractive example: \"{\\\"annotation1\\\":\\\"value1\\\",\\\"annotation2\\\":\\\"value2\\\"}\".")
+	updateCmd.Flags().Bool(flag.PublicEndpointDisabled, false, "Disable the public endpoint of the cluster.")
 	return updateCmd
 }
 
