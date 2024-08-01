@@ -61,6 +61,7 @@ var mutableFields = []string{
 	string(DisplayName),
 	string(Labels),
 	string(Annotations),
+	string(PublicEndpointDisabled),
 }
 
 func UpdateCmd(h *internal.Helper) *cobra.Command {
@@ -135,22 +136,30 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 
-				// variables for input
-				inputModel, err := GetUpdateClusterInput()
-				if err != nil {
-					return err
-				}
-				fieldValue := inputModel.(ui.TextInputModel).Inputs[0].Value()
+				if fieldName == string(PublicEndpointDisabled) {
+					publicEndpointDisabled, err = cloud.GetSelectedBool("Disable the public endpoint of the cluster?")
+					if err != nil {
+						return err
+					}
+				} else {
+					// variables for input
+					inputModel, err := GetUpdateClusterInput()
+					if err != nil {
+						return err
+					}
 
-				switch fieldName {
-				case string(DisplayName):
-					displayName = fieldValue
-				case string(Annotations):
-					annotations = fieldValue
-				case string(Labels):
-					labels = fieldValue
-				default:
-					return errors.Errorf("invalid field %s", fieldName)
+					fieldValue := inputModel.(ui.TextInputModel).Inputs[0].Value()
+
+					switch fieldName {
+					case string(DisplayName):
+						displayName = fieldValue
+					case string(Annotations):
+						annotations = fieldValue
+					case string(Labels):
+						labels = fieldValue
+					default:
+						return errors.Errorf("invalid field %s", fieldName)
+					}
 				}
 
 			} else {
@@ -200,7 +209,8 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				body.Cluster.Annotations = annotationsMap
 				fieldName = string(Annotations)
 			}
-			if cmd.Flags().Changed(flag.PublicEndpointDisabled) {
+			// if filedName is PublicEndpointDisabled, means this field is changed in Interactive mode
+			if cmd.Flags().Changed(flag.PublicEndpointDisabled) || fieldName == string(PublicEndpointDisabled) {
 				body.Cluster.Endpoints = &serverlessModel.TidbCloudOpenApiserverlessv1beta1ClusterEndpoints{
 					Public: &serverlessModel.EndpointsPublic{
 						Disabled: publicEndpointDisabled,
