@@ -247,7 +247,6 @@ func GetSelectedBool(notice string) (bool, error) {
 		return false, errors.Trace(err)
 	}
 
-	model.EnableFilter()
 	p := tea.NewProgram(model)
 	bModel, err := p.Run()
 	if err != nil {

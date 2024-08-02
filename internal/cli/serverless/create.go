@@ -62,6 +62,7 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 		flag.ProjectID,
 		flag.SpendingLimitMonthly,
 		flag.Encryption,
+		flag.PublicEndpointDisabled,
 	}
 }
 

@@ -45,6 +45,7 @@ func (c UpdateOpts) NonInteractiveFlags() []string {
 		flag.DisplayName,
 		flag.ServerlessAnnotations,
 		flag.ServerlessLabels,
+		flag.PublicEndpointDisabled,
 	}
 }
 
@@ -57,11 +58,15 @@ const (
 	PublicEndpointDisabled mutableField = "endpoints.public.disabled"
 )
 
+const (
+	PublicEndpointDisabledHumanReadable = "disable public endpoint"
+)
+
 var mutableFields = []string{
 	string(DisplayName),
 	string(Labels),
 	string(Annotations),
-	string(PublicEndpointDisabled),
+	string(PublicEndpointDisabledHumanReadable),
 }
 
 func UpdateCmd(h *internal.Helper) *cobra.Command {
@@ -136,7 +141,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 
-				if fieldName == string(PublicEndpointDisabled) {
+				if fieldName == string(PublicEndpointDisabledHumanReadable) {
 					publicEndpointDisabled, err = cloud.GetSelectedBool("Disable the public endpoint of the cluster?")
 					if err != nil {
 						return err
@@ -209,8 +214,8 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				body.Cluster.Annotations = annotationsMap
 				fieldName = string(Annotations)
 			}
-			// if filedName is PublicEndpointDisabled, means this field is changed in Interactive mode
-			if cmd.Flags().Changed(flag.PublicEndpointDisabled) || fieldName == string(PublicEndpointDisabled) {
+			// if fieldName is PublicEndpointDisabled, means this field is changed in Interactive mode
+			if cmd.Flags().Changed(flag.PublicEndpointDisabled) || fieldName == string(PublicEndpointDisabledHumanReadable) {
 				body.Cluster.Endpoints = &serverlessModel.TidbCloudOpenApiserverlessv1beta1ClusterEndpoints{
 					Public: &serverlessModel.EndpointsPublic{
 						Disabled: publicEndpointDisabled,
