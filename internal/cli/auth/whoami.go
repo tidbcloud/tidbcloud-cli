@@ -96,7 +96,7 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					fmt.Printf("Error parsing JSON: %v\n", err)
 					return err
-    			}
+				}
 
 				columns := []output.Column{
 					"email",
