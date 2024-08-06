@@ -22,7 +22,6 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/config/store"
 	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/output"
 
 	"github.com/fatih/color"
 	"github.com/go-resty/resty/v2"
@@ -78,46 +77,20 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 				return errors.Errorf("Failed to get user info, code: %s", resp.Status())
 			}
 
-			format, err := cmd.Flags().GetString(flag.Output)
+			var userInfo UserInfo
+			err = json.Unmarshal(resp.Body(), &userInfo)
 			if err != nil {
-				return errors.Trace(err)
+				fmt.Printf("Error parsing JSON: %v\n", err)
+				return err
 			}
 
-			// for terminal which can prompt, humanFormat is the default format.
-			// for other terminals, json format is the default format.
-			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				err := output.PrintJson(h.IOStreams.Out, resp.String())
-				if err != nil {
-					return errors.Trace(err)
-				}
-			} else if format == output.HumanFormat {
-				var userInfo UserInfo
-				err = json.Unmarshal(resp.Body(), &userInfo)
-				if err != nil {
-					fmt.Printf("Error parsing JSON: %v\n", err)
-					return err
-				}
+			fmt.Fprintln(h.IOStreams.Out, "Email:", userInfo.Email)
+			fmt.Fprintln(h.IOStreams.Out, "Username:", userInfo.Username)
 
-				columns := []output.Column{
-					"email",
-					"username",
-				}
-
-				var rows []output.Row
-				rows = append(rows, output.Row{
-					userInfo.Email,
-					userInfo.Username,
-				})
-				err = output.PrintHumanTable(h.IOStreams.Out, columns, rows)
-				if err != nil {
-					return errors.Trace(err)
-				}
-			}
 			return nil
 		},
 	}
 
-	whoamiCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, flag.OutputHelp)
 	return whoamiCmd
 }
 
