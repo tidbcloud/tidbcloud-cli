@@ -44,7 +44,7 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 		Short: "Display information about the current user",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  To display information about the current user::
-		  $ %[1]s auth whoami`, config.CliName),
+  $ %[1]s auth whoami`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			debug, err := cmd.Flags().GetBool(flag.Debug)
 			if err != nil {
