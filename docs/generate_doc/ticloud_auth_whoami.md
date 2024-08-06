@@ -9,8 +9,8 @@ ticloud auth whoami [flags]
 ### Examples
 
 ```
-  To display information about the current user::
-		  $ ticloud auth whoami
+  To display information about the current user:
+  $ ticloud auth whoami
 ```
 
 ### Options
