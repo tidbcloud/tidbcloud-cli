@@ -16,8 +16,7 @@ ticloud auth whoami [flags]
 ### Options
 
 ```
-  -h, --help            help for whoami
-  -o, --output string   Output format, one of ["human" "json"]. For the complete result, please use json format. (default "human")
+  -h, --help   help for whoami
 ```
 
 ### Options inherited from parent commands
