@@ -22,6 +22,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/config/store"
 	"tidbcloud-cli/internal/flag"
+	ver "tidbcloud-cli/internal/version"
 
 	"github.com/fatih/color"
 	"github.com/go-resty/resty/v2"
@@ -67,6 +68,7 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 			resp, err := opts.client.R().
 				SetContext(ctx).
 				SetHeader("Authorization", "Bearer "+token).
+				SetHeader("user-agent", fmt.Sprintf("%s/%s", config.CliName, ver.Version)).
 				Get(fmt.Sprintf("%s%s", config.GetOAuthEndpoint(), userInfoPath))
 
 			if err != nil {
