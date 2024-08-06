@@ -82,7 +82,6 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 			var userInfo UserInfo
 			err = json.Unmarshal(resp.Body(), &userInfo)
 			if err != nil {
-				fmt.Printf("Error parsing JSON: %v\n", err)
 				return err
 			}
 
