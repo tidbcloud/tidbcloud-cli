@@ -22,15 +22,16 @@ ticloud serverless update [flags]
 ### Options
 
 ```
-      --annotations string    The annotations of the cluster to be added or updated.
-                              Interactive example: {"annotation1":"value1","annotation2":"value2"}.
-                              NonInteractive example: "{\"annotation1\":\"value1\",\"annotation2\":\"value2\"}".
-  -c, --cluster-id string     The ID of the cluster to be updated.
-  -n, --display-name string   The new displayName of the cluster to be updated.
-  -h, --help                  help for update
-      --labels string         The labels of the cluster to be added or updated.
-                              Interactive example: {"label1":"value1","label2":"value2"}.
-                              NonInteractive example: "{\"label1\":\"value1\",\"label2\":\"value2\"}".
+      --annotations string        The annotations of the cluster to be added or updated.
+                                  Interactive example: {"annotation1":"value1","annotation2":"value2"}.
+                                  NonInteractive example: "{\"annotation1\":\"value1\",\"annotation2\":\"value2\"}".
+  -c, --cluster-id string         The ID of the cluster to be updated.
+      --disable-public-endpoint   Disable the public endpoint of the cluster.
+  -n, --display-name string       The new displayName of the cluster to be updated.
+  -h, --help                      help for update
+      --labels string             The labels of the cluster to be added or updated.
+                                  Interactive example: {"label1":"value1","label2":"value2"}.
+                                  NonInteractive example: "{\"label1\":\"value1\",\"label2\":\"value2\"}".
 ```
 
 ### Options inherited from parent commands
