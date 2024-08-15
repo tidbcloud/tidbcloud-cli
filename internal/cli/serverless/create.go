@@ -62,6 +62,7 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 		flag.ProjectID,
 		flag.SpendingLimitMonthly,
 		flag.Encryption,
+		flag.PublicEndpointDisabled,
 	}
 }
 
@@ -124,6 +125,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			var projectID string
 			var spendingLimitMonthly int32
 			var encryption bool
+			var publicEndpointDisabled bool
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
@@ -243,6 +245,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
+				publicEndpointDisabled, err = cmd.Flags().GetBool(flag.PublicEndpointDisabled)
+				if err != nil {
+					return errors.Trace(err)
+				}
 				// check clusterName
 				err = checkClusterName(clusterName)
 				if err != nil {
@@ -273,6 +279,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
+			if publicEndpointDisabled {
+				v1Cluster.Endpoints = &serverlessModel.TidbCloudOpenApiserverlessv1beta1ClusterEndpoints{
+					Public: &serverlessModel.EndpointsPublic{
+						Disabled: publicEndpointDisabled,
+					},
+				}
+			}
+
 			if h.IOStreams.CanPrompt {
 				err := CreateAndSpinnerWait(ctx, d, v1Cluster, h)
 				if err != nil {
@@ -294,6 +308,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project, in which the cluster will be created. (default: \"default project\")")
 	createCmd.Flags().Int32(flag.SpendingLimitMonthly, 0, "Maximum monthly spending limit in USD cents. (optional)")
 	createCmd.Flags().Bool(flag.Encryption, false, "Whether Enhanced Encryption at Rest is enabled. (optional)")
+	createCmd.Flags().Bool(flag.PublicEndpointDisabled, false, "Whether the public endpoint is disabled. (optional)")
 	return createCmd
 }
 

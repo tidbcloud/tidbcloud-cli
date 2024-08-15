@@ -21,4 +21,5 @@ Login and logout via TiDB Cloud API
 * [ticloud](ticloud.md)	 - CLI tool to manage TiDB Cloud
 * [ticloud auth login](ticloud_auth_login.md)	 - Authenticate with TiDB Cloud
 * [ticloud auth logout](ticloud_auth_logout.md)	 - Log out of TiDB Cloud
+* [ticloud auth whoami](ticloud_auth_whoami.md)	 - Display information about the current user
 

@@ -235,6 +235,32 @@ func GetSelectedField(mutableFields []string) (string, error) {
 	return field.(string), nil
 }
 
+func GetSelectedBool(notice string) (bool, error) {
+	items := []interface{}{
+		"true",
+		"false",
+	}
+
+	model, err := ui.InitialSelectModel(items, notice)
+	if err != nil {
+		return false, errors.Trace(err)
+	}
+
+	p := tea.NewProgram(model)
+	bModel, err := p.Run()
+	if err != nil {
+		return false, errors.Trace(err)
+	}
+	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
+		return false, util.InterruptError
+	}
+	value := bModel.(ui.SelectModel).GetSelectedItem()
+	if value == nil {
+		return false, errors.New("no value selected")
+	}
+	return value.(string) == "true", nil
+}
+
 func GetSpendingLimitField(mutableFields []string) (string, error) {
 	var items = make([]interface{}, 0, len(mutableFields))
 	for _, item := range mutableFields {
