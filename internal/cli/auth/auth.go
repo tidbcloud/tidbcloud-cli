@@ -28,6 +28,7 @@ const (
 	accessPath   = "/v1/token"
 	revokePath   = "/v1/revoke"
 	userInfoPath = "/v1/userinfo"
+	orgPath      = "/v1beta1/org"
 
 	errSlowDown = "slow_down"
 	errPending  = "authorization_pending"

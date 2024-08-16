@@ -65,6 +65,7 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
+			// get user name and email
 			resp, err := opts.client.R().
 				SetContext(ctx).
 				SetHeader("Authorization", "Bearer "+token).
@@ -84,9 +85,30 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			// get org name
+			resp, err = opts.client.R().
+				SetContext(ctx).
+				SetHeader("Authorization", "Bearer "+token).
+				SetHeader("user-agent", fmt.Sprintf("%s/%s", config.CliName, ver.Version)).
+				Get(fmt.Sprintf("%s%s", config.GetIAMEndpoint(), "/v1beta1/org"))
+
+			if err != nil {
+				return err
+			}
+
+			if !resp.IsSuccess() {
+				return errors.Errorf("Failed to get org info, code: %s", resp.Status())
+			}
+
+			var orgInfo OrgInfo
+			err = json.Unmarshal(resp.Body(), &orgInfo)
+			if err != nil {
+				return err
+			}
 
 			fmt.Fprintln(h.IOStreams.Out, "Email:", userInfo.Email)
 			fmt.Fprintln(h.IOStreams.Out, "Username:", userInfo.Username)
+			fmt.Fprintln(h.IOStreams.Out, "Orgname:", orgInfo.Orgname)
 
 			return nil
 		},
@@ -98,4 +120,8 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 type UserInfo struct {
 	Email    string `json:"email"`
 	Username string `json:"username"`
+}
+
+type OrgInfo struct {
+	Orgname string `json:"orgname"`
 }
