@@ -15,8 +15,10 @@
 package auth
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"sync"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -35,6 +37,8 @@ import (
 type WhoamiOpts struct {
 	client *resty.Client
 }
+
+var wg sync.WaitGroup
 
 func WhoamiCmd(h *internal.Helper) *cobra.Command {
 	opts := WhoamiOpts{
@@ -65,28 +69,41 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			resp, err := opts.client.R().
-				SetContext(ctx).
-				SetHeader("Authorization", "Bearer "+token).
-				SetHeader("user-agent", fmt.Sprintf("%s/%s", config.CliName, ver.Version)).
-				Get(fmt.Sprintf("%s%s", config.GetOAuthEndpoint(), userInfoPath))
+			results := make(chan Result, 2)
+			wg.Add(2)
 
-			if err != nil {
-				return err
-			}
+			go func() {
+				defer wg.Done()
+				results <- getUserInfo(ctx, opts.client, token)
+			}()
 
-			if !resp.IsSuccess() {
-				return errors.Errorf("Failed to get user info, code: %s", resp.Status())
-			}
+			go func() {
+				defer wg.Done()
+				results <- getOrgInfo(ctx, opts.client, token)
+			}()
 
-			var userInfo UserInfo
-			err = json.Unmarshal(resp.Body(), &userInfo)
-			if err != nil {
-				return err
+			wg.Wait()
+			close(results)
+
+			var userInfo *UserInfo
+			var orgInfo *OrgInfo
+
+			for result := range results {
+				if result.Error != nil {
+					return result.Error
+				}
+
+				switch result.API {
+				case userInfoPath:
+					userInfo = result.Data.(*UserInfo)
+				case orgPath:
+					orgInfo = result.Data.(*OrgInfo)
+				}
 			}
 
 			fmt.Fprintln(h.IOStreams.Out, "Email:", userInfo.Email)
-			fmt.Fprintln(h.IOStreams.Out, "Username:", userInfo.Username)
+			fmt.Fprintln(h.IOStreams.Out, "User Name:", userInfo.Username)
+			fmt.Fprintln(h.IOStreams.Out, "Org Name:", orgInfo.Orgname)
 
 			return nil
 		},
@@ -98,4 +115,64 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 type UserInfo struct {
 	Email    string `json:"email"`
 	Username string `json:"username"`
+}
+
+type OrgInfo struct {
+	Orgname string `json:"orgname"`
+}
+
+type Result struct {
+	API   string
+	Data  interface{}
+	Error error
+}
+
+func getUserInfo(ctx context.Context, client *resty.Client, token string) Result {
+	API := userInfoPath
+	resp, err := client.R().
+		SetContext(ctx).
+		SetHeader("Authorization", "Bearer "+token).
+		SetHeader("user-agent", fmt.Sprintf("%s/%s", config.CliName, ver.Version)).
+		Get(fmt.Sprintf("%s%s", config.GetOAuthEndpoint(), userInfoPath))
+
+	if err != nil {
+		return Result{API, nil, err}
+	}
+
+	if !resp.IsSuccess() {
+		return Result{API, nil, err}
+	}
+
+	var userInfo UserInfo
+	err = json.Unmarshal(resp.Body(), &userInfo)
+	if err != nil {
+		return Result{API, nil, err}
+	}
+
+	return Result{API, &userInfo, nil}
+}
+
+func getOrgInfo(ctx context.Context, client *resty.Client, token string) Result {
+	API := orgPath
+	resp, err := client.R().
+		SetContext(ctx).
+		SetHeader("Authorization", "Bearer "+token).
+		SetHeader("user-agent", fmt.Sprintf("%s/%s", config.CliName, ver.Version)).
+		Get(fmt.Sprintf("%s%s", config.GetIAMEndpoint(), orgPath))
+
+	if err != nil {
+		return Result{API, nil, err}
+	}
+
+	if !resp.IsSuccess() {
+		return Result{API, nil, err}
+	}
+
+	var orgInfo OrgInfo
+	err = json.Unmarshal(resp.Body(), &orgInfo)
+	if err != nil {
+		return Result{API, nil, err}
+	}
+
+	return Result{API, &orgInfo, nil}
 }
