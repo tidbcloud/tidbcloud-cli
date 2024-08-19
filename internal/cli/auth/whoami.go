@@ -77,7 +77,7 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 			})
 
 			go getUserInfoAsync(ctx, opts.client, token, chUserInfo)
-			go getOrgInfoAync(ctx, opts.client, token, chOrgInfo)
+			go getOrgInfoAsync(ctx, opts.client, token, chOrgInfo)
 
 			var userInfo *UserInfo
 			var orgInfo *OrgInfo
