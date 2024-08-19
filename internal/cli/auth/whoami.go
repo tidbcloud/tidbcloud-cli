@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sync"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -36,6 +37,8 @@ import (
 type WhoamiOpts struct {
 	client *resty.Client
 }
+
+var wg sync.WaitGroup
 
 func WhoamiCmd(h *internal.Helper) *cobra.Command {
 	opts := WhoamiOpts{
@@ -66,34 +69,37 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			chUserInfo := make(chan struct {
-				userInfo *UserInfo
-				err      error
-			})
+			results := make(chan Result, 2)
+			wg.Add(2)
 
-			chOrgInfo := make(chan struct {
-				orgInfo *OrgInfo
-				err     error
-			})
+			go func() {
+				defer wg.Done()
+				results <- getUserInfo(ctx, opts.client, token)
+			}()
 
-			go getUserInfoAsync(ctx, opts.client, token, chUserInfo)
-			go getOrgInfoAsync(ctx, opts.client, token, chOrgInfo)
+			go func() {
+				defer wg.Done()
+				results <- getOrgInfo(ctx, opts.client, token)
+			}()
+
+			go func() {
+				wg.Wait()
+				close(results)
+			}()
 
 			var userInfo *UserInfo
 			var orgInfo *OrgInfo
 
-			for i := 0; i < 2; i++ {
-				select {
-				case result1 := <-chUserInfo:
-					if result1.err != nil {
-						return result1.err
-					}
-					userInfo = result1.userInfo
-				case result2 := <-chOrgInfo:
-					if result2.err != nil {
-						return result2.err
-					}
-					orgInfo = result2.orgInfo
+			for result := range results {
+				if result.Error != nil {
+					return result.Error
+				}
+
+				switch result.API {
+				case userInfoPath:
+					userInfo = result.Data.(*UserInfo)
+				case orgPath:
+					orgInfo = result.Data.(*OrgInfo)
 				}
 			}
 
@@ -117,10 +123,14 @@ type OrgInfo struct {
 	Orgname string `json:"orgname"`
 }
 
-func getUserInfoAsync(ctx context.Context, client *resty.Client, token string, ch chan struct {
-	userInfo *UserInfo
-	err      error
-}) {
+type Result struct {
+	API   string
+	Data  interface{}
+	Error error
+}
+
+func getUserInfo(ctx context.Context, client *resty.Client, token string) Result {
+	API := userInfoPath
 	resp, err := client.R().
 		SetContext(ctx).
 		SetHeader("Authorization", "Bearer "+token).
@@ -128,75 +138,43 @@ func getUserInfoAsync(ctx context.Context, client *resty.Client, token string, c
 		Get(fmt.Sprintf("%s%s", config.GetOAuthEndpoint(), userInfoPath))
 
 	if err != nil {
-		ch <- struct {
-			userInfo *UserInfo
-			err      error
-		}{nil, err}
-		return
+		return Result{API, nil, err}
 	}
 
 	if !resp.IsSuccess() {
-		ch <- struct {
-			userInfo *UserInfo
-			err      error
-		}{nil, errors.Errorf("Failed to get user info, code: %s", resp.Status())}
-		return
+		return Result{API, nil, err}
 	}
 
 	var userInfo UserInfo
 	err = json.Unmarshal(resp.Body(), &userInfo)
 	if err != nil {
-		ch <- struct {
-			userInfo *UserInfo
-			err      error
-		}{nil, err}
-		return
+		return Result{API, nil, err}
 	}
 
-	ch <- struct {
-		userInfo *UserInfo
-		err      error
-	}{&userInfo, nil}
+	return Result{API, &userInfo, nil}
 }
 
-func getOrgInfoAsync(ctx context.Context, client *resty.Client, token string, ch chan struct {
-	orgInfo *OrgInfo
-	err     error
-}) {
+func getOrgInfo(ctx context.Context, client *resty.Client, token string) Result {
+	API := orgPath
 	resp, err := client.R().
 		SetContext(ctx).
 		SetHeader("Authorization", "Bearer "+token).
 		SetHeader("user-agent", fmt.Sprintf("%s/%s", config.CliName, ver.Version)).
-		Get(fmt.Sprintf("%s%s", config.GetIAMEndpoint(), "/v1beta1/org"))
+		Get(fmt.Sprintf("%s%s", config.GetIAMEndpoint(), orgPath))
 
 	if err != nil {
-		ch <- struct {
-			orgInfo *OrgInfo
-			err     error
-		}{nil, err}
-		return
+		return Result{API, nil, err}
 	}
 
 	if !resp.IsSuccess() {
-		ch <- struct {
-			orgInfo *OrgInfo
-			err     error
-		}{nil, errors.Errorf("Failed to get org info, code: %s", resp.Status())}
-		return
+		return Result{API, nil, err}
 	}
 
 	var orgInfo OrgInfo
 	err = json.Unmarshal(resp.Body(), &orgInfo)
 	if err != nil {
-		ch <- struct {
-			orgInfo *OrgInfo
-			err     error
-		}{nil, err}
-		return
+		return Result{API, nil, err}
 	}
 
-	ch <- struct {
-		orgInfo *OrgInfo
-		err     error
-	}{&orgInfo, nil}
+	return Result{API, &orgInfo, nil}
 }
