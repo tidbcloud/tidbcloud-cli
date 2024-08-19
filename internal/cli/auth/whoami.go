@@ -15,6 +15,7 @@
 package auth
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -65,50 +66,40 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			// get user name and email
-			resp, err := opts.client.R().
-				SetContext(ctx).
-				SetHeader("Authorization", "Bearer "+token).
-				SetHeader("user-agent", fmt.Sprintf("%s/%s", config.CliName, ver.Version)).
-				Get(fmt.Sprintf("%s%s", config.GetOAuthEndpoint(), userInfoPath))
+			chUserInfo := make(chan struct {
+				userInfo *UserInfo
+				err      error
+			})
 
-			if err != nil {
-				return err
-			}
+			chOrgInfo := make(chan struct {
+				orgInfo *OrgInfo
+				err     error
+			})
 
-			if !resp.IsSuccess() {
-				return errors.Errorf("Failed to get user info, code: %s", resp.Status())
-			}
+			go getUserInfoAsync(ctx, opts.client, token, chUserInfo)
+			go getOrgInfoAync(ctx, opts.client, token, chOrgInfo)
 
-			var userInfo UserInfo
-			err = json.Unmarshal(resp.Body(), &userInfo)
-			if err != nil {
-				return err
-			}
-			// get org name
-			resp, err = opts.client.R().
-				SetContext(ctx).
-				SetHeader("Authorization", "Bearer "+token).
-				SetHeader("user-agent", fmt.Sprintf("%s/%s", config.CliName, ver.Version)).
-				Get(fmt.Sprintf("%s%s", config.GetIAMEndpoint(), "/v1beta1/org"))
+			var userInfo *UserInfo
+			var orgInfo *OrgInfo
 
-			if err != nil {
-				return err
-			}
-
-			if !resp.IsSuccess() {
-				return errors.Errorf("Failed to get org info, code: %s", resp.Status())
-			}
-
-			var orgInfo OrgInfo
-			err = json.Unmarshal(resp.Body(), &orgInfo)
-			if err != nil {
-				return err
+			for i := 0; i < 2; i++ {
+				select {
+				case result1 := <-chUserInfo:
+					if result1.err != nil {
+						return result1.err
+					}
+					userInfo = result1.userInfo
+				case result2 := <-chOrgInfo:
+					if result2.err != nil {
+						return result2.err
+					}
+					orgInfo = result2.orgInfo
+				}
 			}
 
 			fmt.Fprintln(h.IOStreams.Out, "Email:", userInfo.Email)
-			fmt.Fprintln(h.IOStreams.Out, "Username:", userInfo.Username)
-			fmt.Fprintln(h.IOStreams.Out, "Orgname:", orgInfo.Orgname)
+			fmt.Fprintln(h.IOStreams.Out, "User Name:", userInfo.Username)
+			fmt.Fprintln(h.IOStreams.Out, "Org Name:", orgInfo.Orgname)
 
 			return nil
 		},
@@ -124,4 +115,88 @@ type UserInfo struct {
 
 type OrgInfo struct {
 	Orgname string `json:"orgname"`
+}
+
+func getUserInfoAsync(ctx context.Context, client *resty.Client, token string, ch chan struct {
+	userInfo *UserInfo
+	err      error
+}) {
+	resp, err := client.R().
+		SetContext(ctx).
+		SetHeader("Authorization", "Bearer "+token).
+		SetHeader("user-agent", fmt.Sprintf("%s/%s", config.CliName, ver.Version)).
+		Get(fmt.Sprintf("%s%s", config.GetOAuthEndpoint(), userInfoPath))
+
+	if err != nil {
+		ch <- struct {
+			userInfo *UserInfo
+			err      error
+		}{nil, err}
+		return
+	}
+
+	if !resp.IsSuccess() {
+		ch <- struct {
+			userInfo *UserInfo
+			err      error
+		}{nil, errors.Errorf("Failed to get user info, code: %s", resp.Status())}
+		return
+	}
+
+	var userInfo UserInfo
+	err = json.Unmarshal(resp.Body(), &userInfo)
+	if err != nil {
+		ch <- struct {
+			userInfo *UserInfo
+			err      error
+		}{nil, err}
+		return
+	}
+
+	ch <- struct {
+		userInfo *UserInfo
+		err      error
+	}{&userInfo, nil}
+}
+
+func getOrgInfoAsync(ctx context.Context, client *resty.Client, token string, ch chan struct {
+	orgInfo *OrgInfo
+	err     error
+}) {
+	resp, err := client.R().
+		SetContext(ctx).
+		SetHeader("Authorization", "Bearer "+token).
+		SetHeader("user-agent", fmt.Sprintf("%s/%s", config.CliName, ver.Version)).
+		Get(fmt.Sprintf("%s%s", config.GetIAMEndpoint(), "/v1beta1/org"))
+
+	if err != nil {
+		ch <- struct {
+			orgInfo *OrgInfo
+			err     error
+		}{nil, err}
+		return
+	}
+
+	if !resp.IsSuccess() {
+		ch <- struct {
+			orgInfo *OrgInfo
+			err     error
+		}{nil, errors.Errorf("Failed to get org info, code: %s", resp.Status())}
+		return
+	}
+
+	var orgInfo OrgInfo
+	err = json.Unmarshal(resp.Body(), &orgInfo)
+	if err != nil {
+		ch <- struct {
+			orgInfo *OrgInfo
+			err     error
+		}{nil, err}
+		return
+	}
+
+	ch <- struct {
+		orgInfo *OrgInfo
+		err     error
+	}{&orgInfo, nil}
 }
