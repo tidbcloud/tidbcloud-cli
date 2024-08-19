@@ -82,10 +82,8 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 				results <- getOrgInfo(ctx, opts.client, token)
 			}()
 
-			go func() {
-				wg.Wait()
-				close(results)
-			}()
+			wg.Wait()
+			close(results)
 
 			var userInfo *UserInfo
 			var orgInfo *OrgInfo
