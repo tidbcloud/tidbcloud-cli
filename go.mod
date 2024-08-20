@@ -1,7 +1,6 @@
 module tidbcloud-cli
 
 go 1.22
-toolchain go1.22.4
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6
