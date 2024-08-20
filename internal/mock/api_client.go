@@ -7,11 +7,13 @@ import (
 	account "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
 	backup_restore_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 
-	export_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
+	context "context"
 
 	import_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 
 	mock "github.com/stretchr/testify/mock"
+
+	openapi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export"
 
 	operations "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
 
@@ -23,36 +25,29 @@ type TiDBCloudClient struct {
 	mock.Mock
 }
 
-// CancelExport provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) CancelExport(params *export_service.ExportServiceCancelExportParams, opts ...export_service.ClientOption) (*export_service.ExportServiceCancelExportOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// CancelExport provides a mock function with given fields: ctx, clusterId, exportId
+func (_m *TiDBCloudClient) CancelExport(ctx context.Context, clusterId string, exportId string) (*openapi.Export, error) {
+	ret := _m.Called(ctx, clusterId, exportId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CancelExport")
 	}
 
-	var r0 *export_service.ExportServiceCancelExportOK
+	var r0 *openapi.Export
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceCancelExportParams, ...export_service.ClientOption) (*export_service.ExportServiceCancelExportOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*openapi.Export, error)); ok {
+		return rf(ctx, clusterId, exportId)
 	}
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceCancelExportParams, ...export_service.ClientOption) *export_service.ExportServiceCancelExportOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *openapi.Export); ok {
+		r0 = rf(ctx, clusterId, exportId)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*export_service.ExportServiceCancelExportOK)
+			r0 = ret.Get(0).(*openapi.Export)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*export_service.ExportServiceCancelExportParams, ...export_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, exportId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -282,36 +277,29 @@ func (_m *TiDBCloudClient) CreateCluster(params *serverless_service.ServerlessSe
 	return r0, r1
 }
 
-// CreateExport provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) CreateExport(params *export_service.ExportServiceCreateExportParams, opts ...export_service.ClientOption) (*export_service.ExportServiceCreateExportOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// CreateExport provides a mock function with given fields: ctx, clusterId, body
+func (_m *TiDBCloudClient) CreateExport(ctx context.Context, clusterId string, body *openapi.ExportServiceCreateExportBody) (*openapi.Export, error) {
+	ret := _m.Called(ctx, clusterId, body)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateExport")
 	}
 
-	var r0 *export_service.ExportServiceCreateExportOK
+	var r0 *openapi.Export
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceCreateExportParams, ...export_service.ClientOption) (*export_service.ExportServiceCreateExportOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, *openapi.ExportServiceCreateExportBody) (*openapi.Export, error)); ok {
+		return rf(ctx, clusterId, body)
 	}
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceCreateExportParams, ...export_service.ClientOption) *export_service.ExportServiceCreateExportOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, *openapi.ExportServiceCreateExportBody) *openapi.Export); ok {
+		r0 = rf(ctx, clusterId, body)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*export_service.ExportServiceCreateExportOK)
+			r0 = ret.Get(0).(*openapi.Export)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*export_service.ExportServiceCreateExportParams, ...export_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string, *openapi.ExportServiceCreateExportBody) error); ok {
+		r1 = rf(ctx, clusterId, body)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -504,36 +492,29 @@ func (_m *TiDBCloudClient) DeleteCluster(params *serverless_service.ServerlessSe
 	return r0, r1
 }
 
-// DeleteExport provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) DeleteExport(params *export_service.ExportServiceDeleteExportParams, opts ...export_service.ClientOption) (*export_service.ExportServiceDeleteExportOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// DeleteExport provides a mock function with given fields: ctx, clusterId, exportId
+func (_m *TiDBCloudClient) DeleteExport(ctx context.Context, clusterId string, exportId string) (*openapi.Export, error) {
+	ret := _m.Called(ctx, clusterId, exportId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteExport")
 	}
 
-	var r0 *export_service.ExportServiceDeleteExportOK
+	var r0 *openapi.Export
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceDeleteExportParams, ...export_service.ClientOption) (*export_service.ExportServiceDeleteExportOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*openapi.Export, error)); ok {
+		return rf(ctx, clusterId, exportId)
 	}
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceDeleteExportParams, ...export_service.ClientOption) *export_service.ExportServiceDeleteExportOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *openapi.Export); ok {
+		r0 = rf(ctx, clusterId, exportId)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*export_service.ExportServiceDeleteExportOK)
+			r0 = ret.Get(0).(*openapi.Export)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*export_service.ExportServiceDeleteExportParams, ...export_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, exportId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -578,36 +559,29 @@ func (_m *TiDBCloudClient) DeleteSQLUser(params *account.DeleteV1beta1ClustersCl
 	return r0, r1
 }
 
-// DownloadExport provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) DownloadExport(params *export_service.ExportServiceDownloadExportParams, opts ...export_service.ClientOption) (*export_service.ExportServiceDownloadExportOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// DownloadExport provides a mock function with given fields: ctx, clusterId, exportId
+func (_m *TiDBCloudClient) DownloadExport(ctx context.Context, clusterId string, exportId string) (*openapi.DownloadExportsResponse, error) {
+	ret := _m.Called(ctx, clusterId, exportId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DownloadExport")
 	}
 
-	var r0 *export_service.ExportServiceDownloadExportOK
+	var r0 *openapi.DownloadExportsResponse
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceDownloadExportParams, ...export_service.ClientOption) (*export_service.ExportServiceDownloadExportOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*openapi.DownloadExportsResponse, error)); ok {
+		return rf(ctx, clusterId, exportId)
 	}
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceDownloadExportParams, ...export_service.ClientOption) *export_service.ExportServiceDownloadExportOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *openapi.DownloadExportsResponse); ok {
+		r0 = rf(ctx, clusterId, exportId)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*export_service.ExportServiceDownloadExportOK)
+			r0 = ret.Get(0).(*openapi.DownloadExportsResponse)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*export_service.ExportServiceDownloadExportParams, ...export_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, exportId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -726,36 +700,29 @@ func (_m *TiDBCloudClient) GetCluster(params *serverless_service.ServerlessServi
 	return r0, r1
 }
 
-// GetExport provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) GetExport(params *export_service.ExportServiceGetExportParams, opts ...export_service.ClientOption) (*export_service.ExportServiceGetExportOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// GetExport provides a mock function with given fields: ctx, clusterId, exportId
+func (_m *TiDBCloudClient) GetExport(ctx context.Context, clusterId string, exportId string) (*openapi.Export, error) {
+	ret := _m.Called(ctx, clusterId, exportId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetExport")
 	}
 
-	var r0 *export_service.ExportServiceGetExportOK
+	var r0 *openapi.Export
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceGetExportParams, ...export_service.ClientOption) (*export_service.ExportServiceGetExportOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*openapi.Export, error)); ok {
+		return rf(ctx, clusterId, exportId)
 	}
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceGetExportParams, ...export_service.ClientOption) *export_service.ExportServiceGetExportOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *openapi.Export); ok {
+		r0 = rf(ctx, clusterId, exportId)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*export_service.ExportServiceGetExportOK)
+			r0 = ret.Get(0).(*openapi.Export)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*export_service.ExportServiceGetExportParams, ...export_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, exportId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -948,36 +915,29 @@ func (_m *TiDBCloudClient) ListClustersOfProject(params *serverless_service.Serv
 	return r0, r1
 }
 
-// ListExports provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) ListExports(params *export_service.ExportServiceListExportsParams, opts ...export_service.ClientOption) (*export_service.ExportServiceListExportsOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// ListExports provides a mock function with given fields: ctx, clusterId, pageSize, pageToken, orderBy
+func (_m *TiDBCloudClient) ListExports(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*openapi.ListExportsResponse, error) {
+	ret := _m.Called(ctx, clusterId, pageSize, pageToken, orderBy)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ListExports")
 	}
 
-	var r0 *export_service.ExportServiceListExportsOK
+	var r0 *openapi.ListExportsResponse
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceListExportsParams, ...export_service.ClientOption) (*export_service.ExportServiceListExportsOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string, *string) (*openapi.ListExportsResponse, error)); ok {
+		return rf(ctx, clusterId, pageSize, pageToken, orderBy)
 	}
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceListExportsParams, ...export_service.ClientOption) *export_service.ExportServiceListExportsOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string, *string) *openapi.ListExportsResponse); ok {
+		r0 = rf(ctx, clusterId, pageSize, pageToken, orderBy)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*export_service.ExportServiceListExportsOK)
+			r0 = ret.Get(0).(*openapi.ListExportsResponse)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*export_service.ExportServiceListExportsParams, ...export_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string, *int32, *string, *string) error); ok {
+		r1 = rf(ctx, clusterId, pageSize, pageToken, orderBy)
 	} else {
 		r1 = ret.Error(1)
 	}
