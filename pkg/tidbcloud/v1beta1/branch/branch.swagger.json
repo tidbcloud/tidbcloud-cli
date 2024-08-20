@@ -419,6 +419,11 @@
         "parentDisplayName": {
           "type": "string",
           "description": "OPTIONAL. The parent display name of this branch."
+        },
+        "parentTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "OPTIONAL. The parent timestamp of this branch."
         }
       },
       "title": "Message for branch",
