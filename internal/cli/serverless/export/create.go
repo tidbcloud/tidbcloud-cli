@@ -33,8 +33,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
-	exportModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/models"
+	exportClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export"
 )
 
 type TargetType string
@@ -438,52 +437,54 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := exportApi.NewExportServiceCreateExportParams().WithClusterID(clusterId).WithBody(
-				exportApi.ExportServiceCreateExportBody{
-					ExportOptions: &exportModel.V1beta1ExportOptions{
-						FileType: exportModel.V1beta1ExportOptionsFileType(strings.ToUpper(fileType)),
-					},
-					Target: &exportModel.V1beta1Target{
-						Type: exportModel.TargetTargetType(strings.ToUpper(targetType)),
-						S3: &exportModel.TargetS3Target{
-							URI: s3URI,
-							AccessKey: &exportModel.S3TargetAccessKey{
-								ID:     accessKeyID,
-								Secret: secretAccessKey,
-							},
+			fileTypeEnum := exportClient.ExportFileTypeEnum(strings.ToUpper(fileType))
+			targetTypeEnum := exportClient.ExportTargetTypeEnum(strings.ToUpper(targetType))
+			params := &exportClient.ExportServiceCreateExportBody{
+				ExportOptions: &exportClient.ExportOptions{
+					FileType: &fileTypeEnum,
+				},
+				Target: &exportClient.ExportTarget{
+					Type: &targetTypeEnum,
+					S3: &exportClient.S3Target{
+						Uri: &s3URI,
+						AccessKey: &exportClient.S3TargetAccessKey{
+							Id:     accessKeyID,
+							Secret: secretAccessKey,
 						},
 					},
-				}).WithContext(ctx)
+				},
+			}
 			if compression != "" {
-				params.Body.ExportOptions.Compression = exportModel.ExportOptionsCompressionType(strings.ToUpper(compression))
+				compressionEnum := exportClient.ExportCompressionTypeEnum(strings.ToUpper(compression))
+				params.ExportOptions.Compression = &compressionEnum
 			}
 			if sql != "" {
-				params.Body.ExportOptions.Filter = &exportModel.ExportOptionsFilter{
-					SQL: sql,
+				params.ExportOptions.Filter = &exportClient.ExportOptionsFilter{
+					Sql: &sql,
 				}
 			}
 			if len(patterns) > 0 || where != "" {
-				params.Body.ExportOptions.Filter = &exportModel.ExportOptionsFilter{
-					Table: &exportModel.FilterTable{
-						Where:    where,
+				params.ExportOptions.Filter = &exportClient.ExportOptionsFilter{
+					Table: &exportClient.ExportOptionsFilterTable{
+						Where:    &where,
 						Patterns: patterns,
 					},
 				}
 			}
 			if strings.ToUpper(fileType) == string(FileTypeCSV) {
-				params.Body.ExportOptions.CsvFormat = &exportModel.V1beta1ExportOptionsCSVFormat{
-					Separator:  csvSeparator,
-					Delimiter:  &csvDelimiter,
-					NullValue:  &csvNullValue,
-					SkipHeader: csvSkipHeader,
+				params.ExportOptions.CsvFormat = &exportClient.ExportOptionsCSVFormat{
+					Separator:  &csvSeparator,
+					Delimiter:  *exportClient.NewNullableString(&csvDelimiter),
+					NullValue:  *exportClient.NewNullableString(&csvNullValue),
+					SkipHeader: &csvSkipHeader,
 				}
 			}
 
-			resp, err := d.CreateExport(params)
+			resp, err := d.CreateExport(ctx, clusterId, params)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("export %s is running now", resp.Payload.ExportID))
+			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("export %s is running now", *resp.ExportId))
 			if err != nil {
 				return err
 			}

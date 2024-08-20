@@ -1,0 +1,620 @@
+openapi: 3.0.1
+info:
+  description: TiDB Cloud Serverless Export Open API
+  title: TiDB Cloud Serverless Export Open API
+  version: v1beta1
+servers:
+- url: https://serverless.tidbapi.com/
+tags:
+- name: ExportService
+paths:
+  /v1beta1/clusters/{clusterId}/exports:
+    get:
+      operationId: ExportService_ListExports
+      parameters:
+      - description: Required. The cluster ID to list exports for.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: Optional. The maximum number of clusters to return. Default is
+          10.
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: Optional. The page token from the previous response for pagination.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: "Optional. List exports order by, separated by comma, default\
+          \ is ascending. Example: \"foo, bar desc\". Supported field: create_time"
+        in: query
+        name: orderBy
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListExportsResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Provides a list of export jobs.
+      tags:
+      - ExportService
+    post:
+      operationId: ExportService_CreateExport
+      parameters:
+      - description: Required. The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportService.CreateExportBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Create an export job
+      tags:
+      - ExportService
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/exports/{exportId}:
+    delete:
+      operationId: ExportService_DeleteExport
+      parameters:
+      - description: Required. The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: Required. The ID of the export to be retrieved.
+        in: path
+        name: exportId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Delete an export job
+      tags:
+      - ExportService
+    get:
+      operationId: ExportService_GetExport
+      parameters:
+      - description: Required. The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: Required. The ID of the export to be retrieved.
+        in: path
+        name: exportId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Retrieves details of an export job.
+      tags:
+      - ExportService
+  /v1beta1/clusters/{clusterId}/exports/{exportId}:cancel:
+    post:
+      operationId: ExportService_CancelExport
+      parameters:
+      - description: Required. The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: Required. The ID of the export to be retrieved.
+        in: path
+        name: exportId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportService.CancelExportBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Export'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Cancel a specific export job.
+      tags:
+      - ExportService
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/exports/{exportId}:download:
+    post:
+      operationId: ExportService_DownloadExport
+      parameters:
+      - description: Required. The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: Required. The ID of the export to be retrieved.
+        in: path
+        name: exportId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExportService.DownloadExportBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadExportsResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Generate download url
+      tags:
+      - ExportService
+      x-codegen-request-body-name: body
+components:
+  schemas:
+    Any:
+      additionalProperties:
+        type: object
+      example:
+        '@type': '@type'
+      properties:
+        '@type':
+          type: string
+      type: object
+    DownloadExportsResponse:
+      example:
+        downloads:
+        - size: 0
+          name: name
+          url: url
+        - size: 0
+          name: name
+          url: url
+      properties:
+        downloads:
+          description: The download urls of the export.
+          items:
+            $ref: '#/components/schemas/DownloadUrl'
+          type: array
+      type: object
+    DownloadUrl:
+      example:
+        size: 0
+        name: name
+        url: url
+      properties:
+        name:
+          description: The name of the download file.
+          type: string
+        url:
+          description: The download url.
+          type: string
+        size:
+          description: The size in bytes of the the download file.
+          format: int64
+          type: integer
+      type: object
+    Export:
+      description: Message for export resource.
+      example:
+        reason: reason
+        displayName: displayName
+        completeTime: 2000-01-23T04:56:07.000+00:00
+        updateTime: 2000-01-23T04:56:07.000+00:00
+        clusterId: clusterId
+        snapshotTime: 2000-01-23T04:56:07.000+00:00
+        target: "{}"
+        expireTime: 2000-01-23T04:56:07.000+00:00
+        exportOptions: "{}"
+        createdBy: createdBy
+        createTime: 2000-01-23T04:56:07.000+00:00
+        name: name
+        state: "{}"
+        exportId: exportId
+      properties:
+        exportId:
+          description: Output_only. The unique ID of the export.
+          readOnly: true
+          type: string
+        name:
+          description: Output_only. The unique name of the export.
+          readOnly: true
+          type: string
+        clusterId:
+          description: Required. The cluster ID that export belong to.
+          type: string
+        createdBy:
+          description: Output_only. The creator of the export.
+          readOnly: true
+          type: string
+        state:
+          allOf:
+          - $ref: '#/components/schemas/ExportState.Enum'
+          description: Output_only. The state of the export.
+          type: object
+        exportOptions:
+          allOf:
+          - $ref: '#/components/schemas/ExportOptions'
+          description: Optional. The options of the export.
+          type: object
+        target:
+          allOf:
+          - $ref: '#/components/schemas/ExportTarget'
+          description: Optional. The target of the export.
+          type: object
+        reason:
+          description: Optional. The failed reason of the export.
+          nullable: true
+          readOnly: true
+          type: string
+        displayName:
+          description: "Optional. The display name of the export. Default: SNAPSHOT_{snapshot_time}."
+          type: string
+        createTime:
+          description: Output_only. Timestamp when the export was created.
+          format: date-time
+          readOnly: true
+          type: string
+        updateTime:
+          description: Output_only. Timestamp when the export was updated.
+          format: date-time
+          nullable: true
+          readOnly: true
+          type: string
+        completeTime:
+          description: Output_only. Timestamp when the export was completed.
+          format: date-time
+          nullable: true
+          readOnly: true
+          type: string
+        snapshotTime:
+          description: Output_only. Snapshot time of the export.
+          format: date-time
+          nullable: true
+          readOnly: true
+          type: string
+        expireTime:
+          description: Output_only. Expire time of the export.
+          format: date-time
+          nullable: true
+          readOnly: true
+          type: string
+      required:
+      - clusterId
+      type: object
+    ExportCompressionType.Enum:
+      description: |2-
+         - GZIP: Gzip compression.
+         - SNAPPY: Snappy compression.
+         - ZSTD: Zstd compression.
+         - NONE: No compression.
+      enum:
+      - GZIP
+      - SNAPPY
+      - ZSTD
+      - NONE
+      type: string
+    ExportFileType.Enum:
+      description: |2-
+         - SQL: SQL type.
+         - CSV: CSV type.
+         - PARQUET: PARQUET type.
+      enum:
+      - SQL
+      - CSV
+      - PARQUET
+      type: string
+    ExportOptions:
+      properties:
+        fileType:
+          allOf:
+          - $ref: '#/components/schemas/ExportFileType.Enum'
+          description: "Optional. The exported file type. Default: CSV with sql filter,\
+            \ SQL with other filter."
+          type: object
+        database:
+          title: "Optional. The specify database of the export. DEPRECATED, use filter\
+            \ instead"
+          type: string
+        table:
+          title: "Optional. The specify table of the export. DEPRECATED, use filter\
+            \ instead"
+          type: string
+        compression:
+          allOf:
+          - $ref: '#/components/schemas/ExportCompressionType.Enum'
+          description: Optional. The compression of the export. Default is GZIP.
+          type: object
+        filter:
+          allOf:
+          - $ref: '#/components/schemas/ExportOptions.Filter'
+          description: Optional. The filter of the export. Default is whole cluster.
+          type: object
+        csvFormat:
+          allOf:
+          - $ref: '#/components/schemas/ExportOptions.CSVFormat'
+          description: Optional. The format of the csv.
+          type: object
+      type: object
+    ExportOptions.CSVFormat:
+      properties:
+        separator:
+          description: "Separator of each value in CSV files. It is recommended to\
+            \ use '|+|' or other uncommon character combinations. Default is ','."
+          type: string
+        delimiter:
+          description: Delimiter of string type variables in CSV files. Default is
+            '"'.
+          nullable: true
+          type: string
+        nullValue:
+          description: Representation of null values in CSV files. Default is "\N".
+          nullable: true
+          type: string
+        skipHeader:
+          description: Export CSV files of the tables without header. Default is false.
+          type: boolean
+      type: object
+    ExportOptions.Filter:
+      properties:
+        sql:
+          description: Optional. Use SQL to filter the export.
+          type: string
+        table:
+          allOf:
+          - $ref: '#/components/schemas/ExportOptions.Filter.Table'
+          description: Optional. Use table-filter to filter the export.
+          type: object
+      type: object
+    ExportOptions.Filter.Table:
+      properties:
+        patterns:
+          description: Optional. The table-filter expressions.
+          items:
+            type: string
+          type: array
+        where:
+          description: Optional. Export only selected records.
+          type: string
+      type: object
+    ExportS3AuthType.Enum:
+      description: |2-
+         - ROLE_ARN: The access method is role arn.
+         - ACCESS_KEY: The access method is access key.
+      enum:
+      - ROLE_ARN
+      - ACCESS_KEY
+      type: string
+    ExportService.CancelExportBody:
+      type: object
+    ExportService.CreateExportBody:
+      properties:
+        exportOptions:
+          allOf:
+          - $ref: '#/components/schemas/ExportOptions'
+          description: Optional. The options of the export.
+          type: object
+        target:
+          allOf:
+          - $ref: '#/components/schemas/ExportTarget'
+          description: Optional. The target of the export.
+          type: object
+        displayName:
+          description: "Optional. The display name of the export. Default: SNAPSHOT_{snapshot_time}."
+          type: string
+      type: object
+    ExportService.DownloadExportBody:
+      type: object
+    ExportState.Enum:
+      description: |-
+        Output Only. Export State.
+
+         - RUNNING: The export job is being created.
+         - SUCCEEDED: The export job is success.
+         - FAILED: The export job is failed.
+         - CANCELED: The export job is canceled.
+         - DELETED: The export job is deleted.
+         - EXPIRED: The export is expired, only local export will be expired.
+      enum:
+      - RUNNING
+      - SUCCEEDED
+      - FAILED
+      - CANCELED
+      - DELETED
+      - EXPIRED
+      type: string
+    ExportTarget:
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/ExportTargetType.Enum'
+          description: Optional. The exported file type. Default is LOCAL.
+          type: object
+        s3:
+          $ref: '#/components/schemas/S3Target'
+      type: object
+    ExportTargetType.Enum:
+      description: |2-
+         - LOCAL: Local target.
+         - S3: S3 target.
+      enum:
+      - LOCAL
+      - S3
+      type: string
+    ListExportsResponse:
+      example:
+        totalSize: 0
+        exports:
+        - reason: reason
+          displayName: displayName
+          completeTime: 2000-01-23T04:56:07.000+00:00
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          snapshotTime: 2000-01-23T04:56:07.000+00:00
+          target: "{}"
+          expireTime: 2000-01-23T04:56:07.000+00:00
+          exportOptions: "{}"
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          name: name
+          state: "{}"
+          exportId: exportId
+        - reason: reason
+          displayName: displayName
+          completeTime: 2000-01-23T04:56:07.000+00:00
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          snapshotTime: 2000-01-23T04:56:07.000+00:00
+          target: "{}"
+          expireTime: 2000-01-23T04:56:07.000+00:00
+          exportOptions: "{}"
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          name: name
+          state: "{}"
+          exportId: exportId
+        nextPageToken: nextPageToken
+      properties:
+        exports:
+          description: A list of exports.
+          items:
+            $ref: '#/components/schemas/Export'
+          type: array
+        nextPageToken:
+          description: Token provided to retrieve the next page of results.
+          type: string
+        totalSize:
+          description: Total number of exports.
+          format: int64
+          type: integer
+      type: object
+    S3Target:
+      properties:
+        bucketUri:
+          description: "Optional. The bucket URI of the s3. DEPRECATED, use uri instead."
+          type: string
+        uri:
+          description: Optional. The URI of the s3 folder.
+          type: string
+        authType:
+          allOf:
+          - $ref: '#/components/schemas/ExportS3AuthType.Enum'
+          description: Required. The auth method of the export s3.
+          type: object
+        accessKey:
+          allOf:
+          - $ref: '#/components/schemas/S3Target.AccessKey'
+          description: Optional. The access key of the s3.
+          type: object
+        roleArn:
+          description: Optional. The role arn of the s3.
+          type: string
+      required:
+      - authType
+      type: object
+    S3Target.AccessKey:
+      properties:
+        id:
+          description: The access key id of the s3.
+          type: string
+        secret:
+          description: Input_Only. The secret access key of the s3.
+          type: string
+      required:
+      - id
+      - secret
+      type: object
+    Status:
+      example:
+        code: 6
+        details:
+        - '@type': '@type'
+        - '@type': '@type'
+        message: message
+      properties:
+        code:
+          format: int32
+          type: integer
+        message:
+          type: string
+        details:
+          items:
+            $ref: '#/components/schemas/Any'
+          type: array
+      type: object
+x-original-swagger-version: "2.0"

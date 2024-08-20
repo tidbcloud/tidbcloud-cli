@@ -36,8 +36,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
-	exportModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/models"
+	exportClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export"
 )
 
 const DefaultConcurrency = 3
@@ -162,18 +161,16 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			params := exportApi.NewExportServiceDownloadExportParams().
-				WithClusterID(clusterID).WithExportID(exportID).WithContext(ctx)
-			resp, err := d.DownloadExport(params)
+			resp, err := d.DownloadExport(ctx, clusterID, exportID)
 			if err != nil {
 				return errors.Trace(err)
 			}
 
 			var totalSize int64
-			for _, download := range resp.Payload.Downloads {
-				totalSize += download.Size
+			for _, download := range resp.Downloads {
+				totalSize += *download.Size
 			}
-			fileMessage := fmt.Sprintf("There are %d files to download, total size is %s.", len(resp.Payload.Downloads), humanize.IBytes(uint64(totalSize)))
+			fileMessage := fmt.Sprintf("There are %d files to download, total size is %s.", len(resp.Downloads), humanize.IBytes(uint64(totalSize)))
 
 			if !force {
 				if !h.IOStreams.CanPrompt {
@@ -201,12 +198,12 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if h.IOStreams.CanPrompt {
-				err = DownloadFilesPrompt(h, resp.Payload.Downloads, path, concurrency)
+				err = DownloadFilesPrompt(h, resp.Downloads, path, concurrency)
 				if err != nil {
 					return errors.Trace(err)
 				}
 			} else {
-				err = DownloadFilesWithoutPrompt(h, resp.Payload.Downloads, path, concurrency)
+				err = DownloadFilesWithoutPrompt(h, resp.Downloads, path, concurrency)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -224,7 +221,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 	return downloadCmd
 }
 
-func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int) error {
+func DownloadFilesPrompt(h *internal.Helper, urls []exportClient.DownloadUrl, path string, concurrency int) error {
 	if concurrency <= 0 {
 		concurrency = DefaultConcurrency
 	}
@@ -240,9 +237,9 @@ func DownloadFilesPrompt(h *internal.Helper, urls []*exportModel.V1beta1Download
 	urlMsgs := make([]ui.URLMsg, 0)
 	for _, u := range urls {
 		url := ui.URLMsg{
-			Name: u.Name,
-			Url:  u.URL,
-			Size: u.Size,
+			Name: *u.Name,
+			Url:  *u.Url,
+			Size: *u.Size,
 		}
 		urlMsgs = append(urlMsgs, url)
 	}
@@ -324,7 +321,7 @@ func GetDownloadPathInput() (tea.Model, error) {
 var wg sync.WaitGroup
 
 type downloadJob struct {
-	url  *exportModel.V1beta1DownloadURL
+	url  exportClient.DownloadUrl
 	path string
 }
 
@@ -344,7 +341,7 @@ func (r *downloadResult) GetErrorString() string {
 	return fmt.Sprintf("%s %s: %s", r.name, r.status, r.err.Error())
 }
 
-func DownloadFilesWithoutPrompt(h *internal.Helper, urls []*exportModel.V1beta1DownloadURL, path string, concurrency int) error {
+func DownloadFilesWithoutPrompt(h *internal.Helper, urls []exportClient.DownloadUrl, path string, concurrency int) error {
 	if concurrency <= 0 {
 		concurrency = DefaultConcurrency
 	}
@@ -407,27 +404,27 @@ func consume(h *internal.Helper, jobs <-chan *downloadJob, results chan *downloa
 				if err != nil {
 					if strings.Contains(err.Error(), "file already exists") {
 						fmt.Fprintf(h.IOStreams.Out, "download %s skipped: %s\n", job.url.Name, err.Error())
-						results <- &downloadResult{name: job.url.Name, err: err, status: ui.Skipped}
+						results <- &downloadResult{name: *job.url.Name, err: err, status: ui.Skipped}
 					} else {
 						fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
-						results <- &downloadResult{name: job.url.Name, err: err, status: ui.Failed}
+						results <- &downloadResult{name: *job.url.Name, err: err, status: ui.Failed}
 					}
 				} else {
 					fmt.Fprintf(h.IOStreams.Out, "download %s succeeded\n", job.url.Name)
-					results <- &downloadResult{name: job.url.Name, err: nil, status: ui.Succeeded}
+					results <- &downloadResult{name: *job.url.Name, err: nil, status: ui.Succeeded}
 				}
 			}()
 
-			fmt.Fprintf(h.IOStreams.Out, "downloading %s | %s\n", job.url.Name, humanize.IBytes(uint64(job.url.Size)))
+			fmt.Fprintf(h.IOStreams.Out, "downloading %s | %s\n", job.url.Name, humanize.IBytes(uint64(*job.url.Size)))
 
 			// request the url
-			resp, err := util.GetResponse(job.url.URL, os.Getenv(config.DebugEnv) != "")
+			resp, err := util.GetResponse(*job.url.Url, os.Getenv(config.DebugEnv) != "")
 			if err != nil {
 				return
 			}
 			defer resp.Body.Close()
 
-			file, err := util.CreateFile(job.path, job.url.Name)
+			file, err := util.CreateFile(job.path, *job.url.Name)
 			if err != nil {
 				return
 			}
