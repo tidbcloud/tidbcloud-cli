@@ -21,7 +21,7 @@ type ExportTargetTypeEnum string
 // List of ExportTargetType.Enum
 const (
 	LOCAL ExportTargetTypeEnum = "LOCAL"
-	S3 ExportTargetTypeEnum = "S3"
+	S3    ExportTargetTypeEnum = "S3"
 )
 
 // All allowed values of ExportTargetTypeEnum enum
@@ -108,4 +108,3 @@ func (v *NullableExportTargetTypeEnum) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

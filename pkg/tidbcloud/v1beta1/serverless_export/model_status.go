@@ -19,9 +19,9 @@ var _ MappedNullable = &Status{}
 
 // Status struct for Status
 type Status struct {
-	Code *int32 `json:"code,omitempty"`
+	Code    *int32  `json:"code,omitempty"`
 	Message *string `json:"message,omitempty"`
-	Details []Any `json:"details,omitempty"`
+	Details []Any   `json:"details,omitempty"`
 }
 
 // NewStatus instantiates a new Status object
@@ -138,7 +138,7 @@ func (o *Status) SetDetails(v []Any) {
 }
 
 func (o Status) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -194,5 +194,3 @@ func (v *NullableStatus) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

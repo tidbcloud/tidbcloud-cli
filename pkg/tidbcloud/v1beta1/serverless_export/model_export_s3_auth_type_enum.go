@@ -20,7 +20,7 @@ type ExportS3AuthTypeEnum string
 
 // List of ExportS3AuthType.Enum
 const (
-	ROLE_ARN ExportS3AuthTypeEnum = "ROLE_ARN"
+	ROLE_ARN   ExportS3AuthTypeEnum = "ROLE_ARN"
 	ACCESS_KEY ExportS3AuthTypeEnum = "ACCESS_KEY"
 )
 
@@ -108,4 +108,3 @@ func (v *NullableExportS3AuthTypeEnum) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

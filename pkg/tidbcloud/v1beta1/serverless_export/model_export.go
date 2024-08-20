@@ -11,10 +11,10 @@ API version: v1beta1
 package openapi
 
 import (
-	"encoding/json"
-	"time"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // checks if the Export type satisfies the MappedNullable interface at compile time
@@ -320,6 +320,7 @@ func (o *Export) HasReason() bool {
 func (o *Export) SetReason(v string) {
 	o.Reason.Set(&v)
 }
+
 // SetReasonNil sets the value for Reason to be an explicit nil
 func (o *Export) SetReasonNil() {
 	o.Reason.Set(nil)
@@ -426,6 +427,7 @@ func (o *Export) HasUpdateTime() bool {
 func (o *Export) SetUpdateTime(v time.Time) {
 	o.UpdateTime.Set(&v)
 }
+
 // SetUpdateTimeNil sets the value for UpdateTime to be an explicit nil
 func (o *Export) SetUpdateTimeNil() {
 	o.UpdateTime.Set(nil)
@@ -468,6 +470,7 @@ func (o *Export) HasCompleteTime() bool {
 func (o *Export) SetCompleteTime(v time.Time) {
 	o.CompleteTime.Set(&v)
 }
+
 // SetCompleteTimeNil sets the value for CompleteTime to be an explicit nil
 func (o *Export) SetCompleteTimeNil() {
 	o.CompleteTime.Set(nil)
@@ -510,6 +513,7 @@ func (o *Export) HasSnapshotTime() bool {
 func (o *Export) SetSnapshotTime(v time.Time) {
 	o.SnapshotTime.Set(&v)
 }
+
 // SetSnapshotTimeNil sets the value for SnapshotTime to be an explicit nil
 func (o *Export) SetSnapshotTimeNil() {
 	o.SnapshotTime.Set(nil)
@@ -552,6 +556,7 @@ func (o *Export) HasExpireTime() bool {
 func (o *Export) SetExpireTime(v time.Time) {
 	o.ExpireTime.Set(&v)
 }
+
 // SetExpireTimeNil sets the value for ExpireTime to be an explicit nil
 func (o *Export) SetExpireTimeNil() {
 	o.ExpireTime.Set(nil)
@@ -563,7 +568,7 @@ func (o *Export) UnsetExpireTime() {
 }
 
 func (o Export) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -628,10 +633,10 @@ func (o *Export) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -687,5 +692,3 @@ func (v *NullableExport) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -20,12 +20,12 @@ type ExportStateEnum string
 
 // List of ExportState.Enum
 const (
-	RUNNING ExportStateEnum = "RUNNING"
+	RUNNING   ExportStateEnum = "RUNNING"
 	SUCCEEDED ExportStateEnum = "SUCCEEDED"
-	FAILED ExportStateEnum = "FAILED"
-	CANCELED ExportStateEnum = "CANCELED"
-	DELETED ExportStateEnum = "DELETED"
-	EXPIRED ExportStateEnum = "EXPIRED"
+	FAILED    ExportStateEnum = "FAILED"
+	CANCELED  ExportStateEnum = "CANCELED"
+	DELETED   ExportStateEnum = "DELETED"
+	EXPIRED   ExportStateEnum = "EXPIRED"
 )
 
 // All allowed values of ExportStateEnum enum
@@ -116,4 +116,3 @@ func (v *NullableExportStateEnum) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

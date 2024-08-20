@@ -20,10 +20,10 @@ type ExportCompressionTypeEnum string
 
 // List of ExportCompressionType.Enum
 const (
-	GZIP ExportCompressionTypeEnum = "GZIP"
+	GZIP   ExportCompressionTypeEnum = "GZIP"
 	SNAPPY ExportCompressionTypeEnum = "SNAPPY"
-	ZSTD ExportCompressionTypeEnum = "ZSTD"
-	NONE ExportCompressionTypeEnum = "NONE"
+	ZSTD   ExportCompressionTypeEnum = "ZSTD"
+	NONE   ExportCompressionTypeEnum = "NONE"
 )
 
 // All allowed values of ExportCompressionTypeEnum enum
@@ -112,4 +112,3 @@ func (v *NullableExportCompressionTypeEnum) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

@@ -21,8 +21,8 @@ var _ MappedNullable = &ExportOptions{}
 type ExportOptions struct {
 	// Optional. The exported file type. Default: CSV with sql filter, SQL with other filter.
 	FileType *ExportFileTypeEnum `json:"fileType,omitempty"`
-	Database *string `json:"database,omitempty"`
-	Table *string `json:"table,omitempty"`
+	Database *string             `json:"database,omitempty"`
+	Table    *string             `json:"table,omitempty"`
 	// Optional. The compression of the export. Default is GZIP.
 	Compression *ExportCompressionTypeEnum `json:"compression,omitempty"`
 	// Optional. The filter of the export. Default is whole cluster.
@@ -241,7 +241,7 @@ func (o *ExportOptions) SetCsvFormat(v ExportOptionsCSVFormat) {
 }
 
 func (o ExportOptions) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -306,5 +306,3 @@ func (v *NullableExportOptions) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

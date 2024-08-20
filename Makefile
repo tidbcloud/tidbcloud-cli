@@ -56,10 +56,10 @@ generate-v1beta1-client: install-openapi-generator## Generate v1beta1 client
 	swagger generate client -f pkg/tidbcloud/v1beta1/serverless_import/import.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless_import
 	@echo "==> Generating serverless export client"
 	rm -rf pkg/tidbcloud/v1beta1/serverless_export
-	cd tools/openapi-generator && npx openapi-generator-cli generate --additional-properties=withGoMod=false -i ../../pkg/tidbcloud/v1beta1/export.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless_export
-	cd pkg/tidbcloud/v1beta1/serverless_export && rm -rf test
+	cd tools/openapi-generator && npx openapi-generator-cli generate --additional-properties=withGoMod=false --global-property=apiTests=false -i ../../pkg/tidbcloud/v1beta1/export.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless_export
 	@echo "==> Generating iam client"
 	swagger generate client -f pkg/tidbcloud/v1beta1/iam/iam.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/iam
+	go fmt ./pkg/...
 
 .PHONY: install-openapi-generator
 install-openapi-generator:

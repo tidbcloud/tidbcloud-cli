@@ -19,16 +19,15 @@ import (
 	"strings"
 )
 
-
 // ExportServiceAPIService ExportServiceAPI service
 type ExportServiceAPIService service
 
 type ApiExportServiceCancelExportRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *ExportServiceAPIService
-	clusterId string
-	exportId string
-	body *map[string]interface{}
+	clusterId  string
+	exportId   string
+	body       *map[string]interface{}
 }
 
 func (r ApiExportServiceCancelExportRequest) Body(body map[string]interface{}) ApiExportServiceCancelExportRequest {
@@ -43,28 +42,29 @@ func (r ApiExportServiceCancelExportRequest) Execute() (*Export, *http.Response,
 /*
 ExportServiceCancelExport Cancel a specific export job.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId Required. The ID of the cluster.
- @param exportId Required. The ID of the export to be retrieved.
- @return ApiExportServiceCancelExportRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId Required. The ID of the cluster.
+	@param exportId Required. The ID of the export to be retrieved.
+	@return ApiExportServiceCancelExportRequest
 */
 func (a *ExportServiceAPIService) ExportServiceCancelExport(ctx context.Context, clusterId string, exportId string) ApiExportServiceCancelExportRequest {
 	return ApiExportServiceCancelExportRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
-		exportId: exportId,
+		ctx:        ctx,
+		clusterId:  clusterId,
+		exportId:   exportId,
 	}
 }
 
 // Execute executes the request
-//  @return Export
+//
+//	@return Export
 func (a *ExportServiceAPIService) ExportServiceCancelExportExecute(r ApiExportServiceCancelExportRequest) (*Export, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Export
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Export
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ExportServiceAPIService.ExportServiceCancelExport")
@@ -124,14 +124,14 @@ func (a *ExportServiceAPIService) ExportServiceCancelExportExecute(r ApiExportSe
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-			var v Status
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v Status
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -148,10 +148,10 @@ func (a *ExportServiceAPIService) ExportServiceCancelExportExecute(r ApiExportSe
 }
 
 type ApiExportServiceCreateExportRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *ExportServiceAPIService
-	clusterId string
-	body *ExportServiceCreateExportBody
+	clusterId  string
+	body       *ExportServiceCreateExportBody
 }
 
 func (r ApiExportServiceCreateExportRequest) Body(body ExportServiceCreateExportBody) ApiExportServiceCreateExportRequest {
@@ -166,26 +166,27 @@ func (r ApiExportServiceCreateExportRequest) Execute() (*Export, *http.Response,
 /*
 ExportServiceCreateExport Create an export job
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId Required. The ID of the cluster.
- @return ApiExportServiceCreateExportRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId Required. The ID of the cluster.
+	@return ApiExportServiceCreateExportRequest
 */
 func (a *ExportServiceAPIService) ExportServiceCreateExport(ctx context.Context, clusterId string) ApiExportServiceCreateExportRequest {
 	return ApiExportServiceCreateExportRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 	}
 }
 
 // Execute executes the request
-//  @return Export
+//
+//	@return Export
 func (a *ExportServiceAPIService) ExportServiceCreateExportExecute(r ApiExportServiceCreateExportRequest) (*Export, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Export
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Export
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ExportServiceAPIService.ExportServiceCreateExport")
@@ -244,14 +245,14 @@ func (a *ExportServiceAPIService) ExportServiceCreateExportExecute(r ApiExportSe
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-			var v Status
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v Status
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -268,10 +269,10 @@ func (a *ExportServiceAPIService) ExportServiceCreateExportExecute(r ApiExportSe
 }
 
 type ApiExportServiceDeleteExportRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *ExportServiceAPIService
-	clusterId string
-	exportId string
+	clusterId  string
+	exportId   string
 }
 
 func (r ApiExportServiceDeleteExportRequest) Execute() (*Export, *http.Response, error) {
@@ -281,28 +282,29 @@ func (r ApiExportServiceDeleteExportRequest) Execute() (*Export, *http.Response,
 /*
 ExportServiceDeleteExport Delete an export job
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId Required. The ID of the cluster.
- @param exportId Required. The ID of the export to be retrieved.
- @return ApiExportServiceDeleteExportRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId Required. The ID of the cluster.
+	@param exportId Required. The ID of the export to be retrieved.
+	@return ApiExportServiceDeleteExportRequest
 */
 func (a *ExportServiceAPIService) ExportServiceDeleteExport(ctx context.Context, clusterId string, exportId string) ApiExportServiceDeleteExportRequest {
 	return ApiExportServiceDeleteExportRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
-		exportId: exportId,
+		ctx:        ctx,
+		clusterId:  clusterId,
+		exportId:   exportId,
 	}
 }
 
 // Execute executes the request
-//  @return Export
+//
+//	@return Export
 func (a *ExportServiceAPIService) ExportServiceDeleteExportExecute(r ApiExportServiceDeleteExportRequest) (*Export, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Export
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Export
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ExportServiceAPIService.ExportServiceDeleteExport")
@@ -357,14 +359,14 @@ func (a *ExportServiceAPIService) ExportServiceDeleteExportExecute(r ApiExportSe
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-			var v Status
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v Status
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -381,11 +383,11 @@ func (a *ExportServiceAPIService) ExportServiceDeleteExportExecute(r ApiExportSe
 }
 
 type ApiExportServiceDownloadExportRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *ExportServiceAPIService
-	clusterId string
-	exportId string
-	body *map[string]interface{}
+	clusterId  string
+	exportId   string
+	body       *map[string]interface{}
 }
 
 func (r ApiExportServiceDownloadExportRequest) Body(body map[string]interface{}) ApiExportServiceDownloadExportRequest {
@@ -400,28 +402,29 @@ func (r ApiExportServiceDownloadExportRequest) Execute() (*DownloadExportsRespon
 /*
 ExportServiceDownloadExport Generate download url
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId Required. The ID of the cluster.
- @param exportId Required. The ID of the export to be retrieved.
- @return ApiExportServiceDownloadExportRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId Required. The ID of the cluster.
+	@param exportId Required. The ID of the export to be retrieved.
+	@return ApiExportServiceDownloadExportRequest
 */
 func (a *ExportServiceAPIService) ExportServiceDownloadExport(ctx context.Context, clusterId string, exportId string) ApiExportServiceDownloadExportRequest {
 	return ApiExportServiceDownloadExportRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
-		exportId: exportId,
+		ctx:        ctx,
+		clusterId:  clusterId,
+		exportId:   exportId,
 	}
 }
 
 // Execute executes the request
-//  @return DownloadExportsResponse
+//
+//	@return DownloadExportsResponse
 func (a *ExportServiceAPIService) ExportServiceDownloadExportExecute(r ApiExportServiceDownloadExportRequest) (*DownloadExportsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *DownloadExportsResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *DownloadExportsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ExportServiceAPIService.ExportServiceDownloadExport")
@@ -481,14 +484,14 @@ func (a *ExportServiceAPIService) ExportServiceDownloadExportExecute(r ApiExport
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-			var v Status
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v Status
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -505,10 +508,10 @@ func (a *ExportServiceAPIService) ExportServiceDownloadExportExecute(r ApiExport
 }
 
 type ApiExportServiceGetExportRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *ExportServiceAPIService
-	clusterId string
-	exportId string
+	clusterId  string
+	exportId   string
 }
 
 func (r ApiExportServiceGetExportRequest) Execute() (*Export, *http.Response, error) {
@@ -518,28 +521,29 @@ func (r ApiExportServiceGetExportRequest) Execute() (*Export, *http.Response, er
 /*
 ExportServiceGetExport Retrieves details of an export job.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId Required. The ID of the cluster.
- @param exportId Required. The ID of the export to be retrieved.
- @return ApiExportServiceGetExportRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId Required. The ID of the cluster.
+	@param exportId Required. The ID of the export to be retrieved.
+	@return ApiExportServiceGetExportRequest
 */
 func (a *ExportServiceAPIService) ExportServiceGetExport(ctx context.Context, clusterId string, exportId string) ApiExportServiceGetExportRequest {
 	return ApiExportServiceGetExportRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
-		exportId: exportId,
+		ctx:        ctx,
+		clusterId:  clusterId,
+		exportId:   exportId,
 	}
 }
 
 // Execute executes the request
-//  @return Export
+//
+//	@return Export
 func (a *ExportServiceAPIService) ExportServiceGetExportExecute(r ApiExportServiceGetExportRequest) (*Export, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Export
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Export
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ExportServiceAPIService.ExportServiceGetExport")
@@ -594,14 +598,14 @@ func (a *ExportServiceAPIService) ExportServiceGetExportExecute(r ApiExportServi
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-			var v Status
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v Status
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -618,12 +622,12 @@ func (a *ExportServiceAPIService) ExportServiceGetExportExecute(r ApiExportServi
 }
 
 type ApiExportServiceListExportsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *ExportServiceAPIService
-	clusterId string
-	pageSize *int32
-	pageToken *string
-	orderBy *string
+	clusterId  string
+	pageSize   *int32
+	pageToken  *string
+	orderBy    *string
 }
 
 // Optional. The maximum number of clusters to return. Default is 10.
@@ -651,26 +655,27 @@ func (r ApiExportServiceListExportsRequest) Execute() (*ListExportsResponse, *ht
 /*
 ExportServiceListExports Provides a list of export jobs.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId Required. The cluster ID to list exports for.
- @return ApiExportServiceListExportsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId Required. The cluster ID to list exports for.
+	@return ApiExportServiceListExportsRequest
 */
 func (a *ExportServiceAPIService) ExportServiceListExports(ctx context.Context, clusterId string) ApiExportServiceListExportsRequest {
 	return ApiExportServiceListExportsRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 	}
 }
 
 // Execute executes the request
-//  @return ListExportsResponse
+//
+//	@return ListExportsResponse
 func (a *ExportServiceAPIService) ExportServiceListExportsExecute(r ApiExportServiceListExportsRequest) (*ListExportsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ListExportsResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListExportsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ExportServiceAPIService.ExportServiceListExports")
@@ -733,14 +738,14 @@ func (a *ExportServiceAPIService) ExportServiceListExportsExecute(r ApiExportSer
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-			var v Status
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v Status
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

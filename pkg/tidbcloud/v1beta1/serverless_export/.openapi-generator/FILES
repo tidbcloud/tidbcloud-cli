@@ -47,5 +47,4 @@ model_s3_target.go
 model_s3_target_access_key.go
 model_status.go
 response.go
-test/api_export_service_test.go
 utils.go

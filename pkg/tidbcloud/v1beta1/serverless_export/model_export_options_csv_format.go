@@ -110,6 +110,7 @@ func (o *ExportOptionsCSVFormat) HasDelimiter() bool {
 func (o *ExportOptionsCSVFormat) SetDelimiter(v string) {
 	o.Delimiter.Set(&v)
 }
+
 // SetDelimiterNil sets the value for Delimiter to be an explicit nil
 func (o *ExportOptionsCSVFormat) SetDelimiterNil() {
 	o.Delimiter.Set(nil)
@@ -152,6 +153,7 @@ func (o *ExportOptionsCSVFormat) HasNullValue() bool {
 func (o *ExportOptionsCSVFormat) SetNullValue(v string) {
 	o.NullValue.Set(&v)
 }
+
 // SetNullValueNil sets the value for NullValue to be an explicit nil
 func (o *ExportOptionsCSVFormat) SetNullValueNil() {
 	o.NullValue.Set(nil)
@@ -195,7 +197,7 @@ func (o *ExportOptionsCSVFormat) SetSkipHeader(v bool) {
 }
 
 func (o ExportOptionsCSVFormat) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -254,5 +256,3 @@ func (v *NullableExportOptionsCSVFormat) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

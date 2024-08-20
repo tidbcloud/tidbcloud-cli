@@ -20,8 +20,8 @@ type ExportFileTypeEnum string
 
 // List of ExportFileType.Enum
 const (
-	SQL ExportFileTypeEnum = "SQL"
-	CSV ExportFileTypeEnum = "CSV"
+	SQL     ExportFileTypeEnum = "SQL"
+	CSV     ExportFileTypeEnum = "CSV"
 	PARQUET ExportFileTypeEnum = "PARQUET"
 )
 
@@ -110,4 +110,3 @@ func (v *NullableExportFileTypeEnum) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

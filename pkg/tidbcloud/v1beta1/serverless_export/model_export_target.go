@@ -21,7 +21,7 @@ var _ MappedNullable = &ExportTarget{}
 type ExportTarget struct {
 	// Optional. The exported file type. Default is LOCAL.
 	Type *ExportTargetTypeEnum `json:"type,omitempty"`
-	S3 *S3Target `json:"s3,omitempty"`
+	S3   *S3Target             `json:"s3,omitempty"`
 }
 
 // NewExportTarget instantiates a new ExportTarget object
@@ -106,7 +106,7 @@ func (o *ExportTarget) SetS3(v S3Target) {
 }
 
 func (o ExportTarget) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -159,5 +159,3 @@ func (v *NullableExportTarget) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-
