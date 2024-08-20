@@ -261,12 +261,14 @@ func (d *ClientDelegate) CancelUpload(params *serverlessImportOp.ImportServiceCa
 }
 
 func (d *ClientDelegate) GetExport(ctx context.Context, clusterId string, exportId string) (*expClient.Export, error) {
-	res, _, err := d.ec.ExportServiceAPI.ExportServiceGetExport(ctx, clusterId, exportId).Execute()
+	res, h, err := d.ec.ExportServiceAPI.ExportServiceGetExport(ctx, clusterId, exportId).Execute()
+	defer h.Body.Close()
 	return res, err
 }
 
 func (d *ClientDelegate) CancelExport(ctx context.Context, clusterId string, exportId string) (*expClient.Export, error) {
-	res, _, err := d.ec.ExportServiceAPI.ExportServiceCancelExport(ctx, clusterId, exportId).Execute()
+	res, h, err := d.ec.ExportServiceAPI.ExportServiceCancelExport(ctx, clusterId, exportId).Execute()
+	defer h.Body.Close()
 	return res, err
 }
 
@@ -275,12 +277,14 @@ func (d *ClientDelegate) CreateExport(ctx context.Context, clusterId string, bod
 	if body != nil {
 		r = r.Body(*body)
 	}
-	res, _, err := r.Execute()
+	res, h, err := r.Execute()
+	defer h.Body.Close()
 	return res, err
 }
 
 func (d *ClientDelegate) DeleteExport(ctx context.Context, clusterId string, exportId string) (*expClient.Export, error) {
-	res, _, err := d.ec.ExportServiceAPI.ExportServiceDeleteExport(ctx, clusterId, exportId).Execute()
+	res, h, err := d.ec.ExportServiceAPI.ExportServiceDeleteExport(ctx, clusterId, exportId).Execute()
+	defer h.Body.Close()
 	return res, err
 }
 
@@ -295,14 +299,16 @@ func (d *ClientDelegate) ListExports(ctx context.Context, clusterId string, page
 	if orderBy != nil {
 		r = r.OrderBy(*orderBy)
 	}
-	res, _, err := r.Execute()
+	res, h, err := r.Execute()
+	defer h.Body.Close()
 	return res, err
 }
 
 func (d *ClientDelegate) DownloadExport(ctx context.Context, clusterId string, exportId string) (*expClient.DownloadExportsResponse, error) {
 	r := d.ec.ExportServiceAPI.ExportServiceDownloadExport(ctx, clusterId, exportId)
 	r = r.Body(make(map[string]interface{}))
-	res, _, err := r.Execute()
+	res, h, err := r.Execute()
+	defer h.Body.Close()
 	return res, err
 }
 
