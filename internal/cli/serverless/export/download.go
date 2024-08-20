@@ -403,19 +403,19 @@ func consume(h *internal.Helper, jobs <-chan *downloadJob, results chan *downloa
 			defer func() {
 				if err != nil {
 					if strings.Contains(err.Error(), "file already exists") {
-						fmt.Fprintf(h.IOStreams.Out, "download %s skipped: %s\n", job.url.Name, err.Error())
+						fmt.Fprintf(h.IOStreams.Out, "download %s skipped: %s\n", *job.url.Name, err.Error())
 						results <- &downloadResult{name: *job.url.Name, err: err, status: ui.Skipped}
 					} else {
-						fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", job.url.Name, err.Error())
+						fmt.Fprintf(h.IOStreams.Out, "download %s failed: %s\n", *job.url.Name, err.Error())
 						results <- &downloadResult{name: *job.url.Name, err: err, status: ui.Failed}
 					}
 				} else {
-					fmt.Fprintf(h.IOStreams.Out, "download %s succeeded\n", job.url.Name)
+					fmt.Fprintf(h.IOStreams.Out, "download %s succeeded\n", *job.url.Name)
 					results <- &downloadResult{name: *job.url.Name, err: nil, status: ui.Succeeded}
 				}
 			}()
 
-			fmt.Fprintf(h.IOStreams.Out, "downloading %s | %s\n", job.url.Name, humanize.IBytes(uint64(*job.url.Size)))
+			fmt.Fprintf(h.IOStreams.Out, "downloading %s | %s\n", *job.url.Name, humanize.IBytes(uint64(*job.url.Size)))
 
 			// request the url
 			resp, err := util.GetResponse(*job.url.Url, os.Getenv(config.DebugEnv) != "")
