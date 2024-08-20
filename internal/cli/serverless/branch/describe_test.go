@@ -50,6 +50,7 @@ const getBranchResultStr = `{
   },
   "name": "clusters/10202848322613926203/branches/bran-fgwdnpasmrahnh5iozqawnmijq",
   "parentId": "10202848322613926203",
+  "parentTimestamp": "0001-01-01T00:00:00.000Z",
   "state": "ACTIVE",
   "updateTime": "2023-12-11T09:44:05.000Z",
   "usage": {

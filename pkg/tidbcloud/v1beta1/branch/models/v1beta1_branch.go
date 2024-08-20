@@ -57,8 +57,7 @@ type V1beta1Branch struct {
 	ParentID string `json:"parentId,omitempty"`
 
 	// OPTIONAL. The parent timestamp of this branch.
-	// Format: date-time
-	ParentTimestamp strfmt.DateTime `json:"parentTimestamp,omitempty"`
+	ParentTimestamp string `json:"parentTimestamp,omitempty"`
 
 	// Output only. The state of this branch.
 	// Read Only: true
@@ -92,10 +91,6 @@ func (m *V1beta1Branch) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateEndpoints(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateParentTimestamp(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -152,18 +147,6 @@ func (m *V1beta1Branch) validateEndpoints(formats strfmt.Registry) error {
 			}
 			return err
 		}
-	}
-
-	return nil
-}
-
-func (m *V1beta1Branch) validateParentTimestamp(formats strfmt.Registry) error {
-	if swag.IsZero(m.ParentTimestamp) { // not required
-		return nil
-	}
-
-	if err := validate.FormatOf("parentTimestamp", "body", "date-time", m.ParentTimestamp.String(), formats); err != nil {
-		return err
 	}
 
 	return nil

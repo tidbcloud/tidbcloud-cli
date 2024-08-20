@@ -43,6 +43,7 @@ const listResultStr = `{
       "displayName": "t",
       "name": "clusters/10202848322613926203/branches/bran-wscjvwen2jajdjiy7hawcebxke",
       "parentId": "10202848322613926203",
+      "parentTimestamp": "0001-01-01T00:00:00.000Z",
       "state": "ACTIVE",
       "updateTime": "2023-12-12T10:18:24.000Z"
     }
@@ -61,6 +62,7 @@ const listResultMultiPageStr = `{
       "displayName": "t",
       "name": "clusters/10202848322613926203/branches/bran-wscjvwen2jajdjiy7hawcebxke",
       "parentId": "10202848322613926203",
+      "parentTimestamp": "0001-01-01T00:00:00.000Z",
       "state": "ACTIVE",
       "updateTime": "2023-12-12T10:18:24.000Z"
     },
@@ -72,6 +74,7 @@ const listResultMultiPageStr = `{
       "displayName": "t",
       "name": "clusters/10202848322613926203/branches/bran-wscjvwen2jajdjiy7hawcebxke",
       "parentId": "10202848322613926203",
+      "parentTimestamp": "0001-01-01T00:00:00.000Z",
       "state": "ACTIVE",
       "updateTime": "2023-12-12T10:18:24.000Z"
     }

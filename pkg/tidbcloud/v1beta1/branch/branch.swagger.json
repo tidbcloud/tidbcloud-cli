@@ -422,7 +422,6 @@
         },
         "parentTimestamp": {
           "type": "string",
-          "format": "date-time",
           "description": "OPTIONAL. The parent timestamp of this branch."
         }
       },

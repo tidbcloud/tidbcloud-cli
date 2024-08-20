@@ -31,7 +31,6 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
-	"github.com/go-openapi/strfmt"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
@@ -110,7 +109,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			var branchName string
 			var clusterId string
 			var parentID string
-			var parentTimestampStr string
+			var parentTimestamp string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -141,7 +140,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if len(branchName) == 0 {
 					return errors.New("branch name is required")
 				}
-				parentTimestampStr = inputModel.(ui.TextInputModel).Inputs[createBranchField[flag.ParentTimestamp]].Value()
+				parentTimestamp = inputModel.(ui.TextInputModel).Inputs[createBranchField[flag.ParentTimestamp]].Value()
 			} else {
 				// non-interactive mode, get values from flags
 				var err error
@@ -157,20 +156,17 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				parentTimestampStr, err = cmd.Flags().GetString(flag.ParentTimestamp)
+				parentTimestamp, err = cmd.Flags().GetString(flag.ParentTimestamp)
 				if err != nil {
 					return errors.Trace(err)
 				}
 			}
 
-			_, err = time.Parse(time.RFC3339, parentTimestampStr)
-			if err != nil {
-				return errors.New("Invalid parent timestamp format, please use RFC3339 format")
-			}
-
-			parentTimestamp, err := strfmt.ParseDateTime(parentTimestampStr)
-			if err != nil {
-				return errors.Trace(err)
+			if len(parentTimestamp) != 0 {
+				_, err = time.Parse(time.RFC3339, parentTimestamp)
+				if err != nil {
+					return errors.New("Invalid parent timestamp format, please use RFC3339 format")
+				}
 			}
 
 			params := branchApi.NewBranchServiceCreateBranchParams().WithClusterID(clusterId).WithBranch(&branchModel.V1beta1Branch{
