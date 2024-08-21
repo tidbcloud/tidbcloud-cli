@@ -41,6 +41,8 @@ type TargetType string
 const (
 	TargetTypeS3      TargetType = "S3"
 	TargetTypeLOCAL   TargetType = "LOCAL"
+	TargetTypeGCS     TargetType = "GCS"
+	TargetTypeAZBLOB  TargetType = "AZBLOB"
 	TargetTypeUnknown TargetType = "UNKNOWN"
 )
 
@@ -49,13 +51,15 @@ type FileType string
 const (
 	FileTypeSQL     FileType = "SQL"
 	FileTypeCSV     FileType = "CSV"
+	FileTypePARQUET FileType = "PARQUET"
 	FileTypeUnknown FileType = "UNKNOWN"
 )
 
 var (
-	supportedFileType    = []string{string(FileTypeSQL), string(FileTypeCSV)}
-	supportedTargetType  = []string{string(TargetTypeS3), string(TargetTypeLOCAL)}
-	supportedCompression = []string{"GZIP", "SNAPPY", "ZSTD", "NONE"}
+	supportedFileType           = []string{string(FileTypeSQL), string(FileTypeCSV), string(FileTypePARQUET)}
+	supportedTargetType         = []string{string(TargetTypeS3), string(TargetTypeLOCAL), string(TargetTypeGCS), string(TargetTypeAZBLOB)}
+	supportedCompression        = []string{"GZIP", "SNAPPY", "ZSTD", "NONE"}
+	supportedParquetCompression = []string{"GZIP", "SNAPPY", "ZSTD", "NONE"}
 )
 
 const (
@@ -174,10 +178,21 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			var s3URI, accessKeyID, secretAccessKey, targetType, fileType, compression, clusterId, sql, where string
+			// options
+			var targetType, fileType, compression, clusterId, sql, where string
 			var patterns []string
+			// csv format
 			var csvSeparator, csvDelimiter, csvNullValue string
 			var csvSkipHeader bool
+			// parquet options
+			var parquetCompression string
+			// s3
+			var s3URI, accessKeyID, secretAccessKey, s3RoleArn string
+			// gcs
+			var gcsURI, gcsServiceAccountKey string
+			// azure
+			var azBlobURI, azBlobSasToken string
+
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -349,7 +364,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if fileType != "" && !slices.Contains(supportedFileType, strings.ToUpper(fileType)) {
 					return errors.New("unsupported file type: " + fileType)
 				}
-				if strings.ToUpper(targetType) == string(TargetTypeS3) {
+				switch strings.ToUpper(targetType) {
+				case string(TargetTypeS3):
 					s3URI, err = cmd.Flags().GetString(flag.S3URI)
 					if err != nil {
 						return errors.Trace(err)
@@ -361,18 +377,51 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if err != nil {
 						return errors.Trace(err)
 					}
-					if accessKeyID == "" {
-						return errors.New("accessKeyId is required when target type is S3")
-					}
 					secretAccessKey, err = cmd.Flags().GetString(flag.S3SecretAccessKey)
 					if err != nil {
 						return errors.Trace(err)
 					}
-					if secretAccessKey == "" {
-						return errors.New("secretAccessKey is required when target type is S3")
+					s3RoleArn, err = cmd.Flags().GetString(flag.S3RoleArn)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					if s3RoleArn == "" && (accessKeyID == "" || secretAccessKey == "") {
+						return errors.New("missing s3 auth information, require either role arn or access key id and secret access key")
+					}
+				case string(TargetTypeGCS):
+					gcsURI, err = cmd.Flags().GetString(flag.GCSURI)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					if gcsURI == "" {
+						return errors.New("gcs uri is required when target type is GCS")
+					}
+					gcsServiceAccountKey, err = cmd.Flags().GetString(flag.GCSServiceAccountKey)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					if gcsServiceAccountKey == "" {
+						return errors.New("gcs service account key is required when target type is GCS")
+					}
+				case string(TargetTypeAZBLOB):
+					azBlobURI, err = cmd.Flags().GetString(flag.AzureBlobURI)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					if azBlobURI == "" {
+						return errors.New("azure blob uri is required when target type is Azure AZBLOB")
+					}
+					azBlobSasToken, err = cmd.Flags().GetString(flag.AzureBlobSASToken)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					if azBlobSasToken == "" {
+						return errors.New("azure blob sas token is required when target type is AZBLOB")
 					}
 				}
-				if strings.ToUpper(fileType) == string(FileTypeCSV) {
+
+				switch strings.ToUpper(fileType) {
+				case string(FileTypeCSV):
 					csvSeparator, err = cmd.Flags().GetString(flag.CSVSeparator)
 					if err != nil {
 						return errors.Trace(err)
@@ -391,6 +440,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					csvSkipHeader, err = cmd.Flags().GetBool(flag.CSVSkipHeader)
 					if err != nil {
 						return errors.Trace(err)
+					}
+				case string(FileTypePARQUET):
+					parquetCompression, err = cmd.Flags().GetString(flag.ParquetCompression)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					if parquetCompression != "" && !slices.Contains(supportedParquetCompression, strings.ToUpper(parquetCompression)) {
+						return errors.New("unsupported parquet compression: " + parquetCompression)
 					}
 				}
 				compression, err = cmd.Flags().GetString(flag.Compression)
@@ -493,11 +550,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster, in which the export will be created.")
-	createCmd.Flags().String(flag.FileType, "SQL", "The export file type. One of [\"CSV\" \"SQL\"].")
-	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export target. One of [\"LOCAL\" \"S3\"].")
-	createCmd.Flags().String(flag.S3URI, "", "The s3 uri in s3://<bucket>/<path> format. Required when target type is S3.")
-	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3. Required when target type is S3.")
-	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3. Required when target type is S3.")
+	createCmd.Flags().String(flag.FileType, "SQL", "The export file type. One of [\"CSV\" \"SQL\" \"PARQUET\"].")
+	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export target. One of [\"LOCAL\" \"S3\" \"GCS\" \"AZBLOB\"].")
+	createCmd.Flags().String(flag.S3URI, "", "The s3 uri in s3://<bucket>/<file> format. Required when target type is S3.")
+	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
+	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
 	createCmd.Flags().String(flag.Compression, "GZIP", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"].")
 	createCmd.Flags().StringSlice(flag.TableFilter, nil, "Specify the exported table(s) with table filter patterns. See https://docs.pingcap.com/tidb/stable/table-filter to learn table filter.")
 	createCmd.Flags().String(flag.TableWhere, "", "Filter the exported table(s) with the where condition.")
@@ -507,8 +564,17 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.CSVSeparator, CSVSeparatorDefaultValue, "Separator of each value in CSV files.")
 	createCmd.Flags().String(flag.CSVNullValue, CSVNullValueDefaultValue, "Representation of null values in CSV files.")
 	createCmd.Flags().Bool(flag.CSVSkipHeader, false, "Export CSV files of the tables without header.")
+	createCmd.Flags().String(flag.S3RoleArn, "", "The role arn of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
+	createCmd.Flags().String(flag.GCSURI, "", "The gcs uri in gcs://<bucket>/<file> format. Required when target type is GCS.")
+	createCmd.Flags().String(flag.GCSServiceAccountKey, "", "The base64 encoded service account key of GCS.")
+	createCmd.Flags().String(flag.AzureBlobURI, "", "The azure blob uri in azure://<account>.blob.core.windows.net/<container>/<file> format. Required when target type is AZBLOB.")
+	createCmd.Flags().String(flag.AzureBlobSASToken, "", "The SAS token of Azure Blob.")
+	createCmd.Flags().String(flag.ParquetCompression, "ZSTD", "The parquet compression algorithm. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"].")
+
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableFilter, flag.SQL)
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableWhere, flag.SQL)
+	createCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3AccessKeyID)
+	createCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3SecretAccessKey)
 	return createCmd
 }
 
