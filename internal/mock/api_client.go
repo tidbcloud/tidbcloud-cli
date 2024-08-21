@@ -13,7 +13,7 @@ import (
 
 	mock "github.com/stretchr/testify/mock"
 
-	openapi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export"
+	openapi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 
 	operations "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
 

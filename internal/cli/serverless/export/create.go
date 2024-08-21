@@ -33,7 +33,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	exportClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export"
+	exportClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 )
 
 type TargetType string

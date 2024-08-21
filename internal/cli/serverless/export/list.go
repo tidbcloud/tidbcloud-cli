@@ -25,7 +25,7 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
-	exportClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export"
+	exportClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 )
 
 type ListOpts struct {

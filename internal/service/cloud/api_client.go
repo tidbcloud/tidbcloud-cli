@@ -31,9 +31,9 @@ import (
 	iamOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
 	serverlessClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client"
 	serverlessOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	expClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	brClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client"
 	brOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
-	expClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export"
 	serverlessImportClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client"
 	serverlessImportOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 
