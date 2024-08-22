@@ -21,8 +21,6 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -31,7 +29,6 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	exportClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 )
@@ -76,22 +73,6 @@ const (
 	CSVDelimiterDefaultValue = "\""
 	CSVNullValueDefaultValue = "\\N"
 )
-
-var FilterSQLInputFields = map[string]int{
-	flag.SQL: 0,
-}
-
-var FilterTableInputFields = map[string]int{
-	flag.TableFilter: 0,
-	flag.TableWhere:  1,
-}
-
-var CSVformatInputFields = map[string]int{
-	flag.CSVSeparator:  0,
-	flag.CSVDelimiter:  1,
-	flag.CSVNullValue:  2,
-	flag.CSVSkipHeader: 3,
-}
 
 type CreateOpts struct {
 	interactive bool
@@ -293,27 +274,28 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				switch filterType {
 				case FilterNone:
 				case FilterSQL:
-					filterInputModel, err := GetFilterInput(FilterSQL)
+					inputs := []string{flag.SQL}
+					textInput, err := InitialInputModel(inputs)
 					if err != nil {
 						return err
 					}
-					sql = filterInputModel.(ui.TextInputModel).Inputs[FilterSQLInputFields[flag.SQL]].Value()
+					sql = textInput.Inputs[0].Value()
 					if sql == "" {
 						return errors.New("sql is empty")
 					}
 				case FilterTable:
 					fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following options, require at least one field"))
-					filterInputModel, err := GetFilterInput(FilterTable)
+					inputs := []string{flag.TableFilter, flag.TableWhere}
+					textInput, err := InitialInputModel(inputs)
 					if err != nil {
 						return err
 					}
-					// TODO input slice
-					patternString := filterInputModel.(ui.TextInputModel).Inputs[FilterTableInputFields[flag.TableFilter]].Value()
+					patternString := textInput.Inputs[0].Value()
 					patterns, err = util.StringSliceConv(patternString)
 					if err != nil {
 						return err
 					}
-					where = filterInputModel.(ui.TextInputModel).Inputs[FilterTableInputFields[flag.TableWhere]].Value()
+					where = textInput.Inputs[1].Value()
 					if len(patterns) == 0 && where == "" {
 						return errors.New("both patterns and where are empty, require at least one field")
 					}
@@ -340,14 +322,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						}
 					}
 					if customCSVFormat {
-						csvFormatInput, err := GetCSVFormatInput()
+						inputs := []string{flag.CSVSeparator, flag.CSVDelimiter, flag.CSVNullValue, flag.CSVSkipHeader}
+						textInput, err := InitialInputModel(inputs)
 						if err != nil {
 							return err
 						}
-						csvSeparator = csvFormatInput.(ui.TextInputModel).Inputs[CSVformatInputFields[flag.CSVSeparator]].Value()
-						csvDelimiter = csvFormatInput.(ui.TextInputModel).Inputs[CSVformatInputFields[flag.CSVDelimiter]].Value()
-						csvNullValue = csvFormatInput.(ui.TextInputModel).Inputs[CSVformatInputFields[flag.CSVNullValue]].Value()
-						skipHeader := csvFormatInput.(ui.TextInputModel).Inputs[CSVformatInputFields[flag.CSVSkipHeader]].Value()
+						csvSeparator = textInput.Inputs[0].Value()
+						csvDelimiter = textInput.Inputs[1].Value()
+						csvNullValue = textInput.Inputs[2].Value()
+						skipHeader := textInput.Inputs[3].Value()
 						if skipHeader == "true" {
 							csvSkipHeader = true
 						} else {
@@ -676,225 +659,4 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3AccessKeyID)
 	createCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3SecretAccessKey)
 	return createCmd
-}
-
-func GetSelectedTargetType() (TargetType, error) {
-	targetTypes := make([]interface{}, 0, 2)
-	targetTypes = append(targetTypes, TargetTypeLOCAL, TargetTypeS3, TargetTypeGCS, TargetTypeAZBLOB)
-	model, err := ui.InitialSelectModel(targetTypes, "Choose the export target:")
-	if err != nil {
-		return TargetTypeUnknown, errors.Trace(err)
-	}
-
-	p := tea.NewProgram(model)
-	targetTypeModel, err := p.Run()
-	if err != nil {
-		return TargetTypeUnknown, errors.Trace(err)
-	}
-	if m, _ := targetTypeModel.(ui.SelectModel); m.Interrupted {
-		return TargetTypeUnknown, util.InterruptError
-	}
-	targetType := targetTypeModel.(ui.SelectModel).GetSelectedItem()
-	if targetType == nil {
-		return TargetTypeUnknown, errors.New("no export target selected")
-	}
-	return targetType.(TargetType), nil
-}
-
-func GetSelectedAuthType(target TargetType) (_ AuthType, err error) {
-	var model *ui.SelectModel
-	switch target {
-	case TargetTypeS3:
-		authTypes := make([]interface{}, 0, 2)
-		authTypes = append(authTypes, AuthTypeS3RoleArn, AuthTypeS3AccessKey)
-		model, err = ui.InitialSelectModel(authTypes, "Choose and input the S3 auth:")
-		if err != nil {
-			return "", errors.Trace(err)
-		}
-	case TargetTypeGCS:
-		return AuthTypeGCSServiceAccountKey, nil
-	case TargetTypeAZBLOB:
-		return AuthTypeAzBlobSasToken, nil
-	}
-	if model == nil {
-		return "", errors.New("unknown auth type")
-	}
-	p := tea.NewProgram(model)
-	authTypeModel, err := p.Run()
-	if err != nil {
-		return "", errors.Trace(err)
-	}
-	if m, _ := authTypeModel.(ui.SelectModel); m.Interrupted {
-		return "", util.InterruptError
-	}
-	authType := authTypeModel.(ui.SelectModel).GetSelectedItem()
-	if authType == nil {
-		return "", errors.New("no auth type selected")
-	}
-	return authType.(AuthType), nil
-}
-
-func GetSelectedFileType(filterType FilterType) (_ FileType, err error) {
-	var model *ui.SelectModel
-	switch filterType {
-	case FilterSQL:
-		fileTypes := make([]interface{}, 0, 2)
-		fileTypes = append(fileTypes, FileTypeCSV, FileTypePARQUET)
-		model, err = ui.InitialSelectModel(fileTypes, "Choose the exported file type:")
-	default:
-		fileTypes := make([]interface{}, 0, 3)
-		fileTypes = append(fileTypes, FileTypeSQL, FileTypeCSV, FileTypePARQUET)
-		model, err = ui.InitialSelectModel(fileTypes, "Choose the exported file type:")
-	}
-	if err != nil {
-		return "", errors.Trace(err)
-	}
-
-	p := tea.NewProgram(model)
-	fileTypeModel, err := p.Run()
-	if err != nil {
-		return "", errors.Trace(err)
-	}
-	if m, _ := fileTypeModel.(ui.SelectModel); m.Interrupted {
-		return FileTypeUnknown, util.InterruptError
-	}
-	fileType := fileTypeModel.(ui.SelectModel).GetSelectedItem()
-	if fileType == nil {
-		return "", errors.New("no export file type selected")
-	}
-	return fileType.(FileType), nil
-}
-
-func GetSelectedCompression() (string, error) {
-	compressions := make([]interface{}, 0, 4)
-	compressions = append(compressions, "SNAPPY", "ZSTD", "NONE")
-	model, err := ui.InitialSelectModel(compressions, "Choose the compression algorithm:")
-	if err != nil {
-		return "", errors.Trace(err)
-	}
-
-	p := tea.NewProgram(model)
-	fileTypeModel, err := p.Run()
-	if err != nil {
-		return "", errors.Trace(err)
-	}
-	if m, _ := fileTypeModel.(ui.SelectModel); m.Interrupted {
-		return "", util.InterruptError
-	}
-	compression := fileTypeModel.(ui.SelectModel).GetSelectedItem()
-	if compression == nil {
-		return "", errors.New("no compression algorithm selected")
-	}
-	return compression.(string), nil
-}
-
-type FilterType string
-
-const (
-	FilterNone  FilterType = "Export all data"
-	FilterTable FilterType = "Table (export specific database(s) or table(s) using table filter)"
-	FilterSQL   FilterType = "SQL (export data using SELECT SQL statement)"
-)
-
-func GetSelectedFilterType() (FilterType, error) {
-	filterTypes := make([]interface{}, 0, 3)
-
-	filterTypes = append(filterTypes, FilterTable, FilterSQL, FilterNone)
-	model, err := ui.InitialSelectModel(filterTypes, "Choose how to filter your data:")
-	if err != nil {
-		return "", errors.Trace(err)
-	}
-
-	p := tea.NewProgram(model)
-	fileTypeModel, err := p.Run()
-	if err != nil {
-		return "", errors.Trace(err)
-	}
-	if m, _ := fileTypeModel.(ui.SelectModel); m.Interrupted {
-		return "", util.InterruptError
-	}
-	filterType := fileTypeModel.(ui.SelectModel).GetSelectedItem()
-	if filterType == nil {
-		return "", errors.New("no filter type selected")
-	}
-	return filterType.(FilterType), nil
-}
-func initialFilterInputModel(filterType FilterType) ui.TextInputModel {
-	var inputFields map[string]int
-	switch filterType {
-	case FilterTable:
-		inputFields = FilterTableInputFields
-	case FilterSQL:
-		inputFields = FilterSQLInputFields
-	}
-	m := ui.TextInputModel{
-		Inputs: make([]textinput.Model, len(inputFields)),
-	}
-	for k, v := range inputFields {
-		t := textinput.New()
-		switch k {
-		case flag.SQL:
-			t.Placeholder = "SELECT SQL statement"
-			t.Focus()
-			t.PromptStyle = config.FocusedStyle
-			t.TextStyle = config.FocusedStyle
-		case flag.TableFilter:
-			t.Placeholder = "Table filter patterns (comma separated). Example: database.table,database.*,`database-1`.`table-1`"
-			t.Focus()
-			t.PromptStyle = config.FocusedStyle
-			t.TextStyle = config.FocusedStyle
-		case flag.TableWhere:
-			t.Placeholder = "Where condition. Example: id > 10"
-		}
-		m.Inputs[v] = t
-	}
-	return m
-}
-
-func GetFilterInput(filterType FilterType) (tea.Model, error) {
-	p := tea.NewProgram(initialFilterInputModel(filterType))
-	inputModel, err := p.Run()
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-	if inputModel.(ui.TextInputModel).Interrupted {
-		return nil, util.InterruptError
-	}
-	return inputModel, nil
-}
-
-func initialCSVFormatInputModel() ui.TextInputModel {
-	m := ui.TextInputModel{
-		Inputs: make([]textinput.Model, len(CSVformatInputFields)),
-	}
-	for k, v := range CSVformatInputFields {
-		t := textinput.New()
-		switch k {
-		case flag.CSVSeparator:
-			t.Placeholder = "CSV separator: separator of each value in CSV files, skip to use default value (,)"
-			t.Focus()
-			t.PromptStyle = config.FocusedStyle
-			t.TextStyle = config.FocusedStyle
-		case flag.CSVDelimiter:
-			t.Placeholder = "CSV delimiter: delimiter of string type variables in CSV files, skip to use default value (\"). If you want to set empty string, please use non-interactive mode"
-		case flag.CSVNullValue:
-			t.Placeholder = "CSV null value: representation of null values in CSV files, skip to use default value (\\N). If you want to set empty string, please use non-interactive mode"
-		case flag.CSVSkipHeader:
-			t.Placeholder = "CSV skip header: export CSV files of the tables without header. Type `true` to skip header, others will not skip header"
-		}
-		m.Inputs[v] = t
-	}
-	return m
-}
-
-func GetCSVFormatInput() (tea.Model, error) {
-	p := tea.NewProgram(initialCSVFormatInputModel())
-	inputModel, err := p.Run()
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-	if inputModel.(ui.TextInputModel).Interrupted {
-		return nil, util.InterruptError
-	}
-	return inputModel, nil
 }

@@ -366,7 +366,6 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	} else {
 		exportCfg.Host = serverlessEndpoint
 	}
-	exportCfg.Debug = true
 
 	return branchClient.New(branchTransport, strfmt.Default), serverlessClient.New(serverlessTransport, strfmt.Default),
 		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default),
