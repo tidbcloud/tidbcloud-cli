@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **Compression** | Pointer to [**ExportCompressionTypeEnum**](ExportCompressionTypeEnum.md) | Optional. The compression of the export. Default is GZIP. | [optional] 
 **Filter** | Pointer to [**ExportOptionsFilter**](ExportOptionsFilter.md) | Optional. The filter of the export. Default is whole cluster. | [optional] 
 **CsvFormat** | Pointer to [**ExportOptionsCSVFormat**](ExportOptionsCSVFormat.md) | Optional. The format of the csv. | [optional] 
+**ParquetOptions** | Pointer to [**ExportOptionsParquetOptions**](ExportOptionsParquetOptions.md) | Optional. The options of the parquet. | [optional] 
 
 ## Methods
 
@@ -179,6 +180,31 @@ SetCsvFormat sets CsvFormat field to given value.
 `func (o *ExportOptions) HasCsvFormat() bool`
 
 HasCsvFormat returns a boolean if a field has been set.
+
+### GetParquetOptions
+
+`func (o *ExportOptions) GetParquetOptions() ExportOptionsParquetOptions`
+
+GetParquetOptions returns the ParquetOptions field if non-nil, zero value otherwise.
+
+### GetParquetOptionsOk
+
+`func (o *ExportOptions) GetParquetOptionsOk() (*ExportOptionsParquetOptions, bool)`
+
+GetParquetOptionsOk returns a tuple with the ParquetOptions field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetParquetOptions
+
+`func (o *ExportOptions) SetParquetOptions(v ExportOptionsParquetOptions)`
+
+SetParquetOptions sets ParquetOptions field to given value.
+
+### HasParquetOptions
+
+`func (o *ExportOptions) HasParquetOptions() bool`
+
+HasParquetOptions returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

@@ -20,12 +20,12 @@ type ExportStateEnum string
 
 // List of ExportState.Enum
 const (
-	RUNNING   ExportStateEnum = "RUNNING"
-	SUCCEEDED ExportStateEnum = "SUCCEEDED"
-	FAILED    ExportStateEnum = "FAILED"
-	CANCELED  ExportStateEnum = "CANCELED"
-	DELETED   ExportStateEnum = "DELETED"
-	EXPIRED   ExportStateEnum = "EXPIRED"
+	EXPORTSTATEENUM_RUNNING   ExportStateEnum = "RUNNING"
+	EXPORTSTATEENUM_SUCCEEDED ExportStateEnum = "SUCCEEDED"
+	EXPORTSTATEENUM_FAILED    ExportStateEnum = "FAILED"
+	EXPORTSTATEENUM_CANCELED  ExportStateEnum = "CANCELED"
+	EXPORTSTATEENUM_DELETED   ExportStateEnum = "DELETED"
+	EXPORTSTATEENUM_EXPIRED   ExportStateEnum = "EXPIRED"
 )
 
 // All allowed values of ExportStateEnum enum

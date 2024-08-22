@@ -6,6 +6,8 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **Type** | Pointer to [**ExportTargetTypeEnum**](ExportTargetTypeEnum.md) | Optional. The exported file type. Default is LOCAL. | [optional] 
 **S3** | Pointer to [**S3Target**](S3Target.md) |  | [optional] 
+**Gcs** | Pointer to [**GCSTarget**](GCSTarget.md) |  | [optional] 
+**AzureBlob** | Pointer to [**AzureBlobTarget**](AzureBlobTarget.md) |  | [optional] 
 
 ## Methods
 
@@ -75,6 +77,56 @@ SetS3 sets S3 field to given value.
 `func (o *ExportTarget) HasS3() bool`
 
 HasS3 returns a boolean if a field has been set.
+
+### GetGcs
+
+`func (o *ExportTarget) GetGcs() GCSTarget`
+
+GetGcs returns the Gcs field if non-nil, zero value otherwise.
+
+### GetGcsOk
+
+`func (o *ExportTarget) GetGcsOk() (*GCSTarget, bool)`
+
+GetGcsOk returns a tuple with the Gcs field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetGcs
+
+`func (o *ExportTarget) SetGcs(v GCSTarget)`
+
+SetGcs sets Gcs field to given value.
+
+### HasGcs
+
+`func (o *ExportTarget) HasGcs() bool`
+
+HasGcs returns a boolean if a field has been set.
+
+### GetAzureBlob
+
+`func (o *ExportTarget) GetAzureBlob() AzureBlobTarget`
+
+GetAzureBlob returns the AzureBlob field if non-nil, zero value otherwise.
+
+### GetAzureBlobOk
+
+`func (o *ExportTarget) GetAzureBlobOk() (*AzureBlobTarget, bool)`
+
+GetAzureBlobOk returns a tuple with the AzureBlob field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetAzureBlob
+
+`func (o *ExportTarget) SetAzureBlob(v AzureBlobTarget)`
+
+SetAzureBlob sets AzureBlob field to given value.
+
+### HasAzureBlob
+
+`func (o *ExportTarget) HasAzureBlob() bool`
+
+HasAzureBlob returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

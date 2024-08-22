@@ -236,6 +236,23 @@ components:
         '@type':
           type: string
       type: object
+    AzureBlobTarget:
+      properties:
+        authType:
+          allOf:
+          - $ref: '#/components/schemas/ExportAzureBlobAuthType.Enum'
+          description: The Azure Blob URI of the export target.
+          type: object
+        sasToken:
+          description: The sas token. This field is input-only.
+          type: string
+        uri:
+          description: "The Azure Blob URI of the export target. For example: https://accountname.blob.core.windows.net/container/folder."
+          type: string
+      required:
+      - authType
+      - uri
+      type: object
     DownloadExportsResponse:
       example:
         downloads:
@@ -357,6 +374,11 @@ components:
       required:
       - clusterId
       type: object
+    ExportAzureBlobAuthType.Enum:
+      description: " - SAS_TOKEN: The access method is sas token."
+      enum:
+      - SAS_TOKEN
+      type: string
     ExportCompressionType.Enum:
       description: |2-
          - GZIP: Gzip compression.
@@ -378,6 +400,11 @@ components:
       - SQL
       - CSV
       - PARQUET
+      type: string
+    ExportGcsAuthType.Enum:
+      description: " - SERVICE_ACCOUNT_KEY: The access method is service account key."
+      enum:
+      - SERVICE_ACCOUNT_KEY
       type: string
     ExportOptions:
       properties:
@@ -409,6 +436,11 @@ components:
           allOf:
           - $ref: '#/components/schemas/ExportOptions.CSVFormat'
           description: Optional. The format of the csv.
+          type: object
+        parquetOptions:
+          allOf:
+          - $ref: '#/components/schemas/ExportOptions.ParquetOptions'
+          description: Optional. The options of the parquet.
           type: object
       type: object
     ExportOptions.CSVFormat:
@@ -452,6 +484,26 @@ components:
           description: Optional. Export only selected records.
           type: string
       type: object
+    ExportOptions.ParquetOptions:
+      properties:
+        compression:
+          allOf:
+          - $ref: '#/components/schemas/ExportParquetCompressionType.Enum'
+          description: Optional. The compression of the parquet. Default is ZSTD.
+          type: object
+      type: object
+    ExportParquetCompressionType.Enum:
+      description: |2-
+         - GZIP: The parquet compression type is GZIP.
+         - SNAPPY: The parquet compression type is SNAPPY.
+         - ZSTD: The parquet compression type is ZSTD.
+         - NONE: No compression.
+      enum:
+      - GZIP
+      - SNAPPY
+      - ZSTD
+      - NONE
+      type: string
     ExportS3AuthType.Enum:
       description: |2-
          - ROLE_ARN: The access method is role arn.
@@ -507,15 +559,40 @@ components:
           type: object
         s3:
           $ref: '#/components/schemas/S3Target'
+        gcs:
+          $ref: '#/components/schemas/GCSTarget'
+        azureBlob:
+          $ref: '#/components/schemas/AzureBlobTarget'
       type: object
     ExportTargetType.Enum:
-      description: |2-
-         - LOCAL: Local target.
-         - S3: S3 target.
       enum:
       - LOCAL
       - S3
+      - GCS
+      - AZURE_BLOB
+      title: |-
+        - LOCAL: Local target.
+         - S3: S3 target.
+         - GCS: gcs source
+         - AZURE_BLOB: azure blob source
       type: string
+    GCSTarget:
+      properties:
+        uri:
+          description: The GCS URI of the export target.
+          type: string
+        authType:
+          allOf:
+          - $ref: '#/components/schemas/ExportGcsAuthType.Enum'
+          description: The auth method of the export target.
+          type: object
+        serviceAccountKey:
+          title: The service account key
+          type: string
+      required:
+      - authType
+      - uri
+      type: object
     ListExportsResponse:
       example:
         totalSize: 0

@@ -294,6 +294,31 @@
       },
       "additionalProperties": {}
     },
+    "AzureBlobTarget": {
+      "type": "object",
+      "properties": {
+        "authType": {
+          "description": "The Azure Blob URI of the export target.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ExportAzureBlobAuthType.Enum"
+            }
+          ]
+        },
+        "sasToken": {
+          "type": "string",
+          "description": "The sas token. This field is input-only."
+        },
+        "uri": {
+          "type": "string",
+          "description": "The Azure Blob URI of the export target. For example: https://accountname.blob.core.windows.net/container/folder."
+        }
+      },
+      "required": [
+        "authType",
+        "uri"
+      ]
+    },
     "DownloadExportsResponse": {
       "type": "object",
       "properties": {
@@ -422,6 +447,13 @@
         "clusterId"
       ]
     },
+    "ExportAzureBlobAuthType.Enum": {
+      "type": "string",
+      "enum": [
+        "SAS_TOKEN"
+      ],
+      "description": " - SAS_TOKEN: The access method is sas token."
+    },
     "ExportCompressionType.Enum": {
       "type": "string",
       "enum": [
@@ -440,6 +472,13 @@
         "PARQUET"
       ],
       "description": " - SQL: SQL type.\n - CSV: CSV type.\n - PARQUET: PARQUET type."
+    },
+    "ExportGcsAuthType.Enum": {
+      "type": "string",
+      "enum": [
+        "SERVICE_ACCOUNT_KEY"
+      ],
+      "description": " - SERVICE_ACCOUNT_KEY: The access method is service account key."
     },
     "ExportOptions": {
       "type": "object",
@@ -481,6 +520,14 @@
           "allOf": [
             {
               "$ref": "#/definitions/ExportOptions.CSVFormat"
+            }
+          ]
+        },
+        "parquetOptions": {
+          "description": "Optional. The options of the parquet.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ExportOptions.ParquetOptions"
             }
           ]
         }
@@ -541,6 +588,29 @@
           "description": "Optional. Export only selected records."
         }
       }
+    },
+    "ExportOptions.ParquetOptions": {
+      "type": "object",
+      "properties": {
+        "compression": {
+          "description": "Optional. The compression of the parquet. Default is ZSTD.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ExportParquetCompressionType.Enum"
+            }
+          ]
+        }
+      }
+    },
+    "ExportParquetCompressionType.Enum": {
+      "type": "string",
+      "enum": [
+        "GZIP",
+        "SNAPPY",
+        "ZSTD",
+        "NONE"
+      ],
+      "description": " - GZIP: The parquet compression type is GZIP.\n - SNAPPY: The parquet compression type is SNAPPY.\n - ZSTD: The parquet compression type is ZSTD.\n - NONE: No compression."
     },
     "ExportS3AuthType.Enum": {
       "type": "string",
@@ -606,6 +676,12 @@
         },
         "s3": {
           "$ref": "#/definitions/S3Target"
+        },
+        "gcs": {
+          "$ref": "#/definitions/GCSTarget"
+        },
+        "azureBlob": {
+          "$ref": "#/definitions/AzureBlobTarget"
         }
       }
     },
@@ -613,9 +689,36 @@
       "type": "string",
       "enum": [
         "LOCAL",
-        "S3"
+        "S3",
+        "GCS",
+        "AZURE_BLOB"
       ],
-      "description": " - LOCAL: Local target.\n - S3: S3 target."
+      "title": "- LOCAL: Local target.\n - S3: S3 target.\n - GCS: gcs source\n - AZURE_BLOB: azure blob source"
+    },
+    "GCSTarget": {
+      "type": "object",
+      "properties": {
+        "uri": {
+          "type": "string",
+          "description": "The GCS URI of the export target."
+        },
+        "authType": {
+          "description": "The auth method of the export target.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ExportGcsAuthType.Enum"
+            }
+          ]
+        },
+        "serviceAccountKey": {
+          "type": "string",
+          "title": "The service account key"
+        }
+      },
+      "required": [
+        "uri",
+        "authType"
+      ]
     },
     "ListExportsResponse": {
       "type": "object",

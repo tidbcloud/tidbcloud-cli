@@ -377,7 +377,7 @@ func GetSelectedLocalExport(ctx context.Context, clusterID string, pageSize int6
 
 	var items = make([]interface{}, 0, len(exportItems))
 	for _, item := range exportItems {
-		if *item.Target.Type == exportClient.LOCAL && *item.State == exportClient.SUCCEEDED {
+		if *item.Target.Type == exportClient.EXPORTTARGETTYPEENUM_LOCAL && *item.State == exportClient.EXPORTSTATEENUM_SUCCEEDED {
 			items = append(items, &Export{
 				ID: *item.ExportId,
 			})

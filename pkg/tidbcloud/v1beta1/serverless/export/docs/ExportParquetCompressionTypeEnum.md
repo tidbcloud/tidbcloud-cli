@@ -1,15 +1,15 @@
-# ExportTargetTypeEnum
+# ExportParquetCompressionTypeEnum
 
 ## Enum
 
 
-* `LOCAL` (value: `"LOCAL"`)
+* `GZIP` (value: `"GZIP"`)
 
-* `S3` (value: `"S3"`)
+* `SNAPPY` (value: `"SNAPPY"`)
 
-* `GCS` (value: `"GCS"`)
+* `ZSTD` (value: `"ZSTD"`)
 
-* `AZURE_BLOB` (value: `"AZURE_BLOB"`)
+* `NONE` (value: `"NONE"`)
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

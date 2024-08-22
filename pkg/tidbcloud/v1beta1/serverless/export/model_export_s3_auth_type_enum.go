@@ -20,8 +20,8 @@ type ExportS3AuthTypeEnum string
 
 // List of ExportS3AuthType.Enum
 const (
-	ROLE_ARN   ExportS3AuthTypeEnum = "ROLE_ARN"
-	ACCESS_KEY ExportS3AuthTypeEnum = "ACCESS_KEY"
+	EXPORTS3AUTHTYPEENUM_ROLE_ARN   ExportS3AuthTypeEnum = "ROLE_ARN"
+	EXPORTS3AUTHTYPEENUM_ACCESS_KEY ExportS3AuthTypeEnum = "ACCESS_KEY"
 )
 
 // All allowed values of ExportS3AuthTypeEnum enum

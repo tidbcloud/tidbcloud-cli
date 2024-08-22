@@ -20,10 +20,10 @@ type ExportCompressionTypeEnum string
 
 // List of ExportCompressionType.Enum
 const (
-	GZIP   ExportCompressionTypeEnum = "GZIP"
-	SNAPPY ExportCompressionTypeEnum = "SNAPPY"
-	ZSTD   ExportCompressionTypeEnum = "ZSTD"
-	NONE   ExportCompressionTypeEnum = "NONE"
+	EXPORTCOMPRESSIONTYPEENUM_GZIP   ExportCompressionTypeEnum = "GZIP"
+	EXPORTCOMPRESSIONTYPEENUM_SNAPPY ExportCompressionTypeEnum = "SNAPPY"
+	EXPORTCOMPRESSIONTYPEENUM_ZSTD   ExportCompressionTypeEnum = "ZSTD"
+	EXPORTCOMPRESSIONTYPEENUM_NONE   ExportCompressionTypeEnum = "NONE"
 )
 
 // All allowed values of ExportCompressionTypeEnum enum

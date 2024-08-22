@@ -55,6 +55,15 @@ const (
 	FileTypeUnknown FileType = "UNKNOWN"
 )
 
+type AuthType string
+
+const (
+	AuthTypeS3AccessKey          AuthType = "S3AccessKey"
+	AuthTypeS3RoleArn            AuthType = "S3RoleArn"
+	AuthTypeGCSServiceAccountKey AuthType = "GCSServiceAccountKey"
+	AuthTypeAzBlobSasToken       AuthType = "AzBlobSasToken"
+)
+
 var (
 	supportedFileType           = []string{string(FileTypeSQL), string(FileTypeCSV), string(FileTypePARQUET)}
 	supportedTargetType         = []string{string(TargetTypeS3), string(TargetTypeLOCAL), string(TargetTypeGCS), string(TargetTypeAZBLOB)}
@@ -67,12 +76,6 @@ const (
 	CSVDelimiterDefaultValue = "\""
 	CSVNullValueDefaultValue = "\\N"
 )
-
-var S3InputFields = map[string]int{
-	flag.S3URI:             0,
-	flag.S3AccessKeyID:     1,
-	flag.S3SecretAccessKey: 2,
-}
 
 var FilterSQLInputFields = map[string]int{
 	flag.SQL: 0,
@@ -209,34 +212,80 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterId = cluster.ID
 
+				// target
 				selectedTargetType, err := GetSelectedTargetType()
 				if err != nil {
 					return err
 				}
-				if selectedTargetType == TargetTypeUnknown {
-					return errors.New("target type must be LOCAL or S3")
-				}
 				targetType = string(selectedTargetType)
-
-				if selectedTargetType == TargetTypeS3 {
-					s3InputModel, err := GetS3Input()
+				selectedAuthType, err := GetSelectedAuthType(selectedTargetType)
+				if err != nil {
+					return err
+				}
+				switch selectedAuthType {
+				case AuthTypeS3AccessKey:
+					inputs := []string{flag.S3URI, flag.S3AccessKeyID, flag.S3SecretAccessKey}
+					textInput, err := InitialInputModel(inputs)
 					if err != nil {
 						return err
 					}
-					s3URI = s3InputModel.(ui.TextInputModel).Inputs[S3InputFields[flag.S3URI]].Value()
+					s3URI = textInput.Inputs[0].Value()
 					if s3URI == "" {
-						return errors.New("s3 uri is required when target type is S3")
+						return errors.New("empty s3 uri")
 					}
-					accessKeyID = s3InputModel.(ui.TextInputModel).Inputs[S3InputFields[flag.S3AccessKeyID]].Value()
+					accessKeyID = textInput.Inputs[1].Value()
 					if accessKeyID == "" {
-						return errors.New("access key Id is required when target type is S3")
+						return errors.New("empty s3 access key Id")
 					}
-					secretAccessKey = s3InputModel.(ui.TextInputModel).Inputs[S3InputFields[flag.S3SecretAccessKey]].Value()
+					secretAccessKey = textInput.Inputs[2].Value()
 					if secretAccessKey == "" {
-						return errors.New("secret access key is required when target type is S3")
+						return errors.New("empty s3 secret access key")
+					}
+				case AuthTypeS3RoleArn:
+					inputs := []string{flag.S3URI, flag.S3RoleArn}
+					textInput, err := InitialInputModel(inputs)
+					if err != nil {
+						return err
+					}
+					s3URI = textInput.Inputs[0].Value()
+					if s3URI == "" {
+						return errors.New("empty s3 uri")
+					}
+					s3RoleArn = textInput.Inputs[1].Value()
+					if s3RoleArn == "" {
+						return errors.New("empty s3 role arn")
+					}
+				case AuthTypeGCSServiceAccountKey:
+					inputs := []string{flag.GCSURI, flag.GCSServiceAccountKey}
+					textInput, err := InitialInputModel(inputs)
+					if err != nil {
+						return err
+					}
+					gcsURI = textInput.Inputs[0].Value()
+					if gcsURI == "" {
+						return errors.New("empty gsc uri")
+					}
+					gcsServiceAccountKey = textInput.Inputs[1].Value()
+					if gcsServiceAccountKey == "" {
+						return errors.New("empty gcs service account key")
+					}
+				case AuthTypeAzBlobSasToken:
+					inputs := []string{flag.AzureBlobURI, flag.AzureBlobSASToken}
+					textInput, err := InitialInputModel(inputs)
+					if err != nil {
+						return err
+					}
+					azBlobURI = textInput.Inputs[0].Value()
+					if azBlobURI == "" {
+						return errors.New("empty azure blob uri")
+					}
+					azBlobSasToken = textInput.Inputs[1].Value()
+					if azBlobSasToken == "" {
+						return errors.New("empty azure blob sas token")
 					}
 				}
 
+				// Export options, including: filter, file type, compression
 				filterType, err := GetSelectedFilterType()
 				if err != nil {
 					return err
@@ -270,20 +319,13 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 				}
 
-				if filterType == FilterSQL {
-					fileType = string(FileTypeCSV)
-				} else {
-					selectedFileType, err := GetSelectedFileType()
-					if err != nil {
-						return err
-					}
-					if selectedFileType == FileTypeUnknown {
-						return errors.New("file type must be SQL or CSV")
-					}
-					fileType = string(selectedFileType)
+				selectedFileType, err := GetSelectedFileType(filterType)
+				if err != nil {
+					return err
 				}
-
-				if fileType == string(FileTypeCSV) {
+				fileType = string(selectedFileType)
+				switch fileType {
+				case string(FileTypeCSV):
 					customCSVFormat := false
 					prompt := &survey.Confirm{
 						Message: "Do you want to customize the CSV format",
@@ -320,6 +362,27 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 					if csvNullValue == "" {
 						csvNullValue = CSVNullValueDefaultValue
+					}
+				case string(FileTypePARQUET):
+					customParquetCompression := false
+					prompt := &survey.Confirm{
+						Message: "Do you want change the default parquet compression algorithm ZSTD",
+						Default: false,
+					}
+					err = survey.AskOne(prompt, &customParquetCompression)
+					if err != nil {
+						if err == terminal.InterruptErr {
+							return util.InterruptError
+						} else {
+							return err
+						}
+					}
+
+					if customParquetCompression {
+						compression, err = GetSelectedCompression()
+						if err != nil {
+							return err
+						}
 					}
 				}
 
@@ -502,19 +565,46 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				},
 				Target: &exportClient.ExportTarget{
 					Type: &targetTypeEnum,
-					S3: &exportClient.S3Target{
-						Uri: &s3URI,
+				},
+			}
+			// add target
+			switch targetTypeEnum {
+			case exportClient.EXPORTTARGETTYPEENUM_S3:
+				if s3RoleArn != "" {
+					params.Target.S3 = &exportClient.S3Target{
+						Uri:      &s3URI,
+						RoleArn:  &s3RoleArn,
+						AuthType: exportClient.EXPORTS3AUTHTYPEENUM_ROLE_ARN,
+					}
+				} else {
+					params.Target.S3 = &exportClient.S3Target{
+						Uri:      &s3URI,
+						AuthType: exportClient.EXPORTS3AUTHTYPEENUM_ACCESS_KEY,
 						AccessKey: &exportClient.S3TargetAccessKey{
 							Id:     accessKeyID,
 							Secret: secretAccessKey,
 						},
-					},
-				},
+					}
+				}
+			case exportClient.EXPORTTARGETTYPEENUM_GCS:
+				params.Target.Gcs = &exportClient.GCSTarget{
+					Uri:               gcsURI,
+					AuthType:          exportClient.EXPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY,
+					ServiceAccountKey: &gcsServiceAccountKey,
+				}
+			case exportClient.EXPORTTARGETTYPEENUM_AZURE_BLOB:
+				params.Target.AzureBlob = &exportClient.AzureBlobTarget{
+					Uri:      azBlobURI,
+					AuthType: exportClient.EXPORTAZUREBLOBAUTHTYPEENUM_SAS_TOKEN,
+					SasToken: &azBlobSasToken,
+				}
 			}
+			// add compression
 			if compression != "" {
 				compressionEnum := exportClient.ExportCompressionTypeEnum(strings.ToUpper(compression))
 				params.ExportOptions.Compression = &compressionEnum
 			}
+			// add filter
 			if sql != "" {
 				params.ExportOptions.Filter = &exportClient.ExportOptionsFilter{
 					Sql: &sql,
@@ -528,12 +618,21 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					},
 				}
 			}
-			if strings.ToUpper(fileType) == string(FileTypeCSV) {
+			// add file type
+			switch strings.ToUpper(fileType) {
+			case string(FileTypeCSV):
 				params.ExportOptions.CsvFormat = &exportClient.ExportOptionsCSVFormat{
 					Separator:  &csvSeparator,
 					Delimiter:  *exportClient.NewNullableString(&csvDelimiter),
 					NullValue:  *exportClient.NewNullableString(&csvNullValue),
 					SkipHeader: &csvSkipHeader,
+				}
+			case string(FileTypePARQUET):
+				if parquetCompression != "" {
+					c := exportClient.ExportParquetCompressionTypeEnum(strings.ToUpper(parquetCompression))
+					params.ExportOptions.ParquetOptions = &exportClient.ExportOptionsParquetOptions{
+						Compression: &c,
+					}
 				}
 			}
 
@@ -552,7 +651,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster, in which the export will be created.")
 	createCmd.Flags().String(flag.FileType, "SQL", "The export file type. One of [\"CSV\" \"SQL\" \"PARQUET\"].")
 	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export target. One of [\"LOCAL\" \"S3\" \"GCS\" \"AZBLOB\"].")
-	createCmd.Flags().String(flag.S3URI, "", "The s3 uri in s3://<bucket>/<file> format. Required when target type is S3.")
+	createCmd.Flags().String(flag.S3URI, "", "The s3 uri in s3://<bucket>/<path> format. Required when target type is S3.")
 	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
 	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
 	createCmd.Flags().String(flag.Compression, "GZIP", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"].")
@@ -565,9 +664,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.CSVNullValue, CSVNullValueDefaultValue, "Representation of null values in CSV files.")
 	createCmd.Flags().Bool(flag.CSVSkipHeader, false, "Export CSV files of the tables without header.")
 	createCmd.Flags().String(flag.S3RoleArn, "", "The role arn of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
-	createCmd.Flags().String(flag.GCSURI, "", "The gcs uri in gcs://<bucket>/<file> format. Required when target type is GCS.")
+	createCmd.Flags().String(flag.GCSURI, "", "The gcs uri in gcs://<bucket>/<path> format. Required when target type is GCS.")
 	createCmd.Flags().String(flag.GCSServiceAccountKey, "", "The base64 encoded service account key of GCS.")
-	createCmd.Flags().String(flag.AzureBlobURI, "", "The azure blob uri in azure://<account>.blob.core.windows.net/<container>/<file> format. Required when target type is AZBLOB.")
+	createCmd.Flags().String(flag.AzureBlobURI, "", "The azure blob uri in azure://<account>.blob.core.windows.net/<container>/<path> format. Required when target type is AZBLOB.")
 	createCmd.Flags().String(flag.AzureBlobSASToken, "", "The SAS token of Azure Blob.")
 	createCmd.Flags().String(flag.ParquetCompression, "ZSTD", "The parquet compression algorithm. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"].")
 
@@ -581,7 +680,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 func GetSelectedTargetType() (TargetType, error) {
 	targetTypes := make([]interface{}, 0, 2)
 	targetTypes = append(targetTypes, TargetTypeLOCAL, TargetTypeS3)
-	model, err := ui.InitialSelectModel(targetTypes, "Choose where to export:")
+	model, err := ui.InitialSelectModel(targetTypes, "Choose the export target:")
 	if err != nil {
 		return TargetTypeUnknown, errors.Trace(err)
 	}
@@ -601,25 +700,66 @@ func GetSelectedTargetType() (TargetType, error) {
 	return targetType.(TargetType), nil
 }
 
-func GetSelectedFileType() (FileType, error) {
-	fileTypes := make([]interface{}, 0, 2)
-	fileTypes = append(fileTypes, FileTypeSQL, FileTypeCSV)
-	model, err := ui.InitialSelectModel(fileTypes, "Choose the exported file type:")
+func GetSelectedAuthType(target TargetType) (_ AuthType, err error) {
+	var model *ui.SelectModel
+	switch target {
+	case TargetTypeS3:
+		authTypes := make([]interface{}, 0, 2)
+		authTypes = append(authTypes, AuthTypeS3RoleArn, AuthTypeS3AccessKey)
+		model, err = ui.InitialSelectModel(authTypes, "Choose the S3 auth:")
+		if err != nil {
+			return "", errors.Trace(err)
+		}
+	case TargetTypeGCS:
+		return AuthTypeGCSServiceAccountKey, nil
+	case TargetTypeAZBLOB:
+		return AuthTypeAzBlobSasToken, nil
+	}
+	if model == nil {
+		return "", errors.New("unknown auth type")
+	}
+	p := tea.NewProgram(model)
+	authTypeModel, err := p.Run()
 	if err != nil {
-		return FileTypeUnknown, errors.Trace(err)
+		return "", errors.Trace(err)
+	}
+	if m, _ := authTypeModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	authType := authTypeModel.(ui.SelectModel).GetSelectedItem()
+	if authType == nil {
+		return "", errors.New("no auth type selected")
+	}
+	return authType.(AuthType), nil
+}
+
+func GetSelectedFileType(filterType FilterType) (_ FileType, err error) {
+	var model *ui.SelectModel
+	switch filterType {
+	case FilterSQL:
+		fileTypes := make([]interface{}, 0, 2)
+		fileTypes = append(fileTypes, FileTypeCSV, FileTypePARQUET)
+		model, err = ui.InitialSelectModel(fileTypes, "Choose the exported file type:")
+	default:
+		fileTypes := make([]interface{}, 0, 3)
+		fileTypes = append(fileTypes, FileTypeSQL, FileTypeCSV, FileTypePARQUET)
+		model, err = ui.InitialSelectModel(fileTypes, "Choose the exported file type:")
+	}
+	if err != nil {
+		return "", errors.Trace(err)
 	}
 
 	p := tea.NewProgram(model)
 	fileTypeModel, err := p.Run()
 	if err != nil {
-		return FileTypeUnknown, errors.Trace(err)
+		return "", errors.Trace(err)
 	}
 	if m, _ := fileTypeModel.(ui.SelectModel); m.Interrupted {
 		return FileTypeUnknown, util.InterruptError
 	}
 	fileType := fileTypeModel.(ui.SelectModel).GetSelectedItem()
 	if fileType == nil {
-		return FileTypeUnknown, errors.New("no export file type selected")
+		return "", errors.New("no export file type selected")
 	}
 	return fileType.(FileType), nil
 }
@@ -659,7 +799,7 @@ func GetSelectedFilterType() (FilterType, error) {
 	filterTypes := make([]interface{}, 0, 3)
 
 	filterTypes = append(filterTypes, FilterTable, FilterSQL, FilterNone)
-	model, err := ui.InitialSelectModel(filterTypes, "Choose the filter type:")
+	model, err := ui.InitialSelectModel(filterTypes, "Choose how to filter your data:")
 	if err != nil {
 		return "", errors.Trace(err)
 	}
@@ -678,41 +818,6 @@ func GetSelectedFilterType() (FilterType, error) {
 	}
 	return filterType.(FilterType), nil
 }
-
-func initialS3InputModel() ui.TextInputModel {
-	m := ui.TextInputModel{
-		Inputs: make([]textinput.Model, len(S3InputFields)),
-	}
-	for k, v := range S3InputFields {
-		t := textinput.New()
-		switch k {
-		case flag.S3URI:
-			t.Placeholder = "S3 URI in s3://<bucket>/<path> format"
-			t.Focus()
-			t.PromptStyle = config.FocusedStyle
-			t.TextStyle = config.FocusedStyle
-		case flag.S3AccessKeyID:
-			t.Placeholder = "S3 Access Key ID"
-		case flag.S3SecretAccessKey:
-			t.Placeholder = "S3 Secret Access key"
-		}
-		m.Inputs[v] = t
-	}
-	return m
-}
-
-func GetS3Input() (tea.Model, error) {
-	p := tea.NewProgram(initialS3InputModel())
-	inputModel, err := p.Run()
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-	if inputModel.(ui.TextInputModel).Interrupted {
-		return nil, util.InterruptError
-	}
-	return inputModel, nil
-}
-
 func initialFilterInputModel(filterType FilterType) ui.TextInputModel {
 	var inputFields map[string]int
 	switch filterType {

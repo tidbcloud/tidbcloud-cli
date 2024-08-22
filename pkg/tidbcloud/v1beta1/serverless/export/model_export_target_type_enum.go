@@ -15,19 +15,23 @@ import (
 	"fmt"
 )
 
-// ExportTargetTypeEnum  - LOCAL: Local target.  - S3: S3 target.
+// ExportTargetTypeEnum the model 'ExportTargetTypeEnum'
 type ExportTargetTypeEnum string
 
 // List of ExportTargetType.Enum
 const (
-	LOCAL ExportTargetTypeEnum = "LOCAL"
-	S3    ExportTargetTypeEnum = "S3"
+	EXPORTTARGETTYPEENUM_LOCAL      ExportTargetTypeEnum = "LOCAL"
+	EXPORTTARGETTYPEENUM_S3         ExportTargetTypeEnum = "S3"
+	EXPORTTARGETTYPEENUM_GCS        ExportTargetTypeEnum = "GCS"
+	EXPORTTARGETTYPEENUM_AZURE_BLOB ExportTargetTypeEnum = "AZURE_BLOB"
 )
 
 // All allowed values of ExportTargetTypeEnum enum
 var AllowedExportTargetTypeEnumEnumValues = []ExportTargetTypeEnum{
 	"LOCAL",
 	"S3",
+	"GCS",
+	"AZURE_BLOB",
 }
 
 func (v *ExportTargetTypeEnum) UnmarshalJSON(src []byte) error {

@@ -20,8 +20,10 @@ var _ MappedNullable = &ExportTarget{}
 // ExportTarget struct for ExportTarget
 type ExportTarget struct {
 	// Optional. The exported file type. Default is LOCAL.
-	Type *ExportTargetTypeEnum `json:"type,omitempty"`
-	S3   *S3Target             `json:"s3,omitempty"`
+	Type      *ExportTargetTypeEnum `json:"type,omitempty"`
+	S3        *S3Target             `json:"s3,omitempty"`
+	Gcs       *GCSTarget            `json:"gcs,omitempty"`
+	AzureBlob *AzureBlobTarget      `json:"azureBlob,omitempty"`
 }
 
 // NewExportTarget instantiates a new ExportTarget object
@@ -105,6 +107,70 @@ func (o *ExportTarget) SetS3(v S3Target) {
 	o.S3 = &v
 }
 
+// GetGcs returns the Gcs field value if set, zero value otherwise.
+func (o *ExportTarget) GetGcs() GCSTarget {
+	if o == nil || IsNil(o.Gcs) {
+		var ret GCSTarget
+		return ret
+	}
+	return *o.Gcs
+}
+
+// GetGcsOk returns a tuple with the Gcs field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ExportTarget) GetGcsOk() (*GCSTarget, bool) {
+	if o == nil || IsNil(o.Gcs) {
+		return nil, false
+	}
+	return o.Gcs, true
+}
+
+// HasGcs returns a boolean if a field has been set.
+func (o *ExportTarget) HasGcs() bool {
+	if o != nil && !IsNil(o.Gcs) {
+		return true
+	}
+
+	return false
+}
+
+// SetGcs gets a reference to the given GCSTarget and assigns it to the Gcs field.
+func (o *ExportTarget) SetGcs(v GCSTarget) {
+	o.Gcs = &v
+}
+
+// GetAzureBlob returns the AzureBlob field value if set, zero value otherwise.
+func (o *ExportTarget) GetAzureBlob() AzureBlobTarget {
+	if o == nil || IsNil(o.AzureBlob) {
+		var ret AzureBlobTarget
+		return ret
+	}
+	return *o.AzureBlob
+}
+
+// GetAzureBlobOk returns a tuple with the AzureBlob field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ExportTarget) GetAzureBlobOk() (*AzureBlobTarget, bool) {
+	if o == nil || IsNil(o.AzureBlob) {
+		return nil, false
+	}
+	return o.AzureBlob, true
+}
+
+// HasAzureBlob returns a boolean if a field has been set.
+func (o *ExportTarget) HasAzureBlob() bool {
+	if o != nil && !IsNil(o.AzureBlob) {
+		return true
+	}
+
+	return false
+}
+
+// SetAzureBlob gets a reference to the given AzureBlobTarget and assigns it to the AzureBlob field.
+func (o *ExportTarget) SetAzureBlob(v AzureBlobTarget) {
+	o.AzureBlob = &v
+}
+
 func (o ExportTarget) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -120,6 +186,12 @@ func (o ExportTarget) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.S3) {
 		toSerialize["s3"] = o.S3
+	}
+	if !IsNil(o.Gcs) {
+		toSerialize["gcs"] = o.Gcs
+	}
+	if !IsNil(o.AzureBlob) {
+		toSerialize["azureBlob"] = o.AzureBlob
 	}
 	return toSerialize, nil
 }

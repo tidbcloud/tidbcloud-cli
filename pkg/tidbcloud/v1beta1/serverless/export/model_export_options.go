@@ -29,6 +29,8 @@ type ExportOptions struct {
 	Filter *ExportOptionsFilter `json:"filter,omitempty"`
 	// Optional. The format of the csv.
 	CsvFormat *ExportOptionsCSVFormat `json:"csvFormat,omitempty"`
+	// Optional. The options of the parquet.
+	ParquetOptions *ExportOptionsParquetOptions `json:"parquetOptions,omitempty"`
 }
 
 // NewExportOptions instantiates a new ExportOptions object
@@ -240,6 +242,38 @@ func (o *ExportOptions) SetCsvFormat(v ExportOptionsCSVFormat) {
 	o.CsvFormat = &v
 }
 
+// GetParquetOptions returns the ParquetOptions field value if set, zero value otherwise.
+func (o *ExportOptions) GetParquetOptions() ExportOptionsParquetOptions {
+	if o == nil || IsNil(o.ParquetOptions) {
+		var ret ExportOptionsParquetOptions
+		return ret
+	}
+	return *o.ParquetOptions
+}
+
+// GetParquetOptionsOk returns a tuple with the ParquetOptions field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ExportOptions) GetParquetOptionsOk() (*ExportOptionsParquetOptions, bool) {
+	if o == nil || IsNil(o.ParquetOptions) {
+		return nil, false
+	}
+	return o.ParquetOptions, true
+}
+
+// HasParquetOptions returns a boolean if a field has been set.
+func (o *ExportOptions) HasParquetOptions() bool {
+	if o != nil && !IsNil(o.ParquetOptions) {
+		return true
+	}
+
+	return false
+}
+
+// SetParquetOptions gets a reference to the given ExportOptionsParquetOptions and assigns it to the ParquetOptions field.
+func (o *ExportOptions) SetParquetOptions(v ExportOptionsParquetOptions) {
+	o.ParquetOptions = &v
+}
+
 func (o ExportOptions) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -267,6 +301,9 @@ func (o ExportOptions) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.CsvFormat) {
 		toSerialize["csvFormat"] = o.CsvFormat
+	}
+	if !IsNil(o.ParquetOptions) {
+		toSerialize["parquetOptions"] = o.ParquetOptions
 	}
 	return toSerialize, nil
 }

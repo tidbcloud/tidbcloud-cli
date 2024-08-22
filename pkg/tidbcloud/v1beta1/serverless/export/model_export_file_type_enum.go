@@ -20,9 +20,9 @@ type ExportFileTypeEnum string
 
 // List of ExportFileType.Enum
 const (
-	SQL     ExportFileTypeEnum = "SQL"
-	CSV     ExportFileTypeEnum = "CSV"
-	PARQUET ExportFileTypeEnum = "PARQUET"
+	EXPORTFILETYPEENUM_SQL     ExportFileTypeEnum = "SQL"
+	EXPORTFILETYPEENUM_CSV     ExportFileTypeEnum = "CSV"
+	EXPORTFILETYPEENUM_PARQUET ExportFileTypeEnum = "PARQUET"
 )
 
 // All allowed values of ExportFileTypeEnum enum
