@@ -47,97 +47,25 @@ func InitialInputModel(inputs []string) (ui.TextInputModel, error) {
 	return finalModel, nil
 }
 
-//func initialS3AccessKeyInputModel() ui.TextInputModel {
-//	m := ui.TextInputModel{
-//		Inputs: make([]textinput.Model, len(S3AccessKeyInputFields)),
-//	}
-//	for k, v := range S3AccessKeyInputFields {
-//		t := textinput.New()
-//		switch k {
-//		case flag.S3URI:
-//			t.Placeholder = "Input your S3 uri in s3://<bucket>/<path> format"
-//			t.Focus()
-//			t.PromptStyle = config.FocusedStyle
-//			t.TextStyle = config.FocusedStyle
-//		case flag.S3AccessKeyID:
-//			t.Placeholder = "Input your S3 access key id"
-//		case flag.S3SecretAccessKey:
-//			t.Placeholder = "Input your S3 secret access key"
-//		}
-//		m.Inputs[v] = t
-//	}
-//	return m
-//}
-//
-//func initialS3RoleArnInputModel() ui.TextInputModel {
-//	m := ui.TextInputModel{
-//		Inputs: make([]textinput.Model, len(S3RoleArnInputFields)),
-//	}
-//	for k, v := range S3RoleArnInputFields {
-//		t := textinput.New()
-//		switch k {
-//		case flag.S3URI:
-//			t.Placeholder = "Input your S3 uri in s3://<bucket>/<path> format"
-//			t.Focus()
-//			t.PromptStyle = config.FocusedStyle
-//			t.TextStyle = config.FocusedStyle
-//		case flag.S3RoleArn:
-//			t.Placeholder = "Input your S3 role arn"
-//		}
-//		m.Inputs[v] = t
-//	}
-//	return m
-//}
-//
-//func initialGSCServiceAccountKeyInputModel() ui.TextInputModel {
-//	m := ui.TextInputModel{
-//		Inputs: make([]textinput.Model, len(GSCServiceAccountKeyInputFields)),
-//	}
-//	for k, v := range GSCServiceAccountKeyInputFields {
-//		t := textinput.New()
-//		switch k {
-//		case flag.GCSURI:
-//			t.Placeholder = "Input your S3 uri in s3://<bucket>/<path> format"
-//			t.Focus()
-//			t.PromptStyle = config.FocusedStyle
-//			t.TextStyle = config.FocusedStyle
-//		case flag.GCSServiceAccountKey:
-//			t.Placeholder = "Input your S3 role arn"
-//		}
-//		m.Inputs[v] = t
-//	}
-//	return m
-//}
-//
-//func initialAzBlobSasTokenInputModel() ui.TextInputModel {
-//	m := ui.TextInputModel{
-//		Inputs: make([]textinput.Model, len(AuthTypeAzBlobSasToken)),
-//	}
-//	for k, v := range AuthTypeAzBlobSasToken {
-//		t := textinput.New()
-//		switch k {
-//		case flag.S3URI:
-//			t.Placeholder = "Input your S3 uri in s3://<bucket>/<path> format"
-//			t.Focus()
-//			t.PromptStyle = config.FocusedStyle
-//			t.TextStyle = config.FocusedStyle
-//		case flag.S3RoleArn:
-//			t.Placeholder = "Input your S3 role arn"
-//		}
-//		m.Inputs[v] = t
-//	}
-//	return m
-//}
-//
-//func GetExternalStorageInput(authType AuthType) (tea.Model, error) {
-//
-//	p := tea.NewProgram(initialS3AccessKeyInputModel())
-//	inputModel, err := p.Run()
-//	if err != nil {
-//		return nil, errors.Trace(err)
-//	}
-//	if inputModel.(ui.TextInputModel).Interrupted {
-//		return nil, util.InterruptError
-//	}
-//	return inputModel, nil
-//}
+func GetSelectedParquetCompression() (string, error) {
+	compressions := make([]interface{}, 0, 4)
+	compressions = append(compressions, "SNAPPY", "GZIP", "NONE")
+	model, err := ui.InitialSelectModel(compressions, "Choose the parquet compression algorithm:")
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+
+	p := tea.NewProgram(model)
+	fileTypeModel, err := p.Run()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := fileTypeModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	compression := fileTypeModel.(ui.SelectModel).GetSelectedItem()
+	if compression == nil {
+		return "", errors.New("no compression algorithm selected")
+	}
+	return compression.(string), nil
+}

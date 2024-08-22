@@ -379,31 +379,32 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 
 					if customParquetCompression {
-						compression, err = GetSelectedCompression()
+						compression, err = GetSelectedParquetCompression()
 						if err != nil {
 							return err
 						}
 					}
 				}
 
-				// get compression
-				changeCompression := false
-				prompt := &survey.Confirm{
-					Message: "Do you want to change the default compression algorithm GZIP",
-					Default: false,
-				}
-				err = survey.AskOne(prompt, &changeCompression)
-				if err != nil {
-					if err == terminal.InterruptErr {
-						return util.InterruptError
-					} else {
-						return err
+				if fileType != string(FileTypePARQUET) {
+					changeCompression := false
+					prompt := &survey.Confirm{
+						Message: "Do you want to change the default compression algorithm GZIP",
+						Default: false,
 					}
-				}
-				if changeCompression {
-					compression, err = GetSelectedCompression()
+					err = survey.AskOne(prompt, &changeCompression)
 					if err != nil {
-						return err
+						if err == terminal.InterruptErr {
+							return util.InterruptError
+						} else {
+							return err
+						}
+					}
+					if changeCompression {
+						compression, err = GetSelectedCompression()
+						if err != nil {
+							return err
+						}
 					}
 				}
 			} else {
@@ -679,7 +680,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 func GetSelectedTargetType() (TargetType, error) {
 	targetTypes := make([]interface{}, 0, 2)
-	targetTypes = append(targetTypes, TargetTypeLOCAL, TargetTypeS3)
+	targetTypes = append(targetTypes, TargetTypeLOCAL, TargetTypeS3, TargetTypeGCS, TargetTypeAZBLOB)
 	model, err := ui.InitialSelectModel(targetTypes, "Choose the export target:")
 	if err != nil {
 		return TargetTypeUnknown, errors.Trace(err)
@@ -706,7 +707,7 @@ func GetSelectedAuthType(target TargetType) (_ AuthType, err error) {
 	case TargetTypeS3:
 		authTypes := make([]interface{}, 0, 2)
 		authTypes = append(authTypes, AuthTypeS3RoleArn, AuthTypeS3AccessKey)
-		model, err = ui.InitialSelectModel(authTypes, "Choose the S3 auth:")
+		model, err = ui.InitialSelectModel(authTypes, "Choose and input the S3 auth:")
 		if err != nil {
 			return "", errors.Trace(err)
 		}
