@@ -14,35 +14,35 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// V1beta1S3Source v1beta1 s3 source
+// S3Source s3 source
 //
-// swagger:model v1beta1S3Source
-type V1beta1S3Source struct {
+// swagger:model S3Source
+type S3Source struct {
 
 	// The access key.
-	AccessKey *V1beta1S3SourceAccessKey `json:"accessKey,omitempty"`
-
-	// The role arn
-	RoleArn string `json:"roleArn,omitempty"`
+	AccessKey *S3SourceAccessKey `json:"accessKey,omitempty"`
 
 	// The auth method of the import source.
 	// Required: true
-	Type *V1beta1S3SourceAuthType `json:"type"`
+	AuthType *ImportS3AuthTypeEnum `json:"authType"`
+
+	// The role arn
+	RoleArn string `json:"roleArn,omitempty"`
 
 	// The S3 URI of the import source.
 	// Required: true
 	URI *string `json:"uri"`
 }
 
-// Validate validates this v1beta1 s3 source
-func (m *V1beta1S3Source) Validate(formats strfmt.Registry) error {
+// Validate validates this s3 source
+func (m *S3Source) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateAccessKey(formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.validateType(formats); err != nil {
+	if err := m.validateAuthType(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -56,7 +56,7 @@ func (m *V1beta1S3Source) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1S3Source) validateAccessKey(formats strfmt.Registry) error {
+func (m *S3Source) validateAccessKey(formats strfmt.Registry) error {
 	if swag.IsZero(m.AccessKey) { // not required
 		return nil
 	}
@@ -75,22 +75,22 @@ func (m *V1beta1S3Source) validateAccessKey(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1S3Source) validateType(formats strfmt.Registry) error {
+func (m *S3Source) validateAuthType(formats strfmt.Registry) error {
 
-	if err := validate.Required("type", "body", m.Type); err != nil {
+	if err := validate.Required("authType", "body", m.AuthType); err != nil {
 		return err
 	}
 
-	if err := validate.Required("type", "body", m.Type); err != nil {
+	if err := validate.Required("authType", "body", m.AuthType); err != nil {
 		return err
 	}
 
-	if m.Type != nil {
-		if err := m.Type.Validate(formats); err != nil {
+	if m.AuthType != nil {
+		if err := m.AuthType.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("type")
+				return ve.ValidateName("authType")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("type")
+				return ce.ValidateName("authType")
 			}
 			return err
 		}
@@ -99,7 +99,7 @@ func (m *V1beta1S3Source) validateType(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1S3Source) validateURI(formats strfmt.Registry) error {
+func (m *S3Source) validateURI(formats strfmt.Registry) error {
 
 	if err := validate.Required("uri", "body", m.URI); err != nil {
 		return err
@@ -108,15 +108,15 @@ func (m *V1beta1S3Source) validateURI(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this v1beta1 s3 source based on the context it is used
-func (m *V1beta1S3Source) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this s3 source based on the context it is used
+func (m *S3Source) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateAccessKey(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
-	if err := m.contextValidateType(ctx, formats); err != nil {
+	if err := m.contextValidateAuthType(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -126,7 +126,7 @@ func (m *V1beta1S3Source) ContextValidate(ctx context.Context, formats strfmt.Re
 	return nil
 }
 
-func (m *V1beta1S3Source) contextValidateAccessKey(ctx context.Context, formats strfmt.Registry) error {
+func (m *S3Source) contextValidateAccessKey(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.AccessKey != nil {
 
@@ -147,15 +147,15 @@ func (m *V1beta1S3Source) contextValidateAccessKey(ctx context.Context, formats 
 	return nil
 }
 
-func (m *V1beta1S3Source) contextValidateType(ctx context.Context, formats strfmt.Registry) error {
+func (m *S3Source) contextValidateAuthType(ctx context.Context, formats strfmt.Registry) error {
 
-	if m.Type != nil {
+	if m.AuthType != nil {
 
-		if err := m.Type.ContextValidate(ctx, formats); err != nil {
+		if err := m.AuthType.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("type")
+				return ve.ValidateName("authType")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("type")
+				return ce.ValidateName("authType")
 			}
 			return err
 		}
@@ -165,7 +165,7 @@ func (m *V1beta1S3Source) contextValidateType(ctx context.Context, formats strfm
 }
 
 // MarshalBinary interface implementation
-func (m *V1beta1S3Source) MarshalBinary() ([]byte, error) {
+func (m *S3Source) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -173,8 +173,8 @@ func (m *V1beta1S3Source) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1beta1S3Source) UnmarshalBinary(b []byte) error {
-	var res V1beta1S3Source
+func (m *S3Source) UnmarshalBinary(b []byte) error {
+	var res S3Source
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

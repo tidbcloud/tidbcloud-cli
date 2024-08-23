@@ -73,7 +73,7 @@ type ImportServiceCompleteUploadParams struct {
 
 	   The parts have been uploaded
 	*/
-	Parts []*models.V1beta1CompletePart
+	Parts []*models.CompletePart
 
 	/* UploadID.
 
@@ -146,13 +146,13 @@ func (o *ImportServiceCompleteUploadParams) SetClusterID(clusterID string) {
 }
 
 // WithParts adds the parts to the import service complete upload params
-func (o *ImportServiceCompleteUploadParams) WithParts(parts []*models.V1beta1CompletePart) *ImportServiceCompleteUploadParams {
+func (o *ImportServiceCompleteUploadParams) WithParts(parts []*models.CompletePart) *ImportServiceCompleteUploadParams {
 	o.SetParts(parts)
 	return o
 }
 
 // SetParts adds the parts to the import service complete upload params
-func (o *ImportServiceCompleteUploadParams) SetParts(parts []*models.V1beta1CompletePart) {
+func (o *ImportServiceCompleteUploadParams) SetParts(parts []*models.CompletePart) {
 	o.Parts = parts
 }
 

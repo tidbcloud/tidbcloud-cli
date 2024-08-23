@@ -14,10 +14,10 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// V1beta1CompletePart v1beta1 complete part
+// CompletePart complete part
 //
-// swagger:model v1beta1CompletePart
-type V1beta1CompletePart struct {
+// swagger:model CompletePart
+type CompletePart struct {
 
 	// The ETag of the part
 	// Required: true
@@ -28,8 +28,8 @@ type V1beta1CompletePart struct {
 	PartNumber *int32 `json:"partNumber"`
 }
 
-// Validate validates this v1beta1 complete part
-func (m *V1beta1CompletePart) Validate(formats strfmt.Registry) error {
+// Validate validates this complete part
+func (m *CompletePart) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateEtag(formats); err != nil {
@@ -46,7 +46,7 @@ func (m *V1beta1CompletePart) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1CompletePart) validateEtag(formats strfmt.Registry) error {
+func (m *CompletePart) validateEtag(formats strfmt.Registry) error {
 
 	if err := validate.Required("etag", "body", m.Etag); err != nil {
 		return err
@@ -55,7 +55,7 @@ func (m *V1beta1CompletePart) validateEtag(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1CompletePart) validatePartNumber(formats strfmt.Registry) error {
+func (m *CompletePart) validatePartNumber(formats strfmt.Registry) error {
 
 	if err := validate.Required("partNumber", "body", m.PartNumber); err != nil {
 		return err
@@ -64,13 +64,13 @@ func (m *V1beta1CompletePart) validatePartNumber(formats strfmt.Registry) error 
 	return nil
 }
 
-// ContextValidate validates this v1beta1 complete part based on context it is used
-func (m *V1beta1CompletePart) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this complete part based on context it is used
+func (m *CompletePart) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *V1beta1CompletePart) MarshalBinary() ([]byte, error) {
+func (m *CompletePart) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -78,8 +78,8 @@ func (m *V1beta1CompletePart) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1beta1CompletePart) UnmarshalBinary(b []byte) error {
-	var res V1beta1CompletePart
+func (m *CompletePart) UnmarshalBinary(b []byte) error {
+	var res CompletePart
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

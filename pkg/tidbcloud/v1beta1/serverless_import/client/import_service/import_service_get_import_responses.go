@@ -53,7 +53,7 @@ ImportServiceGetImportOK describes a response with status code 200, with default
 A successful response.
 */
 type ImportServiceGetImportOK struct {
-	Payload *models.V1beta1Import
+	Payload *models.Import
 }
 
 // IsSuccess returns true when this import service get import o k response has a 2xx status code
@@ -96,13 +96,13 @@ func (o *ImportServiceGetImportOK) String() string {
 	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/imports/{id}][%d] importServiceGetImportOK %s", 200, payload)
 }
 
-func (o *ImportServiceGetImportOK) GetPayload() *models.V1beta1Import {
+func (o *ImportServiceGetImportOK) GetPayload() *models.Import {
 	return o.Payload
 }
 
 func (o *ImportServiceGetImportOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.V1beta1Import)
+	o.Payload = new(models.Import)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
@@ -127,7 +127,7 @@ An unexpected error response.
 type ImportServiceGetImportDefault struct {
 	_statusCode int
 
-	Payload *models.RPCStatus
+	Payload *models.Status
 }
 
 // IsSuccess returns true when this import service get import default response has a 2xx status code
@@ -170,13 +170,13 @@ func (o *ImportServiceGetImportDefault) String() string {
 	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/imports/{id}][%d] ImportService_GetImport default %s", o._statusCode, payload)
 }
 
-func (o *ImportServiceGetImportDefault) GetPayload() *models.RPCStatus {
+func (o *ImportServiceGetImportDefault) GetPayload() *models.Status {
 	return o.Payload
 }
 
 func (o *ImportServiceGetImportDefault) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.RPCStatus)
+	o.Payload = new(models.Status)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

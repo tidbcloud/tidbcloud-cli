@@ -13,22 +13,22 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// V1beta1CreationDetails v1beta1 creation details
+// CreationDetails creation details
 //
-// swagger:model v1beta1CreationDetails
-type V1beta1CreationDetails struct {
+// swagger:model CreationDetails
+type CreationDetails struct {
 
 	// Optional. The options of the import.
 	// Read Only: true
-	ImportOptions *V1beta1ImportOptions `json:"importOptions,omitempty"`
+	ImportOptions *ImportOptions `json:"importOptions,omitempty"`
 
 	// Optional. The source of the import.
 	// Read Only: true
-	Source *V1beta1ImportSource `json:"source,omitempty"`
+	Source *ImportSource `json:"source,omitempty"`
 }
 
-// Validate validates this v1beta1 creation details
-func (m *V1beta1CreationDetails) Validate(formats strfmt.Registry) error {
+// Validate validates this creation details
+func (m *CreationDetails) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateImportOptions(formats); err != nil {
@@ -45,7 +45,7 @@ func (m *V1beta1CreationDetails) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1CreationDetails) validateImportOptions(formats strfmt.Registry) error {
+func (m *CreationDetails) validateImportOptions(formats strfmt.Registry) error {
 	if swag.IsZero(m.ImportOptions) { // not required
 		return nil
 	}
@@ -64,7 +64,7 @@ func (m *V1beta1CreationDetails) validateImportOptions(formats strfmt.Registry) 
 	return nil
 }
 
-func (m *V1beta1CreationDetails) validateSource(formats strfmt.Registry) error {
+func (m *CreationDetails) validateSource(formats strfmt.Registry) error {
 	if swag.IsZero(m.Source) { // not required
 		return nil
 	}
@@ -83,8 +83,8 @@ func (m *V1beta1CreationDetails) validateSource(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this v1beta1 creation details based on the context it is used
-func (m *V1beta1CreationDetails) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this creation details based on the context it is used
+func (m *CreationDetails) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateImportOptions(ctx, formats); err != nil {
@@ -101,7 +101,7 @@ func (m *V1beta1CreationDetails) ContextValidate(ctx context.Context, formats st
 	return nil
 }
 
-func (m *V1beta1CreationDetails) contextValidateImportOptions(ctx context.Context, formats strfmt.Registry) error {
+func (m *CreationDetails) contextValidateImportOptions(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.ImportOptions != nil {
 
@@ -122,7 +122,7 @@ func (m *V1beta1CreationDetails) contextValidateImportOptions(ctx context.Contex
 	return nil
 }
 
-func (m *V1beta1CreationDetails) contextValidateSource(ctx context.Context, formats strfmt.Registry) error {
+func (m *CreationDetails) contextValidateSource(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Source != nil {
 
@@ -144,7 +144,7 @@ func (m *V1beta1CreationDetails) contextValidateSource(ctx context.Context, form
 }
 
 // MarshalBinary interface implementation
-func (m *V1beta1CreationDetails) MarshalBinary() ([]byte, error) {
+func (m *CreationDetails) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -152,8 +152,8 @@ func (m *V1beta1CreationDetails) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1beta1CreationDetails) UnmarshalBinary(b []byte) error {
-	var res V1beta1CreationDetails
+func (m *CreationDetails) UnmarshalBinary(b []byte) error {
+	var res CreationDetails
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

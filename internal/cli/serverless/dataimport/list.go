@@ -128,7 +128,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			// for terminal which can prompt, humanFormat is the default format.
 			// for other terminals, json format is the default format.
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				res := &importModel.V1beta1ListImportsResp{
+				res := &importModel.ListImportsResp{
 					Imports:   importTasks,
 					TotalSize: total,
 				}
@@ -152,13 +152,13 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					var source, st, ft string
 					if item.CreationDetails != nil && item.CreationDetails.Source != nil {
 						st = string(*item.CreationDetails.Source.Type)
-						if *item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeLOCAL {
+						if *item.CreationDetails.Source.Type == importModel.ImportSourceTypeEnumLOCAL {
 							source = item.CreationDetails.Source.Local.FileName
-						} else if *item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeS3 {
+						} else if *item.CreationDetails.Source.Type == importModel.ImportSourceTypeEnumS3 {
 							source = *item.CreationDetails.Source.S3.URI
-						} else if *item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeGCS {
+						} else if *item.CreationDetails.Source.Type == importModel.ImportSourceTypeEnumGCS {
 							source = *item.CreationDetails.Source.Gcs.URI
-						} else if *item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeAZUREBLOB {
+						} else if *item.CreationDetails.Source.Type == importModel.ImportSourceTypeEnumAZUREBLOB {
 							source = item.CreationDetails.Source.AzureBlob.URI
 						}
 					}

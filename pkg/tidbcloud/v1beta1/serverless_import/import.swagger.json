@@ -29,13 +29,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1beta1StartUploadResponse"
+              "$ref": "#/definitions/StartUploadResponse"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/Status"
             }
           }
         },
@@ -97,7 +97,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/Status"
             }
           }
         },
@@ -118,7 +118,7 @@
               "type": "array",
               "items": {
                 "type": "object",
-                "$ref": "#/definitions/v1beta1CompletePart"
+                "$ref": "#/definitions/CompletePart"
               },
               "required": [
                 "parts"
@@ -153,7 +153,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/Status"
             }
           }
         },
@@ -186,13 +186,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1beta1ListImportsResp"
+              "$ref": "#/definitions/ListImportsResp"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/Status"
             }
           }
         },
@@ -239,13 +239,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1beta1Import"
+              "$ref": "#/definitions/Import"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/Status"
             }
           }
         },
@@ -263,7 +263,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ImportServiceCreateImportBody"
+              "$ref": "#/definitions/ImportService.CreateImportBody"
             }
           }
         ],
@@ -280,13 +280,13 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1beta1Import"
+              "$ref": "#/definitions/Import"
             }
           },
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/Status"
             }
           }
         },
@@ -327,7 +327,7 @@
           "default": {
             "description": "An unexpected error response.",
             "schema": {
-              "$ref": "#/definitions/rpcStatus"
+              "$ref": "#/definitions/Status"
             }
           }
         },
@@ -355,24 +355,7 @@
     }
   },
   "definitions": {
-    "ImportServiceCreateImportBody": {
-      "type": "object",
-      "properties": {
-        "importOptions": {
-          "$ref": "#/definitions/v1beta1ImportOptions",
-          "description": "The options of the import."
-        },
-        "source": {
-          "$ref": "#/definitions/v1beta1ImportSource",
-          "description": "The source of the import."
-        }
-      },
-      "required": [
-        "importOptions",
-        "source"
-      ]
-    },
-    "protobufAny": {
+    "Any": {
       "type": "object",
       "properties": {
         "@type": {
@@ -381,30 +364,11 @@
       },
       "additionalProperties": {}
     },
-    "rpcStatus": {
+    "AzureBlobSource": {
       "type": "object",
       "properties": {
-        "code": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "message": {
-          "type": "string"
-        },
-        "details": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/protobufAny"
-          }
-        }
-      }
-    },
-    "v1beta1AzureBlobSource": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "$ref": "#/definitions/v1beta1AzureBlobSourceAuthType",
+        "authType": {
+          "$ref": "#/definitions/ImportAzureBlobAuthType.Enum",
           "description": "The Azure Blob URI of the import source."
         },
         "sasUrl": {
@@ -418,17 +382,10 @@
         }
       },
       "required": [
-        "type"
+        "authType"
       ]
     },
-    "v1beta1AzureBlobSourceAuthType": {
-      "type": "string",
-      "enum": [
-        "SAS_TOKEN"
-      ],
-      "description": " - SAS_TOKEN: The access method is sas token."
-    },
-    "v1beta1CSVFormat": {
+    "CSVFormat": {
       "type": "object",
       "properties": {
         "separator": {
@@ -467,7 +424,7 @@
         }
       }
     },
-    "v1beta1CompletePart": {
+    "CompletePart": {
       "type": "object",
       "properties": {
         "partNumber": {
@@ -485,30 +442,30 @@
         "etag"
       ]
     },
-    "v1beta1CreationDetails": {
+    "CreationDetails": {
       "type": "object",
       "properties": {
         "importOptions": {
-          "$ref": "#/definitions/v1beta1ImportOptions",
+          "$ref": "#/definitions/ImportOptions",
           "description": "Optional. The options of the import.",
           "readOnly": true
         },
         "source": {
-          "$ref": "#/definitions/v1beta1ImportSource",
+          "$ref": "#/definitions/ImportSource",
           "description": "Optional. The source of the import.",
           "readOnly": true
         }
       }
     },
-    "v1beta1GCSSource": {
+    "GCSSource": {
       "type": "object",
       "properties": {
         "uri": {
           "type": "string",
           "description": "The GCS URI of the import source."
         },
-        "type": {
-          "$ref": "#/definitions/v1beta1GCSSourceAuthType",
+        "authType": {
+          "$ref": "#/definitions/ImportGcsAuthType.Enum",
           "description": "The auth method of the import source."
         },
         "serviceAccountKey": {
@@ -518,17 +475,10 @@
       },
       "required": [
         "uri",
-        "type"
+        "authType"
       ]
     },
-    "v1beta1GCSSourceAuthType": {
-      "type": "string",
-      "enum": [
-        "SERVICE_ACCOUNT_KEY"
-      ],
-      "description": " - SERVICE_ACCOUNT_KEY: The access method is service account key."
-    },
-    "v1beta1Import": {
+    "Import": {
       "type": "object",
       "properties": {
         "id": {
@@ -567,7 +517,7 @@
           "readOnly": true
         },
         "state": {
-          "$ref": "#/definitions/v1beta1ImportState",
+          "$ref": "#/definitions/ImportState.Enum",
           "description": "The state of the import.",
           "readOnly": true
         },
@@ -588,29 +538,20 @@
           "readOnly": true
         },
         "creationDetails": {
-          "$ref": "#/definitions/v1beta1CreationDetails",
+          "$ref": "#/definitions/CreationDetails",
           "description": "The creation details of the import.",
           "readOnly": true
         }
       }
     },
-    "v1beta1ImportOptions": {
-      "type": "object",
-      "properties": {
-        "fileType": {
-          "$ref": "#/definitions/v1beta1ImportOptionsFileType",
-          "description": "The exported file type."
-        },
-        "csvFormat": {
-          "$ref": "#/definitions/v1beta1CSVFormat",
-          "description": "Optional. The CSV format."
-        }
-      },
-      "required": [
-        "fileType"
-      ]
+    "ImportAzureBlobAuthType.Enum": {
+      "type": "string",
+      "enum": [
+        "SAS_TOKEN"
+      ],
+      "description": " - SAS_TOKEN: The access method is sas token."
     },
-    "v1beta1ImportOptionsFileType": {
+    "ImportFileType.Enum": {
       "type": "string",
       "enum": [
         "CSV",
@@ -618,33 +559,81 @@
         "AURORA_SNAPSHOT",
         "PARQUET"
       ],
-      "description": "The format of the file.\n\n - CSV: CSV type.\n - SQL: SQL type.\n - AURORA_SNAPSHOT: Aurora snapshot type.\n - PARQUET: Parquet type."
+      "description": " - CSV: CSV type.\n - SQL: SQL type.\n - AURORA_SNAPSHOT: Aurora snapshot type.\n - PARQUET: Parquet type."
     },
-    "v1beta1ImportSource": {
+    "ImportGcsAuthType.Enum": {
+      "type": "string",
+      "enum": [
+        "SERVICE_ACCOUNT_KEY"
+      ],
+      "description": " - SERVICE_ACCOUNT_KEY: The access method is service account key."
+    },
+    "ImportOptions": {
+      "type": "object",
+      "properties": {
+        "fileType": {
+          "$ref": "#/definitions/ImportFileType.Enum",
+          "description": "The exported file type."
+        },
+        "csvFormat": {
+          "$ref": "#/definitions/CSVFormat",
+          "description": "Optional. The CSV format."
+        }
+      },
+      "required": [
+        "fileType"
+      ]
+    },
+    "ImportS3AuthType.Enum": {
+      "type": "string",
+      "enum": [
+        "ROLE_ARN",
+        "ACCESS_KEY"
+      ],
+      "description": " - ROLE_ARN: The access method is role arn.\n - ACCESS_KEY: The access method is access key."
+    },
+    "ImportService.CreateImportBody": {
+      "type": "object",
+      "properties": {
+        "importOptions": {
+          "$ref": "#/definitions/ImportOptions",
+          "description": "The options of the import."
+        },
+        "source": {
+          "$ref": "#/definitions/ImportSource",
+          "description": "The source of the import."
+        }
+      },
+      "required": [
+        "importOptions",
+        "source"
+      ]
+    },
+    "ImportSource": {
       "type": "object",
       "properties": {
         "type": {
-          "$ref": "#/definitions/v1beta1ImportSourceType",
+          "$ref": "#/definitions/ImportSourceType.Enum",
           "description": "The import source type."
         },
         "local": {
-          "$ref": "#/definitions/v1beta1LocalSource"
+          "$ref": "#/definitions/LocalSource"
         },
         "s3": {
-          "$ref": "#/definitions/v1beta1S3Source"
+          "$ref": "#/definitions/S3Source"
         },
         "gcs": {
-          "$ref": "#/definitions/v1beta1GCSSource"
+          "$ref": "#/definitions/GCSSource"
         },
         "azureBlob": {
-          "$ref": "#/definitions/v1beta1AzureBlobSource"
+          "$ref": "#/definitions/AzureBlobSource"
         }
       },
       "required": [
         "type"
       ]
     },
-    "v1beta1ImportSourceType": {
+    "ImportSourceType.Enum": {
       "type": "string",
       "enum": [
         "LOCAL",
@@ -654,7 +643,7 @@
       ],
       "title": "- LOCAL: Local source.\n - S3: S3 source.\n - GCS: gcs source\n - AZURE_BLOB: azure blob source"
     },
-    "v1beta1ImportState": {
+    "ImportState.Enum": {
       "type": "string",
       "enum": [
         "PREPARING",
@@ -666,14 +655,14 @@
       ],
       "description": " - PREPARING: The import is preparing.\n - IMPORTING: The import is importing.\n - COMPLETED: The import is completed.\n - FAILED: The import is failed.\n - CANCELING: The import is canceling.\n - CANCELED: The import is canceled."
     },
-    "v1beta1ListImportsResp": {
+    "ListImportsResp": {
       "type": "object",
       "properties": {
         "imports": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/v1beta1Import"
+            "$ref": "#/definitions/Import"
           },
           "description": "The imports.",
           "readOnly": true
@@ -691,7 +680,7 @@
         }
       }
     },
-    "v1beta1LocalSource": {
+    "LocalSource": {
       "type": "object",
       "properties": {
         "uploadId": {
@@ -718,15 +707,15 @@
         "targetTable"
       ]
     },
-    "v1beta1S3Source": {
+    "S3Source": {
       "type": "object",
       "properties": {
         "uri": {
           "type": "string",
           "description": "The S3 URI of the import source."
         },
-        "type": {
-          "$ref": "#/definitions/v1beta1S3SourceAuthType",
+        "authType": {
+          "$ref": "#/definitions/ImportS3AuthType.Enum",
           "description": "The auth method of the import source."
         },
         "roleArn": {
@@ -734,16 +723,16 @@
           "title": "The role arn"
         },
         "accessKey": {
-          "$ref": "#/definitions/v1beta1S3SourceAccessKey",
+          "$ref": "#/definitions/S3Source.AccessKey",
           "description": "The access key."
         }
       },
       "required": [
         "uri",
-        "type"
+        "authType"
       ]
     },
-    "v1beta1S3SourceAccessKey": {
+    "S3Source.AccessKey": {
       "type": "object",
       "properties": {
         "id": {
@@ -760,15 +749,7 @@
         "secret"
       ]
     },
-    "v1beta1S3SourceAuthType": {
-      "type": "string",
-      "enum": [
-        "ROLE_ARN",
-        "ACCESS_KEY"
-      ],
-      "description": " - ROLE_ARN: The access method is role arn.\n - ACCESS_KEY: The access method is access key."
-    },
-    "v1beta1StartUploadResponse": {
+    "StartUploadResponse": {
       "type": "object",
       "properties": {
         "uploadUrl": {
@@ -783,6 +764,25 @@
           "type": "string",
           "title": "The ID of the upload",
           "readOnly": true
+        }
+      }
+    },
+    "Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Any"
+          }
         }
       }
     }

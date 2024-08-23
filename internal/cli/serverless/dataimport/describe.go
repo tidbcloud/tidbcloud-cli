@@ -105,7 +105,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				selectedImport, err := cloud.GetSelectedImport(ctx, clusterID, h.QueryPageSize, d, []importModel.V1beta1ImportState{})
+				selectedImport, err := cloud.GetSelectedImport(ctx, clusterID, h.QueryPageSize, d, []importModel.ImportStateEnum{})
 				if err != nil {
 					return err
 				}

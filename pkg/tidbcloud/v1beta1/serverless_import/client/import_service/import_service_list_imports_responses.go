@@ -53,7 +53,7 @@ ImportServiceListImportsOK describes a response with status code 200, with defau
 A successful response.
 */
 type ImportServiceListImportsOK struct {
-	Payload *models.V1beta1ListImportsResp
+	Payload *models.ListImportsResp
 }
 
 // IsSuccess returns true when this import service list imports o k response has a 2xx status code
@@ -96,13 +96,13 @@ func (o *ImportServiceListImportsOK) String() string {
 	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/imports][%d] importServiceListImportsOK %s", 200, payload)
 }
 
-func (o *ImportServiceListImportsOK) GetPayload() *models.V1beta1ListImportsResp {
+func (o *ImportServiceListImportsOK) GetPayload() *models.ListImportsResp {
 	return o.Payload
 }
 
 func (o *ImportServiceListImportsOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.V1beta1ListImportsResp)
+	o.Payload = new(models.ListImportsResp)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
@@ -127,7 +127,7 @@ An unexpected error response.
 type ImportServiceListImportsDefault struct {
 	_statusCode int
 
-	Payload *models.RPCStatus
+	Payload *models.Status
 }
 
 // IsSuccess returns true when this import service list imports default response has a 2xx status code
@@ -170,13 +170,13 @@ func (o *ImportServiceListImportsDefault) String() string {
 	return fmt.Sprintf("[GET /v1beta1/clusters/{clusterId}/imports][%d] ImportService_ListImports default %s", o._statusCode, payload)
 }
 
-func (o *ImportServiceListImportsDefault) GetPayload() *models.RPCStatus {
+func (o *ImportServiceListImportsDefault) GetPayload() *models.Status {
 	return o.Payload
 }
 
 func (o *ImportServiceListImportsDefault) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.RPCStatus)
+	o.Payload = new(models.Status)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

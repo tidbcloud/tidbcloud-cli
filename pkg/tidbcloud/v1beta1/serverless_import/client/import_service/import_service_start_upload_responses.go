@@ -53,7 +53,7 @@ ImportServiceStartUploadOK describes a response with status code 200, with defau
 A successful response.
 */
 type ImportServiceStartUploadOK struct {
-	Payload *models.V1beta1StartUploadResponse
+	Payload *models.StartUploadResponse
 }
 
 // IsSuccess returns true when this import service start upload o k response has a 2xx status code
@@ -96,13 +96,13 @@ func (o *ImportServiceStartUploadOK) String() string {
 	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:startUpload][%d] importServiceStartUploadOK %s", 200, payload)
 }
 
-func (o *ImportServiceStartUploadOK) GetPayload() *models.V1beta1StartUploadResponse {
+func (o *ImportServiceStartUploadOK) GetPayload() *models.StartUploadResponse {
 	return o.Payload
 }
 
 func (o *ImportServiceStartUploadOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.V1beta1StartUploadResponse)
+	o.Payload = new(models.StartUploadResponse)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
@@ -127,7 +127,7 @@ An unexpected error response.
 type ImportServiceStartUploadDefault struct {
 	_statusCode int
 
-	Payload *models.RPCStatus
+	Payload *models.Status
 }
 
 // IsSuccess returns true when this import service start upload default response has a 2xx status code
@@ -170,13 +170,13 @@ func (o *ImportServiceStartUploadDefault) String() string {
 	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:startUpload][%d] ImportService_StartUpload default %s", o._statusCode, payload)
 }
 
-func (o *ImportServiceStartUploadDefault) GetPayload() *models.RPCStatus {
+func (o *ImportServiceStartUploadDefault) GetPayload() *models.Status {
 	return o.Payload
 }
 
 func (o *ImportServiceStartUploadDefault) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.RPCStatus)
+	o.Payload = new(models.Status)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

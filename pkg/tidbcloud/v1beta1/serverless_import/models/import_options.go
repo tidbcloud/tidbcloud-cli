@@ -14,21 +14,21 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// V1beta1ImportOptions v1beta1 import options
+// ImportOptions import options
 //
-// swagger:model v1beta1ImportOptions
-type V1beta1ImportOptions struct {
+// swagger:model ImportOptions
+type ImportOptions struct {
 
 	// Optional. The CSV format.
-	CsvFormat *V1beta1CSVFormat `json:"csvFormat,omitempty"`
+	CsvFormat *CSVFormat `json:"csvFormat,omitempty"`
 
 	// The exported file type.
 	// Required: true
-	FileType *V1beta1ImportOptionsFileType `json:"fileType"`
+	FileType *ImportFileTypeEnum `json:"fileType"`
 }
 
-// Validate validates this v1beta1 import options
-func (m *V1beta1ImportOptions) Validate(formats strfmt.Registry) error {
+// Validate validates this import options
+func (m *ImportOptions) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateCsvFormat(formats); err != nil {
@@ -45,7 +45,7 @@ func (m *V1beta1ImportOptions) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1ImportOptions) validateCsvFormat(formats strfmt.Registry) error {
+func (m *ImportOptions) validateCsvFormat(formats strfmt.Registry) error {
 	if swag.IsZero(m.CsvFormat) { // not required
 		return nil
 	}
@@ -64,7 +64,7 @@ func (m *V1beta1ImportOptions) validateCsvFormat(formats strfmt.Registry) error 
 	return nil
 }
 
-func (m *V1beta1ImportOptions) validateFileType(formats strfmt.Registry) error {
+func (m *ImportOptions) validateFileType(formats strfmt.Registry) error {
 
 	if err := validate.Required("fileType", "body", m.FileType); err != nil {
 		return err
@@ -88,8 +88,8 @@ func (m *V1beta1ImportOptions) validateFileType(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this v1beta1 import options based on the context it is used
-func (m *V1beta1ImportOptions) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this import options based on the context it is used
+func (m *ImportOptions) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateCsvFormat(ctx, formats); err != nil {
@@ -106,7 +106,7 @@ func (m *V1beta1ImportOptions) ContextValidate(ctx context.Context, formats strf
 	return nil
 }
 
-func (m *V1beta1ImportOptions) contextValidateCsvFormat(ctx context.Context, formats strfmt.Registry) error {
+func (m *ImportOptions) contextValidateCsvFormat(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.CsvFormat != nil {
 
@@ -127,7 +127,7 @@ func (m *V1beta1ImportOptions) contextValidateCsvFormat(ctx context.Context, for
 	return nil
 }
 
-func (m *V1beta1ImportOptions) contextValidateFileType(ctx context.Context, formats strfmt.Registry) error {
+func (m *ImportOptions) contextValidateFileType(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.FileType != nil {
 
@@ -145,7 +145,7 @@ func (m *V1beta1ImportOptions) contextValidateFileType(ctx context.Context, form
 }
 
 // MarshalBinary interface implementation
-func (m *V1beta1ImportOptions) MarshalBinary() ([]byte, error) {
+func (m *ImportOptions) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -153,8 +153,8 @@ func (m *V1beta1ImportOptions) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1beta1ImportOptions) UnmarshalBinary(b []byte) error {
-	var res V1beta1ImportOptions
+func (m *ImportOptions) UnmarshalBinary(b []byte) error {
+	var res ImportOptions
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

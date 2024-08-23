@@ -14,10 +14,10 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// V1beta1StartUploadResponse v1beta1 start upload response
+// StartUploadResponse start upload response
 //
-// swagger:model v1beta1StartUploadResponse
-type V1beta1StartUploadResponse struct {
+// swagger:model StartUploadResponse
+type StartUploadResponse struct {
 
 	// The ID of the upload
 	// Read Only: true
@@ -28,13 +28,13 @@ type V1beta1StartUploadResponse struct {
 	UploadURL []string `json:"uploadUrl"`
 }
 
-// Validate validates this v1beta1 start upload response
-func (m *V1beta1StartUploadResponse) Validate(formats strfmt.Registry) error {
+// Validate validates this start upload response
+func (m *StartUploadResponse) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this v1beta1 start upload response based on the context it is used
-func (m *V1beta1StartUploadResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this start upload response based on the context it is used
+func (m *StartUploadResponse) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateUploadID(ctx, formats); err != nil {
@@ -51,7 +51,7 @@ func (m *V1beta1StartUploadResponse) ContextValidate(ctx context.Context, format
 	return nil
 }
 
-func (m *V1beta1StartUploadResponse) contextValidateUploadID(ctx context.Context, formats strfmt.Registry) error {
+func (m *StartUploadResponse) contextValidateUploadID(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "uploadId", "body", string(m.UploadID)); err != nil {
 		return err
@@ -60,7 +60,7 @@ func (m *V1beta1StartUploadResponse) contextValidateUploadID(ctx context.Context
 	return nil
 }
 
-func (m *V1beta1StartUploadResponse) contextValidateUploadURL(ctx context.Context, formats strfmt.Registry) error {
+func (m *StartUploadResponse) contextValidateUploadURL(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "uploadUrl", "body", []string(m.UploadURL)); err != nil {
 		return err
@@ -70,7 +70,7 @@ func (m *V1beta1StartUploadResponse) contextValidateUploadURL(ctx context.Contex
 }
 
 // MarshalBinary interface implementation
-func (m *V1beta1StartUploadResponse) MarshalBinary() ([]byte, error) {
+func (m *StartUploadResponse) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -78,8 +78,8 @@ func (m *V1beta1StartUploadResponse) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1beta1StartUploadResponse) UnmarshalBinary(b []byte) error {
-	var res V1beta1StartUploadResponse
+func (m *StartUploadResponse) UnmarshalBinary(b []byte) error {
+	var res StartUploadResponse
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

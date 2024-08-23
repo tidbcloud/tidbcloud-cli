@@ -50,11 +50,11 @@ var CSVFormatInputFields = map[string]int{
 	flag.CSVTrimLastSeparator: 6,
 }
 
-var sourceTypes = []importModel.V1beta1ImportSourceType{
-	importModel.V1beta1ImportSourceTypeS3,
-	importModel.V1beta1ImportSourceTypeLOCAL,
-	importModel.V1beta1ImportSourceTypeGCS,
-	importModel.V1beta1ImportSourceTypeAZUREBLOB,
+var sourceTypes = []importModel.ImportSourceTypeEnum{
+	importModel.ImportSourceTypeEnumS3,
+	importModel.ImportSourceTypeEnumLOCAL,
+	importModel.ImportSourceTypeEnumGCS,
+	importModel.ImportSourceTypeEnumAZUREBLOB,
 }
 
 type StartOpts struct {
@@ -63,7 +63,7 @@ type StartOpts struct {
 
 func (o StartOpts) SupportedFileTypes() []string {
 	return []string{
-		string(importModel.V1beta1ImportOptionsFileTypeCSV),
+		string(importModel.ImportFileTypeEnumCSV),
 	}
 }
 
@@ -120,7 +120,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var sourceType importModel.V1beta1ImportSourceType
+			var sourceType importModel.ImportSourceTypeEnum
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
@@ -132,29 +132,29 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 			} else {
-				sourceType = importModel.V1beta1ImportSourceType(cmd.Flag(flag.SourceType).Value.String())
+				sourceType = importModel.ImportSourceTypeEnum(cmd.Flag(flag.SourceType).Value.String())
 			}
 
-			if sourceType == importModel.V1beta1ImportSourceTypeLOCAL {
+			if sourceType == importModel.ImportSourceTypeEnumLOCAL {
 				localOpts := LocalOpts{
 					concurrency: concurrency,
 					h:           h,
 					interactive: opts.interactive,
 				}
 				return localOpts.Run(cmd)
-			} else if sourceType == importModel.V1beta1ImportSourceTypeS3 {
+			} else if sourceType == importModel.ImportSourceTypeEnumS3 {
 				s3Opts := S3Opts{
 					h:           h,
 					interactive: opts.interactive,
 				}
 				return s3Opts.Run(cmd)
-			} else if sourceType == importModel.V1beta1ImportSourceTypeGCS {
+			} else if sourceType == importModel.ImportSourceTypeEnumGCS {
 				gcsOpts := GCSOpts{
 					h:           h,
 					interactive: opts.interactive,
 				}
 				return gcsOpts.Run(cmd)
-			} else if sourceType == importModel.V1beta1ImportSourceTypeAZUREBLOB {
+			} else if sourceType == importModel.ImportSourceTypeEnumAZUREBLOB {
 				azBlobOpts := AzBlobOpts{
 					h:           h,
 					interactive: opts.interactive,
@@ -198,7 +198,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	return startCmd
 }
 
-func getSelectedSourceType() (importModel.V1beta1ImportSourceType, error) {
+func getSelectedSourceType() (importModel.ImportSourceTypeEnum, error) {
 	SourceTypes := make([]interface{}, 0, len(sourceTypes))
 	for _, sourceType := range sourceTypes {
 		SourceTypes = append(SourceTypes, sourceType)
@@ -220,7 +220,7 @@ func getSelectedSourceType() (importModel.V1beta1ImportSourceType, error) {
 	if sourceType == nil {
 		return "", errors.New("no source type selected")
 	}
-	return sourceType.(importModel.V1beta1ImportSourceType), nil
+	return sourceType.(importModel.ImportSourceTypeEnum), nil
 }
 
 func waitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.ImportServiceCreateImportParams) error {
@@ -285,7 +285,7 @@ func spinnerWaitStartOp(ctx context.Context, h *internal.Helper, d cloud.TiDBClo
 	return nil
 }
 
-func getCSVFormat() (format *importModel.V1beta1CSVFormat, errToReturn error) {
+func getCSVFormat() (format *importModel.CSVFormat, errToReturn error) {
 	separator, delimiter, nullValue := ",", `"`, `\N`
 	backslashEscape, trimLastSeparator, skipHeader, notNull := true, false, false, false
 
@@ -364,7 +364,7 @@ func getCSVFormat() (format *importModel.V1beta1CSVFormat, errToReturn error) {
 		}
 	}
 
-	format = &importModel.V1beta1CSVFormat{
+	format = &importModel.CSVFormat{
 		Separator:         separator,
 		Delimiter:         aws.String(delimiter),
 		BackslashEscape:   aws.Bool(backslashEscape),
@@ -413,7 +413,7 @@ func initialCSVFormatInputModel() ui.TextInputModel {
 	return m
 }
 
-func getCSVFlagValue(cmd *cobra.Command) (*importModel.V1beta1CSVFormat, error) {
+func getCSVFlagValue(cmd *cobra.Command) (*importModel.CSVFormat, error) {
 	// optional flags
 	backslashEscape, err := cmd.Flags().GetBool(flag.CSVBackslashEscape)
 	if err != nil {
@@ -447,7 +447,7 @@ func getCSVFlagValue(cmd *cobra.Command) (*importModel.V1beta1CSVFormat, error) 
 		return nil, errors.Trace(err)
 	}
 
-	format := &importModel.V1beta1CSVFormat{
+	format := &importModel.CSVFormat{
 		Separator:         separator,
 		Delimiter:         aws.String(delimiter),
 		BackslashEscape:   aws.Bool(backslashEscape),

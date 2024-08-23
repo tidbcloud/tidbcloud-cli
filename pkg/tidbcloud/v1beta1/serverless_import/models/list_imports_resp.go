@@ -15,14 +15,14 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// V1beta1ListImportsResp v1beta1 list imports resp
+// ListImportsResp list imports resp
 //
-// swagger:model v1beta1ListImportsResp
-type V1beta1ListImportsResp struct {
+// swagger:model ListImportsResp
+type ListImportsResp struct {
 
 	// The imports.
 	// Read Only: true
-	Imports []*V1beta1Import `json:"imports"`
+	Imports []*Import `json:"imports"`
 
 	// The next page token.
 	// Read Only: true
@@ -33,8 +33,8 @@ type V1beta1ListImportsResp struct {
 	TotalSize int64 `json:"totalSize,omitempty"`
 }
 
-// Validate validates this v1beta1 list imports resp
-func (m *V1beta1ListImportsResp) Validate(formats strfmt.Registry) error {
+// Validate validates this list imports resp
+func (m *ListImportsResp) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateImports(formats); err != nil {
@@ -47,7 +47,7 @@ func (m *V1beta1ListImportsResp) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1ListImportsResp) validateImports(formats strfmt.Registry) error {
+func (m *ListImportsResp) validateImports(formats strfmt.Registry) error {
 	if swag.IsZero(m.Imports) { // not required
 		return nil
 	}
@@ -73,8 +73,8 @@ func (m *V1beta1ListImportsResp) validateImports(formats strfmt.Registry) error 
 	return nil
 }
 
-// ContextValidate validate this v1beta1 list imports resp based on the context it is used
-func (m *V1beta1ListImportsResp) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this list imports resp based on the context it is used
+func (m *ListImportsResp) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateImports(ctx, formats); err != nil {
@@ -95,9 +95,9 @@ func (m *V1beta1ListImportsResp) ContextValidate(ctx context.Context, formats st
 	return nil
 }
 
-func (m *V1beta1ListImportsResp) contextValidateImports(ctx context.Context, formats strfmt.Registry) error {
+func (m *ListImportsResp) contextValidateImports(ctx context.Context, formats strfmt.Registry) error {
 
-	if err := validate.ReadOnly(ctx, "imports", "body", []*V1beta1Import(m.Imports)); err != nil {
+	if err := validate.ReadOnly(ctx, "imports", "body", []*Import(m.Imports)); err != nil {
 		return err
 	}
 
@@ -124,7 +124,7 @@ func (m *V1beta1ListImportsResp) contextValidateImports(ctx context.Context, for
 	return nil
 }
 
-func (m *V1beta1ListImportsResp) contextValidateNextPageToken(ctx context.Context, formats strfmt.Registry) error {
+func (m *ListImportsResp) contextValidateNextPageToken(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "nextPageToken", "body", string(m.NextPageToken)); err != nil {
 		return err
@@ -133,7 +133,7 @@ func (m *V1beta1ListImportsResp) contextValidateNextPageToken(ctx context.Contex
 	return nil
 }
 
-func (m *V1beta1ListImportsResp) contextValidateTotalSize(ctx context.Context, formats strfmt.Registry) error {
+func (m *ListImportsResp) contextValidateTotalSize(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "totalSize", "body", int64(m.TotalSize)); err != nil {
 		return err
@@ -143,7 +143,7 @@ func (m *V1beta1ListImportsResp) contextValidateTotalSize(ctx context.Context, f
 }
 
 // MarshalBinary interface implementation
-func (m *V1beta1ListImportsResp) MarshalBinary() ([]byte, error) {
+func (m *ListImportsResp) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -151,8 +151,8 @@ func (m *V1beta1ListImportsResp) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1beta1ListImportsResp) UnmarshalBinary(b []byte) error {
-	var res V1beta1ListImportsResp
+func (m *ListImportsResp) UnmarshalBinary(b []byte) error {
+	var res ListImportsResp
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

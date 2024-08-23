@@ -125,7 +125,7 @@ An unexpected error response.
 type ImportServiceCompleteUploadDefault struct {
 	_statusCode int
 
-	Payload *models.RPCStatus
+	Payload *models.Status
 }
 
 // IsSuccess returns true when this import service complete upload default response has a 2xx status code
@@ -168,13 +168,13 @@ func (o *ImportServiceCompleteUploadDefault) String() string {
 	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports:completeUpload][%d] ImportService_CompleteUpload default %s", o._statusCode, payload)
 }
 
-func (o *ImportServiceCompleteUploadDefault) GetPayload() *models.RPCStatus {
+func (o *ImportServiceCompleteUploadDefault) GetPayload() *models.Status {
 	return o.Payload
 }
 
 func (o *ImportServiceCompleteUploadDefault) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.RPCStatus)
+	o.Payload = new(models.Status)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

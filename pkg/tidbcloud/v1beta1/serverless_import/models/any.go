@@ -13,20 +13,20 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// ProtobufAny protobuf any
+// Any any
 //
-// swagger:model protobufAny
-type ProtobufAny struct {
+// swagger:model Any
+type Any struct {
 
 	// at type
 	AtType string `json:"@type,omitempty"`
 
-	// protobuf any
-	ProtobufAny map[string]interface{} `json:"-"`
+	// any
+	Any map[string]interface{} `json:"-"`
 }
 
 // UnmarshalJSON unmarshals this object with additional properties from JSON
-func (m *ProtobufAny) UnmarshalJSON(data []byte) error {
+func (m *Any) UnmarshalJSON(data []byte) error {
 	// stage 1, bind the properties
 	var stage1 struct {
 
@@ -36,7 +36,7 @@ func (m *ProtobufAny) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &stage1); err != nil {
 		return err
 	}
-	var rcv ProtobufAny
+	var rcv Any
 
 	rcv.AtType = stage1.AtType
 	*m = rcv
@@ -58,14 +58,14 @@ func (m *ProtobufAny) UnmarshalJSON(data []byte) error {
 			}
 			result[k] = toadd
 		}
-		m.ProtobufAny = result
+		m.Any = result
 	}
 
 	return nil
 }
 
 // MarshalJSON marshals this object with additional properties into a JSON object
-func (m ProtobufAny) MarshalJSON() ([]byte, error) {
+func (m Any) MarshalJSON() ([]byte, error) {
 	var stage1 struct {
 
 		// at type
@@ -80,12 +80,12 @@ func (m ProtobufAny) MarshalJSON() ([]byte, error) {
 		return nil, err
 	}
 
-	if len(m.ProtobufAny) == 0 { // no additional properties
+	if len(m.Any) == 0 { // no additional properties
 		return props, nil
 	}
 
 	// make JSON object for the additional properties
-	additional, err := json.Marshal(m.ProtobufAny)
+	additional, err := json.Marshal(m.Any)
 	if err != nil {
 		return nil, err
 	}
@@ -98,18 +98,18 @@ func (m ProtobufAny) MarshalJSON() ([]byte, error) {
 	return swag.ConcatJSON(props, additional), nil
 }
 
-// Validate validates this protobuf any
-func (m *ProtobufAny) Validate(formats strfmt.Registry) error {
+// Validate validates this any
+func (m *Any) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this protobuf any based on context it is used
-func (m *ProtobufAny) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this any based on context it is used
+func (m *Any) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *ProtobufAny) MarshalBinary() ([]byte, error) {
+func (m *Any) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -117,8 +117,8 @@ func (m *ProtobufAny) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *ProtobufAny) UnmarshalBinary(b []byte) error {
-	var res ProtobufAny
+func (m *Any) UnmarshalBinary(b []byte) error {
+	var res Any
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

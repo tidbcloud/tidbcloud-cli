@@ -14,10 +14,10 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// V1beta1Import v1beta1 import
+// Import import
 //
-// swagger:model v1beta1Import
-type V1beta1Import struct {
+// swagger:model Import
+type Import struct {
 
 	// The ID of the cluster to import into.
 	// Read Only: true
@@ -43,7 +43,7 @@ type V1beta1Import struct {
 
 	// The creation details of the import.
 	// Read Only: true
-	CreationDetails *V1beta1CreationDetails `json:"creationDetails,omitempty"`
+	CreationDetails *CreationDetails `json:"creationDetails,omitempty"`
 
 	// The ID of the import.
 	// Read Only: true
@@ -59,15 +59,15 @@ type V1beta1Import struct {
 
 	// The state of the import.
 	// Read Only: true
-	State V1beta1ImportState `json:"state,omitempty"`
+	State ImportStateEnum `json:"state,omitempty"`
 
 	// The total size of the data imported.
 	// Read Only: true
 	TotalSize string `json:"totalSize,omitempty"`
 }
 
-// Validate validates this v1beta1 import
-func (m *V1beta1Import) Validate(formats strfmt.Registry) error {
+// Validate validates this import
+func (m *Import) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateCompleteTime(formats); err != nil {
@@ -92,7 +92,7 @@ func (m *V1beta1Import) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1Import) validateCompleteTime(formats strfmt.Registry) error {
+func (m *Import) validateCompleteTime(formats strfmt.Registry) error {
 	if swag.IsZero(m.CompleteTime) { // not required
 		return nil
 	}
@@ -104,7 +104,7 @@ func (m *V1beta1Import) validateCompleteTime(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1Import) validateCreateTime(formats strfmt.Registry) error {
+func (m *Import) validateCreateTime(formats strfmt.Registry) error {
 	if swag.IsZero(m.CreateTime) { // not required
 		return nil
 	}
@@ -116,7 +116,7 @@ func (m *V1beta1Import) validateCreateTime(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1Import) validateCreationDetails(formats strfmt.Registry) error {
+func (m *Import) validateCreationDetails(formats strfmt.Registry) error {
 	if swag.IsZero(m.CreationDetails) { // not required
 		return nil
 	}
@@ -135,7 +135,7 @@ func (m *V1beta1Import) validateCreationDetails(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1Import) validateState(formats strfmt.Registry) error {
+func (m *Import) validateState(formats strfmt.Registry) error {
 	if swag.IsZero(m.State) { // not required
 		return nil
 	}
@@ -152,8 +152,8 @@ func (m *V1beta1Import) validateState(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this v1beta1 import based on the context it is used
-func (m *V1beta1Import) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this import based on the context it is used
+func (m *Import) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateClusterID(ctx, formats); err != nil {
@@ -206,7 +206,7 @@ func (m *V1beta1Import) ContextValidate(ctx context.Context, formats strfmt.Regi
 	return nil
 }
 
-func (m *V1beta1Import) contextValidateClusterID(ctx context.Context, formats strfmt.Registry) error {
+func (m *Import) contextValidateClusterID(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "clusterId", "body", string(m.ClusterID)); err != nil {
 		return err
@@ -215,7 +215,7 @@ func (m *V1beta1Import) contextValidateClusterID(ctx context.Context, formats st
 	return nil
 }
 
-func (m *V1beta1Import) contextValidateCompletePercent(ctx context.Context, formats strfmt.Registry) error {
+func (m *Import) contextValidateCompletePercent(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "completePercent", "body", int64(m.CompletePercent)); err != nil {
 		return err
@@ -224,7 +224,7 @@ func (m *V1beta1Import) contextValidateCompletePercent(ctx context.Context, form
 	return nil
 }
 
-func (m *V1beta1Import) contextValidateCompleteTime(ctx context.Context, formats strfmt.Registry) error {
+func (m *Import) contextValidateCompleteTime(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "completeTime", "body", m.CompleteTime); err != nil {
 		return err
@@ -233,7 +233,7 @@ func (m *V1beta1Import) contextValidateCompleteTime(ctx context.Context, formats
 	return nil
 }
 
-func (m *V1beta1Import) contextValidateCreateTime(ctx context.Context, formats strfmt.Registry) error {
+func (m *Import) contextValidateCreateTime(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "createTime", "body", strfmt.DateTime(m.CreateTime)); err != nil {
 		return err
@@ -242,7 +242,7 @@ func (m *V1beta1Import) contextValidateCreateTime(ctx context.Context, formats s
 	return nil
 }
 
-func (m *V1beta1Import) contextValidateCreatedBy(ctx context.Context, formats strfmt.Registry) error {
+func (m *Import) contextValidateCreatedBy(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "createdBy", "body", string(m.CreatedBy)); err != nil {
 		return err
@@ -251,7 +251,7 @@ func (m *V1beta1Import) contextValidateCreatedBy(ctx context.Context, formats st
 	return nil
 }
 
-func (m *V1beta1Import) contextValidateCreationDetails(ctx context.Context, formats strfmt.Registry) error {
+func (m *Import) contextValidateCreationDetails(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.CreationDetails != nil {
 
@@ -272,7 +272,7 @@ func (m *V1beta1Import) contextValidateCreationDetails(ctx context.Context, form
 	return nil
 }
 
-func (m *V1beta1Import) contextValidateID(ctx context.Context, formats strfmt.Registry) error {
+func (m *Import) contextValidateID(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "id", "body", string(m.ID)); err != nil {
 		return err
@@ -281,7 +281,7 @@ func (m *V1beta1Import) contextValidateID(ctx context.Context, formats strfmt.Re
 	return nil
 }
 
-func (m *V1beta1Import) contextValidateMessage(ctx context.Context, formats strfmt.Registry) error {
+func (m *Import) contextValidateMessage(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "message", "body", string(m.Message)); err != nil {
 		return err
@@ -290,7 +290,7 @@ func (m *V1beta1Import) contextValidateMessage(ctx context.Context, formats strf
 	return nil
 }
 
-func (m *V1beta1Import) contextValidateName(ctx context.Context, formats strfmt.Registry) error {
+func (m *Import) contextValidateName(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "name", "body", string(m.Name)); err != nil {
 		return err
@@ -299,7 +299,7 @@ func (m *V1beta1Import) contextValidateName(ctx context.Context, formats strfmt.
 	return nil
 }
 
-func (m *V1beta1Import) contextValidateState(ctx context.Context, formats strfmt.Registry) error {
+func (m *Import) contextValidateState(ctx context.Context, formats strfmt.Registry) error {
 
 	if swag.IsZero(m.State) { // not required
 		return nil
@@ -317,7 +317,7 @@ func (m *V1beta1Import) contextValidateState(ctx context.Context, formats strfmt
 	return nil
 }
 
-func (m *V1beta1Import) contextValidateTotalSize(ctx context.Context, formats strfmt.Registry) error {
+func (m *Import) contextValidateTotalSize(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "totalSize", "body", string(m.TotalSize)); err != nil {
 		return err
@@ -327,7 +327,7 @@ func (m *V1beta1Import) contextValidateTotalSize(ctx context.Context, formats st
 }
 
 // MarshalBinary interface implementation
-func (m *V1beta1Import) MarshalBinary() ([]byte, error) {
+func (m *Import) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -335,8 +335,8 @@ func (m *V1beta1Import) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1beta1Import) UnmarshalBinary(b []byte) error {
-	var res V1beta1Import
+func (m *Import) UnmarshalBinary(b []byte) error {
+	var res Import
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

@@ -14,28 +14,28 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// V1beta1GCSSource v1beta1 g c s source
+// GCSSource g c s source
 //
-// swagger:model v1beta1GCSSource
-type V1beta1GCSSource struct {
-
-	// The service account key
-	ServiceAccountKey string `json:"serviceAccountKey,omitempty"`
+// swagger:model GCSSource
+type GCSSource struct {
 
 	// The auth method of the import source.
 	// Required: true
-	Type *V1beta1GCSSourceAuthType `json:"type"`
+	AuthType *ImportGcsAuthTypeEnum `json:"authType"`
+
+	// The service account key
+	ServiceAccountKey string `json:"serviceAccountKey,omitempty"`
 
 	// The GCS URI of the import source.
 	// Required: true
 	URI *string `json:"uri"`
 }
 
-// Validate validates this v1beta1 g c s source
-func (m *V1beta1GCSSource) Validate(formats strfmt.Registry) error {
+// Validate validates this g c s source
+func (m *GCSSource) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateType(formats); err != nil {
+	if err := m.validateAuthType(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -49,22 +49,22 @@ func (m *V1beta1GCSSource) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1GCSSource) validateType(formats strfmt.Registry) error {
+func (m *GCSSource) validateAuthType(formats strfmt.Registry) error {
 
-	if err := validate.Required("type", "body", m.Type); err != nil {
+	if err := validate.Required("authType", "body", m.AuthType); err != nil {
 		return err
 	}
 
-	if err := validate.Required("type", "body", m.Type); err != nil {
+	if err := validate.Required("authType", "body", m.AuthType); err != nil {
 		return err
 	}
 
-	if m.Type != nil {
-		if err := m.Type.Validate(formats); err != nil {
+	if m.AuthType != nil {
+		if err := m.AuthType.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("type")
+				return ve.ValidateName("authType")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("type")
+				return ce.ValidateName("authType")
 			}
 			return err
 		}
@@ -73,7 +73,7 @@ func (m *V1beta1GCSSource) validateType(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1GCSSource) validateURI(formats strfmt.Registry) error {
+func (m *GCSSource) validateURI(formats strfmt.Registry) error {
 
 	if err := validate.Required("uri", "body", m.URI); err != nil {
 		return err
@@ -82,11 +82,11 @@ func (m *V1beta1GCSSource) validateURI(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this v1beta1 g c s source based on the context it is used
-func (m *V1beta1GCSSource) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this g c s source based on the context it is used
+func (m *GCSSource) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateType(ctx, formats); err != nil {
+	if err := m.contextValidateAuthType(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -96,15 +96,15 @@ func (m *V1beta1GCSSource) ContextValidate(ctx context.Context, formats strfmt.R
 	return nil
 }
 
-func (m *V1beta1GCSSource) contextValidateType(ctx context.Context, formats strfmt.Registry) error {
+func (m *GCSSource) contextValidateAuthType(ctx context.Context, formats strfmt.Registry) error {
 
-	if m.Type != nil {
+	if m.AuthType != nil {
 
-		if err := m.Type.ContextValidate(ctx, formats); err != nil {
+		if err := m.AuthType.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("type")
+				return ve.ValidateName("authType")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("type")
+				return ce.ValidateName("authType")
 			}
 			return err
 		}
@@ -114,7 +114,7 @@ func (m *V1beta1GCSSource) contextValidateType(ctx context.Context, formats strf
 }
 
 // MarshalBinary interface implementation
-func (m *V1beta1GCSSource) MarshalBinary() ([]byte, error) {
+func (m *GCSSource) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -122,8 +122,8 @@ func (m *V1beta1GCSSource) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1beta1GCSSource) UnmarshalBinary(b []byte) error {
-	var res V1beta1GCSSource
+func (m *GCSSource) UnmarshalBinary(b []byte) error {
+	var res GCSSource
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

@@ -14,30 +14,30 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// V1beta1ImportSource v1beta1 import source
+// ImportSource import source
 //
-// swagger:model v1beta1ImportSource
-type V1beta1ImportSource struct {
+// swagger:model ImportSource
+type ImportSource struct {
 
 	// azure blob
-	AzureBlob *V1beta1AzureBlobSource `json:"azureBlob,omitempty"`
+	AzureBlob *AzureBlobSource `json:"azureBlob,omitempty"`
 
 	// gcs
-	Gcs *V1beta1GCSSource `json:"gcs,omitempty"`
+	Gcs *GCSSource `json:"gcs,omitempty"`
 
 	// local
-	Local *V1beta1LocalSource `json:"local,omitempty"`
+	Local *LocalSource `json:"local,omitempty"`
 
 	// s3
-	S3 *V1beta1S3Source `json:"s3,omitempty"`
+	S3 *S3Source `json:"s3,omitempty"`
 
 	// The import source type.
 	// Required: true
-	Type *V1beta1ImportSourceType `json:"type"`
+	Type *ImportSourceTypeEnum `json:"type"`
 }
 
-// Validate validates this v1beta1 import source
-func (m *V1beta1ImportSource) Validate(formats strfmt.Registry) error {
+// Validate validates this import source
+func (m *ImportSource) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateAzureBlob(formats); err != nil {
@@ -66,7 +66,7 @@ func (m *V1beta1ImportSource) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1ImportSource) validateAzureBlob(formats strfmt.Registry) error {
+func (m *ImportSource) validateAzureBlob(formats strfmt.Registry) error {
 	if swag.IsZero(m.AzureBlob) { // not required
 		return nil
 	}
@@ -85,7 +85,7 @@ func (m *V1beta1ImportSource) validateAzureBlob(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1ImportSource) validateGcs(formats strfmt.Registry) error {
+func (m *ImportSource) validateGcs(formats strfmt.Registry) error {
 	if swag.IsZero(m.Gcs) { // not required
 		return nil
 	}
@@ -104,7 +104,7 @@ func (m *V1beta1ImportSource) validateGcs(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1ImportSource) validateLocal(formats strfmt.Registry) error {
+func (m *ImportSource) validateLocal(formats strfmt.Registry) error {
 	if swag.IsZero(m.Local) { // not required
 		return nil
 	}
@@ -123,7 +123,7 @@ func (m *V1beta1ImportSource) validateLocal(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1ImportSource) validateS3(formats strfmt.Registry) error {
+func (m *ImportSource) validateS3(formats strfmt.Registry) error {
 	if swag.IsZero(m.S3) { // not required
 		return nil
 	}
@@ -142,7 +142,7 @@ func (m *V1beta1ImportSource) validateS3(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1ImportSource) validateType(formats strfmt.Registry) error {
+func (m *ImportSource) validateType(formats strfmt.Registry) error {
 
 	if err := validate.Required("type", "body", m.Type); err != nil {
 		return err
@@ -166,8 +166,8 @@ func (m *V1beta1ImportSource) validateType(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this v1beta1 import source based on the context it is used
-func (m *V1beta1ImportSource) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this import source based on the context it is used
+func (m *ImportSource) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateAzureBlob(ctx, formats); err != nil {
@@ -196,7 +196,7 @@ func (m *V1beta1ImportSource) ContextValidate(ctx context.Context, formats strfm
 	return nil
 }
 
-func (m *V1beta1ImportSource) contextValidateAzureBlob(ctx context.Context, formats strfmt.Registry) error {
+func (m *ImportSource) contextValidateAzureBlob(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.AzureBlob != nil {
 
@@ -217,7 +217,7 @@ func (m *V1beta1ImportSource) contextValidateAzureBlob(ctx context.Context, form
 	return nil
 }
 
-func (m *V1beta1ImportSource) contextValidateGcs(ctx context.Context, formats strfmt.Registry) error {
+func (m *ImportSource) contextValidateGcs(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Gcs != nil {
 
@@ -238,7 +238,7 @@ func (m *V1beta1ImportSource) contextValidateGcs(ctx context.Context, formats st
 	return nil
 }
 
-func (m *V1beta1ImportSource) contextValidateLocal(ctx context.Context, formats strfmt.Registry) error {
+func (m *ImportSource) contextValidateLocal(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Local != nil {
 
@@ -259,7 +259,7 @@ func (m *V1beta1ImportSource) contextValidateLocal(ctx context.Context, formats 
 	return nil
 }
 
-func (m *V1beta1ImportSource) contextValidateS3(ctx context.Context, formats strfmt.Registry) error {
+func (m *ImportSource) contextValidateS3(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.S3 != nil {
 
@@ -280,7 +280,7 @@ func (m *V1beta1ImportSource) contextValidateS3(ctx context.Context, formats str
 	return nil
 }
 
-func (m *V1beta1ImportSource) contextValidateType(ctx context.Context, formats strfmt.Registry) error {
+func (m *ImportSource) contextValidateType(ctx context.Context, formats strfmt.Registry) error {
 
 	if m.Type != nil {
 
@@ -298,7 +298,7 @@ func (m *V1beta1ImportSource) contextValidateType(ctx context.Context, formats s
 }
 
 // MarshalBinary interface implementation
-func (m *V1beta1ImportSource) MarshalBinary() ([]byte, error) {
+func (m *ImportSource) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -306,8 +306,8 @@ func (m *V1beta1ImportSource) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1beta1ImportSource) UnmarshalBinary(b []byte) error {
-	var res V1beta1ImportSource
+func (m *ImportSource) UnmarshalBinary(b []byte) error {
+	var res ImportSource
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

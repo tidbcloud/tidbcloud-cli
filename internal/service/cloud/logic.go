@@ -105,7 +105,7 @@ func (e Export) String() string {
 
 type Import struct {
 	ID     string
-	Status *importModel.V1beta1ImportState
+	Status *importModel.ImportStateEnum
 }
 
 func (i Import) String() string {
@@ -479,7 +479,7 @@ func GetSelectedRestoreMode() (string, error) {
 
 // GetSelectedImport get the selected import task. statusFilter is used to filter the available options, only imports has status in statusFilter will be available.
 // statusFilter with no filter will mark all the import tasks as available options just like statusFilter with all status.
-func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client TiDBCloudClient, statusFilter []importModel.V1beta1ImportState) (*Import, error) {
+func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client TiDBCloudClient, statusFilter []importModel.ImportStateEnum) (*Import, error) {
 	_, importItems, err := RetrieveImports(ctx, cID, pageSize, client)
 	if err != nil {
 		return nil, err
@@ -722,12 +722,12 @@ func RetrieveServerlessBackups(ctx context.Context, cID string, pageSize int32, 
 	return int64(len(items)), items, nil
 }
 
-func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*importModel.V1beta1Import, error) {
+func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*importModel.Import, error) {
 	orderBy := "create_time desc"
 	params := importApi.NewImportServiceListImportsParams().WithClusterID(cID).WithContext(context).WithOrderBy(&orderBy)
 
 	ps := int32(pageSize)
-	var items []*importModel.V1beta1Import
+	var items []*importModel.Import
 	imports, err := d.ListImports(params.WithPageSize(&ps))
 	if err != nil {
 		return 0, nil, errors.Trace(err)

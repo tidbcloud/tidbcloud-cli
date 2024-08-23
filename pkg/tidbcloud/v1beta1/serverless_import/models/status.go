@@ -14,23 +14,23 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// RPCStatus rpc status
+// Status status
 //
-// swagger:model rpcStatus
-type RPCStatus struct {
+// swagger:model Status
+type Status struct {
 
 	// code
 	Code int32 `json:"code,omitempty"`
 
 	// details
-	Details []*ProtobufAny `json:"details"`
+	Details []*Any `json:"details"`
 
 	// message
 	Message string `json:"message,omitempty"`
 }
 
-// Validate validates this rpc status
-func (m *RPCStatus) Validate(formats strfmt.Registry) error {
+// Validate validates this status
+func (m *Status) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateDetails(formats); err != nil {
@@ -43,7 +43,7 @@ func (m *RPCStatus) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *RPCStatus) validateDetails(formats strfmt.Registry) error {
+func (m *Status) validateDetails(formats strfmt.Registry) error {
 	if swag.IsZero(m.Details) { // not required
 		return nil
 	}
@@ -69,8 +69,8 @@ func (m *RPCStatus) validateDetails(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this rpc status based on the context it is used
-func (m *RPCStatus) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this status based on the context it is used
+func (m *Status) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateDetails(ctx, formats); err != nil {
@@ -83,7 +83,7 @@ func (m *RPCStatus) ContextValidate(ctx context.Context, formats strfmt.Registry
 	return nil
 }
 
-func (m *RPCStatus) contextValidateDetails(ctx context.Context, formats strfmt.Registry) error {
+func (m *Status) contextValidateDetails(ctx context.Context, formats strfmt.Registry) error {
 
 	for i := 0; i < len(m.Details); i++ {
 
@@ -109,7 +109,7 @@ func (m *RPCStatus) contextValidateDetails(ctx context.Context, formats strfmt.R
 }
 
 // MarshalBinary interface implementation
-func (m *RPCStatus) MarshalBinary() ([]byte, error) {
+func (m *Status) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -117,8 +117,8 @@ func (m *RPCStatus) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *RPCStatus) UnmarshalBinary(b []byte) error {
-	var res RPCStatus
+func (m *Status) UnmarshalBinary(b []byte) error {
+	var res Status
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

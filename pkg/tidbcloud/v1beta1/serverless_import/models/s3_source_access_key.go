@@ -14,10 +14,10 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// V1beta1S3SourceAccessKey v1beta1 s3 source access key
+// S3SourceAccessKey s3 source access key
 //
-// swagger:model v1beta1S3SourceAccessKey
-type V1beta1S3SourceAccessKey struct {
+// swagger:model S3Source.AccessKey
+type S3SourceAccessKey struct {
 
 	// The access key id.
 	// Required: true
@@ -28,8 +28,8 @@ type V1beta1S3SourceAccessKey struct {
 	Secret *string `json:"secret"`
 }
 
-// Validate validates this v1beta1 s3 source access key
-func (m *V1beta1S3SourceAccessKey) Validate(formats strfmt.Registry) error {
+// Validate validates this s3 source access key
+func (m *S3SourceAccessKey) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateID(formats); err != nil {
@@ -46,7 +46,7 @@ func (m *V1beta1S3SourceAccessKey) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1S3SourceAccessKey) validateID(formats strfmt.Registry) error {
+func (m *S3SourceAccessKey) validateID(formats strfmt.Registry) error {
 
 	if err := validate.Required("id", "body", m.ID); err != nil {
 		return err
@@ -55,7 +55,7 @@ func (m *V1beta1S3SourceAccessKey) validateID(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1S3SourceAccessKey) validateSecret(formats strfmt.Registry) error {
+func (m *S3SourceAccessKey) validateSecret(formats strfmt.Registry) error {
 
 	if err := validate.Required("secret", "body", m.Secret); err != nil {
 		return err
@@ -64,13 +64,13 @@ func (m *V1beta1S3SourceAccessKey) validateSecret(formats strfmt.Registry) error
 	return nil
 }
 
-// ContextValidate validates this v1beta1 s3 source access key based on context it is used
-func (m *V1beta1S3SourceAccessKey) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this s3 source access key based on context it is used
+func (m *S3SourceAccessKey) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *V1beta1S3SourceAccessKey) MarshalBinary() ([]byte, error) {
+func (m *S3SourceAccessKey) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -78,8 +78,8 @@ func (m *V1beta1S3SourceAccessKey) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1beta1S3SourceAccessKey) UnmarshalBinary(b []byte) error {
-	var res V1beta1S3SourceAccessKey
+func (m *S3SourceAccessKey) UnmarshalBinary(b []byte) error {
+	var res S3SourceAccessKey
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

@@ -49,18 +49,18 @@ type S3Opts struct {
 
 func (o S3Opts) SupportedFileTypes() []string {
 	return []string{
-		string(importModel.V1beta1ImportOptionsFileTypeCSV),
-		string(importModel.V1beta1ImportOptionsFileTypePARQUET),
-		string(importModel.V1beta1ImportOptionsFileTypeSQL),
-		string(importModel.V1beta1ImportOptionsFileTypeAURORASNAPSHOT),
+		string(importModel.ImportFileTypeEnumCSV),
+		string(importModel.ImportFileTypeEnumPARQUET),
+		string(importModel.ImportFileTypeEnumSQL),
+		string(importModel.ImportFileTypeEnumAURORASNAPSHOT),
 	}
 }
 
 func (o S3Opts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
 	var clusterID, fileType, s3Uri, s3Arn, accessKeyID, secretAccessKey string
-	var authType importModel.V1beta1S3SourceAuthType
-	var format *importModel.V1beta1CSVFormat
+	var authType importModel.ImportS3AuthTypeEnum
+	var format *importModel.CSVFormat
 	d, err := o.h.Client()
 	if err != nil {
 		return err
@@ -96,7 +96,7 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 			}
 		}
 
-		authTypes := []interface{}{importModel.V1beta1S3SourceAuthTypeROLEARN, importModel.V1beta1S3SourceAuthTypeACCESSKEY}
+		authTypes := []interface{}{importModel.ImportS3AuthTypeEnumROLEARN, importModel.ImportS3AuthTypeEnumACCESSKEY}
 		model, err := ui.InitialSelectModel(authTypes, "Choose the auth type:")
 		if err != nil {
 			return err
@@ -109,9 +109,9 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		if m, _ := authTypeModel.(ui.SelectModel); m.Interrupted {
 			return util.InterruptError
 		}
-		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(importModel.V1beta1S3SourceAuthType)
+		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(importModel.ImportS3AuthTypeEnum)
 
-		if authType == importModel.V1beta1S3SourceAuthTypeROLEARN {
+		if authType == importModel.ImportS3AuthTypeEnumROLEARN {
 			input := &survey.Input{
 				Message: "Please input the arn:",
 			}
@@ -123,7 +123,7 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 					return err
 				}
 			}
-		} else if authType == importModel.V1beta1S3SourceAuthTypeACCESSKEY {
+		} else if authType == importModel.ImportS3AuthTypeEnumACCESSKEY {
 			// variables for input
 			p = tea.NewProgram(o.initialAccessKeyInputModel())
 			inputModel, err := p.Run()
@@ -163,7 +163,7 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		}
 		fileType = fileTypeModel.(ui.SelectModel).Choices[fileTypeModel.(ui.SelectModel).Selected].(string)
 
-		if fileType == string(importModel.V1beta1ImportOptionsFileTypeCSV) {
+		if fileType == string(importModel.ImportFileTypeEnumCSV) {
 			format, err = getCSVFormat()
 			if err != nil {
 				return err
@@ -205,9 +205,9 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 			return errors.Trace(err)
 		}
 		if s3Arn != "" {
-			authType = importModel.V1beta1S3SourceAuthTypeROLEARN
+			authType = importModel.ImportS3AuthTypeEnumROLEARN
 		} else if accessKeyID != "" && secretAccessKey != "" {
-			authType = importModel.V1beta1S3SourceAuthTypeACCESSKEY
+			authType = importModel.ImportS3AuthTypeEnumACCESSKEY
 		} else {
 			return fmt.Errorf("either role arn or access key id and secret access key must be provided")
 		}
@@ -232,12 +232,12 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 	}
 	body.ImportOptions.CsvFormat = format
 
-	if authType == importModel.V1beta1S3SourceAuthTypeROLEARN {
-		body.Source.S3.Type = &authType
+	if authType == importModel.ImportS3AuthTypeEnumROLEARN {
+		body.Source.S3.AuthType = &authType
 		body.Source.S3.RoleArn = s3Arn
 	} else {
-		body.Source.S3.Type = &authType
-		body.Source.S3.AccessKey = &importModel.V1beta1S3SourceAccessKey{
+		body.Source.S3.AuthType = &authType
+		body.Source.S3.AccessKey = &importModel.S3SourceAccessKey{
 			ID:     &accessKeyID,
 			Secret: &secretAccessKey,
 		}

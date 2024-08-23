@@ -14,10 +14,10 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// V1beta1LocalSource v1beta1 local source
+// LocalSource local source
 //
-// swagger:model v1beta1LocalSource
-type V1beta1LocalSource struct {
+// swagger:model LocalSource
+type LocalSource struct {
 
 	// The file name of import source file.
 	// Read Only: true
@@ -36,8 +36,8 @@ type V1beta1LocalSource struct {
 	UploadID *string `json:"uploadId"`
 }
 
-// Validate validates this v1beta1 local source
-func (m *V1beta1LocalSource) Validate(formats strfmt.Registry) error {
+// Validate validates this local source
+func (m *LocalSource) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateTargetDatabase(formats); err != nil {
@@ -58,7 +58,7 @@ func (m *V1beta1LocalSource) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1beta1LocalSource) validateTargetDatabase(formats strfmt.Registry) error {
+func (m *LocalSource) validateTargetDatabase(formats strfmt.Registry) error {
 
 	if err := validate.Required("targetDatabase", "body", m.TargetDatabase); err != nil {
 		return err
@@ -67,7 +67,7 @@ func (m *V1beta1LocalSource) validateTargetDatabase(formats strfmt.Registry) err
 	return nil
 }
 
-func (m *V1beta1LocalSource) validateTargetTable(formats strfmt.Registry) error {
+func (m *LocalSource) validateTargetTable(formats strfmt.Registry) error {
 
 	if err := validate.Required("targetTable", "body", m.TargetTable); err != nil {
 		return err
@@ -76,7 +76,7 @@ func (m *V1beta1LocalSource) validateTargetTable(formats strfmt.Registry) error 
 	return nil
 }
 
-func (m *V1beta1LocalSource) validateUploadID(formats strfmt.Registry) error {
+func (m *LocalSource) validateUploadID(formats strfmt.Registry) error {
 
 	if err := validate.Required("uploadId", "body", m.UploadID); err != nil {
 		return err
@@ -85,8 +85,8 @@ func (m *V1beta1LocalSource) validateUploadID(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this v1beta1 local source based on the context it is used
-func (m *V1beta1LocalSource) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this local source based on the context it is used
+func (m *LocalSource) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateFileName(ctx, formats); err != nil {
@@ -99,7 +99,7 @@ func (m *V1beta1LocalSource) ContextValidate(ctx context.Context, formats strfmt
 	return nil
 }
 
-func (m *V1beta1LocalSource) contextValidateFileName(ctx context.Context, formats strfmt.Registry) error {
+func (m *LocalSource) contextValidateFileName(ctx context.Context, formats strfmt.Registry) error {
 
 	if err := validate.ReadOnly(ctx, "fileName", "body", string(m.FileName)); err != nil {
 		return err
@@ -109,7 +109,7 @@ func (m *V1beta1LocalSource) contextValidateFileName(ctx context.Context, format
 }
 
 // MarshalBinary interface implementation
-func (m *V1beta1LocalSource) MarshalBinary() ([]byte, error) {
+func (m *LocalSource) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -117,8 +117,8 @@ func (m *V1beta1LocalSource) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1beta1LocalSource) UnmarshalBinary(b []byte) error {
-	var res V1beta1LocalSource
+func (m *LocalSource) UnmarshalBinary(b []byte) error {
+	var res LocalSource
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

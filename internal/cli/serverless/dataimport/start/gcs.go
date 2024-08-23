@@ -44,18 +44,18 @@ type GCSOpts struct {
 
 func (o GCSOpts) SupportedFileTypes() []string {
 	return []string{
-		string(importModel.V1beta1ImportOptionsFileTypeCSV),
-		string(importModel.V1beta1ImportOptionsFileTypePARQUET),
-		string(importModel.V1beta1ImportOptionsFileTypeSQL),
-		string(importModel.V1beta1ImportOptionsFileTypeAURORASNAPSHOT),
+		string(importModel.ImportFileTypeEnumCSV),
+		string(importModel.ImportFileTypeEnumPARQUET),
+		string(importModel.ImportFileTypeEnumSQL),
+		string(importModel.ImportFileTypeEnumAURORASNAPSHOT),
 	}
 }
 
 func (o GCSOpts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
 	var clusterID, fileType, gcsUri, credentialsPath string
-	var authType importModel.V1beta1GCSSourceAuthType
-	var format *importModel.V1beta1CSVFormat
+	var authType importModel.ImportGcsAuthTypeEnum
+	var format *importModel.CSVFormat
 	d, err := o.h.Client()
 	if err != nil {
 		return err
@@ -91,7 +91,7 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 			}
 		}
 
-		authTypes := []interface{}{importModel.V1beta1GCSSourceAuthTypeSERVICEACCOUNTKEY}
+		authTypes := []interface{}{importModel.ImportGcsAuthTypeEnumSERVICEACCOUNTKEY}
 		model, err := ui.InitialSelectModel(authTypes, "Choose the auth type:")
 		if err != nil {
 			return err
@@ -104,9 +104,9 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		if m, _ := authTypeModel.(ui.SelectModel); m.Interrupted {
 			return util.InterruptError
 		}
-		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(importModel.V1beta1GCSSourceAuthType)
+		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(importModel.ImportGcsAuthTypeEnum)
 
-		if authType == importModel.V1beta1GCSSourceAuthTypeSERVICEACCOUNTKEY {
+		if authType == importModel.ImportGcsAuthTypeEnumSERVICEACCOUNTKEY {
 			input := &survey.Input{
 				Message: "Please input the gcs credentialsPath:",
 			}
@@ -140,7 +140,7 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		}
 		fileType = fileTypeModel.(ui.SelectModel).Choices[fileTypeModel.(ui.SelectModel).Selected].(string)
 
-		if fileType == string(importModel.V1beta1ImportOptionsFileTypeCSV) {
+		if fileType == string(importModel.ImportFileTypeEnumCSV) {
 			format, err = getCSVFormat()
 			if err != nil {
 				return err
@@ -172,7 +172,7 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		if credentialsPath == "" {
 			return fmt.Errorf("gcs credentials path is required")
 		}
-		authType = importModel.V1beta1GCSSourceAuthTypeSERVICEACCOUNTKEY
+		authType = importModel.ImportGcsAuthTypeEnumSERVICEACCOUNTKEY
 
 		// optional flags
 		format, err = getCSVFlagValue(cmd)
@@ -205,7 +205,7 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 	}
 	body.ImportOptions.CsvFormat = format
 
-	body.Source.Gcs.Type = &authType
+	body.Source.Gcs.AuthType = &authType
 	body.Source.Gcs.ServiceAccountKey = base64.StdEncoding.EncodeToString(credentials)
 
 	params := importOp.NewImportServiceCreateImportParams().WithClusterID(clusterID).

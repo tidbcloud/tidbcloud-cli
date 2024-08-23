@@ -57,14 +57,14 @@ type LocalOpts struct {
 
 func (o LocalOpts) SupportedFileTypes() []string {
 	return []string{
-		string(importModel.V1beta1ImportOptionsFileTypeCSV),
+		string(importModel.ImportFileTypeEnumCSV),
 	}
 }
 
 func (o LocalOpts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
 	var clusterID, fileType, targetDatabase, targetTable, filePath string
-	var format *importModel.V1beta1CSVFormat
+	var format *importModel.CSVFormat
 	d, err := o.h.Client()
 	if err != nil {
 		return err
@@ -134,7 +134,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 			return errors.New("Target table is required")
 		}
 
-		if fileType == string(importModel.V1beta1ImportOptionsFileTypeCSV) {
+		if fileType == string(importModel.ImportFileTypeEnumCSV) {
 			format, err = getCSVFormat()
 			if err != nil {
 				return err

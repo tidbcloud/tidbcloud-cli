@@ -16,16 +16,16 @@ import (
 
 // ImportServiceCreateImportBody import service create import body
 //
-// swagger:model ImportServiceCreateImportBody
+// swagger:model ImportService.CreateImportBody
 type ImportServiceCreateImportBody struct {
 
 	// The options of the import.
 	// Required: true
-	ImportOptions *V1beta1ImportOptions `json:"importOptions"`
+	ImportOptions *ImportOptions `json:"importOptions"`
 
 	// The source of the import.
 	// Required: true
-	Source *V1beta1ImportSource `json:"source"`
+	Source *ImportSource `json:"source"`
 }
 
 // Validate validates this import service create import body

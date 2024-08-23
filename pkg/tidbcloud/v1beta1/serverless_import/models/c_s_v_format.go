@@ -12,10 +12,10 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// V1beta1CSVFormat v1beta1 c s v format
+// CSVFormat c s v format
 //
-// swagger:model v1beta1CSVFormat
-type V1beta1CSVFormat struct {
+// swagger:model CSVFormat
+type CSVFormat struct {
 
 	// Whether to escape backslashes in CSV files. Default is true.
 	BackslashEscape *bool `json:"backslashEscape,omitempty"`
@@ -39,18 +39,18 @@ type V1beta1CSVFormat struct {
 	TrimLastSeparator *bool `json:"trimLastSeparator,omitempty"`
 }
 
-// Validate validates this v1beta1 c s v format
-func (m *V1beta1CSVFormat) Validate(formats strfmt.Registry) error {
+// Validate validates this c s v format
+func (m *CSVFormat) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validates this v1beta1 c s v format based on context it is used
-func (m *V1beta1CSVFormat) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this c s v format based on context it is used
+func (m *CSVFormat) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *V1beta1CSVFormat) MarshalBinary() ([]byte, error) {
+func (m *CSVFormat) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -58,8 +58,8 @@ func (m *V1beta1CSVFormat) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1beta1CSVFormat) UnmarshalBinary(b []byte) error {
-	var res V1beta1CSVFormat
+func (m *CSVFormat) UnmarshalBinary(b []byte) error {
+	var res CSVFormat
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

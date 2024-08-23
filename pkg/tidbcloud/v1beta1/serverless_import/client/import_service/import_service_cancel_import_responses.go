@@ -125,7 +125,7 @@ An unexpected error response.
 type ImportServiceCancelImportDefault struct {
 	_statusCode int
 
-	Payload *models.RPCStatus
+	Payload *models.Status
 }
 
 // IsSuccess returns true when this import service cancel import default response has a 2xx status code
@@ -168,13 +168,13 @@ func (o *ImportServiceCancelImportDefault) String() string {
 	return fmt.Sprintf("[POST /v1beta1/clusters/{clusterId}/imports/{id}:cancel][%d] ImportService_CancelImport default %s", o._statusCode, payload)
 }
 
-func (o *ImportServiceCancelImportDefault) GetPayload() *models.RPCStatus {
+func (o *ImportServiceCancelImportDefault) GetPayload() *models.Status {
 	return o.Payload
 }
 
 func (o *ImportServiceCancelImportDefault) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
-	o.Payload = new(models.RPCStatus)
+	o.Payload = new(models.Status)
 
 	// response payload
 	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {

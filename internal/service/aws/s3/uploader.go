@@ -402,7 +402,7 @@ type chunk struct {
 
 // completedParts is a wrapper to make parts sortable by their part number,
 // since S3 required this list to be sent in sorted order.
-type completedParts []*serverlessImportModels.V1beta1CompletePart
+type completedParts []*serverlessImportModels.CompletePart
 
 func (a completedParts) Len() int      { return len(a) }
 func (a completedParts) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
@@ -540,7 +540,7 @@ func (u *multiUploader) send(c chunk) error {
 		return fmt.Errorf("upload failed, code: %s, reason: %s", resp.Status(), string(resp.Body()))
 	}
 
-	var completed serverlessImportModels.V1beta1CompletePart
+	var completed serverlessImportModels.CompletePart
 	completed.PartNumber = &c.num
 	etag := resp.Header().Get("ETag")
 	completed.Etag = &etag
