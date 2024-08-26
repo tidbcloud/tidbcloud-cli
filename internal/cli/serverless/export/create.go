@@ -541,6 +541,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
+			// build param to create export
 			fileTypeEnum := exportClient.ExportFileTypeEnum(strings.ToUpper(fileType))
 			targetTypeEnum := exportClient.ExportTargetTypeEnum(strings.ToUpper(targetType))
 			params := &exportClient.ExportServiceCreateExportBody{
