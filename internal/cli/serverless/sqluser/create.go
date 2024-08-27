@@ -206,7 +206,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			params := &iamClient.ApiCreateSqlUserReq{
 				AuthMethod:  &authMethod,
 				UserName:    &userName,
-				BuiltinRole: &builtinRole,
+				BuiltinRole: builtinRole,
 				CustomRoles: customRoles,
 				Password:    &password,
 				AutoPrefix:  &autoPrefix,
@@ -273,7 +273,7 @@ func getUserPrefix(ctx context.Context, d cloud.TiDBCloudClient, clusterID strin
 	return cluster.Payload.UserPrefix, nil
 }
 
-func getBuiltinRoleAndCustomRoles(roles []string) (string, []string, error) {
+func getBuiltinRoleAndCustomRoles(roles []string) (*string, []string, error) {
 	builtinRole := ""
 	customRoles := make([]string, 0, len(roles))
 	for _, role := range roles {
@@ -289,11 +289,11 @@ func getBuiltinRoleAndCustomRoles(roles []string) (string, []string, error) {
 					builtinRole = util.READONLY_ROLE
 				}
 			} else {
-				return "", []string{}, errors.New("only one built-in role is allowed")
+				return nil, []string{}, errors.New("only one built-in role is allowed")
 			}
 		} else {
 			customRoles = append(customRoles, role)
 		}
 	}
-	return builtinRole, customRoles, nil
+	return &builtinRole, customRoles, nil
 }

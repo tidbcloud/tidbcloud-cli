@@ -537,6 +537,36 @@ func (_m *TiDBCloudClient) DeleteExport(params *export_service.ExportServiceDele
 	return r0, r1
 }
 
+// DeleteSQLUser provides a mock function with given fields: ctx, clusterID, userName
+func (_m *TiDBCloudClient) DeleteSQLUser(ctx context.Context, clusterID string, userName string) (*openapi.ApiBasicResp, error) {
+	ret := _m.Called(ctx, clusterID, userName)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteSQLUser")
+	}
+
+	var r0 *openapi.ApiBasicResp
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*openapi.ApiBasicResp, error)); ok {
+		return rf(ctx, clusterID, userName)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *openapi.ApiBasicResp); ok {
+		r0 = rf(ctx, clusterID, userName)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*openapi.ApiBasicResp)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterID, userName)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // DownloadExport provides a mock function with given fields: params, opts
 func (_m *TiDBCloudClient) DownloadExport(params *export_service.ExportServiceDownloadExportParams, opts ...export_service.ClientOption) (*export_service.ExportServiceDownloadExportOK, error) {
 	_va := make([]interface{}, len(opts))
@@ -752,6 +782,36 @@ func (_m *TiDBCloudClient) GetImport(params *import_service.ImportServiceGetImpo
 
 	if rf, ok := ret.Get(1).(func(*import_service.ImportServiceGetImportParams, ...import_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetSQLUser provides a mock function with given fields: ctx, clusterID, userName
+func (_m *TiDBCloudClient) GetSQLUser(ctx context.Context, clusterID string, userName string) (*openapi.ApiSqlUser, error) {
+	ret := _m.Called(ctx, clusterID, userName)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetSQLUser")
+	}
+
+	var r0 *openapi.ApiSqlUser
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*openapi.ApiSqlUser, error)); ok {
+		return rf(ctx, clusterID, userName)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *openapi.ApiSqlUser); ok {
+		r0 = rf(ctx, clusterID, userName)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*openapi.ApiSqlUser)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterID, userName)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -1145,6 +1205,36 @@ func (_m *TiDBCloudClient) StartUpload(params *import_service.ImportServiceStart
 
 	if rf, ok := ret.Get(1).(func(*import_service.ImportServiceStartUploadParams, ...import_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UpdateSQLUser provides a mock function with given fields: ctx, clusterID, userName, body
+func (_m *TiDBCloudClient) UpdateSQLUser(ctx context.Context, clusterID string, userName string, body *openapi.ApiUpdateSqlUserReq) (*openapi.ApiSqlUser, error) {
+	ret := _m.Called(ctx, clusterID, userName, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateSQLUser")
+	}
+
+	var r0 *openapi.ApiSqlUser
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *openapi.ApiUpdateSqlUserReq) (*openapi.ApiSqlUser, error)); ok {
+		return rf(ctx, clusterID, userName, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *openapi.ApiUpdateSqlUserReq) *openapi.ApiSqlUser); ok {
+		r0 = rf(ctx, clusterID, userName, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*openapi.ApiSqlUser)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string, *openapi.ApiUpdateSqlUserReq) error); ok {
+		r1 = rf(ctx, clusterID, userName, body)
 	} else {
 		r1 = ret.Error(1)
 	}

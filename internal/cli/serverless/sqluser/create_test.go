@@ -28,9 +28,8 @@ import (
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
-	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
-	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/iam"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 
 	"github.com/juju/errors"
@@ -86,23 +85,21 @@ func (suite *CreateSQLUserSuite) TestCreateSQLUserArgs() {
 	customRoleStr := strings.Join(customRole, ",")
 	roleStr := fmt.Sprintf("%s,%s", builtinRole, customRoleStr)
 
-	createSQLUserBody := &iamModel.APICreateSQLUserReq{
-		UserName:    userName,
-		BuiltinRole: builtinRole,
+	authMethod := util.MYSQLNATIVEPASSWORD
+	autoPrefix := DefaultAutoPrefix
+	createSQLUserBody := &iamClient.ApiCreateSqlUserReq{
+		UserName:    &userName,
+		BuiltinRole: &builtinRole,
 		CustomRoles: customRole,
-		Password:    password,
-		AuthMethod:  util.MYSQLNATIVEPASSWORD,
-		AutoPrefix:  true,
+		Password:    &password,
+		AuthMethod:  &authMethod,
+		AutoPrefix:  &autoPrefix,
 	}
-	body := &iamModel.APISQLUser{}
-	err := json.Unmarshal([]byte(getSQLUserResultStr), body)
+	result := &iamClient.ApiSqlUser{}
+	err := json.Unmarshal([]byte(getSQLUserResultStr), result)
 	assert.Nil(err)
-	result := &iamApi.PostV1beta1ClustersClusterIDSQLUsersOK{
-		Payload: body,
-	}
 
-	suite.mockClient.On("CreateSQLUser", iamApi.NewPostV1beta1ClustersClusterIDSQLUsersParams().
-		WithClusterID(clusterID).WithSQLUser(createSQLUserBody).WithContext(ctx)).
+	suite.mockClient.On("CreateSQLUser", ctx, clusterID, createSQLUserBody).
 		Return(result, nil)
 
 	clusterBody := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{}

@@ -12,25 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package sqluser
+package util
 
-import (
-	"tidbcloud-cli/internal"
-
-	"github.com/spf13/cobra"
-)
-
-func SQLUserCmd(h *internal.Helper) *cobra.Command {
-	var SQLUserCmd = &cobra.Command{
-		Use:     "sql-user",
-		Short:   "Manage cluster SQL users",
-		Aliases: []string{"user"},
-	}
-
-	SQLUserCmd.AddCommand(ListCmd(h))
-	SQLUserCmd.AddCommand(CreateCmd(h))
-	SQLUserCmd.AddCommand(DeleteCmd(h))
-	SQLUserCmd.AddCommand(UpdateCmd(h))
-
-	return SQLUserCmd
+func IsNilOrEmpty(s *string) bool {
+	return s == nil || *s == ""
 }

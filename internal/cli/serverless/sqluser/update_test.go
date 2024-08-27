@@ -28,9 +28,8 @@ import (
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
-	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
-	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/iam"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 
 	"github.com/juju/errors"
@@ -75,17 +74,11 @@ func (suite *UpdateSQLUserSuite) TestUpdateSQLUserArgs() {
 	customRoleStr := strings.Join(customRole, ",")
 	roleStr := fmt.Sprintf("%s,%s", builtinRole, customRoleStr)
 
-	body := &iamModel.APISQLUser{}
-	err := json.Unmarshal([]byte(getSQLUserResultStr), body)
+	result := &iamClient.ApiSqlUser{}
+	err := json.Unmarshal([]byte(getSQLUserResultStr), result)
 	assert.Nil(err)
-	result := &iamApi.GetV1beta1ClustersClusterIDSQLUsersUserNameOK{
-		Payload: body,
-	}
 
-	suite.mockClient.On("GetSQLUser", iamApi.NewGetV1beta1ClustersClusterIDSQLUsersUserNameParams().
-		WithClusterID(clusterID).
-		WithUserName(fullUserName).
-		WithContext(ctx)).
+	suite.mockClient.On("GetSQLUser", ctx, clusterID, fullUserName).
 		Return(result, nil)
 
 	clusterBody := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{}
@@ -98,18 +91,14 @@ func (suite *UpdateSQLUserSuite) TestUpdateSQLUserArgs() {
 		WithClusterID(clusterID).WithContext(ctx)).
 		Return(res, nil)
 
-	updateBody := &iamModel.APIUpdateSQLUserReq{
-		BuiltinRole: builtinRole,
+	updateBody := &iamClient.ApiUpdateSqlUserReq{
+		BuiltinRole: &builtinRole,
 		CustomRoles: customRole,
-		Password:    password,
+		Password:    &password,
 	}
 
-	suite.mockClient.On("UpdateSQLUser", iamApi.NewPatchV1beta1ClustersClusterIDSQLUsersUserNameParams().
-		WithClusterID(clusterID).
-		WithUserName(fullUserName).
-		WithSQLUser(updateBody).
-		WithContext(ctx)).
-		Return(&iamApi.PatchV1beta1ClustersClusterIDSQLUsersUserNameOK{}, nil)
+	suite.mockClient.On("UpdateSQLUser", ctx, clusterID, fullUserName, updateBody).
+		Return(result, nil)
 
 	tests := []struct {
 		name         string

@@ -25,8 +25,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
-	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
+	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/iam"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -37,7 +36,6 @@ const listResultStr = `{
     {
       "authMethod": "mysql_native_password",
       "builtinRole": "role_admin",
-      "customRoles": null,
       "userName": "4TGJD6zA3NnUiz4.12222"
     },
     {
@@ -81,15 +79,12 @@ func (suite *ListSQLUserSuite) TestListSQLUserArgs() {
 
 	clusterID := "12345"
 
-	body := &iamModel.APIListSQLUsersRsp{}
-	err := json.Unmarshal([]byte(listResultStr), body)
+	result := &iamClient.ApiListSqlUsersRsp{}
+	err := json.Unmarshal([]byte(listResultStr), result)
 	assert.Nil(err)
-	result := &iamApi.GetV1beta1ClustersClusterIDSQLUsersOK{
-		Payload: body,
-	}
-	pageSize := int64(suite.pageSize)
-	suite.mockClient.On("ListSQLUsers", iamApi.NewGetV1beta1ClustersClusterIDSQLUsersParams().
-		WithClusterID(clusterID).WithPageSize(&pageSize).WithContext(ctx)).
+	pageSize := int32(suite.pageSize)
+	var pageToken *string
+	suite.mockClient.On("ListSQLUsers", ctx, clusterID, &pageSize, pageToken).
 		Return(result, nil)
 
 	tests := []struct {

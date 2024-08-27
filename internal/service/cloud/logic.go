@@ -552,47 +552,46 @@ func GetSelectedBuiltinRole() (string, error) {
 	return role.(string), nil
 }
 
-// func GetSelectedSQLUser(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (string, error) {
-// 	_, sqlUserItems, err := RetrieveSQLUsers(ctx, clusterID, pageSize, client)
-// 	if err != nil {
-// 		return "", err
-// 	}
+func GetSelectedSQLUser(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (string, error) {
+	_, sqlUserItems, err := RetrieveSQLUsers(ctx, clusterID, pageSize, client)
+	if err != nil {
+		return "", err
+	}
 
-// 	var items = make([]interface{}, 0, len(sqlUserItems))
-// 	for _, item := range sqlUserItems {
-// 		items = append(items, &SQLUser{
-// 			UserName: item.UserName,
-// 			Role:     util.GetDisplayRole(item.BuiltinRole, item.CustomRoles),
-// 		})
-// 	}
-// 	if len(items) == 0 {
-// 		return "", fmt.Errorf("no available sql-users found")
-// 	}
+	var items = make([]interface{}, 0, len(sqlUserItems))
+	for _, item := range sqlUserItems {
+		items = append(items, &SQLUser{
+			UserName: *item.UserName,
+			Role:     util.GetDisplayRole(*item.BuiltinRole, item.CustomRoles),
+		})
+	}
+	if len(items) == 0 {
+		return "", fmt.Errorf("no available sql-users found")
+	}
 
-// 	model, err := ui.InitialSelectModel(items, "Choose the SQL user:")
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	itemsPerPage := 6
-// 	model.EnablePagination(itemsPerPage)
-// 	model.EnableFilter()
+	model, err := ui.InitialSelectModel(items, "Choose the SQL user:")
+	if err != nil {
+		return "", err
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
 
-// 	p := tea.NewProgram(model)
-// 	sqlUserModel, err := p.Run()
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	if m, _ := sqlUserModel.(ui.SelectModel); m.Interrupted {
-// 		return "", util.InterruptError
-// 	}
-// 	res := sqlUserModel.(ui.SelectModel).GetSelectedItem()
-// 	if res == nil {
-// 		return "", errors.New("no SQL user selected")
-// 	}
+	p := tea.NewProgram(model)
+	sqlUserModel, err := p.Run()
+	if err != nil {
+		return "", err
+	}
+	if m, _ := sqlUserModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	res := sqlUserModel.(ui.SelectModel).GetSelectedItem()
+	if res == nil {
+		return "", errors.New("no SQL user selected")
+	}
 
-// 	return res.(*SQLUser).UserName, nil
-
-// }
+	return res.(*SQLUser).UserName, nil
+}
 
 func RetrieveProjects(ctx context.Context, pageSize int64, d TiDBCloudClient) (int64, []iamClient.ApiProject, error) {
 	var items []iamClient.ApiProject
