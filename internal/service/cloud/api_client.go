@@ -27,7 +27,6 @@ import (
 	pingchatOp "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
 	branchClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client"
 	branchOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
-	oldiamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client"
 	serverlessClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client"
 	serverlessOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/iam"
@@ -47,7 +46,7 @@ import (
 const (
 	DefaultApiUrl             = "https://" + apiClient.DefaultHost
 	DefaultServerlessEndpoint = "https://" + serverlessClient.DefaultHost
-	DefaultIAMEndpoint        = "https://" + oldiamClient.DefaultHost
+	DefaultIAMEndpoint        = "https://" + "iam.tidbapi.com"
 	userAgent                 = "User-Agent"
 )
 
@@ -110,9 +109,9 @@ type TiDBCloudClient interface {
 
 	DownloadExport(params *expOp.ExportServiceDownloadExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDownloadExportOK, error)
 
-	// ListSQLUsers(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersOK, error)
+	ListSQLUsers(ctx context.Context, clusterID string, pageSize *int32, pageToken *string) (*iamClient.ApiListSqlUsersRsp, error)
 
-	// CreateSQLUser(ctx context.Context, clusterID string, body *iamClient.ApiCreateSqlUserReq) error
+	CreateSQLUser(ctx context.Context, clusterID string, body *iamClient.ApiCreateSqlUserReq) (*iamClient.ApiSqlUser, error)
 
 	// GetSQLUser(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameOK, error)
 
@@ -197,10 +196,8 @@ func (d *ClientDelegate) ListProjects(ctx context.Context, pageSize *int32, page
 	if pageToken != nil {
 		r = r.PageToken(*pageToken)
 	}
-	fmt.Println(1111)
-	res, _, err := r.Execute()
-	fmt.Println(err)
-	// defer h.Body.Close()
+	res, h, err := r.Execute()
+	defer h.Body.Close()
 	return res, err
 }
 
@@ -296,13 +293,28 @@ func (d *ClientDelegate) DownloadExport(params *expOp.ExportServiceDownloadExpor
 	return d.ec.ExportService.ExportServiceDownloadExport(params, opts...)
 }
 
-// func (d *ClientDelegate) ListSQLUsers(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersOK, error) {
-// 	return d.ic.Account.GetV1beta1ClustersClusterIDSQLUsers(params, opts...)
-// }
+func (d *ClientDelegate) ListSQLUsers(ctx context.Context, clusterID string, pageSize *int32, pageToken *string) (*iamClient.ApiListSqlUsersRsp, error) {
+	r := d.ic.AccountAPI.V1beta1ClustersClusterIdSqlUsersGet(ctx, clusterID)
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	res, h, err := r.Execute()
+	defer h.Body.Close()
+	return res, err
+}
 
-// func (d *ClientDelegate) CreateSQLUser(params *iamOp.PostV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.PostV1beta1ClustersClusterIDSQLUsersOK, error) {
-// 	return d.ic.Account.PostV1beta1ClustersClusterIDSQLUsers(params, opts...)
-// }
+func (d *ClientDelegate) CreateSQLUser(ctx context.Context, clusterId string, body *iamClient.ApiCreateSqlUserReq) (*iamClient.ApiSqlUser, error) {
+	r := d.ic.AccountAPI.V1beta1ClustersClusterIdSqlUsersPost(ctx, clusterId)
+	if body != nil {
+		r = r.SqlUser(*body)
+	}
+	res, h, err := r.Execute()
+	defer h.Body.Close()
+	return res, err
+}
 
 // func (d *ClientDelegate) GetSQLUser(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameOK, error) {
 // 	return d.ic.Account.GetV1beta1ClustersClusterIDSQLUsersUserName(params, opts...)
@@ -347,7 +359,6 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	} else {
 		iamCfg.Host = iamEndpoint
 	}
-	fmt.Println(iamCfg.Host)
 
 	return branchClient.New(branchTransport, strfmt.Default), serverlessClient.New(serverlessTransport, strfmt.Default),
 		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default),

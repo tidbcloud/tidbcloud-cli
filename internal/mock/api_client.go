@@ -359,6 +359,36 @@ func (_m *TiDBCloudClient) CreateImport(params *import_service.ImportServiceCrea
 	return r0, r1
 }
 
+// CreateSQLUser provides a mock function with given fields: ctx, clusterID, body
+func (_m *TiDBCloudClient) CreateSQLUser(ctx context.Context, clusterID string, body *openapi.ApiCreateSqlUserReq) (*openapi.ApiSqlUser, error) {
+	ret := _m.Called(ctx, clusterID, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateSQLUser")
+	}
+
+	var r0 *openapi.ApiSqlUser
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *openapi.ApiCreateSqlUserReq) (*openapi.ApiSqlUser, error)); ok {
+		return rf(ctx, clusterID, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *openapi.ApiCreateSqlUserReq) *openapi.ApiSqlUser); ok {
+		r0 = rf(ctx, clusterID, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*openapi.ApiSqlUser)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *openapi.ApiCreateSqlUserReq) error); ok {
+		r1 = rf(ctx, clusterID, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // DeleteBackup provides a mock function with given fields: params, opts
 func (_m *TiDBCloudClient) DeleteBackup(params *backup_restore_service.BackupRestoreServiceDeleteBackupParams, opts ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceDeleteBackupOK, error) {
 	_va := make([]interface{}, len(opts))
@@ -974,6 +1004,36 @@ func (_m *TiDBCloudClient) ListProviderRegions(params *serverless_service.Server
 
 	if rf, ok := ret.Get(1).(func(*serverless_service.ServerlessServiceListRegionsParams, ...serverless_service.ClientOption) error); ok {
 		r1 = rf(params, opts...)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ListSQLUsers provides a mock function with given fields: ctx, clusterID, pageSize, pageToken
+func (_m *TiDBCloudClient) ListSQLUsers(ctx context.Context, clusterID string, pageSize *int32, pageToken *string) (*openapi.ApiListSqlUsersRsp, error) {
+	ret := _m.Called(ctx, clusterID, pageSize, pageToken)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListSQLUsers")
+	}
+
+	var r0 *openapi.ApiListSqlUsersRsp
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string) (*openapi.ApiListSqlUsersRsp, error)); ok {
+		return rf(ctx, clusterID, pageSize, pageToken)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string) *openapi.ApiListSqlUsersRsp); ok {
+		r0 = rf(ctx, clusterID, pageSize, pageToken)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*openapi.ApiListSqlUsersRsp)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *int32, *string) error); ok {
+		r1 = rf(ctx, clusterID, pageSize, pageToken)
 	} else {
 		r1 = ret.Error(1)
 	}

@@ -90,7 +90,7 @@ func NewConfiguration() *Configuration {
 		Debug:            false,
 		Servers:          ServerConfigurations{
 			{
-				URL: "//iam.tidbapi.com",
+				URL: "https://iam.tidbapi.com",
 				Description: "No description provided",
 			},
 		},

@@ -750,33 +750,31 @@ func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDB
 	return int64(len(items)), items, nil
 }
 
-// func RetrieveSQLUsers(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*iamModel.APISQLUser, error) {
-// 	var items []*iamModel.APISQLUser
-// 	var pageToken string
+func RetrieveSQLUsers(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []iamClient.ApiSqlUser, error) {
+	var items []iamClient.ApiSqlUser
 
-// 	params := iamApi.NewGetV1beta1ClustersClusterIDSQLUsersParams().
-// 		WithClusterID(cID).
-// 		WithPageSize(&pageSize).
-// 		WithContext(ctx)
-// 	users, err := d.ListSQLUsers(params)
-// 	if err != nil {
-// 		return 0, nil, errors.Trace(err)
-// 	}
-// 	items = append(items, users.Payload.SQLUsers...)
-// 	// loop to get all SQL users
-// 	for {
-// 		pageToken = users.Payload.NextPageToken
-// 		if pageToken == "" {
-// 			break
-// 		}
-// 		users, err = d.ListSQLUsers(params.WithPageSize(&pageSize).WithPageToken(&pageToken))
-// 		if err != nil {
-// 			return 0, nil, errors.Trace(err)
-// 		}
-// 		items = append(items, users.Payload.SQLUsers...)
-// 	}
-// 	return int64(len(items)), items, nil
-// }
+	pageSizeInt32 := int32(pageSize)
+	var pageToken *string
+
+	sqlUsers, err := d.ListSQLUsers(ctx, cID, &pageSizeInt32, pageToken)
+	if err != nil {
+		return 0, nil, errors.Trace(err)
+	}
+	items = append(items, sqlUsers.SqlUsers...)
+	// loop to get all SQL users
+	for {
+		pageToken = sqlUsers.NextPageToken
+		if pageToken == nil || *pageToken == "" {
+			break
+		}
+		sqlUsers, err := d.ListSQLUsers(ctx, cID, &pageSizeInt32, pageToken)
+		if err != nil {
+			return 0, nil, errors.Trace(err)
+		}
+		items = append(items, sqlUsers.SqlUsers...)
+	}
+	return int64(len(items)), items, nil
+}
 
 func GetSelectedParentID(ctx context.Context, cluster *Cluster, pageSize int64, client TiDBCloudClient) (string, error) {
 	clusterID := cluster.ID

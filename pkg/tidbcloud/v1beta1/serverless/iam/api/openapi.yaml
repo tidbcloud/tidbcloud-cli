@@ -5,7 +5,7 @@ info:
   title: Acccount OPENAPI
   version: v1beta1
 servers:
-- url: //iam.tidbapi.com/
+- url: https://iam.tidbapi.com/
 paths:
   /customerSignupUrl:
     post:

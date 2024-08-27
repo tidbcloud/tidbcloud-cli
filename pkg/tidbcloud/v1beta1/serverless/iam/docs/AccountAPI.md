@@ -1,6 +1,6 @@
 # \AccountAPI
 
-All URIs are relative to *http://iam.tidbapi.com*
+All URIs are relative to *https://iam.tidbapi.com*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------

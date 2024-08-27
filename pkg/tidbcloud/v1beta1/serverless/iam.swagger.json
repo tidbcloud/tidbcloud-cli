@@ -7,6 +7,9 @@
         "version": "v1beta1"
     },
     "host": "iam.tidbapi.com",
+    "schemes": [
+        "https"
+    ],
     "paths": {
         "/customerSignupUrl": {
             "post": {
