@@ -24,7 +24,7 @@ import (
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
 
-	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
+	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/iam"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -56,7 +56,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				res := iamModel.APIListProjectsRsp{
+				res := iamClient.ApiListProjectsRsp{
 					Projects: items,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)
@@ -75,11 +75,11 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				var rows []output.Row
 				for _, item := range items {
 					rows = append(rows, output.Row{
-						item.ID,
-						item.Name,
-						strconv.FormatInt(item.ClusterCount, 10),
-						strconv.FormatInt(item.UserCount, 10),
-						item.OrgID,
+						*item.Id,
+						*item.Name,
+						strconv.FormatInt(int64(*item.ClusterCount), 10),
+						strconv.FormatInt(int64(*item.UserCount), 10),
+						*item.OrgId,
 					})
 				}
 

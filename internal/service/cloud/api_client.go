@@ -15,8 +15,10 @@
 package cloud
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
@@ -25,10 +27,10 @@ import (
 	pingchatOp "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
 	branchClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client"
 	branchOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
-	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client"
-	iamOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
+	oldiamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client"
 	serverlessClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client"
 	serverlessOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/iam"
 	brClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client"
 	brOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 	expClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client"
@@ -45,7 +47,7 @@ import (
 const (
 	DefaultApiUrl             = "https://" + apiClient.DefaultHost
 	DefaultServerlessEndpoint = "https://" + serverlessClient.DefaultHost
-	DefaultIAMEndpoint        = "https://" + iamClient.DefaultHost
+	DefaultIAMEndpoint        = "https://" + oldiamClient.DefaultHost
 	userAgent                 = "User-Agent"
 )
 
@@ -62,7 +64,7 @@ type TiDBCloudClient interface {
 
 	ListProviderRegions(params *serverlessOp.ServerlessServiceListRegionsParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListRegionsOK, error)
 
-	ListProjects(params *iamOp.GetV1beta1ProjectsParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ProjectsOK, error)
+	ListProjects(ctx context.Context, pageSize *int32, pageToken *string) (*iamClient.ApiListProjectsRsp, error)
 
 	CancelImport(params *serverlessImportOp.ImportServiceCancelImportParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelImportOK, error)
 
@@ -108,19 +110,19 @@ type TiDBCloudClient interface {
 
 	DownloadExport(params *expOp.ExportServiceDownloadExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDownloadExportOK, error)
 
-	ListSQLUsers(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersOK, error)
+	// ListSQLUsers(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersOK, error)
 
-	CreateSQLUser(params *iamOp.PostV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.PostV1beta1ClustersClusterIDSQLUsersOK, error)
+	// CreateSQLUser(ctx context.Context, clusterID string, body *iamClient.ApiCreateSqlUserReq) error
 
-	GetSQLUser(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameOK, error)
+	// GetSQLUser(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameOK, error)
 
-	DeleteSQLUser(params *iamOp.DeleteV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.DeleteV1beta1ClustersClusterIDSQLUsersUserNameOK, error)
+	// DeleteSQLUser(params *iamOp.DeleteV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.DeleteV1beta1ClustersClusterIDSQLUsersUserNameOK, error)
 
-	UpdateSQLUser(params *iamOp.PatchV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.PatchV1beta1ClustersClusterIDSQLUsersUserNameOK, error)
+	// UpdateSQLUser(params *iamOp.PatchV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.PatchV1beta1ClustersClusterIDSQLUsersUserNameOK, error)
 }
 
 type ClientDelegate struct {
-	ic  *iamClient.TidbcloudServerless
+	ic  *iamClient.APIClient
 	bc  *branchClient.TidbcloudServerless
 	pc  *pingchatClient.TidbcloudPingchat
 	sc  *serverlessClient.TidbcloudServerless
@@ -187,8 +189,19 @@ func (d *ClientDelegate) PartialUpdateCluster(params *serverlessOp.ServerlessSer
 	return d.sc.ServerlessService.ServerlessServicePartialUpdateCluster(params, opts...)
 }
 
-func (d *ClientDelegate) ListProjects(params *iamOp.GetV1beta1ProjectsParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ProjectsOK, error) {
-	return d.ic.Account.GetV1beta1Projects(params, opts...)
+func (d *ClientDelegate) ListProjects(ctx context.Context, pageSize *int32, pageToken *string) (*iamClient.ApiListProjectsRsp, error) {
+	r := d.ic.AccountAPI.V1beta1ProjectsGet(ctx)
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	fmt.Println(1111)
+	res, _, err := r.Execute()
+	fmt.Println(err)
+	// defer h.Body.Close()
+	return res, err
 }
 
 func (d *ClientDelegate) CancelImport(params *serverlessImportOp.ImportServiceCancelImportParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelImportOK, error) {
@@ -283,27 +296,27 @@ func (d *ClientDelegate) DownloadExport(params *expOp.ExportServiceDownloadExpor
 	return d.ec.ExportService.ExportServiceDownloadExport(params, opts...)
 }
 
-func (d *ClientDelegate) ListSQLUsers(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersOK, error) {
-	return d.ic.Account.GetV1beta1ClustersClusterIDSQLUsers(params, opts...)
-}
+// func (d *ClientDelegate) ListSQLUsers(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersOK, error) {
+// 	return d.ic.Account.GetV1beta1ClustersClusterIDSQLUsers(params, opts...)
+// }
 
-func (d *ClientDelegate) CreateSQLUser(params *iamOp.PostV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.PostV1beta1ClustersClusterIDSQLUsersOK, error) {
-	return d.ic.Account.PostV1beta1ClustersClusterIDSQLUsers(params, opts...)
-}
+// func (d *ClientDelegate) CreateSQLUser(params *iamOp.PostV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.PostV1beta1ClustersClusterIDSQLUsersOK, error) {
+// 	return d.ic.Account.PostV1beta1ClustersClusterIDSQLUsers(params, opts...)
+// }
 
-func (d *ClientDelegate) GetSQLUser(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameOK, error) {
-	return d.ic.Account.GetV1beta1ClustersClusterIDSQLUsersUserName(params, opts...)
-}
+// func (d *ClientDelegate) GetSQLUser(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameOK, error) {
+// 	return d.ic.Account.GetV1beta1ClustersClusterIDSQLUsersUserName(params, opts...)
+// }
 
-func (d *ClientDelegate) DeleteSQLUser(params *iamOp.DeleteV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.DeleteV1beta1ClustersClusterIDSQLUsersUserNameOK, error) {
-	return d.ic.Account.DeleteV1beta1ClustersClusterIDSQLUsersUserName(params, opts...)
-}
+// func (d *ClientDelegate) DeleteSQLUser(params *iamOp.DeleteV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.DeleteV1beta1ClustersClusterIDSQLUsersUserNameOK, error) {
+// 	return d.ic.Account.DeleteV1beta1ClustersClusterIDSQLUsersUserName(params, opts...)
+// }
 
-func (d *ClientDelegate) UpdateSQLUser(params *iamOp.PatchV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.PatchV1beta1ClustersClusterIDSQLUsersUserNameOK, error) {
-	return d.ic.Account.PatchV1beta1ClustersClusterIDSQLUsersUserName(params, opts...)
-}
+// func (d *ClientDelegate) UpdateSQLUser(params *iamOp.PatchV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.PatchV1beta1ClustersClusterIDSQLUsersUserNameOK, error) {
+// 	return d.ic.Account.PatchV1beta1ClustersClusterIDSQLUsersUserName(params, opts...)
+// }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *serverlessImportClient.TidbcloudServerless, *expClient.TidbcloudServerless, *iamClient.TidbcloudServerless, error) {
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *serverlessImportClient.TidbcloudServerless, *expClient.TidbcloudServerless, *iamClient.APIClient, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}
@@ -320,21 +333,26 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	if err != nil {
 		return nil, nil, nil, nil, nil, nil, nil, err
 	}
-	iamUrl, err := prop.ValidateApiUrl(iamEndpoint)
-	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, err
-	}
+
 	serverlessTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	branchTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	backRestoreTransport := httpTransport.NewWithClient(serverlessURL.Host, brClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	importTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessImportClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	exportTransport := httpTransport.NewWithClient(serverlessURL.Host, expClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
-	iamTransport := httpTransport.NewWithClient(iamUrl.Host, iamClient.DefaultBasePath, []string{iamUrl.Scheme}, httpclient)
+
+	iamCfg := iamClient.NewConfiguration()
+	iamCfg.HTTPClient = httpclient
+	if strings.HasPrefix(iamEndpoint, "https://") {
+		iamCfg.Host = iamEndpoint[8:]
+	} else {
+		iamCfg.Host = iamEndpoint
+	}
+	fmt.Println(iamCfg.Host)
 
 	return branchClient.New(branchTransport, strfmt.Default), serverlessClient.New(serverlessTransport, strfmt.Default),
 		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default),
 		serverlessImportClient.New(importTransport, strfmt.Default), expClient.New(exportTransport, strfmt.Default),
-		iamClient.New(iamTransport, strfmt.Default), nil
+		iamClient.NewAPIClient(iamCfg), nil
 }
 
 func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {
