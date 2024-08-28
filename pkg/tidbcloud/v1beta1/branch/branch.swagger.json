@@ -419,6 +419,12 @@
         "parentDisplayName": {
           "type": "string",
           "description": "OPTIONAL. The parent display name of this branch."
+        },
+        "parentTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true,
+          "description": "Optional. The point in time on the parent branch the branch will be created from."
         }
       },
       "title": "Message for branch",

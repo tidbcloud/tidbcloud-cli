@@ -16,13 +16,12 @@ import (
 
 // BranchState Output Only. Branch State.
 //
-//   - STATE_UNSPECIFIED: The state of the branch is unknown.
 //   - CREATING: The branch is being created.
 //   - ACTIVE: The branch is active and running.
 //   - DELETED: The branch is being deleted.
 //   - MAINTENANCE: The branch is under maintenance.
 //
-// swagger:model BranchState
+// swagger:model Branch.State
 type BranchState string
 
 func NewBranchState(value BranchState) *BranchState {
