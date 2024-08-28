@@ -16,7 +16,9 @@ package cloud
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 
@@ -262,14 +264,12 @@ func (d *ClientDelegate) CancelUpload(params *serverlessImportOp.ImportServiceCa
 
 func (d *ClientDelegate) GetExport(ctx context.Context, clusterId string, exportId string) (*expClient.Export, error) {
 	res, h, err := d.ec.ExportServiceAPI.ExportServiceGetExport(ctx, clusterId, exportId).Execute()
-	defer h.Body.Close()
-	return res, err
+	return res, parseError(err, h)
 }
 
 func (d *ClientDelegate) CancelExport(ctx context.Context, clusterId string, exportId string) (*expClient.Export, error) {
 	res, h, err := d.ec.ExportServiceAPI.ExportServiceCancelExport(ctx, clusterId, exportId).Execute()
-	defer h.Body.Close()
-	return res, err
+	return res, parseError(err, h)
 }
 
 func (d *ClientDelegate) CreateExport(ctx context.Context, clusterId string, body *expClient.ExportServiceCreateExportBody) (*expClient.Export, error) {
@@ -278,14 +278,12 @@ func (d *ClientDelegate) CreateExport(ctx context.Context, clusterId string, bod
 		r = r.Body(*body)
 	}
 	res, h, err := r.Execute()
-	defer h.Body.Close()
-	return res, err
+	return res, parseError(err, h)
 }
 
 func (d *ClientDelegate) DeleteExport(ctx context.Context, clusterId string, exportId string) (*expClient.Export, error) {
 	res, h, err := d.ec.ExportServiceAPI.ExportServiceDeleteExport(ctx, clusterId, exportId).Execute()
-	defer h.Body.Close()
-	return res, err
+	return res, parseError(err, h)
 }
 
 func (d *ClientDelegate) ListExports(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*expClient.ListExportsResponse, error) {
@@ -300,16 +298,14 @@ func (d *ClientDelegate) ListExports(ctx context.Context, clusterId string, page
 		r = r.OrderBy(*orderBy)
 	}
 	res, h, err := r.Execute()
-	defer h.Body.Close()
-	return res, err
+	return res, parseError(err, h)
 }
 
 func (d *ClientDelegate) DownloadExport(ctx context.Context, clusterId string, exportId string) (*expClient.DownloadExportsResponse, error) {
 	r := d.ec.ExportServiceAPI.ExportServiceDownloadExport(ctx, clusterId, exportId)
 	r = r.Body(make(map[string]interface{}))
 	res, h, err := r.Execute()
-	defer h.Body.Close()
-	return res, err
+	return res, parseError(err, h)
 }
 
 func (d *ClientDelegate) ListSQLUsers(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersOK, error) {
@@ -419,4 +415,23 @@ type BearTokenTransport struct {
 func (bt *BearTokenTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", bt.Token))
 	return bt.inner.RoundTrip(r)
+}
+
+func parseError(err error, resp *http.Response) error {
+	defer func() {
+		if resp != nil {
+			resp.Body.Close()
+		}
+	}()
+	if err == nil {
+		return nil
+	}
+	if resp == nil {
+		return err
+	}
+	body, err1 := io.ReadAll(resp.Body)
+	if err1 != nil {
+		return err
+	}
+	return errors.New(string(body))
 }
