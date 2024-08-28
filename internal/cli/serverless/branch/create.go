@@ -54,6 +54,7 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.DisplayName,
 		flag.ClusterID,
+		flag.ParentTimestamp,
 	}
 }
 
@@ -198,7 +199,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "The displayName of the branch to be created.")
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster, in which the branch will be created.")
 	createCmd.Flags().StringP(flag.ParentID, "", "", "The ID of the branch parent, default is cluster id.")
-	createCmd.Flags().StringP(flag.ParentTimestamp, "", "", "The timestamp of the parent branch, default is current time.")
+	createCmd.Flags().StringP(flag.ParentTimestamp, "", "", "The timestamp of the parent branch, default is current time. (RFC3339 format, e.g.: 2024-01-01T00:00:00Z)")
 	return createCmd
 }
 
@@ -302,7 +303,7 @@ func initialCreateBranchInputModel() ui.TextInputModel {
 			t.TextStyle = config.FocusedStyle
 		case flag.ParentTimestamp:
 			timestampExample := time.Now().Format(time.RFC3339)
-			t.Placeholder = fmt.Sprintf("Parent Timestamp (e.g.: %s)", timestampExample)
+			t.Placeholder = fmt.Sprintf("Parent Timestamp (optional, e.g.: %s)", timestampExample)
 		}
 		m.Inputs[v] = t
 	}
