@@ -598,22 +598,18 @@ func RetrieveProjects(ctx context.Context, pageSize int64, d TiDBCloudClient) (i
 	pageSizeInt32 := int32(pageSize)
 	var pageToken *string
 
-	projects, err := d.ListProjects(ctx, &pageSizeInt32, pageToken)
-	if err != nil {
-		return 0, nil, errors.Trace(err)
-	}
-	items = append(items, projects.Projects...)
 	// loop to get all projects
 	for {
-		pageToken = projects.NextPageToken
-		if pageToken == nil || *pageToken == "" {
-			break
-		}
 		projects, err := d.ListProjects(ctx, &pageSizeInt32, pageToken)
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
 		items = append(items, projects.Projects...)
+
+		pageToken = projects.NextPageToken
+		if util.IsNilOrEmpty(pageToken) {
+			break
+		}
 	}
 	return int64(len(items)), items, nil
 }
@@ -754,23 +750,18 @@ func RetrieveSQLUsers(ctx context.Context, cID string, pageSize int64, d TiDBClo
 
 	pageSizeInt32 := int32(pageSize)
 	var pageToken *string
-
-	sqlUsers, err := d.ListSQLUsers(ctx, cID, &pageSizeInt32, pageToken)
-	if err != nil {
-		return 0, nil, errors.Trace(err)
-	}
-	items = append(items, sqlUsers.SqlUsers...)
 	// loop to get all SQL users
 	for {
-		pageToken = sqlUsers.NextPageToken
-		if pageToken == nil || *pageToken == "" {
-			break
-		}
 		sqlUsers, err := d.ListSQLUsers(ctx, cID, &pageSizeInt32, pageToken)
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
 		items = append(items, sqlUsers.SqlUsers...)
+
+		pageToken = sqlUsers.NextPageToken
+		if util.IsNilOrEmpty(pageToken) {
+			break
+		}
 	}
 	return int64(len(items)), items, nil
 }

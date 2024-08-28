@@ -76,14 +76,14 @@ func (suite *ListSQLUserSuite) SetupTest() {
 func (suite *ListSQLUserSuite) TestListSQLUserArgs() {
 	assert := require.New(suite.T())
 	ctx := context.Background()
+	pageSize := int32(suite.pageSize)
+	var pageToken *string
 
 	clusterID := "12345"
 
 	result := &iamClient.ApiListSqlUsersRsp{}
 	err := json.Unmarshal([]byte(listResultStr), result)
 	assert.Nil(err)
-	pageSize := int32(suite.pageSize)
-	var pageToken *string
 	suite.mockClient.On("ListSQLUsers", ctx, clusterID, &pageSize, pageToken).
 		Return(result, nil)
 
