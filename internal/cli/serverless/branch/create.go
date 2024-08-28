@@ -58,6 +58,13 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 	}
 }
 
+func (c CreateOpts) RequiredFlags() []string {
+	return []string{
+		flag.ClusterID,
+		flag.DisplayName,
+	}
+}
+
 func (c *CreateOpts) MarkInteractive(cmd *cobra.Command) error {
 	flags := c.NonInteractiveFlags()
 	for _, fn := range flags {
@@ -69,7 +76,7 @@ func (c *CreateOpts) MarkInteractive(cmd *cobra.Command) error {
 	}
 	// Mark required flags
 	if !c.interactive {
-		for _, fn := range flags {
+		for _, fn := range c.RequiredFlags() {
 			err := cmd.MarkFlagRequired(fn)
 			if err != nil {
 				return err
