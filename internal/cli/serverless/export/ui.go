@@ -128,6 +128,8 @@ func GetSelectedAuthType(target TargetType) (_ AuthType, err error) {
 		return AuthTypeGCSServiceAccountKey, nil
 	case TargetTypeAZBLOB:
 		return AuthTypeAzBlobSasToken, nil
+	case TargetTypeLOCAL:
+		return "", nil
 	}
 	if model == nil {
 		return "", errors.New("unknown auth type")

@@ -19,7 +19,7 @@ docs/ExportOptions.md
 docs/ExportOptionsCSVFormat.md
 docs/ExportOptionsFilter.md
 docs/ExportOptionsFilterTable.md
-docs/ExportOptionsParquetOptions.md
+docs/ExportOptionsParquetFormat.md
 docs/ExportParquetCompressionTypeEnum.md
 docs/ExportS3AuthTypeEnum.md
 docs/ExportServiceAPI.md
@@ -46,7 +46,7 @@ model_export_options.go
 model_export_options_csv_format.go
 model_export_options_filter.go
 model_export_options_filter_table.go
-model_export_options_parquet_options.go
+model_export_options_parquet_format.go
 model_export_parquet_compression_type_enum.go
 model_export_s3_auth_type_enum.go
 model_export_service_create_export_body.go

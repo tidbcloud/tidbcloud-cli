@@ -247,7 +247,7 @@ components:
           description: The sas token. This field is input-only.
           type: string
         uri:
-          description: "The Azure Blob URI of the export target. For example: https://accountname.blob.core.windows.net/container/folder."
+          description: "The Azure Blob URI of the export target. For example: https://accountname.blob.core.windows.net/container/blob."
           type: string
       required:
       - authType
@@ -437,10 +437,10 @@ components:
           - $ref: '#/components/schemas/ExportOptions.CSVFormat'
           description: Optional. The format of the csv.
           type: object
-        parquetOptions:
+        parquetFormat:
           allOf:
-          - $ref: '#/components/schemas/ExportOptions.ParquetOptions'
-          description: Optional. The options of the parquet.
+          - $ref: '#/components/schemas/ExportOptions.ParquetFormat'
+          description: Optional. The format of the parquet.
           type: object
       type: object
     ExportOptions.CSVFormat:
@@ -484,7 +484,7 @@ components:
           description: Optional. Export only selected records.
           type: string
       type: object
-    ExportOptions.ParquetOptions:
+    ExportOptions.ParquetFormat:
       properties:
         compression:
           allOf:

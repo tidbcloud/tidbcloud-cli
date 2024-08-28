@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **AuthType** | [**ExportAzureBlobAuthTypeEnum**](ExportAzureBlobAuthTypeEnum.md) | The Azure Blob URI of the export target. | 
 **SasToken** | Pointer to **string** | The sas token. This field is input-only. | [optional] 
-**Uri** | **string** | The Azure Blob URI of the export target. For example: https://accountname.blob.core.windows.net/container/folder. | 
+**Uri** | **string** | The Azure Blob URI of the export target. For example: https://accountname.blob.core.windows.net/container/blob. | 
 
 ## Methods
 

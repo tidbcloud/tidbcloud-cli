@@ -39,7 +39,7 @@ const (
 	TargetTypeS3      TargetType = "S3"
 	TargetTypeLOCAL   TargetType = "LOCAL"
 	TargetTypeGCS     TargetType = "GCS"
-	TargetTypeAZBLOB  TargetType = "AZBLOB"
+	TargetTypeAZBLOB  TargetType = "AZURE_BLOB"
 	TargetTypeUnknown TargetType = "UNKNOWN"
 )
 
@@ -362,7 +362,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 
 					if customParquetCompression {
-						compression, err = GetSelectedParquetCompression()
+						parquetCompression, err = GetSelectedParquetCompression()
 						if err != nil {
 							return err
 						}
@@ -615,7 +615,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			case string(FileTypePARQUET):
 				if parquetCompression != "" {
 					c := exportClient.ExportParquetCompressionTypeEnum(strings.ToUpper(parquetCompression))
-					params.ExportOptions.ParquetOptions = &exportClient.ExportOptionsParquetOptions{
+					params.ExportOptions.ParquetFormat = &exportClient.ExportOptionsParquetFormat{
 						Compression: &c,
 					}
 				}
@@ -635,7 +635,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster, in which the export will be created.")
 	createCmd.Flags().String(flag.FileType, "SQL", "The export file type. One of [\"CSV\" \"SQL\" \"PARQUET\"].")
-	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export target. One of [\"LOCAL\" \"S3\" \"GCS\" \"AZBLOB\"].")
+	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export target. One of [\"LOCAL\" \"S3\" \"GCS\" \"AZURE_BLOB\"].")
 	createCmd.Flags().String(flag.S3URI, "", "The s3 uri in s3://<bucket>/<path> format. Required when target type is S3.")
 	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
 	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")

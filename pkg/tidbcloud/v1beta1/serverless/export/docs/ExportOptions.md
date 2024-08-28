@@ -10,7 +10,7 @@ Name | Type | Description | Notes
 **Compression** | Pointer to [**ExportCompressionTypeEnum**](ExportCompressionTypeEnum.md) | Optional. The compression of the export. Default is GZIP. | [optional] 
 **Filter** | Pointer to [**ExportOptionsFilter**](ExportOptionsFilter.md) | Optional. The filter of the export. Default is whole cluster. | [optional] 
 **CsvFormat** | Pointer to [**ExportOptionsCSVFormat**](ExportOptionsCSVFormat.md) | Optional. The format of the csv. | [optional] 
-**ParquetOptions** | Pointer to [**ExportOptionsParquetOptions**](ExportOptionsParquetOptions.md) | Optional. The options of the parquet. | [optional] 
+**ParquetFormat** | Pointer to [**ExportOptionsParquetFormat**](ExportOptionsParquetFormat.md) | Optional. The format of the parquet. | [optional] 
 
 ## Methods
 
@@ -181,30 +181,30 @@ SetCsvFormat sets CsvFormat field to given value.
 
 HasCsvFormat returns a boolean if a field has been set.
 
-### GetParquetOptions
+### GetParquetFormat
 
-`func (o *ExportOptions) GetParquetOptions() ExportOptionsParquetOptions`
+`func (o *ExportOptions) GetParquetFormat() ExportOptionsParquetFormat`
 
-GetParquetOptions returns the ParquetOptions field if non-nil, zero value otherwise.
+GetParquetFormat returns the ParquetFormat field if non-nil, zero value otherwise.
 
-### GetParquetOptionsOk
+### GetParquetFormatOk
 
-`func (o *ExportOptions) GetParquetOptionsOk() (*ExportOptionsParquetOptions, bool)`
+`func (o *ExportOptions) GetParquetFormatOk() (*ExportOptionsParquetFormat, bool)`
 
-GetParquetOptionsOk returns a tuple with the ParquetOptions field if it's non-nil, zero value otherwise
+GetParquetFormatOk returns a tuple with the ParquetFormat field if it's non-nil, zero value otherwise
 and a boolean to check if the value has been set.
 
-### SetParquetOptions
+### SetParquetFormat
 
-`func (o *ExportOptions) SetParquetOptions(v ExportOptionsParquetOptions)`
+`func (o *ExportOptions) SetParquetFormat(v ExportOptionsParquetFormat)`
 
-SetParquetOptions sets ParquetOptions field to given value.
+SetParquetFormat sets ParquetFormat field to given value.
 
-### HasParquetOptions
+### HasParquetFormat
 
-`func (o *ExportOptions) HasParquetOptions() bool`
+`func (o *ExportOptions) HasParquetFormat() bool`
 
-HasParquetOptions returns a boolean if a field has been set.
+HasParquetFormat returns a boolean if a field has been set.
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

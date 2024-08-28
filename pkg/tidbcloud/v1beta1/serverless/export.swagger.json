@@ -311,7 +311,7 @@
         },
         "uri": {
           "type": "string",
-          "description": "The Azure Blob URI of the export target. For example: https://accountname.blob.core.windows.net/container/folder."
+          "description": "The Azure Blob URI of the export target. For example: https://accountname.blob.core.windows.net/container/blob."
         }
       },
       "required": [
@@ -523,11 +523,11 @@
             }
           ]
         },
-        "parquetOptions": {
-          "description": "Optional. The options of the parquet.",
+        "parquetFormat": {
+          "description": "Optional. The format of the parquet.",
           "allOf": [
             {
-              "$ref": "#/definitions/ExportOptions.ParquetOptions"
+              "$ref": "#/definitions/ExportOptions.ParquetFormat"
             }
           ]
         }
@@ -589,7 +589,7 @@
         }
       }
     },
-    "ExportOptions.ParquetOptions": {
+    "ExportOptions.ParquetFormat": {
       "type": "object",
       "properties": {
         "compression": {
