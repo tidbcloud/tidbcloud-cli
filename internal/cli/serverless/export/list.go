@@ -16,6 +16,7 @@ package export
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -134,25 +135,19 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				columns := []output.Column{
 					"ID",
 					"State",
-					"Type",
-					"Compression",
+					"Target",
+					"File",
 					"CreateTime",
-					"ExpireTime",
 				}
 
 				var rows []output.Row
 				for _, item := range items {
-					expireTime := ""
-					if item.ExpireTime.IsSet() {
-						expireTime = item.ExpireTime.Get().String()
-					}
 					rows = append(rows, output.Row{
 						*item.ExportId,
 						string(*item.State),
 						string(*item.Target.Type),
-						string(*item.ExportOptions.Compression),
-						item.CreateTime.String(),
-						expireTime,
+						string(*item.ExportOptions.FileType),
+						item.CreateTime.Format(time.RFC3339),
 					})
 				}
 
