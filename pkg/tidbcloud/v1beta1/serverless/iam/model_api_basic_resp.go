@@ -19,7 +19,7 @@ var _ MappedNullable = &ApiBasicResp{}
 
 // ApiBasicResp struct for ApiBasicResp
 type ApiBasicResp struct {
-	Code *int32 `json:"code,omitempty"`
+	Code    *int32  `json:"code,omitempty"`
 	Message *string `json:"message,omitempty"`
 }
 
@@ -105,7 +105,7 @@ func (o *ApiBasicResp) SetMessage(v string) {
 }
 
 func (o ApiBasicResp) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -158,5 +158,3 @@ func (v *NullableApiBasicResp) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -20,8 +20,8 @@ var _ MappedNullable = &ApiListProjectsRsp{}
 // ApiListProjectsRsp struct for ApiListProjectsRsp
 type ApiListProjectsRsp struct {
 	// `next_page_token` can be sent in a subsequent call to fetch more results
-	NextPageToken *string `json:"nextPageToken,omitempty"`
-	Projects []ApiProject `json:"projects,omitempty"`
+	NextPageToken *string      `json:"nextPageToken,omitempty"`
+	Projects      []ApiProject `json:"projects,omitempty"`
 }
 
 // NewApiListProjectsRsp instantiates a new ApiListProjectsRsp object
@@ -106,7 +106,7 @@ func (o *ApiListProjectsRsp) SetProjects(v []ApiProject) {
 }
 
 func (o ApiListProjectsRsp) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -159,5 +159,3 @@ func (v *NullableApiListProjectsRsp) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

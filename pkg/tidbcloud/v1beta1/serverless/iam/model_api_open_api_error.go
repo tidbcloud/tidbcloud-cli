@@ -19,10 +19,10 @@ var _ MappedNullable = &ApiOpenApiError{}
 
 // ApiOpenApiError struct for ApiOpenApiError
 type ApiOpenApiError struct {
-	Code *string `json:"code,omitempty"`
-	Error map[string]interface{} `json:"error,omitempty"`
-	MsgPrefix *string `json:"msgPrefix,omitempty"`
-	Status *int32 `json:"status,omitempty"`
+	Code      *string                `json:"code,omitempty"`
+	Error     map[string]interface{} `json:"error,omitempty"`
+	MsgPrefix *string                `json:"msgPrefix,omitempty"`
+	Status    *int32                 `json:"status,omitempty"`
 }
 
 // NewApiOpenApiError instantiates a new ApiOpenApiError object
@@ -171,7 +171,7 @@ func (o *ApiOpenApiError) SetStatus(v int32) {
 }
 
 func (o ApiOpenApiError) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -230,5 +230,3 @@ func (v *NullableApiOpenApiError) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

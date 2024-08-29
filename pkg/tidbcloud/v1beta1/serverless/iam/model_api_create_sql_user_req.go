@@ -27,7 +27,7 @@ type ApiCreateSqlUserReq struct {
 	BuiltinRole *string `json:"builtinRole,omitempty"`
 	// if cluster is serverless ,customRoles roles do not need to be prefixed.
 	CustomRoles []string `json:"customRoles,omitempty"`
-	Password *string `json:"password,omitempty"`
+	Password    *string  `json:"password,omitempty"`
 	// The username of the sql user, if cluster is serverless and autoPrefix is false, the userName must be start with serverless token.
 	UserName *string `json:"userName,omitempty"`
 }
@@ -242,7 +242,7 @@ func (o *ApiCreateSqlUserReq) SetUserName(v string) {
 }
 
 func (o ApiCreateSqlUserReq) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -307,5 +307,3 @@ func (v *NullableApiCreateSqlUserReq) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

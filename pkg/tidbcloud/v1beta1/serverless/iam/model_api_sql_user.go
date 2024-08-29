@@ -19,10 +19,10 @@ var _ MappedNullable = &ApiSqlUser{}
 
 // ApiSqlUser struct for ApiSqlUser
 type ApiSqlUser struct {
-	AuthMethod *string `json:"authMethod,omitempty"`
-	BuiltinRole *string `json:"builtinRole,omitempty"`
+	AuthMethod  *string  `json:"authMethod,omitempty"`
+	BuiltinRole *string  `json:"builtinRole,omitempty"`
 	CustomRoles []string `json:"customRoles,omitempty"`
-	UserName *string `json:"userName,omitempty"`
+	UserName    *string  `json:"userName,omitempty"`
 }
 
 // NewApiSqlUser instantiates a new ApiSqlUser object
@@ -171,7 +171,7 @@ func (o *ApiSqlUser) SetUserName(v string) {
 }
 
 func (o ApiSqlUser) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -230,5 +230,3 @@ func (v *NullableApiSqlUser) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -19,13 +19,12 @@ import (
 	"strings"
 )
 
-
 // AccountAPIService AccountAPI service
 type AccountAPIService service
 
 type ApiCustomerSignupUrlPostRequest struct {
-	ctx context.Context
-	ApiService *AccountAPIService
+	ctx              context.Context
+	ApiService       *AccountAPIService
 	mspCustomerOrgId *ApiOpenApiCreateMspCustomerSignupUrlReq
 }
 
@@ -44,24 +43,25 @@ CustomerSignupUrlPost Create a new signup URL for an MSP customer
 
 This endpoint creates a new signup URL for an MSP customer.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiCustomerSignupUrlPostRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiCustomerSignupUrlPostRequest
 */
 func (a *AccountAPIService) CustomerSignupUrlPost(ctx context.Context) ApiCustomerSignupUrlPostRequest {
 	return ApiCustomerSignupUrlPostRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ApiOpenApiMspCustomerSignupUrl
+//
+//	@return ApiOpenApiMspCustomerSignupUrl
 func (a *AccountAPIService) CustomerSignupUrlPostExecute(r ApiCustomerSignupUrlPostRequest) (*ApiOpenApiMspCustomerSignupUrl, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApiOpenApiMspCustomerSignupUrl
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ApiOpenApiMspCustomerSignupUrl
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AccountAPIService.CustomerSignupUrlPost")
@@ -126,8 +126,8 @@ func (a *AccountAPIService) CustomerSignupUrlPostExecute(r ApiCustomerSignupUrlP
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -145,8 +145,8 @@ func (a *AccountAPIService) CustomerSignupUrlPostExecute(r ApiCustomerSignupUrlP
 }
 
 type ApiMspCustomersCustomerOrgIdGetRequest struct {
-	ctx context.Context
-	ApiService *AccountAPIService
+	ctx           context.Context
+	ApiService    *AccountAPIService
 	customerOrgId string
 }
 
@@ -159,26 +159,27 @@ MspCustomersCustomerOrgIdGet Retrieve a single MSP customer
 
 This endpoint retrieves a single MSP customer by their customer org ID.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param customerOrgId The MSP customer org ID.
- @return ApiMspCustomersCustomerOrgIdGetRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param customerOrgId The MSP customer org ID.
+	@return ApiMspCustomersCustomerOrgIdGetRequest
 */
 func (a *AccountAPIService) MspCustomersCustomerOrgIdGet(ctx context.Context, customerOrgId string) ApiMspCustomersCustomerOrgIdGetRequest {
 	return ApiMspCustomersCustomerOrgIdGetRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:    a,
+		ctx:           ctx,
 		customerOrgId: customerOrgId,
 	}
 }
 
 // Execute executes the request
-//  @return ApiOpenApiMspCustomer
+//
+//	@return ApiOpenApiMspCustomer
 func (a *AccountAPIService) MspCustomersCustomerOrgIdGetExecute(r ApiMspCustomersCustomerOrgIdGetRequest) (*ApiOpenApiMspCustomer, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApiOpenApiMspCustomer
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ApiOpenApiMspCustomer
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AccountAPIService.MspCustomersCustomerOrgIdGet")
@@ -239,8 +240,8 @@ func (a *AccountAPIService) MspCustomersCustomerOrgIdGetExecute(r ApiMspCustomer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -258,10 +259,10 @@ func (a *AccountAPIService) MspCustomersCustomerOrgIdGetExecute(r ApiMspCustomer
 }
 
 type ApiMspCustomersGetRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *AccountAPIService
-	pageToken *string
-	pageSize *int32
+	pageToken  *string
+	pageSize   *int32
 }
 
 // The page token of the next page.
@@ -285,24 +286,25 @@ MspCustomersGet Get a list of MSP customers
 
 This endpoint returns a list of MSP customers.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiMspCustomersGetRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiMspCustomersGetRequest
 */
 func (a *AccountAPIService) MspCustomersGet(ctx context.Context) ApiMspCustomersGetRequest {
 	return ApiMspCustomersGetRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ApiOpenApiListMspCustomerRsp
+//
+//	@return ApiOpenApiListMspCustomerRsp
 func (a *AccountAPIService) MspCustomersGetExecute(r ApiMspCustomersGetRequest) (*ApiOpenApiListMspCustomerRsp, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApiOpenApiListMspCustomerRsp
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ApiOpenApiListMspCustomerRsp
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AccountAPIService.MspCustomersGet")
@@ -368,8 +370,8 @@ func (a *AccountAPIService) MspCustomersGetExecute(r ApiMspCustomersGetRequest) 
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -387,9 +389,9 @@ func (a *AccountAPIService) MspCustomersGetExecute(r ApiMspCustomersGetRequest) 
 }
 
 type ApiV1beta1ClustersClusterIdDbuserGetRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *AccountAPIService
-	clusterId string
+	clusterId  string
 }
 
 func (r ApiV1beta1ClustersClusterIdDbuserGetRequest) Execute() (*ApiGetDbuserRsp, *http.Response, error) {
@@ -401,26 +403,27 @@ V1beta1ClustersClusterIdDbuserGet get one dbuser
 
 This endpoint retrieves a db user by apikey or access token.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId The id of the cluster.
- @return ApiV1beta1ClustersClusterIdDbuserGetRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId The id of the cluster.
+	@return ApiV1beta1ClustersClusterIdDbuserGetRequest
 */
 func (a *AccountAPIService) V1beta1ClustersClusterIdDbuserGet(ctx context.Context, clusterId string) ApiV1beta1ClustersClusterIdDbuserGetRequest {
 	return ApiV1beta1ClustersClusterIdDbuserGetRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 	}
 }
 
 // Execute executes the request
-//  @return ApiGetDbuserRsp
+//
+//	@return ApiGetDbuserRsp
 func (a *AccountAPIService) V1beta1ClustersClusterIdDbuserGetExecute(r ApiV1beta1ClustersClusterIdDbuserGetRequest) (*ApiGetDbuserRsp, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApiGetDbuserRsp
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ApiGetDbuserRsp
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AccountAPIService.V1beta1ClustersClusterIdDbuserGet")
@@ -481,8 +484,8 @@ func (a *AccountAPIService) V1beta1ClustersClusterIdDbuserGetExecute(r ApiV1beta
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -500,11 +503,11 @@ func (a *AccountAPIService) V1beta1ClustersClusterIdDbuserGetExecute(r ApiV1beta
 }
 
 type ApiV1beta1ClustersClusterIdSqlUsersGetRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *AccountAPIService
-	clusterId string
-	pageToken *string
-	pageSize *int32
+	clusterId  string
+	pageToken  *string
+	pageSize   *int32
 }
 
 // The page token of the next page.
@@ -528,26 +531,27 @@ V1beta1ClustersClusterIdSqlUsersGet Get all sql users
 
 This endpoint retrieves all sql users  in the cluster.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId The id of the cluster.
- @return ApiV1beta1ClustersClusterIdSqlUsersGetRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId The id of the cluster.
+	@return ApiV1beta1ClustersClusterIdSqlUsersGetRequest
 */
 func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersGet(ctx context.Context, clusterId string) ApiV1beta1ClustersClusterIdSqlUsersGetRequest {
 	return ApiV1beta1ClustersClusterIdSqlUsersGetRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 	}
 }
 
 // Execute executes the request
-//  @return ApiListSqlUsersRsp
+//
+//	@return ApiListSqlUsersRsp
 func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersGetExecute(r ApiV1beta1ClustersClusterIdSqlUsersGetRequest) (*ApiListSqlUsersRsp, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApiListSqlUsersRsp
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ApiListSqlUsersRsp
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AccountAPIService.V1beta1ClustersClusterIdSqlUsersGet")
@@ -614,8 +618,8 @@ func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersGetExecute(r ApiV1be
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -633,10 +637,10 @@ func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersGetExecute(r ApiV1be
 }
 
 type ApiV1beta1ClustersClusterIdSqlUsersPostRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *AccountAPIService
-	clusterId string
-	sqlUser *ApiCreateSqlUserReq
+	clusterId  string
+	sqlUser    *ApiCreateSqlUserReq
 }
 
 // create sql user request
@@ -654,26 +658,27 @@ V1beta1ClustersClusterIdSqlUsersPost Create one sql user
 
 This endpoint will create one sql user int the cluster.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId The id of the cluster.
- @return ApiV1beta1ClustersClusterIdSqlUsersPostRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId The id of the cluster.
+	@return ApiV1beta1ClustersClusterIdSqlUsersPostRequest
 */
 func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersPost(ctx context.Context, clusterId string) ApiV1beta1ClustersClusterIdSqlUsersPostRequest {
 	return ApiV1beta1ClustersClusterIdSqlUsersPostRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 	}
 }
 
 // Execute executes the request
-//  @return ApiSqlUser
+//
+//	@return ApiSqlUser
 func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersPostExecute(r ApiV1beta1ClustersClusterIdSqlUsersPostRequest) (*ApiSqlUser, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApiSqlUser
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ApiSqlUser
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AccountAPIService.V1beta1ClustersClusterIdSqlUsersPost")
@@ -739,8 +744,8 @@ func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersPostExecute(r ApiV1b
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -758,10 +763,10 @@ func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersPostExecute(r ApiV1b
 }
 
 type ApiV1beta1ClustersClusterIdSqlUsersUserNameDeleteRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *AccountAPIService
-	clusterId string
-	userName string
+	clusterId  string
+	userName   string
 }
 
 func (r ApiV1beta1ClustersClusterIdSqlUsersUserNameDeleteRequest) Execute() (*ApiBasicResp, *http.Response, error) {
@@ -773,28 +778,29 @@ V1beta1ClustersClusterIdSqlUsersUserNameDelete Delete one sql user
 
 This endpoint delete the sql user by user name.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId The id of the cluster.
- @param userName The name of the sql user.
- @return ApiV1beta1ClustersClusterIdSqlUsersUserNameDeleteRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId The id of the cluster.
+	@param userName The name of the sql user.
+	@return ApiV1beta1ClustersClusterIdSqlUsersUserNameDeleteRequest
 */
 func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersUserNameDelete(ctx context.Context, clusterId string, userName string) ApiV1beta1ClustersClusterIdSqlUsersUserNameDeleteRequest {
 	return ApiV1beta1ClustersClusterIdSqlUsersUserNameDeleteRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
-		userName: userName,
+		ctx:        ctx,
+		clusterId:  clusterId,
+		userName:   userName,
 	}
 }
 
 // Execute executes the request
-//  @return ApiBasicResp
+//
+//	@return ApiBasicResp
 func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersUserNameDeleteExecute(r ApiV1beta1ClustersClusterIdSqlUsersUserNameDeleteRequest) (*ApiBasicResp, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApiBasicResp
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ApiBasicResp
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AccountAPIService.V1beta1ClustersClusterIdSqlUsersUserNameDelete")
@@ -856,8 +862,8 @@ func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersUserNameDeleteExecut
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -875,10 +881,10 @@ func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersUserNameDeleteExecut
 }
 
 type ApiV1beta1ClustersClusterIdSqlUsersUserNameGetRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *AccountAPIService
-	clusterId string
-	userName string
+	clusterId  string
+	userName   string
 }
 
 func (r ApiV1beta1ClustersClusterIdSqlUsersUserNameGetRequest) Execute() (*ApiSqlUser, *http.Response, error) {
@@ -890,28 +896,29 @@ V1beta1ClustersClusterIdSqlUsersUserNameGet Query sql user
 
 This endpoint retrieves a sql user by user name.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId The id of the cluster.
- @param userName The name of the sql user.
- @return ApiV1beta1ClustersClusterIdSqlUsersUserNameGetRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId The id of the cluster.
+	@param userName The name of the sql user.
+	@return ApiV1beta1ClustersClusterIdSqlUsersUserNameGetRequest
 */
 func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersUserNameGet(ctx context.Context, clusterId string, userName string) ApiV1beta1ClustersClusterIdSqlUsersUserNameGetRequest {
 	return ApiV1beta1ClustersClusterIdSqlUsersUserNameGetRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
-		userName: userName,
+		ctx:        ctx,
+		clusterId:  clusterId,
+		userName:   userName,
 	}
 }
 
 // Execute executes the request
-//  @return ApiSqlUser
+//
+//	@return ApiSqlUser
 func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersUserNameGetExecute(r ApiV1beta1ClustersClusterIdSqlUsersUserNameGetRequest) (*ApiSqlUser, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApiSqlUser
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ApiSqlUser
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AccountAPIService.V1beta1ClustersClusterIdSqlUsersUserNameGet")
@@ -973,8 +980,8 @@ func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersUserNameGetExecute(r
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -992,11 +999,11 @@ func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersUserNameGetExecute(r
 }
 
 type ApiV1beta1ClustersClusterIdSqlUsersUserNamePatchRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *AccountAPIService
-	clusterId string
-	userName string
-	sqlUser *ApiUpdateSqlUserReq
+	clusterId  string
+	userName   string
+	sqlUser    *ApiUpdateSqlUserReq
 }
 
 // update sql user request
@@ -1014,28 +1021,29 @@ V1beta1ClustersClusterIdSqlUsersUserNamePatch Update one sql user
 
 This endpoint update one sql user in the cluster.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId The id of the cluster.
- @param userName The name of the sql user.
- @return ApiV1beta1ClustersClusterIdSqlUsersUserNamePatchRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId The id of the cluster.
+	@param userName The name of the sql user.
+	@return ApiV1beta1ClustersClusterIdSqlUsersUserNamePatchRequest
 */
 func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersUserNamePatch(ctx context.Context, clusterId string, userName string) ApiV1beta1ClustersClusterIdSqlUsersUserNamePatchRequest {
 	return ApiV1beta1ClustersClusterIdSqlUsersUserNamePatchRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
-		userName: userName,
+		ctx:        ctx,
+		clusterId:  clusterId,
+		userName:   userName,
 	}
 }
 
 // Execute executes the request
-//  @return ApiSqlUser
+//
+//	@return ApiSqlUser
 func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersUserNamePatchExecute(r ApiV1beta1ClustersClusterIdSqlUsersUserNamePatchRequest) (*ApiSqlUser, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPatch
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApiSqlUser
+		localVarHTTPMethod  = http.MethodPatch
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ApiSqlUser
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AccountAPIService.V1beta1ClustersClusterIdSqlUsersUserNamePatch")
@@ -1102,8 +1110,8 @@ func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersUserNamePatchExecute
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
@@ -1121,10 +1129,10 @@ func (a *AccountAPIService) V1beta1ClustersClusterIdSqlUsersUserNamePatchExecute
 }
 
 type ApiV1beta1ProjectsGetRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *AccountAPIService
-	pageToken *string
-	pageSize *int32
+	pageToken  *string
+	pageSize   *int32
 }
 
 // The page token of the next page.
@@ -1148,24 +1156,25 @@ V1beta1ProjectsGet Get  list of org projects
 
 This endpoint returns a list of org projects.
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiV1beta1ProjectsGetRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiV1beta1ProjectsGetRequest
 */
 func (a *AccountAPIService) V1beta1ProjectsGet(ctx context.Context) ApiV1beta1ProjectsGetRequest {
 	return ApiV1beta1ProjectsGetRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return ApiListProjectsRsp
+//
+//	@return ApiListProjectsRsp
 func (a *AccountAPIService) V1beta1ProjectsGetExecute(r ApiV1beta1ProjectsGetRequest) (*ApiListProjectsRsp, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *ApiListProjectsRsp
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ApiListProjectsRsp
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AccountAPIService.V1beta1ProjectsGet")
@@ -1231,8 +1240,8 @@ func (a *AccountAPIService) V1beta1ProjectsGetExecute(r ApiV1beta1ProjectsGetReq
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 		}
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
