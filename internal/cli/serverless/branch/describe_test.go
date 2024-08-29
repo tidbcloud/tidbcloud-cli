@@ -26,8 +26,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
-	branchModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -39,7 +38,7 @@ const getBranchResultStr = `{
   },
   "branchId": "bran-fgwdnpasmrahnh5iozqawnmijq",
   "clusterId": "10202848322613926203",
-  "createTime": "2023-12-11T09:41:44.000Z",
+  "createTime": "2023-12-11T09:41:44Z",
   "createdBy": "yuhang.shi@pingcap.com",
   "displayName": "t2",
   "endpoints": {
@@ -51,7 +50,7 @@ const getBranchResultStr = `{
   "name": "clusters/10202848322613926203/branches/bran-fgwdnpasmrahnh5iozqawnmijq",
   "parentId": "10202848322613926203",
   "state": "ACTIVE",
-  "updateTime": "2023-12-11T09:44:05.000Z",
+  "updateTime": "2023-12-11T09:44:05Z",
   "usage": {
     "requestUnit": "0",
     "rowStorage": 951526
@@ -86,17 +85,12 @@ func (suite *DescribeBranchSuite) TestDescribeBranchArgs() {
 	assert := require.New(suite.T())
 	ctx := context.Background()
 
-	body := &branchModel.V1beta1Branch{}
+	body := &branch.Branch{}
 	err := json.Unmarshal([]byte(getBranchResultStr), body)
 	assert.Nil(err)
-	result := &branchApi.BranchServiceGetBranchOK{
-		Payload: body,
-	}
 	clusterID := "10202848322613926203"
 	branchID := "bran-fgwdnpasmrahnh5iozqawnmijq"
-	suite.mockClient.On("GetBranch", branchApi.NewBranchServiceGetBranchParams().
-		WithBranchID(branchID).WithClusterID(clusterID).WithContext(ctx)).
-		Return(result, nil)
+	suite.mockClient.On("GetBranch", ctx, clusterID, branchID).Return(body, nil)
 
 	tests := []struct {
 		name         string
