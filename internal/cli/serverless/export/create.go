@@ -30,7 +30,7 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
-	exportClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 )
 
 type TargetType string
@@ -94,6 +94,12 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 		flag.CSVNullValue,
 		flag.CSVSkipHeader,
 		flag.CSVSeparator,
+		flag.S3RoleArn,
+		flag.GCSURI,
+		flag.GCSServiceAccountKey,
+		flag.AzureBlobURI,
+		flag.AzureBlobSASToken,
+		flag.ParquetCompression,
 	}
 }
 
@@ -140,7 +146,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   Export all data with local type in non-interactive mode:
   $ %[1]s serverless export create -c <cluster-id>
 
-  Export all data with s3 type in non-interactive mode:
+  Export all data with S3 type in non-interactive mode:
   $ %[1]s serverless export create -c <cluster-id> --target-type S3 --s3.uri <s3-uri> --s3.access-key-id <access-key-id> --s3.secret-access-key <secret-access-key>
 
   Export all data and customize csv format in non-interactive mode:
@@ -212,15 +218,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 					s3URI = textInput.Inputs[0].Value()
 					if s3URI == "" {
-						return errors.New("empty s3 uri")
+						return errors.New("empty S3 URI")
 					}
 					accessKeyID = textInput.Inputs[1].Value()
 					if accessKeyID == "" {
-						return errors.New("empty s3 access key Id")
+						return errors.New("empty S3 access key Id")
 					}
 					secretAccessKey = textInput.Inputs[2].Value()
 					if secretAccessKey == "" {
-						return errors.New("empty s3 secret access key")
+						return errors.New("empty S3 secret access key")
 					}
 				case AuthTypeS3RoleArn:
 					inputs := []string{flag.S3URI, flag.S3RoleArn}
@@ -230,11 +236,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 					s3URI = textInput.Inputs[0].Value()
 					if s3URI == "" {
-						return errors.New("empty s3 uri")
+						return errors.New("empty S3 URI")
 					}
 					s3RoleArn = textInput.Inputs[1].Value()
 					if s3RoleArn == "" {
-						return errors.New("empty s3 role arn")
+						return errors.New("empty S3 role arn")
 					}
 				case AuthTypeGCSServiceAccountKey:
 					inputs := []string{flag.GCSURI, flag.GCSServiceAccountKey}
@@ -244,11 +250,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 					gcsURI = textInput.Inputs[0].Value()
 					if gcsURI == "" {
-						return errors.New("empty gsc uri")
+						return errors.New("empty GCS URI")
 					}
 					gcsServiceAccountKey = textInput.Inputs[1].Value()
 					if gcsServiceAccountKey == "" {
-						return errors.New("empty gcs service account key")
+						return errors.New("empty GCS service account key")
 					}
 				case AuthTypeAzBlobSasToken:
 					inputs := []string{flag.AzureBlobURI, flag.AzureBlobSASToken}
@@ -258,11 +264,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 					azBlobURI = textInput.Inputs[0].Value()
 					if azBlobURI == "" {
-						return errors.New("empty azure blob uri")
+						return errors.New("empty Azure Blob URI")
 					}
 					azBlobSasToken = textInput.Inputs[1].Value()
 					if azBlobSasToken == "" {
-						return errors.New("empty azure blob sas token")
+						return errors.New("empty Azure Blob sas token")
 					}
 				}
 
@@ -418,7 +424,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.Trace(err)
 					}
 					if s3URI == "" {
-						return errors.New("s3 uri is required when target type is S3")
+						return errors.New("S3 URI is required when target type is S3")
 					}
 					accessKeyID, err = cmd.Flags().GetString(flag.S3AccessKeyID)
 					if err != nil {
@@ -433,7 +439,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.Trace(err)
 					}
 					if s3RoleArn == "" && (accessKeyID == "" || secretAccessKey == "") {
-						return errors.New("missing s3 auth information, require either role arn or access key id and secret access key")
+						return errors.New("missing S3 auth information, require either role arn or access key id and secret access key")
 					}
 				case string(TargetTypeGCS):
 					gcsURI, err = cmd.Flags().GetString(flag.GCSURI)
@@ -441,14 +447,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.Trace(err)
 					}
 					if gcsURI == "" {
-						return errors.New("gcs uri is required when target type is GCS")
+						return errors.New("GCS URI is required when target type is GCS")
 					}
 					gcsServiceAccountKey, err = cmd.Flags().GetString(flag.GCSServiceAccountKey)
 					if err != nil {
 						return errors.Trace(err)
 					}
 					if gcsServiceAccountKey == "" {
-						return errors.New("gcs service account key is required when target type is GCS")
+						return errors.New("GCS service account key is required when target type is GCS")
 					}
 				case string(TargetTypeAZBLOB):
 					azBlobURI, err = cmd.Flags().GetString(flag.AzureBlobURI)
@@ -456,14 +462,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.Trace(err)
 					}
 					if azBlobURI == "" {
-						return errors.New("azure blob uri is required when target type is Azure AZBLOB")
+						return errors.New("azure blob uri is required when target type is Azure_Blob")
 					}
 					azBlobSasToken, err = cmd.Flags().GetString(flag.AzureBlobSASToken)
 					if err != nil {
 						return errors.Trace(err)
 					}
 					if azBlobSasToken == "" {
-						return errors.New("azure blob sas token is required when target type is AZBLOB")
+						return errors.New("azure blob sas token is required when target type is Azure_Blob")
 					}
 				}
 
@@ -542,62 +548,62 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			// build param to create export
-			fileTypeEnum := exportClient.ExportFileTypeEnum(strings.ToUpper(fileType))
-			targetTypeEnum := exportClient.ExportTargetTypeEnum(strings.ToUpper(targetType))
-			params := &exportClient.ExportServiceCreateExportBody{
-				ExportOptions: &exportClient.ExportOptions{
+			fileTypeEnum := export.ExportFileTypeEnum(strings.ToUpper(fileType))
+			targetTypeEnum := export.ExportTargetTypeEnum(strings.ToUpper(targetType))
+			params := &export.ExportServiceCreateExportBody{
+				ExportOptions: &export.ExportOptions{
 					FileType: &fileTypeEnum,
 				},
-				Target: &exportClient.ExportTarget{
+				Target: &export.ExportTarget{
 					Type: &targetTypeEnum,
 				},
 			}
 			// add target
 			switch targetTypeEnum {
-			case exportClient.EXPORTTARGETTYPEENUM_S3:
+			case export.EXPORTTARGETTYPEENUM_S3:
 				if s3RoleArn != "" {
-					params.Target.S3 = &exportClient.S3Target{
+					params.Target.S3 = &export.S3Target{
 						Uri:      &s3URI,
 						RoleArn:  &s3RoleArn,
-						AuthType: exportClient.EXPORTS3AUTHTYPEENUM_ROLE_ARN,
+						AuthType: export.EXPORTS3AUTHTYPEENUM_ROLE_ARN,
 					}
 				} else {
-					params.Target.S3 = &exportClient.S3Target{
+					params.Target.S3 = &export.S3Target{
 						Uri:      &s3URI,
-						AuthType: exportClient.EXPORTS3AUTHTYPEENUM_ACCESS_KEY,
-						AccessKey: &exportClient.S3TargetAccessKey{
+						AuthType: export.EXPORTS3AUTHTYPEENUM_ACCESS_KEY,
+						AccessKey: &export.S3TargetAccessKey{
 							Id:     accessKeyID,
 							Secret: secretAccessKey,
 						},
 					}
 				}
-			case exportClient.EXPORTTARGETTYPEENUM_GCS:
-				params.Target.Gcs = &exportClient.GCSTarget{
+			case export.EXPORTTARGETTYPEENUM_GCS:
+				params.Target.Gcs = &export.GCSTarget{
 					Uri:               gcsURI,
-					AuthType:          exportClient.EXPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY,
+					AuthType:          export.EXPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY,
 					ServiceAccountKey: &gcsServiceAccountKey,
 				}
-			case exportClient.EXPORTTARGETTYPEENUM_AZURE_BLOB:
-				params.Target.AzureBlob = &exportClient.AzureBlobTarget{
+			case export.EXPORTTARGETTYPEENUM_AZURE_BLOB:
+				params.Target.AzureBlob = &export.AzureBlobTarget{
 					Uri:      azBlobURI,
-					AuthType: exportClient.EXPORTAZUREBLOBAUTHTYPEENUM_SAS_TOKEN,
+					AuthType: export.EXPORTAZUREBLOBAUTHTYPEENUM_SAS_TOKEN,
 					SasToken: &azBlobSasToken,
 				}
 			}
 			// add compression
 			if compression != "" {
-				compressionEnum := exportClient.ExportCompressionTypeEnum(strings.ToUpper(compression))
+				compressionEnum := export.ExportCompressionTypeEnum(strings.ToUpper(compression))
 				params.ExportOptions.Compression = &compressionEnum
 			}
 			// add filter
 			if sql != "" {
-				params.ExportOptions.Filter = &exportClient.ExportOptionsFilter{
+				params.ExportOptions.Filter = &export.ExportOptionsFilter{
 					Sql: &sql,
 				}
 			}
 			if len(patterns) > 0 || where != "" {
-				params.ExportOptions.Filter = &exportClient.ExportOptionsFilter{
-					Table: &exportClient.ExportOptionsFilterTable{
+				params.ExportOptions.Filter = &export.ExportOptionsFilter{
+					Table: &export.ExportOptionsFilterTable{
 						Where:    &where,
 						Patterns: patterns,
 					},
@@ -606,16 +612,16 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			// add file type
 			switch strings.ToUpper(fileType) {
 			case string(FileTypeCSV):
-				params.ExportOptions.CsvFormat = &exportClient.ExportOptionsCSVFormat{
+				params.ExportOptions.CsvFormat = &export.ExportOptionsCSVFormat{
 					Separator:  &csvSeparator,
-					Delimiter:  *exportClient.NewNullableString(&csvDelimiter),
-					NullValue:  *exportClient.NewNullableString(&csvNullValue),
+					Delimiter:  *export.NewNullableString(&csvDelimiter),
+					NullValue:  *export.NewNullableString(&csvNullValue),
 					SkipHeader: &csvSkipHeader,
 				}
 			case string(FileTypePARQUET):
 				if parquetCompression != "" {
-					c := exportClient.ExportParquetCompressionTypeEnum(strings.ToUpper(parquetCompression))
-					params.ExportOptions.ParquetFormat = &exportClient.ExportOptionsParquetFormat{
+					c := export.ExportParquetCompressionTypeEnum(strings.ToUpper(parquetCompression))
+					params.ExportOptions.ParquetFormat = &export.ExportOptionsParquetFormat{
 						Compression: &c,
 					}
 				}
@@ -636,7 +642,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster, in which the export will be created.")
 	createCmd.Flags().String(flag.FileType, "SQL", "The export file type. One of [\"CSV\" \"SQL\" \"PARQUET\"].")
 	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export target. One of [\"LOCAL\" \"S3\" \"GCS\" \"AZURE_BLOB\"].")
-	createCmd.Flags().String(flag.S3URI, "", "The s3 uri in s3://<bucket>/<path> format. Required when target type is S3.")
+	createCmd.Flags().String(flag.S3URI, "", "The S3 URI in s3://<bucket>/<path> format. Required when target type is S3.")
 	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
 	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
 	createCmd.Flags().String(flag.Compression, "GZIP", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"].")
@@ -649,9 +655,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.CSVNullValue, CSVNullValueDefaultValue, "Representation of null values in CSV files.")
 	createCmd.Flags().Bool(flag.CSVSkipHeader, false, "Export CSV files of the tables without header.")
 	createCmd.Flags().String(flag.S3RoleArn, "", "The role arn of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
-	createCmd.Flags().String(flag.GCSURI, "", "The gcs uri in gcs://<bucket>/<path> format. Required when target type is GCS.")
+	createCmd.Flags().String(flag.GCSURI, "", "The GCS URI in gcs://<bucket>/<path> format. Required when target type is GCS.")
 	createCmd.Flags().String(flag.GCSServiceAccountKey, "", "The base64 encoded service account key of GCS.")
-	createCmd.Flags().String(flag.AzureBlobURI, "", "The azure blob uri in azure://<account>.blob.core.windows.net/<container>/<path> format. Required when target type is AZBLOB.")
+	createCmd.Flags().String(flag.AzureBlobURI, "", "The Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format. Required when target type is AZURE_BLOB.")
 	createCmd.Flags().String(flag.AzureBlobSASToken, "", "The SAS token of Azure Blob.")
 	createCmd.Flags().String(flag.ParquetCompression, "ZSTD", "The parquet compression algorithm. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"].")
 

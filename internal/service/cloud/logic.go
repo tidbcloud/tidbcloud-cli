@@ -26,7 +26,7 @@ import (
 	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
 	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
-	exportClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 	brModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/models"
@@ -377,7 +377,7 @@ func GetSelectedLocalExport(ctx context.Context, clusterID string, pageSize int6
 
 	var items = make([]interface{}, 0, len(exportItems))
 	for _, item := range exportItems {
-		if *item.Target.Type == exportClient.EXPORTTARGETTYPEENUM_LOCAL && *item.State == exportClient.EXPORTSTATEENUM_SUCCEEDED {
+		if *item.Target.Type == export.EXPORTTARGETTYPEENUM_LOCAL && *item.State == export.EXPORTSTATEENUM_SUCCEEDED {
 			items = append(items, &Export{
 				ID: *item.ExportId,
 			})
@@ -673,8 +673,8 @@ func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBClo
 	return int64(len(items)), items, nil
 }
 
-func RetrieveExports(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []exportClient.Export, error) {
-	var items []exportClient.Export
+func RetrieveExports(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []export.Export, error) {
+	var items []export.Export
 	pageSizeInt32 := int32(pageSize)
 	var pageToken *string
 

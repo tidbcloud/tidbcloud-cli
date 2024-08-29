@@ -25,7 +25,7 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
-	exportClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 )
 
 type ListOpts struct {
@@ -122,7 +122,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			// for terminal which can prompt, humanFormat is the default format.
 			// for other terminals, json format is the default format.
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				res := &exportClient.ListExportsResponse{
+				res := &export.ListExportsResponse{
 					Exports:   items,
 					TotalSize: &total,
 				}

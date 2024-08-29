@@ -36,7 +36,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	exportClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 )
 
 const DefaultConcurrency = 3
@@ -221,7 +221,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 	return downloadCmd
 }
 
-func DownloadFilesPrompt(h *internal.Helper, urls []exportClient.DownloadUrl, path string, concurrency int) error {
+func DownloadFilesPrompt(h *internal.Helper, urls []export.DownloadUrl, path string, concurrency int) error {
 	if concurrency <= 0 {
 		concurrency = DefaultConcurrency
 	}
@@ -321,7 +321,7 @@ func GetDownloadPathInput() (tea.Model, error) {
 var wg sync.WaitGroup
 
 type downloadJob struct {
-	url  exportClient.DownloadUrl
+	url  export.DownloadUrl
 	path string
 }
 
@@ -341,7 +341,7 @@ func (r *downloadResult) GetErrorString() string {
 	return fmt.Sprintf("%s %s: %s", r.name, r.status, r.err.Error())
 }
 
-func DownloadFilesWithoutPrompt(h *internal.Helper, urls []exportClient.DownloadUrl, path string, concurrency int) error {
+func DownloadFilesWithoutPrompt(h *internal.Helper, urls []export.DownloadUrl, path string, concurrency int) error {
 	if concurrency <= 0 {
 		concurrency = DefaultConcurrency
 	}

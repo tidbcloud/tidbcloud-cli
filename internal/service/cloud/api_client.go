@@ -17,12 +17,12 @@ package cloud
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
-	"strings"
-
+	"os"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/version"
@@ -358,10 +358,9 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 
 	exportCfg := expClient.NewConfiguration()
 	exportCfg.HTTPClient = httpclient
-	if strings.HasPrefix(serverlessEndpoint, "https://") {
-		exportCfg.Host = serverlessEndpoint[8:]
-	} else {
-		exportCfg.Host = serverlessEndpoint
+	exportCfg.Host = serverlessURL.Host
+	if os.Getenv(config.DebugEnv) == "true" || os.Getenv(config.DebugEnv) == "1" {
+		exportCfg.Debug = true
 	}
 
 	return branchClient.New(branchTransport, strfmt.Default), serverlessClient.New(serverlessTransport, strfmt.Default),
@@ -434,5 +433,17 @@ func parseError(err error, resp *http.Response) error {
 	if err1 != nil {
 		return err
 	}
-	return errors.New(string(body))
+	// extract error message from response body
+	type errorMsg struct {
+		Message string `json:"message"`
+		Code    int    `json:"code"`
+	}
+	var msg errorMsg
+	if err1 := json.Unmarshal(body, &msg); err1 != nil {
+		return err
+	}
+	if msg.Message != "" {
+		return errors.New(msg.Message)
+	}
+	return err
 }
