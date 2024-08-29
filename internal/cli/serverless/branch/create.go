@@ -31,12 +31,14 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
+	"github.com/go-openapi/strfmt"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
 
 var createBranchField = map[string]int{
-	flag.DisplayName: 0,
+	flag.DisplayName:     0,
+	flag.ParentTimestamp: 1,
 }
 
 const (
@@ -52,6 +54,14 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.DisplayName,
 		flag.ClusterID,
+		flag.ParentTimestamp,
+	}
+}
+
+func (c CreateOpts) RequiredFlags() []string {
+	return []string{
+		flag.ClusterID,
+		flag.DisplayName,
 	}
 }
 
@@ -66,7 +76,7 @@ func (c *CreateOpts) MarkInteractive(cmd *cobra.Command) error {
 	}
 	// Mark required flags
 	if !c.interactive {
-		for _, fn := range flags {
+		for _, fn := range c.RequiredFlags() {
 			err := cmd.MarkFlagRequired(fn)
 			if err != nil {
 				return err
@@ -108,6 +118,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			var branchName string
 			var clusterId string
 			var parentID string
+			var parentTimestampStr string
+			var parentTimestamp *strfmt.DateTime
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -138,6 +150,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if len(branchName) == 0 {
 					return errors.New("branch name is required")
 				}
+				parentTimestampStr = inputModel.(ui.TextInputModel).Inputs[createBranchField[flag.ParentTimestamp]].Value()
 			} else {
 				// non-interactive mode, get values from flags
 				var err error
@@ -153,11 +166,25 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
+				parentTimestampStr, err = cmd.Flags().GetString(flag.ParentTimestamp)
+				if err != nil {
+					return errors.Trace(err)
+				}
+			}
+
+			if len(parentTimestampStr) != 0 {
+				t, err := time.Parse(time.RFC3339, parentTimestampStr)
+				if err != nil {
+					return errors.New("Invalid parent timestamp format, please use RFC3339 format")
+				}
+				tFormated := strfmt.DateTime(t)
+				parentTimestamp = &tFormated
 			}
 
 			params := branchApi.NewBranchServiceCreateBranchParams().WithClusterID(clusterId).WithBranch(&branchModel.V1beta1Branch{
-				DisplayName: &branchName,
-				ParentID:    parentID,
+				DisplayName:     &branchName,
+				ParentID:        parentID,
+				ParentTimestamp: parentTimestamp,
 			}).WithContext(ctx)
 
 			if h.IOStreams.CanPrompt {
@@ -179,6 +206,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "The displayName of the branch to be created.")
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster, in which the branch will be created.")
 	createCmd.Flags().StringP(flag.ParentID, "", "", "The ID of the branch parent, default is cluster id.")
+	createCmd.Flags().StringP(flag.ParentTimestamp, "", "", "The timestamp of the parent branch, default is current time. (RFC3339 format, e.g., 2024-01-01T00:00:00Z)")
 	return createCmd
 }
 
@@ -280,9 +308,11 @@ func initialCreateBranchInputModel() ui.TextInputModel {
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
-
-			m.Inputs[v] = t
+		case flag.ParentTimestamp:
+			timestampExample := time.Now().Format(time.RFC3339)
+			t.Placeholder = fmt.Sprintf("Parent Timestamp (optional, e.g., %s)", timestampExample)
 		}
+		m.Inputs[v] = t
 	}
 	return m
 }

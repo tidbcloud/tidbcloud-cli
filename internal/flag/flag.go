@@ -84,6 +84,7 @@ const (
 	TableWhere             string = "where"
 	TableFilter            string = "filter"
 	ParentID               string = "parent-id"
+	ParentTimestamp        string = "parent-timestamp"
 	PublicEndpointDisabled string = "disable-public-endpoint"
 	ParquetCompression     string = "parquet.compression"
 )
