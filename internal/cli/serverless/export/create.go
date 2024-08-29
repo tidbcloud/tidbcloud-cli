@@ -462,14 +462,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.Trace(err)
 					}
 					if azBlobURI == "" {
-						return errors.New("azure blob uri is required when target type is Azure_Blob")
+						return errors.New("Azure Blob URI is required when target type is Azure_Blob")
 					}
 					azBlobSasToken, err = cmd.Flags().GetString(flag.AzureBlobSASToken)
 					if err != nil {
 						return errors.Trace(err)
 					}
 					if azBlobSasToken == "" {
-						return errors.New("azure blob sas token is required when target type is Azure_Blob")
+						return errors.New("Azure Blob sas token is required when target type is Azure_Blob")
 					}
 				}
 
