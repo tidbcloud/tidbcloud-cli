@@ -26,11 +26,10 @@ import (
 	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
 	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 	brModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/models"
-	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
-	exportModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/models"
 	importApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
@@ -340,7 +339,7 @@ func GetSelectedExport(ctx context.Context, clusterID string, pageSize int64, cl
 	var items = make([]interface{}, 0, len(exportItems))
 	for _, item := range exportItems {
 		items = append(items, &Export{
-			ID: item.ExportID,
+			ID: *item.ExportId,
 		})
 	}
 	if len(items) == 0 {
@@ -378,9 +377,9 @@ func GetSelectedLocalExport(ctx context.Context, clusterID string, pageSize int6
 
 	var items = make([]interface{}, 0, len(exportItems))
 	for _, item := range exportItems {
-		if item.Target.Type == exportModel.TargetTargetTypeLOCAL && item.State == exportModel.V1beta1ExportStateSUCCEEDED {
+		if *item.Target.Type == export.EXPORTTARGETTYPEENUM_LOCAL && *item.State == export.EXPORTSTATEENUM_SUCCEEDED {
 			items = append(items, &Export{
-				ID: item.ExportID,
+				ID: *item.ExportId,
 			})
 		}
 	}
@@ -674,30 +673,28 @@ func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBClo
 	return int64(len(items)), items, nil
 }
 
-func RetrieveExports(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*exportModel.V1beta1Export, error) {
-	var items []*exportModel.V1beta1Export
+func RetrieveExports(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []export.Export, error) {
+	var items []export.Export
 	pageSizeInt32 := int32(pageSize)
-	var pageToken string
+	var pageToken *string
 
 	orderBy := "create_time desc"
-	params := exportApi.NewExportServiceListExportsParams().WithClusterID(cID).WithPageSize(&pageSizeInt32).
-		WithOrderBy(&orderBy).WithContext(ctx)
-	exports, err := d.ListExports(params)
+	exports, err := d.ListExports(ctx, cID, &pageSizeInt32, nil, &orderBy)
 	if err != nil {
 		return 0, nil, errors.Trace(err)
 	}
-	items = append(items, exports.Payload.Exports...)
+	items = append(items, exports.Exports...)
 	// loop to get all branches
 	for {
-		pageToken = exports.Payload.NextPageToken
-		if pageToken == "" {
+		pageToken = exports.NextPageToken
+		if pageToken == nil || *pageToken == "" {
 			break
 		}
-		exports, err = d.ListExports(params.WithPageSize(&pageSizeInt32).WithPageToken(&pageToken))
+		exports, err = d.ListExports(ctx, cID, &pageSizeInt32, pageToken, &orderBy)
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
-		items = append(items, exports.Payload.Exports...)
+		items = append(items, exports.Exports...)
 	}
 	return int64(len(items)), items, nil
 }
