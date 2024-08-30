@@ -30,8 +30,7 @@ import (
 	pingchatOp "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
-	serverlessClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client"
-	serverlessOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	brClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client"
 	brOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
@@ -46,7 +45,7 @@ import (
 
 const (
 	DefaultApiUrl             = "https://" + apiClient.DefaultHost
-	DefaultServerlessEndpoint = "https://" + serverlessClient.DefaultHost
+	DefaultServerlessEndpoint = "https://serverless.tidbapi.com"
 	DefaultIAMEndpoint        = "https://iam.tidbapi.com"
 	userAgent                 = "User-Agent"
 )
@@ -125,7 +124,7 @@ type ClientDelegate struct {
 	ic  *iam.APIClient
 	bc  *branch.APIClient
 	pc  *pingchatClient.TidbcloudPingchat
-	sc  *serverlessClient.TidbcloudServerless
+	sc  *cluster.APIClient
 	brc *brClient.TidbcloudServerless
 	sic *serverlessImportClient.TidbcloudServerless
 	ec  *export.APIClient
@@ -386,7 +385,6 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 		return nil, nil, nil, nil, nil, nil, nil, err
 	}
 
-	serverlessTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	backRestoreTransport := httpTransport.NewWithClient(serverlessURL.Host, brClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	importTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessImportClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 
@@ -398,6 +396,10 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	}
 	iamCfg.Host = iamURL.Host
 
+	clusterCfg := cluster.NewConfiguration()
+	clusterCfg.HTTPClient = httpclient
+	clusterCfg.Host = serverlessURL.Host
+
 	branchCfg := branch.NewConfiguration()
 	branchCfg.HTTPClient = httpclient
 	branchCfg.Host = serverlessURL.Host
@@ -406,7 +408,7 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	exportCfg.HTTPClient = httpclient
 	exportCfg.Host = serverlessURL.Host
 
-	return branch.NewAPIClient(branchCfg), serverlessClient.New(serverlessTransport, strfmt.Default),
+	return branch.NewAPIClient(branchCfg), cluster.NewAPIClient(clusterCfg),
 		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default),
 		serverlessImportClient.New(importTransport, strfmt.Default), export.NewAPIClient(exportCfg),
 		iam.NewAPIClient(iamCfg), nil
