@@ -26,8 +26,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
-	branchModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -63,26 +62,18 @@ func (suite *CreateBranchSuite) TestCreateBranchArgs() {
 	branchName := "test"
 	branchId := "12345"
 
-	createBranchBody := &branchModel.V1beta1Branch{
-		DisplayName: &branchName,
+	createBranchBody := &branch.Branch{
+		DisplayName: branchName,
 	}
-	suite.mockClient.On("CreateBranch", branchApi.NewBranchServiceCreateBranchParams().
-		WithClusterID(clusterID).WithBranch(createBranchBody).WithContext(ctx)).
-		Return(&branchApi.BranchServiceCreateBranchOK{
-			Payload: &branchModel.V1beta1Branch{
-				BranchID: branchId,
-			},
+	suite.mockClient.On("CreateBranch", ctx, clusterID, createBranchBody).
+		Return(&branch.Branch{
+			BranchId: &branchId,
 		}, nil)
 
-	body := &branchModel.V1beta1Branch{}
+	body := &branch.Branch{}
 	err := json.Unmarshal([]byte(getBranchResultStr), body)
 	assert.Nil(err)
-	result := &branchApi.BranchServiceGetBranchOK{
-		Payload: body,
-	}
-	suite.mockClient.On("GetBranch", branchApi.NewBranchServiceGetBranchParams().
-		WithClusterID(clusterID).WithBranchID(branchId).WithContext(ctx)).
-		Return(result, nil)
+	suite.mockClient.On("GetBranch", ctx, clusterID, branchId).Return(body, nil)
 
 	tests := []struct {
 		name         string

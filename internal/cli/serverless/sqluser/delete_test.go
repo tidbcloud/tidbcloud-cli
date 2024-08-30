@@ -17,7 +17,6 @@ package sqluser
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"testing"
@@ -26,8 +25,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
-	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -64,13 +62,8 @@ func (suite *DeleteSQLUserSuite) TestDeleteSQLUserArgs() {
 	userNamePrefix := "4TGJD6zA3Nn2333"
 	fullUserName := fmt.Sprintf("%s.%s", userNamePrefix, userName)
 
-	suite.mockClient.On("DeleteSQLUser", iamApi.NewDeleteV1beta1ClustersClusterIDSQLUsersUserNameParams().
-		WithClusterID(clusterID).WithUserName(fullUserName).WithContext(ctx)).
-		Return(&iamApi.DeleteV1beta1ClustersClusterIDSQLUsersUserNameOK{}, nil)
-
-	body := &iamModel.CentralSQLUser{}
-	err := json.Unmarshal([]byte(getSQLUserResultStr), body)
-	assert.Nil(err)
+	suite.mockClient.On("DeleteSQLUser", ctx, clusterID, fullUserName).
+		Return(&iam.ApiBasicResp{}, nil)
 
 	tests := []struct {
 		name         string

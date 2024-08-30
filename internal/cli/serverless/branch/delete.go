@@ -22,7 +22,6 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
-	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -159,9 +158,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := branchApi.NewBranchServiceDeleteBranchParams().
-				WithClusterID(clusterID).WithBranchID(branchID).WithContext(ctx)
-			_, err = d.DeleteBranch(params)
+			_, err = d.DeleteBranch(ctx, clusterID, branchID)
 			if err != nil {
 				return errors.Trace(err)
 			}

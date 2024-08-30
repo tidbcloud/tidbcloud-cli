@@ -21,7 +21,6 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
-	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -158,11 +157,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := iamApi.NewDeleteV1beta1ClustersClusterIDSQLUsersUserNameParams().
-				WithClusterID(clusterID).
-				WithUserName(userName).
-				WithContext(ctx)
-			_, err = d.DeleteSQLUser(params)
+			_, err = d.DeleteSQLUser(ctx, clusterID, userName)
 			if err != nil {
 				return errors.Trace(err)
 			}

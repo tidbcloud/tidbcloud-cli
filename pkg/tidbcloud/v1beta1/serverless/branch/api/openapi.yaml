@@ -1,0 +1,456 @@
+openapi: 3.0.1
+info:
+  description: TiDB Cloud Serverless Open API
+  title: TiDB Cloud Serverless Open API
+  version: v1beta1
+servers:
+- url: https://serverless.tidbapi.com/
+tags:
+- name: BranchService
+paths:
+  /v1beta1/clusters/{clusterId}/branches:
+    get:
+      operationId: BranchService_ListBranches
+      parameters:
+      - description: Required. The ID of the project to which the clusters belong.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: |-
+          Optional. Requested page size. Server may return fewer items than
+          requested. If unspecified, server will pick an appropriate default.
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: Optional. A token identifying a page of results the server should
+          return.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListBranchesResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Lists information about branches.
+      tags:
+      - BranchService
+    post:
+      operationId: BranchService_CreateBranch
+      parameters:
+      - description: Required. The cluster ID of the branch
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Branch'
+        description: Required. The resource being created
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Creates a branch.
+      tags:
+      - BranchService
+      x-codegen-request-body-name: branch
+  /v1beta1/clusters/{clusterId}/branches/{branchId}:
+    delete:
+      operationId: BranchService_DeleteBranch
+      parameters:
+      - description: Required. The cluster ID of the branch
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: Required. The branch ID
+        in: path
+        name: branchId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Deletes a branch.
+      tags:
+      - BranchService
+    get:
+      operationId: BranchService_GetBranch
+      parameters:
+      - description: Required. The cluster ID of the branch
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: Required. The branch ID
+        in: path
+        name: branchId
+        required: true
+        schema:
+          type: string
+      - description: |-
+          Optional. The view of the branch to return. Defaults to FULL
+
+           - BASIC: Basic response contains basic information for a branch.
+           - FULL: FULL response contains all detailed information for a branch.
+        in: query
+        name: view
+        schema:
+          enum:
+          - BASIC
+          - FULL
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Gets information about a branch.
+      tags:
+      - BranchService
+components:
+  schemas:
+    Any:
+      additionalProperties:
+        type: object
+      example:
+        '@type': '@type'
+      properties:
+        '@type':
+          type: string
+      type: object
+    Branch:
+      example:
+        branchId: branchId
+        endpoints: "{}"
+        displayName: displayName
+        usage: "{}"
+        annotations:
+          key: annotations
+        updateTime: 2000-01-23T04:56:07.000+00:00
+        clusterId: clusterId
+        parentId: parentId
+        parentDisplayName: parentDisplayName
+        parentTimestamp: 2000-01-23T04:56:07.000+00:00
+        createdBy: createdBy
+        createTime: 2000-01-23T04:56:07.000+00:00
+        name: name
+        userPrefix: userPrefix
+        state: "{}"
+      properties:
+        name:
+          description: Output Only. The name of the resource.
+          readOnly: true
+          type: string
+        branchId:
+          description: Output only. The system-generated ID of the resource.
+          readOnly: true
+          type: string
+        displayName:
+          description: Required. User-settable and human-readable display name for
+            the branch.
+          type: string
+        clusterId:
+          description: Output only. The cluster ID of this branch.
+          readOnly: true
+          type: string
+        parentId:
+          description: Optional. The parent ID of this branch.
+          type: string
+        createdBy:
+          description: Output only. The creator of the branch.
+          readOnly: true
+          type: string
+        state:
+          allOf:
+          - $ref: '#/components/schemas/Branch.State'
+          description: Output only. The state of this branch.
+          type: object
+        endpoints:
+          allOf:
+          - $ref: '#/components/schemas/Branch.Endpoints'
+          description: Optional. The endpoints of this branch.
+          type: object
+        userPrefix:
+          description: |-
+            Output only. User name prefix of this branch. For each TiDB Serverless branch,
+            TiDB Cloud generates a unique prefix to distinguish it from other branches.
+            Whenever you use or set a database user name, you must include the prefix in the user name.
+          nullable: true
+          readOnly: true
+          type: string
+        usage:
+          allOf:
+          - $ref: '#/components/schemas/Branch.Usage'
+          description: Output only. Usage metrics of this branch. Only display in
+            FULL view.
+          type: object
+        createTime:
+          format: date-time
+          readOnly: true
+          title: Output only. Create timestamp
+          type: string
+        updateTime:
+          format: date-time
+          readOnly: true
+          title: Output only. Update timestamp
+          type: string
+        annotations:
+          additionalProperties:
+            type: string
+          description: Optional. The annotations of this branch..
+          type: object
+        parentDisplayName:
+          description: Output only. The parent display name of this branch.
+          readOnly: true
+          type: string
+        parentTimestamp:
+          description: Optional. The point in time on the parent branch the branch
+            will be created from.
+          format: date-time
+          nullable: true
+          type: string
+      required:
+      - displayName
+      title: Message for branch
+      type: object
+    Branch.Endpoints:
+      description: Message for the Endpoints for this branch.
+      properties:
+        public:
+          allOf:
+          - $ref: '#/components/schemas/Branch.Endpoints.Public'
+          description: Optional. Public Endpoint for this branch.
+          type: object
+        private:
+          allOf:
+          - $ref: '#/components/schemas/Branch.Endpoints.Private'
+          description: Output only. Private Endpoint for this branch.
+          type: object
+      type: object
+    Branch.Endpoints.Private:
+      description: Message for Private Endpoint for this branch.
+      properties:
+        host:
+          description: Output Only. Host Name of Public Endpoint.
+          readOnly: true
+          type: string
+        port:
+          description: Output Only. Port of Public Endpoint.
+          format: int32
+          readOnly: true
+          type: integer
+        aws:
+          allOf:
+          - $ref: '#/components/schemas/Branch.Endpoints.Private.AWS'
+          title: Message for AWS
+          type: object
+        gcp:
+          allOf:
+          - $ref: '#/components/schemas/Branch.Endpoints.Private.GCP'
+          title: Message for GCP
+          type: object
+      type: object
+    Branch.Endpoints.Private.AWS:
+      description: Message for AWS Private Link Service.
+      properties:
+        serviceName:
+          description: Output Only. Service Name for Private Link Service.
+          readOnly: true
+          type: string
+        availabilityZone:
+          description: Output Only. Availability Zone for Private Link Service.
+          items:
+            type: string
+          readOnly: true
+          type: array
+      type: object
+    Branch.Endpoints.Private.GCP:
+      description: Message for GCP Private Link Service.
+      properties:
+        serviceAttachmentName:
+          description: Output Only. Target Service Account for Private Link Service.
+          readOnly: true
+          type: string
+      type: object
+    Branch.Endpoints.Public:
+      description: Message for Public Endpoint for this branch.
+      properties:
+        host:
+          readOnly: true
+          title: Output Only. Host name of Public Endpoint
+          type: string
+        port:
+          format: int32
+          readOnly: true
+          title: Output Only. Port of Public Endpoint
+          type: integer
+        disabled:
+          title: Optional. Disable Public Endpoint
+          type: boolean
+      type: object
+    Branch.State:
+      description: |-
+        Output Only. Branch State.
+
+         - CREATING: The branch is being created.
+         - ACTIVE: The branch is active and running.
+         - DELETED: The branch is being deleted.
+         - MAINTENANCE: The branch is under maintenance.
+      enum:
+      - CREATING
+      - ACTIVE
+      - DELETED
+      - MAINTENANCE
+      type: string
+    Branch.Usage:
+      description: Message for usage metrics for this cluster.
+      properties:
+        requestUnit:
+          description: Output Only. The latest value of Request Unit Metric for this
+            cluster.
+          format: int64
+          readOnly: true
+          type: string
+        rowStorage:
+          description: Output Only. The latest value of Row Storage Metric for this
+            cluster.
+          format: double
+          readOnly: true
+          type: number
+        columnarStorage:
+          description: Output Only. The latest value of Columnar Storage Metric for
+            this cluster.
+          format: double
+          readOnly: true
+          type: number
+      type: object
+    BranchView:
+      description: |-
+        View on branch. Pass this enum to control which subsets of fields to get.
+
+         - BASIC: Basic response contains basic information for a branch.
+         - FULL: FULL response contains all detailed information for a branch.
+      enum:
+      - BASIC
+      - FULL
+      type: string
+    ListBranchesResponse:
+      example:
+        totalSize: 0
+        nextPageToken: nextPageToken
+        branches:
+        - branchId: branchId
+          endpoints: "{}"
+          displayName: displayName
+          usage: "{}"
+          annotations:
+            key: annotations
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          parentId: parentId
+          parentDisplayName: parentDisplayName
+          parentTimestamp: 2000-01-23T04:56:07.000+00:00
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          name: name
+          userPrefix: userPrefix
+          state: "{}"
+        - branchId: branchId
+          endpoints: "{}"
+          displayName: displayName
+          usage: "{}"
+          annotations:
+            key: annotations
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          parentId: parentId
+          parentDisplayName: parentDisplayName
+          parentTimestamp: 2000-01-23T04:56:07.000+00:00
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          name: name
+          userPrefix: userPrefix
+          state: "{}"
+      properties:
+        branches:
+          items:
+            $ref: '#/components/schemas/Branch'
+          title: The list of branches
+          type: array
+        nextPageToken:
+          description: A token identifying a page of results the server should return.
+          type: string
+        totalSize:
+          format: int64
+          title: Total number of branches
+          type: integer
+      title: Message for response to list branches
+      type: object
+    Status:
+      example:
+        code: 6
+        details:
+        - '@type': '@type'
+        - '@type': '@type'
+        message: message
+      properties:
+        code:
+          format: int32
+          type: integer
+        message:
+          type: string
+        details:
+          items:
+            $ref: '#/components/schemas/Any'
+          type: array
+      type: object
+x-original-swagger-version: "2.0"

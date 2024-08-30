@@ -26,8 +26,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
-	branchModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -38,13 +37,13 @@ const listResultStr = `{
     {
       "branchId": "bran-wscjvwen2jajdjiy7hawcebxke",
       "clusterId": "10202848322613926203",
-      "createTime": "2023-12-12T10:17:15.000Z",
+      "createTime": "2023-12-12T10:17:15Z",
       "createdBy": "apikey-MCTGR3Jv",
       "displayName": "t",
       "name": "clusters/10202848322613926203/branches/bran-wscjvwen2jajdjiy7hawcebxke",
       "parentId": "10202848322613926203",
       "state": "ACTIVE",
-      "updateTime": "2023-12-12T10:18:24.000Z"
+      "updateTime": "2023-12-12T10:18:24Z"
     }
   ],
   "totalSize": 1
@@ -56,37 +55,37 @@ const listResultMultiPageStr = `{
     {
       "branchId": "bran-wscjvwen2jajdjiy7hawcebxke",
       "clusterId": "10202848322613926203",
-      "createTime": "2023-12-12T10:17:15.000Z",
+      "createTime": "2023-12-12T10:17:15Z",
       "createdBy": "apikey-MCTGR3Jv",
       "displayName": "t",
       "name": "clusters/10202848322613926203/branches/bran-wscjvwen2jajdjiy7hawcebxke",
       "parentId": "10202848322613926203",
       "state": "ACTIVE",
-      "updateTime": "2023-12-12T10:18:24.000Z"
+      "updateTime": "2023-12-12T10:18:24Z"
     },
     {
       "branchId": "bran-wscjvwen2jajdjiy7hawcebxke",
       "clusterId": "10202848322613926203",
-      "createTime": "2023-12-12T10:17:15.000Z",
+      "createTime": "2023-12-12T10:17:15Z",
       "createdBy": "apikey-MCTGR3Jv",
       "displayName": "t",
       "name": "clusters/10202848322613926203/branches/bran-wscjvwen2jajdjiy7hawcebxke",
       "parentId": "10202848322613926203",
       "state": "ACTIVE",
-      "updateTime": "2023-12-12T10:18:24.000Z"
+      "updateTime": "2023-12-12T10:18:24Z"
     }
   ],
   "totalSize": 2
 }
 `
 
-type ListBranchSuite struct {
+type ListBranchesSuite struct {
 	suite.Suite
 	h          *internal.Helper
 	mockClient *mock.TiDBCloudClient
 }
 
-func (suite *ListBranchSuite) SetupTest() {
+func (suite *ListBranchesSuite) SetupTest() {
 	if err := os.Setenv("NO_COLOR", "true"); err != nil {
 		suite.T().Error(err)
 	}
@@ -102,21 +101,16 @@ func (suite *ListBranchSuite) SetupTest() {
 	}
 }
 
-func (suite *ListBranchSuite) TestListBranchesArgs() {
+func (suite *ListBranchesSuite) TestListBranchesArgs() {
 	assert := require.New(suite.T())
 	pageSize := int32(suite.h.QueryPageSize)
 	ctx := context.Background()
 
-	body := &branchModel.V1beta1ListBranchesResponse{}
+	body := &branch.ListBranchesResponse{}
 	err := json.Unmarshal([]byte(listResultStr), body)
 	assert.Nil(err)
-	result := &branchApi.BranchServiceListBranchesOK{
-		Payload: body,
-	}
 	clusterID := "12345"
-	suite.mockClient.On("ListBranches", branchApi.NewBranchServiceListBranchesParams().
-		WithClusterID(clusterID).WithPageSize(&pageSize).WithContext(ctx)).
-		Return(result, nil)
+	suite.mockClient.On("ListBranches", ctx, clusterID, &pageSize, (*string)(nil)).Return(body, nil)
 
 	tests := []struct {
 		name         string
@@ -161,35 +155,25 @@ func (suite *ListBranchSuite) TestListBranchesArgs() {
 	}
 }
 
-func (suite *ListBranchSuite) TestListBranchesWithMultiPages() {
+func (suite *ListBranchesSuite) TestListBranchesWithMultiPages() {
 	assert := require.New(suite.T())
 	ctx := context.Background()
 	pageSize := int32(suite.h.QueryPageSize)
 	pageToken := "2"
-	body := &branchModel.V1beta1ListBranchesResponse{}
-	err := json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"total": 1`, `"total": 2`)), body)
+	body := &branch.ListBranchesResponse{}
+	err := json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"totalSize": 1`, `"totalSize": 2`)), body)
 	assert.Nil(err)
-	body.NextPageToken = pageToken
-	result := &branchApi.BranchServiceListBranchesOK{
-		Payload: body,
-	}
+	body.NextPageToken = &pageToken
 
 	clusterID := "12345"
-	suite.mockClient.On("ListBranches", branchApi.NewBranchServiceListBranchesParams().
-		WithClusterID(clusterID).WithPageSize(&pageSize).WithContext(ctx)).
-		Return(result, nil)
+	suite.mockClient.On("ListBranches", ctx, clusterID, &pageSize, (*string)(nil)).Return(body, nil)
 
-	body2 := &branchModel.V1beta1ListBranchesResponse{}
-	err = json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"total": 1`, `"total": 2`)), body2)
+	body2 := &branch.ListBranchesResponse{}
+	err = json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"totalSize": 1`, `"totalSize": 2`)), body2)
 	assert.Nil(err)
-	result2 := &branchApi.BranchServiceListBranchesOK{
-		Payload: body2,
-	}
-	suite.mockClient.On("ListBranches", branchApi.NewBranchServiceListBranchesParams().
-		WithClusterID(clusterID).WithPageToken(&pageToken).WithPageSize(&pageSize).WithContext(ctx)).
-		Return(result2, nil)
-	cmd := ListCmd(suite.h)
+	suite.mockClient.On("ListBranches", ctx, clusterID, &pageSize, &pageToken).Return(body2, nil)
 
+	cmd := ListCmd(suite.h)
 	tests := []struct {
 		name         string
 		args         []string
@@ -220,5 +204,5 @@ func (suite *ListBranchSuite) TestListBranchesWithMultiPages() {
 }
 
 func TestListBranchSuite(t *testing.T) {
-	suite.Run(t, new(ListBranchSuite))
+	suite.Run(t, new(ListBranchesSuite))
 }

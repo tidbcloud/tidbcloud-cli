@@ -21,10 +21,8 @@ import (
 
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
-	branchModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/models"
-	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
-	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
@@ -131,16 +129,16 @@ func GetSelectedProject(ctx context.Context, pageSize int64, client TiDBCloudCli
 	// If there is only one project, return it directly.
 	if len(projectItems) == 1 {
 		return &Project{
-			projectItems[0].ID,
-			projectItems[0].Name,
+			*projectItems[0].Id,
+			*projectItems[0].Name,
 		}, nil
 	}
 
 	var items = make([]interface{}, 0, len(projectItems))
 	for _, item := range projectItems {
 		items = append(items, &Project{
-			ID:   item.ID,
-			Name: item.Name,
+			ID:   *item.Id,
+			Name: *item.Name,
 		})
 	}
 	model, err := ui.InitialSelectModel(items, "Choose the project:")
@@ -298,8 +296,8 @@ func GetSelectedBranch(ctx context.Context, clusterID string, pageSize int64, cl
 	var items = make([]interface{}, 0, len(branchItems))
 	for _, item := range branchItems {
 		items = append(items, &Branch{
-			ID:          item.BranchID,
-			DisplayName: *item.DisplayName,
+			ID:          *item.BranchId,
+			DisplayName: item.DisplayName,
 			IsCluster:   false,
 		})
 	}
@@ -561,8 +559,8 @@ func GetSelectedSQLUser(ctx context.Context, clusterID string, pageSize int64, c
 	var items = make([]interface{}, 0, len(sqlUserItems))
 	for _, item := range sqlUserItems {
 		items = append(items, &SQLUser{
-			UserName: item.UserName,
-			Role:     util.GetDisplayRole(item.BuiltinRole, item.CustomRoles),
+			UserName: *item.UserName,
+			Role:     util.GetDisplayRole(*item.BuiltinRole, item.CustomRoles),
 		})
 	}
 	if len(items) == 0 {
@@ -591,30 +589,25 @@ func GetSelectedSQLUser(ctx context.Context, clusterID string, pageSize int64, c
 	}
 
 	return res.(*SQLUser).UserName, nil
-
 }
 
-func RetrieveProjects(ctx context.Context, pageSize int64, d TiDBCloudClient) (int64, []*iamModel.APIProject, error) {
-	var items []*iamModel.APIProject
-	var pageToken string
+func RetrieveProjects(ctx context.Context, pageSize int64, d TiDBCloudClient) (int64, []iam.ApiProject, error) {
+	var items []iam.ApiProject
+	pageSizeInt32 := int32(pageSize)
+	var pageToken *string
 
-	params := iamApi.NewGetV1beta1ProjectsParams().WithPageSize(&pageSize).WithContext(ctx)
-	projects, err := d.ListProjects(params)
-	if err != nil {
-		return 0, nil, errors.Trace(err)
-	}
-	items = append(items, projects.Payload.Projects...)
 	// loop to get all projects
 	for {
-		pageToken = projects.Payload.NextPageToken
-		if pageToken == "" {
-			break
-		}
-		projects, err = d.ListProjects(params.WithPageSize(&pageSize).WithPageToken(&pageToken))
+		projects, err := d.ListProjects(ctx, &pageSizeInt32, pageToken)
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
-		items = append(items, projects.Payload.Projects...)
+		items = append(items, projects.Projects...)
+
+		pageToken = projects.NextPageToken
+		if util.IsNilOrEmpty(pageToken) {
+			break
+		}
 	}
 	return int64(len(items)), items, nil
 }
@@ -647,28 +640,27 @@ func RetrieveClusters(ctx context.Context, pID string, pageSize int64, d TiDBClo
 	return int64(len(items)), items, nil
 }
 
-func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*branchModel.V1beta1Branch, error) {
-	var items []*branchModel.V1beta1Branch
+func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []branch.Branch, error) {
+	var items []branch.Branch
 	pageSizeInt32 := int32(pageSize)
-	var pageToken string
+	var pageToken *string
 
-	params := branchApi.NewBranchServiceListBranchesParams().WithClusterID(cID).WithContext(ctx)
-	branches, err := d.ListBranches(params.WithPageSize(&pageSizeInt32))
+	branches, err := d.ListBranches(ctx, cID, &pageSizeInt32, nil)
 	if err != nil {
 		return 0, nil, errors.Trace(err)
 	}
-	items = append(items, branches.Payload.Branches...)
+	items = append(items, branches.Branches...)
 	// loop to get all branches
 	for {
-		pageToken = branches.Payload.NextPageToken
-		if pageToken == "" {
+		pageToken = branches.NextPageToken
+		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
-		branches, err = d.ListBranches(params.WithPageSize(&pageSizeInt32).WithPageToken(&pageToken))
+		branches, err = d.ListBranches(ctx, cID, &pageSizeInt32, pageToken)
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
-		items = append(items, branches.Payload.Branches...)
+		items = append(items, branches.Branches...)
 	}
 	return int64(len(items)), items, nil
 }
@@ -687,7 +679,7 @@ func RetrieveExports(ctx context.Context, cID string, pageSize int64, d TiDBClou
 	// loop to get all branches
 	for {
 		pageToken = exports.NextPageToken
-		if pageToken == nil || *pageToken == "" {
+		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
 		exports, err = d.ListExports(ctx, cID, &pageSizeInt32, pageToken, &orderBy)
@@ -748,30 +740,23 @@ func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDB
 	return int64(len(items)), items, nil
 }
 
-func RetrieveSQLUsers(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*iamModel.APISQLUser, error) {
-	var items []*iamModel.APISQLUser
-	var pageToken string
+func RetrieveSQLUsers(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []iam.ApiSqlUser, error) {
+	var items []iam.ApiSqlUser
 
-	params := iamApi.NewGetV1beta1ClustersClusterIDSQLUsersParams().
-		WithClusterID(cID).
-		WithPageSize(&pageSize).
-		WithContext(ctx)
-	users, err := d.ListSQLUsers(params)
-	if err != nil {
-		return 0, nil, errors.Trace(err)
-	}
-	items = append(items, users.Payload.SQLUsers...)
+	pageSizeInt32 := int32(pageSize)
+	var pageToken *string
 	// loop to get all SQL users
 	for {
-		pageToken = users.Payload.NextPageToken
-		if pageToken == "" {
-			break
-		}
-		users, err = d.ListSQLUsers(params.WithPageSize(&pageSize).WithPageToken(&pageToken))
+		sqlUsers, err := d.ListSQLUsers(ctx, cID, &pageSizeInt32, pageToken)
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
-		items = append(items, users.Payload.SQLUsers...)
+		items = append(items, sqlUsers.SqlUsers...)
+
+		pageToken = sqlUsers.NextPageToken
+		if util.IsNilOrEmpty(pageToken) {
+			break
+		}
 	}
 	return int64(len(items)), items, nil
 }
@@ -795,8 +780,8 @@ func GetSelectedParentID(ctx context.Context, cluster *Cluster, pageSize int64, 
 	})
 	for _, item := range branchItems {
 		items = append(items, &Branch{
-			ID:          item.BranchID,
-			DisplayName: *item.DisplayName,
+			ID:          *item.BranchId,
+			DisplayName: item.DisplayName,
 			IsCluster:   false,
 		})
 	}
