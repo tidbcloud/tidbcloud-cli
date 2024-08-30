@@ -28,7 +28,7 @@ import (
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 
-	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 
 	"github.com/charmbracelet/bubbles/textinput"
@@ -203,7 +203,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 			authMethod := util.MYSQLNATIVEPASSWORD
 			autoPrefix := DefaultAutoPrefix
-			params := &iamClient.ApiCreateSqlUserReq{
+			params := &iam.ApiCreateSqlUserReq{
 				AuthMethod:  &authMethod,
 				UserName:    &userName,
 				BuiltinRole: builtinRole,

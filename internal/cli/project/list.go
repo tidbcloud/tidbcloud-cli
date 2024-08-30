@@ -24,7 +24,7 @@ import (
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
 
-	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -56,7 +56,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				res := iamClient.ApiListProjectsRsp{
+				res := iam.ApiListProjectsRsp{
 					Projects: items,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)

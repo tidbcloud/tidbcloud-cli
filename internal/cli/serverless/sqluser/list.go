@@ -25,7 +25,7 @@ import (
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/util"
 
-	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -126,7 +126,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				res := iamClient.ApiListSqlUsersRsp{
+				res := iam.ApiListSqlUsersRsp{
 					SqlUsers: items,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)

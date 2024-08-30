@@ -21,7 +21,7 @@ import (
 
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
@@ -591,8 +591,8 @@ func GetSelectedSQLUser(ctx context.Context, clusterID string, pageSize int64, c
 	return res.(*SQLUser).UserName, nil
 }
 
-func RetrieveProjects(ctx context.Context, pageSize int64, d TiDBCloudClient) (int64, []iamClient.ApiProject, error) {
-	var items []iamClient.ApiProject
+func RetrieveProjects(ctx context.Context, pageSize int64, d TiDBCloudClient) (int64, []iam.ApiProject, error) {
+	var items []iam.ApiProject
 	pageSizeInt32 := int32(pageSize)
 	var pageToken *string
 
@@ -740,8 +740,8 @@ func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDB
 	return int64(len(items)), items, nil
 }
 
-func RetrieveSQLUsers(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []iamClient.ApiSqlUser, error) {
-	var items []iamClient.ApiSqlUser
+func RetrieveSQLUsers(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []iam.ApiSqlUser, error) {
+	var items []iam.ApiSqlUser
 
 	pageSizeInt32 := int32(pageSize)
 	var pageToken *string

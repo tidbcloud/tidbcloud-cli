@@ -28,7 +28,7 @@ import (
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
-	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 
@@ -87,7 +87,7 @@ func (suite *CreateSQLUserSuite) TestCreateSQLUserArgs() {
 
 	authMethod := util.MYSQLNATIVEPASSWORD
 	autoPrefix := DefaultAutoPrefix
-	createSQLUserBody := &iamClient.ApiCreateSqlUserReq{
+	createSQLUserBody := &iam.ApiCreateSqlUserReq{
 		UserName:    &userName,
 		BuiltinRole: &builtinRole,
 		CustomRoles: customRole,
@@ -95,7 +95,7 @@ func (suite *CreateSQLUserSuite) TestCreateSQLUserArgs() {
 		AuthMethod:  &authMethod,
 		AutoPrefix:  &autoPrefix,
 	}
-	result := &iamClient.ApiSqlUser{}
+	result := &iam.ApiSqlUser{}
 	err := json.Unmarshal([]byte(getSQLUserResultStr), result)
 	assert.Nil(err)
 

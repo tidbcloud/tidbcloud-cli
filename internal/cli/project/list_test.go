@@ -26,7 +26,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -111,7 +111,7 @@ func (suite *ListProjectSuite) TestListProjectArgs() {
 	pageSize := int32(suite.h.QueryPageSize)
 	var pageToken *string
 
-	result := &iamClient.ApiListProjectsRsp{}
+	result := &iam.ApiListProjectsRsp{}
 	err := json.Unmarshal([]byte(resultStr), result)
 	assert.Nil(err)
 	suite.mockClient.On("ListProjects", ctx, &pageSize, pageToken).
@@ -172,11 +172,11 @@ func (suite *ListProjectSuite) TestListProjectWithMultiPages() {
 	var pageToken *string
 	nextPageToken := "next_token"
 
-	resultPage1 := &iamClient.ApiListProjectsRsp{}
+	resultPage1 := &iam.ApiListProjectsRsp{}
 	err := json.Unmarshal([]byte(resultPageOne), resultPage1)
 	assert.Nil(err)
 
-	resultPage2 := &iamClient.ApiListProjectsRsp{}
+	resultPage2 := &iam.ApiListProjectsRsp{}
 	err = json.Unmarshal([]byte(resultStr), resultPage2)
 	assert.Nil(err)
 

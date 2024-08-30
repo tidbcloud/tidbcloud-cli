@@ -25,7 +25,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -81,7 +81,7 @@ func (suite *ListSQLUserSuite) TestListSQLUserArgs() {
 
 	clusterID := "12345"
 
-	result := &iamClient.ApiListSqlUsersRsp{}
+	result := &iam.ApiListSqlUsersRsp{}
 	err := json.Unmarshal([]byte(listResultStr), result)
 	assert.Nil(err)
 	suite.mockClient.On("ListSQLUsers", ctx, clusterID, &pageSize, pageToken).

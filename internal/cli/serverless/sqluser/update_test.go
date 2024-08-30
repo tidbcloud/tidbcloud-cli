@@ -28,7 +28,7 @@ import (
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
-	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 
@@ -74,7 +74,7 @@ func (suite *UpdateSQLUserSuite) TestUpdateSQLUserArgs() {
 	customRoleStr := strings.Join(customRole, ",")
 	roleStr := fmt.Sprintf("%s,%s", builtinRole, customRoleStr)
 
-	result := &iamClient.ApiSqlUser{}
+	result := &iam.ApiSqlUser{}
 	err := json.Unmarshal([]byte(getSQLUserResultStr), result)
 	assert.Nil(err)
 
@@ -91,7 +91,7 @@ func (suite *UpdateSQLUserSuite) TestUpdateSQLUserArgs() {
 		WithClusterID(clusterID).WithContext(ctx)).
 		Return(res, nil)
 
-	updateBody := &iamClient.ApiUpdateSqlUserReq{
+	updateBody := &iam.ApiUpdateSqlUserReq{
 		BuiltinRole: &builtinRole,
 		CustomRoles: customRole,
 		Password:    &password,

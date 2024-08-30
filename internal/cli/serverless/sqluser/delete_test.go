@@ -25,7 +25,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -63,7 +63,7 @@ func (suite *DeleteSQLUserSuite) TestDeleteSQLUserArgs() {
 	fullUserName := fmt.Sprintf("%s.%s", userNamePrefix, userName)
 
 	suite.mockClient.On("DeleteSQLUser", ctx, clusterID, fullUserName).
-		Return(&iamClient.ApiBasicResp{}, nil)
+		Return(&iam.ApiBasicResp{}, nil)
 
 	tests := []struct {
 		name         string
