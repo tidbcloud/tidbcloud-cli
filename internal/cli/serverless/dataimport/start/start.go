@@ -27,8 +27,7 @@ import (
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
+	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -40,6 +39,23 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var inputDescription = map[string]string{
+	flag.S3URI:                "Input your S3 URI in s3://<bucket>/<path> format",
+	flag.S3AccessKeyID:        "Input your S3 access key id",
+	flag.S3SecretAccessKey:    "Input your S3 secret access key",
+	flag.S3RoleArn:            "Input your S3 role arn",
+	flag.AzureBlobURI:         "Input your Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format",
+	flag.AzureBlobSASToken:    "Input your Azure Blob SAS token",
+	flag.GCSURI:               "Input your GCS URI in gcs://<bucket>/<path> format",
+	flag.GCSServiceAccountKey: "Input your base64 encoded GCS service account key",
+	flag.CSVSeparator:         "Input the csv separator: separator of each value in CSV files, skip to use default value (,)",
+	flag.CSVDelimiter:         "Input the csv delimiter: delimiter of string type variables in CSV files, skip to use default value (\"). If you want to set empty string, please use non-interactive mode",
+	flag.CSVNullValue:         "Input the csv null value: representation of null values in CSV files, skip to use default value (\\N). If you want to set empty string, please use non-interactive mode",
+	flag.CSVSkipHeader:        "Input the csv skip header: export CSV files of the tables without header. Type `true` to skip header, others will not skip header",
+	flag.CSVBackslashEscape:   "Input the csv backslash-escape: whether to interpret backslash escapes inside fields, skip to use default value (true)",
+	flag.CSVTrimLastSeparator: "Input the csv trim-last-separator: remove the last separator when a line ends with a separator, skip to use default value (false)",
+}
+
 var CSVFormatInputFields = map[string]int{
 	flag.CSVSeparator:         0,
 	flag.CSVDelimiter:         1,
@@ -50,11 +66,11 @@ var CSVFormatInputFields = map[string]int{
 	flag.CSVTrimLastSeparator: 6,
 }
 
-var sourceTypes = []importModel.ImportSourceTypeEnum{
-	importModel.ImportSourceTypeEnumS3,
-	importModel.ImportSourceTypeEnumLOCAL,
-	importModel.ImportSourceTypeEnumGCS,
-	importModel.ImportSourceTypeEnumAZUREBLOB,
+var sourceTypes = []imp.ImportSourceTypeEnum{
+	imp.IMPORTSOURCETYPEENUM_S3,
+	imp.IMPORTSOURCETYPEENUM_LOCAL,
+	imp.IMPORTSOURCETYPEENUM_GCS,
+	imp.IMPORTSOURCETYPEENUM_AZURE_BLOB,
 }
 
 type StartOpts struct {
@@ -63,7 +79,7 @@ type StartOpts struct {
 
 func (o StartOpts) SupportedFileTypes() []string {
 	return []string{
-		string(importModel.ImportFileTypeEnumCSV),
+		string(imp.IMPORTFILETYPEENUM_CSV),
 	}
 }
 
@@ -120,7 +136,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			var sourceType importModel.ImportSourceTypeEnum
+			var sourceType imp.ImportSourceTypeEnum
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
@@ -132,29 +148,29 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 			} else {
-				sourceType = importModel.ImportSourceTypeEnum(cmd.Flag(flag.SourceType).Value.String())
+				sourceType = imp.ImportSourceTypeEnum(cmd.Flag(flag.SourceType).Value.String())
 			}
 
-			if sourceType == importModel.ImportSourceTypeEnumLOCAL {
+			if sourceType == imp.IMPORTSOURCETYPEENUM_LOCAL {
 				localOpts := LocalOpts{
 					concurrency: concurrency,
 					h:           h,
 					interactive: opts.interactive,
 				}
 				return localOpts.Run(cmd)
-			} else if sourceType == importModel.ImportSourceTypeEnumS3 {
+			} else if sourceType == imp.IMPORTSOURCETYPEENUM_S3 {
 				s3Opts := S3Opts{
 					h:           h,
 					interactive: opts.interactive,
 				}
 				return s3Opts.Run(cmd)
-			} else if sourceType == importModel.ImportSourceTypeEnumGCS {
+			} else if sourceType == imp.IMPORTSOURCETYPEENUM_GCS {
 				gcsOpts := GCSOpts{
 					h:           h,
 					interactive: opts.interactive,
 				}
 				return gcsOpts.Run(cmd)
-			} else if sourceType == importModel.ImportSourceTypeEnumAZUREBLOB {
+			} else if sourceType == imp.IMPORTSOURCETYPEENUM_AZURE_BLOB {
 				azBlobOpts := AzBlobOpts{
 					h:           h,
 					interactive: opts.interactive,
@@ -183,22 +199,23 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	startCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3SecretAccessKey)
 	startCmd.MarkFlagsRequiredTogether(flag.S3AccessKeyID, flag.S3SecretAccessKey)
 
-	startCmd.Flags().String(flag.GCSUri, "", "The GCS folder URI for import.")
+	startCmd.Flags().String(flag.GCSURI, "", "The GCS folder URI for import.")
 	startCmd.Flags().String(flag.GCSCredentialsPath, "", "The local path of GCS credentials.")
 
-	startCmd.Flags().String(flag.AzureBlobSASUrl, "", "The SAS URL for Azure Blob.")
+	startCmd.Flags().String(flag.AzureBlobURI, "", "The Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format.")
+	startCmd.Flags().String(flag.AzureBlobSASToken, "", "The SAS token of Azure Blob.")
 
 	startCmd.Flags().String(flag.CSVDelimiter, "\"", "The delimiter used for quoting of CSV file.")
 	startCmd.Flags().String(flag.CSVSeparator, ",", "The field separator of CSV file.")
 	startCmd.Flags().Bool(flag.CSVTrimLastSeparator, false, "Specifies whether to treat separator as the line terminator and trim all trailing separators in the CSV file.")
-	startCmd.Flags().Bool(flag.CSVBackslashEscape, true, "Specifies whether to parse backslash inside fields as escape characters in the CSV file.")
+	startCmd.Flags().Bool(flag.CSVBackslashEscape, true, "Specifies whether to interpret backslash escapes inside fields in the CSV file.")
 	startCmd.Flags().Bool(flag.CSVNotNull, false, "Specifies whether a CSV file can contain any NULL values.")
 	startCmd.Flags().String(flag.CSVNullValue, `\N`, "The representation of NULL values in the CSV file.")
 	startCmd.Flags().Bool(flag.CSVSkipHeader, false, "Specifies whether the CSV file contains a header line.")
 	return startCmd
 }
 
-func getSelectedSourceType() (importModel.ImportSourceTypeEnum, error) {
+func getSelectedSourceType() (imp.ImportSourceTypeEnum, error) {
 	SourceTypes := make([]interface{}, 0, len(sourceTypes))
 	for _, sourceType := range sourceTypes {
 		SourceTypes = append(SourceTypes, sourceType)
@@ -220,32 +237,32 @@ func getSelectedSourceType() (importModel.ImportSourceTypeEnum, error) {
 	if sourceType == nil {
 		return "", errors.New("no source type selected")
 	}
-	return sourceType.(importModel.ImportSourceTypeEnum), nil
+	return sourceType.(imp.ImportSourceTypeEnum), nil
 }
 
-func waitStartOp(h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.ImportServiceCreateImportParams) error {
+func waitStartOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, clusterId string, body *imp.ImportServiceCreateImportBody) error {
 	fmt.Fprintf(h.IOStreams.Out, "... Starting the import task\n")
-	res, err := d.CreateImport(params)
+	res, err := d.CreateImport(ctx, clusterId, body)
 	if err != nil {
 		return err
 	}
 
-	fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", res.Payload.ID))
+	fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", res.Id))
 	return nil
 }
 
-func spinnerWaitStartOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, params *importOp.ImportServiceCreateImportParams) error {
+func spinnerWaitStartOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, clusterId string, body *imp.ImportServiceCreateImportBody) error {
 	task := func() tea.Msg {
 		errChan := make(chan error, 1)
 
 		go func() {
-			res, err := d.CreateImport(params)
+			res, err := d.CreateImport(ctx, clusterId, body)
 			if err != nil {
 				errChan <- err
 				return
 			}
 
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", res.Payload.ID))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", res.Id))
 			errChan <- nil
 		}()
 
@@ -285,7 +302,7 @@ func spinnerWaitStartOp(ctx context.Context, h *internal.Helper, d cloud.TiDBClo
 	return nil
 }
 
-func getCSVFormat() (format *importModel.CSVFormat, errToReturn error) {
+func getCSVFormat() (format *imp.CSVFormat, errToReturn error) {
 	separator, delimiter, nullValue := ",", `"`, `\N`
 	backslashEscape, trimLastSeparator, skipHeader, notNull := true, false, false, false
 
@@ -364,14 +381,14 @@ func getCSVFormat() (format *importModel.CSVFormat, errToReturn error) {
 		}
 	}
 
-	format = &importModel.CSVFormat{
-		Separator:         separator,
-		Delimiter:         aws.String(delimiter),
-		BackslashEscape:   aws.Bool(backslashEscape),
-		TrimLastSeparator: aws.Bool(trimLastSeparator),
-		Null:              aws.String(nullValue),
-		Header:            aws.Bool(!skipHeader),
-		NotNull:           aws.Bool(notNull),
+	format = &imp.CSVFormat{
+		Separator:         aws.String(separator),
+		Delimiter:         *imp.NewNullableString(aws.String(delimiter)),
+		BackslashEscape:   *imp.NewNullableBool(aws.Bool(backslashEscape)),
+		TrimLastSeparator: *imp.NewNullableBool(aws.Bool(trimLastSeparator)),
+		Null:              *imp.NewNullableString(aws.String(nullValue)),
+		Header:            *imp.NewNullableBool(aws.Bool(!skipHeader)),
+		NotNull:           *imp.NewNullableBool(aws.Bool(notNull)),
 	}
 	return
 }
@@ -413,7 +430,7 @@ func initialCSVFormatInputModel() ui.TextInputModel {
 	return m
 }
 
-func getCSVFlagValue(cmd *cobra.Command) (*importModel.CSVFormat, error) {
+func getCSVFlagValue(cmd *cobra.Command) (*imp.CSVFormat, error) {
 	// optional flags
 	backslashEscape, err := cmd.Flags().GetBool(flag.CSVBackslashEscape)
 	if err != nil {
@@ -447,14 +464,14 @@ func getCSVFlagValue(cmd *cobra.Command) (*importModel.CSVFormat, error) {
 		return nil, errors.Trace(err)
 	}
 
-	format := &importModel.CSVFormat{
-		Separator:         separator,
-		Delimiter:         aws.String(delimiter),
-		BackslashEscape:   aws.Bool(backslashEscape),
-		TrimLastSeparator: aws.Bool(trimLastSeparator),
-		Null:              aws.String(nullValue),
-		Header:            aws.Bool(!skipHeader),
-		NotNull:           aws.Bool(notNull),
+	format := &imp.CSVFormat{
+		Separator:         aws.String(separator),
+		Delimiter:         *imp.NewNullableString(aws.String(delimiter)),
+		BackslashEscape:   *imp.NewNullableBool(aws.Bool(backslashEscape)),
+		TrimLastSeparator: *imp.NewNullableBool(aws.Bool(trimLastSeparator)),
+		Null:              *imp.NewNullableString(aws.String(nullValue)),
+		Header:            *imp.NewNullableBool(aws.Bool(!skipHeader)),
+		NotNull:           *imp.NewNullableBool(aws.Bool(notNull)),
 	}
 	return format, nil
 }

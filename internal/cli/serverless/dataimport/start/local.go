@@ -29,8 +29,8 @@ import (
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
+
+	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/charmbracelet/bubbles/progress"
@@ -57,14 +57,14 @@ type LocalOpts struct {
 
 func (o LocalOpts) SupportedFileTypes() []string {
 	return []string{
-		string(importModel.ImportFileTypeEnumCSV),
+		string(imp.IMPORTFILETYPEENUM_CSV),
 	}
 }
 
 func (o LocalOpts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
 	var clusterID, fileType, targetDatabase, targetTable, filePath string
-	var format *importModel.CSVFormat
+	var format *imp.CSVFormat
 	d, err := o.h.Client()
 	if err != nil {
 		return err
@@ -134,7 +134,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 			return errors.New("Target table is required")
 		}
 
-		if fileType == string(importModel.ImportFileTypeEnumCSV) {
+		if fileType == string(imp.IMPORTFILETYPEENUM_CSV) {
 			format, err = getCSVFormat()
 			if err != nil {
 				return err
@@ -182,7 +182,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		DatabaseName:  aws.String(targetDatabase),
 		TableName:     aws.String(targetTable),
 		ContentLength: aws.Int64(stat.Size()),
-		ClusterID:     aws.String(clusterID),
+		ClusterID:     clusterID,
 		Body:          uploadFile,
 	}
 	if o.h.IOStreams.CanPrompt {
@@ -197,34 +197,19 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		}
 	}
 
-	body := &importModel.ImportServiceCreateImportBody{}
-	err = body.UnmarshalBinary([]byte(fmt.Sprintf(`{
-			"importOptions": {
-				"fileType": "%s"
-			},
-			"source": {
-				"local": {
-					"uploadId": "%s",
-					"targetDatabase": "%s",
-					"targetTable": "%s"
-				},
-				"type": "LOCAL"
-			}
-			}`, fileType, uploadID, targetDatabase, targetTable)))
-	if err != nil {
-		return errors.Trace(err)
-	}
-	body.ImportOptions.CsvFormat = format
+	source := imp.NewImportSource(imp.IMPORTSOURCETYPEENUM_LOCAL)
+	source.Local = imp.NewLocalSource(uploadID, targetDatabase, targetTable)
+	options := imp.NewImportOptions(imp.ImportFileTypeEnum(fileType))
+	options.CsvFormat = format
+	body := imp.NewImportServiceCreateImportBody(*options, *source)
 
-	params := importOp.NewImportServiceCreateImportParams().WithClusterID(clusterID).
-		WithBody(body).WithContext(ctx)
 	if o.h.IOStreams.CanPrompt {
-		err := spinnerWaitStartOp(ctx, o.h, d, params)
+		err := spinnerWaitStartOp(ctx, o.h, d, clusterID, body)
 		if err != nil {
 			return err
 		}
 	} else {
-		err := waitStartOp(o.h, d, params)
+		err := waitStartOp(ctx, o.h, d, clusterID, body)
 		if err != nil {
 			return err
 		}

@@ -25,7 +25,6 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"

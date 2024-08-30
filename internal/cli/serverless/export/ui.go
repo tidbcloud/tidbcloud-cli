@@ -15,17 +15,15 @@
 package export
 
 import (
-	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 
-	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/juju/errors"
 )
 
-var InputDescription = map[string]string{
+var inputDescription = map[string]string{
 	flag.S3URI:                "Input your S3 URI in s3://<bucket>/<path> format",
 	flag.S3AccessKeyID:        "Input your S3 access key id",
 	flag.S3SecretAccessKey:    "Input your S3 secret access key",
@@ -41,32 +39,6 @@ var InputDescription = map[string]string{
 	flag.CSVDelimiter:         "Input the csv delimiter: delimiter of string type variables in CSV files, skip to use default value (\"). If you want to set empty string, please use non-interactive mode",
 	flag.CSVNullValue:         "Input the csv null value: representation of null values in CSV files, skip to use default value (\\N). If you want to set empty string, please use non-interactive mode",
 	flag.CSVSkipHeader:        "Input the csv skip header: export CSV files of the tables without header. Type `true` to skip header, others will not skip header",
-}
-
-func InitialInputModel(inputs []string) (ui.TextInputModel, error) {
-	m := ui.TextInputModel{
-		Inputs: make([]textinput.Model, len(inputs)),
-	}
-	for i, input := range inputs {
-		t := textinput.New()
-		if i == 0 {
-			t.Focus()
-			t.PromptStyle = config.FocusedStyle
-			t.TextStyle = config.FocusedStyle
-		}
-		t.Placeholder = InputDescription[input]
-		m.Inputs[i] = t
-	}
-	p := tea.NewProgram(m)
-	inputModel, err := p.Run()
-	finalModel := inputModel.(ui.TextInputModel)
-	if err != nil {
-		return finalModel, errors.Trace(err)
-	}
-	if finalModel.Interrupted {
-		return finalModel, util.InterruptError
-	}
-	return finalModel, nil
 }
 
 func GetSelectedParquetCompression() (string, error) {

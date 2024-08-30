@@ -15,7 +15,6 @@
 package start
 
 import (
-	stdErr "errors"
 	"fmt"
 	"slices"
 
@@ -25,11 +24,9 @@ import (
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
-	"github.com/AlecAivazis/survey/v2"
-	"github.com/AlecAivazis/survey/v2/terminal"
+	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
+
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -42,18 +39,18 @@ type AzBlobOpts struct {
 
 func (o AzBlobOpts) SupportedFileTypes() []string {
 	return []string{
-		string(importModel.ImportFileTypeEnumCSV),
-		string(importModel.ImportFileTypeEnumPARQUET),
-		string(importModel.ImportFileTypeEnumSQL),
-		string(importModel.ImportFileTypeEnumAURORASNAPSHOT),
+		string(imp.IMPORTFILETYPEENUM_CSV),
+		string(imp.IMPORTFILETYPEENUM_PARQUET),
+		string(imp.IMPORTFILETYPEENUM_SQL),
+		string(imp.IMPORTFILETYPEENUM_AURORA_SNAPSHOT),
 	}
 }
 
 func (o AzBlobOpts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
-	var clusterID, fileType, sasUrl string
-	var authType importModel.ImportAzureBlobAuthTypeEnum
-	var format *importModel.CSVFormat
+	var clusterID, fileType, uri, sasToken string
+	var authType imp.ImportAzureBlobAuthTypeEnum
+	var format *imp.CSVFormat
 	d, err := o.h.Client()
 	if err != nil {
 		return err
@@ -77,7 +74,7 @@ func (o AzBlobOpts) Run(cmd *cobra.Command) error {
 		}
 		clusterID = cluster.ID
 
-		authTypes := []interface{}{importModel.ImportAzureBlobAuthTypeEnumSASTOKEN}
+		authTypes := []interface{}{imp.IMPORTAZUREBLOBAUTHTYPEENUM_SAS_TOKEN}
 		model, err := ui.InitialSelectModel(authTypes, "Choose the auth type:")
 		if err != nil {
 			return err
@@ -90,19 +87,21 @@ func (o AzBlobOpts) Run(cmd *cobra.Command) error {
 		if m, _ := authTypeModel.(ui.SelectModel); m.Interrupted {
 			return util.InterruptError
 		}
-		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(importModel.ImportAzureBlobAuthTypeEnum)
+		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(imp.ImportAzureBlobAuthTypeEnum)
 
-		if authType == importModel.ImportAzureBlobAuthTypeEnumSASTOKEN {
-			input := &survey.Input{
-				Message: "Please input the blob sas url:",
-			}
-			err = survey.AskOne(input, &sasUrl, survey.WithValidator(survey.Required))
+		if authType == imp.IMPORTAZUREBLOBAUTHTYPEENUM_SAS_TOKEN {
+			inputs := []string{flag.AzureBlobURI, flag.AzureBlobSASToken}
+			textInput, err := ui.InitialInputModel(inputs, inputDescription)
 			if err != nil {
-				if stdErr.Is(err, terminal.InterruptErr) {
-					return util.InterruptError
-				} else {
-					return err
-				}
+				return err
+			}
+			uri = textInput.Inputs[0].Value()
+			if uri == "" {
+				return errors.New("empty Azure Blob URI")
+			}
+			sasToken = textInput.Inputs[1].Value()
+			if sasToken == "" {
+				return errors.New("empty Azure Blob SAS token")
 			}
 		} else {
 			return fmt.Errorf("invalid auth type :%s", authType)
@@ -126,7 +125,7 @@ func (o AzBlobOpts) Run(cmd *cobra.Command) error {
 		}
 		fileType = fileTypeModel.(ui.SelectModel).Choices[fileTypeModel.(ui.SelectModel).Selected].(string)
 
-		if fileType == string(importModel.ImportFileTypeEnumCSV) {
+		if fileType == string(imp.IMPORTFILETYPEENUM_CSV) {
 			format, err = getCSVFormat()
 			if err != nil {
 				return err
@@ -146,14 +145,22 @@ func (o AzBlobOpts) Run(cmd *cobra.Command) error {
 			return fmt.Errorf("file type \"%s\" is not supported, please use one of %q", fileType, o.SupportedFileTypes())
 		}
 
-		sasUrl, err = cmd.Flags().GetString(flag.AzureBlobSASUrl)
+		uri, err = cmd.Flags().GetString(flag.AzureBlobURI)
 		if err != nil {
 			return errors.Trace(err)
 		}
-		if sasUrl == "" {
-			return fmt.Errorf("azure blob sas url is required")
+		if uri == "" {
+			return fmt.Errorf("empty Azure Blob URI")
 		}
-		authType = importModel.ImportAzureBlobAuthTypeEnumSASTOKEN
+
+		sasToken, err = cmd.Flags().GetString(flag.AzureBlobSASToken)
+		if err != nil {
+			return errors.Trace(err)
+		}
+		if uri == "" {
+			return fmt.Errorf("empty Azure Blob SAS token")
+		}
+		authType = imp.IMPORTAZUREBLOBAUTHTYPEENUM_SAS_TOKEN
 
 		// optional flags
 		format, err = getCSVFlagValue(cmd)
@@ -164,34 +171,21 @@ func (o AzBlobOpts) Run(cmd *cobra.Command) error {
 
 	cmd.Annotations[telemetry.ClusterID] = clusterID
 
-	body := &importModel.ImportServiceCreateImportBody{}
-	err = body.UnmarshalBinary([]byte(fmt.Sprintf(`{
-			"importOptions": {
-				"fileType": "%s"
-			},
-			"source": {
-				"type": "AzBlob"
-			}
-			}`, fileType)))
-	if err != nil {
-		return errors.Trace(err)
-	}
-	body.ImportOptions.CsvFormat = format
+	source := imp.NewImportSource(imp.IMPORTSOURCETYPEENUM_AZURE_BLOB)
+	source.AzureBlob = imp.NewAzureBlobSource(authType, uri)
+	source.AzureBlob.AuthType = authType
+	source.AzureBlob.SasToken = &sasToken
+	options := imp.NewImportOptions(imp.ImportFileTypeEnum(fileType))
+	options.CsvFormat = format
+	body := imp.NewImportServiceCreateImportBody(*options, *source)
 
-	body.Source.AzureBlob = &importModel.AzureBlobSource{
-		AuthType: &authType,
-		SasURL:   sasUrl,
-	}
-
-	params := importOp.NewImportServiceCreateImportParams().WithClusterID(clusterID).
-		WithBody(body).WithContext(ctx)
 	if o.h.IOStreams.CanPrompt {
-		err := spinnerWaitStartOp(ctx, o.h, d, params)
+		err := spinnerWaitStartOp(ctx, o.h, d, clusterID, body)
 		if err != nil {
 			return err
 		}
 	} else {
-		err := waitStartOp(o.h, d, params)
+		err := waitStartOp(ctx, o.h, d, clusterID, body)
 		if err != nil {
 			return err
 		}

@@ -27,11 +27,12 @@ import (
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
+
+	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -44,18 +45,18 @@ type GCSOpts struct {
 
 func (o GCSOpts) SupportedFileTypes() []string {
 	return []string{
-		string(importModel.ImportFileTypeEnumCSV),
-		string(importModel.ImportFileTypeEnumPARQUET),
-		string(importModel.ImportFileTypeEnumSQL),
-		string(importModel.ImportFileTypeEnumAURORASNAPSHOT),
+		string(imp.IMPORTFILETYPEENUM_CSV),
+		string(imp.IMPORTFILETYPEENUM_PARQUET),
+		string(imp.IMPORTFILETYPEENUM_SQL),
+		string(imp.IMPORTFILETYPEENUM_AURORA_SNAPSHOT),
 	}
 }
 
 func (o GCSOpts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
 	var clusterID, fileType, gcsUri, credentialsPath string
-	var authType importModel.ImportGcsAuthTypeEnum
-	var format *importModel.CSVFormat
+	var authType imp.ImportGcsAuthTypeEnum
+	var format *imp.CSVFormat
 	d, err := o.h.Client()
 	if err != nil {
 		return err
@@ -91,7 +92,7 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 			}
 		}
 
-		authTypes := []interface{}{importModel.ImportGcsAuthTypeEnumSERVICEACCOUNTKEY}
+		authTypes := []interface{}{imp.IMPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY}
 		model, err := ui.InitialSelectModel(authTypes, "Choose the auth type:")
 		if err != nil {
 			return err
@@ -104,9 +105,9 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		if m, _ := authTypeModel.(ui.SelectModel); m.Interrupted {
 			return util.InterruptError
 		}
-		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(importModel.ImportGcsAuthTypeEnum)
+		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(imp.ImportGcsAuthTypeEnum)
 
-		if authType == importModel.ImportGcsAuthTypeEnumSERVICEACCOUNTKEY {
+		if authType == imp.IMPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY {
 			input := &survey.Input{
 				Message: "Please input the gcs credentialsPath:",
 			}
@@ -140,7 +141,7 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		}
 		fileType = fileTypeModel.(ui.SelectModel).Choices[fileTypeModel.(ui.SelectModel).Selected].(string)
 
-		if fileType == string(importModel.ImportFileTypeEnumCSV) {
+		if fileType == string(imp.IMPORTFILETYPEENUM_CSV) {
 			format, err = getCSVFormat()
 			if err != nil {
 				return err
@@ -159,7 +160,7 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		if !slices.Contains(o.SupportedFileTypes(), fileType) {
 			return fmt.Errorf("file type \"%s\" is not supported, please use one of %q", fileType, o.SupportedFileTypes())
 		}
-		gcsUri, err = cmd.Flags().GetString(flag.GCSUri)
+		gcsUri, err = cmd.Flags().GetString(flag.GCSURI)
 		if err != nil {
 			return errors.Trace(err)
 		}
@@ -172,7 +173,7 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		if credentialsPath == "" {
 			return fmt.Errorf("gcs credentials path is required")
 		}
-		authType = importModel.ImportGcsAuthTypeEnumSERVICEACCOUNTKEY
+		authType = imp.IMPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY
 
 		// optional flags
 		format, err = getCSVFlagValue(cmd)
@@ -188,35 +189,20 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 
 	cmd.Annotations[telemetry.ClusterID] = clusterID
 
-	body := &importModel.ImportServiceCreateImportBody{}
-	err = body.UnmarshalBinary([]byte(fmt.Sprintf(`{
-			"importOptions": {
-				"fileType": "%s"
-			},
-			"source": {
-				"gcs": {
-					"uri": "%s"
-				},
-				"type": "GCS"
-			}
-			}`, fileType, gcsUri)))
-	if err != nil {
-		return errors.Trace(err)
-	}
-	body.ImportOptions.CsvFormat = format
+	source := imp.NewImportSource(imp.IMPORTSOURCETYPEENUM_GCS)
+	source.Gcs = imp.NewGCSSource(gcsUri, authType)
+	source.Gcs.ServiceAccountKey = aws.String(base64.StdEncoding.EncodeToString(credentials))
+	options := imp.NewImportOptions(imp.ImportFileTypeEnum(fileType))
+	options.CsvFormat = format
+	body := imp.NewImportServiceCreateImportBody(*options, *source)
 
-	body.Source.Gcs.AuthType = &authType
-	body.Source.Gcs.ServiceAccountKey = base64.StdEncoding.EncodeToString(credentials)
-
-	params := importOp.NewImportServiceCreateImportParams().WithClusterID(clusterID).
-		WithBody(body).WithContext(ctx)
 	if o.h.IOStreams.CanPrompt {
-		err := spinnerWaitStartOp(ctx, o.h, d, params)
+		err := spinnerWaitStartOp(ctx, o.h, d, clusterID, body)
 		if err != nil {
 			return err
 		}
 	} else {
-		err := waitStartOp(o.h, d, params)
+		err := waitStartOp(ctx, o.h, d, clusterID, body)
 		if err != nil {
 			return err
 		}

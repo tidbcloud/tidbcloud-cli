@@ -26,8 +26,8 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
+
+	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -92,7 +92,7 @@ func (suite *DescribeImportSuite) SetupTest() {
 func (suite *DescribeImportSuite) TestDescribeImportArgs() {
 	assert := require.New(suite.T())
 	ctx := context.Background()
-	body := &importModel.V1beta1Import{}
+	body := &imp.V1beta1Import{}
 	err := json.Unmarshal([]byte(getImportResultStr), body)
 	assert.Nil(err)
 	result := &importOp.ImportServiceGetImportOK{

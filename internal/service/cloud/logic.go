@@ -26,11 +26,10 @@ import (
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
+	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 	brModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/models"
-	importApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/go-openapi/strfmt"
@@ -105,7 +104,7 @@ func (e Export) String() string {
 
 type Import struct {
 	ID     string
-	Status *importModel.ImportStateEnum
+	Status *imp.ImportStateEnum
 }
 
 func (i Import) String() string {
@@ -479,7 +478,7 @@ func GetSelectedRestoreMode() (string, error) {
 
 // GetSelectedImport get the selected import task. statusFilter is used to filter the available options, only imports has status in statusFilter will be available.
 // statusFilter with no filter will mark all the import tasks as available options just like statusFilter with all status.
-func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client TiDBCloudClient, statusFilter []importModel.ImportStateEnum) (*Import, error) {
+func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client TiDBCloudClient, statusFilter []imp.ImportStateEnum) (*Import, error) {
 	_, importItems, err := RetrieveImports(ctx, cID, pageSize, client)
 	if err != nil {
 		return nil, err
@@ -487,13 +486,13 @@ func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client T
 
 	var items = make([]interface{}, 0, len(importItems))
 	for _, item := range importItems {
-		if len(statusFilter) != 0 && !slices.Contains(statusFilter, item.State) {
+		if len(statusFilter) != 0 && !slices.Contains(statusFilter, *item.State) {
 			continue
 		}
 
 		items = append(items, &Import{
-			ID:     item.ID,
-			Status: &item.State,
+			ID:     *item.Id,
+			Status: item.State,
 		})
 	}
 	if len(items) == 0 {
@@ -509,14 +508,14 @@ func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client T
 	model.EnableFilter()
 
 	p := tea.NewProgram(model)
-	importModel, err := p.Run()
+	imp, err := p.Run()
 	if err != nil {
 		return nil, err
 	}
-	if m, _ := importModel.(ui.SelectModel); m.Interrupted {
+	if m, _ := imp.(ui.SelectModel); m.Interrupted {
 		return nil, util.InterruptError
 	}
-	res := importModel.(ui.SelectModel).GetSelectedItem()
+	res := imp.(ui.SelectModel).GetSelectedItem()
 	if res == nil {
 		return nil, errors.New("no import task selected")
 	}
@@ -722,28 +721,26 @@ func RetrieveServerlessBackups(ctx context.Context, cID string, pageSize int32, 
 	return int64(len(items)), items, nil
 }
 
-func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*importModel.Import, error) {
+func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []imp.Import, error) {
 	orderBy := "create_time desc"
-	params := importApi.NewImportServiceListImportsParams().WithClusterID(cID).WithContext(context).WithOrderBy(&orderBy)
-
 	ps := int32(pageSize)
-	var items []*importModel.Import
-	imports, err := d.ListImports(params.WithPageSize(&ps))
+	var items []imp.Import
+	imports, err := d.ListImports(context, cID, &ps, nil, &orderBy)
 	if err != nil {
 		return 0, nil, errors.Trace(err)
 	}
-	items = append(items, imports.Payload.Imports...)
-	var pageToken string
+	items = append(items, imports.Imports...)
+	var pageToken *string
 	for {
-		pageToken = imports.Payload.NextPageToken
-		if pageToken == "" {
+		pageToken = imports.NextPageToken
+		if pageToken == nil || *pageToken == "" {
 			break
 		}
-		imports, err = d.ListImports(params.WithPageToken(&pageToken).WithPageSize(&ps))
+		imports, err = d.ListImports(context, cID, &ps, pageToken, &orderBy)
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
-		items = append(items, imports.Payload.Imports...)
+		items = append(items, imports.Imports...)
 	}
 	return int64(len(items)), items, nil
 }

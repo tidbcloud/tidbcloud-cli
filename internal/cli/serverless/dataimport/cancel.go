@@ -23,8 +23,8 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/util"
-	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
+
+	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -109,9 +109,9 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cluster.ID
 
 				// Only task status is pending or importing can be canceled.
-				selectedImport, err := cloud.GetSelectedImport(ctx, clusterID, h.QueryPageSize, d, []importModel.ImportStateEnum{
-					importModel.ImportStateEnumPREPARING,
-					importModel.ImportStateEnumIMPORTING,
+				selectedImport, err := cloud.GetSelectedImport(ctx, clusterID, h.QueryPageSize, d, []imp.ImportStateEnum{
+					imp.IMPORTSTATEENUM_PREPARING,
+					imp.IMPORTSTATEENUM_IMPORTING,
 				})
 				if err != nil {
 					return err
@@ -139,7 +139,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				var userInput string
 				err := survey.AskOne(prompt, &userInput)
 				if err != nil {
-					if err == terminal.InterruptErr {
+					if errors.Is(err, terminal.InterruptErr) {
 						return util.InterruptError
 					} else {
 						return err
@@ -151,8 +151,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := importOp.NewImportServiceCancelImportParams().WithClusterID(clusterID).WithID(importID).WithContext(cmd.Context())
-			_, err = d.CancelImport(params)
+			err = d.CancelImport(ctx, clusterID, importID)
 			if err != nil {
 				return errors.Trace(err)
 			}

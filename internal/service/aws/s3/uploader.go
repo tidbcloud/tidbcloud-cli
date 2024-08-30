@@ -27,10 +27,11 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
-	serverlessImportOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
-	serverlessImportModels "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
+	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/dustin/go-humanize"
 	"github.com/go-resty/resty/v2"
 	"github.com/pingcap/log"
 	"go.uber.org/zap"
@@ -98,7 +99,7 @@ type PutObjectInput struct {
 	DatabaseName  *string
 	TableName     *string
 	ContentLength *int64
-	ClusterID     *string
+	ClusterID     string
 	Body          ReaderAtSeeker
 
 	OnProgress func(ratio float64)
@@ -221,7 +222,10 @@ func (u *uploader) upload() (string, error) {
 	defer u.cfg.partPool.Close()
 
 	if u.cfg.PartSize < MinUploadPartSize {
-		return "", fmt.Errorf("part size must be at least %d bytes", MinUploadPartSize)
+		return "", fmt.Errorf("part size must be at least %s bytes", humanize.IBytes(uint64(MinUploadPartSize)))
+	}
+	if u.cfg.PartSize > MaxUploadPartSize {
+		return "", fmt.Errorf("part size must be at most %s bytes", humanize.IBytes(uint64(MaxUploadPartSize)))
 	}
 
 	// Do one read to determine if we have more than one part
@@ -324,24 +328,23 @@ type singerUploader struct {
 // parts, or at least 5MB of data.
 func (u *singerUploader) upload(r io.ReadSeeker, cleanup func()) (string, error) {
 	defer cleanup()
-	res, err := u.cfg.client.StartUpload(serverlessImportOp.NewImportServiceStartUploadParams().
-		WithClusterID(*u.in.ClusterID).WithPartNumber(1).WithFileName(*u.in.FileName).
-		WithTargetDatabase(*u.in.DatabaseName).WithTargetTable(*u.in.TableName).WithContext(u.ctx))
+	res, err := u.cfg.client.StartUpload(u.ctx, u.in.ClusterID, u.in.FileName,
+		u.in.DatabaseName, u.in.TableName, aws.Int32(1))
 	if err != nil {
 		return "", err
 	}
-	u.uploadID = res.Payload.UploadID
+	u.uploadID = *res.UploadId
 
 	resp, err := u.cfg.httpClient.R().
 		SetContext(u.ctx).
 		SetContentLength(true).
-		SetBody(r).Put(res.Payload.UploadURL[0])
+		SetBody(r).Put(res.UploadUrl[0])
 
 	if err != nil {
 		u.fail()
 		return "", &uploadError{
 			err:      err,
-			uploadID: res.Payload.UploadID,
+			uploadID: *res.UploadId,
 		}
 	}
 
@@ -349,7 +352,7 @@ func (u *singerUploader) upload(r io.ReadSeeker, cleanup func()) (string, error)
 		u.fail()
 		return "", &uploadError{
 			err:      fmt.Errorf("upload failed, code: %s, reason: %s", resp.Status(), string(resp.Body())),
-			uploadID: res.Payload.UploadID,
+			uploadID: *res.UploadId,
 		}
 	}
 
@@ -358,12 +361,11 @@ func (u *singerUploader) upload(r io.ReadSeeker, cleanup func()) (string, error)
 		return "", err
 	}
 
-	return res.Payload.UploadID, nil
+	return *res.UploadId, nil
 }
 
 func (u *singerUploader) complete() error {
-	_, err := u.cfg.client.CompleteUpload(serverlessImportOp.NewImportServiceCompleteUploadParams().
-		WithClusterID(*u.in.ClusterID).WithUploadID(u.uploadID).WithContext(u.ctx))
+	err := u.cfg.client.CompleteUpload(u.ctx, u.in.ClusterID, &u.uploadID, nil)
 	if err != nil {
 		u.fail()
 		return err
@@ -373,8 +375,7 @@ func (u *singerUploader) complete() error {
 
 func (u *singerUploader) fail() {
 	ctx := context.WithoutCancel(u.ctx)
-	_, err := u.cfg.client.CancelUpload(serverlessImportOp.NewImportServiceCancelUploadParams().
-		WithClusterID(*u.in.ClusterID).WithUploadID(u.uploadID).WithContext(ctx))
+	err := u.cfg.client.CancelUpload(ctx, u.in.ClusterID, &u.uploadID)
 	if err != nil {
 		log.Warn("failed to abort singlePart upload", zap.Error(err))
 		return
@@ -402,27 +403,25 @@ type chunk struct {
 
 // completedParts is a wrapper to make parts sortable by their part number,
 // since S3 required this list to be sent in sorted order.
-type completedParts []*serverlessImportModels.CompletePart
+type completedParts []imp.CompletePart
 
 func (a completedParts) Len() int      { return len(a) }
 func (a completedParts) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a completedParts) Less(i, j int) bool {
-	return *a[i].PartNumber < *a[j].PartNumber
+	return a[i].PartNumber < a[j].PartNumber
 }
 
 // upload will perform a multipart upload using the firstBuf buffer containing
 // the first chunk of data.
 func (u *multiUploader) upload(firstBuf io.ReadSeeker, cleanup func()) (string, error) {
 	partNumber := math.Ceil(float64(u.totalSize) / float64(u.cfg.PartSize))
-	url, err := u.cfg.client.StartUpload(serverlessImportOp.NewImportServiceStartUploadParams().
-		WithClusterID(*u.in.ClusterID).WithPartNumber(int32(partNumber)).WithFileName(*u.in.FileName).
-		WithTargetDatabase(*u.in.DatabaseName).WithTargetTable(*u.in.TableName).WithContext(u.ctx))
+	url, err := u.cfg.client.StartUpload(u.ctx, u.in.ClusterID, u.in.FileName, u.in.DatabaseName, u.in.TableName, aws.Int32(int32(partNumber)))
 	if err != nil {
 		cleanup()
 		return "", err
 	}
-	u.uploadID = url.Payload.UploadID
-	u.urls = url.Payload.UploadURL
+	u.uploadID = *url.UploadId
+	u.urls = url.UploadUrl
 
 	// Create the workers
 	ch := make(chan chunk, u.cfg.Concurrency)
@@ -540,13 +539,13 @@ func (u *multiUploader) send(c chunk) error {
 		return fmt.Errorf("upload failed, code: %s, reason: %s", resp.Status(), string(resp.Body()))
 	}
 
-	var completed serverlessImportModels.CompletePart
-	completed.PartNumber = &c.num
+	var completed imp.CompletePart
+	completed.PartNumber = c.num
 	etag := resp.Header().Get("ETag")
-	completed.Etag = &etag
+	completed.Etag = etag
 
 	u.m.Lock()
-	u.parts = append(u.parts, &completed)
+	u.parts = append(u.parts, completed)
 	u.in.OnProgress(float64(len(u.parts)) / float64(len(u.urls)+processCompletePartWeights))
 	u.m.Unlock()
 
@@ -576,8 +575,7 @@ func (u *multiUploader) fail() {
 	}
 
 	ctx := context.WithoutCancel(u.ctx)
-	_, err := u.cfg.client.CancelUpload(serverlessImportOp.NewImportServiceCancelUploadParams().
-		WithClusterID(*u.in.ClusterID).WithUploadID(u.uploadID).WithContext(ctx))
+	err := u.cfg.client.CancelUpload(ctx, u.in.ClusterID, &u.uploadID)
 	if err != nil {
 		log.Warn("failed to abort multipart upload", zap.Error(err))
 		return
@@ -592,8 +590,9 @@ func (u *multiUploader) complete() {
 	}
 
 	sort.Sort(u.parts)
-	_, err := u.cfg.client.CompleteUpload(serverlessImportOp.NewImportServiceCompleteUploadParams().
-		WithClusterID(*u.in.ClusterID).WithUploadID(u.uploadID).WithParts(u.parts).WithContext(u.ctx))
+	cp := []imp.CompletePart(u.parts)
+	err := u.cfg.client.CompleteUpload(u.ctx, u.in.ClusterID, &u.uploadID, &cp)
+
 	if err != nil {
 		u.setErr(err)
 		u.fail()

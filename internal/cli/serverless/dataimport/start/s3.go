@@ -26,8 +26,7 @@ import (
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
+	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -49,18 +48,18 @@ type S3Opts struct {
 
 func (o S3Opts) SupportedFileTypes() []string {
 	return []string{
-		string(importModel.ImportFileTypeEnumCSV),
-		string(importModel.ImportFileTypeEnumPARQUET),
-		string(importModel.ImportFileTypeEnumSQL),
-		string(importModel.ImportFileTypeEnumAURORASNAPSHOT),
+		string(imp.IMPORTFILETYPEENUM_CSV),
+		string(imp.IMPORTFILETYPEENUM_PARQUET),
+		string(imp.IMPORTFILETYPEENUM_SQL),
+		string(imp.IMPORTFILETYPEENUM_AURORA_SNAPSHOT),
 	}
 }
 
 func (o S3Opts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
 	var clusterID, fileType, s3Uri, s3Arn, accessKeyID, secretAccessKey string
-	var authType importModel.ImportS3AuthTypeEnum
-	var format *importModel.CSVFormat
+	var authType imp.ImportS3AuthTypeEnum
+	var format *imp.CSVFormat
 	d, err := o.h.Client()
 	if err != nil {
 		return err
@@ -96,7 +95,7 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 			}
 		}
 
-		authTypes := []interface{}{importModel.ImportS3AuthTypeEnumROLEARN, importModel.ImportS3AuthTypeEnumACCESSKEY}
+		authTypes := []interface{}{imp.IMPORTS3AUTHTYPEENUM_ROLE_ARN, imp.IMPORTS3AUTHTYPEENUM_ACCESS_KEY}
 		model, err := ui.InitialSelectModel(authTypes, "Choose the auth type:")
 		if err != nil {
 			return err
@@ -109,9 +108,9 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		if m, _ := authTypeModel.(ui.SelectModel); m.Interrupted {
 			return util.InterruptError
 		}
-		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(importModel.ImportS3AuthTypeEnum)
+		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(imp.ImportS3AuthTypeEnum)
 
-		if authType == importModel.ImportS3AuthTypeEnumROLEARN {
+		if authType == imp.IMPORTS3AUTHTYPEENUM_ROLE_ARN {
 			input := &survey.Input{
 				Message: "Please input the arn:",
 			}
@@ -123,7 +122,7 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 					return err
 				}
 			}
-		} else if authType == importModel.ImportS3AuthTypeEnumACCESSKEY {
+		} else if authType == imp.IMPORTS3AUTHTYPEENUM_ACCESS_KEY {
 			// variables for input
 			p = tea.NewProgram(o.initialAccessKeyInputModel())
 			inputModel, err := p.Run()
@@ -163,7 +162,7 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		}
 		fileType = fileTypeModel.(ui.SelectModel).Choices[fileTypeModel.(ui.SelectModel).Selected].(string)
 
-		if fileType == string(importModel.ImportFileTypeEnumCSV) {
+		if fileType == string(imp.IMPORTFILETYPEENUM_CSV) {
 			format, err = getCSVFormat()
 			if err != nil {
 				return err
@@ -205,9 +204,9 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 			return errors.Trace(err)
 		}
 		if s3Arn != "" {
-			authType = importModel.ImportS3AuthTypeEnumROLEARN
+			authType = imp.IMPORTS3AUTHTYPEENUM_ROLE_ARN
 		} else if accessKeyID != "" && secretAccessKey != "" {
-			authType = importModel.ImportS3AuthTypeEnumACCESSKEY
+			authType = imp.IMPORTS3AUTHTYPEENUM_ACCESS_KEY
 		} else {
 			return fmt.Errorf("either role arn or access key id and secret access key must be provided")
 		}
@@ -215,43 +214,29 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 
 	cmd.Annotations[telemetry.ClusterID] = clusterID
 
-	body := &importModel.ImportServiceCreateImportBody{}
-	err = body.UnmarshalBinary([]byte(fmt.Sprintf(`{
-			"importOptions": {
-				"fileType": "%s"
-			},
-			"source": {
-				"s3": {
-					"uri": "%s"
-				},
-				"type": "S3"
-			}
-			}`, fileType, s3Uri)))
-	if err != nil {
-		return errors.Trace(err)
-	}
-	body.ImportOptions.CsvFormat = format
-
-	if authType == importModel.ImportS3AuthTypeEnumROLEARN {
-		body.Source.S3.AuthType = &authType
-		body.Source.S3.RoleArn = s3Arn
+	source := imp.NewImportSource(imp.IMPORTSOURCETYPEENUM_S3)
+	source.S3 = imp.NewS3Source(s3Uri, authType)
+	if authType == imp.IMPORTS3AUTHTYPEENUM_ROLE_ARN {
+		source.S3.AuthType = authType
+		source.S3.RoleArn = &s3Arn
 	} else {
-		body.Source.S3.AuthType = &authType
-		body.Source.S3.AccessKey = &importModel.S3SourceAccessKey{
-			ID:     &accessKeyID,
-			Secret: &secretAccessKey,
+		source.S3.AuthType = authType
+		source.S3.AccessKey = &imp.S3SourceAccessKey{
+			Id:     accessKeyID,
+			Secret: secretAccessKey,
 		}
 	}
+	options := imp.NewImportOptions(imp.ImportFileTypeEnum(fileType))
+	options.CsvFormat = format
+	body := imp.NewImportServiceCreateImportBody(*options, *source)
 
-	params := importOp.NewImportServiceCreateImportParams().WithClusterID(clusterID).
-		WithBody(body).WithContext(ctx)
 	if o.h.IOStreams.CanPrompt {
-		err := spinnerWaitStartOp(ctx, o.h, d, params)
+		err := spinnerWaitStartOp(ctx, o.h, d, clusterID, body)
 		if err != nil {
 			return err
 		}
 	} else {
-		err := waitStartOp(o.h, d, params)
+		err := waitStartOp(ctx, o.h, d, clusterID, body)
 		if err != nil {
 			return err
 		}

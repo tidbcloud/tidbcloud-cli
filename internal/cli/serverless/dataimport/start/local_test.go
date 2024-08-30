@@ -27,8 +27,8 @@ import (
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/aws/s3"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
+
+	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
 	mockTool "github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -84,7 +84,7 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 
 	uploadID := "upl-sadads"
 	importID := "imp-asdasd"
-	body := &importModel.V1beta1Import{}
+	body := &imp.V1beta1Import{}
 	err := json.Unmarshal([]byte(fmt.Sprintf(`{
   "clusterId": "12345",
   "completePercent": 100,
@@ -266,7 +266,7 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
   }`, fileType, targetDatabase, targetTable, uploadID)))
 	assert.Nil(err)
 
-	body := &importModel.V1beta1Import{}
+	body := &imp.V1beta1Import{}
 	err = json.Unmarshal([]byte(fmt.Sprintf(`{
   "clusterId": "12345",
   "completePercent": 100,

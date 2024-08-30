@@ -26,8 +26,8 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
+
+	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/stretchr/testify/require"
@@ -178,7 +178,7 @@ func (suite *ListImportSuite) TestListImportArgs() {
 	var pageSize = int32(suite.h.QueryPageSize)
 	ctx := context.Background()
 
-	body := &importModel.V1beta1ListImportsResp{}
+	body := &imp.V1beta1ListImportsResp{}
 	err := json.Unmarshal([]byte(listResultStr), body)
 	assert.Nil(err)
 	result := &importOp.ImportServiceListImportsOK{
@@ -240,7 +240,7 @@ func (suite *ListImportSuite) TestListImportWithMultiPages() {
 	ctx := context.Background()
 	clusterID := "12345"
 
-	body := &importModel.V1beta1ListImportsResp{}
+	body := &imp.V1beta1ListImportsResp{}
 	err := json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"total": 1`, `"total": 2`)), body)
 	assert.Nil(err)
 	result := &importOp.ImportServiceListImportsOK{
@@ -256,7 +256,7 @@ func (suite *ListImportSuite) TestListImportWithMultiPages() {
 		WithClusterID(clusterID).WithPageSize(&pageSize).WithOrderBy(&orderBy).WithContext(ctx)).
 		Return(result, nil)
 
-	body2 := &importModel.V1beta1ListImportsResp{}
+	body2 := &imp.V1beta1ListImportsResp{}
 	err = json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"totalSize": 1`, `"totalSize": 2`)), body2)
 	assert.Nil(err)
 	result2 := &importOp.ImportServiceListImportsOK{
