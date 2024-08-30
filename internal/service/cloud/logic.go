@@ -653,7 +653,7 @@ func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBClo
 	// loop to get all branches
 	for {
 		pageToken = branches.NextPageToken
-		if pageToken == nil || *pageToken == "" {
+		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
 		branches, err = d.ListBranches(ctx, cID, &pageSizeInt32, pageToken)
@@ -679,7 +679,7 @@ func RetrieveExports(ctx context.Context, cID string, pageSize int64, d TiDBClou
 	// loop to get all branches
 	for {
 		pageToken = exports.NextPageToken
-		if pageToken == nil || *pageToken == "" {
+		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
 		exports, err = d.ListExports(ctx, cID, &pageSizeInt32, pageToken, &orderBy)
