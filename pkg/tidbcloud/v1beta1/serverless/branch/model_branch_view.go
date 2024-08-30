@@ -21,7 +21,7 @@ type BranchView string
 // List of BranchView
 const (
 	BRANCHVIEW_BASIC BranchView = "BASIC"
-	BRANCHVIEW_FULL BranchView = "FULL"
+	BRANCHVIEW_FULL  BranchView = "FULL"
 )
 
 // All allowed values of BranchView enum
@@ -108,4 +108,3 @@ func (v *NullableBranchView) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

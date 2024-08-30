@@ -22,7 +22,7 @@ type ListBranchesResponse struct {
 	Branches []Branch `json:"branches,omitempty"`
 	// A token identifying a page of results the server should return.
 	NextPageToken *string `json:"nextPageToken,omitempty"`
-	TotalSize *int64 `json:"totalSize,omitempty"`
+	TotalSize     *int64  `json:"totalSize,omitempty"`
 }
 
 // NewListBranchesResponse instantiates a new ListBranchesResponse object
@@ -139,7 +139,7 @@ func (o *ListBranchesResponse) SetTotalSize(v int64) {
 }
 
 func (o ListBranchesResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -195,5 +195,3 @@ func (v *NullableListBranchesResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

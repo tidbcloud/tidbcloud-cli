@@ -19,9 +19,9 @@ var _ MappedNullable = &BranchEndpointsPublic{}
 
 // BranchEndpointsPublic Message for Public Endpoint for this branch.
 type BranchEndpointsPublic struct {
-	Host *string `json:"host,omitempty"`
-	Port *int32 `json:"port,omitempty"`
-	Disabled *bool `json:"disabled,omitempty"`
+	Host     *string `json:"host,omitempty"`
+	Port     *int32  `json:"port,omitempty"`
+	Disabled *bool   `json:"disabled,omitempty"`
 }
 
 // NewBranchEndpointsPublic instantiates a new BranchEndpointsPublic object
@@ -138,7 +138,7 @@ func (o *BranchEndpointsPublic) SetDisabled(v bool) {
 }
 
 func (o BranchEndpointsPublic) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -194,5 +194,3 @@ func (v *NullableBranchEndpointsPublic) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

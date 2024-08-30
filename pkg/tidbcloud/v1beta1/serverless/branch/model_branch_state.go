@@ -20,9 +20,9 @@ type BranchState string
 
 // List of Branch.State
 const (
-	BRANCHSTATE_CREATING BranchState = "CREATING"
-	BRANCHSTATE_ACTIVE BranchState = "ACTIVE"
-	BRANCHSTATE_DELETED BranchState = "DELETED"
+	BRANCHSTATE_CREATING    BranchState = "CREATING"
+	BRANCHSTATE_ACTIVE      BranchState = "ACTIVE"
+	BRANCHSTATE_DELETED     BranchState = "DELETED"
 	BRANCHSTATE_MAINTENANCE BranchState = "MAINTENANCE"
 )
 
@@ -112,4 +112,3 @@ func (v *NullableBranchState) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

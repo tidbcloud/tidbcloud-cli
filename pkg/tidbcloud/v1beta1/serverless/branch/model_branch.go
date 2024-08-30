@@ -11,10 +11,10 @@ API version: v1beta1
 package branch
 
 import (
-	"encoding/json"
-	"time"
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // checks if the Branch type satisfies the MappedNullable interface at compile time
@@ -41,9 +41,9 @@ type Branch struct {
 	// Output only. User name prefix of this branch. For each TiDB Serverless branch, TiDB Cloud generates a unique prefix to distinguish it from other branches. Whenever you use or set a database user name, you must include the prefix in the user name.
 	UserPrefix NullableString `json:"userPrefix,omitempty"`
 	// Output only. Usage metrics of this branch. Only display in FULL view.
-	Usage *BranchUsage `json:"usage,omitempty"`
-	CreateTime *time.Time `json:"createTime,omitempty"`
-	UpdateTime *time.Time `json:"updateTime,omitempty"`
+	Usage      *BranchUsage `json:"usage,omitempty"`
+	CreateTime *time.Time   `json:"createTime,omitempty"`
+	UpdateTime *time.Time   `json:"updateTime,omitempty"`
 	// Optional. The annotations of this branch..
 	Annotations *map[string]string `json:"annotations,omitempty"`
 	// Output only. The parent display name of this branch.
@@ -352,6 +352,7 @@ func (o *Branch) HasUserPrefix() bool {
 func (o *Branch) SetUserPrefix(v string) {
 	o.UserPrefix.Set(&v)
 }
+
 // SetUserPrefixNil sets the value for UserPrefix to be an explicit nil
 func (o *Branch) SetUserPrefixNil() {
 	o.UserPrefix.Set(nil)
@@ -554,6 +555,7 @@ func (o *Branch) HasParentTimestamp() bool {
 func (o *Branch) SetParentTimestamp(v time.Time) {
 	o.ParentTimestamp.Set(&v)
 }
+
 // SetParentTimestampNil sets the value for ParentTimestamp to be an explicit nil
 func (o *Branch) SetParentTimestampNil() {
 	o.ParentTimestamp.Set(nil)
@@ -565,7 +567,7 @@ func (o *Branch) UnsetParentTimestamp() {
 }
 
 func (o Branch) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -633,10 +635,10 @@ func (o *Branch) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -692,5 +694,3 @@ func (v *NullableBranch) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -19,7 +19,7 @@ var _ MappedNullable = &Any{}
 
 // Any struct for Any
 type Any struct {
-	Type *string `json:"@type,omitempty"`
+	Type                 *string `json:"@type,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -75,7 +75,7 @@ func (o *Any) SetType(v string) {
 }
 
 func (o Any) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -151,5 +151,3 @@ func (v *NullableAny) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-
