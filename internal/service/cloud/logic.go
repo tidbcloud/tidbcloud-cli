@@ -659,7 +659,7 @@ func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBClo
 	// loop to get all branches
 	for {
 		pageToken = branches.NextPageToken
-		if pageToken != nil && *pageToken == "" {
+		if pageToken == nil || *pageToken == "" {
 			break
 		}
 		branches, err = d.ListBranches(ctx, cID, &pageSizeInt32, pageToken)

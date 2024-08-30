@@ -37,13 +37,13 @@ const listResultStr = `{
     {
       "branchId": "bran-wscjvwen2jajdjiy7hawcebxke",
       "clusterId": "10202848322613926203",
-      "createTime": "2023-12-12T10:17:15.000Z",
+      "createTime": "2023-12-12T10:17:15Z",
       "createdBy": "apikey-MCTGR3Jv",
       "displayName": "t",
       "name": "clusters/10202848322613926203/branches/bran-wscjvwen2jajdjiy7hawcebxke",
       "parentId": "10202848322613926203",
       "state": "ACTIVE",
-      "updateTime": "2023-12-12T10:18:24.000Z"
+      "updateTime": "2023-12-12T10:18:24Z"
     }
   ],
   "totalSize": 1
@@ -55,24 +55,24 @@ const listResultMultiPageStr = `{
     {
       "branchId": "bran-wscjvwen2jajdjiy7hawcebxke",
       "clusterId": "10202848322613926203",
-      "createTime": "2023-12-12T10:17:15.000Z",
+      "createTime": "2023-12-12T10:17:15Z",
       "createdBy": "apikey-MCTGR3Jv",
       "displayName": "t",
       "name": "clusters/10202848322613926203/branches/bran-wscjvwen2jajdjiy7hawcebxke",
       "parentId": "10202848322613926203",
       "state": "ACTIVE",
-      "updateTime": "2023-12-12T10:18:24.000Z"
+      "updateTime": "2023-12-12T10:18:24Z"
     },
     {
       "branchId": "bran-wscjvwen2jajdjiy7hawcebxke",
       "clusterId": "10202848322613926203",
-      "createTime": "2023-12-12T10:17:15.000Z",
+      "createTime": "2023-12-12T10:17:15Z",
       "createdBy": "apikey-MCTGR3Jv",
       "displayName": "t",
       "name": "clusters/10202848322613926203/branches/bran-wscjvwen2jajdjiy7hawcebxke",
       "parentId": "10202848322613926203",
       "state": "ACTIVE",
-      "updateTime": "2023-12-12T10:18:24.000Z"
+      "updateTime": "2023-12-12T10:18:24Z"
     }
   ],
   "totalSize": 2
@@ -166,7 +166,7 @@ func (suite *ListBranchesSuite) TestListBranchesWithMultiPages() {
 	body.NextPageToken = &pageToken
 
 	clusterID := "12345"
-	suite.mockClient.On("ListBranches", ctx, clusterID, &pageSize, nil).Return(body, nil)
+	suite.mockClient.On("ListBranches", ctx, clusterID, &pageSize, (*string)(nil)).Return(body, nil)
 
 	body2 := &branch.ListBranchesResponse{}
 	err = json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"totalSize": 1`, `"totalSize": 2`)), body2)
