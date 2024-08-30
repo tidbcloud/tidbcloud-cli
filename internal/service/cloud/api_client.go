@@ -199,8 +199,7 @@ func (d *ClientDelegate) ListProjects(ctx context.Context, pageSize *int32, page
 		r = r.PageToken(*pageToken)
 	}
 	res, h, err := r.Execute()
-	defer h.Body.Close()
-	return res, err
+	return res, parseError(err, h)
 }
 
 func (d *ClientDelegate) CancelImport(params *serverlessImportOp.ImportServiceCancelImportParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelImportOK, error) {
@@ -337,8 +336,7 @@ func (d *ClientDelegate) ListSQLUsers(ctx context.Context, clusterID string, pag
 		r = r.PageToken(*pageToken)
 	}
 	res, h, err := r.Execute()
-	defer h.Body.Close()
-	return res, err
+	return res, parseError(err, h)
 }
 
 func (d *ClientDelegate) CreateSQLUser(ctx context.Context, clusterId string, body *iam.ApiCreateSqlUserReq) (*iam.ApiSqlUser, error) {
@@ -347,22 +345,19 @@ func (d *ClientDelegate) CreateSQLUser(ctx context.Context, clusterId string, bo
 		r = r.SqlUser(*body)
 	}
 	res, h, err := r.Execute()
-	defer h.Body.Close()
-	return res, err
+	return res, parseError(err, h)
 }
 
 func (d *ClientDelegate) GetSQLUser(ctx context.Context, clusterID string, userName string) (*iam.ApiSqlUser, error) {
 	r := d.ic.AccountAPI.V1beta1ClustersClusterIdSqlUsersUserNameGet(ctx, clusterID, userName)
 	res, h, err := r.Execute()
-	defer h.Body.Close()
-	return res, err
+	return res, parseError(err, h)
 }
 
 func (d *ClientDelegate) DeleteSQLUser(ctx context.Context, clusterID string, userName string) (*iam.ApiBasicResp, error) {
 	r := d.ic.AccountAPI.V1beta1ClustersClusterIdSqlUsersUserNameDelete(ctx, clusterID, userName)
 	res, h, err := r.Execute()
-	defer h.Body.Close()
-	return res, err
+	return res, parseError(err, h)
 }
 
 func (d *ClientDelegate) UpdateSQLUser(ctx context.Context, clusterID string, userName string, body *iam.ApiUpdateSqlUserReq) (*iam.ApiSqlUser, error) {
@@ -371,8 +366,7 @@ func (d *ClientDelegate) UpdateSQLUser(ctx context.Context, clusterID string, us
 		r = r.SqlUser(*body)
 	}
 	res, h, err := r.Execute()
-	defer h.Body.Close()
-	return res, err
+	return res, parseError(err, h)
 }
 
 func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *serverlessImportClient.TidbcloudServerless, *export.APIClient, *iam.APIClient, error) {
