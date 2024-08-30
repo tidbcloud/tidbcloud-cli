@@ -201,10 +201,8 @@ func (suite *ListProjectSuite) TestListProjectWithMultiPages() {
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
-			fmt.Println(111)
 			err = cmd.Execute()
 			assert.Nil(err)
-			fmt.Println(222)
 
 			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
 			assert.Equal(tt.stderrString, suite.h.IOStreams.Err.(*bytes.Buffer).String())
