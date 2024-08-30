@@ -17,10 +17,10 @@ package start
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"os"
 	"testing"
+	"time"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/iostream"
@@ -30,6 +30,7 @@ import (
 
 	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	mockTool "github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -82,91 +83,67 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 	assert := require.New(suite.T())
 	ctx := context.Background()
 
+	clusterID := "12345"
 	uploadID := "upl-sadads"
 	importID := "imp-asdasd"
-	body := &imp.V1beta1Import{}
-	err := json.Unmarshal([]byte(fmt.Sprintf(`{
-  "clusterId": "12345",
-  "completePercent": 100,
-  "createTime": "2024-04-01T06:39:50.000Z",
-  "completeTime": "2024-04-01T06:49:50.000Z",
-  "creationDetails": {
-    "importOptions": {
-      "fileType": "CSV",
-      "csvFormat": {
-        "backslashEscape": true,
-        "delimiter": "\"",
-        "header": true,
-        "null": "\\N",
-        "separator": ","
-      }
-    },
-    "source": {
-      "local": {
-        "fileName": "a.csv",
-       	"targetDatabase": "test",
-        "targetTable": "test"
-      },
-      "type": "LOCAL"
-    }
-  },
-  "id": "%s",
-  "name": "import-2024-04-01T06:39:50.000Z",
-  "state": "COMPLETED",
-  "totalSize": "37",
-  "createdBy": "test",
-  "message": "import success"
-}
-`, importID)), body)
-	assert.Nil(err)
-	result := &importOp.ImportServiceCreateImportOK{
-		Payload: body,
-	}
-
-	fileType := "CSV"
 	targetDatabase := "test"
 	targetTable := "test"
-	clusterID := "12345"
+	t := time.Now()
+	fileType := imp.IMPORTFILETYPEENUM_CSV
+	csvFormat := &imp.CSVFormat{
+		BackslashEscape:   *imp.NewNullableBool(aws.Bool(true)),
+		Delimiter:         *imp.NewNullableString(aws.String("\"")),
+		Header:            *imp.NewNullableBool(aws.Bool(true)),
+		Null:              *imp.NewNullableString(aws.String("\\N")),
+		NotNull:           *imp.NewNullableBool(aws.Bool(false)),
+		Separator:         aws.String(","),
+		TrimLastSeparator: *imp.NewNullableBool(aws.Bool(false)),
+	}
+	i := imp.Import{
+		ClusterId:       aws.String(clusterID),
+		CompletePercent: aws.Int64(100),
+		CompleteTime:    *imp.NewNullableTime(&t),
+		CreateTime:      &t,
+		CreatedBy:       aws.String("test"),
+		CreationDetails: &imp.CreationDetails{
+			ImportOptions: &imp.ImportOptions{
+				FileType:  fileType,
+				CsvFormat: csvFormat,
+			},
+		},
+		Id:        aws.String(importID),
+		Message:   aws.String("import success"),
+		Name:      aws.String("import-2024-04-01T06:39:50.000Z"),
+		State:     (*imp.ImportStateEnum)(aws.String("COMPLETED")),
+		TotalSize: aws.String("37"),
+	}
+	body := &imp.ImportServiceCreateImportBody{
+		ImportOptions: imp.ImportOptions{
+			FileType:  fileType,
+			CsvFormat: csvFormat,
+		},
+		Source: imp.ImportSource{
+			Type: "LOCAL",
+			Local: &imp.LocalSource{
+				UploadId:       uploadID,
+				TargetDatabase: targetDatabase,
+				TargetTable:    targetTable,
+			},
+		},
+	}
 
 	suite.mockUploader.On("Upload", ctx, mockTool.MatchedBy(func(keys *s3.PutObjectInput) bool {
 		assert.Equal(fileName, *keys.FileName)
 		assert.Equal(targetDatabase, *keys.DatabaseName)
 		assert.Equal(targetTable, *keys.TableName)
-		assert.Equal(clusterID, *keys.ClusterID)
+		assert.Equal(clusterID, keys.ClusterID)
 		return true
 	})).Return(uploadID, nil)
 	suite.mockUploader.On("SetConcurrency", 5).Return(nil)
 	suite.mockUploader.On("SetPartSize", int64(5*1024*1024)).Return(nil)
 
-	reqBody := importOp.ImportServiceCreateImportBody{}
-	err = reqBody.UnmarshalBinary([]byte(fmt.Sprintf(`{
-    "clusterId": "12345",
-    "importOptions": {
-      "fileType": "%s",
-      "csvFormat": {
-        "backslashEscape": true,
-        "delimiter": "\"",
-        "header": true,
-		"notNull": false,
-        "null": "\\N",
-        "separator": ",",
-		"trimLastSeparator": false
-      }
-    },
-    "source": {
-      "local": {
-       	"targetDatabase": "%s",
-        "targetTable": "%s",
-		"uploadID": "%s"
-      },
-      "type": "LOCAL"
-    }
-  }`, fileType, targetDatabase, targetTable, uploadID)))
-	assert.Nil(err)
-
-	suite.mockClient.On("CreateImport", importOp.NewImportServiceCreateImportParams().
-		WithClusterID(clusterID).WithBody(reqBody).WithContext(ctx)).
-		Return(result, nil)
+	suite.mockClient.On("CreateImport", ctx, clusterID, body).
+		Return(&i, nil)
 
 	tests := []struct {
 		name         string
@@ -176,7 +153,7 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 	}{
 		{
 			name:         "start import success",
-			args:         []string{"--source-type", "LOCAL", "--local.file-path", fileName, "--cluster-id", clusterID, "--file-type", fileType, "--local.target-database", targetDatabase, "--local.target-table", targetTable},
+			args:         []string{"--source-type", "LOCAL", "--local.file-path", fileName, "--cluster-id", clusterID, "--file-type", string(fileType), "--local.target-database", targetDatabase, "--local.target-table", targetTable},
 			stdoutString: fmt.Sprintf("... Uploading file\nFile has been uploaded\n... Starting the import task\nImport task %s started.\n", importID),
 		},
 		{
@@ -186,17 +163,17 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 		},
 		{
 			name:         "start import with shorthand flag",
-			args:         []string{"--source-type", "LOCAL", "--local.file-path", fileName, "-c", clusterID, "--file-type", fileType, "--local.target-database", targetDatabase, "--local.target-table", targetTable},
+			args:         []string{"--source-type", "LOCAL", "--local.file-path", fileName, "-c", clusterID, "--file-type", string(fileType), "--local.target-database", targetDatabase, "--local.target-table", targetTable},
 			stdoutString: fmt.Sprintf("... Uploading file\nFile has been uploaded\n... Starting the import task\nImport task %s started.\n", importID),
 		},
 		{
 			name: "start import without required cluster id",
-			args: []string{"--source-type", "LOCAL", "--local.file-path", fileName, "--file-type", fileType, "--local.target-database", targetDatabase, "--local.target-table", targetTable},
+			args: []string{"--source-type", "LOCAL", "--local.file-path", fileName, "--file-type", string(fileType), "--local.target-database", targetDatabase, "--local.target-table", targetTable},
 			err:  fmt.Errorf("required flag(s) \"cluster-id\" not set"),
 		},
 		{
 			name: "start import without required file path",
-			args: []string{"--source-type", "LOCAL", "-c", clusterID, "--file-type", fileType, "--local.target-database", targetDatabase, "--local.target-table", targetTable},
+			args: []string{"--source-type", "LOCAL", "-c", clusterID, "--file-type", string(fileType), "--local.target-database", targetDatabase, "--local.target-table", targetTable},
 			err:  fmt.Errorf("required flag(s) \"local.file-path\" not set"),
 		},
 	}
@@ -208,7 +185,7 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
 			cmd.SetContext(ctx)
-			err = cmd.Execute()
+			err := cmd.Execute()
 			if err != nil {
 				assert.NotNil(tt.err)
 				assert.Contains(err.Error(), tt.err.Error())
@@ -225,92 +202,67 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 	assert := require.New(suite.T())
 	ctx := context.Background()
 
+	clusterID := "12345"
 	uploadID := "upl-sadads"
 	importID := "imp-asdasd"
-
-	fileType := "CSV"
 	targetDatabase := "test"
 	targetTable := "test"
-	clusterID := "12345"
+	t := time.Now()
+	fileType := imp.IMPORTFILETYPEENUM_CSV
+	csvFormat := &imp.CSVFormat{
+		BackslashEscape:   *imp.NewNullableBool(aws.Bool(false)),
+		Delimiter:         *imp.NewNullableString(aws.String("i")),
+		Header:            *imp.NewNullableBool(aws.Bool(false)),
+		Null:              *imp.NewNullableString(aws.String("null")),
+		NotNull:           *imp.NewNullableBool(aws.Bool(false)),
+		Separator:         aws.String("sep"),
+		TrimLastSeparator: *imp.NewNullableBool(aws.Bool(true)),
+	}
+	i := imp.Import{
+		ClusterId:       aws.String(clusterID),
+		CompletePercent: aws.Int64(100),
+		CompleteTime:    *imp.NewNullableTime(&t),
+		CreateTime:      &t,
+		CreatedBy:       aws.String("test"),
+		CreationDetails: &imp.CreationDetails{
+			ImportOptions: &imp.ImportOptions{
+				FileType:  fileType,
+				CsvFormat: csvFormat,
+			},
+		},
+		Id:        aws.String(importID),
+		Message:   aws.String("import success"),
+		Name:      aws.String("import-2024-04-01T06:39:50.000Z"),
+		State:     (*imp.ImportStateEnum)(aws.String("COMPLETED")),
+		TotalSize: aws.String("37"),
+	}
+	body := &imp.ImportServiceCreateImportBody{
+		ImportOptions: imp.ImportOptions{
+			FileType:  fileType,
+			CsvFormat: csvFormat,
+		},
+		Source: imp.ImportSource{
+			Type: "LOCAL",
+			Local: &imp.LocalSource{
+				UploadId:       uploadID,
+				TargetDatabase: targetDatabase,
+				TargetTable:    targetTable,
+			},
+		},
+	}
+
 	suite.mockUploader.On("Upload", ctx, mockTool.MatchedBy(func(keys *s3.PutObjectInput) bool {
 		assert.Equal(fileName, *keys.FileName)
 		assert.Equal(targetDatabase, *keys.DatabaseName)
 		assert.Equal(targetTable, *keys.TableName)
-		assert.Equal(clusterID, *keys.ClusterID)
+		assert.Equal(clusterID, keys.ClusterID)
 		return true
 	})).Return(uploadID, nil)
-
-	reqBody := importOp.ImportServiceCreateImportBody{}
-	err := reqBody.UnmarshalBinary([]byte(fmt.Sprintf(`{
-   "clusterId": "12345",
-    "importOptions": {
-      "fileType": "%s",
-      "csvFormat": {
-        "backslashEscape": false,
-        "delimiter": "",
-        "header": false,
-        "null": "\\N",
-		"notNull": false,
-        "separator": "\"",
-		"trimLastSeparator": true
-      }
-    },
-    "source": {
-      "local": {
-       	"targetDatabase": "%s",
-        "targetTable": "%s",
-		"uploadID": "%s"
-      },
-      "type": "LOCAL"
-    }
-  }`, fileType, targetDatabase, targetTable, uploadID)))
-	assert.Nil(err)
-
-	body := &imp.V1beta1Import{}
-	err = json.Unmarshal([]byte(fmt.Sprintf(`{
-  "clusterId": "12345",
-  "completePercent": 100,
-  "createTime": "2024-04-01T06:39:50.000Z",
-  "completeTime": "2024-04-01T06:49:50.000Z",
-  "creationDetails": {
-    "importOptions": {
-      "fileType": "CSV",
-      "csvFormat": {
-        "backslashEscape": false,
-        "delimiter": "",
-        "header": false,
-        "null": "\\N",
-		"notNull": false,
-        "separator": "\"",
-		"trimLastSeparator": true
-      }
-    },
-    "source": {
-      "local": {
-        "fileName": "a.csv",
-       	"targetDatabase": "test",
-        "targetTable": "test"
-      },
-      "type": "LOCAL"
-    }
-  },
-  "id": "%s",
-  "name": "import-2024-04-01T06:39:50.000Z",
-  "state": "COMPLETED",
-  "totalSize": "37",
-  "createdBy": "test",
-  "message": "import success"
-}
-`, importID)), body)
-	assert.Nil(err)
-	result := &importOp.ImportServiceCreateImportOK{
-		Payload: body,
-	}
-
-	suite.mockClient.On("CreateImport", importOp.NewImportServiceCreateImportParams().
-		WithClusterID(clusterID).WithBody(reqBody).WithContext(ctx)).
-		Return(result, nil)
 	suite.mockUploader.On("SetConcurrency", 5).Return(nil)
+	suite.mockUploader.On("SetPartSize", int64(5*1024*1024)).Return(nil)
+
+	suite.mockClient.On("CreateImport", ctx, clusterID, body).
+		Return(&i, nil)
 
 	tests := []struct {
 		name         string
@@ -321,9 +273,9 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 	}{
 		{
 			name: "start import success",
-			args: []string{"--source-type", "LOCAL", "--local.file-path", fileName, "--cluster-id", clusterID, "--file-type", fileType, "--local.target-database", targetDatabase, "--local.target-table", targetTable,
-				"--csv.separator", "\"", "--csv.delimiter", "", "--csv.backslash-escape=false", "--csv.trim-last-separator=true",
-				"--csv.skip-header=true", "--csv.null-value", `\N`, "--csv.not-null=false"},
+			args: []string{"--source-type", "LOCAL", "--local.file-path", fileName, "--cluster-id", clusterID, "--file-type", string(fileType), "--local.target-database", targetDatabase, "--local.target-table", targetTable,
+				"--csv.separator", "sep", "--csv.delimiter", "i", "--csv.backslash-escape=false", "--csv.trim-last-separator",
+				"--csv.skip-header=true", "--csv.null-value", `null`},
 			stdoutString: fmt.Sprintf("... Uploading file\nFile has been uploaded\n... Starting the import task\nImport task %s started.\n", importID),
 		},
 	}
@@ -334,7 +286,7 @@ func (suite *LocalImportSuite) TestLocalImportCSVFormat() {
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
-			err = cmd.Execute()
+			err := cmd.Execute()
 			assert.Equal(tt.err, err)
 
 			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
