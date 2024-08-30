@@ -28,7 +28,6 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
-	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
 )
 
 const confirmed = "yes"
@@ -152,9 +151,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := exportApi.NewExportServiceCancelExportParams().
-				WithClusterID(clusterID).WithExportID(exportID).WithContext(ctx)
-			_, err = d.CancelExport(params)
+			_, err = d.CancelExport(ctx, clusterID, exportID)
 			if err != nil {
 				return errors.Trace(err)
 			}

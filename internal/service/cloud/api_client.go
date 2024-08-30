@@ -12,28 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//nolint:bodyclose // still warn even the body is closed
 package cloud
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
-	"strings"
 
+	"os"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/version"
 	pingchatClient "tidbcloud-cli/pkg/tidbcloud/pingchat/client"
 	pingchatOp "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
-	branchClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client"
-	branchOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/iam"
 	serverlessClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client"
 	serverlessOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
-	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/iam"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	brClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client"
 	brOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
-	expClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client"
-	expOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
 	serverlessImportClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client"
 	serverlessImportOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 
@@ -46,7 +48,7 @@ import (
 const (
 	DefaultApiUrl             = "https://" + apiClient.DefaultHost
 	DefaultServerlessEndpoint = "https://" + serverlessClient.DefaultHost
-	DefaultIAMEndpoint        = "https://" + "iam.tidbapi.com"
+	DefaultIAMEndpoint        = "https://iam.tidbapi.com"
 	userAgent                 = "User-Agent"
 )
 
@@ -63,7 +65,7 @@ type TiDBCloudClient interface {
 
 	ListProviderRegions(params *serverlessOp.ServerlessServiceListRegionsParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListRegionsOK, error)
 
-	ListProjects(ctx context.Context, pageSize *int32, pageToken *string) (*iamClient.ApiListProjectsRsp, error)
+	ListProjects(ctx context.Context, pageSize *int32, pageToken *string) (*iam.ApiListProjectsRsp, error)
 
 	CancelImport(params *serverlessImportOp.ImportServiceCancelImportParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelImportOK, error)
 
@@ -73,13 +75,13 @@ type TiDBCloudClient interface {
 
 	ListImports(params *serverlessImportOp.ImportServiceListImportsParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceListImportsOK, error)
 
-	GetBranch(params *branchOp.BranchServiceGetBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceGetBranchOK, error)
+	GetBranch(ctx context.Context, clusterId, branchId string) (*branch.Branch, error)
 
-	ListBranches(params *branchOp.BranchServiceListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceListBranchesOK, error)
+	ListBranches(ctx context.Context, clusterId string, pageSize *int32, pageToken *string) (*branch.ListBranchesResponse, error)
 
-	CreateBranch(params *branchOp.BranchServiceCreateBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceCreateBranchOK, error)
+	CreateBranch(ctx context.Context, clusterId string, body *branch.Branch) (*branch.Branch, error)
 
-	DeleteBranch(params *branchOp.BranchServiceDeleteBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceDeleteBranchOK, error)
+	DeleteBranch(ctx context.Context, clusterId string, branchId string) (*branch.Branch, error)
 
 	Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.ClientOption) (*pingchatOp.ChatOK, error)
 
@@ -97,37 +99,37 @@ type TiDBCloudClient interface {
 
 	CancelUpload(params *serverlessImportOp.ImportServiceCancelUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelUploadOK, error)
 
-	GetExport(params *expOp.ExportServiceGetExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceGetExportOK, error)
+	GetExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error)
 
-	CancelExport(params *expOp.ExportServiceCancelExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceCancelExportOK, error)
+	CancelExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error)
 
-	CreateExport(params *expOp.ExportServiceCreateExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceCreateExportOK, error)
+	CreateExport(ctx context.Context, clusterId string, body *export.ExportServiceCreateExportBody) (*export.Export, error)
 
-	DeleteExport(params *expOp.ExportServiceDeleteExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDeleteExportOK, error)
+	DeleteExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error)
 
-	ListExports(params *expOp.ExportServiceListExportsParams, opts ...expOp.ClientOption) (*expOp.ExportServiceListExportsOK, error)
+	ListExports(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*export.ListExportsResponse, error)
 
-	DownloadExport(params *expOp.ExportServiceDownloadExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDownloadExportOK, error)
+	DownloadExport(ctx context.Context, clusterId string, exportId string) (*export.DownloadExportsResponse, error)
 
-	ListSQLUsers(ctx context.Context, clusterID string, pageSize *int32, pageToken *string) (*iamClient.ApiListSqlUsersRsp, error)
+	ListSQLUsers(ctx context.Context, clusterID string, pageSize *int32, pageToken *string) (*iam.ApiListSqlUsersRsp, error)
 
-	CreateSQLUser(ctx context.Context, clusterID string, body *iamClient.ApiCreateSqlUserReq) (*iamClient.ApiSqlUser, error)
+	CreateSQLUser(ctx context.Context, clusterID string, body *iam.ApiCreateSqlUserReq) (*iam.ApiSqlUser, error)
 
-	GetSQLUser(ctx context.Context, clusterID string, userName string) (*iamClient.ApiSqlUser, error)
+	GetSQLUser(ctx context.Context, clusterID string, userName string) (*iam.ApiSqlUser, error)
 
-	DeleteSQLUser(ctx context.Context, clusterID string, userName string) (*iamClient.ApiBasicResp, error)
+	DeleteSQLUser(ctx context.Context, clusterID string, userName string) (*iam.ApiBasicResp, error)
 
-	UpdateSQLUser(ctx context.Context, clusterID string, userName string, body *iamClient.ApiUpdateSqlUserReq) (*iamClient.ApiSqlUser, error)
+	UpdateSQLUser(ctx context.Context, clusterID string, userName string, body *iam.ApiUpdateSqlUserReq) (*iam.ApiSqlUser, error)
 }
 
 type ClientDelegate struct {
-	ic  *iamClient.APIClient
-	bc  *branchClient.TidbcloudServerless
+	ic  *iam.APIClient
+	bc  *branch.APIClient
 	pc  *pingchatClient.TidbcloudPingchat
 	sc  *serverlessClient.TidbcloudServerless
 	brc *brClient.TidbcloudServerless
 	sic *serverlessImportClient.TidbcloudServerless
-	ec  *expClient.TidbcloudServerless
+	ec  *export.APIClient
 }
 
 func NewClientDelegateWithToken(token string, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*ClientDelegate, error) {
@@ -188,7 +190,7 @@ func (d *ClientDelegate) PartialUpdateCluster(params *serverlessOp.ServerlessSer
 	return d.sc.ServerlessService.ServerlessServicePartialUpdateCluster(params, opts...)
 }
 
-func (d *ClientDelegate) ListProjects(ctx context.Context, pageSize *int32, pageToken *string) (*iamClient.ApiListProjectsRsp, error) {
+func (d *ClientDelegate) ListProjects(ctx context.Context, pageSize *int32, pageToken *string) (*iam.ApiListProjectsRsp, error) {
 	r := d.ic.AccountAPI.V1beta1ProjectsGet(ctx)
 	if pageSize != nil {
 		r = r.PageSize(*pageSize)
@@ -217,24 +219,35 @@ func (d *ClientDelegate) ListImports(params *serverlessImportOp.ImportServiceLis
 	return d.sic.ImportService.ImportServiceListImports(params, opts...)
 }
 
-func (d *ClientDelegate) GetBranch(params *branchOp.BranchServiceGetBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceGetBranchOK, error) {
-	r, err := d.bc.BranchService.BranchServiceGetBranch(params, opts...)
-	return r, err
+func (d *ClientDelegate) GetBranch(ctx context.Context, clusterId, branchId string) (*branch.Branch, error) {
+	b, h, err := d.bc.BranchServiceAPI.BranchServiceGetBranch(ctx, clusterId, branchId).Execute()
+	return b, parseError(err, h)
 }
 
-func (d *ClientDelegate) ListBranches(params *branchOp.BranchServiceListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceListBranchesOK, error) {
-	r, err := d.bc.BranchService.BranchServiceListBranches(params, opts...)
-	return r, err
+func (d *ClientDelegate) ListBranches(ctx context.Context, clusterId string, pageSize *int32, pageToken *string) (*branch.ListBranchesResponse, error) {
+	r := d.bc.BranchServiceAPI.BranchServiceListBranches(ctx, clusterId)
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	bs, h, err := r.Execute()
+	return bs, parseError(err, h)
 }
 
-func (d *ClientDelegate) CreateBranch(params *branchOp.BranchServiceCreateBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceCreateBranchOK, error) {
-	r, err := d.bc.BranchService.BranchServiceCreateBranch(params, opts...)
-	return r, err
+func (d *ClientDelegate) CreateBranch(ctx context.Context, clusterId string, body *branch.Branch) (*branch.Branch, error) {
+	r := d.bc.BranchServiceAPI.BranchServiceCreateBranch(ctx, clusterId)
+	if body != nil {
+		r = r.Branch(*body)
+	}
+	b, h, err := r.Execute()
+	return b, parseError(err, h)
 }
 
-func (d *ClientDelegate) DeleteBranch(params *branchOp.BranchServiceDeleteBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceDeleteBranchOK, error) {
-	r, err := d.bc.BranchService.BranchServiceDeleteBranch(params, opts...)
-	return r, err
+func (d *ClientDelegate) DeleteBranch(ctx context.Context, clusterId string, branchId string) (*branch.Branch, error) {
+	b, h, err := d.bc.BranchServiceAPI.BranchServiceDeleteBranch(ctx, clusterId, branchId).Execute()
+	return b, parseError(err, h)
 }
 
 func (d *ClientDelegate) Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.ClientOption) (*pingchatOp.ChatOK, error) {
@@ -269,31 +282,53 @@ func (d *ClientDelegate) CancelUpload(params *serverlessImportOp.ImportServiceCa
 	return d.sic.ImportService.ImportServiceCancelUpload(params, opts...)
 }
 
-func (d *ClientDelegate) GetExport(params *expOp.ExportServiceGetExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceGetExportOK, error) {
-	return d.ec.ExportService.ExportServiceGetExport(params, opts...)
+func (d *ClientDelegate) GetExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error) {
+	res, h, err := d.ec.ExportServiceAPI.ExportServiceGetExport(ctx, clusterId, exportId).Execute()
+	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) CancelExport(params *expOp.ExportServiceCancelExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceCancelExportOK, error) {
-	return d.ec.ExportService.ExportServiceCancelExport(params, opts...)
+func (d *ClientDelegate) CancelExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error) {
+	res, h, err := d.ec.ExportServiceAPI.ExportServiceCancelExport(ctx, clusterId, exportId).Execute()
+	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) CreateExport(params *expOp.ExportServiceCreateExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceCreateExportOK, error) {
-	return d.ec.ExportService.ExportServiceCreateExport(params, opts...)
+func (d *ClientDelegate) CreateExport(ctx context.Context, clusterId string, body *export.ExportServiceCreateExportBody) (*export.Export, error) {
+	r := d.ec.ExportServiceAPI.ExportServiceCreateExport(ctx, clusterId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) DeleteExport(params *expOp.ExportServiceDeleteExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDeleteExportOK, error) {
-	return d.ec.ExportService.ExportServiceDeleteExport(params, opts...)
+func (d *ClientDelegate) DeleteExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error) {
+	res, h, err := d.ec.ExportServiceAPI.ExportServiceDeleteExport(ctx, clusterId, exportId).Execute()
+	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) ListExports(params *expOp.ExportServiceListExportsParams, opts ...expOp.ClientOption) (*expOp.ExportServiceListExportsOK, error) {
-	return d.ec.ExportService.ExportServiceListExports(params, opts...)
+func (d *ClientDelegate) ListExports(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*export.ListExportsResponse, error) {
+	r := d.ec.ExportServiceAPI.ExportServiceListExports(ctx, clusterId)
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	if orderBy != nil {
+		r = r.OrderBy(*orderBy)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) DownloadExport(params *expOp.ExportServiceDownloadExportParams, opts ...expOp.ClientOption) (*expOp.ExportServiceDownloadExportOK, error) {
-	return d.ec.ExportService.ExportServiceDownloadExport(params, opts...)
+func (d *ClientDelegate) DownloadExport(ctx context.Context, clusterId string, exportId string) (*export.DownloadExportsResponse, error) {
+	r := d.ec.ExportServiceAPI.ExportServiceDownloadExport(ctx, clusterId, exportId)
+	r = r.Body(make(map[string]interface{}))
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) ListSQLUsers(ctx context.Context, clusterID string, pageSize *int32, pageToken *string) (*iamClient.ApiListSqlUsersRsp, error) {
+func (d *ClientDelegate) ListSQLUsers(ctx context.Context, clusterID string, pageSize *int32, pageToken *string) (*iam.ApiListSqlUsersRsp, error) {
 	r := d.ic.AccountAPI.V1beta1ClustersClusterIdSqlUsersGet(ctx, clusterID)
 	if pageSize != nil {
 		r = r.PageSize(*pageSize)
@@ -306,7 +341,7 @@ func (d *ClientDelegate) ListSQLUsers(ctx context.Context, clusterID string, pag
 	return res, err
 }
 
-func (d *ClientDelegate) CreateSQLUser(ctx context.Context, clusterId string, body *iamClient.ApiCreateSqlUserReq) (*iamClient.ApiSqlUser, error) {
+func (d *ClientDelegate) CreateSQLUser(ctx context.Context, clusterId string, body *iam.ApiCreateSqlUserReq) (*iam.ApiSqlUser, error) {
 	r := d.ic.AccountAPI.V1beta1ClustersClusterIdSqlUsersPost(ctx, clusterId)
 	if body != nil {
 		r = r.SqlUser(*body)
@@ -316,21 +351,21 @@ func (d *ClientDelegate) CreateSQLUser(ctx context.Context, clusterId string, bo
 	return res, err
 }
 
-func (d *ClientDelegate) GetSQLUser(ctx context.Context, clusterID string, userName string) (*iamClient.ApiSqlUser, error) {
+func (d *ClientDelegate) GetSQLUser(ctx context.Context, clusterID string, userName string) (*iam.ApiSqlUser, error) {
 	r := d.ic.AccountAPI.V1beta1ClustersClusterIdSqlUsersUserNameGet(ctx, clusterID, userName)
 	res, h, err := r.Execute()
 	defer h.Body.Close()
 	return res, err
 }
 
-func (d *ClientDelegate) DeleteSQLUser(ctx context.Context, clusterID string, userName string) (*iamClient.ApiBasicResp, error) {
+func (d *ClientDelegate) DeleteSQLUser(ctx context.Context, clusterID string, userName string) (*iam.ApiBasicResp, error) {
 	r := d.ic.AccountAPI.V1beta1ClustersClusterIdSqlUsersUserNameDelete(ctx, clusterID, userName)
 	res, h, err := r.Execute()
 	defer h.Body.Close()
 	return res, err
 }
 
-func (d *ClientDelegate) UpdateSQLUser(ctx context.Context, clusterID string, userName string, body *iamClient.ApiUpdateSqlUserReq) (*iamClient.ApiSqlUser, error) {
+func (d *ClientDelegate) UpdateSQLUser(ctx context.Context, clusterID string, userName string, body *iam.ApiUpdateSqlUserReq) (*iam.ApiSqlUser, error) {
 	r := d.ic.AccountAPI.V1beta1ClustersClusterIdSqlUsersUserNamePatch(ctx, clusterID, userName)
 	if body != nil {
 		r = r.SqlUser(*body)
@@ -340,7 +375,7 @@ func (d *ClientDelegate) UpdateSQLUser(ctx context.Context, clusterID string, us
 	return res, err
 }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *serverlessImportClient.TidbcloudServerless, *expClient.TidbcloudServerless, *iamClient.APIClient, error) {
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *serverlessImportClient.TidbcloudServerless, *export.APIClient, *iam.APIClient, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}
@@ -359,23 +394,35 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	}
 
 	serverlessTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
-	branchTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	backRestoreTransport := httpTransport.NewWithClient(serverlessURL.Host, brClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	importTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessImportClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
-	exportTransport := httpTransport.NewWithClient(serverlessURL.Host, expClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 
-	iamCfg := iamClient.NewConfiguration()
+	iamCfg := iam.NewConfiguration()
 	iamCfg.HTTPClient = httpclient
-	if strings.HasPrefix(iamEndpoint, "https://") {
-		iamCfg.Host = iamEndpoint[8:]
-	} else {
-		iamCfg.Host = iamEndpoint
+	iamURL, err := prop.ValidateApiUrl(iamEndpoint)
+	if err != nil {
+		return nil, nil, nil, nil, nil, nil, nil, err
+	}
+	iamCfg.Host = iamURL.Host
+
+	branchCfg := branch.NewConfiguration()
+	branchCfg.HTTPClient = httpclient
+	branchCfg.Host = serverlessURL.Host
+
+	exportCfg := export.NewConfiguration()
+	exportCfg.HTTPClient = httpclient
+	exportCfg.Host = serverlessURL.Host
+
+	if os.Getenv(config.DebugEnv) == "true" || os.Getenv(config.DebugEnv) == "1" {
+		branchCfg.Debug = true
+		exportCfg.Debug = true
+		iamCfg.Debug = true
 	}
 
-	return branchClient.New(branchTransport, strfmt.Default), serverlessClient.New(serverlessTransport, strfmt.Default),
+	return branch.NewAPIClient(branchCfg), serverlessClient.New(serverlessTransport, strfmt.Default),
 		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default),
-		serverlessImportClient.New(importTransport, strfmt.Default), expClient.New(exportTransport, strfmt.Default),
-		iamClient.NewAPIClient(iamCfg), nil
+		serverlessImportClient.New(importTransport, strfmt.Default), export.NewAPIClient(exportCfg),
+		iam.NewAPIClient(iamCfg), nil
 }
 
 func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {
@@ -424,4 +471,35 @@ type BearTokenTransport struct {
 func (bt *BearTokenTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", bt.Token))
 	return bt.inner.RoundTrip(r)
+}
+
+func parseError(err error, resp *http.Response) error {
+	defer func() {
+		if resp != nil {
+			resp.Body.Close()
+		}
+	}()
+	if err == nil {
+		return nil
+	}
+	if resp == nil {
+		return err
+	}
+	body, err1 := io.ReadAll(resp.Body)
+	if err1 != nil {
+		return err
+	}
+	// extract error message from response body
+	type errorMsg struct {
+		Message string `json:"message"`
+		Code    int    `json:"code"`
+	}
+	var msg errorMsg
+	if err1 := json.Unmarshal(body, &msg); err1 != nil {
+		return err
+	}
+	if msg.Message != "" {
+		return errors.New(msg.Message)
+	}
+	return err
 }

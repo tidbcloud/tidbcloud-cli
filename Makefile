@@ -21,7 +21,7 @@ setup: deps devtools ## Set up dev env
 .PHONY: generate-mocks
 generate-mocks: ## Generate mock objects
 	@echo "==> Generating mock objects"
-	go install github.com/vektra/mockery/v2@latest
+	go install github.com/vektra/mockery/v2@v2.43.0
 	mockery --name TiDBCloudClient --recursive --output=internal/mock --outpkg mock --filename api_client.go
 	mockery --name EventsSender --recursive --output=internal/mock --outpkg mock --filename sender.go
 	mockery --name Uploader --recursive --output=internal/mock --outpkg mock --filename uploader.go
@@ -47,7 +47,8 @@ addcopy: ## Add copyright to all files
 generate-v1beta1-client: install-openapi-generator ## Generate v1beta1 client
 	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
 	@echo "==> Generating serverless branch client"
-	swagger generate client -f pkg/tidbcloud/v1beta1/branch/branch.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/branch
+	rm -rf pkg/tidbcloud/v1beta1/serverless/branch
+	cd tools/openapi-generator && npx openapi-generator-cli generate --additional-properties=withGoMod=false,enumClassPrefix=true --global-property=apiTests=false,apiDocs=false,modelDocs=fasle,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/branch.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/branch --package-name branch
 	@echo "==> Generating serverless client"
 	swagger generate client -f pkg/tidbcloud/v1beta1/serverless/serverless.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless
 	@echo "==> Generating serverless br client"
@@ -55,12 +56,16 @@ generate-v1beta1-client: install-openapi-generator ## Generate v1beta1 client
 	@echo "==> Generating serverless import client"
 	swagger generate client -f pkg/tidbcloud/v1beta1/serverless_import/import.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless_import
 	@echo "==> Generating serverless export client"
-	swagger generate client -f pkg/tidbcloud/v1beta1/serverless_export/export.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/serverless_export
+	rm -rf pkg/tidbcloud/v1beta1/serverless/export
+	cd tools/openapi-generator && npx openapi-generator-cli generate --additional-properties=withGoMod=false,enumClassPrefix=true --global-property=apiTests=false,apiDocs=false,modelDocs=fasle,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/export.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/export --package-name export
 	@echo "==> Generating iam client"
-	# swagger generate client -f pkg/tidbcloud/v1beta1/iam/iam.swagger.json -A tidbcloud-serverless -t pkg/tidbcloud/v1beta1/iam
 	rm -rf pkg/tidbcloud/v1beta1/serverless/iam
 	cd tools/openapi-generator && npx openapi-generator-cli generate --additional-properties=withGoMod=false,enumClassPrefix=true --global-property=apiTests=false,apiDocs=false,modelDocs=fasle,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/iam.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/iam --package-name iam
 	go fmt ./pkg/...
+
+.PHONY: install-openapi-generator
+install-openapi-generator:
+	cd tools/openapi-generator && npm install
 
 .PHONY: fmt
 fmt: ## Format changed go
@@ -91,7 +96,3 @@ help:
 generate-docs: ## Generate mock objects
 	@echo "==> Generating docs"
 	go run gen_doc.go
-
-.PHONY: install-openapi-generator
-install-openapi-generator:
-	cd tools/openapi-generator && npm install

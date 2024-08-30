@@ -25,7 +25,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -59,9 +59,7 @@ func (suite *DeleteBranchSuite) TestDeleteBranchArgs() {
 
 	clusterID := "12345"
 	branchID := "12345"
-	suite.mockClient.On("DeleteBranch", branchApi.NewBranchServiceDeleteBranchParams().
-		WithBranchID(branchID).WithClusterID(clusterID).WithContext(ctx)).
-		Return(&branchApi.BranchServiceDeleteBranchOK{}, nil)
+	suite.mockClient.On("DeleteBranch", ctx, clusterID, branchID).Return(&branch.Branch{}, nil)
 
 	tests := []struct {
 		name         string
