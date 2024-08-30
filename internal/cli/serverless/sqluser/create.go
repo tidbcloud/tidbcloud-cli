@@ -28,8 +28,8 @@ import (
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 
+	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
-	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/iam"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"

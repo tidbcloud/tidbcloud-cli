@@ -10,7 +10,7 @@ import (
 
 	export "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 
-	iam "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/iam"
+	iam "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	import_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 

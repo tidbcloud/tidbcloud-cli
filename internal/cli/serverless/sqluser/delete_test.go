@@ -25,7 +25,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/iam"
+	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"

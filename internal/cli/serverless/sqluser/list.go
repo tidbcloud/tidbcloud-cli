@@ -25,7 +25,7 @@ import (
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/util"
 
-	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/iam"
+	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"

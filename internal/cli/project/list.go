@@ -24,7 +24,7 @@ import (
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
 
-	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/iam"
+	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
