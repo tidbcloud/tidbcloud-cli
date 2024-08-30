@@ -17,6 +17,7 @@ package auth
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sync"
 
@@ -24,11 +25,11 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/config/store"
 	"tidbcloud-cli/internal/flag"
+	"tidbcloud-cli/internal/service/cloud"
 	ver "tidbcloud-cli/internal/version"
 
 	"github.com/fatih/color"
 	"github.com/go-resty/resty/v2"
-	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 	_ "github.com/xo/usql/drivers/mysql"
 	"github.com/zalando/go-keyring"
@@ -128,7 +129,6 @@ type Result struct {
 }
 
 func getUserInfo(ctx context.Context, client *resty.Client, token string) Result {
-	API := userInfoPath
 	resp, err := client.R().
 		SetContext(ctx).
 		SetHeader("Authorization", "Bearer "+token).
@@ -136,43 +136,46 @@ func getUserInfo(ctx context.Context, client *resty.Client, token string) Result
 		Get(fmt.Sprintf("%s%s", config.GetOAuthEndpoint(), userInfoPath))
 
 	if err != nil {
-		return Result{API, nil, err}
+		return Result{userInfoPath, nil, err}
 	}
 
 	if !resp.IsSuccess() {
-		return Result{API, nil, err}
+		return Result{userInfoPath, nil, fmt.Errorf("%s get %d response", userInfoPath, resp.StatusCode())}
 	}
 
 	var userInfo UserInfo
 	err = json.Unmarshal(resp.Body(), &userInfo)
 	if err != nil {
-		return Result{API, nil, err}
+		return Result{userInfoPath, nil, err}
 	}
 
-	return Result{API, &userInfo, nil}
+	return Result{userInfoPath, &userInfo, nil}
 }
 
 func getOrgInfo(ctx context.Context, client *resty.Client, token string) Result {
-	API := orgPath
+	iamEndpoint := config.GetIAMEndpoint()
+	if iamEndpoint == "" {
+		iamEndpoint = cloud.DefaultIAMEndpoint
+	}
 	resp, err := client.R().
 		SetContext(ctx).
 		SetHeader("Authorization", "Bearer "+token).
 		SetHeader("user-agent", fmt.Sprintf("%s/%s", config.CliName, ver.Version)).
-		Get(fmt.Sprintf("%s%s", config.GetIAMEndpoint(), orgPath))
+		Get(fmt.Sprintf("%s%s", iamEndpoint, orgPath))
 
 	if err != nil {
-		return Result{API, nil, err}
+		return Result{orgPath, nil, err}
 	}
 
 	if !resp.IsSuccess() {
-		return Result{API, nil, err}
+		return Result{orgPath, nil, fmt.Errorf("%s get %d response", orgPath, resp.StatusCode())}
 	}
 
 	var orgInfo OrgInfo
 	err = json.Unmarshal(resp.Body(), &orgInfo)
 	if err != nil {
-		return Result{API, nil, err}
+		return Result{orgPath, nil, err}
 	}
 
-	return Result{API, &orgInfo, nil}
+	return Result{orgPath, &orgInfo, nil}
 }
