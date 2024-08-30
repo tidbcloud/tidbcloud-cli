@@ -25,7 +25,6 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
-	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
 )
 
 type DescribeOpts struct {
@@ -121,14 +120,12 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := exportApi.NewExportServiceGetExportParams().
-				WithClusterID(clusterID).WithExportID(exportID).WithContext(ctx)
-			export, err := d.GetExport(params)
+			export, err := d.GetExport(ctx, clusterID, exportID)
 			if err != nil {
 				return errors.Trace(err)
 			}
 
-			v, err := json.MarshalIndent(export.Payload, "", "  ")
+			v, err := json.MarshalIndent(export, "", "  ")
 			if err != nil {
 				return errors.Trace(err)
 			}

@@ -45,6 +45,10 @@ func Format(ver, commit, buildDate string) string {
 		return fmt.Sprintf("%s version (built from source)", config.CliName)
 	}
 
+	if strings.Contains(ver, version.NightlyVersion) {
+		return fmt.Sprintf("%s version %s (build date: %s commit: %s)\n", config.CliName, ver, buildDate, commit)
+	}
+
 	ver = strings.TrimPrefix(ver, "v")
 
 	return fmt.Sprintf("%s version %s (build date: %s commit: %s)\n%s\n", config.CliName, ver, buildDate, commit, changelogURL(ver))

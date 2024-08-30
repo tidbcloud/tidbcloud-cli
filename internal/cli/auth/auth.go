@@ -24,9 +24,11 @@ const (
 	tokenTypeHint = "access_token"
 	grantType     = "urn:ietf:params:oauth:grant-type:device_code"
 
-	authPath   = "/v1/device_authorization"
-	accessPath = "/v1/token"
-	revokePath = "/v1/revoke"
+	authPath     = "/v1/device_authorization"
+	accessPath   = "/v1/token"
+	revokePath   = "/v1/revoke"
+	userInfoPath = "/v1/userinfo"
+	orgPath      = "/v1beta1/org"
 
 	errSlowDown = "slow_down"
 	errPending  = "authorization_pending"
@@ -40,5 +42,6 @@ func AuthCmd(h *internal.Helper) *cobra.Command {
 
 	authCmd.AddCommand(LoginCmd(h))
 	authCmd.AddCommand(LogoutCmd(h))
+	authCmd.AddCommand(WhoamiCmd(h))
 	return authCmd
 }

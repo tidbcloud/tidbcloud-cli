@@ -21,16 +21,14 @@ import (
 
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	branchApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
-	branchModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/models"
 	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
 	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 	brModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/models"
-	exportApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
-	exportModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/models"
 	importApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
@@ -92,7 +90,7 @@ func (r Region) String() string {
 
 func (b Branch) String() string {
 	if b.IsCluster {
-		return "main(the cluster)"
+		return fmt.Sprintf("%s(main)", b.DisplayName)
 	}
 	return fmt.Sprintf("%s(%s)", b.DisplayName, b.ID)
 }
@@ -236,6 +234,32 @@ func GetSelectedField(mutableFields []string) (string, error) {
 	return field.(string), nil
 }
 
+func GetSelectedBool(notice string) (bool, error) {
+	items := []interface{}{
+		"true",
+		"false",
+	}
+
+	model, err := ui.InitialSelectModel(items, notice)
+	if err != nil {
+		return false, errors.Trace(err)
+	}
+
+	p := tea.NewProgram(model)
+	bModel, err := p.Run()
+	if err != nil {
+		return false, errors.Trace(err)
+	}
+	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
+		return false, util.InterruptError
+	}
+	value := bModel.(ui.SelectModel).GetSelectedItem()
+	if value == nil {
+		return false, errors.New("no value selected")
+	}
+	return value.(string) == "true", nil
+}
+
 func GetSpendingLimitField(mutableFields []string) (string, error) {
 	var items = make([]interface{}, 0, len(mutableFields))
 	for _, item := range mutableFields {
@@ -273,8 +297,8 @@ func GetSelectedBranch(ctx context.Context, clusterID string, pageSize int64, cl
 	var items = make([]interface{}, 0, len(branchItems))
 	for _, item := range branchItems {
 		items = append(items, &Branch{
-			ID:          item.BranchID,
-			DisplayName: *item.DisplayName,
+			ID:          *item.BranchId,
+			DisplayName: item.DisplayName,
 			IsCluster:   false,
 		})
 	}
@@ -314,7 +338,7 @@ func GetSelectedExport(ctx context.Context, clusterID string, pageSize int64, cl
 	var items = make([]interface{}, 0, len(exportItems))
 	for _, item := range exportItems {
 		items = append(items, &Export{
-			ID: item.ExportID,
+			ID: *item.ExportId,
 		})
 	}
 	if len(items) == 0 {
@@ -352,9 +376,9 @@ func GetSelectedLocalExport(ctx context.Context, clusterID string, pageSize int6
 
 	var items = make([]interface{}, 0, len(exportItems))
 	for _, item := range exportItems {
-		if item.Target.Type == exportModel.TargetTargetTypeLOCAL && item.State == exportModel.V1beta1ExportStateSUCCEEDED {
+		if *item.Target.Type == export.EXPORTTARGETTYPEENUM_LOCAL && *item.State == export.EXPORTSTATEENUM_SUCCEEDED {
 			items = append(items, &Export{
-				ID: item.ExportID,
+				ID: *item.ExportId,
 			})
 		}
 	}
@@ -622,56 +646,53 @@ func RetrieveClusters(ctx context.Context, pID string, pageSize int64, d TiDBClo
 	return int64(len(items)), items, nil
 }
 
-func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*branchModel.V1beta1Branch, error) {
-	var items []*branchModel.V1beta1Branch
+func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []branch.Branch, error) {
+	var items []branch.Branch
 	pageSizeInt32 := int32(pageSize)
-	var pageToken string
+	var pageToken *string
 
-	params := branchApi.NewBranchServiceListBranchesParams().WithClusterID(cID).WithContext(ctx)
-	branches, err := d.ListBranches(params.WithPageSize(&pageSizeInt32))
+	branches, err := d.ListBranches(ctx, cID, &pageSizeInt32, nil)
 	if err != nil {
 		return 0, nil, errors.Trace(err)
 	}
-	items = append(items, branches.Payload.Branches...)
+	items = append(items, branches.Branches...)
 	// loop to get all branches
 	for {
-		pageToken = branches.Payload.NextPageToken
-		if pageToken == "" {
+		pageToken = branches.NextPageToken
+		if pageToken == nil || *pageToken == "" {
 			break
 		}
-		branches, err = d.ListBranches(params.WithPageSize(&pageSizeInt32).WithPageToken(&pageToken))
+		branches, err = d.ListBranches(ctx, cID, &pageSizeInt32, pageToken)
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
-		items = append(items, branches.Payload.Branches...)
+		items = append(items, branches.Branches...)
 	}
 	return int64(len(items)), items, nil
 }
 
-func RetrieveExports(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []*exportModel.V1beta1Export, error) {
-	var items []*exportModel.V1beta1Export
+func RetrieveExports(ctx context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []export.Export, error) {
+	var items []export.Export
 	pageSizeInt32 := int32(pageSize)
-	var pageToken string
+	var pageToken *string
 
 	orderBy := "create_time desc"
-	params := exportApi.NewExportServiceListExportsParams().WithClusterID(cID).WithPageSize(&pageSizeInt32).
-		WithOrderBy(&orderBy).WithContext(ctx)
-	exports, err := d.ListExports(params)
+	exports, err := d.ListExports(ctx, cID, &pageSizeInt32, nil, &orderBy)
 	if err != nil {
 		return 0, nil, errors.Trace(err)
 	}
-	items = append(items, exports.Payload.Exports...)
+	items = append(items, exports.Exports...)
 	// loop to get all branches
 	for {
-		pageToken = exports.Payload.NextPageToken
-		if pageToken == "" {
+		pageToken = exports.NextPageToken
+		if pageToken == nil || *pageToken == "" {
 			break
 		}
-		exports, err = d.ListExports(params.WithPageSize(&pageSizeInt32).WithPageToken(&pageToken))
+		exports, err = d.ListExports(ctx, cID, &pageSizeInt32, pageToken, &orderBy)
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
-		items = append(items, exports.Payload.Exports...)
+		items = append(items, exports.Exports...)
 	}
 	return int64(len(items)), items, nil
 }
@@ -753,4 +774,52 @@ func RetrieveSQLUsers(ctx context.Context, cID string, pageSize int64, d TiDBClo
 		items = append(items, users.Payload.SQLUsers...)
 	}
 	return int64(len(items)), items, nil
+}
+
+func GetSelectedParentID(ctx context.Context, cluster *Cluster, pageSize int64, client TiDBCloudClient) (string, error) {
+	clusterID := cluster.ID
+	_, branchItems, err := RetrieveBranches(ctx, clusterID, pageSize, client)
+	if err != nil {
+		return "", err
+	}
+	// If there is no branch, return the clusterID directly.
+	if len(branchItems) == 0 {
+		return clusterID, nil
+	}
+
+	var items = make([]interface{}, 0, len(branchItems)+1)
+	items = append(items, &Branch{
+		ID:          clusterID,
+		DisplayName: cluster.DisplayName,
+		IsCluster:   true,
+	})
+	for _, item := range branchItems {
+		items = append(items, &Branch{
+			ID:          *item.BranchId,
+			DisplayName: item.DisplayName,
+			IsCluster:   false,
+		})
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the parent:")
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	bModel, err := p.Run()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	parent := bModel.(ui.SelectModel).GetSelectedItem()
+	if parent == nil {
+		return "", errors.New("no parent selected")
+	}
+	return parent.(*Branch).ID, nil
 }

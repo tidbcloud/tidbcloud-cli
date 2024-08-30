@@ -1,3 +1,4 @@
+version: 2
 project_name: ticloud
 
 before:
@@ -28,13 +29,13 @@ builds:
 archives:
   - id: nix
     builds: [linux, macos]
-    <<: &archive_defaults
-      name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-      wrap_in_directory: false
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: false
     format: tar.gz
   - id: windows
     builds: [windows]
-    <<: *archive_defaults
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: false
     format: zip
 
 nfpms:
@@ -57,5 +58,5 @@ nfpms:
 checksum:
   name_template: 'checksums.txt'
 snapshot:
-  name_template: "{{ incpatch .Version }}-next"
+  name_template: "{{ .Version }}"
 

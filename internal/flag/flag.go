@@ -62,6 +62,7 @@ const (
 	Monthly               string = "monthly"
 	BackupID              string = "backup-id"
 	BackupTime            string = "backup-time"
+	// External storage
 	S3URI                 string = "s3.uri"
 	S3AccessKeyID         string = "s3.access-key-id"
 	S3SecretAccessKey     string = "s3.secret-access-key"
@@ -81,6 +82,10 @@ const (
 	SQL                   string = "sql"
 	TableWhere            string = "where"
 	TableFilter           string = "filter"
+	ParentID               string = "parent-id"
+	ParentTimestamp        string = "parent-timestamp"
+	PublicEndpointDisabled string = "disable-public-endpoint"
+	ParquetCompression     string = "parquet.compression"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."

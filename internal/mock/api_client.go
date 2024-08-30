@@ -3,11 +3,13 @@
 package mock
 
 import (
-	branch_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 	account "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
+	branch "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 	backup_restore_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 
-	export_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/client/export_service"
+	context "context"
+
+	export "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 
 	import_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 
@@ -23,36 +25,29 @@ type TiDBCloudClient struct {
 	mock.Mock
 }
 
-// CancelExport provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) CancelExport(params *export_service.ExportServiceCancelExportParams, opts ...export_service.ClientOption) (*export_service.ExportServiceCancelExportOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// CancelExport provides a mock function with given fields: ctx, clusterId, exportId
+func (_m *TiDBCloudClient) CancelExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error) {
+	ret := _m.Called(ctx, clusterId, exportId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CancelExport")
 	}
 
-	var r0 *export_service.ExportServiceCancelExportOK
+	var r0 *export.Export
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceCancelExportParams, ...export_service.ClientOption) (*export_service.ExportServiceCancelExportOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*export.Export, error)); ok {
+		return rf(ctx, clusterId, exportId)
 	}
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceCancelExportParams, ...export_service.ClientOption) *export_service.ExportServiceCancelExportOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *export.Export); ok {
+		r0 = rf(ctx, clusterId, exportId)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*export_service.ExportServiceCancelExportOK)
+			r0 = ret.Get(0).(*export.Export)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*export_service.ExportServiceCancelExportParams, ...export_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, exportId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -208,36 +203,29 @@ func (_m *TiDBCloudClient) CompleteUpload(params *import_service.ImportServiceCo
 	return r0, r1
 }
 
-// CreateBranch provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) CreateBranch(params *branch_service.BranchServiceCreateBranchParams, opts ...branch_service.ClientOption) (*branch_service.BranchServiceCreateBranchOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// CreateBranch provides a mock function with given fields: ctx, clusterId, body
+func (_m *TiDBCloudClient) CreateBranch(ctx context.Context, clusterId string, body *branch.Branch) (*branch.Branch, error) {
+	ret := _m.Called(ctx, clusterId, body)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateBranch")
 	}
 
-	var r0 *branch_service.BranchServiceCreateBranchOK
+	var r0 *branch.Branch
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*branch_service.BranchServiceCreateBranchParams, ...branch_service.ClientOption) (*branch_service.BranchServiceCreateBranchOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, *branch.Branch) (*branch.Branch, error)); ok {
+		return rf(ctx, clusterId, body)
 	}
-	if rf, ok := ret.Get(0).(func(*branch_service.BranchServiceCreateBranchParams, ...branch_service.ClientOption) *branch_service.BranchServiceCreateBranchOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, *branch.Branch) *branch.Branch); ok {
+		r0 = rf(ctx, clusterId, body)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*branch_service.BranchServiceCreateBranchOK)
+			r0 = ret.Get(0).(*branch.Branch)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*branch_service.BranchServiceCreateBranchParams, ...branch_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string, *branch.Branch) error); ok {
+		r1 = rf(ctx, clusterId, body)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -282,36 +270,29 @@ func (_m *TiDBCloudClient) CreateCluster(params *serverless_service.ServerlessSe
 	return r0, r1
 }
 
-// CreateExport provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) CreateExport(params *export_service.ExportServiceCreateExportParams, opts ...export_service.ClientOption) (*export_service.ExportServiceCreateExportOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// CreateExport provides a mock function with given fields: ctx, clusterId, body
+func (_m *TiDBCloudClient) CreateExport(ctx context.Context, clusterId string, body *export.ExportServiceCreateExportBody) (*export.Export, error) {
+	ret := _m.Called(ctx, clusterId, body)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateExport")
 	}
 
-	var r0 *export_service.ExportServiceCreateExportOK
+	var r0 *export.Export
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceCreateExportParams, ...export_service.ClientOption) (*export_service.ExportServiceCreateExportOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, *export.ExportServiceCreateExportBody) (*export.Export, error)); ok {
+		return rf(ctx, clusterId, body)
 	}
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceCreateExportParams, ...export_service.ClientOption) *export_service.ExportServiceCreateExportOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, *export.ExportServiceCreateExportBody) *export.Export); ok {
+		r0 = rf(ctx, clusterId, body)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*export_service.ExportServiceCreateExportOK)
+			r0 = ret.Get(0).(*export.Export)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*export_service.ExportServiceCreateExportParams, ...export_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string, *export.ExportServiceCreateExportBody) error); ok {
+		r1 = rf(ctx, clusterId, body)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -430,36 +411,29 @@ func (_m *TiDBCloudClient) DeleteBackup(params *backup_restore_service.BackupRes
 	return r0, r1
 }
 
-// DeleteBranch provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) DeleteBranch(params *branch_service.BranchServiceDeleteBranchParams, opts ...branch_service.ClientOption) (*branch_service.BranchServiceDeleteBranchOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// DeleteBranch provides a mock function with given fields: ctx, clusterId, branchId
+func (_m *TiDBCloudClient) DeleteBranch(ctx context.Context, clusterId string, branchId string) (*branch.Branch, error) {
+	ret := _m.Called(ctx, clusterId, branchId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteBranch")
 	}
 
-	var r0 *branch_service.BranchServiceDeleteBranchOK
+	var r0 *branch.Branch
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*branch_service.BranchServiceDeleteBranchParams, ...branch_service.ClientOption) (*branch_service.BranchServiceDeleteBranchOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*branch.Branch, error)); ok {
+		return rf(ctx, clusterId, branchId)
 	}
-	if rf, ok := ret.Get(0).(func(*branch_service.BranchServiceDeleteBranchParams, ...branch_service.ClientOption) *branch_service.BranchServiceDeleteBranchOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *branch.Branch); ok {
+		r0 = rf(ctx, clusterId, branchId)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*branch_service.BranchServiceDeleteBranchOK)
+			r0 = ret.Get(0).(*branch.Branch)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*branch_service.BranchServiceDeleteBranchParams, ...branch_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, branchId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -504,36 +478,29 @@ func (_m *TiDBCloudClient) DeleteCluster(params *serverless_service.ServerlessSe
 	return r0, r1
 }
 
-// DeleteExport provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) DeleteExport(params *export_service.ExportServiceDeleteExportParams, opts ...export_service.ClientOption) (*export_service.ExportServiceDeleteExportOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// DeleteExport provides a mock function with given fields: ctx, clusterId, exportId
+func (_m *TiDBCloudClient) DeleteExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error) {
+	ret := _m.Called(ctx, clusterId, exportId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteExport")
 	}
 
-	var r0 *export_service.ExportServiceDeleteExportOK
+	var r0 *export.Export
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceDeleteExportParams, ...export_service.ClientOption) (*export_service.ExportServiceDeleteExportOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*export.Export, error)); ok {
+		return rf(ctx, clusterId, exportId)
 	}
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceDeleteExportParams, ...export_service.ClientOption) *export_service.ExportServiceDeleteExportOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *export.Export); ok {
+		r0 = rf(ctx, clusterId, exportId)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*export_service.ExportServiceDeleteExportOK)
+			r0 = ret.Get(0).(*export.Export)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*export_service.ExportServiceDeleteExportParams, ...export_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, exportId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -578,36 +545,29 @@ func (_m *TiDBCloudClient) DeleteSQLUser(params *account.DeleteV1beta1ClustersCl
 	return r0, r1
 }
 
-// DownloadExport provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) DownloadExport(params *export_service.ExportServiceDownloadExportParams, opts ...export_service.ClientOption) (*export_service.ExportServiceDownloadExportOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// DownloadExport provides a mock function with given fields: ctx, clusterId, exportId
+func (_m *TiDBCloudClient) DownloadExport(ctx context.Context, clusterId string, exportId string) (*export.DownloadExportsResponse, error) {
+	ret := _m.Called(ctx, clusterId, exportId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DownloadExport")
 	}
 
-	var r0 *export_service.ExportServiceDownloadExportOK
+	var r0 *export.DownloadExportsResponse
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceDownloadExportParams, ...export_service.ClientOption) (*export_service.ExportServiceDownloadExportOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*export.DownloadExportsResponse, error)); ok {
+		return rf(ctx, clusterId, exportId)
 	}
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceDownloadExportParams, ...export_service.ClientOption) *export_service.ExportServiceDownloadExportOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *export.DownloadExportsResponse); ok {
+		r0 = rf(ctx, clusterId, exportId)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*export_service.ExportServiceDownloadExportOK)
+			r0 = ret.Get(0).(*export.DownloadExportsResponse)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*export_service.ExportServiceDownloadExportParams, ...export_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, exportId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -652,36 +612,29 @@ func (_m *TiDBCloudClient) GetBackup(params *backup_restore_service.BackupRestor
 	return r0, r1
 }
 
-// GetBranch provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) GetBranch(params *branch_service.BranchServiceGetBranchParams, opts ...branch_service.ClientOption) (*branch_service.BranchServiceGetBranchOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// GetBranch provides a mock function with given fields: ctx, clusterId, branchId
+func (_m *TiDBCloudClient) GetBranch(ctx context.Context, clusterId string, branchId string) (*branch.Branch, error) {
+	ret := _m.Called(ctx, clusterId, branchId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetBranch")
 	}
 
-	var r0 *branch_service.BranchServiceGetBranchOK
+	var r0 *branch.Branch
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*branch_service.BranchServiceGetBranchParams, ...branch_service.ClientOption) (*branch_service.BranchServiceGetBranchOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*branch.Branch, error)); ok {
+		return rf(ctx, clusterId, branchId)
 	}
-	if rf, ok := ret.Get(0).(func(*branch_service.BranchServiceGetBranchParams, ...branch_service.ClientOption) *branch_service.BranchServiceGetBranchOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *branch.Branch); ok {
+		r0 = rf(ctx, clusterId, branchId)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*branch_service.BranchServiceGetBranchOK)
+			r0 = ret.Get(0).(*branch.Branch)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*branch_service.BranchServiceGetBranchParams, ...branch_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, branchId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -726,36 +679,29 @@ func (_m *TiDBCloudClient) GetCluster(params *serverless_service.ServerlessServi
 	return r0, r1
 }
 
-// GetExport provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) GetExport(params *export_service.ExportServiceGetExportParams, opts ...export_service.ClientOption) (*export_service.ExportServiceGetExportOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// GetExport provides a mock function with given fields: ctx, clusterId, exportId
+func (_m *TiDBCloudClient) GetExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error) {
+	ret := _m.Called(ctx, clusterId, exportId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetExport")
 	}
 
-	var r0 *export_service.ExportServiceGetExportOK
+	var r0 *export.Export
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceGetExportParams, ...export_service.ClientOption) (*export_service.ExportServiceGetExportOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*export.Export, error)); ok {
+		return rf(ctx, clusterId, exportId)
 	}
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceGetExportParams, ...export_service.ClientOption) *export_service.ExportServiceGetExportOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *export.Export); ok {
+		r0 = rf(ctx, clusterId, exportId)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*export_service.ExportServiceGetExportOK)
+			r0 = ret.Get(0).(*export.Export)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*export_service.ExportServiceGetExportParams, ...export_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, exportId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -874,36 +820,29 @@ func (_m *TiDBCloudClient) ListBackups(params *backup_restore_service.BackupRest
 	return r0, r1
 }
 
-// ListBranches provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) ListBranches(params *branch_service.BranchServiceListBranchesParams, opts ...branch_service.ClientOption) (*branch_service.BranchServiceListBranchesOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// ListBranches provides a mock function with given fields: ctx, clusterId, pageSize, pageToken
+func (_m *TiDBCloudClient) ListBranches(ctx context.Context, clusterId string, pageSize *int32, pageToken *string) (*branch.ListBranchesResponse, error) {
+	ret := _m.Called(ctx, clusterId, pageSize, pageToken)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ListBranches")
 	}
 
-	var r0 *branch_service.BranchServiceListBranchesOK
+	var r0 *branch.ListBranchesResponse
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*branch_service.BranchServiceListBranchesParams, ...branch_service.ClientOption) (*branch_service.BranchServiceListBranchesOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string) (*branch.ListBranchesResponse, error)); ok {
+		return rf(ctx, clusterId, pageSize, pageToken)
 	}
-	if rf, ok := ret.Get(0).(func(*branch_service.BranchServiceListBranchesParams, ...branch_service.ClientOption) *branch_service.BranchServiceListBranchesOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string) *branch.ListBranchesResponse); ok {
+		r0 = rf(ctx, clusterId, pageSize, pageToken)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*branch_service.BranchServiceListBranchesOK)
+			r0 = ret.Get(0).(*branch.ListBranchesResponse)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*branch_service.BranchServiceListBranchesParams, ...branch_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string, *int32, *string) error); ok {
+		r1 = rf(ctx, clusterId, pageSize, pageToken)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -948,36 +887,29 @@ func (_m *TiDBCloudClient) ListClustersOfProject(params *serverless_service.Serv
 	return r0, r1
 }
 
-// ListExports provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) ListExports(params *export_service.ExportServiceListExportsParams, opts ...export_service.ClientOption) (*export_service.ExportServiceListExportsOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// ListExports provides a mock function with given fields: ctx, clusterId, pageSize, pageToken, orderBy
+func (_m *TiDBCloudClient) ListExports(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*export.ListExportsResponse, error) {
+	ret := _m.Called(ctx, clusterId, pageSize, pageToken, orderBy)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ListExports")
 	}
 
-	var r0 *export_service.ExportServiceListExportsOK
+	var r0 *export.ListExportsResponse
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceListExportsParams, ...export_service.ClientOption) (*export_service.ExportServiceListExportsOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string, *string) (*export.ListExportsResponse, error)); ok {
+		return rf(ctx, clusterId, pageSize, pageToken, orderBy)
 	}
-	if rf, ok := ret.Get(0).(func(*export_service.ExportServiceListExportsParams, ...export_service.ClientOption) *export_service.ExportServiceListExportsOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string, *string) *export.ListExportsResponse); ok {
+		r0 = rf(ctx, clusterId, pageSize, pageToken, orderBy)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*export_service.ExportServiceListExportsOK)
+			r0 = ret.Get(0).(*export.ListExportsResponse)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*export_service.ExportServiceListExportsParams, ...export_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string, *int32, *string, *string) error); ok {
+		r1 = rf(ctx, clusterId, pageSize, pageToken, orderBy)
 	} else {
 		r1 = ret.Error(1)
 	}

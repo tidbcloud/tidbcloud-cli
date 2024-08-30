@@ -16,6 +16,7 @@ package export
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -25,7 +26,7 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
-	exportModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_export/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 )
 
 type ListOpts struct {
@@ -122,9 +123,9 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			// for terminal which can prompt, humanFormat is the default format.
 			// for other terminals, json format is the default format.
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				res := &exportModel.V1beta1ListExportsResponse{
+				res := &export.ListExportsResponse{
 					Exports:   items,
-					TotalSize: total,
+					TotalSize: &total,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)
 				if err != nil {
@@ -134,25 +135,19 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				columns := []output.Column{
 					"ID",
 					"State",
-					"Type",
-					"Compression",
+					"Target",
+					"File",
 					"CreateTime",
-					"ExpireTime",
 				}
 
 				var rows []output.Row
 				for _, item := range items {
-					expireTime := ""
-					if item.ExpireTime != nil {
-						expireTime = item.ExpireTime.String()
-					}
 					rows = append(rows, output.Row{
-						item.ExportID,
-						string(item.State),
-						string(item.Target.Type),
-						string(item.ExportOptions.Compression),
-						item.CreateTime.String(),
-						expireTime,
+						*item.ExportId,
+						string(*item.State),
+						string(*item.Target.Type),
+						string(*item.ExportOptions.FileType),
+						item.CreateTime.Format(time.RFC3339),
 					})
 				}
 

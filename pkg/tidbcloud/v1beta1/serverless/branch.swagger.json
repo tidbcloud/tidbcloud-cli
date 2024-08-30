@@ -1,0 +1,501 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "TiDB Cloud Serverless Open API",
+      "description": "TiDB Cloud Serverless Open API",
+      "version": "v1beta1"
+    },
+    "tags": [
+      {
+        "name": "BranchService"
+      }
+    ],
+    "host": "serverless.tidbapi.com",
+    "schemes": [
+      "https"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "paths": {
+      "/v1beta1/clusters/{clusterId}/branches": {
+        "get": {
+          "summary": "Lists information about branches.",
+          "operationId": "BranchService_ListBranches",
+          "responses": {
+            "200": {
+              "description": "A successful response.",
+              "schema": {
+                "$ref": "#/definitions/ListBranchesResponse"
+              }
+            },
+            "default": {
+              "description": "An unexpected error response.",
+              "schema": {
+                "$ref": "#/definitions/Status"
+              }
+            }
+          },
+          "parameters": [
+            {
+              "name": "clusterId",
+              "description": "Required. The ID of the project to which the clusters belong.",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "pageSize",
+              "description": "Optional. Requested page size. Server may return fewer items than\nrequested. If unspecified, server will pick an appropriate default.",
+              "in": "query",
+              "required": false,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "pageToken",
+              "description": "Optional. A token identifying a page of results the server should return.",
+              "in": "query",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "tags": [
+            "BranchService"
+          ]
+        },
+        "post": {
+          "summary": "Creates a branch.",
+          "operationId": "BranchService_CreateBranch",
+          "responses": {
+            "200": {
+              "description": "A successful response.",
+              "schema": {
+                "$ref": "#/definitions/Branch"
+              }
+            },
+            "default": {
+              "description": "An unexpected error response.",
+              "schema": {
+                "$ref": "#/definitions/Status"
+              }
+            }
+          },
+          "parameters": [
+            {
+              "name": "clusterId",
+              "description": "Required. The cluster ID of the branch",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "branch",
+              "description": "Required. The resource being created",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Branch"
+              }
+            }
+          ],
+          "tags": [
+            "BranchService"
+          ]
+        }
+      },
+      "/v1beta1/clusters/{clusterId}/branches/{branchId}": {
+        "get": {
+          "summary": "Gets information about a branch.",
+          "operationId": "BranchService_GetBranch",
+          "responses": {
+            "200": {
+              "description": "A successful response.",
+              "schema": {
+                "$ref": "#/definitions/Branch"
+              }
+            },
+            "default": {
+              "description": "An unexpected error response.",
+              "schema": {
+                "$ref": "#/definitions/Status"
+              }
+            }
+          },
+          "parameters": [
+            {
+              "name": "clusterId",
+              "description": "Required. The cluster ID of the branch",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "branchId",
+              "description": "Required. The branch ID",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "view",
+              "description": "Optional. The view of the branch to return. Defaults to FULL\n\n - BASIC: Basic response contains basic information for a branch.\n - FULL: FULL response contains all detailed information for a branch.",
+              "in": "query",
+              "required": false,
+              "type": "string",
+              "enum": [
+                "BASIC",
+                "FULL"
+              ]
+            }
+          ],
+          "tags": [
+            "BranchService"
+          ]
+        },
+        "delete": {
+          "summary": "Deletes a branch.",
+          "operationId": "BranchService_DeleteBranch",
+          "responses": {
+            "200": {
+              "description": "A successful response.",
+              "schema": {
+                "$ref": "#/definitions/Branch"
+              }
+            },
+            "default": {
+              "description": "An unexpected error response.",
+              "schema": {
+                "$ref": "#/definitions/Status"
+              }
+            }
+          },
+          "parameters": [
+            {
+              "name": "clusterId",
+              "description": "Required. The cluster ID of the branch",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "branchId",
+              "description": "Required. The branch ID",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "tags": [
+            "BranchService"
+          ]
+        }
+      }
+    },
+    "definitions": {
+      "Any": {
+        "type": "object",
+        "properties": {
+          "@type": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": {}
+      },
+      "Branch": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Output Only. The name of the resource.",
+            "readOnly": true
+          },
+          "branchId": {
+            "type": "string",
+            "description": "Output only. The system-generated ID of the resource.",
+            "readOnly": true
+          },
+          "displayName": {
+            "type": "string",
+            "description": "Required. User-settable and human-readable display name for the branch."
+          },
+          "clusterId": {
+            "type": "string",
+            "description": "Output only. The cluster ID of this branch.",
+            "readOnly": true
+          },
+          "parentId": {
+            "type": "string",
+            "description": "Optional. The parent ID of this branch."
+          },
+          "createdBy": {
+            "type": "string",
+            "description": "Output only. The creator of the branch.",
+            "readOnly": true
+          },
+          "state": {
+            "description": "Output only. The state of this branch.",
+            "readOnly": true,
+            "allOf": [
+              {
+                "$ref": "#/definitions/Branch.State"
+              }
+            ]
+          },
+          "endpoints": {
+            "description": "Optional. The endpoints of this branch.",
+            "allOf": [
+              {
+                "$ref": "#/definitions/Branch.Endpoints"
+              }
+            ]
+          },
+          "userPrefix": {
+            "type": "string",
+            "x-nullable": true,
+            "description": "Output only. User name prefix of this branch. For each TiDB Serverless branch,\nTiDB Cloud generates a unique prefix to distinguish it from other branches.\nWhenever you use or set a database user name, you must include the prefix in the user name.",
+            "readOnly": true
+          },
+          "usage": {
+            "description": "Output only. Usage metrics of this branch. Only display in FULL view.",
+            "readOnly": true,
+            "allOf": [
+              {
+                "$ref": "#/definitions/Branch.Usage"
+              }
+            ]
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Output only. Create timestamp",
+            "readOnly": true
+          },
+          "updateTime": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Output only. Update timestamp",
+            "readOnly": true
+          },
+          "annotations": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Optional. The annotations of this branch.."
+          },
+          "parentDisplayName": {
+            "type": "string",
+            "description": "Output only. The parent display name of this branch.",
+            "readOnly": true
+          },
+          "parentTimestamp": {
+            "type": "string",
+            "format": "date-time",
+            "x-nullable": true,
+            "description": "Optional. The point in time on the parent branch the branch will be created from."
+          }
+        },
+        "title": "Message for branch",
+        "required": [
+          "displayName"
+        ]
+      },
+      "Branch.Endpoints": {
+        "type": "object",
+        "properties": {
+          "public": {
+            "description": "Optional. Public Endpoint for this branch.",
+            "allOf": [
+              {
+                "$ref": "#/definitions/Branch.Endpoints.Public"
+              }
+            ]
+          },
+          "private": {
+            "description": "Output only. Private Endpoint for this branch.",
+            "readOnly": true,
+            "allOf": [
+              {
+                "$ref": "#/definitions/Branch.Endpoints.Private"
+              }
+            ]
+          }
+        },
+        "description": "Message for the Endpoints for this branch."
+      },
+      "Branch.Endpoints.Private": {
+        "type": "object",
+        "properties": {
+          "host": {
+            "type": "string",
+            "description": "Output Only. Host Name of Public Endpoint.",
+            "readOnly": true
+          },
+          "port": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Output Only. Port of Public Endpoint.",
+            "readOnly": true
+          },
+          "aws": {
+            "title": "Message for AWS",
+            "readOnly": true,
+            "allOf": [
+              {
+                "$ref": "#/definitions/Branch.Endpoints.Private.AWS"
+              }
+            ]
+          },
+          "gcp": {
+            "title": "Message for GCP",
+            "readOnly": true,
+            "allOf": [
+              {
+                "$ref": "#/definitions/Branch.Endpoints.Private.GCP"
+              }
+            ]
+          }
+        },
+        "description": "Message for Private Endpoint for this branch."
+      },
+      "Branch.Endpoints.Private.AWS": {
+        "type": "object",
+        "properties": {
+          "serviceName": {
+            "type": "string",
+            "description": "Output Only. Service Name for Private Link Service.",
+            "readOnly": true
+          },
+          "availabilityZone": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Output Only. Availability Zone for Private Link Service.",
+            "readOnly": true
+          }
+        },
+        "description": "Message for AWS Private Link Service."
+      },
+      "Branch.Endpoints.Private.GCP": {
+        "type": "object",
+        "properties": {
+          "serviceAttachmentName": {
+            "type": "string",
+            "description": "Output Only. Target Service Account for Private Link Service.",
+            "readOnly": true
+          }
+        },
+        "description": "Message for GCP Private Link Service."
+      },
+      "Branch.Endpoints.Public": {
+        "type": "object",
+        "properties": {
+          "host": {
+            "type": "string",
+            "title": "Output Only. Host name of Public Endpoint",
+            "readOnly": true
+          },
+          "port": {
+            "type": "integer",
+            "format": "int32",
+            "title": "Output Only. Port of Public Endpoint",
+            "readOnly": true
+          },
+          "disabled": {
+            "type": "boolean",
+            "title": "Optional. Disable Public Endpoint"
+          }
+        },
+        "description": "Message for Public Endpoint for this branch."
+      },
+      "Branch.State": {
+        "type": "string",
+        "enum": [
+          "CREATING",
+          "ACTIVE",
+          "DELETED",
+          "MAINTENANCE"
+        ],
+        "description": "Output Only. Branch State.\n\n - CREATING: The branch is being created.\n - ACTIVE: The branch is active and running.\n - DELETED: The branch is being deleted.\n - MAINTENANCE: The branch is under maintenance."
+      },
+      "Branch.Usage": {
+        "type": "object",
+        "properties": {
+          "requestUnit": {
+            "type": "string",
+            "format": "int64",
+            "description": "Output Only. The latest value of Request Unit Metric for this cluster.",
+            "readOnly": true
+          },
+          "rowStorage": {
+            "type": "number",
+            "format": "double",
+            "description": "Output Only. The latest value of Row Storage Metric for this cluster.",
+            "readOnly": true
+          },
+          "columnarStorage": {
+            "type": "number",
+            "format": "double",
+            "description": "Output Only. The latest value of Columnar Storage Metric for this cluster.",
+            "readOnly": true
+          }
+        },
+        "description": "Message for usage metrics for this cluster."
+      },
+      "BranchView": {
+        "type": "string",
+        "enum": [
+          "BASIC",
+          "FULL"
+        ],
+        "description": "View on branch. Pass this enum to control which subsets of fields to get.\n\n - BASIC: Basic response contains basic information for a branch.\n - FULL: FULL response contains all detailed information for a branch."
+      },
+      "ListBranchesResponse": {
+        "type": "object",
+        "properties": {
+          "branches": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "$ref": "#/definitions/Branch"
+            },
+            "title": "The list of branches"
+          },
+          "nextPageToken": {
+            "type": "string",
+            "description": "A token identifying a page of results the server should return."
+          },
+          "totalSize": {
+            "type": "integer",
+            "format": "int64",
+            "title": "Total number of branches"
+          }
+        },
+        "title": "Message for response to list branches"
+      },
+      "Status": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "$ref": "#/definitions/Any"
+            }
+          }
+        }
+      }
+    }
+  }
