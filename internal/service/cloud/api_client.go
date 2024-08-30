@@ -28,13 +28,12 @@ import (
 	"tidbcloud-cli/internal/version"
 	pingchatClient "tidbcloud-cli/pkg/tidbcloud/pingchat/client"
 	pingchatOp "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
-	branchClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client"
-	branchOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/branch/client/branch_service"
 	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client"
 	iamOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 	serverlessClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client"
 	serverlessOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
-	expClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	brClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client"
 	brOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 	serverlessImportClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client"
@@ -76,13 +75,13 @@ type TiDBCloudClient interface {
 
 	ListImports(params *serverlessImportOp.ImportServiceListImportsParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceListImportsOK, error)
 
-	GetBranch(params *branchOp.BranchServiceGetBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceGetBranchOK, error)
+	GetBranch(ctx context.Context, clusterId, branchId string) (*branch.Branch, error)
 
-	ListBranches(params *branchOp.BranchServiceListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceListBranchesOK, error)
+	ListBranches(ctx context.Context, clusterId string, pageSize *int32, pageToken *string) (*branch.ListBranchesResponse, error)
 
-	CreateBranch(params *branchOp.BranchServiceCreateBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceCreateBranchOK, error)
+	CreateBranch(ctx context.Context, clusterId string, body *branch.Branch) (*branch.Branch, error)
 
-	DeleteBranch(params *branchOp.BranchServiceDeleteBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceDeleteBranchOK, error)
+	DeleteBranch(ctx context.Context, clusterId string, branchId string) (*branch.Branch, error)
 
 	Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.ClientOption) (*pingchatOp.ChatOK, error)
 
@@ -100,17 +99,17 @@ type TiDBCloudClient interface {
 
 	CancelUpload(params *serverlessImportOp.ImportServiceCancelUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelUploadOK, error)
 
-	GetExport(ctx context.Context, clusterId string, exportId string) (*expClient.Export, error)
+	GetExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error)
 
-	CancelExport(ctx context.Context, clusterId string, exportId string) (*expClient.Export, error)
+	CancelExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error)
 
-	CreateExport(ctx context.Context, clusterId string, body *expClient.ExportServiceCreateExportBody) (*expClient.Export, error)
+	CreateExport(ctx context.Context, clusterId string, body *export.ExportServiceCreateExportBody) (*export.Export, error)
 
-	DeleteExport(ctx context.Context, clusterId string, exportId string) (*expClient.Export, error)
+	DeleteExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error)
 
-	ListExports(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*expClient.ListExportsResponse, error)
+	ListExports(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*export.ListExportsResponse, error)
 
-	DownloadExport(ctx context.Context, clusterId string, exportId string) (*expClient.DownloadExportsResponse, error)
+	DownloadExport(ctx context.Context, clusterId string, exportId string) (*export.DownloadExportsResponse, error)
 
 	ListSQLUsers(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersOK, error)
 
@@ -125,12 +124,12 @@ type TiDBCloudClient interface {
 
 type ClientDelegate struct {
 	ic  *iamClient.TidbcloudServerless
-	bc  *branchClient.TidbcloudServerless
+	bc  *branch.APIClient
 	pc  *pingchatClient.TidbcloudPingchat
 	sc  *serverlessClient.TidbcloudServerless
 	brc *brClient.TidbcloudServerless
 	sic *serverlessImportClient.TidbcloudServerless
-	ec  *expClient.APIClient
+	ec  *export.APIClient
 }
 
 func NewClientDelegateWithToken(token string, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*ClientDelegate, error) {
@@ -211,24 +210,35 @@ func (d *ClientDelegate) ListImports(params *serverlessImportOp.ImportServiceLis
 	return d.sic.ImportService.ImportServiceListImports(params, opts...)
 }
 
-func (d *ClientDelegate) GetBranch(params *branchOp.BranchServiceGetBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceGetBranchOK, error) {
-	r, err := d.bc.BranchService.BranchServiceGetBranch(params, opts...)
-	return r, err
+func (d *ClientDelegate) GetBranch(ctx context.Context, clusterId, branchId string) (*branch.Branch, error) {
+	b, h, err := d.bc.BranchServiceAPI.BranchServiceGetBranch(ctx, clusterId, branchId).Execute()
+	return b, parseError(err, h)
 }
 
-func (d *ClientDelegate) ListBranches(params *branchOp.BranchServiceListBranchesParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceListBranchesOK, error) {
-	r, err := d.bc.BranchService.BranchServiceListBranches(params, opts...)
-	return r, err
+func (d *ClientDelegate) ListBranches(ctx context.Context, clusterId string, pageSize *int32, pageToken *string) (*branch.ListBranchesResponse, error) {
+	r := d.bc.BranchServiceAPI.BranchServiceListBranches(ctx, clusterId)
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	bs, h, err := r.Execute()
+	return bs, parseError(err, h)
 }
 
-func (d *ClientDelegate) CreateBranch(params *branchOp.BranchServiceCreateBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceCreateBranchOK, error) {
-	r, err := d.bc.BranchService.BranchServiceCreateBranch(params, opts...)
-	return r, err
+func (d *ClientDelegate) CreateBranch(ctx context.Context, clusterId string, body *branch.Branch) (*branch.Branch, error) {
+	r := d.bc.BranchServiceAPI.BranchServiceCreateBranch(ctx, clusterId)
+	if body != nil {
+		r = r.Branch(*body)
+	}
+	b, h, err := r.Execute()
+	return b, parseError(err, h)
 }
 
-func (d *ClientDelegate) DeleteBranch(params *branchOp.BranchServiceDeleteBranchParams, opts ...branchOp.ClientOption) (*branchOp.BranchServiceDeleteBranchOK, error) {
-	r, err := d.bc.BranchService.BranchServiceDeleteBranch(params, opts...)
-	return r, err
+func (d *ClientDelegate) DeleteBranch(ctx context.Context, clusterId string, branchId string) (*branch.Branch, error) {
+	b, h, err := d.bc.BranchServiceAPI.BranchServiceDeleteBranch(ctx, clusterId, branchId).Execute()
+	return b, parseError(err, h)
 }
 
 func (d *ClientDelegate) Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.ClientOption) (*pingchatOp.ChatOK, error) {
@@ -263,17 +273,17 @@ func (d *ClientDelegate) CancelUpload(params *serverlessImportOp.ImportServiceCa
 	return d.sic.ImportService.ImportServiceCancelUpload(params, opts...)
 }
 
-func (d *ClientDelegate) GetExport(ctx context.Context, clusterId string, exportId string) (*expClient.Export, error) {
+func (d *ClientDelegate) GetExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error) {
 	res, h, err := d.ec.ExportServiceAPI.ExportServiceGetExport(ctx, clusterId, exportId).Execute()
 	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) CancelExport(ctx context.Context, clusterId string, exportId string) (*expClient.Export, error) {
+func (d *ClientDelegate) CancelExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error) {
 	res, h, err := d.ec.ExportServiceAPI.ExportServiceCancelExport(ctx, clusterId, exportId).Execute()
 	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) CreateExport(ctx context.Context, clusterId string, body *expClient.ExportServiceCreateExportBody) (*expClient.Export, error) {
+func (d *ClientDelegate) CreateExport(ctx context.Context, clusterId string, body *export.ExportServiceCreateExportBody) (*export.Export, error) {
 	r := d.ec.ExportServiceAPI.ExportServiceCreateExport(ctx, clusterId)
 	if body != nil {
 		r = r.Body(*body)
@@ -282,12 +292,12 @@ func (d *ClientDelegate) CreateExport(ctx context.Context, clusterId string, bod
 	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) DeleteExport(ctx context.Context, clusterId string, exportId string) (*expClient.Export, error) {
+func (d *ClientDelegate) DeleteExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error) {
 	res, h, err := d.ec.ExportServiceAPI.ExportServiceDeleteExport(ctx, clusterId, exportId).Execute()
 	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) ListExports(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*expClient.ListExportsResponse, error) {
+func (d *ClientDelegate) ListExports(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*export.ListExportsResponse, error) {
 	r := d.ec.ExportServiceAPI.ExportServiceListExports(ctx, clusterId)
 	if pageSize != nil {
 		r = r.PageSize(*pageSize)
@@ -302,7 +312,7 @@ func (d *ClientDelegate) ListExports(ctx context.Context, clusterId string, page
 	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) DownloadExport(ctx context.Context, clusterId string, exportId string) (*expClient.DownloadExportsResponse, error) {
+func (d *ClientDelegate) DownloadExport(ctx context.Context, clusterId string, exportId string) (*export.DownloadExportsResponse, error) {
 	r := d.ec.ExportServiceAPI.ExportServiceDownloadExport(ctx, clusterId, exportId)
 	r = r.Body(make(map[string]interface{}))
 	res, h, err := r.Execute()
@@ -329,7 +339,7 @@ func (d *ClientDelegate) UpdateSQLUser(params *iamOp.PatchV1beta1ClustersCluster
 	return d.ic.Account.PatchV1beta1ClustersClusterIDSQLUsersUserName(params, opts...)
 }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branchClient.TidbcloudServerless, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *serverlessImportClient.TidbcloudServerless, *expClient.APIClient, *iamClient.TidbcloudServerless, error) {
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *serverlessImportClient.TidbcloudServerless, *export.APIClient, *iamClient.TidbcloudServerless, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}
@@ -351,21 +361,26 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 		return nil, nil, nil, nil, nil, nil, nil, err
 	}
 	serverlessTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
-	branchTransport := httpTransport.NewWithClient(serverlessURL.Host, branchClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	backRestoreTransport := httpTransport.NewWithClient(serverlessURL.Host, brClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	importTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessImportClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 	iamTransport := httpTransport.NewWithClient(iamUrl.Host, iamClient.DefaultBasePath, []string{iamUrl.Scheme}, httpclient)
 
-	exportCfg := expClient.NewConfiguration()
+	branchCfg := branch.NewConfiguration()
+	branchCfg.HTTPClient = httpclient
+	branchCfg.Host = serverlessURL.Host
+
+	exportCfg := export.NewConfiguration()
 	exportCfg.HTTPClient = httpclient
 	exportCfg.Host = serverlessURL.Host
+
 	if os.Getenv(config.DebugEnv) == "true" || os.Getenv(config.DebugEnv) == "1" {
+		branchCfg.Debug = true
 		exportCfg.Debug = true
 	}
 
-	return branchClient.New(branchTransport, strfmt.Default), serverlessClient.New(serverlessTransport, strfmt.Default),
+	return branch.NewAPIClient(branchCfg), serverlessClient.New(serverlessTransport, strfmt.Default),
 		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default),
-		serverlessImportClient.New(importTransport, strfmt.Default), expClient.NewAPIClient(exportCfg),
+		serverlessImportClient.New(importTransport, strfmt.Default), export.NewAPIClient(exportCfg),
 		iamClient.New(iamTransport, strfmt.Default), nil
 }
 
