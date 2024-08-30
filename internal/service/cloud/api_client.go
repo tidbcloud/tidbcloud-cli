@@ -17,8 +17,6 @@ package cloud
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -433,17 +431,9 @@ func parseError(err error, resp *http.Response) error {
 	if err1 != nil {
 		return err
 	}
-	// extract error message from response body
-	type errorMsg struct {
-		Message string `json:"message"`
-		Code    int    `json:"code"`
+	path := "[path]"
+	if resp.Request != nil {
+		path = fmt.Sprintf("[%s %s]", resp.Request.Method, resp.Request.URL.Path)
 	}
-	var msg errorMsg
-	if err1 := json.Unmarshal(body, &msg); err1 != nil {
-		return err
-	}
-	if msg.Message != "" {
-		return errors.New(msg.Message)
-	}
-	return err
+	return fmt.Errorf("%s[%s] %s", path, err.Error(), body)
 }
