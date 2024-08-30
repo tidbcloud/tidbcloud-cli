@@ -1,0 +1,608 @@
+openapi: 3.0.1
+info:
+  contact: {}
+  description: This is account open api.
+  title: Acccount OPENAPI
+  version: v1beta1
+servers:
+- url: https://iam.tidbapi.com/
+paths:
+  /customerSignupUrl:
+    post:
+      description: This endpoint creates a new signup URL for an MSP customer.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api.OpenApiCreateMspCustomerSignupUrlReq'
+        description: The MSP customer org ID.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.OpenApiMspCustomerSignupUrl'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.OpenApiError'
+          description: Bad Request
+      summary: Create a new signup URL for an MSP customer
+      tags:
+      - Account
+      x-codegen-request-body-name: mspCustomerOrgId
+  /mspCustomers:
+    get:
+      description: This endpoint returns a list of MSP customers.
+      parameters:
+      - description: The page token of the next page.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: "The page size of the next page. If `pageSize` is set to 0, it\
+          \ returns all MSP customers in one page."
+        in: query
+        name: pageSize
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.OpenApiListMspCustomerRsp'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.OpenApiError'
+          description: Bad Request
+      summary: Get a list of MSP customers
+      tags:
+      - Account
+  /mspCustomers/{customerOrgId}:
+    get:
+      description: This endpoint retrieves a single MSP customer by their customer
+        org ID.
+      parameters:
+      - description: The MSP customer org ID.
+        in: path
+        name: customerOrgId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.OpenApiMspCustomer'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.OpenApiError'
+          description: Bad Request
+      summary: Retrieve a single MSP customer
+      tags:
+      - Account
+  /v1beta1/clusters/{clusterId}/dbuser:
+    get:
+      description: This endpoint retrieves a db user by apikey or access token.
+      parameters:
+      - description: The id of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.GetDbuserRsp'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.OpenApiError'
+          description: Bad Request
+      summary: get one dbuser
+      tags:
+      - Account
+  /v1beta1/clusters/{clusterId}/sqlUsers:
+    get:
+      description: This endpoint retrieves all sql users  in the cluster.
+      parameters:
+      - description: The id of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The page token of the next page.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: "The page size of the next page. If `pageSize` is set to 0, it\
+          \ returns 100 records in one page."
+        in: query
+        name: pageSize
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.ListSqlUsersRsp'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.OpenApiError'
+          description: Bad Request
+      summary: Get all sql users
+      tags:
+      - Account
+    post:
+      description: This endpoint will create one sql user int the cluster.
+      parameters:
+      - description: The id of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api.CreateSqlUserReq'
+        description: create sql user request
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.SqlUser'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.OpenApiError'
+          description: Bad Request
+      summary: Create one sql user
+      tags:
+      - Account
+      x-codegen-request-body-name: sqlUser
+  /v1beta1/clusters/{clusterId}/sqlUsers/{userName}:
+    delete:
+      description: This endpoint delete the sql user by user name.
+      parameters:
+      - description: The id of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The name of the sql user.
+        in: path
+        name: userName
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.BasicResp'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.OpenApiError'
+          description: Bad Request
+      summary: Delete one sql user
+      tags:
+      - Account
+    get:
+      description: This endpoint retrieves a sql user by user name.
+      parameters:
+      - description: The id of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The name of the sql user.
+        in: path
+        name: userName
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.SqlUser'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.OpenApiError'
+          description: Bad Request
+      summary: Query sql user
+      tags:
+      - Account
+    patch:
+      description: This endpoint update one sql user in the cluster.
+      parameters:
+      - description: The id of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The name of the sql user.
+        in: path
+        name: userName
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/api.UpdateSqlUserReq'
+        description: update sql user request
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.SqlUser'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.OpenApiError'
+          description: Bad Request
+      summary: Update one sql user
+      tags:
+      - Account
+      x-codegen-request-body-name: sqlUser
+  /v1beta1/projects:
+    get:
+      description: This endpoint returns a list of org projects.
+      parameters:
+      - description: The page token of the next page.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: "The page size of the next page. If `pageSize` is set to 0, it\
+          \ returns 100 records in one page."
+        in: query
+        name: pageSize
+        schema:
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.ListProjectsRsp'
+          description: OK
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/api.OpenApiError'
+          description: Bad Request
+      summary: Get  list of org projects
+      tags:
+      - Account
+components:
+  schemas:
+    api.BasicResp:
+      example:
+        code: 0
+        message: message
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+      type: object
+    api.CreateSqlUserReq:
+      properties:
+        authMethod:
+          description: "available values [mysql_native_password] ."
+          type: string
+        autoPrefix:
+          description: "if autoPrefix is true ,username and  builtinRole will automatically\
+            \ add the serverless token prefix."
+          type: boolean
+        builtinRole:
+          description: "The builtinRole of the sql user,available values [role_admin,role_readonly,role_readwrite]\
+            \ . if cluster is serverless and autoPrefix is false, the builtinRole[role_readonly,role_readwrite]\
+            \ must be start with serverless token."
+          type: string
+        customRoles:
+          description: "if cluster is serverless ,customRoles roles do not need to\
+            \ be prefixed."
+          items:
+            type: string
+          type: array
+        password:
+          type: string
+        userName:
+          description: "The username of the sql user, if cluster is serverless and\
+            \ autoPrefix is false, the userName must be start with serverless token."
+          type: string
+      type: object
+    api.GetDbuserRsp:
+      example:
+        jwt: jwt
+        dbuser: dbuser
+      properties:
+        dbuser:
+          description: The username connect to the cluster
+          type: string
+        jwt:
+          description: JWT to connect to the cluster
+          type: string
+      type: object
+    api.ListProjectsRsp:
+      example:
+        projects:
+        - create_timestamp: "1688460316"
+          user_count: 4
+          org_id: "324234234"
+          name: project01
+          cluster_count: 7
+          id: "1234566"
+          aws_cmek_enabled: false
+        - create_timestamp: "1688460316"
+          user_count: 4
+          org_id: "324234234"
+          name: project01
+          cluster_count: 7
+          id: "1234566"
+          aws_cmek_enabled: false
+        nextPageToken: 498c7f44-656f-4944-b455-0695faa5d4f9
+      properties:
+        nextPageToken:
+          description: '`next_page_token` can be sent in a subsequent call to fetch
+            more results'
+          example: 498c7f44-656f-4944-b455-0695faa5d4f9
+          type: string
+        projects:
+          items:
+            $ref: '#/components/schemas/api.Project'
+          type: array
+      type: object
+    api.ListSqlUsersRsp:
+      example:
+        nextPageToken: 498c7f44-656f-4944-b455-0695faa5d4f9
+        sqlUsers:
+        - builtinRole: builtinRole
+          authMethod: authMethod
+          userName: userName
+          customRoles:
+          - customRoles
+          - customRoles
+        - builtinRole: builtinRole
+          authMethod: authMethod
+          userName: userName
+          customRoles:
+          - customRoles
+          - customRoles
+      properties:
+        nextPageToken:
+          description: '`next_page_token` can be sent in a subsequent call to fetch
+            more results'
+          example: 498c7f44-656f-4944-b455-0695faa5d4f9
+          type: string
+        sqlUsers:
+          description: "SqlUsers []*SqlUser `json:\"sqlUsers\"`"
+          items:
+            $ref: '#/components/schemas/api.SqlUser'
+          type: array
+      type: object
+    api.OpenApiCreateMspCustomerSignupUrlReq:
+      properties:
+        orgId:
+          description: The ID of the MSP.
+          example: "123456"
+          type: string
+      type: object
+    api.OpenApiError:
+      example:
+        code: code
+        msgPrefix: msgPrefix
+        error: "{}"
+        status: 0
+      properties:
+        code:
+          type: string
+        error:
+          type: object
+        msgPrefix:
+          type: string
+        status:
+          type: integer
+      type: object
+    api.OpenApiListMspCustomerRsp:
+      example:
+        nextPageToken: 498c7f44-656f-4944-b455-0695faa5d4f9
+        mspCustomers:
+        - orgName: New Org
+          id: "123456"
+          state: active
+          effectedTime: 2023-12-06 15:18:13
+          email: 123@my.com
+          expiredTime: 2023-12-06 15:18:13
+          orgId: "123456"
+        - orgName: New Org
+          id: "123456"
+          state: active
+          effectedTime: 2023-12-06 15:18:13
+          email: 123@my.com
+          expiredTime: 2023-12-06 15:18:13
+          orgId: "123456"
+      properties:
+        mspCustomers:
+          description: The list of matching MSP Customers.
+          items:
+            $ref: '#/components/schemas/api.OpenApiMspCustomer'
+          type: array
+        nextPageToken:
+          description: '`next_page_token` can be sent in a subsequent call to fetch
+            more results'
+          example: 498c7f44-656f-4944-b455-0695faa5d4f9
+          type: string
+      type: object
+    api.OpenApiMspCustomer:
+      example:
+        orgName: New Org
+        id: "123456"
+        state: active
+        effectedTime: 2023-12-06 15:18:13
+        email: 123@my.com
+        expiredTime: 2023-12-06 15:18:13
+        orgId: "123456"
+      properties:
+        effectedTime:
+          description: The effected time of the MSP customer.
+          example: 2023-12-06 15:18:13
+          type: string
+        email:
+          description: The email of the MSP customer.
+          example: 123@my.com
+          type: string
+        expiredTime:
+          description: The expired time of the MSP customer.
+          example: 2023-12-06 15:18:13
+          type: string
+        id:
+          description: The ID of the MSP customer.
+          example: "123456"
+          type: string
+        orgId:
+          description: The ID of the MSP customer.
+          example: "123456"
+          type: string
+        orgName:
+          description: The org name of the MSP customer.
+          example: New Org
+          type: string
+        state:
+          description: The state of the MSP customer.
+          example: active
+          type: string
+      type: object
+    api.OpenApiMspCustomerSignupUrl:
+      example:
+        expiredAt: 2024-12-06 15:18:13
+        customerSignupUrl: https://test.com/signup?msp=test&third_party_account_provider=test&third_party_account_token=test
+      properties:
+        customerSignupUrl:
+          description: The signup URL of the MSP customer.
+          example: https://test.com/signup?msp=test&third_party_account_provider=test&third_party_account_token=test
+          type: string
+        expiredAt:
+          description: The expired time of the MSP customer signup url.
+          example: 2024-12-06 15:18:13
+          type: string
+      type: object
+    api.Project:
+      example:
+        create_timestamp: "1688460316"
+        user_count: 4
+        org_id: "324234234"
+        name: project01
+        cluster_count: 7
+        id: "1234566"
+        aws_cmek_enabled: false
+      properties:
+        aws_cmek_enabled:
+          description: The AwsCmekEnabled of the project.
+          example: false
+          type: boolean
+        cluster_count:
+          description: Number of cluster_ in the project.
+          example: 7
+          type: integer
+        create_timestamp:
+          description: The create time key of the project.
+          example: "1688460316"
+          type: string
+        id:
+          description: The id of the project.
+          example: "1234566"
+          type: string
+        name:
+          description: The name of the API key.
+          example: project01
+          type: string
+        org_id:
+          description: The org id  of the project.
+          example: "324234234"
+          type: string
+        user_count:
+          description: Number of users in the project.
+          example: 4
+          type: integer
+      type: object
+    api.SqlUser:
+      example:
+        builtinRole: builtinRole
+        authMethod: authMethod
+        userName: userName
+        customRoles:
+        - customRoles
+        - customRoles
+      properties:
+        authMethod:
+          type: string
+        builtinRole:
+          type: string
+        customRoles:
+          items:
+            type: string
+          type: array
+        userName:
+          type: string
+      type: object
+    api.UpdateSqlUserReq:
+      properties:
+        builtinRole:
+          type: string
+        customRoles:
+          items:
+            type: string
+          type: array
+        password:
+          type: string
+      type: object
+x-original-swagger-version: "2.0"
