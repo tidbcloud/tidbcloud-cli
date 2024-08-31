@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httputil"
 
 	"os"
 	"tidbcloud-cli/internal/config"
@@ -405,12 +406,6 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	exportCfg.HTTPClient = httpclient
 	exportCfg.Host = serverlessURL.Host
 
-	if os.Getenv(config.DebugEnv) == "true" || os.Getenv(config.DebugEnv) == "1" {
-		branchCfg.Debug = true
-		exportCfg.Debug = true
-		iamCfg.Debug = true
-	}
-
 	return branch.NewAPIClient(branchCfg), serverlessClient.New(serverlessTransport, strfmt.Default),
 		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default),
 		serverlessImportClient.New(importTransport, strfmt.Default), export.NewAPIClient(exportCfg),
@@ -419,13 +414,14 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 
 func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {
 	return NewTransportWithAgent(&digest.Transport{
-		Username: publicKey,
-		Password: privateKey,
+		Username:  publicKey,
+		Password:  privateKey,
+		Transport: NewDebugTransport(http.DefaultTransport),
 	}, fmt.Sprintf("%s/%s", config.CliName, version.Version))
 }
 
 func NewBearTokenTransport(token string) http.RoundTripper {
-	return NewTransportWithAgent(NewTransportWithBearToken(http.DefaultTransport, token),
+	return NewTransportWithAgent(NewTransportWithBearToken(NewDebugTransport(http.DefaultTransport), token),
 		fmt.Sprintf("%s/%s", config.CliName, version.Version))
 }
 
@@ -463,6 +459,39 @@ type BearTokenTransport struct {
 func (bt *BearTokenTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", bt.Token))
 	return bt.inner.RoundTrip(r)
+}
+
+func NewDebugTransport(inner http.RoundTripper) http.RoundTripper {
+	return &DebugTransport{inner: inner}
+}
+
+type DebugTransport struct {
+	inner http.RoundTripper
+}
+
+func (dt *DebugTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+	if os.Getenv(config.DebugEnv) == "true" || os.Getenv(config.DebugEnv) == "1" {
+		dump, err := httputil.DumpRequestOut(r, true)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Printf("\n%s", string(dump))
+	}
+
+	resp, err := dt.inner.RoundTrip(r)
+	if err != nil {
+		return resp, err
+	}
+
+	if os.Getenv(config.DebugEnv) == "true" || os.Getenv(config.DebugEnv) == "1" {
+		dump, err := httputil.DumpResponse(resp, true)
+		if err != nil {
+			return resp, err
+		}
+		fmt.Printf("%s\n", string(dump))
+	}
+
+	return resp, err
 }
 
 func parseError(err error, resp *http.Response) error {
