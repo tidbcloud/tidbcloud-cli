@@ -470,7 +470,9 @@ type DebugTransport struct {
 }
 
 func (dt *DebugTransport) RoundTrip(r *http.Request) (*http.Response, error) {
-	if os.Getenv(config.DebugEnv) == "true" || os.Getenv(config.DebugEnv) == "1" {
+	debug := os.Getenv(config.DebugEnv) == "true" || os.Getenv(config.DebugEnv) == "1"
+
+	if debug {
 		dump, err := httputil.DumpRequestOut(r, true)
 		if err != nil {
 			return nil, err
@@ -483,7 +485,7 @@ func (dt *DebugTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 		return resp, err
 	}
 
-	if os.Getenv(config.DebugEnv) == "true" || os.Getenv(config.DebugEnv) == "1" {
+	if debug {
 		dump, err := httputil.DumpResponse(resp, true)
 		if err != nil {
 			return resp, err
