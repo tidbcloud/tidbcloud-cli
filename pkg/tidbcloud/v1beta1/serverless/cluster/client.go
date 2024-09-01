@@ -48,7 +48,7 @@ type APIClient struct {
 
 	// API Services
 
-	BranchServiceAPI *BranchServiceAPIService
+	ServerlessServiceAPI *ServerlessServiceAPIService
 }
 
 type service struct {
@@ -67,7 +67,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.common.client = c
 
 	// API Services
-	c.BranchServiceAPI = (*BranchServiceAPIService)(&c.common)
+	c.ServerlessServiceAPI = (*ServerlessServiceAPIService)(&c.common)
 
 	return c
 }

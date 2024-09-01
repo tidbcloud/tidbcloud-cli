@@ -14,35 +14,38 @@ import (
 	"encoding/json"
 )
 
-// checks if the Status type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &Status{}
+// checks if the GooglerpcStatus type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &GooglerpcStatus{}
 
-// Status struct for Status
-type Status struct {
-	Code    *int32  `json:"code,omitempty"`
+// GooglerpcStatus The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details.  You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).
+type GooglerpcStatus struct {
+	// The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+	Code *int32 `json:"code,omitempty"`
+	// A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
 	Message *string `json:"message,omitempty"`
-	Details []Any   `json:"details,omitempty"`
+	// A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+	Details []ProtobufAny `json:"details,omitempty"`
 }
 
-// NewStatus instantiates a new Status object
+// NewGooglerpcStatus instantiates a new GooglerpcStatus object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewStatus() *Status {
-	this := Status{}
+func NewGooglerpcStatus() *GooglerpcStatus {
+	this := GooglerpcStatus{}
 	return &this
 }
 
-// NewStatusWithDefaults instantiates a new Status object
+// NewGooglerpcStatusWithDefaults instantiates a new GooglerpcStatus object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewStatusWithDefaults() *Status {
-	this := Status{}
+func NewGooglerpcStatusWithDefaults() *GooglerpcStatus {
+	this := GooglerpcStatus{}
 	return &this
 }
 
 // GetCode returns the Code field value if set, zero value otherwise.
-func (o *Status) GetCode() int32 {
+func (o *GooglerpcStatus) GetCode() int32 {
 	if o == nil || IsNil(o.Code) {
 		var ret int32
 		return ret
@@ -52,7 +55,7 @@ func (o *Status) GetCode() int32 {
 
 // GetCodeOk returns a tuple with the Code field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Status) GetCodeOk() (*int32, bool) {
+func (o *GooglerpcStatus) GetCodeOk() (*int32, bool) {
 	if o == nil || IsNil(o.Code) {
 		return nil, false
 	}
@@ -60,7 +63,7 @@ func (o *Status) GetCodeOk() (*int32, bool) {
 }
 
 // HasCode returns a boolean if a field has been set.
-func (o *Status) HasCode() bool {
+func (o *GooglerpcStatus) HasCode() bool {
 	if o != nil && !IsNil(o.Code) {
 		return true
 	}
@@ -69,12 +72,12 @@ func (o *Status) HasCode() bool {
 }
 
 // SetCode gets a reference to the given int32 and assigns it to the Code field.
-func (o *Status) SetCode(v int32) {
+func (o *GooglerpcStatus) SetCode(v int32) {
 	o.Code = &v
 }
 
 // GetMessage returns the Message field value if set, zero value otherwise.
-func (o *Status) GetMessage() string {
+func (o *GooglerpcStatus) GetMessage() string {
 	if o == nil || IsNil(o.Message) {
 		var ret string
 		return ret
@@ -84,7 +87,7 @@ func (o *Status) GetMessage() string {
 
 // GetMessageOk returns a tuple with the Message field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Status) GetMessageOk() (*string, bool) {
+func (o *GooglerpcStatus) GetMessageOk() (*string, bool) {
 	if o == nil || IsNil(o.Message) {
 		return nil, false
 	}
@@ -92,7 +95,7 @@ func (o *Status) GetMessageOk() (*string, bool) {
 }
 
 // HasMessage returns a boolean if a field has been set.
-func (o *Status) HasMessage() bool {
+func (o *GooglerpcStatus) HasMessage() bool {
 	if o != nil && !IsNil(o.Message) {
 		return true
 	}
@@ -101,14 +104,14 @@ func (o *Status) HasMessage() bool {
 }
 
 // SetMessage gets a reference to the given string and assigns it to the Message field.
-func (o *Status) SetMessage(v string) {
+func (o *GooglerpcStatus) SetMessage(v string) {
 	o.Message = &v
 }
 
 // GetDetails returns the Details field value if set, zero value otherwise.
-func (o *Status) GetDetails() []Any {
+func (o *GooglerpcStatus) GetDetails() []ProtobufAny {
 	if o == nil || IsNil(o.Details) {
-		var ret []Any
+		var ret []ProtobufAny
 		return ret
 	}
 	return o.Details
@@ -116,7 +119,7 @@ func (o *Status) GetDetails() []Any {
 
 // GetDetailsOk returns a tuple with the Details field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Status) GetDetailsOk() ([]Any, bool) {
+func (o *GooglerpcStatus) GetDetailsOk() ([]ProtobufAny, bool) {
 	if o == nil || IsNil(o.Details) {
 		return nil, false
 	}
@@ -124,7 +127,7 @@ func (o *Status) GetDetailsOk() ([]Any, bool) {
 }
 
 // HasDetails returns a boolean if a field has been set.
-func (o *Status) HasDetails() bool {
+func (o *GooglerpcStatus) HasDetails() bool {
 	if o != nil && !IsNil(o.Details) {
 		return true
 	}
@@ -132,12 +135,12 @@ func (o *Status) HasDetails() bool {
 	return false
 }
 
-// SetDetails gets a reference to the given []Any and assigns it to the Details field.
-func (o *Status) SetDetails(v []Any) {
+// SetDetails gets a reference to the given []ProtobufAny and assigns it to the Details field.
+func (o *GooglerpcStatus) SetDetails(v []ProtobufAny) {
 	o.Details = v
 }
 
-func (o Status) MarshalJSON() ([]byte, error) {
+func (o GooglerpcStatus) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -145,7 +148,7 @@ func (o Status) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o Status) ToMap() (map[string]interface{}, error) {
+func (o GooglerpcStatus) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Code) {
 		toSerialize["code"] = o.Code
@@ -159,38 +162,38 @@ func (o Status) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-type NullableStatus struct {
-	value *Status
+type NullableGooglerpcStatus struct {
+	value *GooglerpcStatus
 	isSet bool
 }
 
-func (v NullableStatus) Get() *Status {
+func (v NullableGooglerpcStatus) Get() *GooglerpcStatus {
 	return v.value
 }
 
-func (v *NullableStatus) Set(val *Status) {
+func (v *NullableGooglerpcStatus) Set(val *GooglerpcStatus) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableStatus) IsSet() bool {
+func (v NullableGooglerpcStatus) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableStatus) Unset() {
+func (v *NullableGooglerpcStatus) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableStatus(val *Status) *NullableStatus {
-	return &NullableStatus{value: val, isSet: true}
+func NewNullableGooglerpcStatus(val *GooglerpcStatus) *NullableGooglerpcStatus {
+	return &NullableGooglerpcStatus{value: val, isSet: true}
 }
 
-func (v NullableStatus) MarshalJSON() ([]byte, error) {
+func (v NullableGooglerpcStatus) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableStatus) UnmarshalJSON(src []byte) error {
+func (v *NullableGooglerpcStatus) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

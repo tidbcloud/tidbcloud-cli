@@ -14,35 +14,38 @@ import (
 	"encoding/json"
 )
 
-// checks if the BranchEndpointsPublic type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &BranchEndpointsPublic{}
+// checks if the EndpointsPublic type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &EndpointsPublic{}
 
-// BranchEndpointsPublic Message for Public Endpoint for this branch.
-type BranchEndpointsPublic struct {
-	Host     *string `json:"host,omitempty"`
-	Port     *int32  `json:"port,omitempty"`
-	Disabled *bool   `json:"disabled,omitempty"`
+// EndpointsPublic Message for public endpoint to connect to the cluster.
+type EndpointsPublic struct {
+	// Output_only. The hostname of the public endpoint.
+	Host *string `json:"host,omitempty"`
+	// Output_only. The port of the public endpoint.
+	Port *int32 `json:"port,omitempty"`
+	// Optional. Whether the public endpoint is disabled.
+	Disabled *bool `json:"disabled,omitempty"`
 }
 
-// NewBranchEndpointsPublic instantiates a new BranchEndpointsPublic object
+// NewEndpointsPublic instantiates a new EndpointsPublic object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewBranchEndpointsPublic() *BranchEndpointsPublic {
-	this := BranchEndpointsPublic{}
+func NewEndpointsPublic() *EndpointsPublic {
+	this := EndpointsPublic{}
 	return &this
 }
 
-// NewBranchEndpointsPublicWithDefaults instantiates a new BranchEndpointsPublic object
+// NewEndpointsPublicWithDefaults instantiates a new EndpointsPublic object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewBranchEndpointsPublicWithDefaults() *BranchEndpointsPublic {
-	this := BranchEndpointsPublic{}
+func NewEndpointsPublicWithDefaults() *EndpointsPublic {
+	this := EndpointsPublic{}
 	return &this
 }
 
 // GetHost returns the Host field value if set, zero value otherwise.
-func (o *BranchEndpointsPublic) GetHost() string {
+func (o *EndpointsPublic) GetHost() string {
 	if o == nil || IsNil(o.Host) {
 		var ret string
 		return ret
@@ -52,7 +55,7 @@ func (o *BranchEndpointsPublic) GetHost() string {
 
 // GetHostOk returns a tuple with the Host field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *BranchEndpointsPublic) GetHostOk() (*string, bool) {
+func (o *EndpointsPublic) GetHostOk() (*string, bool) {
 	if o == nil || IsNil(o.Host) {
 		return nil, false
 	}
@@ -60,7 +63,7 @@ func (o *BranchEndpointsPublic) GetHostOk() (*string, bool) {
 }
 
 // HasHost returns a boolean if a field has been set.
-func (o *BranchEndpointsPublic) HasHost() bool {
+func (o *EndpointsPublic) HasHost() bool {
 	if o != nil && !IsNil(o.Host) {
 		return true
 	}
@@ -69,12 +72,12 @@ func (o *BranchEndpointsPublic) HasHost() bool {
 }
 
 // SetHost gets a reference to the given string and assigns it to the Host field.
-func (o *BranchEndpointsPublic) SetHost(v string) {
+func (o *EndpointsPublic) SetHost(v string) {
 	o.Host = &v
 }
 
 // GetPort returns the Port field value if set, zero value otherwise.
-func (o *BranchEndpointsPublic) GetPort() int32 {
+func (o *EndpointsPublic) GetPort() int32 {
 	if o == nil || IsNil(o.Port) {
 		var ret int32
 		return ret
@@ -84,7 +87,7 @@ func (o *BranchEndpointsPublic) GetPort() int32 {
 
 // GetPortOk returns a tuple with the Port field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *BranchEndpointsPublic) GetPortOk() (*int32, bool) {
+func (o *EndpointsPublic) GetPortOk() (*int32, bool) {
 	if o == nil || IsNil(o.Port) {
 		return nil, false
 	}
@@ -92,7 +95,7 @@ func (o *BranchEndpointsPublic) GetPortOk() (*int32, bool) {
 }
 
 // HasPort returns a boolean if a field has been set.
-func (o *BranchEndpointsPublic) HasPort() bool {
+func (o *EndpointsPublic) HasPort() bool {
 	if o != nil && !IsNil(o.Port) {
 		return true
 	}
@@ -101,12 +104,12 @@ func (o *BranchEndpointsPublic) HasPort() bool {
 }
 
 // SetPort gets a reference to the given int32 and assigns it to the Port field.
-func (o *BranchEndpointsPublic) SetPort(v int32) {
+func (o *EndpointsPublic) SetPort(v int32) {
 	o.Port = &v
 }
 
 // GetDisabled returns the Disabled field value if set, zero value otherwise.
-func (o *BranchEndpointsPublic) GetDisabled() bool {
+func (o *EndpointsPublic) GetDisabled() bool {
 	if o == nil || IsNil(o.Disabled) {
 		var ret bool
 		return ret
@@ -116,7 +119,7 @@ func (o *BranchEndpointsPublic) GetDisabled() bool {
 
 // GetDisabledOk returns a tuple with the Disabled field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *BranchEndpointsPublic) GetDisabledOk() (*bool, bool) {
+func (o *EndpointsPublic) GetDisabledOk() (*bool, bool) {
 	if o == nil || IsNil(o.Disabled) {
 		return nil, false
 	}
@@ -124,7 +127,7 @@ func (o *BranchEndpointsPublic) GetDisabledOk() (*bool, bool) {
 }
 
 // HasDisabled returns a boolean if a field has been set.
-func (o *BranchEndpointsPublic) HasDisabled() bool {
+func (o *EndpointsPublic) HasDisabled() bool {
 	if o != nil && !IsNil(o.Disabled) {
 		return true
 	}
@@ -133,11 +136,11 @@ func (o *BranchEndpointsPublic) HasDisabled() bool {
 }
 
 // SetDisabled gets a reference to the given bool and assigns it to the Disabled field.
-func (o *BranchEndpointsPublic) SetDisabled(v bool) {
+func (o *EndpointsPublic) SetDisabled(v bool) {
 	o.Disabled = &v
 }
 
-func (o BranchEndpointsPublic) MarshalJSON() ([]byte, error) {
+func (o EndpointsPublic) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -145,7 +148,7 @@ func (o BranchEndpointsPublic) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o BranchEndpointsPublic) ToMap() (map[string]interface{}, error) {
+func (o EndpointsPublic) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Host) {
 		toSerialize["host"] = o.Host
@@ -159,38 +162,38 @@ func (o BranchEndpointsPublic) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-type NullableBranchEndpointsPublic struct {
-	value *BranchEndpointsPublic
+type NullableEndpointsPublic struct {
+	value *EndpointsPublic
 	isSet bool
 }
 
-func (v NullableBranchEndpointsPublic) Get() *BranchEndpointsPublic {
+func (v NullableEndpointsPublic) Get() *EndpointsPublic {
 	return v.value
 }
 
-func (v *NullableBranchEndpointsPublic) Set(val *BranchEndpointsPublic) {
+func (v *NullableEndpointsPublic) Set(val *EndpointsPublic) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableBranchEndpointsPublic) IsSet() bool {
+func (v NullableEndpointsPublic) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableBranchEndpointsPublic) Unset() {
+func (v *NullableEndpointsPublic) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableBranchEndpointsPublic(val *BranchEndpointsPublic) *NullableBranchEndpointsPublic {
-	return &NullableBranchEndpointsPublic{value: val, isSet: true}
+func NewNullableEndpointsPublic(val *EndpointsPublic) *NullableEndpointsPublic {
+	return &NullableEndpointsPublic{value: val, isSet: true}
 }
 
-func (v NullableBranchEndpointsPublic) MarshalJSON() ([]byte, error) {
+func (v NullableEndpointsPublic) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableBranchEndpointsPublic) UnmarshalJSON(src []byte) error {
+func (v *NullableEndpointsPublic) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

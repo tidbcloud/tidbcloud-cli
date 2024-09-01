@@ -14,34 +14,34 @@ import (
 	"encoding/json"
 )
 
-// checks if the BranchEndpointsPrivateGCP type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &BranchEndpointsPrivateGCP{}
+// checks if the PrivateGCP type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &PrivateGCP{}
 
-// BranchEndpointsPrivateGCP Message for GCP Private Link Service.
-type BranchEndpointsPrivateGCP struct {
-	// Output Only. Target Service Account for Private Link Service.
+// PrivateGCP Message for GCP Private Service information.
+type PrivateGCP struct {
+	// Output_only. The target GCP service attachment name for private access.
 	ServiceAttachmentName *string `json:"serviceAttachmentName,omitempty"`
 }
 
-// NewBranchEndpointsPrivateGCP instantiates a new BranchEndpointsPrivateGCP object
+// NewPrivateGCP instantiates a new PrivateGCP object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewBranchEndpointsPrivateGCP() *BranchEndpointsPrivateGCP {
-	this := BranchEndpointsPrivateGCP{}
+func NewPrivateGCP() *PrivateGCP {
+	this := PrivateGCP{}
 	return &this
 }
 
-// NewBranchEndpointsPrivateGCPWithDefaults instantiates a new BranchEndpointsPrivateGCP object
+// NewPrivateGCPWithDefaults instantiates a new PrivateGCP object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewBranchEndpointsPrivateGCPWithDefaults() *BranchEndpointsPrivateGCP {
-	this := BranchEndpointsPrivateGCP{}
+func NewPrivateGCPWithDefaults() *PrivateGCP {
+	this := PrivateGCP{}
 	return &this
 }
 
 // GetServiceAttachmentName returns the ServiceAttachmentName field value if set, zero value otherwise.
-func (o *BranchEndpointsPrivateGCP) GetServiceAttachmentName() string {
+func (o *PrivateGCP) GetServiceAttachmentName() string {
 	if o == nil || IsNil(o.ServiceAttachmentName) {
 		var ret string
 		return ret
@@ -51,7 +51,7 @@ func (o *BranchEndpointsPrivateGCP) GetServiceAttachmentName() string {
 
 // GetServiceAttachmentNameOk returns a tuple with the ServiceAttachmentName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *BranchEndpointsPrivateGCP) GetServiceAttachmentNameOk() (*string, bool) {
+func (o *PrivateGCP) GetServiceAttachmentNameOk() (*string, bool) {
 	if o == nil || IsNil(o.ServiceAttachmentName) {
 		return nil, false
 	}
@@ -59,7 +59,7 @@ func (o *BranchEndpointsPrivateGCP) GetServiceAttachmentNameOk() (*string, bool)
 }
 
 // HasServiceAttachmentName returns a boolean if a field has been set.
-func (o *BranchEndpointsPrivateGCP) HasServiceAttachmentName() bool {
+func (o *PrivateGCP) HasServiceAttachmentName() bool {
 	if o != nil && !IsNil(o.ServiceAttachmentName) {
 		return true
 	}
@@ -68,11 +68,11 @@ func (o *BranchEndpointsPrivateGCP) HasServiceAttachmentName() bool {
 }
 
 // SetServiceAttachmentName gets a reference to the given string and assigns it to the ServiceAttachmentName field.
-func (o *BranchEndpointsPrivateGCP) SetServiceAttachmentName(v string) {
+func (o *PrivateGCP) SetServiceAttachmentName(v string) {
 	o.ServiceAttachmentName = &v
 }
 
-func (o BranchEndpointsPrivateGCP) MarshalJSON() ([]byte, error) {
+func (o PrivateGCP) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -80,7 +80,7 @@ func (o BranchEndpointsPrivateGCP) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o BranchEndpointsPrivateGCP) ToMap() (map[string]interface{}, error) {
+func (o PrivateGCP) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.ServiceAttachmentName) {
 		toSerialize["serviceAttachmentName"] = o.ServiceAttachmentName
@@ -88,38 +88,38 @@ func (o BranchEndpointsPrivateGCP) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-type NullableBranchEndpointsPrivateGCP struct {
-	value *BranchEndpointsPrivateGCP
+type NullablePrivateGCP struct {
+	value *PrivateGCP
 	isSet bool
 }
 
-func (v NullableBranchEndpointsPrivateGCP) Get() *BranchEndpointsPrivateGCP {
+func (v NullablePrivateGCP) Get() *PrivateGCP {
 	return v.value
 }
 
-func (v *NullableBranchEndpointsPrivateGCP) Set(val *BranchEndpointsPrivateGCP) {
+func (v *NullablePrivateGCP) Set(val *PrivateGCP) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableBranchEndpointsPrivateGCP) IsSet() bool {
+func (v NullablePrivateGCP) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableBranchEndpointsPrivateGCP) Unset() {
+func (v *NullablePrivateGCP) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableBranchEndpointsPrivateGCP(val *BranchEndpointsPrivateGCP) *NullableBranchEndpointsPrivateGCP {
-	return &NullableBranchEndpointsPrivateGCP{value: val, isSet: true}
+func NewNullablePrivateGCP(val *PrivateGCP) *NullablePrivateGCP {
+	return &NullablePrivateGCP{value: val, isSet: true}
 }
 
-func (v NullableBranchEndpointsPrivateGCP) MarshalJSON() ([]byte, error) {
+func (v NullablePrivateGCP) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableBranchEndpointsPrivateGCP) UnmarshalJSON(src []byte) error {
+func (v *NullablePrivateGCP) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

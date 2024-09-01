@@ -14,36 +14,36 @@ import (
 	"encoding/json"
 )
 
-// checks if the BranchEndpointsPrivateAWS type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &BranchEndpointsPrivateAWS{}
+// checks if the PrivateAWS type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &PrivateAWS{}
 
-// BranchEndpointsPrivateAWS Message for AWS Private Link Service.
-type BranchEndpointsPrivateAWS struct {
-	// Output Only. Service Name for Private Link Service.
+// PrivateAWS Message for AWS PrivateLink information.
+type PrivateAWS struct {
+	// Output_only. The AWS service name for private access.
 	ServiceName *string `json:"serviceName,omitempty"`
-	// Output Only. Availability Zone for Private Link Service.
+	// Output_only. The availability zones that the service is available in.
 	AvailabilityZone []string `json:"availabilityZone,omitempty"`
 }
 
-// NewBranchEndpointsPrivateAWS instantiates a new BranchEndpointsPrivateAWS object
+// NewPrivateAWS instantiates a new PrivateAWS object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewBranchEndpointsPrivateAWS() *BranchEndpointsPrivateAWS {
-	this := BranchEndpointsPrivateAWS{}
+func NewPrivateAWS() *PrivateAWS {
+	this := PrivateAWS{}
 	return &this
 }
 
-// NewBranchEndpointsPrivateAWSWithDefaults instantiates a new BranchEndpointsPrivateAWS object
+// NewPrivateAWSWithDefaults instantiates a new PrivateAWS object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewBranchEndpointsPrivateAWSWithDefaults() *BranchEndpointsPrivateAWS {
-	this := BranchEndpointsPrivateAWS{}
+func NewPrivateAWSWithDefaults() *PrivateAWS {
+	this := PrivateAWS{}
 	return &this
 }
 
 // GetServiceName returns the ServiceName field value if set, zero value otherwise.
-func (o *BranchEndpointsPrivateAWS) GetServiceName() string {
+func (o *PrivateAWS) GetServiceName() string {
 	if o == nil || IsNil(o.ServiceName) {
 		var ret string
 		return ret
@@ -53,7 +53,7 @@ func (o *BranchEndpointsPrivateAWS) GetServiceName() string {
 
 // GetServiceNameOk returns a tuple with the ServiceName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *BranchEndpointsPrivateAWS) GetServiceNameOk() (*string, bool) {
+func (o *PrivateAWS) GetServiceNameOk() (*string, bool) {
 	if o == nil || IsNil(o.ServiceName) {
 		return nil, false
 	}
@@ -61,7 +61,7 @@ func (o *BranchEndpointsPrivateAWS) GetServiceNameOk() (*string, bool) {
 }
 
 // HasServiceName returns a boolean if a field has been set.
-func (o *BranchEndpointsPrivateAWS) HasServiceName() bool {
+func (o *PrivateAWS) HasServiceName() bool {
 	if o != nil && !IsNil(o.ServiceName) {
 		return true
 	}
@@ -70,12 +70,12 @@ func (o *BranchEndpointsPrivateAWS) HasServiceName() bool {
 }
 
 // SetServiceName gets a reference to the given string and assigns it to the ServiceName field.
-func (o *BranchEndpointsPrivateAWS) SetServiceName(v string) {
+func (o *PrivateAWS) SetServiceName(v string) {
 	o.ServiceName = &v
 }
 
 // GetAvailabilityZone returns the AvailabilityZone field value if set, zero value otherwise.
-func (o *BranchEndpointsPrivateAWS) GetAvailabilityZone() []string {
+func (o *PrivateAWS) GetAvailabilityZone() []string {
 	if o == nil || IsNil(o.AvailabilityZone) {
 		var ret []string
 		return ret
@@ -85,7 +85,7 @@ func (o *BranchEndpointsPrivateAWS) GetAvailabilityZone() []string {
 
 // GetAvailabilityZoneOk returns a tuple with the AvailabilityZone field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *BranchEndpointsPrivateAWS) GetAvailabilityZoneOk() ([]string, bool) {
+func (o *PrivateAWS) GetAvailabilityZoneOk() ([]string, bool) {
 	if o == nil || IsNil(o.AvailabilityZone) {
 		return nil, false
 	}
@@ -93,7 +93,7 @@ func (o *BranchEndpointsPrivateAWS) GetAvailabilityZoneOk() ([]string, bool) {
 }
 
 // HasAvailabilityZone returns a boolean if a field has been set.
-func (o *BranchEndpointsPrivateAWS) HasAvailabilityZone() bool {
+func (o *PrivateAWS) HasAvailabilityZone() bool {
 	if o != nil && !IsNil(o.AvailabilityZone) {
 		return true
 	}
@@ -102,11 +102,11 @@ func (o *BranchEndpointsPrivateAWS) HasAvailabilityZone() bool {
 }
 
 // SetAvailabilityZone gets a reference to the given []string and assigns it to the AvailabilityZone field.
-func (o *BranchEndpointsPrivateAWS) SetAvailabilityZone(v []string) {
+func (o *PrivateAWS) SetAvailabilityZone(v []string) {
 	o.AvailabilityZone = v
 }
 
-func (o BranchEndpointsPrivateAWS) MarshalJSON() ([]byte, error) {
+func (o PrivateAWS) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -114,7 +114,7 @@ func (o BranchEndpointsPrivateAWS) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o BranchEndpointsPrivateAWS) ToMap() (map[string]interface{}, error) {
+func (o PrivateAWS) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.ServiceName) {
 		toSerialize["serviceName"] = o.ServiceName
@@ -125,38 +125,38 @@ func (o BranchEndpointsPrivateAWS) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-type NullableBranchEndpointsPrivateAWS struct {
-	value *BranchEndpointsPrivateAWS
+type NullablePrivateAWS struct {
+	value *PrivateAWS
 	isSet bool
 }
 
-func (v NullableBranchEndpointsPrivateAWS) Get() *BranchEndpointsPrivateAWS {
+func (v NullablePrivateAWS) Get() *PrivateAWS {
 	return v.value
 }
 
-func (v *NullableBranchEndpointsPrivateAWS) Set(val *BranchEndpointsPrivateAWS) {
+func (v *NullablePrivateAWS) Set(val *PrivateAWS) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableBranchEndpointsPrivateAWS) IsSet() bool {
+func (v NullablePrivateAWS) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableBranchEndpointsPrivateAWS) Unset() {
+func (v *NullablePrivateAWS) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableBranchEndpointsPrivateAWS(val *BranchEndpointsPrivateAWS) *NullableBranchEndpointsPrivateAWS {
-	return &NullableBranchEndpointsPrivateAWS{value: val, isSet: true}
+func NewNullablePrivateAWS(val *PrivateAWS) *NullablePrivateAWS {
+	return &NullablePrivateAWS{value: val, isSet: true}
 }
 
-func (v NullableBranchEndpointsPrivateAWS) MarshalJSON() ([]byte, error) {
+func (v NullablePrivateAWS) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableBranchEndpointsPrivateAWS) UnmarshalJSON(src []byte) error {
+func (v *NullablePrivateAWS) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

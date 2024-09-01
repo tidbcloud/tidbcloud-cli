@@ -4,96 +4,93 @@ info:
   title: TiDB Cloud Serverless Open API
   version: v1beta1
 servers:
-- url: https://serverless.tidbapi.com/
+- url: https://serverless.tidbapi.com/v1beta1
 tags:
-- name: BranchService
+- name: ServerlessService
 paths:
-  /v1beta1/clusters/{clusterId}/branches:
+  /clusters:
     get:
-      operationId: BranchService_ListBranches
+      operationId: ServerlessService_ListClusters
       parameters:
-      - description: Required. The ID of the project to which the clusters belong.
-        in: path
-        name: clusterId
-        required: true
-        schema:
-          type: string
-      - description: |-
-          Optional. Requested page size. Server may return fewer items than
-          requested. If unspecified, server will pick an appropriate default.
+      - description: Optional. The maximum number of clusters to return.
         in: query
         name: pageSize
         schema:
           format: int32
           type: integer
-      - description: Optional. A token identifying a page of results the server should
-          return.
+      - description: Optional. The page token from the previous response for pagination.
         in: query
         name: pageToken
         schema:
           type: string
+      - description: Optional. The filter expression to filter clusters.
+        in: query
+        name: filter
+        schema:
+          type: string
+      - description: Optional. The order by expression for sorting clusters.
+        in: query
+        name: orderBy
+        schema:
+          type: string
+      - description: |-
+          The number of individual resources to skip before starting to return results.
+          If the skip value causes the cursor to move past the end of the collection,
+          the response will be 200 OK with an empty result set and no next_page_token.
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ListBranchesResponse'
+                $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1ListClustersResponse'
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Lists information about branches.
+      summary: Provides a list of TiDB Serverless clusters in a project.
       tags:
-      - BranchService
+      - ServerlessService
     post:
-      operationId: BranchService_CreateBranch
-      parameters:
-      - description: Required. The cluster ID of the branch
-        in: path
-        name: clusterId
-        required: true
-        schema:
-          type: string
+      operationId: ServerlessService_CreateCluster
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Branch'
-        description: Required. The resource being created
+              $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1Cluster'
+        description: Required. The cluster to be created.
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Branch'
+                $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1Cluster'
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Creates a branch.
+      summary: Creates a new TiDB Serverless cluster.
       tags:
-      - BranchService
-      x-codegen-request-body-name: branch
-  /v1beta1/clusters/{clusterId}/branches/{branchId}:
+      - ServerlessService
+      x-codegen-request-body-name: cluster
+  /clusters/{clusterId}:
     delete:
-      operationId: BranchService_DeleteBranch
+      operationId: ServerlessService_DeleteCluster
       parameters:
-      - description: Required. The cluster ID of the branch
+      - description: Required. The ID of the cluster to be deleted.
         in: path
         name: clusterId
-        required: true
-        schema:
-          type: string
-      - description: Required. The branch ID
-        in: path
-        name: branchId
         required: true
         schema:
           type: string
@@ -102,37 +99,31 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Branch'
+                $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1Cluster'
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Deletes a branch.
+      summary: Deletes a specific TiDB Serverless cluster.
       tags:
-      - BranchService
+      - ServerlessService
     get:
-      operationId: BranchService_GetBranch
+      operationId: ServerlessService_GetCluster
       parameters:
-      - description: Required. The cluster ID of the branch
+      - description: Required. The ID of the cluster to be retrieved.
         in: path
         name: clusterId
-        required: true
-        schema:
-          type: string
-      - description: Required. The branch ID
-        in: path
-        name: branchId
         required: true
         schema:
           type: string
       - description: |-
-          Optional. The view of the branch to return. Defaults to FULL
+          Optional. The level of detail to return for the cluster.
 
-           - BASIC: Basic response contains basic information for a branch.
-           - FULL: FULL response contains all detailed information for a branch.
+           - BASIC: Only basic information about the cluster is returned.
+           - FULL: All details about the cluster are returned.
         in: query
         name: view
         schema:
@@ -145,297 +136,273 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Branch'
+                $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1Cluster'
           description: A successful response.
         default:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Status'
+                $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Gets information about a branch.
+      summary: Retrieves details of a specific TiDB Serverless cluster.
       tags:
-      - BranchService
+      - ServerlessService
+  /clusters/{cluster.clusterId}:
+    patch:
+      operationId: ServerlessService_PartialUpdateCluster
+      parameters:
+      - description: Output_only. The unique ID of the cluster.
+        in: path
+        name: cluster.clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1beta1ServerlessServicePartialUpdateClusterBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1Cluster'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Partially updates a specific TiDB Serverless cluster.
+      tags:
+      - ServerlessService
+      x-codegen-request-body-name: body
+  /clusters/{clusterId}/password:
+    put:
+      operationId: ServerlessService_ChangeRootPassword
+      parameters:
+      - description: Required. The ID of the cluster for which the password is to
+          be changed.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ServerlessServiceChangeRootPasswordBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1ChangeRootPasswordResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Changes the root password of a specific TiDB Serverless cluster.
+      tags:
+      - ServerlessService
+      x-codegen-request-body-name: body
+  /regions:
+    get:
+      operationId: ServerlessService_ListRegions
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1ListRegionsResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Provides a list of available regions for TiDB Serverless clusters.
+      tags:
+      - ServerlessService
 components:
   schemas:
-    Any:
-      additionalProperties:
-        type: object
-      example:
-        '@type': '@type'
+    ClusterSpendingLimit:
+      description: Message for spending limit configuration.
       properties:
-        '@type':
-          type: string
+        monthly:
+          description: Optional. Maximum monthly spending limit in USD cents.
+          format: int32
+          type: integer
       type: object
-    Branch:
-      example:
-        branchId: branchId
-        endpoints: "{}"
-        displayName: displayName
-        usage: "{}"
-        annotations:
-          key: annotations
-        updateTime: 2000-01-23T04:56:07.000+00:00
-        clusterId: clusterId
-        parentId: parentId
-        parentDisplayName: parentDisplayName
-        parentTimestamp: 2000-01-23T04:56:07.000+00:00
-        createdBy: createdBy
-        createTime: 2000-01-23T04:56:07.000+00:00
-        name: name
-        userPrefix: userPrefix
-        state: "{}"
-      properties:
-        name:
-          description: Output Only. The name of the resource.
-          readOnly: true
-          type: string
-        branchId:
-          description: Output only. The system-generated ID of the resource.
-          readOnly: true
-          type: string
-        displayName:
-          description: Required. User-settable and human-readable display name for
-            the branch.
-          type: string
-        clusterId:
-          description: Output only. The cluster ID of this branch.
-          readOnly: true
-          type: string
-        parentId:
-          description: Optional. The parent ID of this branch.
-          type: string
-        createdBy:
-          description: Output only. The creator of the branch.
-          readOnly: true
-          type: string
-        state:
-          allOf:
-          - $ref: '#/components/schemas/Branch.State'
-          description: Output only. The state of this branch.
-          type: object
-        endpoints:
-          allOf:
-          - $ref: '#/components/schemas/Branch.Endpoints'
-          description: Optional. The endpoints of this branch.
-          type: object
-        userPrefix:
-          description: |-
-            Output only. User name prefix of this branch. For each TiDB Serverless branch,
-            TiDB Cloud generates a unique prefix to distinguish it from other branches.
-            Whenever you use or set a database user name, you must include the prefix in the user name.
-          nullable: true
-          readOnly: true
-          type: string
-        usage:
-          allOf:
-          - $ref: '#/components/schemas/Branch.Usage'
-          description: Output only. Usage metrics of this branch. Only display in
-            FULL view.
-          type: object
-        createTime:
-          format: date-time
-          readOnly: true
-          title: Output only. Create timestamp
-          type: string
-        updateTime:
-          format: date-time
-          readOnly: true
-          title: Output only. Update timestamp
-          type: string
-        annotations:
-          additionalProperties:
-            type: string
-          description: Optional. The annotations of this branch..
-          type: object
-        parentDisplayName:
-          description: Output only. The parent display name of this branch.
-          readOnly: true
-          type: string
-        parentTimestamp:
-          description: Optional. The point in time on the parent branch the branch
-            will be created from.
-          format: date-time
-          nullable: true
-          type: string
-      required:
-      - displayName
-      title: Message for branch
-      type: object
-    Branch.Endpoints:
-      description: Message for the Endpoints for this branch.
-      properties:
-        public:
-          allOf:
-          - $ref: '#/components/schemas/Branch.Endpoints.Public'
-          description: Optional. Public Endpoint for this branch.
-          type: object
-        private:
-          allOf:
-          - $ref: '#/components/schemas/Branch.Endpoints.Private'
-          description: Output only. Private Endpoint for this branch.
-          type: object
-      type: object
-    Branch.Endpoints.Private:
-      description: Message for Private Endpoint for this branch.
+    EndpointsPrivate:
+      description: Message for private endpoint to securely connect to the cluster.
       properties:
         host:
-          description: Output Only. Host Name of Public Endpoint.
+          description: Output_only. The hostname of the private endpoint.
           readOnly: true
           type: string
         port:
-          description: Output Only. Port of Public Endpoint.
+          description: Output_only. The port of the private endpoint.
           format: int32
           readOnly: true
           type: integer
         aws:
           allOf:
-          - $ref: '#/components/schemas/Branch.Endpoints.Private.AWS'
-          title: Message for AWS
+          - $ref: '#/components/schemas/PrivateAWS'
           type: object
         gcp:
           allOf:
-          - $ref: '#/components/schemas/Branch.Endpoints.Private.GCP'
-          title: Message for GCP
+          - $ref: '#/components/schemas/PrivateGCP'
           type: object
       type: object
-    Branch.Endpoints.Private.AWS:
-      description: Message for AWS Private Link Service.
+    EndpointsPublic:
+      description: Message for public endpoint to connect to the cluster.
+      properties:
+        host:
+          description: Output_only. The hostname of the public endpoint.
+          readOnly: true
+          type: string
+        port:
+          description: Output_only. The port of the public endpoint.
+          format: int32
+          readOnly: true
+          type: integer
+        disabled:
+          description: Optional. Whether the public endpoint is disabled.
+          type: boolean
+      type: object
+    PrivateAWS:
+      description: Message for AWS PrivateLink information.
       properties:
         serviceName:
-          description: Output Only. Service Name for Private Link Service.
+          description: Output_only. The AWS service name for private access.
           readOnly: true
           type: string
         availabilityZone:
-          description: Output Only. Availability Zone for Private Link Service.
+          description: Output_only. The availability zones that the service is available
+            in.
           items:
             type: string
           readOnly: true
           type: array
       type: object
-    Branch.Endpoints.Private.GCP:
-      description: Message for GCP Private Link Service.
+    PrivateGCP:
+      description: Message for GCP Private Service information.
       properties:
         serviceAttachmentName:
-          description: Output Only. Target Service Account for Private Link Service.
+          description: Output_only. The target GCP service attachment name for private
+            access.
           readOnly: true
           type: string
       type: object
-    Branch.Endpoints.Public:
-      description: Message for Public Endpoint for this branch.
+    ServerlessServiceChangeRootPasswordBody:
+      description: Message for requesting to change the root password of a TiDB Serverless
+        cluster.
+      example:
+        password: password
       properties:
-        host:
-          readOnly: true
-          title: Output Only. Host name of Public Endpoint
+        password:
+          description: Required. The new root password for the cluster.
           type: string
-        port:
-          format: int32
-          readOnly: true
-          title: Output Only. Port of Public Endpoint
-          type: integer
-        disabled:
-          title: Optional. Disable Public Endpoint
-          type: boolean
+      required:
+      - password
       type: object
-    Branch.State:
+    commonv1beta1ClusterState:
       description: |-
-        Output Only. Branch State.
+        Enum of possible states of a cluster.
 
-         - CREATING: The branch is being created.
-         - ACTIVE: The branch is active and running.
-         - DELETED: The branch is being deleted.
-         - MAINTENANCE: The branch is under maintenance.
+         - CREATING: Cluster is being created.
+         - DELETING: Cluster is being deleted.
+         - ACTIVE: Cluster is active for use.
+         - RESTORING: Cluster data is being restored.
+         - MAINTENANCE: Cluster is under maintenance.
+         - DELETED: Cluster has been deleted.
+         - INACTIVE: Cluster is not active, but not being deleted.
+         - UPGRADING: Cluster is being updated.
+        Only for Dedicated Cluster.
+         - IMPORTING: Cluster is being imported.
+        Only for Dedicated Cluster.
+         - MODIFYING: Cluster is being modified.
+        Only for Dedicated Cluster.
+         - PAUSING: Cluster is being paused.
+        Only for Dedicated Cluster.
+         - PAUSED: Cluster is paused.
+        Only for Dedicated Cluster.
+         - RESUMING: Cluster is resuming.
+        Only for Dedicated Cluster.
       enum:
       - CREATING
+      - DELETING
       - ACTIVE
-      - DELETED
+      - RESTORING
       - MAINTENANCE
+      - DELETED
+      - INACTIVE
+      - UPGRADING
+      - IMPORTING
+      - MODIFYING
+      - PAUSING
+      - PAUSED
+      - RESUMING
       type: string
-    Branch.Usage:
-      description: Message for usage metrics for this cluster.
-      properties:
-        requestUnit:
-          description: Output Only. The latest value of Request Unit Metric for this
-            cluster.
-          format: int64
-          readOnly: true
-          type: string
-        rowStorage:
-          description: Output Only. The latest value of Row Storage Metric for this
-            cluster.
-          format: double
-          readOnly: true
-          type: number
-        columnarStorage:
-          description: Output Only. The latest value of Columnar Storage Metric for
-            this cluster.
-          format: double
-          readOnly: true
-          type: number
-      type: object
-    BranchView:
-      description: |-
-        View on branch. Pass this enum to control which subsets of fields to get.
-
-         - BASIC: Basic response contains basic information for a branch.
-         - FULL: FULL response contains all detailed information for a branch.
-      enum:
-      - BASIC
-      - FULL
-      type: string
-    ListBranchesResponse:
+    commonv1beta1Region:
+      description: A representation of a region for deploying TiDB clusters.
       example:
-        totalSize: 0
-        nextPageToken: nextPageToken
-        branches:
-        - branchId: branchId
-          endpoints: "{}"
-          displayName: displayName
-          usage: "{}"
-          annotations:
-            key: annotations
-          updateTime: 2000-01-23T04:56:07.000+00:00
-          clusterId: clusterId
-          parentId: parentId
-          parentDisplayName: parentDisplayName
-          parentTimestamp: 2000-01-23T04:56:07.000+00:00
-          createdBy: createdBy
-          createTime: 2000-01-23T04:56:07.000+00:00
-          name: name
-          userPrefix: userPrefix
-          state: "{}"
-        - branchId: branchId
-          endpoints: "{}"
-          displayName: displayName
-          usage: "{}"
-          annotations:
-            key: annotations
-          updateTime: 2000-01-23T04:56:07.000+00:00
-          clusterId: clusterId
-          parentId: parentId
-          parentDisplayName: parentDisplayName
-          parentTimestamp: 2000-01-23T04:56:07.000+00:00
-          createdBy: createdBy
-          createTime: 2000-01-23T04:56:07.000+00:00
-          name: name
-          userPrefix: userPrefix
-          state: "{}"
+        regionId: regionId
+        provider: provider
+        displayName: displayName
+        cloudProvider: "{}"
+        name: regions/aws-us-west-2
       properties:
-        branches:
-          items:
-            $ref: '#/components/schemas/Branch'
-          title: The list of branches
-          type: array
-        nextPageToken:
-          description: A token identifying a page of results the server should return.
+        name:
+          example: regions/aws-us-west-2
+          pattern: ^regions/(aws|gcp|azure)-(.+)$
+          title: |-
+            The unique name of the region.
+            Format: regions/{region_id}
           type: string
-        totalSize:
-          format: int64
-          title: Total number of branches
-          type: integer
-      title: Message for response to list branches
+        regionId:
+          description: |-
+            Format: {cloud_provider}-{region_code}
+            Region code: us-west-2, asia-east1.
+          readOnly: true
+          type: string
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1RegionCloudProvider'
+          description: The cloud provider for the region.
+          type: object
+        displayName:
+          description: User-friendly display name of the region.
+          readOnly: true
+          type: string
+        provider:
+          description: |-
+            Optional provider name for the region.
+            Only used for serverless cluster.
+            Deprecated.
+          nullable: true
+          readOnly: true
+          type: string
       type: object
-    Status:
+    googlerpcStatus:
+      description: |-
+        The `Status` type defines a logical error model that is suitable for
+        different programming environments, including REST APIs and RPC APIs. It is
+        used by [gRPC](https://github.com/grpc). Each `Status` message contains
+        three pieces of data: error code, error message, and error details.
+
+        You can find out more about this error model and how to work with it in the
+        [API Design Guide](https://cloud.google.com/apis/design/errors).
       example:
         code: 6
         details:
@@ -444,13 +411,499 @@ components:
         message: message
       properties:
         code:
+          description: |-
+            The status code, which should be an enum value of
+            [google.rpc.Code][google.rpc.Code].
           format: int32
           type: integer
         message:
+          description: |-
+            A developer-facing error message, which should be in English. Any
+            user-facing error message should be localized and sent in the
+            [google.rpc.Status.details][google.rpc.Status.details] field, or localized
+            by the client.
           type: string
         details:
+          description: |-
+            A list of messages that carry the error details.  There is a common set of
+            message types for APIs to use.
           items:
-            $ref: '#/components/schemas/Any'
+            $ref: '#/components/schemas/protobufAny'
           type: array
+      type: object
+    protobufAny:
+      additionalProperties:
+        type: object
+      description: |-
+        `Any` contains an arbitrary serialized protocol buffer message along with a
+        URL that describes the type of the serialized message.
+
+        Protobuf library provides support to pack/unpack Any values in the form
+        of utility functions or additional generated methods of the Any type.
+
+        Example 1: Pack and unpack a message in C++.
+
+            Foo foo = ...;
+            Any any;
+            any.PackFrom(foo);
+            ...
+            if (any.UnpackTo(&foo)) {
+              ...
+            }
+
+        Example 2: Pack and unpack a message in Java.
+
+            Foo foo = ...;
+            Any any = Any.pack(foo);
+            ...
+            if (any.is(Foo.class)) {
+              foo = any.unpack(Foo.class);
+            }
+            // or ...
+            if (any.isSameTypeAs(Foo.getDefaultInstance())) {
+              foo = any.unpack(Foo.getDefaultInstance());
+            }
+
+         Example 3: Pack and unpack a message in Python.
+
+            foo = Foo(...)
+            any = Any()
+            any.Pack(foo)
+            ...
+            if any.Is(Foo.DESCRIPTOR):
+              any.Unpack(foo)
+              ...
+
+         Example 4: Pack and unpack a message in Go
+
+             foo := &pb.Foo{...}
+             any, err := anypb.New(foo)
+             if err != nil {
+               ...
+             }
+             ...
+             foo := &pb.Foo{}
+             if err := any.UnmarshalTo(foo); err != nil {
+               ...
+             }
+
+        The pack methods provided by protobuf library will by default use
+        'type.googleapis.com/full.type.name' as the type URL and the unpack
+        methods only use the fully qualified type name after the last '/'
+        in the type URL, for example "foo.bar.com/x/y.z" will yield type
+        name "y.z".
+
+        JSON
+        ====
+        The JSON representation of an `Any` value uses the regular
+        representation of the deserialized, embedded message, with an
+        additional field `@type` which contains the type URL. Example:
+
+            package google.profile;
+            message Person {
+              string first_name = 1;
+              string last_name = 2;
+            }
+
+            {
+              "@type": "type.googleapis.com/google.profile.Person",
+              "firstName": <string>,
+              "lastName": <string>
+            }
+
+        If the embedded message type is well-known and has a custom JSON
+        representation, that representation will be embedded adding a field
+        `value` which holds the custom JSON in addition to the `@type`
+        field. Example (for message [google.protobuf.Duration][]):
+
+            {
+              "@type": "type.googleapis.com/google.protobuf.Duration",
+              "value": "1.212s"
+            }
+      example:
+        '@type': '@type'
+      properties:
+        '@type':
+          description: |-
+            A URL/resource name that uniquely identifies the type of the serialized
+            protocol buffer message. This string must contain at least
+            one "/" character. The last segment of the URL's path must represent
+            the fully qualified name of the type (as in
+            `path/google.protobuf.Duration`). The name should be in a canonical form
+            (e.g., leading "." is not accepted).
+
+            In practice, teams usually precompile into the binary all types that they
+            expect it to use in the context of Any. However, for URLs which use the
+            scheme `http`, `https`, or no scheme, one can optionally set up a type
+            server that maps type URLs to message definitions as follows:
+
+            * If no scheme is provided, `https` is assumed.
+            * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+              value in binary format, or produce an error.
+            * Applications are allowed to cache lookup results based on the
+              URL, or have them precompiled into a binary to avoid any
+              lookup. Therefore, binary compatibility needs to be preserved
+              on changes to types. (Use versioned type names to manage
+              breaking changes.)
+
+            Note: this functionality is not currently available in the official
+            protobuf release, and it is not used for type URLs beginning with
+            type.googleapis.com. As of May 2023, there are no widely used type server
+            implementations and no plans to implement one.
+
+            Schemes other than `http`, `https` (or the empty scheme) might be
+            used with implementation specific semantics.
+          type: string
+      type: object
+    serverlessv1beta1ClusterView:
+      description: |-
+        Enum for the different types of detail view to be returned for a TiDB Serverless cluster.
+
+         - BASIC: Only basic information about the cluster is returned.
+         - FULL: All details about the cluster are returned.
+      enum:
+      - BASIC
+      - FULL
+      type: string
+    tidb_cloud_open_apiserverlessv1beta1Cluster:
+      description: Message for a serverless TiDB cluster resource.
+      example:
+        encryptionConfig: "{}"
+        endpoints: "{}"
+        automatedBackupPolicy: "{}"
+        displayName: displayName
+        usage: "{}"
+        annotations:
+          key: annotations
+        updateTime: 2000-01-23T04:56:07.000+00:00
+        clusterId: clusterId
+        version: version
+        labels:
+          key: labels
+        spendingLimit: "{}"
+        createdBy: createdBy
+        createTime: 2000-01-23T04:56:07.000+00:00
+        name: name
+        userPrefix: userPrefix
+        state: "{}"
+        region: "{}"
+      properties:
+        name:
+          description: Output_only. The unique name of the cluster.
+          readOnly: true
+          type: string
+        clusterId:
+          description: Output_only. The unique ID of the cluster.
+          readOnly: true
+          type: string
+        displayName:
+          description: Required. User friendly display name of the cluster.
+          type: string
+        region:
+          allOf:
+          - $ref: '#/components/schemas/commonv1beta1Region'
+          description: Required. Region where the cluster will be created.
+          type: object
+        spendingLimit:
+          allOf:
+          - $ref: '#/components/schemas/ClusterSpendingLimit'
+          description: Optional. The spending limit for the cluster.
+          type: object
+        version:
+          description: Output_only. The TiDB version of the cluster.
+          readOnly: true
+          type: string
+        createdBy:
+          description: Output_only. The email of the creator of the cluster.
+          readOnly: true
+          type: string
+        automatedBackupPolicy:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterAutomatedBackupPolicy'
+          description: Optional. Automated backup policy to set on the cluster.
+          type: object
+        userPrefix:
+          description: Output_only. The unique prefix in SQL user name.
+          readOnly: true
+          type: string
+        endpoints:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterEndpoints'
+          description: Optional. The endpoints for connecting to the cluster.
+          type: object
+        state:
+          allOf:
+          - $ref: '#/components/schemas/commonv1beta1ClusterState'
+          description: Output_only. The current state of the cluster.
+          type: object
+        usage:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterUsage'
+          description: Output_only. Usage details of the cluster.
+          type: object
+        encryptionConfig:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterEncryptionConfig'
+          description: Optional. Encryption settings for the cluster.
+          type: object
+        labels:
+          additionalProperties:
+            type: string
+          description: |-
+            Optional. The labels for the cluster.
+            tidb.cloud/organization. The label for the cluster organization id.
+            tidb.cloud/project. The label for the cluster project id.
+          type: object
+        annotations:
+          additionalProperties:
+            type: string
+          description: |-
+            OUTPUT_ONLY. The annotations for the cluster.
+            tidb.cloud/has-set-password. The annotation for whether the cluster has set password.
+            tidb.cloud/available-features. The annotation for the available features of the cluster.
+          readOnly: true
+          type: object
+        createTime:
+          description: Output_only. Timestamp when the cluster was created.
+          format: date-time
+          readOnly: true
+          type: string
+        updateTime:
+          description: Output_only. Timestamp when the cluster was last updated.
+          format: date-time
+          readOnly: true
+          type: string
+      required:
+      - displayName
+      - region
+      type: object
+    tidb_cloud_open_apiserverlessv1beta1ListClustersResponse:
+      description: Responses message to the request for listing of TiDB Serverless
+        clusters.
+      example:
+        totalSize: 0
+        nextPageToken: nextPageToken
+        clusters:
+        - encryptionConfig: "{}"
+          endpoints: "{}"
+          automatedBackupPolicy: "{}"
+          displayName: displayName
+          usage: "{}"
+          annotations:
+            key: annotations
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          version: version
+          labels:
+            key: labels
+          spendingLimit: "{}"
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          name: name
+          userPrefix: userPrefix
+          state: "{}"
+          region: "{}"
+        - encryptionConfig: "{}"
+          endpoints: "{}"
+          automatedBackupPolicy: "{}"
+          displayName: displayName
+          usage: "{}"
+          annotations:
+            key: annotations
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          version: version
+          labels:
+            key: labels
+          spendingLimit: "{}"
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          name: name
+          userPrefix: userPrefix
+          state: "{}"
+          region: "{}"
+      properties:
+        clusters:
+          description: A list of clusters.
+          items:
+            $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1Cluster'
+          type: array
+        nextPageToken:
+          description: Token provided to retrieve the next page of results.
+          type: string
+        totalSize:
+          description: Total number of available clusters.
+          format: int64
+          type: integer
+      type: object
+    tidb_cloud_open_apiserverlessv1beta1ListRegionsResponse:
+      description: Responses message to the request for listing of available regions
+        in TiDB Serverless.
+      example:
+        regions:
+        - regionId: regionId
+          provider: provider
+          displayName: displayName
+          cloudProvider: "{}"
+          name: regions/aws-us-west-2
+        - regionId: regionId
+          provider: provider
+          displayName: displayName
+          cloudProvider: "{}"
+          name: regions/aws-us-west-2
+      properties:
+        regions:
+          description: A list of available regions.
+          items:
+            $ref: '#/components/schemas/commonv1beta1Region'
+          type: array
+      type: object
+    v1beta1ChangeRootPasswordResponse:
+      description: Responses message to the request for changing the root password
+        of a TiDB Serverless cluster.
+      type: object
+    v1beta1ClusterAutomatedBackupPolicy:
+      description: Message for automated backup configuration for a cluster.
+      properties:
+        startTime:
+          description: Optional. Cron expression for when automated backups should
+            start.
+          type: string
+        retentionDays:
+          description: Optional. Number of days to retain automated backups.
+          format: int32
+          type: integer
+      type: object
+    v1beta1ClusterEncryptionConfig:
+      description: Message for encryption settings for a cluster.
+      properties:
+        enhancedEncryptionEnabled:
+          description: Optional. Whether enhanced encryption for cluster data is enabled.
+          type: boolean
+      type: object
+    v1beta1ClusterEndpoints:
+      description: Message for endpoint information for connecting to a cluster.
+      properties:
+        public:
+          allOf:
+          - $ref: '#/components/schemas/EndpointsPublic'
+          description: Optional. Public endpoint to connect to the cluster.
+          type: object
+        private:
+          allOf:
+          - $ref: '#/components/schemas/EndpointsPrivate'
+          description: Output_only. Private endpoint to securely connect to the cluster.
+          type: object
+      type: object
+    v1beta1ClusterUsage:
+      description: Message for usage statistics of a cluster.
+      properties:
+        requestUnit:
+          description: Output_only. The Request Units used in this month.
+          format: int64
+          readOnly: true
+          type: string
+        rowBasedStorage:
+          description: Output_only. The storage used on row-based storage in bytes.
+          format: double
+          readOnly: true
+          type: number
+        columnarStorage:
+          description: Output_only. The storage used on column-based storage in bytes.
+          format: double
+          readOnly: true
+          type: number
+      type: object
+    v1beta1PartialUpdateClusterRequestPartialUpdateCluster:
+      properties:
+        clusterId:
+          description: Output_only. The unique ID of the cluster.
+          type: string
+        displayName:
+          description: Required. User friendly display name of the cluster.
+          type: string
+        spendingLimit:
+          allOf:
+          - $ref: '#/components/schemas/ClusterSpendingLimit'
+          description: Optional. The spending limit for the cluster.
+          type: object
+        automatedBackupPolicy:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterAutomatedBackupPolicy'
+          description: Optional. Automated backup policy to set on the cluster.
+          type: object
+        endpoints:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterEndpoints'
+          description: Optional. The endpoints for connecting to the cluster.
+          type: object
+        labels:
+          additionalProperties:
+            type: string
+          description: |-
+            Optional. The labels for the cluster.
+            tidb.cloud/organization. The label for the cluster organization id.
+            tidb.cloud/project. The label for the cluster project id.
+          type: object
+      required:
+      - clusterId
+      type: object
+    v1beta1RegionCloudProvider:
+      description: |-
+        Enum of cloud provider names.
+
+         - aws: Amazon Web Services.
+        buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+         - gcp: Google Cloud Platform.
+        buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+         - azure: Microsoft Azure.
+        buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+      enum:
+      - aws
+      - gcp
+      - azure
+      type: string
+    v1beta1ServerlessServicePartialUpdateClusterBody:
+      description: Message for requesting a partial update on a TiDB Serverless cluster.
+      properties:
+        cluster:
+          $ref: '#/components/schemas/Required__The_cluster_to_be_updated_'
+        updateMask:
+          description: Required. The update mask indicating which fields are to be
+            updated.
+          type: string
+      required:
+      - updateMask
+      type: object
+    Required__The_cluster_to_be_updated_:
+      description: Required. The cluster to be updated.
+      properties:
+        displayName:
+          description: Required. User friendly display name of the cluster.
+          type: string
+        spendingLimit:
+          allOf:
+          - $ref: '#/components/schemas/ClusterSpendingLimit'
+          description: Optional. The spending limit for the cluster.
+          type: object
+        automatedBackupPolicy:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterAutomatedBackupPolicy'
+          description: Optional. Automated backup policy to set on the cluster.
+          type: object
+        endpoints:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterEndpoints'
+          description: Optional. The endpoints for connecting to the cluster.
+          type: object
+        labels:
+          additionalProperties:
+            type: string
+          description: |-
+            Optional. The labels for the cluster.
+            tidb.cloud/organization. The label for the cluster organization id.
+            tidb.cloud/project. The label for the cluster project id.
+          type: object
+      title: Required. The cluster to be updated.
       type: object
 x-original-swagger-version: "2.0"

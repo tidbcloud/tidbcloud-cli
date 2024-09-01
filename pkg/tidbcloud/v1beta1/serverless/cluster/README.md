@@ -74,30 +74,43 @@ ctx = context.WithValue(context.Background(), cluster.ContextOperationServerVari
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *https://serverless.tidbapi.com*
+All URIs are relative to *https://serverless.tidbapi.com/v1beta1*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*BranchServiceAPI* | [**BranchServiceCreateBranch**](docs/BranchServiceAPI.md#branchservicecreatebranch) | **Post** /v1beta1/clusters/{clusterId}/branches | Creates a branch.
-*BranchServiceAPI* | [**BranchServiceDeleteBranch**](docs/BranchServiceAPI.md#branchservicedeletebranch) | **Delete** /v1beta1/clusters/{clusterId}/branches/{branchId} | Deletes a branch.
-*BranchServiceAPI* | [**BranchServiceGetBranch**](docs/BranchServiceAPI.md#branchservicegetbranch) | **Get** /v1beta1/clusters/{clusterId}/branches/{branchId} | Gets information about a branch.
-*BranchServiceAPI* | [**BranchServiceListBranches**](docs/BranchServiceAPI.md#branchservicelistbranches) | **Get** /v1beta1/clusters/{clusterId}/branches | Lists information about branches.
+*ServerlessServiceAPI* | [**ServerlessServiceChangeRootPassword**](docs/ServerlessServiceAPI.md#serverlessservicechangerootpassword) | **Put** /clusters/{clusterId}/password | Changes the root password of a specific TiDB Serverless cluster.
+*ServerlessServiceAPI* | [**ServerlessServiceCreateCluster**](docs/ServerlessServiceAPI.md#serverlessservicecreatecluster) | **Post** /clusters | Creates a new TiDB Serverless cluster.
+*ServerlessServiceAPI* | [**ServerlessServiceDeleteCluster**](docs/ServerlessServiceAPI.md#serverlessservicedeletecluster) | **Delete** /clusters/{clusterId} | Deletes a specific TiDB Serverless cluster.
+*ServerlessServiceAPI* | [**ServerlessServiceGetCluster**](docs/ServerlessServiceAPI.md#serverlessservicegetcluster) | **Get** /clusters/{clusterId} | Retrieves details of a specific TiDB Serverless cluster.
+*ServerlessServiceAPI* | [**ServerlessServiceListClusters**](docs/ServerlessServiceAPI.md#serverlessservicelistclusters) | **Get** /clusters | Provides a list of TiDB Serverless clusters in a project.
+*ServerlessServiceAPI* | [**ServerlessServiceListRegions**](docs/ServerlessServiceAPI.md#serverlessservicelistregions) | **Get** /regions | Provides a list of available regions for TiDB Serverless clusters.
+*ServerlessServiceAPI* | [**ServerlessServicePartialUpdateCluster**](docs/ServerlessServiceAPI.md#serverlessservicepartialupdatecluster) | **Patch** /clusters/{cluster.clusterId} | Partially updates a specific TiDB Serverless cluster.
 
 
 ## Documentation For Models
 
- - [Any](docs/Any.md)
- - [Branch](docs/Branch.md)
- - [BranchEndpoints](docs/BranchEndpoints.md)
- - [BranchEndpointsPrivate](docs/BranchEndpointsPrivate.md)
- - [BranchEndpointsPrivateAWS](docs/BranchEndpointsPrivateAWS.md)
- - [BranchEndpointsPrivateGCP](docs/BranchEndpointsPrivateGCP.md)
- - [BranchEndpointsPublic](docs/BranchEndpointsPublic.md)
- - [BranchState](docs/BranchState.md)
- - [BranchUsage](docs/BranchUsage.md)
- - [BranchView](docs/BranchView.md)
- - [ListBranchesResponse](docs/ListBranchesResponse.md)
- - [Status](docs/Status.md)
+ - [ClusterSpendingLimit](docs/ClusterSpendingLimit.md)
+ - [Commonv1beta1ClusterState](docs/Commonv1beta1ClusterState.md)
+ - [Commonv1beta1Region](docs/Commonv1beta1Region.md)
+ - [EndpointsPrivate](docs/EndpointsPrivate.md)
+ - [EndpointsPublic](docs/EndpointsPublic.md)
+ - [GooglerpcStatus](docs/GooglerpcStatus.md)
+ - [PrivateAWS](docs/PrivateAWS.md)
+ - [PrivateGCP](docs/PrivateGCP.md)
+ - [ProtobufAny](docs/ProtobufAny.md)
+ - [RequiredTheClusterToBeUpdated](docs/RequiredTheClusterToBeUpdated.md)
+ - [ServerlessServiceChangeRootPasswordBody](docs/ServerlessServiceChangeRootPasswordBody.md)
+ - [Serverlessv1beta1ClusterView](docs/Serverlessv1beta1ClusterView.md)
+ - [TidbCloudOpenApiserverlessv1beta1Cluster](docs/TidbCloudOpenApiserverlessv1beta1Cluster.md)
+ - [TidbCloudOpenApiserverlessv1beta1ListClustersResponse](docs/TidbCloudOpenApiserverlessv1beta1ListClustersResponse.md)
+ - [TidbCloudOpenApiserverlessv1beta1ListRegionsResponse](docs/TidbCloudOpenApiserverlessv1beta1ListRegionsResponse.md)
+ - [V1beta1ClusterAutomatedBackupPolicy](docs/V1beta1ClusterAutomatedBackupPolicy.md)
+ - [V1beta1ClusterEncryptionConfig](docs/V1beta1ClusterEncryptionConfig.md)
+ - [V1beta1ClusterEndpoints](docs/V1beta1ClusterEndpoints.md)
+ - [V1beta1ClusterUsage](docs/V1beta1ClusterUsage.md)
+ - [V1beta1PartialUpdateClusterRequestPartialUpdateCluster](docs/V1beta1PartialUpdateClusterRequestPartialUpdateCluster.md)
+ - [V1beta1RegionCloudProvider](docs/V1beta1RegionCloudProvider.md)
+ - [V1beta1ServerlessServicePartialUpdateClusterBody](docs/V1beta1ServerlessServicePartialUpdateClusterBody.md)
 
 
 ## Documentation For Authorization
