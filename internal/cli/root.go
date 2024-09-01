@@ -133,13 +133,7 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			if debugMode {
 				log.InitLogger("DEBUG")
-				// enable debug for go-openapi, will output http request/response details, but won't output header
-				// added in roundtrip
-				err := os.Setenv("SWAGGER_DEBUG", "1")
-				if err != nil {
-					return err
-				}
-				err = os.Setenv(config.DebugEnv, "1")
+				err := os.Setenv(config.DebugEnv, "1")
 				if err != nil {
 					return err
 				}
