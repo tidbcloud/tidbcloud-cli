@@ -66,7 +66,7 @@ func (suite *AISuite) TestAIArgs() {
 		Links:   links,
 	}}
 
-	res, _ := json.MarshalIndent(chatOK, "", "  ")
+	res, _ := json.MarshalIndent(chatOK.Payload, "", "  ")
 
 	suite.mockClient.On("Chat", mockTool.Anything).
 		Return(&chatOK, nil)

@@ -15,12 +15,12 @@
 package config
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
+	"tidbcloud-cli/internal/output"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -43,13 +43,9 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			value := viper.Get(name)
-			v, err := json.MarshalIndent(value, "", "  ")
-			if err != nil {
-				return errors.Trace(err)
-			}
+			err = output.PrintJson(h.IOStreams.Out, value)
+			return errors.Trace(err)
 
-			fmt.Fprintln(h.IOStreams.Out, string(v))
-			return nil
 		},
 	}
 
