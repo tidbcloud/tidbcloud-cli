@@ -15,12 +15,12 @@
 package serverless
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
+	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
@@ -118,13 +118,8 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			v, err := json.MarshalIndent(cluster.Payload, "", "  ")
-			if err != nil {
-				return errors.Trace(err)
-			}
-
-			fmt.Fprintln(h.IOStreams.Out, string(v))
-			return nil
+			err = output.PrintJson(h.IOStreams.Out, cluster.Payload)
+			return errors.Trace(err)
 		},
 	}
 
