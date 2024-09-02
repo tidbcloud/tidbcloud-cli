@@ -15,12 +15,12 @@
 package dataimport
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
+	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 
@@ -123,13 +123,8 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			v, err := json.MarshalIndent(importTask, "", "  ")
-			if err != nil {
-				return errors.Trace(err)
-			}
-
-			fmt.Fprintln(h.IOStreams.Out, string(v))
-			return nil
+			err = output.PrintJson(h.IOStreams.Out, importTask)
+			return errors.Trace(err)
 		},
 	}
 

@@ -17,11 +17,10 @@ package cloud
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httputil"
 	"os"
 
 	"tidbcloud-cli/internal/config"
@@ -29,8 +28,7 @@ import (
 	"tidbcloud-cli/internal/version"
 	pingchatClient "tidbcloud-cli/pkg/tidbcloud/pingchat/client"
 	pingchatOp "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
-	iamClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client"
-	iamOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 	serverlessClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client"
 	serverlessOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
@@ -48,7 +46,7 @@ import (
 const (
 	DefaultApiUrl             = "https://" + apiClient.DefaultHost
 	DefaultServerlessEndpoint = "https://" + serverlessClient.DefaultHost
-	DefaultIAMEndpoint        = "https://" + iamClient.DefaultHost
+	DefaultIAMEndpoint        = "https://iam.tidbapi.com"
 	userAgent                 = "User-Agent"
 )
 
@@ -65,7 +63,7 @@ type TiDBCloudClient interface {
 
 	ListProviderRegions(params *serverlessOp.ServerlessServiceListRegionsParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListRegionsOK, error)
 
-	ListProjects(params *iamOp.GetV1beta1ProjectsParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ProjectsOK, error)
+	ListProjects(ctx context.Context, pageSize *int32, pageToken *string) (*iam.ApiListProjectsRsp, error)
 
 	CancelImport(ctx context.Context, clusterId string, id string) error
 
@@ -111,19 +109,19 @@ type TiDBCloudClient interface {
 
 	DownloadExport(ctx context.Context, clusterId string, exportId string) (*export.DownloadExportsResponse, error)
 
-	ListSQLUsers(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersOK, error)
+	ListSQLUsers(ctx context.Context, clusterID string, pageSize *int32, pageToken *string) (*iam.ApiListSqlUsersRsp, error)
 
-	CreateSQLUser(params *iamOp.PostV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.PostV1beta1ClustersClusterIDSQLUsersOK, error)
+	CreateSQLUser(ctx context.Context, clusterID string, body *iam.ApiCreateSqlUserReq) (*iam.ApiSqlUser, error)
 
-	GetSQLUser(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameOK, error)
+	GetSQLUser(ctx context.Context, clusterID string, userName string) (*iam.ApiSqlUser, error)
 
-	DeleteSQLUser(params *iamOp.DeleteV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.DeleteV1beta1ClustersClusterIDSQLUsersUserNameOK, error)
+	DeleteSQLUser(ctx context.Context, clusterID string, userName string) (*iam.ApiBasicResp, error)
 
-	UpdateSQLUser(params *iamOp.PatchV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.PatchV1beta1ClustersClusterIDSQLUsersUserNameOK, error)
+	UpdateSQLUser(ctx context.Context, clusterID string, userName string, body *iam.ApiUpdateSqlUserReq) (*iam.ApiSqlUser, error)
 }
 
 type ClientDelegate struct {
-	ic  *iamClient.TidbcloudServerless
+	ic  *iam.APIClient
 	bc  *branch.APIClient
 	pc  *pingchatClient.TidbcloudPingchat
 	sc  *serverlessClient.TidbcloudServerless
@@ -190,8 +188,16 @@ func (d *ClientDelegate) PartialUpdateCluster(params *serverlessOp.ServerlessSer
 	return d.sc.ServerlessService.ServerlessServicePartialUpdateCluster(params, opts...)
 }
 
-func (d *ClientDelegate) ListProjects(params *iamOp.GetV1beta1ProjectsParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ProjectsOK, error) {
-	return d.ic.Account.GetV1beta1Projects(params, opts...)
+func (d *ClientDelegate) ListProjects(ctx context.Context, pageSize *int32, pageToken *string) (*iam.ApiListProjectsRsp, error) {
+	r := d.ic.AccountAPI.V1beta1ProjectsGet(ctx)
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
 }
 
 func (d *ClientDelegate) CancelImport(ctx context.Context, clusterId string, id string) error {
@@ -364,27 +370,49 @@ func (d *ClientDelegate) DownloadExport(ctx context.Context, clusterId string, e
 	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) ListSQLUsers(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersOK, error) {
-	return d.ic.Account.GetV1beta1ClustersClusterIDSQLUsers(params, opts...)
+func (d *ClientDelegate) ListSQLUsers(ctx context.Context, clusterID string, pageSize *int32, pageToken *string) (*iam.ApiListSqlUsersRsp, error) {
+	r := d.ic.AccountAPI.V1beta1ClustersClusterIdSqlUsersGet(ctx, clusterID)
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) CreateSQLUser(params *iamOp.PostV1beta1ClustersClusterIDSQLUsersParams, opts ...iamOp.ClientOption) (*iamOp.PostV1beta1ClustersClusterIDSQLUsersOK, error) {
-	return d.ic.Account.PostV1beta1ClustersClusterIDSQLUsers(params, opts...)
+func (d *ClientDelegate) CreateSQLUser(ctx context.Context, clusterId string, body *iam.ApiCreateSqlUserReq) (*iam.ApiSqlUser, error) {
+	r := d.ic.AccountAPI.V1beta1ClustersClusterIdSqlUsersPost(ctx, clusterId)
+	if body != nil {
+		r = r.SqlUser(*body)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) GetSQLUser(params *iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.GetV1beta1ClustersClusterIDSQLUsersUserNameOK, error) {
-	return d.ic.Account.GetV1beta1ClustersClusterIDSQLUsersUserName(params, opts...)
+func (d *ClientDelegate) GetSQLUser(ctx context.Context, clusterID string, userName string) (*iam.ApiSqlUser, error) {
+	r := d.ic.AccountAPI.V1beta1ClustersClusterIdSqlUsersUserNameGet(ctx, clusterID, userName)
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) DeleteSQLUser(params *iamOp.DeleteV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.DeleteV1beta1ClustersClusterIDSQLUsersUserNameOK, error) {
-	return d.ic.Account.DeleteV1beta1ClustersClusterIDSQLUsersUserName(params, opts...)
+func (d *ClientDelegate) DeleteSQLUser(ctx context.Context, clusterID string, userName string) (*iam.ApiBasicResp, error) {
+	r := d.ic.AccountAPI.V1beta1ClustersClusterIdSqlUsersUserNameDelete(ctx, clusterID, userName)
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) UpdateSQLUser(params *iamOp.PatchV1beta1ClustersClusterIDSQLUsersUserNameParams, opts ...iamOp.ClientOption) (*iamOp.PatchV1beta1ClustersClusterIDSQLUsersUserNameOK, error) {
-	return d.ic.Account.PatchV1beta1ClustersClusterIDSQLUsersUserName(params, opts...)
+func (d *ClientDelegate) UpdateSQLUser(ctx context.Context, clusterID string, userName string, body *iam.ApiUpdateSqlUserReq) (*iam.ApiSqlUser, error) {
+	r := d.ic.AccountAPI.V1beta1ClustersClusterIdSqlUsersUserNamePatch(ctx, clusterID, userName)
+	if body != nil {
+		r = r.SqlUser(*body)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
 }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *imp.APIClient, *export.APIClient, *iamClient.TidbcloudServerless, error) {
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *imp.APIClient, *export.APIClient, *iam.APIClient, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}
@@ -401,13 +429,17 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	if err != nil {
 		return nil, nil, nil, nil, nil, nil, nil, err
 	}
-	iamUrl, err := prop.ValidateApiUrl(iamEndpoint)
+
+	serverlessTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
+	backRestoreTransport := httpTransport.NewWithClient(serverlessURL.Host, brClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
+
+	iamCfg := iam.NewConfiguration()
+	iamCfg.HTTPClient = httpclient
+	iamURL, err := prop.ValidateApiUrl(iamEndpoint)
 	if err != nil {
 		return nil, nil, nil, nil, nil, nil, nil, err
 	}
-	serverlessTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
-	backRestoreTransport := httpTransport.NewWithClient(serverlessURL.Host, brClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
-	iamTransport := httpTransport.NewWithClient(iamUrl.Host, iamClient.DefaultBasePath, []string{iamUrl.Scheme}, httpclient)
+	iamCfg.Host = iamURL.Host
 
 	branchCfg := branch.NewConfiguration()
 	branchCfg.HTTPClient = httpclient
@@ -421,26 +453,22 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	importCfg.HTTPClient = httpclient
 	importCfg.Host = serverlessURL.Host
 
-	if os.Getenv(config.DebugEnv) == "true" || os.Getenv(config.DebugEnv) == "1" {
-		branchCfg.Debug = true
-		exportCfg.Debug = true
-	}
-
 	return branch.NewAPIClient(branchCfg), serverlessClient.New(serverlessTransport, strfmt.Default),
 		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default),
 		imp.NewAPIClient(importCfg), export.NewAPIClient(exportCfg),
-		iamClient.New(iamTransport, strfmt.Default), nil
+		iam.NewAPIClient(iamCfg), nil
 }
 
 func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {
 	return NewTransportWithAgent(&digest.Transport{
-		Username: publicKey,
-		Password: privateKey,
+		Username:  publicKey,
+		Password:  privateKey,
+		Transport: NewDebugTransport(http.DefaultTransport),
 	}, fmt.Sprintf("%s/%s", config.CliName, version.Version))
 }
 
 func NewBearTokenTransport(token string) http.RoundTripper {
-	return NewTransportWithAgent(NewTransportWithBearToken(http.DefaultTransport, token),
+	return NewTransportWithAgent(NewTransportWithBearToken(NewDebugTransport(http.DefaultTransport), token),
 		fmt.Sprintf("%s/%s", config.CliName, version.Version))
 }
 
@@ -480,6 +508,41 @@ func (bt *BearTokenTransport) RoundTrip(r *http.Request) (*http.Response, error)
 	return bt.inner.RoundTrip(r)
 }
 
+func NewDebugTransport(inner http.RoundTripper) http.RoundTripper {
+	return &DebugTransport{inner: inner}
+}
+
+type DebugTransport struct {
+	inner http.RoundTripper
+}
+
+func (dt *DebugTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+	debug := os.Getenv(config.DebugEnv) == "true" || os.Getenv(config.DebugEnv) == "1"
+
+	if debug {
+		dump, err := httputil.DumpRequestOut(r, true)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Printf("\n%s", string(dump))
+	}
+
+	resp, err := dt.inner.RoundTrip(r)
+	if err != nil {
+		return resp, err
+	}
+
+	if debug {
+		dump, err := httputil.DumpResponse(resp, true)
+		if err != nil {
+			return resp, err
+		}
+		fmt.Printf("%s\n", string(dump))
+	}
+
+	return resp, err
+}
+
 func parseError(err error, resp *http.Response) error {
 	defer func() {
 		if resp != nil {
@@ -496,17 +559,9 @@ func parseError(err error, resp *http.Response) error {
 	if err1 != nil {
 		return err
 	}
-	// extract error message from response body
-	type errorMsg struct {
-		Message string `json:"message"`
-		Code    int    `json:"code"`
+	path := "[path]"
+	if resp.Request != nil {
+		path = fmt.Sprintf("[%s %s]", resp.Request.Method, resp.Request.URL.Path)
 	}
-	var msg errorMsg
-	if err1 := json.Unmarshal(body, &msg); err1 != nil {
-		return err
-	}
-	if msg.Message != "" {
-		return errors.New(msg.Message)
-	}
-	return err
+	return fmt.Errorf("%s[%s] %s", path, err.Error(), body)
 }

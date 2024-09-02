@@ -114,7 +114,7 @@ func Execute(ctx context.Context) {
 	ctx = telemetry.NewTelemetryContext(ctx)
 	if err := rootCmd.ExecuteContext(ctx); err != nil {
 		telemetry.FinishTrackingCommand(telemetry.TrackOptions{Err: err})
-		fmt.Fprintf(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
+		fmt.Fprint(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
 		if errors.Is(err, util.InterruptError) {
 			os.Exit(130)
 		}
@@ -133,13 +133,7 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			if debugMode {
 				log.InitLogger("DEBUG")
-				// enable debug for go-openapi, will output http request/response details, but won't output header
-				// added in roundtrip
-				err := os.Setenv("SWAGGER_DEBUG", "1")
-				if err != nil {
-					return err
-				}
-				err = os.Setenv(config.DebugEnv, "1")
+				err := os.Setenv(config.DebugEnv, "1")
 				if err != nil {
 					return err
 				}
@@ -185,10 +179,10 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 			if shouldCheckNewRelease(cmd) {
 				newRelease := <-updateMessageChan
 				if newRelease != nil {
-					fmt.Fprintf(h.IOStreams.Out, fmt.Sprintf("\n%s %s → %s\n",
+					fmt.Fprintf(h.IOStreams.Out, "\n%s %s → %s\n",
 						color.YellowString("A new version of %s is available:", config.CliName),
 						color.CyanString(ver.Version),
-						color.CyanString(newRelease.Version)))
+						color.CyanString(newRelease.Version))
 
 					if config.IsUnderTiUP {
 						fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use `tiup update cloud` to update to the latest version"))

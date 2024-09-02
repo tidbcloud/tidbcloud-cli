@@ -25,7 +25,7 @@ import (
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/util"
 
-	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -126,8 +126,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				res := iamModel.APIListSQLUsersRsp{
-					SQLUsers: items,
+				res := iam.ApiListSqlUsersRsp{
+					SqlUsers: items,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)
 				if err != nil {
@@ -142,8 +142,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				var rows []output.Row
 				for _, item := range items {
 					rows = append(rows, output.Row{
-						item.UserName,
-						util.GetDisplayRole(item.BuiltinRole, item.CustomRoles),
+						*item.UserName,
+						util.GetDisplayRole(*item.BuiltinRole, item.CustomRoles),
 					})
 				}
 

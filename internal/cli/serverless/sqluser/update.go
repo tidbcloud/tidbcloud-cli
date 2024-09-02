@@ -24,8 +24,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
-	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -209,16 +208,10 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				deleteRole = dRole
 			}
 
-			getUserParams := iamApi.NewGetV1beta1ClustersClusterIDSQLUsersUserNameParams().
-				WithClusterID(clusterID).
-				WithUserName(userName).
-				WithContext(ctx)
-			getSQLUserResult, err := d.GetSQLUser(getUserParams)
+			u, err := d.GetSQLUser(ctx, clusterID, userName)
 			if err != nil {
 				return errors.Trace(err)
 			}
-
-			u := getSQLUserResult.GetPayload()
 
 			if len(userRole) != 0 {
 				u.BuiltinRole, u.CustomRoles, err = getBuiltinRoleAndCustomRoles(userRole)
@@ -232,9 +225,9 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if u.BuiltinRole != "" && addBuiltinRole != "" {
+				if !util.IsNilOrEmpty(u.BuiltinRole) && !util.IsNilOrEmpty(addBuiltinRole) {
 					return errors.New("built-in role already exists in the SQL user")
-				} else if u.BuiltinRole == "" && addBuiltinRole != "" {
+				} else if util.IsNilOrEmpty(u.BuiltinRole) && !!util.IsNilOrEmpty(addBuiltinRole) {
 					u.BuiltinRole = addBuiltinRole
 				}
 				u.CustomRoles = append(u.CustomRoles, addCustomRoles...)
@@ -245,13 +238,14 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if deleteBuiltinRole != "" {
-					deleteBuiltinRole = util.AddPrefix(deleteBuiltinRole, userPrefix)
+				if !util.IsNilOrEmpty(deleteBuiltinRole) {
+					builtinRoleWithPrefix := util.AddPrefix(*u.BuiltinRole, userPrefix)
+					deleteBuiltinRole = &builtinRoleWithPrefix
 					if deleteBuiltinRole == u.BuiltinRole {
 						// it doesn't work yet, because the API doesn't support to delete the builtin role
-						u.BuiltinRole = ""
+						u.BuiltinRole = nil
 					} else {
-						return errors.New(fmt.Sprintf("role %s doesn't exist in the SQL user", deleteBuiltinRole))
+						return errors.New(fmt.Sprintf("role %s doesn't exist in the SQL user", *deleteBuiltinRole))
 					}
 				}
 				for _, role := range deleteCustomRoles {
@@ -263,24 +257,20 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			body := &iamModel.APIUpdateSQLUserReq{}
-			if u.BuiltinRole != util.ADMIN_ROLE {
-				body.BuiltinRole = util.AddPrefix(u.BuiltinRole, userPrefix)
+			body := &iam.ApiUpdateSqlUserReq{}
+			if *u.BuiltinRole != util.ADMIN_ROLE {
+				builtinRoleWithPrefix := util.AddPrefix(*u.BuiltinRole, userPrefix)
+				body.BuiltinRole = &builtinRoleWithPrefix
 			} else {
 				body.BuiltinRole = u.BuiltinRole
 			}
 			body.CustomRoles = u.CustomRoles
 
 			if password != "" {
-				body.Password = password
+				body.Password = &password
 			}
 
-			params := iamApi.NewPatchV1beta1ClustersClusterIDSQLUsersUserNameParams().
-				WithClusterID(clusterID).
-				WithUserName(userName).
-				WithSQLUser(body).
-				WithContext(ctx)
-			_, err = d.UpdateSQLUser(params)
+			_, err = d.UpdateSQLUser(ctx, clusterID, userName, body)
 			if err != nil {
 				return errors.Trace(err)
 			}

@@ -28,8 +28,7 @@ import (
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 
-	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
-	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 
 	"github.com/charmbracelet/bubbles/textinput"
@@ -46,6 +45,8 @@ type CreateOpts struct {
 const (
 	WaitInterval = 5 * time.Second
 	WaitTimeout  = 2 * time.Minute
+
+	DefaultAutoPrefix = true
 )
 
 var createSQLUserField = map[string]int{
@@ -199,19 +200,19 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
-			params := iamApi.NewPostV1beta1ClustersClusterIDSQLUsersParams().
-				WithClusterID(clusterID).
-				WithSQLUser(&iamModel.APICreateSQLUserReq{
-					AuthMethod:  util.MYSQLNATIVEPASSWORD,
-					UserName:    userName,
-					Password:    password,
-					BuiltinRole: builtinRole,
-					CustomRoles: customRoles,
-					AutoPrefix:  true,
-				}).
-				WithContext(ctx)
 
-			_, err = d.CreateSQLUser(params)
+			authMethod := util.MYSQLNATIVEPASSWORD
+			autoPrefix := DefaultAutoPrefix
+			params := &iam.ApiCreateSqlUserReq{
+				AuthMethod:  &authMethod,
+				UserName:    &userName,
+				BuiltinRole: builtinRole,
+				CustomRoles: customRoles,
+				Password:    &password,
+				AutoPrefix:  &autoPrefix,
+			}
+
+			_, err = d.CreateSQLUser(ctx, clusterID, params)
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -272,7 +273,7 @@ func getUserPrefix(ctx context.Context, d cloud.TiDBCloudClient, clusterID strin
 	return cluster.Payload.UserPrefix, nil
 }
 
-func getBuiltinRoleAndCustomRoles(roles []string) (string, []string, error) {
+func getBuiltinRoleAndCustomRoles(roles []string) (*string, []string, error) {
 	builtinRole := ""
 	customRoles := make([]string, 0, len(roles))
 	for _, role := range roles {
@@ -288,11 +289,11 @@ func getBuiltinRoleAndCustomRoles(roles []string) (string, []string, error) {
 					builtinRole = util.READONLY_ROLE
 				}
 			} else {
-				return "", []string{}, errors.New("only one built-in role is allowed")
+				return nil, []string{}, errors.New("only one built-in role is allowed")
 			}
 		} else {
 			customRoles = append(customRoles, role)
 		}
 	}
-	return builtinRole, customRoles, nil
+	return &builtinRole, customRoles, nil
 }

@@ -26,8 +26,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	iamApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/client/account"
-	iamModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/iam/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -109,16 +108,14 @@ func (suite *ListProjectSuite) SetupTest() {
 func (suite *ListProjectSuite) TestListProjectArgs() {
 	assert := require.New(suite.T())
 	ctx := context.Background()
+	pageSize := int32(suite.h.QueryPageSize)
+	var pageToken *string
 
-	body := &iamModel.APIListProjectsRsp{}
-	err := json.Unmarshal([]byte(resultStr), body)
+	result := &iam.ApiListProjectsRsp{}
+	err := json.Unmarshal([]byte(resultStr), result)
 	assert.Nil(err)
-	result := &iamApi.GetV1beta1ProjectsOK{
-		Payload: body,
-	}
-	suite.mockClient.On("ListProjects", iamApi.NewGetV1beta1ProjectsParams().
-		WithPageSize(&suite.h.QueryPageSize).WithContext(ctx)).Return(result, nil)
-
+	suite.mockClient.On("ListProjects", ctx, &pageSize, pageToken).
+		Return(result, nil)
 	tests := []struct {
 		name         string
 		args         []string
@@ -171,24 +168,20 @@ func (suite *ListProjectSuite) TestListProjectWithMultiPages() {
 	assert := require.New(suite.T())
 	ctx := context.Background()
 	suite.h.QueryPageSize = 1
+	pageSize := int32(suite.h.QueryPageSize)
+	var pageToken *string
 	nextPageToken := "next_token"
 
-	body1 := &iamModel.APIListProjectsRsp{}
-	err := json.Unmarshal([]byte(resultPageOne), body1)
+	resultPage1 := &iam.ApiListProjectsRsp{}
+	err := json.Unmarshal([]byte(resultPageOne), resultPage1)
 	assert.Nil(err)
-	resultPageOne := &iamApi.GetV1beta1ProjectsOK{
-		Payload: body1,
-	}
-	body2 := &iamModel.APIListProjectsRsp{}
-	err = json.Unmarshal([]byte(resultStr), body2)
+
+	resultPage2 := &iam.ApiListProjectsRsp{}
+	err = json.Unmarshal([]byte(resultStr), resultPage2)
 	assert.Nil(err)
-	resultPageTwo := &iamApi.GetV1beta1ProjectsOK{
-		Payload: body2,
-	}
-	suite.mockClient.On("ListProjects", iamApi.NewGetV1beta1ProjectsParams().
-		WithPageSize(&suite.h.QueryPageSize).WithContext(ctx)).Return(resultPageOne, nil)
-	suite.mockClient.On("ListProjects", iamApi.NewGetV1beta1ProjectsParams().
-		WithPageSize(&suite.h.QueryPageSize).WithPageToken(&nextPageToken).WithContext(ctx)).Return(resultPageTwo, nil)
+
+	suite.mockClient.On("ListProjects", ctx, &pageSize, pageToken).Return(resultPage1, nil)
+	suite.mockClient.On("ListProjects", ctx, &pageSize, &nextPageToken).Return(resultPage2, nil)
 	tests := []struct {
 		name         string
 		args         []string

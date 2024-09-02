@@ -15,13 +15,13 @@
 package ai
 
 import (
-	"encoding/json"
 	"fmt"
 	"regexp"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
+	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	"tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
@@ -171,16 +171,12 @@ func AICmd(h *internal.Helper) *cobra.Command {
 					},
 					Domain: domain,
 				}).WithContext(context))
-
 				if err != nil {
 					return err
 				}
 
-				marshal, err := json.MarshalIndent(chat, "", "  ")
-				if err != nil {
-					return err
-				}
-				fmt.Fprintln(h.IOStreams.Out, string(marshal))
+				err = output.PrintJson(h.IOStreams.Out, chat.Payload)
+				return errors.Trace(err)
 			}
 
 			return nil

@@ -15,7 +15,6 @@
 package export
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/juju/errors"
@@ -24,6 +23,7 @@ import (
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
+	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
 )
 
@@ -125,13 +125,8 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			v, err := json.MarshalIndent(export, "", "  ")
-			if err != nil {
-				return errors.Trace(err)
-			}
-
-			fmt.Fprintln(h.IOStreams.Out, string(v))
-			return nil
+			err = output.PrintJson(h.IOStreams.Out, export)
+			return errors.Trace(err)
 		},
 	}
 

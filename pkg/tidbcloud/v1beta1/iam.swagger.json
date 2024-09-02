@@ -1,0 +1,716 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is account open api.",
+        "title": "Acccount OPENAPI",
+        "contact": {},
+        "version": "v1beta1"
+    },
+    "host": "iam.tidbapi.com",
+    "schemes": [
+        "https"
+    ],
+    "paths": {
+        "/customerSignupUrl": {
+            "post": {
+                "description": "This endpoint creates a new signup URL for an MSP customer.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Create a new signup URL for an MSP customer",
+                "parameters": [
+                    {
+                        "description": "The MSP customer org ID.",
+                        "name": "mspCustomerOrgId",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiCreateMspCustomerSignupUrlReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiMspCustomerSignupUrl"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/mspCustomers": {
+            "get": {
+                "description": "This endpoint returns a list of MSP customers.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Get a list of MSP customers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The page token of the next page.",
+                        "name": "pageToken",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The page size of the next page. If `pageSize` is set to 0, it returns all MSP customers in one page.",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiListMspCustomerRsp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/mspCustomers/{customerOrgId}": {
+            "get": {
+                "description": "This endpoint retrieves a single MSP customer by their customer org ID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Retrieve a single MSP customer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The MSP customer org ID.",
+                        "name": "customerOrgId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiMspCustomer"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1beta1/clusters/{clusterId}/dbuser": {
+            "get": {
+                "description": "This endpoint retrieves a db user by apikey or access token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "get one dbuser",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The id of the cluster.",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetDbuserRsp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1beta1/clusters/{clusterId}/sqlUsers": {
+            "get": {
+                "description": "This endpoint retrieves all sql users  in the cluster.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Get all sql users",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The id of the cluster.",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The page token of the next page.",
+                        "name": "pageToken",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The page size of the next page. If `pageSize` is set to 0, it returns 100 records in one page.",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.ListSqlUsersRsp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "This endpoint will create one sql user int the cluster.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Create one sql user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The id of the cluster.",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "create sql user request",
+                        "name": "sqlUser",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.CreateSqlUserReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.SqlUser"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1beta1/clusters/{clusterId}/sqlUsers/{userName}": {
+            "get": {
+                "description": "This endpoint retrieves a sql user by user name.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Query sql user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The id of the cluster.",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The name of the sql user.",
+                        "name": "userName",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.SqlUser"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "This endpoint delete the sql user by user name.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Delete one sql user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The id of the cluster.",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The name of the sql user.",
+                        "name": "userName",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.BasicResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "This endpoint update one sql user in the cluster.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Update one sql user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The id of the cluster.",
+                        "name": "clusterId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "The name of the sql user.",
+                        "name": "userName",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "update sql user request",
+                        "name": "sqlUser",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.UpdateSqlUserReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.SqlUser"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1beta1/projects": {
+            "get": {
+                "description": "This endpoint returns a list of org projects.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Get  list of org projects",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "The page token of the next page.",
+                        "name": "pageToken",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "The page size of the next page. If `pageSize` is set to 0, it returns 100 records in one page.",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.ListProjectsRsp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api.OpenApiError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.BasicResp": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.CreateSqlUserReq": {
+            "type": "object",
+            "properties": {
+                "authMethod": {
+                    "description": "available values [mysql_native_password] .",
+                    "type": "string"
+                },
+                "autoPrefix": {
+                    "description": "if autoPrefix is true ,username and  builtinRole will automatically add the serverless token prefix.",
+                    "type": "boolean"
+                },
+                "builtinRole": {
+                    "description": "The builtinRole of the sql user,available values [role_admin,role_readonly,role_readwrite] . if cluster is serverless and autoPrefix is false, the builtinRole[role_readonly,role_readwrite] must be start with serverless token.",
+                    "type": "string"
+                },
+                "customRoles": {
+                    "description": "if cluster is serverless ,customRoles roles do not need to be prefixed.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "password": {
+                    "type": "string"
+                },
+                "userName": {
+                    "description": "The username of the sql user, if cluster is serverless and autoPrefix is false, the userName must be start with serverless token.",
+                    "type": "string"
+                }
+            }
+        },
+        "api.GetDbuserRsp": {
+            "type": "object",
+            "properties": {
+                "dbuser": {
+                    "description": "The username connect to the cluster",
+                    "type": "string"
+                },
+                "jwt": {
+                    "description": "JWT to connect to the cluster",
+                    "type": "string"
+                }
+            }
+        },
+        "api.ListProjectsRsp": {
+            "type": "object",
+            "properties": {
+                "nextPageToken": {
+                    "description": "`next_page_token` can be sent in a subsequent call to fetch more results",
+                    "type": "string",
+                    "example": "498c7f44-656f-4944-b455-0695faa5d4f9"
+                },
+                "projects": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.Project"
+                    }
+                }
+            }
+        },
+        "api.ListSqlUsersRsp": {
+            "type": "object",
+            "properties": {
+                "nextPageToken": {
+                    "description": "`next_page_token` can be sent in a subsequent call to fetch more results",
+                    "type": "string",
+                    "example": "498c7f44-656f-4944-b455-0695faa5d4f9"
+                },
+                "sqlUsers": {
+                    "description": "SqlUsers []*SqlUser `json:\"sqlUsers\"`",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.SqlUser"
+                    }
+                }
+            }
+        },
+        "api.OpenApiCreateMspCustomerSignupUrlReq": {
+            "type": "object",
+            "properties": {
+                "orgId": {
+                    "description": "The ID of the MSP.",
+                    "type": "string",
+                    "example": "123456"
+                }
+            }
+        },
+        "api.OpenApiError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "error": {},
+                "msgPrefix": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "api.OpenApiListMspCustomerRsp": {
+            "type": "object",
+            "properties": {
+                "mspCustomers": {
+                    "description": "The list of matching MSP Customers.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api.OpenApiMspCustomer"
+                    }
+                },
+                "nextPageToken": {
+                    "description": "`next_page_token` can be sent in a subsequent call to fetch more results",
+                    "type": "string",
+                    "example": "498c7f44-656f-4944-b455-0695faa5d4f9"
+                }
+            }
+        },
+        "api.OpenApiMspCustomer": {
+            "type": "object",
+            "properties": {
+                "effectedTime": {
+                    "description": "The effected time of the MSP customer.",
+                    "type": "string",
+                    "example": "2023-12-06 15:18:13"
+                },
+                "email": {
+                    "description": "The email of the MSP customer.",
+                    "type": "string",
+                    "example": "123@my.com"
+                },
+                "expiredTime": {
+                    "description": "The expired time of the MSP customer.",
+                    "type": "string",
+                    "example": "2023-12-06 15:18:13"
+                },
+                "id": {
+                    "description": "The ID of the MSP customer.",
+                    "type": "string",
+                    "example": "123456"
+                },
+                "orgId": {
+                    "description": "The ID of the MSP customer.",
+                    "type": "string",
+                    "example": "123456"
+                },
+                "orgName": {
+                    "description": "The org name of the MSP customer.",
+                    "type": "string",
+                    "example": "New Org"
+                },
+                "state": {
+                    "description": "The state of the MSP customer.",
+                    "type": "string",
+                    "example": "active"
+                }
+            }
+        },
+        "api.OpenApiMspCustomerSignupUrl": {
+            "type": "object",
+            "properties": {
+                "customerSignupUrl": {
+                    "description": "The signup URL of the MSP customer.",
+                    "type": "string",
+                    "example": "https://test.com/signup?msp=test\u0026third_party_account_provider=test\u0026third_party_account_token=test"
+                },
+                "expiredAt": {
+                    "description": "The expired time of the MSP customer signup url.",
+                    "type": "string",
+                    "example": "2024-12-06 15:18:13"
+                }
+            }
+        },
+        "api.Project": {
+            "type": "object",
+            "properties": {
+                "aws_cmek_enabled": {
+                    "description": "The AwsCmekEnabled of the project.",
+                    "type": "boolean",
+                    "example": false
+                },
+                "cluster_count": {
+                    "description": "Number of cluster_ in the project.",
+                    "type": "integer",
+                    "example": 7
+                },
+                "create_timestamp": {
+                    "description": "The create time key of the project.",
+                    "type": "string",
+                    "example": "1688460316"
+                },
+                "id": {
+                    "description": "The id of the project.",
+                    "type": "string",
+                    "example": "1234566"
+                },
+                "name": {
+                    "description": "The name of the API key.",
+                    "type": "string",
+                    "example": "project01"
+                },
+                "org_id": {
+                    "description": "The org id  of the project.",
+                    "type": "string",
+                    "example": "324234234"
+                },
+                "user_count": {
+                    "description": "Number of users in the project.",
+                    "type": "integer",
+                    "example": 4
+                }
+            }
+        },
+        "api.SqlUser": {
+            "type": "object",
+            "properties": {
+                "authMethod": {
+                    "type": "string"
+                },
+                "builtinRole": {
+                    "type": "string"
+                },
+                "customRoles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.UpdateSqlUserReq": {
+            "type": "object",
+            "properties": {
+                "builtinRole": {
+                    "type": "string"
+                },
+                "customRoles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
