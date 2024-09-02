@@ -28,8 +28,7 @@ import (
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -51,7 +50,7 @@ const (
 )
 
 type CreateOpts struct {
-	serverlessProviders []*serverlessModel.Commonv1beta1Region
+	serverlessProviders []cluster.Commonv1beta1Region
 	interactive         bool
 }
 
@@ -133,16 +132,16 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// interactive mode
-				regions, err := d.ListProviderRegions(serverlessApi.NewServerlessServiceListRegionsParams().WithContext(ctx))
+				regions, err := d.ListProviderRegions(ctx)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				opts.serverlessProviders = regions.Payload.Regions
+				opts.serverlessProviders = regions.Regions
 
 				// distinct cloud providers
 				providers := hashset.New()
 				for _, provider := range opts.serverlessProviders {
-					providers.Add(string(*provider.Provider))
+					providers.Add(*provider.Provider.Get())
 				}
 				cloudProvider, err = GetProvider(providers)
 				if err != nil {
@@ -152,11 +151,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				// filter out regions for the selected cloud provider
 				regionSet := hashset.New()
 				for _, provider := range opts.serverlessProviders {
-					if string(*provider.Provider) == cloudProvider {
+					if *provider.Provider.Get() == cloudProvider {
 						regionSet.Add(cloud.Region{
 							Name:        *provider.Name,
-							DisplayName: provider.DisplayName,
-							Provider:    string(*provider.Provider),
+							DisplayName: *provider.DisplayName,
+							Provider:    *provider.Provider.Get(),
 						})
 					}
 				}
@@ -258,37 +257,37 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 			cmd.Annotations[telemetry.ProjectID] = projectID
 
-			v1Cluster := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
-				DisplayName: &clusterName,
-				Region: &serverlessModel.Commonv1beta1Region{
+			v1Cluster := &cluster.TidbCloudOpenApiserverlessv1beta1Cluster{
+				DisplayName: clusterName,
+				Region: cluster.Commonv1beta1Region{
 					Name: &region,
 				},
 			}
 			// optional fields
 			if projectID != "" {
-				v1Cluster.Labels = map[string]string{"tidb.cloud/project": projectID}
+				v1Cluster.Labels = &map[string]string{"tidb.cloud/project": projectID}
 			}
 			if spendingLimitMonthly != 0 {
-				v1Cluster.SpendingLimit = &serverlessModel.ClusterSpendingLimit{
-					Monthly: spendingLimitMonthly,
+				v1Cluster.SpendingLimit = &cluster.ClusterSpendingLimit{
+					Monthly: &spendingLimitMonthly,
 				}
 			}
 			if encryption {
-				v1Cluster.EncryptionConfig = &serverlessModel.V1beta1ClusterEncryptionConfig{
-					EnhancedEncryptionEnabled: encryption,
+				v1Cluster.EncryptionConfig = &cluster.V1beta1ClusterEncryptionConfig{
+					EnhancedEncryptionEnabled: &encryption,
 				}
 			}
 
 			if publicEndpointDisabled {
-				v1Cluster.Endpoints = &serverlessModel.TidbCloudOpenApiserverlessv1beta1ClusterEndpoints{
-					Public: &serverlessModel.EndpointsPublic{
-						Disabled: publicEndpointDisabled,
+				v1Cluster.Endpoints = &cluster.V1beta1ClusterEndpoints{
+					Public: &cluster.EndpointsPublic{
+						Disabled: &publicEndpointDisabled,
 					},
 				}
 			}
 
 			if h.IOStreams.CanPrompt {
-				err := CreateAndSpinnerWait(ctx, d, v1Cluster, h)
+				err := CreateAndSpinnerWait(ctx, h, d, v1Cluster)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -312,13 +311,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	return createCmd
 }
 
-func CreateAndWaitReady(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, v1Cluster *serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster) error {
-	createClusterResult, err := d.CreateCluster(serverlessApi.NewServerlessServiceCreateClusterParams().
-		WithCluster(v1Cluster).WithContext(ctx))
+func CreateAndWaitReady(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, v1Cluster *cluster.TidbCloudOpenApiserverlessv1beta1Cluster) error {
+	createClusterResult, err := d.CreateCluster(ctx, v1Cluster)
 	if err != nil {
 		return errors.Trace(err)
 	}
-	newClusterID := createClusterResult.GetPayload().ClusterID
+	newClusterID := *createClusterResult.ClusterId
 
 	fmt.Fprintln(h.IOStreams.Out, "... Waiting for cluster to be ready")
 	ticker := time.NewTicker(WaitInterval)
@@ -329,13 +327,11 @@ func CreateAndWaitReady(ctx context.Context, h *internal.Helper, d cloud.TiDBClo
 		case <-timer:
 			return errors.New(fmt.Sprintf("Timeout waiting for cluster %s to be ready, please check status on dashboard.", newClusterID))
 		case <-ticker.C:
-			clusterResult, err := d.GetCluster(serverlessApi.NewServerlessServiceGetClusterParams().
-				WithClusterID(newClusterID).WithContext(ctx))
+			clusterResult, err := d.GetCluster(ctx, newClusterID)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			s := *clusterResult.GetPayload().State
-			if s == "ACTIVE" {
+			if *clusterResult.State == cluster.COMMONV1BETA1CLUSTERSTATE_ACTIVE {
 				fmt.Fprint(h.IOStreams.Out, color.GreenString("Cluster %s is ready.", newClusterID))
 				return nil
 			}
@@ -343,15 +339,14 @@ func CreateAndWaitReady(ctx context.Context, h *internal.Helper, d cloud.TiDBClo
 	}
 }
 
-func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, v1Cluster *serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster, h *internal.Helper) error {
+func CreateAndSpinnerWait(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, v1Cluster *cluster.TidbCloudOpenApiserverlessv1beta1Cluster) error {
 	// use spinner to indicate that the cluster is being created
 	task := func() tea.Msg {
-		createClusterResult, err := d.CreateCluster(serverlessApi.NewServerlessServiceCreateClusterParams().
-			WithCluster(v1Cluster).WithContext(ctx))
+		createClusterResult, err := d.CreateCluster(ctx, v1Cluster)
 		if err != nil {
 			return errors.Trace(err)
 		}
-		newClusterID := createClusterResult.GetPayload().ClusterID
+		newClusterID := *createClusterResult.ClusterId
 
 		ticker := time.NewTicker(WaitInterval)
 		defer ticker.Stop()
@@ -361,13 +356,11 @@ func CreateAndSpinnerWait(ctx context.Context, d cloud.TiDBCloudClient, v1Cluste
 			case <-timer:
 				return ui.Result(fmt.Sprintf("Timeout waiting for cluster %s to be ready, please check status on dashboard.", newClusterID))
 			case <-ticker.C:
-				clusterResult, err := d.GetCluster(serverlessApi.NewServerlessServiceGetClusterParams().
-					WithClusterID(newClusterID).WithContext(ctx))
+				clusterResult, err := d.GetCluster(ctx, newClusterID)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				s := *clusterResult.GetPayload().State
-				if s == "ACTIVE" {
+				if *clusterResult.State == cluster.COMMONV1BETA1CLUSTERSTATE_ACTIVE {
 					return ui.Result(fmt.Sprintf("Cluster %s is ready.", newClusterID))
 				}
 			case <-ctx.Done():

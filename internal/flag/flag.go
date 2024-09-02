@@ -55,7 +55,6 @@ const (
 	UserShort             string = "u"
 	SpendingLimitMonthly  string = "spending-limit-monthly"
 	ServerlessLabels      string = "labels"
-	ServerlessAnnotations string = "annotations"
 	Monthly               string = "monthly"
 	BackupID              string = "backup-id"
 	BackupTime            string = "backup-time"

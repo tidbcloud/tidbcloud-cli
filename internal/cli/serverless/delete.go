@@ -23,7 +23,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/util"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -103,11 +103,11 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 				projectID := project.ID
 
-				cluster, err := cloud.GetSelectedCluster(ctx, projectID, h.QueryPageSize, d)
+				c, err := cloud.GetSelectedCluster(ctx, projectID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				clusterID = cluster.ID
+				clusterID = c.ID
 			} else {
 				// non-interactive mode doesn't need projectID
 				cID, err := cmd.Flags().GetString(flag.ClusterID)
@@ -143,12 +143,11 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := serverlessApi.NewServerlessServiceDeleteClusterParams().WithClusterID(clusterID).WithContext(cmd.Context())
-			cluster, err := d.DeleteCluster(params)
+			c, err := d.DeleteCluster(ctx, clusterID)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			if *cluster.Payload.State == "DELETING" || *cluster.Payload.State == "DELETED" {
+			if *c.State == cluster.COMMONV1BETA1CLUSTERSTATE_DELETING || *c.State == cluster.COMMONV1BETA1CLUSTERSTATE_DELETED {
 				fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("cluster %s deleted", clusterID)))
 				return nil
 			} else {

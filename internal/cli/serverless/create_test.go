@@ -25,8 +25,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -62,31 +61,23 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 	clusterID := "12345"
 	clusterName := "test"
 	regionName := "regions/aws-us-west-1"
-	v1Cluster := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
-		DisplayName: &clusterName,
-		Region: &serverlessModel.Commonv1beta1Region{
+	v1Cluster := &cluster.TidbCloudOpenApiserverlessv1beta1Cluster{
+		DisplayName: clusterName,
+		Region: cluster.Commonv1beta1Region{
 			Name: &regionName,
 		},
-		Labels: map[string]string{"tidb.cloud/project": projectID},
+		Labels: &map[string]string{"tidb.cloud/project": projectID},
 	}
 
-	body := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{}
+	body := &cluster.TidbCloudOpenApiserverlessv1beta1Cluster{}
 	err := json.Unmarshal([]byte(getClusterResultStr), body)
 	assert.Nil(err)
-	res := &serverlessApi.ServerlessServiceGetClusterOK{
-		Payload: body,
-	}
 
-	suite.mockClient.On("CreateCluster", serverlessApi.NewServerlessServiceCreateClusterParams().
-		WithCluster(v1Cluster).WithContext(ctx)).
-		Return(&serverlessApi.ServerlessServiceCreateClusterOK{
-			Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
-				ClusterID: clusterID,
-			},
+	suite.mockClient.On("CreateCluster", ctx, v1Cluster).
+		Return(&cluster.TidbCloudOpenApiserverlessv1beta1Cluster{
+			ClusterId: &clusterID,
 		}, nil)
-	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
-		WithClusterID(clusterID).WithContext(ctx)).
-		Return(res, nil)
+	suite.mockClient.On("GetCluster", ctx, clusterID).Return(body, nil)
 
 	tests := []struct {
 		name         string
@@ -134,30 +125,22 @@ func (suite *CreateClusterSuite) TestCreateClusterWithoutProject() {
 	clusterName := "test"
 	regionName := "regions/aws-us-west-1"
 
-	v1ClusterWithoutProject := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
-		DisplayName: &clusterName,
-		Region: &serverlessModel.Commonv1beta1Region{
+	v1ClusterWithoutProject := &cluster.TidbCloudOpenApiserverlessv1beta1Cluster{
+		DisplayName: clusterName,
+		Region: cluster.Commonv1beta1Region{
 			Name: &regionName,
 		},
 	}
 
-	body := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{}
+	body := &cluster.TidbCloudOpenApiserverlessv1beta1Cluster{}
 	err := json.Unmarshal([]byte(getClusterResultStr), body)
 	assert.Nil(err)
-	res := &serverlessApi.ServerlessServiceGetClusterOK{
-		Payload: body,
-	}
 
-	suite.mockClient.On("CreateCluster", serverlessApi.NewServerlessServiceCreateClusterParams().
-		WithCluster(v1ClusterWithoutProject).WithContext(ctx)).
-		Return(&serverlessApi.ServerlessServiceCreateClusterOK{
-			Payload: &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{
-				ClusterID: clusterID,
-			},
+	suite.mockClient.On("CreateCluster", ctx, v1ClusterWithoutProject).
+		Return(&cluster.TidbCloudOpenApiserverlessv1beta1Cluster{
+			ClusterId: &clusterID,
 		}, nil)
-	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
-		WithClusterID(clusterID).WithContext(ctx)).
-		Return(res, nil)
+	suite.mockClient.On("GetCluster", ctx, clusterID).Return(body, nil)
 
 	tests := []struct {
 		name         string

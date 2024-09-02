@@ -29,8 +29,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/juju/errors"
 	"github.com/stretchr/testify/require"
@@ -81,15 +80,10 @@ func (suite *UpdateSQLUserSuite) TestUpdateSQLUserArgs() {
 	suite.mockClient.On("GetSQLUser", ctx, clusterID, fullUserName).
 		Return(result, nil)
 
-	clusterBody := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{}
-	err = json.Unmarshal([]byte(getClusterResultStr), clusterBody)
+	res := &cluster.TidbCloudOpenApiserverlessv1beta1Cluster{}
+	err = json.Unmarshal([]byte(getClusterResultStr), res)
 	assert.Nil(err)
-	res := &serverlessApi.ServerlessServiceGetClusterOK{
-		Payload: clusterBody,
-	}
-	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
-		WithClusterID(clusterID).WithContext(ctx)).
-		Return(res, nil)
+	suite.mockClient.On("GetCluster", ctx, clusterID).Return(res, nil)
 
 	updateBody := &iam.ApiUpdateSqlUserReq{
 		BuiltinRole: &builtinRole,
