@@ -172,6 +172,9 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		if err != nil {
 			return errors.Trace(err)
 		}
+		if s3Uri == "" {
+			return errors.New("empty S3 URI")
+		}
 
 		// optional flags
 		format, err = getCSVFlagValue(cmd)

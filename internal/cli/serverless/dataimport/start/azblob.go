@@ -157,7 +157,7 @@ func (o AzBlobOpts) Run(cmd *cobra.Command) error {
 		if err != nil {
 			return errors.Trace(err)
 		}
-		if uri == "" {
+		if sasToken == "" {
 			return fmt.Errorf("empty Azure Blob SAS token")
 		}
 		authType = imp.IMPORTAZUREBLOBAUTHTYPEENUM_SAS_TOKEN

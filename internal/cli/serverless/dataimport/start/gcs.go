@@ -164,14 +164,16 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		if err != nil {
 			return errors.Trace(err)
 		}
+		if gcsUri == "" {
+			return fmt.Errorf("empty GCS URI")
+		}
 
 		accountKey, err = cmd.Flags().GetString(flag.GCSServiceAccountKey)
 		if err != nil {
 			return errors.Trace(err)
 		}
-
 		if accountKey == "" {
-			return fmt.Errorf("gcs credentials path is required")
+			return fmt.Errorf("empty GCS service account key")
 		}
 		authType = imp.IMPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY
 
