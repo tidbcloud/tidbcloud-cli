@@ -51,17 +51,17 @@ const (
 )
 
 type TiDBCloudClient interface {
-	CreateCluster(params *serverlessOp.ServerlessServiceCreateClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceCreateClusterOK, error)
+	CreateCluster(ctx context.Context, body *cluster.TidbCloudOpenApiserverlessv1beta1Cluster) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)
 
-	DeleteCluster(params *serverlessOp.ServerlessServiceDeleteClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceDeleteClusterOK, error)
+	DeleteCluster(ctx context.Context, clusterId string) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)
 
-	GetCluster(params *serverlessOp.ServerlessServiceGetClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceGetClusterOK, error)
+	GetCluster(ctx context.Context, clusterId string) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)
 
-	ListClustersOfProject(params *serverlessOp.ServerlessServiceListClustersParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListClustersOK, error)
+	ListClustersOfProject(ctx context.Context, filter *string, pageSize *int32, pageToken *string, orderBy *string, skip *int32) (*cluster.TidbCloudOpenApiserverlessv1beta1ListClustersResponse, error)
 
-	PartialUpdateCluster(params *serverlessOp.ServerlessServicePartialUpdateClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServicePartialUpdateClusterOK, error)
+	PartialUpdateCluster(ctx context.Context, clusterId string, body *cluster.V1beta1ServerlessServicePartialUpdateClusterBody) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)
 
-	ListProviderRegions(params *serverlessOp.ServerlessServiceListRegionsParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListRegionsOK, error)
+	ListProviderRegions(ctx context.Context) (*cluster.TidbCloudOpenApiserverlessv1beta1ListRegionsResponse, error)
 
 	ListProjects(ctx context.Context, pageSize *int32, pageToken *string) (*iam.ApiListProjectsRsp, error)
 
@@ -164,28 +164,58 @@ func NewClientDelegateWithApiKey(publicKey string, privateKey string, apiUrl str
 	}, nil
 }
 
-func (d *ClientDelegate) CreateCluster(params *serverlessOp.ServerlessServiceCreateClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceCreateClusterOK, error) {
-	return d.sc.ServerlessService.ServerlessServiceCreateCluster(params, opts...)
+func (d *ClientDelegate) CreateCluster(ctx context.Context, body *cluster.TidbCloudOpenApiserverlessv1beta1Cluster) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+	r := d.sc.ServerlessServiceAPI.ServerlessServiceCreateCluster(ctx)
+	if body != nil {
+		r.Cluster(*body)
+	}
+	c, h, err := r.Execute()
+	return c, parseError(err, h)
 }
 
-func (d *ClientDelegate) DeleteCluster(params *serverlessOp.ServerlessServiceDeleteClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceDeleteClusterOK, error) {
-	return d.sc.ServerlessService.ServerlessServiceDeleteCluster(params, opts...)
+func (d *ClientDelegate) DeleteCluster(ctx context.Context, clusterId string) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+	c, h, err := d.sc.ServerlessServiceAPI.ServerlessServiceDeleteCluster(ctx, clusterId).Execute()
+	return c, parseError(err, h)
 }
 
-func (d *ClientDelegate) GetCluster(params *serverlessOp.ServerlessServiceGetClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceGetClusterOK, error) {
-	return d.sc.ServerlessService.ServerlessServiceGetCluster(params, opts...)
+func (d *ClientDelegate) GetCluster(ctx context.Context, clusterId string) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+	c, h, err := d.sc.ServerlessServiceAPI.ServerlessServiceGetCluster(ctx, clusterId).Execute()
+	return c, parseError(err, h)
 }
 
-func (d *ClientDelegate) ListProviderRegions(params *serverlessOp.ServerlessServiceListRegionsParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListRegionsOK, error) {
-	return d.sc.ServerlessService.ServerlessServiceListRegions(params, opts...)
+func (d *ClientDelegate) ListProviderRegions(ctx context.Context) (*cluster.TidbCloudOpenApiserverlessv1beta1ListRegionsResponse, error) {
+	resp, h, err := d.sc.ServerlessServiceAPI.ServerlessServiceListRegions(ctx).Execute()
+	return resp, parseError(err, h)
 }
 
-func (d *ClientDelegate) ListClustersOfProject(params *serverlessOp.ServerlessServiceListClustersParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListClustersOK, error) {
-	return d.sc.ServerlessService.ServerlessServiceListClusters(params, opts...)
+func (d *ClientDelegate) ListClustersOfProject(ctx context.Context, filter *string, pageSize *int32, pageToken *string, orderBy *string, skip *int32) (*cluster.TidbCloudOpenApiserverlessv1beta1ListClustersResponse, error) {
+	r := d.sc.ServerlessServiceAPI.ServerlessServiceListClusters(ctx)
+	if filter != nil {
+		r.Filter(*filter)
+	}
+	if pageSize != nil {
+		r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r.PageToken(*pageToken)
+	}
+	if orderBy != nil {
+		r.OrderBy(*orderBy)
+	}
+	if skip != nil {
+		r.Skip(*skip)
+	}
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
 }
 
-func (d *ClientDelegate) PartialUpdateCluster(params *serverlessOp.ServerlessServicePartialUpdateClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServicePartialUpdateClusterOK, error) {
-	return d.sc.ServerlessService.ServerlessServicePartialUpdateCluster(params, opts...)
+func (d *ClientDelegate) PartialUpdateCluster(ctx context.Context, clusterId string, body *cluster.V1beta1ServerlessServicePartialUpdateClusterBody) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+	r := d.sc.ServerlessServiceAPI.ServerlessServicePartialUpdateCluster(ctx, clusterId)
+	if body != nil {
+		r.Body(*body)
+	}
+	c, h, err := r.Execute()
+	return c, parseError(err, h)
 }
 
 func (d *ClientDelegate) ListProjects(ctx context.Context, pageSize *int32, pageToken *string) (*iam.ApiListProjectsRsp, error) {
@@ -367,7 +397,7 @@ func (d *ClientDelegate) UpdateSQLUser(ctx context.Context, clusterID string, us
 	return res, parseError(err, h)
 }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *serverlessImportClient.TidbcloudServerless, *export.APIClient, *iam.APIClient, error) {
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *serverlessImportClient.TidbcloudServerless, *export.APIClient, *iam.APIClient, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}
