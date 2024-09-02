@@ -15,10 +15,8 @@
 package start
 
 import (
-	"encoding/base64"
 	stdErr "errors"
 	"fmt"
-	"os"
 	"slices"
 
 	"tidbcloud-cli/internal"
@@ -54,7 +52,7 @@ func (o GCSOpts) SupportedFileTypes() []string {
 
 func (o GCSOpts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
-	var clusterID, fileType, gcsUri, credentialsPath string
+	var clusterID, fileType, gcsUri, accountKey string
 	var authType imp.ImportGcsAuthTypeEnum
 	var format *imp.CSVFormat
 	d, err := o.h.Client()
@@ -80,18 +78,6 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		}
 		clusterID = cluster.ID
 
-		input := &survey.Input{
-			Message: "Please input the gcs fold uri:",
-		}
-		err = survey.AskOne(input, &gcsUri, survey.WithValidator(survey.Required))
-		if err != nil {
-			if stdErr.Is(err, terminal.InterruptErr) {
-				return util.InterruptError
-			} else {
-				return err
-			}
-		}
-
 		authTypes := []interface{}{imp.IMPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY}
 		model, err := ui.InitialSelectModel(authTypes, "Choose the auth type:")
 		if err != nil {
@@ -107,17 +93,31 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		}
 		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(imp.ImportGcsAuthTypeEnum)
 
-		if authType == imp.IMPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY {
-			input := &survey.Input{
-				Message: "Please input the gcs credentialsPath:",
+		input := &survey.Input{
+			Message: "Please input the gcs fold uri:",
+		}
+		err = survey.AskOne(input, &gcsUri, survey.WithValidator(survey.Required))
+		if err != nil {
+			if stdErr.Is(err, terminal.InterruptErr) {
+				return util.InterruptError
+			} else {
+				return err
 			}
-			err = survey.AskOne(input, &credentialsPath, survey.WithValidator(survey.Required))
+		}
+
+		if authType == imp.IMPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY {
+			inputs := []string{flag.GCSURI, flag.GCSServiceAccountKey}
+			textInput, err := ui.InitialInputModel(inputs, inputDescription)
 			if err != nil {
-				if stdErr.Is(err, terminal.InterruptErr) {
-					return util.InterruptError
-				} else {
-					return err
-				}
+				return err
+			}
+			gcsUri = textInput.Inputs[0].Value()
+			if gcsUri == "" {
+				return errors.New("empty GCS URI")
+			}
+			accountKey = textInput.Inputs[1].Value()
+			if accountKey == "" {
+				return errors.New("empty GCS service account key")
 			}
 		} else {
 			return fmt.Errorf("invalid auth type :%s", authType)
@@ -165,12 +165,12 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 			return errors.Trace(err)
 		}
 
-		credentialsPath, err = cmd.Flags().GetString(flag.GCSCredentialsPath)
+		accountKey, err = cmd.Flags().GetString(flag.GCSServiceAccountKey)
 		if err != nil {
 			return errors.Trace(err)
 		}
 
-		if credentialsPath == "" {
+		if accountKey == "" {
 			return fmt.Errorf("gcs credentials path is required")
 		}
 		authType = imp.IMPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY
@@ -182,16 +182,11 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		}
 	}
 
-	credentials, err := os.ReadFile(credentialsPath)
-	if err != nil {
-		return err
-	}
-
 	cmd.Annotations[telemetry.ClusterID] = clusterID
 
 	source := imp.NewImportSource(imp.IMPORTSOURCETYPEENUM_GCS)
 	source.Gcs = imp.NewGCSSource(gcsUri, authType)
-	source.Gcs.ServiceAccountKey = aws.String(base64.StdEncoding.EncodeToString(credentials))
+	source.Gcs.ServiceAccountKey = aws.String(accountKey)
 	options := imp.NewImportOptions(imp.ImportFileTypeEnum(fileType))
 	options.CsvFormat = format
 	body := imp.NewImportServiceCreateImportBody(*options, *source)

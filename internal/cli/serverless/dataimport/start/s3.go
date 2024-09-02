@@ -15,7 +15,6 @@
 package start
 
 import (
-	stdErr "errors"
 	"fmt"
 	"slices"
 
@@ -28,8 +27,6 @@ import (
 	"tidbcloud-cli/internal/util"
 	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
-	"github.com/AlecAivazis/survey/v2"
-	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/pingcap/errors"
@@ -83,18 +80,6 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		}
 		clusterID = cluster.ID
 
-		input := &survey.Input{
-			Message: "Please input the s3 fold uri:",
-		}
-		err = survey.AskOne(input, &s3Uri, survey.WithValidator(survey.Required))
-		if err != nil {
-			if stdErr.Is(err, terminal.InterruptErr) {
-				return util.InterruptError
-			} else {
-				return err
-			}
-		}
-
 		authTypes := []interface{}{imp.IMPORTS3AUTHTYPEENUM_ROLE_ARN, imp.IMPORTS3AUTHTYPEENUM_ACCESS_KEY}
 		model, err := ui.InitialSelectModel(authTypes, "Choose the auth type:")
 		if err != nil {
@@ -111,34 +96,36 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(imp.ImportS3AuthTypeEnum)
 
 		if authType == imp.IMPORTS3AUTHTYPEENUM_ROLE_ARN {
-			input := &survey.Input{
-				Message: "Please input the arn:",
-			}
-			err = survey.AskOne(input, &s3Arn, survey.WithValidator(survey.Required))
+			inputs := []string{flag.S3URI, flag.S3RoleArn}
+			textInput, err := ui.InitialInputModel(inputs, inputDescription)
 			if err != nil {
-				if stdErr.Is(err, terminal.InterruptErr) {
-					return util.InterruptError
-				} else {
-					return err
-				}
+				return err
+			}
+			s3Uri = textInput.Inputs[0].Value()
+			if s3Uri == "" {
+				return errors.New("empty S3 URI")
+			}
+			s3Arn = textInput.Inputs[1].Value()
+			if s3Arn == "" {
+				return errors.New("empty S3 role arn")
 			}
 		} else if authType == imp.IMPORTS3AUTHTYPEENUM_ACCESS_KEY {
-			// variables for input
-			p = tea.NewProgram(o.initialAccessKeyInputModel())
-			inputModel, err := p.Run()
+			inputs := []string{flag.S3URI, flag.S3AccessKeyID, flag.S3SecretAccessKey}
+			textInput, err := ui.InitialInputModel(inputs, inputDescription)
 			if err != nil {
-				return errors.Trace(err)
+				return err
 			}
-			if inputModel.(ui.TextInputModel).Interrupted {
-				return util.InterruptError
+			s3Uri = textInput.Inputs[0].Value()
+			if s3Uri == "" {
+				return errors.New("empty S3 URI")
 			}
-			accessKeyID = inputModel.(ui.TextInputModel).Inputs[accessKeyImportField[flag.S3AccessKeyID]].Value()
-			if len(accessKeyID) == 0 {
-				return errors.New("S3 access key id is required")
+			accessKeyID = textInput.Inputs[1].Value()
+			if accessKeyID == "" {
+				return errors.New("empty S3 access key Id")
 			}
-			secretAccessKey = inputModel.(ui.TextInputModel).Inputs[accessKeyImportField[flag.S3SecretAccessKey]].Value()
-			if len(secretAccessKey) == 0 {
-				return errors.New("S3 secret access key is required")
+			secretAccessKey = textInput.Inputs[2].Value()
+			if secretAccessKey == "" {
+				return errors.New("empty S3 secret access key")
 			}
 		} else {
 			return fmt.Errorf("invalid auth type :%s", authType)

@@ -200,7 +200,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	startCmd.MarkFlagsRequiredTogether(flag.S3AccessKeyID, flag.S3SecretAccessKey)
 
 	startCmd.Flags().String(flag.GCSURI, "", "The GCS folder URI for import.")
-	startCmd.Flags().String(flag.GCSCredentialsPath, "", "The local path of GCS credentials.")
+	startCmd.Flags().String(flag.GCSServiceAccountKey, "", "The base64 encoded service account key of GCS.")
 
 	startCmd.Flags().String(flag.AzureBlobURI, "", "The Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format.")
 	startCmd.Flags().String(flag.AzureBlobSASToken, "", "The SAS token of Azure Blob.")

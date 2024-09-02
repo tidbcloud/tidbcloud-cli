@@ -19,8 +19,8 @@ set -euo pipefail
 find_files() {
   find . -not \( \
     \( \
-      -wholename '*mock*' \
-      -o -wholename '*third_party*' \
+      -path './**/mock/*' \
+      -o -path './pkg/tidbcloud/*' \
     \) -prune \
   \) \
   \( -name '*.go' -o -name '*.sh' \)

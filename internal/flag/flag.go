@@ -66,7 +66,6 @@ const (
 	S3RoleArn              string = "s3.role-arn"
 	GCSURI                 string = "gcs.uri"
 	GCSServiceAccountKey   string = "gcs.service-account-key"
-	GCSCredentialsPath     string = "gcs.credentials-path"
 	AzureBlobURI           string = "azblob.uri"
 	AzureBlobSASToken      string = "azblob.sas-token"
 	TargetType             string = "target-type"
