@@ -19,7 +19,6 @@ import (
 	"slices"
 
 	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
@@ -27,16 +26,10 @@ import (
 	"tidbcloud-cli/internal/util"
 	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
-	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/pingcap/errors"
 	"github.com/spf13/cobra"
 )
-
-var accessKeyImportField = map[string]int{
-	flag.S3AccessKeyID:     0,
-	flag.S3SecretAccessKey: 1,
-}
 
 type S3Opts struct {
 	h           *internal.Helper
@@ -233,31 +226,4 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 	}
 
 	return nil
-}
-
-func (o S3Opts) initialAccessKeyInputModel() ui.TextInputModel {
-	m := ui.TextInputModel{
-		Inputs: make([]textinput.Model, len(accessKeyImportField)),
-	}
-
-	var t textinput.Model
-	for k, v := range accessKeyImportField {
-		t = textinput.New()
-		t.Cursor.Style = config.FocusedStyle
-		t.CharLimit = 0
-
-		switch k {
-		case flag.S3AccessKeyID:
-			t.Placeholder = "S3 access key id"
-			t.Focus()
-			t.PromptStyle = config.FocusedStyle
-			t.TextStyle = config.FocusedStyle
-		case flag.S3SecretAccessKey:
-			t.Placeholder = "S3 secret access key"
-		}
-
-		m.Inputs[v] = t
-	}
-
-	return m
 }
