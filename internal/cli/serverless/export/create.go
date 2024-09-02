@@ -503,12 +503,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.New("unsupported parquet compression: " + parquetCompression)
 					}
 				}
-				compression, err = cmd.Flags().GetString(flag.Compression)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				if compression != "" && !slices.Contains(supportedCompression, strings.ToUpper(compression)) {
-					return errors.New("unsupported compression: " + compression)
+				if strings.ToUpper(fileType) != string(FileTypePARQUET) {
+					compression, err = cmd.Flags().GetString(flag.Compression)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					if compression != "" && !slices.Contains(supportedCompression, strings.ToUpper(compression)) {
+						return errors.New("unsupported compression: " + compression)
+					}
 				}
 				sql, err = cmd.Flags().GetString(flag.SQL)
 				if err != nil {
@@ -640,12 +642,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster, in which the export will be created.")
-	createCmd.Flags().String(flag.FileType, "SQL", "The export file type. One of [\"CSV\" \"SQL\" \"PARQUET\"].")
+	createCmd.Flags().String(flag.FileType, "CSV", "The export file type. One of [\"CSV\" \"SQL\" \"PARQUET\"].")
 	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export target. One of [\"LOCAL\" \"S3\" \"GCS\" \"AZURE_BLOB\"].")
 	createCmd.Flags().String(flag.S3URI, "", "The S3 URI in s3://<bucket>/<path> format. Required when target type is S3.")
 	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
 	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
-	createCmd.Flags().String(flag.Compression, "GZIP", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"].")
+	createCmd.Flags().String(flag.Compression, "GZIP", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"]. Only take effect when file type is not PARQUET.")
 	createCmd.Flags().StringSlice(flag.TableFilter, nil, "Specify the exported table(s) with table filter patterns. See https://docs.pingcap.com/tidb/stable/table-filter to learn table filter.")
 	createCmd.Flags().String(flag.TableWhere, "", "Filter the exported table(s) with the where condition.")
 	createCmd.Flags().String(flag.SQL, "", "Filter the exported data with SQL SELECT statement.")
