@@ -69,9 +69,11 @@ var (
 )
 
 const (
-	CSVSeparatorDefaultValue = ","
-	CSVDelimiterDefaultValue = "\""
-	CSVNullValueDefaultValue = "\\N"
+	CSVSeparatorDefaultValue       = ","
+	CSVDelimiterDefaultValue       = "\""
+	CSVNullValueDefaultValue       = "\\N"
+	CompressionDefaultValue        = "GZIP"
+	ParquetCompressionDefaultValue = "ZSTD"
 )
 
 type CreateOpts struct {
@@ -353,6 +355,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						csvNullValue = CSVNullValueDefaultValue
 					}
 				case string(FileTypePARQUET):
+					parquetCompression = ParquetCompressionDefaultValue
 					customParquetCompression := false
 					prompt := &survey.Confirm{
 						Message: "Do you want change the default parquet compression algorithm ZSTD",
@@ -376,6 +379,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				if fileType != string(FileTypePARQUET) {
+					compression = CompressionDefaultValue
 					changeCompression := false
 					prompt := &survey.Confirm{
 						Message: "Do you want to change the default compression algorithm GZIP",
@@ -473,6 +477,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 				}
 
+				compression, err = cmd.Flags().GetString(flag.Compression)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				if compression != "" && !slices.Contains(supportedCompression, strings.ToUpper(compression)) {
+					return errors.New("unsupported compression: " + compression)
+				}
+
 				switch strings.ToUpper(fileType) {
 				case string(FileTypeCSV):
 					csvSeparator, err = cmd.Flags().GetString(flag.CSVSeparator)
@@ -502,16 +514,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if parquetCompression != "" && !slices.Contains(supportedParquetCompression, strings.ToUpper(parquetCompression)) {
 						return errors.New("unsupported parquet compression: " + parquetCompression)
 					}
-				}
-				if strings.ToUpper(fileType) != string(FileTypePARQUET) {
-					compression, err = cmd.Flags().GetString(flag.Compression)
-					if err != nil {
-						return errors.Trace(err)
-					}
-					if compression != "" && !slices.Contains(supportedCompression, strings.ToUpper(compression)) {
-						return errors.New("unsupported compression: " + compression)
+					if compression != "" {
+						return errors.New("--compression is not supported when file type is parquet, please use --parquet.compression instead")
 					}
 				}
+
 				sql, err = cmd.Flags().GetString(flag.SQL)
 				if err != nil {
 					return errors.Trace(err)
@@ -647,7 +654,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.S3URI, "", "The S3 URI in s3://<bucket>/<path> format. Required when target type is S3.")
 	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
 	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
-	createCmd.Flags().String(flag.Compression, "GZIP", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"]. Only take effect when file type is not PARQUET.")
+	createCmd.Flags().String(flag.Compression, "", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"].")
 	createCmd.Flags().StringSlice(flag.TableFilter, nil, "Specify the exported table(s) with table filter patterns. See https://docs.pingcap.com/tidb/stable/table-filter to learn table filter.")
 	createCmd.Flags().String(flag.TableWhere, "", "Filter the exported table(s) with the where condition.")
 	createCmd.Flags().String(flag.SQL, "", "Filter the exported data with SQL SELECT statement.")
