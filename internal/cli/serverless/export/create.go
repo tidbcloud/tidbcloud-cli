@@ -355,7 +355,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						csvNullValue = CSVNullValueDefaultValue
 					}
 				case string(FileTypePARQUET):
-					parquetCompression = ParquetCompressionDefaultValue
 					customParquetCompression := false
 					prompt := &survey.Confirm{
 						Message: "Do you want change the default parquet compression algorithm ZSTD",
@@ -379,7 +378,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				if fileType != string(FileTypePARQUET) {
-					compression = CompressionDefaultValue
 					changeCompression := false
 					prompt := &survey.Confirm{
 						Message: "Do you want to change the default compression algorithm GZIP",
@@ -556,6 +554,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
+			// apply default values
+			if strings.ToUpper(fileType) == string(FileTypePARQUET) {
+				if parquetCompression == "" {
+					parquetCompression = ParquetCompressionDefaultValue
+				}
+			} else if compression == "" {
+				compression = CompressionDefaultValue
+			}
 			// build param to create export
 			fileTypeEnum := export.ExportFileTypeEnum(strings.ToUpper(fileType))
 			targetTypeEnum := export.ExportTargetTypeEnum(strings.ToUpper(targetType))
