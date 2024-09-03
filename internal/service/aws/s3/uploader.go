@@ -365,7 +365,8 @@ func (u *singerUploader) upload(r io.ReadSeeker, cleanup func()) (string, error)
 }
 
 func (u *singerUploader) complete() error {
-	err := u.cfg.client.CompleteUpload(u.ctx, u.in.ClusterID, &u.uploadID, nil)
+	var parts []imp.CompletePart
+	err := u.cfg.client.CompleteUpload(u.ctx, u.in.ClusterID, &u.uploadID, &parts)
 	if err != nil {
 		u.fail()
 		return err

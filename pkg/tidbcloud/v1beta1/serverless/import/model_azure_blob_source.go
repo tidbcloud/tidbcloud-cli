@@ -25,7 +25,7 @@ type AzureBlobSource struct {
 	AuthType ImportAzureBlobAuthTypeEnum `json:"authType"`
 	// The sas token. This field is input-only.
 	SasToken *string `json:"sasToken,omitempty"`
-	// The Azure Blob URI of the import source. For example: https://accountname.blob.core.windows.net/container/blob.
+	// The Azure Blob URI of the import source. For example: azure://<account>.blob.core.windows.net/<container>/<path>.
 	Uri string `json:"uri"`
 }
 

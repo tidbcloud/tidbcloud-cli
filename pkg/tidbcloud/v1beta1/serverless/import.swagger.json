@@ -111,7 +111,7 @@
           },
           {
             "name": "parts",
-            "description": "The parts have been uploaded",
+            "description": "The parts have been uploaded, only needed when upload is multipart.",
             "in": "body",
             "required": true,
             "schema": {
@@ -119,10 +119,7 @@
               "items": {
                 "type": "object",
                 "$ref": "#/definitions/CompletePart"
-              },
-              "required": [
-                "parts"
-              ]
+              }
             }
           },
           {
@@ -381,7 +378,7 @@
         },
         "uri": {
           "type": "string",
-          "description": "The Azure Blob URI of the import source. For example: https://accountname.blob.core.windows.net/container/blob."
+          "description": "The Azure Blob URI of the import source. For example: azure://<account>.blob.core.windows.net/<container>/<path>."
         }
       },
       "required": [

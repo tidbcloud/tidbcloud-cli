@@ -82,7 +82,7 @@ paths:
               items:
                 $ref: '#/components/schemas/CompletePart'
               type: array
-        description: The parts have been uploaded
+        description: "The parts have been uploaded, only needed when upload is multipart."
         required: true
       responses:
         "200":
@@ -298,7 +298,7 @@ components:
           description: The sas token. This field is input-only.
           type: string
         uri:
-          description: "The Azure Blob URI of the import source. For example: https://accountname.blob.core.windows.net/container/blob."
+          description: "The Azure Blob URI of the import source. For example: azure://<account>.blob.core.windows.net/<container>/<path>."
           type: string
       required:
       - authType

@@ -271,7 +271,7 @@ func (r ApiImportServiceCompleteUploadRequest) UploadId(uploadId string) ApiImpo
 	return r
 }
 
-// The parts have been uploaded
+// The parts have been uploaded, only needed when upload is multipart.
 func (r ApiImportServiceCompleteUploadRequest) Parts(parts []CompletePart) ApiImportServiceCompleteUploadRequest {
 	r.parts = &parts
 	return r
