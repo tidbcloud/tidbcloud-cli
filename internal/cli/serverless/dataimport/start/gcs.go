@@ -15,7 +15,6 @@
 package start
 
 import (
-	stdErr "errors"
 	"fmt"
 	"slices"
 
@@ -28,8 +27,6 @@ import (
 
 	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
-	"github.com/AlecAivazis/survey/v2"
-	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/juju/errors"
@@ -92,18 +89,6 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 			return util.InterruptError
 		}
 		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(imp.ImportGcsAuthTypeEnum)
-
-		input := &survey.Input{
-			Message: "Please input the gcs fold uri:",
-		}
-		err = survey.AskOne(input, &gcsUri, survey.WithValidator(survey.Required))
-		if err != nil {
-			if stdErr.Is(err, terminal.InterruptErr) {
-				return util.InterruptError
-			} else {
-				return err
-			}
-		}
 
 		if authType == imp.IMPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY {
 			inputs := []string{flag.GCSURI, flag.GCSServiceAccountKey}
