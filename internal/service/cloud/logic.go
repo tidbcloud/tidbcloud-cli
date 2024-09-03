@@ -621,7 +621,7 @@ func RetrieveClusters(ctx context.Context, pID string, pageSize int64, d TiDBClo
 		filter = &projectFilter
 	}
 
-	clusters, err := d.ListClustersOfProject(ctx, filter, &pageSizeInt32, nil, nil, nil)
+	clusters, err := d.ListClusters(ctx, filter, &pageSizeInt32, nil, nil, nil)
 	if err != nil {
 		return 0, nil, errors.Trace(err)
 	}
@@ -631,7 +631,7 @@ func RetrieveClusters(ctx context.Context, pID string, pageSize int64, d TiDBClo
 		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
-		clusters, err = d.ListClustersOfProject(ctx, filter, &pageSizeInt32, pageToken, nil, nil)
+		clusters, err = d.ListClusters(ctx, filter, &pageSizeInt32, pageToken, nil, nil)
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}

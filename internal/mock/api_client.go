@@ -809,12 +809,12 @@ func (_m *TiDBCloudClient) ListBranches(ctx context.Context, clusterId string, p
 	return r0, r1
 }
 
-// ListClustersOfProject provides a mock function with given fields: ctx, filter, pageSize, pageToken, orderBy, skip
-func (_m *TiDBCloudClient) ListClustersOfProject(ctx context.Context, filter *string, pageSize *int32, pageToken *string, orderBy *string, skip *int32) (*cluster.TidbCloudOpenApiserverlessv1beta1ListClustersResponse, error) {
+// ListClusters provides a mock function with given fields: ctx, filter, pageSize, pageToken, orderBy, skip
+func (_m *TiDBCloudClient) ListClusters(ctx context.Context, filter *string, pageSize *int32, pageToken *string, orderBy *string, skip *int32) (*cluster.TidbCloudOpenApiserverlessv1beta1ListClustersResponse, error) {
 	ret := _m.Called(ctx, filter, pageSize, pageToken, orderBy, skip)
 
 	if len(ret) == 0 {
-		panic("no return value specified for ListClustersOfProject")
+		panic("no return value specified for ListClusters")
 	}
 
 	var r0 *cluster.TidbCloudOpenApiserverlessv1beta1ListClustersResponse

@@ -188,7 +188,7 @@ func (suite *ListClusterSuite) TestListClusterArgs() {
 	projectID := "12345"
 	pageSize := int32(suite.h.QueryPageSize)
 	filter := fmt.Sprintf("projectId=%s", projectID)
-	suite.mockClient.On("ListClustersOfProject", ctx, &filter, &pageSize, (*string)(nil), (*string)(nil), (*int32)(nil)).Return(body, nil)
+	suite.mockClient.On("ListClusters", ctx, &filter, &pageSize, (*string)(nil), (*string)(nil), (*int32)(nil)).Return(body, nil)
 
 	tests := []struct {
 		name         string
@@ -247,12 +247,12 @@ func (suite *ListClusterSuite) TestListClusterWithMultiPages() {
 
 	projectID := "12345"
 	filter := fmt.Sprintf("projectId=%s", projectID)
-	suite.mockClient.On("ListClustersOfProject", ctx, &filter, &pageSize, (*string)(nil), (*string)(nil), (*int32)(nil)).Return(body, nil)
+	suite.mockClient.On("ListClusters", ctx, &filter, &pageSize, (*string)(nil), (*string)(nil), (*int32)(nil)).Return(body, nil)
 
 	body2 := &cluster.TidbCloudOpenApiserverlessv1beta1ListClustersResponse{}
 	err = json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"totalSize": 1`, `"totalSize": 2`)), body2)
 	assert.Nil(err)
-	suite.mockClient.On("ListClustersOfProject", ctx, &filter, &pageSize, &pageToken, (*string)(nil), (*int32)(nil)).Return(body2, nil)
+	suite.mockClient.On("ListClusters", ctx, &filter, &pageSize, &pageToken, (*string)(nil), (*int32)(nil)).Return(body2, nil)
 
 	cmd := ListCmd(suite.h)
 	tests := []struct {
