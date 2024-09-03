@@ -167,7 +167,7 @@ func NewClientDelegateWithApiKey(publicKey string, privateKey string, apiUrl str
 func (d *ClientDelegate) CreateCluster(ctx context.Context, body *cluster.TidbCloudOpenApiserverlessv1beta1Cluster) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
 	r := d.sc.ServerlessServiceAPI.ServerlessServiceCreateCluster(ctx)
 	if body != nil {
-		r.Cluster(*body)
+		r = r.Cluster(*body)
 	}
 	c, h, err := r.Execute()
 	return c, parseError(err, h)
@@ -191,19 +191,19 @@ func (d *ClientDelegate) ListProviderRegions(ctx context.Context) (*cluster.Tidb
 func (d *ClientDelegate) ListClusters(ctx context.Context, filter *string, pageSize *int32, pageToken *string, orderBy *string, skip *int32) (*cluster.TidbCloudOpenApiserverlessv1beta1ListClustersResponse, error) {
 	r := d.sc.ServerlessServiceAPI.ServerlessServiceListClusters(ctx)
 	if filter != nil {
-		r.Filter(*filter)
+		r = r.Filter(*filter)
 	}
 	if pageSize != nil {
-		r.PageSize(*pageSize)
+		r = r.PageSize(*pageSize)
 	}
 	if pageToken != nil {
-		r.PageToken(*pageToken)
+		r = r.PageToken(*pageToken)
 	}
 	if orderBy != nil {
-		r.OrderBy(*orderBy)
+		r = r.OrderBy(*orderBy)
 	}
 	if skip != nil {
-		r.Skip(*skip)
+		r = r.Skip(*skip)
 	}
 	resp, h, err := r.Execute()
 	return resp, parseError(err, h)
@@ -212,7 +212,7 @@ func (d *ClientDelegate) ListClusters(ctx context.Context, filter *string, pageS
 func (d *ClientDelegate) PartialUpdateCluster(ctx context.Context, clusterId string, body *cluster.V1beta1ServerlessServicePartialUpdateClusterBody) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
 	r := d.sc.ServerlessServiceAPI.ServerlessServicePartialUpdateCluster(ctx, clusterId)
 	if body != nil {
-		r.Body(*body)
+		r = r.Body(*body)
 	}
 	c, h, err := r.Execute()
 	return c, parseError(err, h)
