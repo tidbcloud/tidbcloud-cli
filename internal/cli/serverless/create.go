@@ -141,7 +141,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				// distinct cloud providers
 				providers := hashset.New()
 				for _, provider := range opts.serverlessProviders {
-					providers.Add(*provider.Provider.Get())
+					providers.Add(string(*provider.CloudProvider))
 				}
 				cloudProvider, err = GetProvider(providers)
 				if err != nil {
@@ -151,11 +151,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				// filter out regions for the selected cloud provider
 				regionSet := hashset.New()
 				for _, provider := range opts.serverlessProviders {
-					if *provider.Provider.Get() == cloudProvider {
+					if string(*provider.CloudProvider) == cloudProvider {
 						regionSet.Add(cloud.Region{
 							Name:        *provider.Name,
 							DisplayName: *provider.DisplayName,
-							Provider:    *provider.Provider.Get(),
+							Provider:    string(*provider.CloudProvider),
 						})
 					}
 				}

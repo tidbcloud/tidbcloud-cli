@@ -136,7 +136,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 						item.DisplayName,
 						string(*item.State),
 						*item.Version,
-						*item.Region.Provider.Get(),
+						string(*item.Region.CloudProvider),
 						*item.Region.DisplayName,
 						item.CreateTime.Format(time.RFC3339),
 					})

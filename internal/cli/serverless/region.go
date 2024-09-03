@@ -68,7 +68,7 @@ func RegionCmd(h *internal.Helper) *cobra.Command {
 					rows = append(rows, output.Row{
 						*item.Name,
 						*item.DisplayName,
-						*item.Provider.Get(),
+						string(*item.CloudProvider),
 					})
 				}
 				err = output.PrintHumanTable(h.IOStreams.Out, columns, rows)
