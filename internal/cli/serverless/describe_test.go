@@ -25,8 +25,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -107,16 +106,12 @@ func (suite *DescribeClusterSuite) TestDescribeClusterArgs() {
 	assert := require.New(suite.T())
 	ctx := context.Background()
 
-	body := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{}
+	body := &cluster.TidbCloudOpenApiserverlessv1beta1Cluster{}
 	err := json.Unmarshal([]byte(getClusterResultStr), body)
 	assert.Nil(err)
-	result := &serverlessApi.ServerlessServiceGetClusterOK{
-		Payload: body,
-	}
+
 	clusterID := "12345"
-	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
-		WithClusterID(clusterID).WithContext(ctx)).
-		Return(result, nil)
+	suite.mockClient.On("GetCluster", ctx, clusterID).Return(body, nil)
 
 	tests := []struct {
 		name         string
