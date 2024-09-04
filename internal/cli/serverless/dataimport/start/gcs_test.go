@@ -100,7 +100,7 @@ func (suite *GCSImportSuite) TestGCSImportArgs() {
 				CsvFormat: csvFormat,
 			},
 		},
-		Id:        aws.String(importID),
+		ImportId:  aws.String(importID),
 		Message:   aws.String("import success"),
 		Name:      aws.String("import-2024-04-01T06:39:50.000Z"),
 		State:     (*imp.ImportStateEnum)(aws.String("COMPLETED")),

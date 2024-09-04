@@ -496,7 +496,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "description": "The ID of the import.",
+          "description": "The ID of the import. DEPRECATED, use import_id instead.",
           "readOnly": true
         },
         "name": {
@@ -562,6 +562,11 @@
               "$ref": "#/definitions/CreationDetails"
             }
           ]
+        },
+        "importId": {
+          "type": "string",
+          "description": "The ID of the import.",
+          "readOnly": true
         }
       }
     },

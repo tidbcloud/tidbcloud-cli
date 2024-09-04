@@ -166,7 +166,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 						ft = string(item.CreationDetails.ImportOptions.FileType)
 					}
 					rows = append(rows, output.Row{
-						*item.Id,
+						*item.ImportId,
 						st,
 						string(*item.State),
 						item.CreateTime.String(),

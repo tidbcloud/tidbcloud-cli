@@ -20,7 +20,7 @@ var _ MappedNullable = &Import{}
 
 // Import struct for Import
 type Import struct {
-	// The ID of the import.
+	// The ID of the import. DEPRECATED, use import_id instead.
 	Id *string `json:"id,omitempty"`
 	// The name of the import.
 	Name *string `json:"name,omitempty"`
@@ -42,6 +42,8 @@ type Import struct {
 	CreatedBy *string `json:"createdBy,omitempty"`
 	// The creation details of the import.
 	CreationDetails *CreationDetails `json:"creationDetails,omitempty"`
+	// The ID of the import.
+	ImportId *string `json:"importId,omitempty"`
 }
 
 // NewImport instantiates a new Import object
@@ -424,6 +426,38 @@ func (o *Import) SetCreationDetails(v CreationDetails) {
 	o.CreationDetails = &v
 }
 
+// GetImportId returns the ImportId field value if set, zero value otherwise.
+func (o *Import) GetImportId() string {
+	if o == nil || IsNil(o.ImportId) {
+		var ret string
+		return ret
+	}
+	return *o.ImportId
+}
+
+// GetImportIdOk returns a tuple with the ImportId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Import) GetImportIdOk() (*string, bool) {
+	if o == nil || IsNil(o.ImportId) {
+		return nil, false
+	}
+	return o.ImportId, true
+}
+
+// HasImportId returns a boolean if a field has been set.
+func (o *Import) HasImportId() bool {
+	if o != nil && !IsNil(o.ImportId) {
+		return true
+	}
+
+	return false
+}
+
+// SetImportId gets a reference to the given string and assigns it to the ImportId field.
+func (o *Import) SetImportId(v string) {
+	o.ImportId = &v
+}
+
 func (o Import) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -466,6 +500,9 @@ func (o Import) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.CreationDetails) {
 		toSerialize["creationDetails"] = o.CreationDetails
+	}
+	if !IsNil(o.ImportId) {
+		toSerialize["importId"] = o.ImportId
 	}
 	return toSerialize, nil
 }

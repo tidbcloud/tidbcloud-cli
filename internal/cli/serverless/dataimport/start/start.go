@@ -247,7 +247,7 @@ func waitStartOp(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClien
 		return err
 	}
 
-	fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", *res.Id))
+	fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", *res.ImportId))
 	return nil
 }
 
@@ -262,7 +262,7 @@ func spinnerWaitStartOp(ctx context.Context, h *internal.Helper, d cloud.TiDBClo
 				return
 			}
 
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", *res.Id))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Import task %s started.", *res.ImportId))
 			errChan <- nil
 		}()
 

@@ -490,7 +490,7 @@ func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client T
 		}
 
 		items = append(items, &Import{
-			ID:     *item.Id,
+			ID:     *item.ImportId,
 			Status: item.State,
 		})
 	}

@@ -385,6 +385,7 @@ components:
     Import:
       example:
         totalSize: totalSize
+        importId: importId
         createTime: 2000-01-23T04:56:07.000+00:00
         createdBy: createdBy
         name: name
@@ -397,7 +398,7 @@ components:
         creationDetails: "{}"
       properties:
         id:
-          description: The ID of the import.
+          description: "The ID of the import. DEPRECATED, use import_id instead."
           readOnly: true
           type: string
         name:
@@ -449,6 +450,10 @@ components:
           - $ref: '#/components/schemas/CreationDetails'
           description: The creation details of the import.
           type: object
+        importId:
+          description: The ID of the import.
+          readOnly: true
+          type: string
       type: object
     ImportAzureBlobAuthType.Enum:
       description: " - SAS_TOKEN: The access method is sas token."
@@ -561,6 +566,7 @@ components:
       example:
         imports:
         - totalSize: totalSize
+          importId: importId
           createTime: 2000-01-23T04:56:07.000+00:00
           createdBy: createdBy
           name: name
@@ -572,6 +578,7 @@ components:
           message: message
           creationDetails: "{}"
         - totalSize: totalSize
+          importId: importId
           createTime: 2000-01-23T04:56:07.000+00:00
           createdBy: createdBy
           name: name
