@@ -16,6 +16,7 @@ package backup
 
 import (
 	"fmt"
+	"time"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -146,7 +147,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					rows = append(rows, output.Row{
 						*item.BackupId,
 						item.ClusterId,
-						item.CreateTime.String(),
+						item.CreateTime.Format(time.RFC3339),
 					})
 				}
 
