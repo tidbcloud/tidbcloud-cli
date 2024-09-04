@@ -22,7 +22,6 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
-	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -148,8 +147,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := brApi.NewBackupRestoreServiceDeleteBackupParams().WithBackupID(backupID).WithContext(ctx)
-			_, err = d.DeleteBackup(params)
+			_, err = d.DeleteBackup(ctx, backupID)
 			if err != nil {
 				return errors.Trace(err)
 			}

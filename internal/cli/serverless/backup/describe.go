@@ -17,17 +17,14 @@ package backup
 import (
 	"fmt"
 
-	"tidbcloud-cli/internal/output"
-
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
+	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
-	brAPI "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
-
-	"github.com/spf13/cobra"
 
 	"github.com/juju/errors"
+	"github.com/spf13/cobra"
 )
 
 type DescribeOpts struct {
@@ -121,15 +118,14 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := brAPI.NewBackupRestoreServiceGetBackupParams().WithBackupID(backupID).WithContext(ctx)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			backup, err := d.GetBackup(params)
+			backup, err := d.GetBackup(ctx, backupID)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			err = output.PrintJson(h.IOStreams.Out, backup.Payload)
+			err = output.PrintJson(h.IOStreams.Out, backup)
 			if err != nil {
 				return errors.Trace(err)
 			}
