@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
+
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"

@@ -21,12 +21,12 @@ import (
 	"errors"
 	"os"
 	"testing"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"

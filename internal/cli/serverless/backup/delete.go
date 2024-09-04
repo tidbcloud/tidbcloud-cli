@@ -17,16 +17,17 @@ package backup
 import (
 	"fmt"
 
-	"github.com/AlecAivazis/survey/v2"
-	"github.com/AlecAivazis/survey/v2/terminal"
-	"github.com/fatih/color"
-	"github.com/juju/errors"
-	"github.com/spf13/cobra"
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
+
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/fatih/color"
+	"github.com/juju/errors"
+	"github.com/spf13/cobra"
 )
 
 const confirmed = "yes"
