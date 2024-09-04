@@ -35,7 +35,7 @@ import (
 const getBackupResult = `{
   "backupId": "289048",
   "clusterId": "10048930788495339885",
-  "createTime": "2023-12-15T07:00:00.000Z",
+  "createTime": "2023-12-15T07:00:00Z",
   "name": "backups/289048"
 }
 `

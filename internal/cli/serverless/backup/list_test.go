@@ -36,7 +36,7 @@ const listResultStr = `{
     {
       "backupId": "289048",
       "clusterId": "10048930788495339885",
-      "createTime": "2023-12-15T07:00:00.000Z",
+      "createTime": "2023-12-15T07:00:00Z",
       "name": "backups/289048"
     }
   ],
@@ -49,13 +49,13 @@ const listResultMultiPageStr = `{
     {
       "backupId": "289048",
       "clusterId": "10048930788495339885",
-      "createTime": "2023-12-15T07:00:00.000Z",
+      "createTime": "2023-12-15T07:00:00Z",
       "name": "backups/289048"
     },
     {
       "backupId": "289048",
       "clusterId": "10048930788495339885",
-      "createTime": "2023-12-15T07:00:00.000Z",
+      "createTime": "2023-12-15T07:00:00Z",
       "name": "backups/289048"
     }
   ],
@@ -95,7 +95,7 @@ func (suite *ListBackupSuite) TestListBackups() {
 	assert.Nil(err)
 	pageSize := int32(suite.pageSize)
 	clusterID := "10048930788495339885"
-	suite.mockClient.On("ListBackups", ctx, clusterID, pageSize, (*string)(nil)).
+	suite.mockClient.On("ListBackups", ctx, &clusterID, &pageSize, (*string)(nil)).
 		Return(body, nil)
 
 	tests := []struct {
@@ -154,13 +154,13 @@ func (suite *ListBackupSuite) TestListBackupsWithMultiPages() {
 	err := json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"total": 1`, `"total": 2`)), body)
 	assert.Nil(err)
 	body.NextPageToken = &pageToken
-	suite.mockClient.On("ListBackups", ctx, clusterID, pageSize, (*string)(nil)).
+	suite.mockClient.On("ListBackups", ctx, &clusterID, &pageSize, (*string)(nil)).
 		Return(body, nil)
 
 	body2 := &br.V1beta1ListBackupsResponse{}
 	err = json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"total": 1`, `"total": 2`)), body2)
 	assert.Nil(err)
-	suite.mockClient.On("ListBackups", ctx, clusterID, pageSize, pageToken).
+	suite.mockClient.On("ListBackups", ctx, &clusterID, &pageSize, &pageToken).
 		Return(body2, nil)
 
 	tests := []struct {
