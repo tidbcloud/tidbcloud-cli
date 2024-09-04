@@ -16,16 +16,15 @@ package backup
 
 import (
 	"fmt"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
 
+	"github.com/juju/errors"
+	"github.com/spf13/cobra"
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
-	brModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/models"
-
-	"github.com/juju/errors"
-	"github.com/spf13/cobra"
 )
 
 type ListOpts struct {
@@ -126,9 +125,9 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			// for terminal which can prompt, humanFormat is the default format.
 			// for other terminals, json format is the default format.
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				res := &brModel.V1beta1ListBackupsResponse{
+				res := &br.V1beta1ListBackupsResponse{
 					Backups:   items,
-					TotalSize: total,
+					TotalSize: &total,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)
 				if err != nil {
@@ -144,8 +143,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				var rows []output.Row
 				for _, item := range items {
 					rows = append(rows, output.Row{
-						item.BackupID,
-						*item.ClusterID,
+						*item.BackupId,
+						item.ClusterId,
 						item.CreateTime.String(),
 					})
 				}

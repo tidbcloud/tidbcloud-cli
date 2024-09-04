@@ -16,6 +16,8 @@ package serverless
 
 import (
 	"fmt"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
+	"time"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -23,13 +25,10 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
-	brModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/models"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
-	"github.com/go-openapi/strfmt"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
@@ -156,30 +155,29 @@ func RestoreCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			params := brApi.NewBackupRestoreServiceRestoreParams().WithBody(&brModel.V1beta1RestoreRequest{}).WithContext(ctx)
+			body := &br.V1beta1RestoreRequest{}
 			if backupID != "" {
-				params.Body.Snapshot = &brModel.RestoreRequestSnapshot{
-					BackupID: backupID,
+				body.Snapshot = &br.RestoreRequestSnapshot{
+					BackupId: &backupID,
 				}
 			} else {
 				if backupTimeStr == "" {
 					return errors.New("backup time is required in point-in-time mode")
 				}
-				var backupTime strfmt.DateTime
-				backupTime, err = strfmt.ParseDateTime(backupTimeStr)
+				backupTime, err := time.Parse(time.RFC3339, backupTimeStr)
 				if err != nil {
 					return errors.New(fmt.Sprintf("invalid backup time %s. Please input the backup time with the 2006-01-02T15:04:05Z formate", backupTimeStr))
 				}
-				params.Body.PointInTime = &brModel.RestoreRequestPointInTime{
-					ClusterID:  clusterID,
-					BackupTime: backupTime,
+				body.PointInTime = &br.RestoreRequestPointInTime{
+					ClusterId:  &clusterID,
+					BackupTime: &backupTime,
 				}
 			}
-			resp, err := d.Restore(params)
+			resp, err := d.Restore(ctx, body)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("restore to clsuter %s, use \"ticloud serverless get -c %s\" to check the restore process", *resp.Payload.ClusterID, *resp.Payload.ClusterID)))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("restore to clsuter %s, use \"ticloud serverless get -c %s\" to check the restore process", resp.ClusterId, resp.ClusterId)))
 			return nil
 		},
 	}

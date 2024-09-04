@@ -3,8 +3,8 @@
 package mock
 
 import (
+	br "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
 	branch "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
-	backup_restore_service "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 
 	context "context"
 
@@ -368,36 +368,29 @@ func (_m *TiDBCloudClient) CreateSQLUser(ctx context.Context, clusterID string, 
 	return r0, r1
 }
 
-// DeleteBackup provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) DeleteBackup(params *backup_restore_service.BackupRestoreServiceDeleteBackupParams, opts ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceDeleteBackupOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// DeleteBackup provides a mock function with given fields: ctx, backupId
+func (_m *TiDBCloudClient) DeleteBackup(ctx context.Context, backupId string) (*br.V1beta1Backup, error) {
+	ret := _m.Called(ctx, backupId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for DeleteBackup")
 	}
 
-	var r0 *backup_restore_service.BackupRestoreServiceDeleteBackupOK
+	var r0 *br.V1beta1Backup
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*backup_restore_service.BackupRestoreServiceDeleteBackupParams, ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceDeleteBackupOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*br.V1beta1Backup, error)); ok {
+		return rf(ctx, backupId)
 	}
-	if rf, ok := ret.Get(0).(func(*backup_restore_service.BackupRestoreServiceDeleteBackupParams, ...backup_restore_service.ClientOption) *backup_restore_service.BackupRestoreServiceDeleteBackupOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string) *br.V1beta1Backup); ok {
+		r0 = rf(ctx, backupId)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*backup_restore_service.BackupRestoreServiceDeleteBackupOK)
+			r0 = ret.Get(0).(*br.V1beta1Backup)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*backup_restore_service.BackupRestoreServiceDeleteBackupParams, ...backup_restore_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, backupId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -562,36 +555,29 @@ func (_m *TiDBCloudClient) DownloadExport(ctx context.Context, clusterId string,
 	return r0, r1
 }
 
-// GetBackup provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) GetBackup(params *backup_restore_service.BackupRestoreServiceGetBackupParams, opts ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceGetBackupOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// GetBackup provides a mock function with given fields: ctx, backupId
+func (_m *TiDBCloudClient) GetBackup(ctx context.Context, backupId string) (*br.V1beta1Backup, error) {
+	ret := _m.Called(ctx, backupId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetBackup")
 	}
 
-	var r0 *backup_restore_service.BackupRestoreServiceGetBackupOK
+	var r0 *br.V1beta1Backup
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*backup_restore_service.BackupRestoreServiceGetBackupParams, ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceGetBackupOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*br.V1beta1Backup, error)); ok {
+		return rf(ctx, backupId)
 	}
-	if rf, ok := ret.Get(0).(func(*backup_restore_service.BackupRestoreServiceGetBackupParams, ...backup_restore_service.ClientOption) *backup_restore_service.BackupRestoreServiceGetBackupOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, string) *br.V1beta1Backup); ok {
+		r0 = rf(ctx, backupId)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*backup_restore_service.BackupRestoreServiceGetBackupOK)
+			r0 = ret.Get(0).(*br.V1beta1Backup)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*backup_restore_service.BackupRestoreServiceGetBackupParams, ...backup_restore_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, backupId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -763,36 +749,29 @@ func (_m *TiDBCloudClient) GetSQLUser(ctx context.Context, clusterID string, use
 	return r0, r1
 }
 
-// ListBackups provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) ListBackups(params *backup_restore_service.BackupRestoreServiceListBackupsParams, opts ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceListBackupsOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// ListBackups provides a mock function with given fields: ctx, clusterId, pageSize, pageToken
+func (_m *TiDBCloudClient) ListBackups(ctx context.Context, clusterId *string, pageSize *int32, pageToken *string) (*br.V1beta1ListBackupsResponse, error) {
+	ret := _m.Called(ctx, clusterId, pageSize, pageToken)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ListBackups")
 	}
 
-	var r0 *backup_restore_service.BackupRestoreServiceListBackupsOK
+	var r0 *br.V1beta1ListBackupsResponse
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*backup_restore_service.BackupRestoreServiceListBackupsParams, ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceListBackupsOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, *string, *int32, *string) (*br.V1beta1ListBackupsResponse, error)); ok {
+		return rf(ctx, clusterId, pageSize, pageToken)
 	}
-	if rf, ok := ret.Get(0).(func(*backup_restore_service.BackupRestoreServiceListBackupsParams, ...backup_restore_service.ClientOption) *backup_restore_service.BackupRestoreServiceListBackupsOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, *string, *int32, *string) *br.V1beta1ListBackupsResponse); ok {
+		r0 = rf(ctx, clusterId, pageSize, pageToken)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*backup_restore_service.BackupRestoreServiceListBackupsOK)
+			r0 = ret.Get(0).(*br.V1beta1ListBackupsResponse)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*backup_restore_service.BackupRestoreServiceListBackupsParams, ...backup_restore_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, *string, *int32, *string) error); ok {
+		r1 = rf(ctx, clusterId, pageSize, pageToken)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -1068,36 +1047,29 @@ func (_m *TiDBCloudClient) PartialUpdateCluster(params *serverless_service.Serve
 	return r0, r1
 }
 
-// Restore provides a mock function with given fields: params, opts
-func (_m *TiDBCloudClient) Restore(params *backup_restore_service.BackupRestoreServiceRestoreParams, opts ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceRestoreOK, error) {
-	_va := make([]interface{}, len(opts))
-	for _i := range opts {
-		_va[_i] = opts[_i]
-	}
-	var _ca []interface{}
-	_ca = append(_ca, params)
-	_ca = append(_ca, _va...)
-	ret := _m.Called(_ca...)
+// Restore provides a mock function with given fields: ctx, body
+func (_m *TiDBCloudClient) Restore(ctx context.Context, body *br.V1beta1RestoreRequest) (*br.V1beta1RestoreResponse, error) {
+	ret := _m.Called(ctx, body)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Restore")
 	}
 
-	var r0 *backup_restore_service.BackupRestoreServiceRestoreOK
+	var r0 *br.V1beta1RestoreResponse
 	var r1 error
-	if rf, ok := ret.Get(0).(func(*backup_restore_service.BackupRestoreServiceRestoreParams, ...backup_restore_service.ClientOption) (*backup_restore_service.BackupRestoreServiceRestoreOK, error)); ok {
-		return rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, *br.V1beta1RestoreRequest) (*br.V1beta1RestoreResponse, error)); ok {
+		return rf(ctx, body)
 	}
-	if rf, ok := ret.Get(0).(func(*backup_restore_service.BackupRestoreServiceRestoreParams, ...backup_restore_service.ClientOption) *backup_restore_service.BackupRestoreServiceRestoreOK); ok {
-		r0 = rf(params, opts...)
+	if rf, ok := ret.Get(0).(func(context.Context, *br.V1beta1RestoreRequest) *br.V1beta1RestoreResponse); ok {
+		r0 = rf(ctx, body)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*backup_restore_service.BackupRestoreServiceRestoreOK)
+			r0 = ret.Get(0).(*br.V1beta1RestoreResponse)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(*backup_restore_service.BackupRestoreServiceRestoreParams, ...backup_restore_service.ClientOption) error); ok {
-		r1 = rf(params, opts...)
+	if rf, ok := ret.Get(1).(func(context.Context, *br.V1beta1RestoreRequest) error); ok {
+		r1 = rf(ctx, body)
 	} else {
 		r1 = ret.Error(1)
 	}

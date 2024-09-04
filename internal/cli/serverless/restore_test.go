@@ -21,15 +21,14 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
+	"time"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
-	brModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/models"
 
-	"github.com/go-openapi/strfmt"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
@@ -63,15 +62,13 @@ func (suite *RestoreClusterSuite) TestRestoreClusterSnapshot() {
 	clusterID := "10048930788495339885"
 	backupID := "289048"
 
-	body := &brModel.V1beta1RestoreRequest{
-		Snapshot: &brModel.RestoreRequestSnapshot{
-			BackupID: backupID,
+	body := &br.V1beta1RestoreRequest{
+		Snapshot: &br.RestoreRequestSnapshot{
+			BackupId: &backupID,
 		},
 	}
-	suite.mockClient.On("Restore", brApi.NewBackupRestoreServiceRestoreParams().
-		WithBody(body).WithContext(ctx)).
-		Return(&brApi.BackupRestoreServiceRestoreOK{Payload: &brModel.V1beta1RestoreResponse{
-			ClusterID: &clusterID}}, nil)
+	suite.mockClient.On("Restore", ctx, body).
+		Return(&br.V1beta1RestoreResponse{ClusterId: clusterID}, nil)
 
 	tests := []struct {
 		name         string
@@ -113,18 +110,16 @@ func (suite *RestoreClusterSuite) TestRestoreClusterPointInTime() {
 	clusterID := "10048930788495339885"
 	backupTimeStr := "2023-12-15T07:00:00.000Z"
 
-	backupTime, err := strfmt.ParseDateTime(backupTimeStr)
+	backupTime, err := time.Parse(time.RFC3339, backupTimeStr)
 	assert.Nil(err)
-	body := &brModel.V1beta1RestoreRequest{
-		PointInTime: &brModel.RestoreRequestPointInTime{
-			BackupTime: backupTime,
-			ClusterID:  clusterID,
+	body := &br.V1beta1RestoreRequest{
+		PointInTime: &br.RestoreRequestPointInTime{
+			BackupTime: &backupTime,
+			ClusterId:  &clusterID,
 		},
 	}
-	suite.mockClient.On("Restore", brApi.NewBackupRestoreServiceRestoreParams().
-		WithBody(body).WithContext(ctx)).
-		Return(&brApi.BackupRestoreServiceRestoreOK{Payload: &brModel.V1beta1RestoreResponse{
-			ClusterID: &clusterID}}, nil)
+	suite.mockClient.On("Restore", ctx, body).
+		Return(&br.V1beta1RestoreResponse{ClusterId: clusterID}, nil)
 
 	tests := []struct {
 		name         string

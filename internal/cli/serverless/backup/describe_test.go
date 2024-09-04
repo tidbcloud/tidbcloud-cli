@@ -21,13 +21,12 @@ import (
 	"errors"
 	"os"
 	"testing"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
-	brModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/models"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -66,17 +65,13 @@ func (suite *DescribeBackupSuite) TestDescribeBackup() {
 	assert := require.New(suite.T())
 	ctx := context.Background()
 
-	body := &brModel.V1beta1Backup{}
+	body := &br.V1beta1Backup{}
 	err := json.Unmarshal([]byte(getBackupResult), body)
 	assert.Nil(err)
-	result := &brApi.BackupRestoreServiceGetBackupOK{
-		Payload: body,
-	}
 	backupId := "289048"
 
-	suite.mockClient.On("GetBackup", brApi.NewBackupRestoreServiceGetBackupParams().
-		WithBackupID(backupId).WithContext(ctx)).
-		Return(result, nil)
+	suite.mockClient.On("GetBackup", ctx, backupId).
+		Return(body, nil)
 
 	tests := []struct {
 		name         string
