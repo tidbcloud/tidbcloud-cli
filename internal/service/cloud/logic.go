@@ -25,9 +25,8 @@ import (
 	"tidbcloud-cli/internal/util"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
 	importApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
@@ -172,9 +171,9 @@ func GetSelectedCluster(ctx context.Context, projectID string, pageSize int64, c
 	var items = make([]interface{}, 0, len(clusterItems))
 	for _, item := range clusterItems {
 		items = append(items, &Cluster{
-			ID:          item.ClusterID,
-			DisplayName: *item.DisplayName,
-			UserPrefix:  item.UserPrefix,
+			ID:          *item.ClusterId,
+			DisplayName: item.DisplayName,
+			UserPrefix:  *item.UserPrefix,
 		})
 	}
 	if len(items) == 0 {
@@ -611,30 +610,31 @@ func RetrieveProjects(ctx context.Context, pageSize int64, d TiDBCloudClient) (i
 	return int64(len(items)), items, nil
 }
 
-func RetrieveClusters(ctx context.Context, pID string, pageSize int64, d TiDBCloudClient) (int64, []*serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
-	params := serverlessApi.NewServerlessServiceListClustersParams().WithContext(ctx)
+func RetrieveClusters(ctx context.Context, pID string, pageSize int64, d TiDBCloudClient) (int64, []cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+	var items []cluster.TidbCloudOpenApiserverlessv1beta1Cluster
+	pageSizeInt32 := int32(pageSize)
+	var pageToken *string
+	var filter *string
 	if pID != "" {
 		projectFilter := fmt.Sprintf("projectId=%s", pID)
-		params.WithFilter(&projectFilter)
+		filter = &projectFilter
 	}
-	pageSizeInt32 := int32(pageSize)
-	var pageToken string
-	var items []*serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster
-	clusters, err := d.ListClustersOfProject(params.WithPageSize(&pageSizeInt32))
+
+	clusters, err := d.ListClusters(ctx, filter, &pageSizeInt32, nil, nil, nil)
 	if err != nil {
 		return 0, nil, errors.Trace(err)
 	}
-	items = append(items, clusters.Payload.Clusters...)
+	items = append(items, clusters.Clusters...)
 	for {
-		pageToken = clusters.Payload.NextPageToken
-		if pageToken == "" {
+		pageToken = clusters.NextPageToken
+		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
-		clusters, err = d.ListClustersOfProject(params.WithPageToken(&pageToken).WithPageSize(&pageSizeInt32))
+		clusters, err = d.ListClusters(ctx, filter, &pageSizeInt32, pageToken, nil, nil)
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
-		items = append(items, clusters.Payload.Clusters...)
+		items = append(items, clusters.Clusters...)
 	}
 	return int64(len(items)), items, nil
 }

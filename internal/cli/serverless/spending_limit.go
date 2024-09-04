@@ -24,8 +24,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -105,11 +104,11 @@ func SpendingLimitCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 
-				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
+				c, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				clusterID = cluster.ID
+				clusterID = c.ID
 
 				field, err := cloud.GetSpendingLimitField(spendingLimitFields)
 				if err != nil {
@@ -146,16 +145,14 @@ func SpendingLimitCmd(h *internal.Helper) *cobra.Command {
 				return errors.Errorf("invalid monthly spending limit %d", monthly)
 			}
 
-			body := &serverlessApi.ServerlessServicePartialUpdateClusterBody{
-				Cluster: &serverlessApi.ServerlessServicePartialUpdateClusterParamsBodyCluster{
-					SpendingLimit: &serverlessModel.ClusterSpendingLimit{},
+			body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
+				Cluster: &cluster.RequiredTheClusterToBeUpdated{
+					SpendingLimit: &cluster.ClusterSpendingLimit{},
 				},
 			}
-			body.UpdateMask = &SpendingLimitMonthlyMask
-			body.Cluster.SpendingLimit.Monthly = monthly
-			params := serverlessApi.NewServerlessServicePartialUpdateClusterParams().WithClusterClusterID(clusterID).
-				WithBody(*body).WithContext(ctx)
-			_, err = d.PartialUpdateCluster(params)
+			body.UpdateMask = SpendingLimitMonthlyMask
+			body.Cluster.SpendingLimit.Monthly = &monthly
+			_, err = d.PartialUpdateCluster(ctx, clusterID, body)
 			if err != nil {
 				return errors.Trace(err)
 			}

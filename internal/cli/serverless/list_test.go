@@ -27,8 +27,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -38,7 +37,7 @@ const listResultStr = `{
   "clusters": [
     {
       "clusterId": "3779024",
-      "createTime": "2023-07-04T01:56:12.000Z",
+      "createTime": "2023-07-04T01:56:12Z",
       "createdBy": "yuhang.shi@pingcap.com",
       "displayName": "Cluster0",
       "endpoints": {
@@ -68,7 +67,7 @@ const listResultStr = `{
         "provider": "AWS"
       },
       "state": "ACTIVE",
-      "updateTime": "2023-08-03T09:08:07.753Z",
+      "updateTime": "2023-08-03T09:08:07Z",
       "userPrefix": "4FNu72xBpLXjFnC",
       "version": "v6.6.0"
     }
@@ -81,7 +80,7 @@ const listResultMultiPageStr = `{
   "clusters": [
     {
       "clusterId": "3779024",
-      "createTime": "2023-07-04T01:56:12.000Z",
+      "createTime": "2023-07-04T01:56:12Z",
       "createdBy": "yuhang.shi@pingcap.com",
       "displayName": "Cluster0",
       "endpoints": {
@@ -111,13 +110,13 @@ const listResultMultiPageStr = `{
         "provider": "AWS"
       },
       "state": "ACTIVE",
-      "updateTime": "2023-08-03T09:08:07.753Z",
+      "updateTime": "2023-08-03T09:08:07Z",
       "userPrefix": "4FNu72xBpLXjFnC",
       "version": "v6.6.0"
     },
     {
       "clusterId": "3779024",
-      "createTime": "2023-07-04T01:56:12.000Z",
+      "createTime": "2023-07-04T01:56:12Z",
       "createdBy": "yuhang.shi@pingcap.com",
       "displayName": "Cluster0",
       "endpoints": {
@@ -147,7 +146,7 @@ const listResultMultiPageStr = `{
         "provider": "AWS"
       },
       "state": "ACTIVE",
-      "updateTime": "2023-08-03T09:08:07.753Z",
+      "updateTime": "2023-08-03T09:08:07Z",
       "userPrefix": "4FNu72xBpLXjFnC",
       "version": "v6.6.0"
     }
@@ -182,18 +181,14 @@ func (suite *ListClusterSuite) TestListClusterArgs() {
 	assert := require.New(suite.T())
 	ctx := context.Background()
 
-	body := &serverlessModel.TidbCloudOpenApiserverlessv1beta1ListClustersResponse{}
+	body := &cluster.TidbCloudOpenApiserverlessv1beta1ListClustersResponse{}
 	err := json.Unmarshal([]byte(listResultStr), body)
 	assert.Nil(err)
-	result := &serverlessApi.ServerlessServiceListClustersOK{
-		Payload: body,
-	}
+
 	projectID := "12345"
 	pageSize := int32(suite.h.QueryPageSize)
 	filter := fmt.Sprintf("projectId=%s", projectID)
-	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
-		WithPageSize(&pageSize).WithFilter(&filter).WithContext(ctx)).
-		Return(result, nil)
+	suite.mockClient.On("ListClusters", ctx, &filter, &pageSize, (*string)(nil), (*string)(nil), (*int32)(nil)).Return(body, nil)
 
 	tests := []struct {
 		name         string
@@ -245,30 +240,21 @@ func (suite *ListClusterSuite) TestListClusterWithMultiPages() {
 	suite.h.QueryPageSize = 1
 	pageSize := int32(suite.h.QueryPageSize)
 	pageToken := "2"
-	body := &serverlessModel.TidbCloudOpenApiserverlessv1beta1ListClustersResponse{}
+	body := &cluster.TidbCloudOpenApiserverlessv1beta1ListClustersResponse{}
 	err := json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"totalSize": 1`, `"totalSize": 2`)), body)
 	assert.Nil(err)
-	body.NextPageToken = pageToken
-	result := &serverlessApi.ServerlessServiceListClustersOK{
-		Payload: body,
-	}
+	body.NextPageToken = &pageToken
+
 	projectID := "12345"
 	filter := fmt.Sprintf("projectId=%s", projectID)
-	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
-		WithPageSize(&pageSize).WithFilter(&filter).WithContext(ctx)).
-		Return(result, nil)
+	suite.mockClient.On("ListClusters", ctx, &filter, &pageSize, (*string)(nil), (*string)(nil), (*int32)(nil)).Return(body, nil)
 
-	body2 := &serverlessModel.TidbCloudOpenApiserverlessv1beta1ListClustersResponse{}
+	body2 := &cluster.TidbCloudOpenApiserverlessv1beta1ListClustersResponse{}
 	err = json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"totalSize": 1`, `"totalSize": 2`)), body2)
 	assert.Nil(err)
-	result2 := &serverlessApi.ServerlessServiceListClustersOK{
-		Payload: body2,
-	}
-	suite.mockClient.On("ListClustersOfProject", serverlessApi.NewServerlessServiceListClustersParams().
-		WithPageToken(&pageToken).WithPageSize(&pageSize).WithFilter(&filter).WithContext(ctx)).
-		Return(result2, nil)
-	cmd := ListCmd(suite.h)
+	suite.mockClient.On("ListClusters", ctx, &filter, &pageSize, &pageToken, (*string)(nil), (*int32)(nil)).Return(body2, nil)
 
+	cmd := ListCmd(suite.h)
 	tests := []struct {
 		name         string
 		args         []string

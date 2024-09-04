@@ -227,7 +227,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				}
 				if !util.IsNilOrEmpty(u.BuiltinRole) && !util.IsNilOrEmpty(addBuiltinRole) {
 					return errors.New("built-in role already exists in the SQL user")
-				} else if util.IsNilOrEmpty(u.BuiltinRole) && !!util.IsNilOrEmpty(addBuiltinRole) {
+				} else if util.IsNilOrEmpty(u.BuiltinRole) && !util.IsNilOrEmpty(addBuiltinRole) {
 					u.BuiltinRole = addBuiltinRole
 				}
 				u.CustomRoles = append(u.CustomRoles, addCustomRoles...)

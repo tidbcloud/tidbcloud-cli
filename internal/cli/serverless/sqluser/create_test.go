@@ -29,8 +29,7 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/juju/errors"
 	"github.com/stretchr/testify/require"
@@ -45,8 +44,14 @@ const getSQLUserResultStr = `{
 }`
 
 const getClusterResultStr = `{
-	"clusterID": "12345",
-	"userPrefix": "4TGJD6zA3Nn2333"
+	"clusterId": "12345",
+	"userPrefix": "4TGJD6zA3Nn2333",
+	"displayName": "test",
+	"region": {
+    	"displayName": "Singapore (ap-southeast-1)",
+        "name": "regions/aws-ap-southeast-1",
+        "provider": "aws"
+      }
 }`
 
 type CreateSQLUserSuite struct {
@@ -102,15 +107,10 @@ func (suite *CreateSQLUserSuite) TestCreateSQLUserArgs() {
 	suite.mockClient.On("CreateSQLUser", ctx, clusterID, createSQLUserBody).
 		Return(result, nil)
 
-	clusterBody := &serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster{}
-	err = json.Unmarshal([]byte(getClusterResultStr), clusterBody)
+	res := &cluster.TidbCloudOpenApiserverlessv1beta1Cluster{}
+	err = json.Unmarshal([]byte(getClusterResultStr), res)
 	assert.Nil(err)
-	res := &serverlessApi.ServerlessServiceGetClusterOK{
-		Payload: clusterBody,
-	}
-	suite.mockClient.On("GetCluster", serverlessApi.NewServerlessServiceGetClusterParams().
-		WithClusterID(clusterID).WithContext(ctx)).
-		Return(res, nil)
+	suite.mockClient.On("GetCluster", ctx, clusterID).Return(res, nil)
 
 	tests := []struct {
 		name         string

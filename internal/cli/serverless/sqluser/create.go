@@ -29,7 +29,6 @@ import (
 	"tidbcloud-cli/internal/util"
 
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -263,14 +262,12 @@ func initialCreateInputModel(userPrefix string) ui.TextInputModel {
 }
 
 func getUserPrefix(ctx context.Context, d cloud.TiDBCloudClient, clusterID string) (string, error) {
-	params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID).WithContext(ctx)
-
-	cluster, err := d.GetCluster(params)
+	cluster, err := d.GetCluster(ctx, clusterID)
 	if err != nil {
 		return "", errors.Trace(err)
 	}
 
-	return cluster.Payload.UserPrefix, nil
+	return *cluster.UserPrefix, nil
 }
 
 func getBuiltinRoleAndCustomRoles(roles []string) (*string, []string, error) {

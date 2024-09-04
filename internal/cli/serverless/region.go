@@ -22,7 +22,6 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -47,13 +46,13 @@ func RegionCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			regions, err := d.ListProviderRegions(serverlessApi.NewServerlessServiceListRegionsParams().WithContext(cmd.Context()))
+			regions, err := d.ListProviderRegions(cmd.Context())
 			if err != nil {
 				return errors.Trace(err)
 			}
 
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				err = output.PrintJson(h.IOStreams.Out, regions.Payload.Regions)
+				err = output.PrintJson(h.IOStreams.Out, regions.Regions)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -65,11 +64,11 @@ func RegionCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				var rows []output.Row
-				for _, item := range regions.Payload.Regions {
+				for _, item := range regions.Regions {
 					rows = append(rows, output.Row{
 						*item.Name,
-						item.DisplayName,
-						string(*item.Provider),
+						*item.DisplayName,
+						string(*item.CloudProvider),
 					})
 				}
 				err = output.PrintHumanTable(h.IOStreams.Out, columns, rows)
