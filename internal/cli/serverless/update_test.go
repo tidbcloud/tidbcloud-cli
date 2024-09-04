@@ -26,7 +26,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -59,19 +59,17 @@ func (suite *UpdateClusterSuite) TestUpdateClusterArgs() {
 	ctx := context.Background()
 
 	displayName := "update_name"
-	cluster := &serverlessApi.ServerlessServicePartialUpdateClusterParamsBodyCluster{
-		DisplayName: displayName,
+	c := &cluster.RequiredTheClusterToBeUpdated{
+		DisplayName: &displayName,
 	}
 	mask := "displayName"
-	body := serverlessApi.ServerlessServicePartialUpdateClusterBody{
-		Cluster:    cluster,
-		UpdateMask: &mask,
+	body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
+		Cluster:    c,
+		UpdateMask: mask,
 	}
 
 	clusterID := "12345"
-	suite.mockClient.On("PartialUpdateCluster", serverlessApi.NewServerlessServicePartialUpdateClusterParams().
-		WithClusterClusterID(clusterID).WithBody(body).WithContext(ctx)).
-		Return(&serverlessApi.ServerlessServicePartialUpdateClusterOK{}, nil)
+	suite.mockClient.On("PartialUpdateCluster", ctx, clusterID, body).Return(&cluster.TidbCloudOpenApiserverlessv1beta1Cluster{}, nil)
 
 	tests := []struct {
 		name         string
@@ -115,17 +113,15 @@ func (suite *UpdateClusterSuite) TestUpdateLabels() {
 
 	labelsMap := make(map[string]string)
 	_ = json.Unmarshal([]byte(labels), &labelsMap)
-	cluster := &serverlessApi.ServerlessServicePartialUpdateClusterParamsBodyCluster{
-		Labels: labelsMap,
+	c := &cluster.RequiredTheClusterToBeUpdated{
+		Labels: &labelsMap,
 	}
-	body := serverlessApi.ServerlessServicePartialUpdateClusterBody{
-		Cluster:    cluster,
-		UpdateMask: &mask,
+	body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
+		Cluster:    c,
+		UpdateMask: mask,
 	}
 	clusterID := "12345"
-	suite.mockClient.On("PartialUpdateCluster", serverlessApi.NewServerlessServicePartialUpdateClusterParams().
-		WithClusterClusterID(clusterID).WithBody(body).WithContext(ctx)).
-		Return(&serverlessApi.ServerlessServicePartialUpdateClusterOK{}, nil)
+	suite.mockClient.On("PartialUpdateCluster", ctx, clusterID, body).Return(&cluster.TidbCloudOpenApiserverlessv1beta1Cluster{}, nil)
 
 	tests := []struct {
 		name         string

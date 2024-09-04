@@ -23,7 +23,6 @@ import (
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -97,11 +96,11 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 				projectID := project.ID
 
-				cluster, err := cloud.GetSelectedCluster(ctx, projectID, h.QueryPageSize, d)
+				c, err := cloud.GetSelectedCluster(ctx, projectID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				clusterID = cluster.ID
+				clusterID = c.ID
 			} else {
 				// non-interactive mode does not need projectID
 				cID, err := cmd.Flags().GetString(flag.ClusterID)
@@ -111,14 +110,12 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cID
 			}
 
-			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID).WithContext(cmd.Context())
-
-			cluster, err := d.GetCluster(params)
+			c, err := d.GetCluster(ctx, clusterID)
 			if err != nil {
 				return errors.Trace(err)
 			}
 
-			err = output.PrintJson(h.IOStreams.Out, cluster.Payload)
+			err = output.PrintJson(h.IOStreams.Out, c)
 			return errors.Trace(err)
 		},
 	}

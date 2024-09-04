@@ -23,7 +23,6 @@ import (
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -169,16 +168,15 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			}
 
 			var host, name, port string
-			params := serverlessApi.NewServerlessServiceGetClusterParams().WithClusterID(clusterID).WithContext(ctx)
-			cluster, err := d.GetCluster(params)
+			cluster, err := d.GetCluster(ctx, clusterID)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			host = cluster.Payload.Endpoints.Public.Host
-			name = *cluster.Payload.DisplayName
-			port = strconv.Itoa(int(cluster.Payload.Endpoints.Public.Port))
+			host = *cluster.Endpoints.Public.Host
+			name = cluster.DisplayName
+			port = strconv.Itoa(int(*cluster.Endpoints.Public.Port))
 			if userName == "" {
-				userName = cluster.Payload.UserPrefix + ".root"
+				userName = *cluster.UserPrefix + ".root"
 				fmt.Fprintln(h.IOStreams.Out, color.GreenString("Current user: ")+color.HiGreenString(userName))
 			}
 
