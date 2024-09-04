@@ -727,7 +727,7 @@ func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDB
 	var pageToken *string
 	for {
 		pageToken = imports.NextPageToken
-		if pageToken == nil || *pageToken == "" {
+		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
 		imports, err = d.ListImports(context, cID, &ps, pageToken, &orderBy)

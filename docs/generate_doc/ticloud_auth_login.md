@@ -9,7 +9,7 @@ ticloud auth login [flags]
 ### Examples
 
 ```
-  To log into TiDB Cloud::
+  To log into TiDB Cloud:
   $ ticloud auth login
 ```
 

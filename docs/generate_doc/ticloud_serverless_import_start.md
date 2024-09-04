@@ -26,28 +26,29 @@ ticloud serverless import start [flags]
 ### Options
 
 ```
-      --azure.blob-sas-url string      The SAS URL for Azure Blob.
-  -c, --cluster-id string              Cluster ID.
-      --csv.backslash-escape           Specifies whether to parse backslash inside fields as escape characters in the CSV file. (default true)
-      --csv.delimiter string           The delimiter used for quoting of CSV file. (default "\"")
-      --csv.not-null                   Specifies whether a CSV file can contain any NULL values.
-      --csv.null-value string          The representation of NULL values in the CSV file. (default "\\N")
-      --csv.separator string           The field separator of CSV file. (default ",")
-      --csv.skip-header                Specifies whether the CSV file contains a header line.
-      --csv.trim-last-separator        Specifies whether to treat separator as the line terminator and trim all trailing separators in the CSV file.
-      --file-type string               The import file type, one of ["CSV"].
-      --gcs.credentials-path string    The local path of GCS credentials.
-      --gcs.uri string                 The GCS folder URI for import.
-  -h, --help                           help for start
-      --local.concurrency int          The concurrency for uploading file. (default 5)
-      --local.file-path string         The local file path to import.
-      --local.target-database string   Target database to which import data.
-      --local.target-table string      Target table to which import data.
-      --s3.access-key-id string        The access key ID for S3.
-      --s3.role-arn string             The role ARN for S3.
-      --s3.secret-access-key string    The secret access key for S3.
-      --s3.uri string                  The S3 folder URI for import.
-      --source-type string             The import source type, one of ["S3" "LOCAL" "GCS" "AzBlob"]. (default "LOCAL")
+      --azblob.sas-token string          The SAS token of Azure Blob.
+      --azblob.uri string                The Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format.
+  -c, --cluster-id string                Cluster ID.
+      --csv.backslash-escape             Specifies whether to interpret backslash escapes inside fields in the CSV file. (default true)
+      --csv.delimiter string             The delimiter used for quoting of CSV file. (default "\"")
+      --csv.not-null                     Specifies whether a CSV file can contain any NULL values.
+      --csv.null-value string            The representation of NULL values in the CSV file. (default "\\N")
+      --csv.separator string             The field separator of CSV file. (default ",")
+      --csv.skip-header                  Specifies whether the CSV file contains a header line.
+      --csv.trim-last-separator          Specifies whether to treat separator as the line terminator and trim all trailing separators in the CSV file.
+      --file-type string                 The import file type, one of ["CSV"].
+      --gcs.service-account-key string   The base64 encoded service account key of GCS.
+      --gcs.uri string                   The GCS folder URI for import.
+  -h, --help                             help for start
+      --local.concurrency int            The concurrency for uploading file. (default 5)
+      --local.file-path string           The local file path to import.
+      --local.target-database string     Target database to which import data.
+      --local.target-table string        Target table to which import data.
+      --s3.access-key-id string          The access key ID for S3.
+      --s3.role-arn string               The role ARN for S3.
+      --s3.secret-access-key string      The secret access key for S3.
+      --s3.uri string                    The S3 folder URI for import.
+      --source-type string               The import source type, one of ["S3" "LOCAL" "GCS" "AZURE_BLOB"]. (default "LOCAL")
 ```
 
 ### Options inherited from parent commands
