@@ -29,8 +29,9 @@ generate-mocks: ## Generate mock objects
 .PHONY: generate-pingchat-client
 generate-pingchat-client: ## Generate PingChat client
 	@echo "==> Generating PingChat client"
-	go install github.com/go-swagger/go-swagger/cmd/swagger@latest
-	swagger generate client -f pkg/tidbcloud/pingchat/pingchat_swagger.json -A tidbcloud-pingchat -t pkg/tidbcloud/pingchat
+	rm -rf pkg/tidbcloud/pingchat
+	cd tools/openapi-generator && npx openapi-generator-cli generate --additional-properties=withGoMod=false,enumClassPrefix=true --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/pingchat.swagger.json -g go -o ../../pkg/tidbcloud/pingchat --package-name pingchat
+	go fmt ./pkg/...
 
 .PHONY: addcopy
 addcopy: ## Add copyright to all files

@@ -24,8 +24,7 @@ import (
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	"tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
-	"tidbcloud-cli/pkg/tidbcloud/pingchat/models"
+	"tidbcloud-cli/pkg/tidbcloud/pingchat"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/pingcap/errors"
@@ -93,12 +92,11 @@ func AICmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			param := operations.NewChatParams()
 
 			context := cmd.Context()
 			if opts.interactive {
 				task := func(messages []ui.ChatMessage) tea.Msg {
-					msgs := make([]*models.PingchatChatMessage, 0, len(messages))
+					msgs := make([]pingchat.PingchatChatMessage, 0, len(messages))
 					for _, message := range messages {
 						content := message.Content
 						role, err := convertRole(message.Role)
@@ -107,16 +105,16 @@ func AICmd(h *internal.Helper) *cobra.Command {
 								Err: err,
 							}
 						}
-						msg := models.PingchatChatMessage{
-							Content: &content,
-							Role:    &role,
+						msg := pingchat.PingchatChatMessage{
+							Content: content,
+							Role:    role,
 						}
-						msgs = append(msgs, &msg)
+						msgs = append(msgs, msg)
 					}
-					chat, err := client.Chat(param.WithChatInfo(&models.PingchatChatInfo{
+					chat, err := client.Chat(context, &pingchat.PingchatChatInfo{
 						Messages: msgs,
 						Domain:   domain,
-					}).WithContext(context))
+					})
 
 					if err != nil {
 						return ui.EndSendingMsg{
@@ -125,12 +123,12 @@ func AICmd(h *internal.Helper) *cobra.Command {
 					}
 
 					linkContent := "\n\n"
-					for i, link := range chat.Payload.Links {
-						linkContent = fmt.Sprintf("%s[%d] [%s](%s)\n", linkContent, i+1, link.Title, link.Link)
+					for i, link := range chat.Links {
+						linkContent = fmt.Sprintf("%s[%d] [%s](%s)\n", linkContent, i+1, *link.Title, *link.Link)
 					}
 
 					// Replace occurrences of [^\d+] with [\d+] for better user comprehension.
-					content := re.ReplaceAllString(chat.Payload.Content, "[$1]")
+					content := re.ReplaceAllString(*chat.Content, "[$1]")
 
 					return ui.EndSendingMsg{
 						Msg: ui.ChatMessage{
@@ -161,21 +159,20 @@ func AICmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 
-				role := models.PingchatChatMessageRoleUser
-				chat, err := client.Chat(param.WithChatInfo(&models.PingchatChatInfo{
-					Messages: []*models.PingchatChatMessage{
+				chat, err := client.Chat(context, &pingchat.PingchatChatInfo{
+					Messages: []pingchat.PingchatChatMessage{
 						{
-							Content: &query,
-							Role:    &role,
+							Content: query,
+							Role:    "user",
 						},
 					},
 					Domain: domain,
-				}).WithContext(context))
+				})
 				if err != nil {
 					return err
 				}
 
-				err = output.PrintJson(h.IOStreams.Out, chat.Payload)
+				err = output.PrintJson(h.IOStreams.Out, chat)
 				return errors.Trace(err)
 			}
 
@@ -190,9 +187,9 @@ func AICmd(h *internal.Helper) *cobra.Command {
 func convertRole(role ui.Role) (string, error) {
 	switch role {
 	case ui.RoleUser:
-		return models.PingchatChatMessageRoleUser, nil
+		return "user", nil
 	case ui.RoleBot:
-		return models.PingchatChatMessageRoleAssistant, nil
+		return "assistant", nil
 	default:
 		return "", errors.New("unknown chat role")
 	}

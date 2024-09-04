@@ -1,0 +1,114 @@
+openapi: 3.0.1
+info:
+  contact: {}
+  termsOfService: http://swagger.io/terms/
+  title: PingChat Swagger API
+  version: "1.0"
+servers:
+- url: https://localhost:8080/
+paths:
+  /ecosystem/api/internal/pingchat/chat:
+    post:
+      description: Chat with PingChat
+      operationId: Chat
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/pingchat.ChatInfo'
+        description: chat information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pingchat.ChatResponse'
+          description: ok
+        "400":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: error
+        "500":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: error
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+          description: other error
+      x-codegen-request-body-name: chatInfo
+components:
+  schemas:
+    pingchat.ChatInfo:
+      properties:
+        domain:
+          items:
+            enum:
+            - tidb
+            - tidbcloud
+            - asktug
+            - blog
+            - community
+            - knowledge-base-cn
+            - kb
+            type: string
+          type: array
+        messages:
+          description: https://pkg.go.dev/gopkg.in/bluesuncorp/validator.v9#hdr-Dive
+          items:
+            $ref: '#/components/schemas/pingchat.ChatMessage'
+          type: array
+      required:
+      - messages
+      type: object
+    pingchat.ChatMessage:
+      properties:
+        content:
+          description: Dialogue content
+          type: string
+        role:
+          description: "User's input as \"user\", AI assistant's reply as \"assistant\"\
+            , see https://github.com/gin-gonic/gin/issues/3234."
+          enum:
+          - user
+          - assistant
+          type: string
+      required:
+      - content
+      - role
+      type: object
+    pingchat.ChatResponse:
+      example:
+        links:
+        - link: link
+          title: title
+        - link: link
+          title: title
+        content: content
+      properties:
+        content:
+          type: string
+        links:
+          description: Reference Document Links
+          items:
+            $ref: '#/components/schemas/pingchat.Link'
+          type: array
+      type: object
+    pingchat.Link:
+      example:
+        link: link
+        title: title
+      properties:
+        link:
+          type: string
+        title:
+          type: string
+      type: object
+x-original-swagger-version: "2.0"
