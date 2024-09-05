@@ -311,7 +311,7 @@
         },
         "uri": {
           "type": "string",
-          "description": "The Azure Blob URI of the export target. For example: https://accountname.blob.core.windows.net/container/blob."
+          "description": "The Azure Blob URI of the export target. For example: azure://<account>.blob.core.windows.net/<container>/<path>."
         }
       },
       "required": [
@@ -484,7 +484,7 @@
       "type": "object",
       "properties": {
         "fileType": {
-          "description": "Optional. The exported file type. Default: CSV with sql filter, SQL with other filter.",
+          "description": "Optional. The exported file type. Default: CSV.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportFileType.Enum"
