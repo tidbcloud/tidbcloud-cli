@@ -23,7 +23,7 @@ type DownloadUrl struct {
 	Name *string `json:"name,omitempty"`
 	// The download url.
 	Url *string `json:"url,omitempty"`
-	// The size in bytes of the the download file.
+	// The size in bytes of the download file.
 	Size                 *int64 `json:"size,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

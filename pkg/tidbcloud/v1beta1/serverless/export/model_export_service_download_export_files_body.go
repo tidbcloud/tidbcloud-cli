@@ -11,7 +11,6 @@ API version: v1beta1
 package export
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -22,7 +21,8 @@ var _ MappedNullable = &ExportServiceDownloadExportFilesBody{}
 // ExportServiceDownloadExportFilesBody struct for ExportServiceDownloadExportFilesBody
 type ExportServiceDownloadExportFilesBody struct {
 	// Required. The name of the files to be downloaded.
-	FileNames []string `json:"fileNames"`
+	FileNames            []string `json:"fileNames"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _ExportServiceDownloadExportFilesBody ExportServiceDownloadExportFilesBody
@@ -80,6 +80,11 @@ func (o ExportServiceDownloadExportFilesBody) MarshalJSON() ([]byte, error) {
 func (o ExportServiceDownloadExportFilesBody) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["fileNames"] = o.FileNames
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -107,15 +112,20 @@ func (o *ExportServiceDownloadExportFilesBody) UnmarshalJSON(data []byte) (err e
 
 	varExportServiceDownloadExportFilesBody := _ExportServiceDownloadExportFilesBody{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varExportServiceDownloadExportFilesBody)
+	err = json.Unmarshal(data, &varExportServiceDownloadExportFilesBody)
 
 	if err != nil {
 		return err
 	}
 
 	*o = ExportServiceDownloadExportFilesBody(varExportServiceDownloadExportFilesBody)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "fileNames")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

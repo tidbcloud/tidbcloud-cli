@@ -24,8 +24,11 @@ type ListExportFilesResponse struct {
 	// Token provided to retrieve the next page of results.
 	NextPageToken *string `json:"nextPageToken,omitempty"`
 	// Total number of export files.
-	TotalSize *int64 `json:"totalSize,omitempty"`
+	TotalSize            *int64 `json:"totalSize,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ListExportFilesResponse ListExportFilesResponse
 
 // NewListExportFilesResponse instantiates a new ListExportFilesResponse object
 // This constructor will assign default values to properties that have it defined,
@@ -159,7 +162,35 @@ func (o ListExportFilesResponse) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.TotalSize) {
 		toSerialize["totalSize"] = o.TotalSize
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ListExportFilesResponse) UnmarshalJSON(data []byte) (err error) {
+	varListExportFilesResponse := _ListExportFilesResponse{}
+
+	err = json.Unmarshal(data, &varListExportFilesResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ListExportFilesResponse(varListExportFilesResponse)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "files")
+		delete(additionalProperties, "nextPageToken")
+		delete(additionalProperties, "totalSize")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableListExportFilesResponse struct {

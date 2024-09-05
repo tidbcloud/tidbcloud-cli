@@ -24,8 +24,11 @@ type ExportFile struct {
 	// The size in bytes of the file.
 	Size *int64 `json:"size,omitempty"`
 	// download url of the file.
-	DownloadUrl *string `json:"downloadUrl,omitempty"`
+	DownloadUrl          *string `json:"downloadUrl,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ExportFile ExportFile
 
 // NewExportFile instantiates a new ExportFile object
 // This constructor will assign default values to properties that have it defined,
@@ -159,7 +162,35 @@ func (o ExportFile) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DownloadUrl) {
 		toSerialize["downloadUrl"] = o.DownloadUrl
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ExportFile) UnmarshalJSON(data []byte) (err error) {
+	varExportFile := _ExportFile{}
+
+	err = json.Unmarshal(data, &varExportFile)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ExportFile(varExportFile)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "size")
+		delete(additionalProperties, "downloadUrl")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableExportFile struct {
