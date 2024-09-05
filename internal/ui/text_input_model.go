@@ -18,9 +18,13 @@ import (
 	"fmt"
 	"strings"
 
+	"tidbcloud-cli/internal/config"
+	"tidbcloud-cli/internal/util"
+
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/juju/errors"
 )
 
 var (
@@ -127,4 +131,30 @@ func (m TextInputModel) View() string {
 	fmt.Fprintf(&b, "\n\n%s\n\n", *button)
 
 	return b.String()
+}
+
+func InitialInputModel(inputs []string, inputDescription map[string]string) (TextInputModel, error) {
+	m := TextInputModel{
+		Inputs: make([]textinput.Model, len(inputs)),
+	}
+	for i, input := range inputs {
+		t := textinput.New()
+		if i == 0 {
+			t.Focus()
+			t.PromptStyle = config.FocusedStyle
+			t.TextStyle = config.FocusedStyle
+		}
+		t.Placeholder = inputDescription[input]
+		m.Inputs[i] = t
+	}
+	p := tea.NewProgram(m)
+	inputModel, err := p.Run()
+	finalModel := inputModel.(TextInputModel)
+	if err != nil {
+		return finalModel, errors.Trace(err)
+	}
+	if finalModel.Interrupted {
+		return finalModel, util.InterruptError
+	}
+	return finalModel, nil
 }

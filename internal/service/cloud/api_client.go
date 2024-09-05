@@ -21,8 +21,8 @@ import (
 	"io"
 	"net/http"
 	"net/http/httputil"
-
 	"os"
+
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/version"
@@ -33,8 +33,7 @@ import (
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
-	serverlessImportClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client"
-	serverlessImportOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
+	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
 	apiClient "github.com/c4pt0r/go-tidbcloud-sdk-v1/client"
 	httpTransport "github.com/go-openapi/runtime/client"
@@ -64,13 +63,13 @@ type TiDBCloudClient interface {
 
 	ListProjects(ctx context.Context, pageSize *int32, pageToken *string) (*iam.ApiListProjectsRsp, error)
 
-	CancelImport(params *serverlessImportOp.ImportServiceCancelImportParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelImportOK, error)
+	CancelImport(ctx context.Context, clusterId string, id string) error
 
-	CreateImport(params *serverlessImportOp.ImportServiceCreateImportParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCreateImportOK, error)
+	CreateImport(ctx context.Context, clusterId string, body *imp.ImportServiceCreateImportBody) (*imp.Import, error)
 
-	GetImport(params *serverlessImportOp.ImportServiceGetImportParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceGetImportOK, error)
+	GetImport(ctx context.Context, clusterId string, id string) (*imp.Import, error)
 
-	ListImports(params *serverlessImportOp.ImportServiceListImportsParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceListImportsOK, error)
+	ListImports(ctx context.Context, clusterId string, pageSize *int32, pageToken, orderBy *string) (*imp.ListImportsResp, error)
 
 	GetBranch(ctx context.Context, clusterId, branchId string) (*branch.Branch, error)
 
@@ -90,11 +89,11 @@ type TiDBCloudClient interface {
 
 	Restore(ctx context.Context, body *br.V1beta1RestoreRequest) (*br.V1beta1RestoreResponse, error)
 
-	StartUpload(params *serverlessImportOp.ImportServiceStartUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceStartUploadOK, error)
+	StartUpload(ctx context.Context, clusterId string, fileName, targetDatabase, targetTable *string, partNumber *int32) (*imp.StartUploadResponse, error)
 
-	CompleteUpload(params *serverlessImportOp.ImportServiceCompleteUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCompleteUploadOK, error)
+	CompleteUpload(ctx context.Context, clusterId string, uploadId *string, parts *[]imp.CompletePart) error
 
-	CancelUpload(params *serverlessImportOp.ImportServiceCancelUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelUploadOK, error)
+	CancelUpload(ctx context.Context, clusterId string, uploadId *string) error
 
 	GetExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error)
 
@@ -125,7 +124,7 @@ type ClientDelegate struct {
 	pc  *pingchatClient.TidbcloudPingchat
 	brc *br.APIClient
 	sc  *cluster.APIClient
-	sic *serverlessImportClient.TidbcloudServerless
+	sic *imp.APIClient
 	ec  *export.APIClient
 }
 
@@ -229,20 +228,38 @@ func (d *ClientDelegate) ListProjects(ctx context.Context, pageSize *int32, page
 	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) CancelImport(params *serverlessImportOp.ImportServiceCancelImportParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelImportOK, error) {
-	return d.sic.ImportService.ImportServiceCancelImport(params, opts...)
+func (d *ClientDelegate) CancelImport(ctx context.Context, clusterId string, id string) error {
+	_, h, err := d.sic.ImportServiceAPI.ImportServiceCancelImport(ctx, clusterId, id).Execute()
+	return parseError(err, h)
 }
 
-func (d *ClientDelegate) CreateImport(params *serverlessImportOp.ImportServiceCreateImportParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCreateImportOK, error) {
-	return d.sic.ImportService.ImportServiceCreateImport(params, opts...)
+func (d *ClientDelegate) CreateImport(ctx context.Context, clusterId string, body *imp.ImportServiceCreateImportBody) (*imp.Import, error) {
+	r := d.sic.ImportServiceAPI.ImportServiceCreateImport(ctx, clusterId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	i, h, err := r.Execute()
+	return i, parseError(err, h)
 }
 
-func (d *ClientDelegate) GetImport(params *serverlessImportOp.ImportServiceGetImportParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceGetImportOK, error) {
-	return d.sic.ImportService.ImportServiceGetImport(params, opts...)
+func (d *ClientDelegate) GetImport(ctx context.Context, clusterId string, id string) (*imp.Import, error) {
+	i, h, err := d.sic.ImportServiceAPI.ImportServiceGetImport(ctx, clusterId, id).Execute()
+	return i, parseError(err, h)
 }
 
-func (d *ClientDelegate) ListImports(params *serverlessImportOp.ImportServiceListImportsParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceListImportsOK, error) {
-	return d.sic.ImportService.ImportServiceListImports(params, opts...)
+func (d *ClientDelegate) ListImports(ctx context.Context, clusterId string, pageSize *int32, pageToken, orderBy *string) (*imp.ListImportsResp, error) {
+	r := d.sic.ImportServiceAPI.ImportServiceListImports(ctx, clusterId)
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	if orderBy != nil {
+		r = r.OrderBy(*orderBy)
+	}
+	is, h, err := r.Execute()
+	return is, parseError(err, h)
 }
 
 func (d *ClientDelegate) GetBranch(ctx context.Context, clusterId, branchId string) (*branch.Branch, error) {
@@ -314,16 +331,43 @@ func (d *ClientDelegate) Restore(ctx context.Context, body *br.V1beta1RestoreReq
 	return bs, parseError(err, h)
 }
 
-func (d *ClientDelegate) StartUpload(params *serverlessImportOp.ImportServiceStartUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceStartUploadOK, error) {
-	return d.sic.ImportService.ImportServiceStartUpload(params, opts...)
+func (d *ClientDelegate) StartUpload(ctx context.Context, clusterId string, fileName, targetDatabase, targetTable *string, partNumber *int32) (*imp.StartUploadResponse, error) {
+	r := d.sic.ImportServiceAPI.ImportServiceStartUpload(ctx, clusterId)
+	if fileName != nil {
+		r = r.FileName(*fileName)
+	}
+	if targetDatabase != nil {
+		r = r.TargetDatabase(*targetDatabase)
+	}
+	if targetTable != nil {
+		r = r.TargetTable(*targetTable)
+	}
+	if partNumber != nil {
+		r = r.PartNumber(*partNumber)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) CompleteUpload(params *serverlessImportOp.ImportServiceCompleteUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCompleteUploadOK, error) {
-	return d.sic.ImportService.ImportServiceCompleteUpload(params, opts...)
+func (d *ClientDelegate) CompleteUpload(ctx context.Context, clusterId string, uploadId *string, parts *[]imp.CompletePart) error {
+	r := d.sic.ImportServiceAPI.ImportServiceCompleteUpload(ctx, clusterId)
+	if uploadId != nil {
+		r = r.UploadId(*uploadId)
+	}
+	if parts != nil {
+		r = r.Parts(*parts)
+	}
+	_, h, err := r.Execute()
+	return parseError(err, h)
 }
 
-func (d *ClientDelegate) CancelUpload(params *serverlessImportOp.ImportServiceCancelUploadParams, opts ...serverlessImportOp.ClientOption) (*serverlessImportOp.ImportServiceCancelUploadOK, error) {
-	return d.sic.ImportService.ImportServiceCancelUpload(params, opts...)
+func (d *ClientDelegate) CancelUpload(ctx context.Context, clusterId string, uploadId *string) error {
+	r := d.sic.ImportServiceAPI.ImportServiceCancelUpload(ctx, clusterId)
+	if uploadId != nil {
+		r = r.UploadId(*uploadId)
+	}
+	_, h, err := r.Execute()
+	return parseError(err, h)
 }
 
 func (d *ClientDelegate) GetExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error) {
@@ -414,7 +458,7 @@ func (d *ClientDelegate) UpdateSQLUser(ctx context.Context, clusterID string, us
 	return res, parseError(err, h)
 }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *pingchatClient.TidbcloudPingchat, *br.APIClient, *serverlessImportClient.TidbcloudServerless, *export.APIClient, *iam.APIClient, error) {
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *pingchatClient.TidbcloudPingchat, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}
@@ -431,8 +475,6 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	if err != nil {
 		return nil, nil, nil, nil, nil, nil, nil, err
 	}
-
-	importTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessImportClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
 
 	iamCfg := iam.NewConfiguration()
 	iamCfg.HTTPClient = httpclient
@@ -454,13 +496,17 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	exportCfg.HTTPClient = httpclient
 	exportCfg.Host = serverlessURL.Host
 
+	importCfg := imp.NewConfiguration()
+	importCfg.HTTPClient = httpclient
+	importCfg.Host = serverlessURL.Host
+
 	backupRestoreCfg := br.NewConfiguration()
 	backupRestoreCfg.HTTPClient = httpclient
 	backupRestoreCfg.Host = serverlessURL.Host
 
 	return branch.NewAPIClient(branchCfg), cluster.NewAPIClient(clusterCfg),
 		pingchatClient.New(transport, strfmt.Default), br.NewAPIClient(backupRestoreCfg),
-		serverlessImportClient.New(importTransport, strfmt.Default), export.NewAPIClient(exportCfg),
+		imp.NewAPIClient(importCfg), export.NewAPIClient(exportCfg),
 		iam.NewAPIClient(iamCfg), nil
 }
 

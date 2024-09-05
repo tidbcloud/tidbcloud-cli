@@ -1,0 +1,844 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "TiDB Cloud Serverless Open API",
+    "description": "TiDB Cloud Serverless Open API",
+    "version": "v1beta1"
+  },
+  "tags": [
+    {
+      "name": "ImportService"
+    }
+  ],
+  "host": "serverless.tidbapi.com",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1beta1/clusters/{clusterId}/imports:startUpload": {
+      "post": {
+        "summary": "Generate Upload url for importing data",
+        "operationId": "ImportService_StartUpload",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/StartUploadResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster to import into",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "fileName",
+            "description": "The name of the file to import",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "partNumber",
+            "description": "The number of parts to split the file into",
+            "in": "query",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "targetDatabase",
+            "description": "The name of the database to import into",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "targetTable",
+            "description": "The name of the table to import into",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ImportService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/imports:completeUpload": {
+      "post": {
+        "summary": "Complete the upload",
+        "operationId": "ImportService_CompleteUpload",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster to import into",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "parts",
+            "description": "The parts have been uploaded, only needed when upload is multipart.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "$ref": "#/definitions/CompletePart"
+              }
+            }
+          },
+          {
+            "name": "uploadId",
+            "description": "The ID of the upload",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ImportService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/imports:cancelUpload": {
+      "post": {
+        "summary": "Cancel the upload",
+        "operationId": "ImportService_CancelUpload",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster to import into",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "uploadId",
+            "description": "The ID of the upload",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ImportService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/imports": {
+      "get": {
+        "summary": "Provides a list of import jobs",
+        "operationId": "ImportService_ListImports",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListImportsResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster to import into.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "pageToken",
+            "description": "Optional. The page token, default is empty.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "Optional. The page size, default is 10.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "orderBy",
+            "description": "Optional. List imports order by, separated by comma, default is ascending. Example: \"foo, bar desc\". Supported field: create_time",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ImportService"
+        ]
+      },
+      "post": {
+        "summary": "Create an import job",
+        "operationId": "ImportService_CreateImport",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Import"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster to import into.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ImportService.CreateImportBody"
+            }
+          }
+        ],
+        "tags": [
+          "ImportService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/imports/{id}": {
+      "get": {
+        "summary": "Get an import detailed information",
+        "operationId": "ImportService_GetImport",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Import"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster to import into.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "id",
+            "description": "The ID of the import.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ImportService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/imports/{id}:cancel": {
+      "post": {
+        "summary": "Cancel an import job",
+        "operationId": "ImportService_CancelImport",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster to import into.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "uint64"
+          },
+          {
+            "name": "id",
+            "description": "The ID of the import.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ImportService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "AzureBlobSource": {
+      "type": "object",
+      "properties": {
+        "authType": {
+          "description": "The Azure Blob URI of the import source.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ImportAzureBlobAuthType.Enum"
+            }
+          ]
+        },
+        "sasToken": {
+          "type": "string",
+          "description": "The sas token. This field is input-only."
+        },
+        "uri": {
+          "type": "string",
+          "description": "The Azure Blob URI of the import source. For example: azure://<account>.blob.core.windows.net/<container>/<path>."
+        }
+      },
+      "required": [
+        "authType",
+        "uri"
+      ]
+    },
+    "CSVFormat": {
+      "type": "object",
+      "properties": {
+        "separator": {
+          "type": "string",
+          "description": "Separator of each value in CSV files. Default is ','."
+        },
+        "delimiter": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "Delimiter of string type variables in CSV files. Default is '\"'."
+        },
+        "header": {
+          "type": "boolean",
+          "x-nullable": true,
+          "description": "Import CSV files of the tables with header. Default is true."
+        },
+        "notNull": {
+          "type": "boolean",
+          "x-nullable": true,
+          "description": "Whether the columns in CSV files can be null. Default is false."
+        },
+        "null": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "Representation of null values in CSV files. Default is \"\\N\"."
+        },
+        "backslashEscape": {
+          "type": "boolean",
+          "x-nullable": true,
+          "description": "Whether to escape backslashes in CSV files. Default is true."
+        },
+        "trimLastSeparator": {
+          "type": "boolean",
+          "x-nullable": true,
+          "description": "Whether to trim the last separator in CSV files. Default is false."
+        }
+      }
+    },
+    "CompletePart": {
+      "type": "object",
+      "properties": {
+        "partNumber": {
+          "type": "integer",
+          "format": "int32",
+          "title": "The part number"
+        },
+        "etag": {
+          "type": "string",
+          "title": "The ETag of the part"
+        }
+      },
+      "required": [
+        "partNumber",
+        "etag"
+      ]
+    },
+    "CreationDetails": {
+      "type": "object",
+      "properties": {
+        "importOptions": {
+          "description": "Optional. The options of the import.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/ImportOptions"
+            }
+          ]
+        },
+        "source": {
+          "description": "Optional. The source of the import.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/ImportSource"
+            }
+          ]
+        }
+      }
+    },
+    "GCSSource": {
+      "type": "object",
+      "properties": {
+        "uri": {
+          "type": "string",
+          "description": "The GCS URI of the import source."
+        },
+        "authType": {
+          "description": "The auth method of the import source.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ImportGcsAuthType.Enum"
+            }
+          ]
+        },
+        "serviceAccountKey": {
+          "type": "string",
+          "title": "The service account key"
+        }
+      },
+      "required": [
+        "uri",
+        "authType"
+      ]
+    },
+    "Import": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The ID of the import. DEPRECATED, use import_id instead.",
+          "readOnly": true
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the import.",
+          "readOnly": true
+        },
+        "clusterId": {
+          "type": "string",
+          "format": "uint64",
+          "description": "The ID of the cluster to import into.",
+          "readOnly": true
+        },
+        "totalSize": {
+          "type": "string",
+          "format": "uint64",
+          "description": "The total size of the data imported.",
+          "readOnly": true
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The time the import was created.",
+          "readOnly": true
+        },
+        "completeTime": {
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true,
+          "description": "The time the import was completed.",
+          "readOnly": true
+        },
+        "state": {
+          "description": "The state of the import.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/ImportState.Enum"
+            }
+          ]
+        },
+        "completePercent": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The process in percent of the import job, but doesn't include the post-processing progress.",
+          "readOnly": true
+        },
+        "message": {
+          "type": "string",
+          "description": "The output message of the import.",
+          "readOnly": true
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "The user who created the import.",
+          "readOnly": true
+        },
+        "creationDetails": {
+          "description": "The creation details of the import.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/CreationDetails"
+            }
+          ]
+        },
+        "importId": {
+          "type": "string",
+          "description": "The ID of the import.",
+          "readOnly": true
+        }
+      }
+    },
+    "ImportAzureBlobAuthType.Enum": {
+      "type": "string",
+      "enum": [
+        "SAS_TOKEN"
+      ],
+      "description": " - SAS_TOKEN: The access method is sas token."
+    },
+    "ImportFileType.Enum": {
+      "type": "string",
+      "enum": [
+        "CSV",
+        "SQL",
+        "AURORA_SNAPSHOT",
+        "PARQUET"
+      ],
+      "description": " - CSV: CSV type.\n - SQL: SQL type.\n - AURORA_SNAPSHOT: Aurora snapshot type.\n - PARQUET: Parquet type."
+    },
+    "ImportGcsAuthType.Enum": {
+      "type": "string",
+      "enum": [
+        "SERVICE_ACCOUNT_KEY"
+      ],
+      "description": " - SERVICE_ACCOUNT_KEY: The access method is service account key."
+    },
+    "ImportOptions": {
+      "type": "object",
+      "properties": {
+        "fileType": {
+          "description": "The exported file type.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ImportFileType.Enum"
+            }
+          ]
+        },
+        "csvFormat": {
+          "description": "Optional. The CSV format.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/CSVFormat"
+            }
+          ]
+        }
+      },
+      "required": [
+        "fileType"
+      ]
+    },
+    "ImportS3AuthType.Enum": {
+      "type": "string",
+      "enum": [
+        "ROLE_ARN",
+        "ACCESS_KEY"
+      ],
+      "description": " - ROLE_ARN: The access method is role arn.\n - ACCESS_KEY: The access method is access key."
+    },
+    "ImportService.CreateImportBody": {
+      "type": "object",
+      "properties": {
+        "importOptions": {
+          "description": "The options of the import.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ImportOptions"
+            }
+          ]
+        },
+        "source": {
+          "description": "The source of the import.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ImportSource"
+            }
+          ]
+        }
+      },
+      "required": [
+        "importOptions",
+        "source"
+      ]
+    },
+    "ImportSource": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The import source type.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ImportSourceType.Enum"
+            }
+          ]
+        },
+        "local": {
+          "$ref": "#/definitions/LocalSource"
+        },
+        "s3": {
+          "$ref": "#/definitions/S3Source"
+        },
+        "gcs": {
+          "$ref": "#/definitions/GCSSource"
+        },
+        "azureBlob": {
+          "$ref": "#/definitions/AzureBlobSource"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "ImportSourceType.Enum": {
+      "type": "string",
+      "enum": [
+        "LOCAL",
+        "S3",
+        "GCS",
+        "AZURE_BLOB"
+      ],
+      "title": "- LOCAL: Local source.\n - S3: S3 source.\n - GCS: gcs source\n - AZURE_BLOB: azure blob source"
+    },
+    "ImportState.Enum": {
+      "type": "string",
+      "enum": [
+        "PREPARING",
+        "IMPORTING",
+        "COMPLETED",
+        "FAILED",
+        "CANCELING",
+        "CANCELED"
+      ],
+      "description": " - PREPARING: The import is preparing.\n - IMPORTING: The import is importing.\n - COMPLETED: The import is completed.\n - FAILED: The import is failed.\n - CANCELING: The import is canceling.\n - CANCELED: The import is canceled."
+    },
+    "ListImportsResp": {
+      "type": "object",
+      "properties": {
+        "imports": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Import"
+          },
+          "description": "The imports.",
+          "readOnly": true
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The total size of the imports.",
+          "readOnly": true
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "The next page token.",
+          "readOnly": true
+        }
+      }
+    },
+    "LocalSource": {
+      "type": "object",
+      "properties": {
+        "uploadId": {
+          "type": "string",
+          "description": "The upload id of import source file."
+        },
+        "targetDatabase": {
+          "type": "string",
+          "description": "The target database of import."
+        },
+        "targetTable": {
+          "type": "string",
+          "description": "The target table of import."
+        },
+        "fileName": {
+          "type": "string",
+          "description": "The file name of import source file.",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "uploadId",
+        "targetDatabase",
+        "targetTable"
+      ]
+    },
+    "S3Source": {
+      "type": "object",
+      "properties": {
+        "uri": {
+          "type": "string",
+          "description": "The S3 URI of the import source."
+        },
+        "authType": {
+          "description": "The auth method of the import source.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ImportS3AuthType.Enum"
+            }
+          ]
+        },
+        "roleArn": {
+          "type": "string",
+          "title": "The role arn"
+        },
+        "accessKey": {
+          "description": "The access key.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/S3Source.AccessKey"
+            }
+          ]
+        }
+      },
+      "required": [
+        "uri",
+        "authType"
+      ]
+    },
+    "S3Source.AccessKey": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The access key id."
+        },
+        "secret": {
+          "type": "string",
+          "description": "The secret access key. This field is input-only."
+        }
+      },
+      "required": [
+        "id",
+        "secret"
+      ]
+    },
+    "StartUploadResponse": {
+      "type": "object",
+      "properties": {
+        "uploadUrl": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "The URL to upload the file to",
+          "readOnly": true
+        },
+        "uploadId": {
+          "type": "string",
+          "title": "The ID of the upload",
+          "readOnly": true
+        }
+      }
+    },
+    "Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Any"
+          }
+        }
+      }
+    }
+  }
+}

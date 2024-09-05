@@ -25,7 +25,6 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -56,12 +55,10 @@ func (suite *CancelImportSuite) SetupTest() {
 func (suite *CancelImportSuite) TestCancelImportArgs() {
 	assert := require.New(suite.T())
 	ctx := context.Background()
-	result := &importOp.ImportServiceCancelImportOK{}
 	clusterID := "12345"
 	importID := "imp-asdasd"
-	suite.mockClient.On("CancelImport", importOp.NewImportServiceCancelImportParams().
-		WithClusterID(clusterID).WithID(importID).WithContext(ctx)).
-		Return(result, nil)
+	suite.mockClient.On("CancelImport", ctx, clusterID, importID).
+		Return(nil)
 
 	tests := []struct {
 		name         string

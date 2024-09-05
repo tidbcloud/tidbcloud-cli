@@ -17,6 +17,7 @@ package dataimport
 import (
 	"fmt"
 	"strconv"
+	"time"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -24,7 +25,7 @@ import (
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
-	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
+	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
 	"github.com/dustin/go-humanize"
 	"github.com/juju/errors"
@@ -128,9 +129,9 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			// for terminal which can prompt, humanFormat is the default format.
 			// for other terminals, json format is the default format.
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				res := &importModel.V1beta1ListImportsResp{
+				res := &imp.ListImportsResp{
 					Imports:   importTasks,
-					TotalSize: total,
+					TotalSize: &total,
 				}
 				err := output.PrintJson(h.IOStreams.Out, res)
 				if err != nil {
@@ -152,21 +153,27 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					var source, st, ft string
 					if item.CreationDetails != nil && item.CreationDetails.Source != nil {
 						st = string(item.CreationDetails.Source.Type)
-						if item.CreationDetails.Source.Type == importModel.V1beta1ImportSourceTypeLOCAL {
-							source = item.CreationDetails.Source.Local.FileName
+						if item.CreationDetails.Source.Type == imp.IMPORTSOURCETYPEENUM_LOCAL {
+							source = *item.CreationDetails.Source.Local.FileName
+						} else if item.CreationDetails.Source.Type == imp.IMPORTSOURCETYPEENUM_S3 {
+							source = item.CreationDetails.Source.S3.Uri
+						} else if item.CreationDetails.Source.Type == imp.IMPORTSOURCETYPEENUM_GCS {
+							source = item.CreationDetails.Source.Gcs.Uri
+						} else if item.CreationDetails.Source.Type == imp.IMPORTSOURCETYPEENUM_AZURE_BLOB {
+							source = item.CreationDetails.Source.AzureBlob.Uri
 						}
 					}
 					if item.CreationDetails != nil && item.CreationDetails.ImportOptions != nil {
 						ft = string(item.CreationDetails.ImportOptions.FileType)
 					}
 					rows = append(rows, output.Row{
-						item.ID,
+						*item.ImportId,
 						st,
-						string(item.State),
-						item.CreateTime.String(),
+						string(*item.State),
+						item.CreateTime.Format(time.RFC3339),
 						source,
 						ft,
-						convertToStoreSize(item.TotalSize),
+						convertToStoreSize(*item.TotalSize),
 					})
 				}
 

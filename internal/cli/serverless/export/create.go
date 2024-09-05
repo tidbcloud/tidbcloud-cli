@@ -19,6 +19,8 @@ import (
 	"slices"
 	"strings"
 
+	"tidbcloud-cli/internal/ui"
+
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/fatih/color"
@@ -152,7 +154,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   Export all data with S3 type in non-interactive mode:
   $ %[1]s serverless export create -c <cluster-id> --target-type S3 --s3.uri <s3-uri> --s3.access-key-id <access-key-id> --s3.secret-access-key <secret-access-key>
 
-  Export all data and customize csv format in non-interactive mode:
+  Export all data and customize CSV format in non-interactive mode:
   $ %[1]s serverless export create -c <cluster-id> --file-type CSV --csv.separator ";" --csv.delimiter "\"" --csv.null-value 'NaN' --csv.skip-header
 
   Export test.t1 and test.t2 in non-interactive mode:
@@ -215,7 +217,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				switch selectedAuthType {
 				case AuthTypeS3AccessKey:
 					inputs := []string{flag.S3URI, flag.S3AccessKeyID, flag.S3SecretAccessKey}
-					textInput, err := InitialInputModel(inputs)
+					textInput, err := ui.InitialInputModel(inputs, inputDescription)
 					if err != nil {
 						return err
 					}
@@ -233,7 +235,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 				case AuthTypeS3RoleArn:
 					inputs := []string{flag.S3URI, flag.S3RoleArn}
-					textInput, err := InitialInputModel(inputs)
+					textInput, err := ui.InitialInputModel(inputs, inputDescription)
 					if err != nil {
 						return err
 					}
@@ -247,7 +249,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 				case AuthTypeGCSServiceAccountKey:
 					inputs := []string{flag.GCSURI, flag.GCSServiceAccountKey}
-					textInput, err := InitialInputModel(inputs)
+					textInput, err := ui.InitialInputModel(inputs, inputDescription)
 					if err != nil {
 						return err
 					}
@@ -261,7 +263,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 				case AuthTypeAzBlobSasToken:
 					inputs := []string{flag.AzureBlobURI, flag.AzureBlobSASToken}
-					textInput, err := InitialInputModel(inputs)
+					textInput, err := ui.InitialInputModel(inputs, inputDescription)
 					if err != nil {
 						return err
 					}
@@ -284,7 +286,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				case FilterNone:
 				case FilterSQL:
 					inputs := []string{flag.SQL}
-					textInput, err := InitialInputModel(inputs)
+					textInput, err := ui.InitialInputModel(inputs, inputDescription)
 					if err != nil {
 						return err
 					}
@@ -295,7 +297,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				case FilterTable:
 					fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following options, require at least one field"))
 					inputs := []string{flag.TableFilter, flag.TableWhere}
-					textInput, err := InitialInputModel(inputs)
+					textInput, err := ui.InitialInputModel(inputs, inputDescription)
 					if err != nil {
 						return err
 					}
@@ -332,7 +334,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 					if customCSVFormat {
 						inputs := []string{flag.CSVSeparator, flag.CSVDelimiter, flag.CSVNullValue, flag.CSVSkipHeader}
-						textInput, err := InitialInputModel(inputs)
+						textInput, err := ui.InitialInputModel(inputs, inputDescription)
 						if err != nil {
 							return err
 						}

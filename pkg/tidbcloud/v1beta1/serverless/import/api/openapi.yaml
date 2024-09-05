@@ -1,0 +1,701 @@
+openapi: 3.0.1
+info:
+  description: TiDB Cloud Serverless Open API
+  title: TiDB Cloud Serverless Open API
+  version: v1beta1
+servers:
+- url: https://serverless.tidbapi.com/
+tags:
+- name: ImportService
+paths:
+  /v1beta1/clusters/{clusterId}/imports:startUpload:
+    post:
+      operationId: ImportService_StartUpload
+      parameters:
+      - description: The ID of the cluster to import into
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The name of the file to import
+        in: query
+        name: fileName
+        required: true
+        schema:
+          type: string
+      - description: The number of parts to split the file into
+        in: query
+        name: partNumber
+        required: true
+        schema:
+          format: int32
+          type: integer
+      - description: The name of the database to import into
+        in: query
+        name: targetDatabase
+        required: true
+        schema:
+          type: string
+      - description: The name of the table to import into
+        in: query
+        name: targetTable
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StartUploadResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Generate Upload url for importing data
+      tags:
+      - ImportService
+  /v1beta1/clusters/{clusterId}/imports:completeUpload:
+    post:
+      operationId: ImportService_CompleteUpload
+      parameters:
+      - description: The ID of the cluster to import into
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the upload
+        in: query
+        name: uploadId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              items:
+                $ref: '#/components/schemas/CompletePart'
+              type: array
+        description: "The parts have been uploaded, only needed when upload is multipart."
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Complete the upload
+      tags:
+      - ImportService
+      x-codegen-request-body-name: parts
+  /v1beta1/clusters/{clusterId}/imports:cancelUpload:
+    post:
+      operationId: ImportService_CancelUpload
+      parameters:
+      - description: The ID of the cluster to import into
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the upload
+        in: query
+        name: uploadId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Cancel the upload
+      tags:
+      - ImportService
+  /v1beta1/clusters/{clusterId}/imports:
+    get:
+      operationId: ImportService_ListImports
+      parameters:
+      - description: The ID of the cluster to import into.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          format: uint64
+          type: string
+      - description: "Optional. The page token, default is empty."
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: "Optional. The page size, default is 10."
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: "Optional. List imports order by, separated by comma, default\
+          \ is ascending. Example: \"foo, bar desc\". Supported field: create_time"
+        in: query
+        name: orderBy
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListImportsResp'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Provides a list of import jobs
+      tags:
+      - ImportService
+    post:
+      operationId: ImportService_CreateImport
+      parameters:
+      - description: The ID of the cluster to import into.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          format: uint64
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportService.CreateImportBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Import'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Create an import job
+      tags:
+      - ImportService
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/imports/{id}:
+    get:
+      operationId: ImportService_GetImport
+      parameters:
+      - description: The ID of the cluster to import into.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          format: uint64
+          type: string
+      - description: The ID of the import.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Import'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Get an import detailed information
+      tags:
+      - ImportService
+  /v1beta1/clusters/{clusterId}/imports/{id}:cancel:
+    post:
+      operationId: ImportService_CancelImport
+      parameters:
+      - description: The ID of the cluster to import into.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          format: uint64
+          type: string
+      - description: The ID of the import.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Cancel an import job
+      tags:
+      - ImportService
+components:
+  schemas:
+    Any:
+      additionalProperties:
+        type: object
+      example:
+        '@type': '@type'
+      properties:
+        '@type':
+          type: string
+      type: object
+    AzureBlobSource:
+      properties:
+        authType:
+          allOf:
+          - $ref: '#/components/schemas/ImportAzureBlobAuthType.Enum'
+          description: The Azure Blob URI of the import source.
+          type: object
+        sasToken:
+          description: The sas token. This field is input-only.
+          type: string
+        uri:
+          description: "The Azure Blob URI of the import source. For example: azure://<account>.blob.core.windows.net/<container>/<path>."
+          type: string
+      required:
+      - authType
+      - uri
+      type: object
+    CSVFormat:
+      properties:
+        separator:
+          description: "Separator of each value in CSV files. Default is ','."
+          type: string
+        delimiter:
+          description: Delimiter of string type variables in CSV files. Default is
+            '"'.
+          nullable: true
+          type: string
+        header:
+          description: Import CSV files of the tables with header. Default is true.
+          nullable: true
+          type: boolean
+        notNull:
+          description: Whether the columns in CSV files can be null. Default is false.
+          nullable: true
+          type: boolean
+        "null":
+          description: Representation of null values in CSV files. Default is "\N".
+          nullable: true
+          type: string
+        backslashEscape:
+          description: Whether to escape backslashes in CSV files. Default is true.
+          nullable: true
+          type: boolean
+        trimLastSeparator:
+          description: Whether to trim the last separator in CSV files. Default is
+            false.
+          nullable: true
+          type: boolean
+      type: object
+    CompletePart:
+      example:
+        partNumber: 0
+        etag: etag
+      properties:
+        partNumber:
+          format: int32
+          title: The part number
+          type: integer
+        etag:
+          title: The ETag of the part
+          type: string
+      required:
+      - etag
+      - partNumber
+      type: object
+    CreationDetails:
+      properties:
+        importOptions:
+          allOf:
+          - $ref: '#/components/schemas/ImportOptions'
+          description: Optional. The options of the import.
+          type: object
+        source:
+          allOf:
+          - $ref: '#/components/schemas/ImportSource'
+          description: Optional. The source of the import.
+          type: object
+      type: object
+    GCSSource:
+      properties:
+        uri:
+          description: The GCS URI of the import source.
+          type: string
+        authType:
+          allOf:
+          - $ref: '#/components/schemas/ImportGcsAuthType.Enum'
+          description: The auth method of the import source.
+          type: object
+        serviceAccountKey:
+          title: The service account key
+          type: string
+      required:
+      - authType
+      - uri
+      type: object
+    Import:
+      example:
+        totalSize: totalSize
+        importId: importId
+        createTime: 2000-01-23T04:56:07.000+00:00
+        createdBy: createdBy
+        name: name
+        completeTime: 2000-01-23T04:56:07.000+00:00
+        completePercent: 0
+        id: id
+        clusterId: clusterId
+        state: "{}"
+        message: message
+        creationDetails: "{}"
+      properties:
+        id:
+          description: "The ID of the import. DEPRECATED, use import_id instead."
+          readOnly: true
+          type: string
+        name:
+          description: The name of the import.
+          readOnly: true
+          type: string
+        clusterId:
+          description: The ID of the cluster to import into.
+          format: uint64
+          readOnly: true
+          type: string
+        totalSize:
+          description: The total size of the data imported.
+          format: uint64
+          readOnly: true
+          type: string
+        createTime:
+          description: The time the import was created.
+          format: date-time
+          readOnly: true
+          type: string
+        completeTime:
+          description: The time the import was completed.
+          format: date-time
+          nullable: true
+          readOnly: true
+          type: string
+        state:
+          allOf:
+          - $ref: '#/components/schemas/ImportState.Enum'
+          description: The state of the import.
+          type: object
+        completePercent:
+          description: "The process in percent of the import job, but doesn't include\
+            \ the post-processing progress."
+          format: int64
+          readOnly: true
+          type: integer
+        message:
+          description: The output message of the import.
+          readOnly: true
+          type: string
+        createdBy:
+          description: The user who created the import.
+          readOnly: true
+          type: string
+        creationDetails:
+          allOf:
+          - $ref: '#/components/schemas/CreationDetails'
+          description: The creation details of the import.
+          type: object
+        importId:
+          description: The ID of the import.
+          readOnly: true
+          type: string
+      type: object
+    ImportAzureBlobAuthType.Enum:
+      description: " - SAS_TOKEN: The access method is sas token."
+      enum:
+      - SAS_TOKEN
+      type: string
+    ImportFileType.Enum:
+      description: |2-
+         - CSV: CSV type.
+         - SQL: SQL type.
+         - AURORA_SNAPSHOT: Aurora snapshot type.
+         - PARQUET: Parquet type.
+      enum:
+      - CSV
+      - SQL
+      - AURORA_SNAPSHOT
+      - PARQUET
+      type: string
+    ImportGcsAuthType.Enum:
+      description: " - SERVICE_ACCOUNT_KEY: The access method is service account key."
+      enum:
+      - SERVICE_ACCOUNT_KEY
+      type: string
+    ImportOptions:
+      properties:
+        fileType:
+          allOf:
+          - $ref: '#/components/schemas/ImportFileType.Enum'
+          description: The exported file type.
+          type: object
+        csvFormat:
+          allOf:
+          - $ref: '#/components/schemas/CSVFormat'
+          description: Optional. The CSV format.
+          type: object
+      required:
+      - fileType
+      type: object
+    ImportS3AuthType.Enum:
+      description: |2-
+         - ROLE_ARN: The access method is role arn.
+         - ACCESS_KEY: The access method is access key.
+      enum:
+      - ROLE_ARN
+      - ACCESS_KEY
+      type: string
+    ImportService.CreateImportBody:
+      properties:
+        importOptions:
+          allOf:
+          - $ref: '#/components/schemas/ImportOptions'
+          description: The options of the import.
+          type: object
+        source:
+          allOf:
+          - $ref: '#/components/schemas/ImportSource'
+          description: The source of the import.
+          type: object
+      required:
+      - importOptions
+      - source
+      type: object
+    ImportSource:
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/ImportSourceType.Enum'
+          description: The import source type.
+          type: object
+        local:
+          $ref: '#/components/schemas/LocalSource'
+        s3:
+          $ref: '#/components/schemas/S3Source'
+        gcs:
+          $ref: '#/components/schemas/GCSSource'
+        azureBlob:
+          $ref: '#/components/schemas/AzureBlobSource'
+      required:
+      - type
+      type: object
+    ImportSourceType.Enum:
+      enum:
+      - LOCAL
+      - S3
+      - GCS
+      - AZURE_BLOB
+      title: |-
+        - LOCAL: Local source.
+         - S3: S3 source.
+         - GCS: gcs source
+         - AZURE_BLOB: azure blob source
+      type: string
+    ImportState.Enum:
+      description: |2-
+         - PREPARING: The import is preparing.
+         - IMPORTING: The import is importing.
+         - COMPLETED: The import is completed.
+         - FAILED: The import is failed.
+         - CANCELING: The import is canceling.
+         - CANCELED: The import is canceled.
+      enum:
+      - PREPARING
+      - IMPORTING
+      - COMPLETED
+      - FAILED
+      - CANCELING
+      - CANCELED
+      type: string
+    ListImportsResp:
+      example:
+        imports:
+        - totalSize: totalSize
+          importId: importId
+          createTime: 2000-01-23T04:56:07.000+00:00
+          createdBy: createdBy
+          name: name
+          completeTime: 2000-01-23T04:56:07.000+00:00
+          completePercent: 0
+          id: id
+          clusterId: clusterId
+          state: "{}"
+          message: message
+          creationDetails: "{}"
+        - totalSize: totalSize
+          importId: importId
+          createTime: 2000-01-23T04:56:07.000+00:00
+          createdBy: createdBy
+          name: name
+          completeTime: 2000-01-23T04:56:07.000+00:00
+          completePercent: 0
+          id: id
+          clusterId: clusterId
+          state: "{}"
+          message: message
+          creationDetails: "{}"
+        totalSize: 6
+        nextPageToken: nextPageToken
+      properties:
+        imports:
+          description: The imports.
+          items:
+            $ref: '#/components/schemas/Import'
+          readOnly: true
+          type: array
+        totalSize:
+          description: The total size of the imports.
+          format: int64
+          readOnly: true
+          type: integer
+        nextPageToken:
+          description: The next page token.
+          readOnly: true
+          type: string
+      type: object
+    LocalSource:
+      properties:
+        uploadId:
+          description: The upload id of import source file.
+          type: string
+        targetDatabase:
+          description: The target database of import.
+          type: string
+        targetTable:
+          description: The target table of import.
+          type: string
+        fileName:
+          description: The file name of import source file.
+          readOnly: true
+          type: string
+      required:
+      - targetDatabase
+      - targetTable
+      - uploadId
+      type: object
+    S3Source:
+      properties:
+        uri:
+          description: The S3 URI of the import source.
+          type: string
+        authType:
+          allOf:
+          - $ref: '#/components/schemas/ImportS3AuthType.Enum'
+          description: The auth method of the import source.
+          type: object
+        roleArn:
+          title: The role arn
+          type: string
+        accessKey:
+          allOf:
+          - $ref: '#/components/schemas/S3Source.AccessKey'
+          description: The access key.
+          type: object
+      required:
+      - authType
+      - uri
+      type: object
+    S3Source.AccessKey:
+      properties:
+        id:
+          description: The access key id.
+          type: string
+        secret:
+          description: The secret access key. This field is input-only.
+          type: string
+      required:
+      - id
+      - secret
+      type: object
+    StartUploadResponse:
+      example:
+        uploadUrl:
+        - uploadUrl
+        - uploadUrl
+        uploadId: uploadId
+      properties:
+        uploadUrl:
+          items:
+            type: string
+          readOnly: true
+          title: The URL to upload the file to
+          type: array
+        uploadId:
+          readOnly: true
+          title: The ID of the upload
+          type: string
+      type: object
+    Status:
+      example:
+        code: 0
+        details:
+        - '@type': '@type'
+        - '@type': '@type'
+        message: message
+      properties:
+        code:
+          format: int32
+          type: integer
+        message:
+          type: string
+        details:
+          items:
+            $ref: '#/components/schemas/Any'
+          type: array
+      type: object
+x-original-swagger-version: "2.0"

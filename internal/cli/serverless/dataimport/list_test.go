@@ -19,137 +19,22 @@ import (
 	"context"
 	"encoding/json"
 	"os"
-	"strings"
 	"testing"
+	"time"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
+
+	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	mockTool "github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	"go.einride.tech/aip/pagination"
 )
-
-const listResultStr = `{
-  "imports": [
-    {
-      "clusterId": "12345",
-      "completePercent": 100,
-      "completeTime": "2024-04-01T06:49:50.000Z",
-      "createTime": "2024-04-01T06:39:50.000Z",
-      "createdBy": "test",
-      "creationDetails": {
-        "importOptions": {
-          "csvFormat": {
-            "backslashEscape": false,
-            "delimiter": ",",
-            "header": true,
-            "notNull": false,
-            "null": "\\N",
-            "separator": "\"",
-            "trimLastSeparator": true
-          },
-          "fileType": "CSV"
-        },
-        "source": {
-          "local": {
-            "fileName": "a.csv",
-            "targetDatabase": "test",
-            "targetTable": "test"
-          },
-          "type": "LOCAL"
-        }
-      },
-      "id": "%s",
-      "message": "import success",
-      "name": "import-2024-04-01T06:39:50.000Z",
-      "state": "COMPLETED",
-      "totalSize": "37"
-    }
-  ],
-  "totalSize": 1
-}
-`
-
-const listResultMultiPageStr = `{
-  "imports": [
-    {
-      "clusterId": "12345",
-      "completePercent": 100,
-      "completeTime": "2024-04-01T06:49:50.000Z",
-      "createTime": "2024-04-01T06:39:50.000Z",
-      "createdBy": "test",
-      "creationDetails": {
-        "importOptions": {
-          "csvFormat": {
-            "backslashEscape": false,
-            "delimiter": ",",
-            "header": true,
-            "notNull": false,
-            "null": "\\N",
-            "separator": "\"",
-            "trimLastSeparator": true
-          },
-          "fileType": "CSV"
-        },
-        "source": {
-          "local": {
-            "fileName": "a.csv",
-            "targetDatabase": "test",
-            "targetTable": "test"
-          },
-          "type": "LOCAL"
-        }
-      },
-      "id": "%s",
-      "message": "import success",
-      "name": "import-2024-04-01T06:39:50.000Z",
-      "state": "COMPLETED",
-      "totalSize": "37"
-    },
-    {
-      "clusterId": "12345",
-      "completePercent": 100,
-      "completeTime": "2024-04-01T06:49:50.000Z",
-      "createTime": "2024-04-01T06:39:50.000Z",
-      "createdBy": "test",
-      "creationDetails": {
-        "importOptions": {
-          "csvFormat": {
-            "backslashEscape": false,
-            "delimiter": ",",
-            "header": true,
-            "notNull": false,
-            "null": "\\N",
-            "separator": "\"",
-            "trimLastSeparator": true
-          },
-          "fileType": "CSV"
-        },
-        "source": {
-          "local": {
-            "fileName": "a.csv",
-            "targetDatabase": "test",
-            "targetTable": "test"
-          },
-          "type": "LOCAL"
-        }
-      },
-      "id": "%s",
-      "message": "import success",
-      "name": "import-2024-04-01T06:39:50.000Z",
-      "state": "COMPLETED",
-      "totalSize": "37"
-    }
-  ],
-  "totalSize": 2
-}
-`
 
 type ListImportSuite struct {
 	suite.Suite
@@ -177,17 +62,39 @@ func (suite *ListImportSuite) TestListImportArgs() {
 	assert := require.New(suite.T())
 	var pageSize = int32(suite.h.QueryPageSize)
 	ctx := context.Background()
-
-	body := &importModel.V1beta1ListImportsResp{}
-	err := json.Unmarshal([]byte(listResultStr), body)
-	assert.Nil(err)
-	result := &importOp.ImportServiceListImportsOK{
-		Payload: body,
-	}
+	t := time.Now()
+	orderBy := "create_time desc"
 	clusterID := "12345"
-	suite.mockClient.On("ListImports", importOp.NewImportServiceListImportsParams().
-		WithClusterID(clusterID).WithPageSize(&pageSize).WithContext(ctx)).
-		Return(result, nil)
+
+	i := imp.Import{
+		ClusterId:       aws.String(clusterID),
+		CompletePercent: aws.Int64(100),
+		CompleteTime:    *imp.NewNullableTime(&t),
+		CreateTime:      &t,
+		CreatedBy:       aws.String("test"),
+		CreationDetails: &imp.CreationDetails{
+			ImportOptions: &imp.ImportOptions{
+				FileType:  "CSV",
+				CsvFormat: imp.NewCSVFormat(),
+			},
+		},
+		Id:        aws.String("imp-asdasd"),
+		Message:   aws.String("import success"),
+		Name:      aws.String("import-2024-04-01T06:39:50.000Z"),
+		State:     (*imp.ImportStateEnum)(aws.String("COMPLETED")),
+		TotalSize: aws.String("37"),
+	}
+
+	resp := &imp.ListImportsResp{
+		Imports:   []imp.Import{i},
+		TotalSize: aws.Int64(1),
+	}
+
+	suite.mockClient.On("ListImports", ctx, clusterID, &pageSize, mockTool.Anything, &orderBy).
+		Return(resp, nil)
+	j, err := json.MarshalIndent(resp, "", "  ")
+	assert.Nil(err)
+	listResultStr := string(j) + "\n"
 
 	tests := []struct {
 		name         string
@@ -220,7 +127,7 @@ func (suite *ListImportSuite) TestListImportArgs() {
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetContext(ctx)
 			cmd.SetArgs(tt.args)
-			err = cmd.Execute()
+			err := cmd.Execute()
 			assert.Equal(tt.err, err)
 
 			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
@@ -238,33 +145,57 @@ func (suite *ListImportSuite) TestListImportWithMultiPages() {
 	var pageSize = int32(suite.h.QueryPageSize)
 	ctx := context.Background()
 	clusterID := "12345"
+	t := time.Now()
 
-	body := &importModel.V1beta1ListImportsResp{}
-	err := json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"total": 1`, `"total": 2`)), body)
-	assert.Nil(err)
-	result := &importOp.ImportServiceListImportsOK{
-		Payload: body,
+	i := imp.Import{
+		ClusterId:       aws.String(clusterID),
+		CompletePercent: aws.Int64(100),
+		CompleteTime:    *imp.NewNullableTime(&t),
+		CreateTime:      &t,
+		CreatedBy:       aws.String("test"),
+		CreationDetails: &imp.CreationDetails{
+			ImportOptions: &imp.ImportOptions{
+				FileType:  "CSV",
+				CsvFormat: imp.NewCSVFormat(),
+			},
+		},
+		Id:        aws.String("imp-asdasd"),
+		Message:   aws.String("import success"),
+		Name:      aws.String("import-2024-04-01T06:39:50.000Z"),
+		State:     (*imp.ImportStateEnum)(aws.String("COMPLETED")),
+		TotalSize: aws.String("37"),
 	}
 	nextPageToken := pagination.PageToken{
 		Offset: 1,
 	}
-	result.Payload.NextPageToken = nextPageToken.String()
-
-	suite.mockClient.On("ListImports", importOp.NewImportServiceListImportsParams().
-		WithClusterID(clusterID).WithPageSize(&pageSize).WithContext(ctx)).
-		Return(result, nil)
-
-	body2 := &importModel.V1beta1ListImportsResp{}
-	err = json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"totalSize": 1`, `"totalSize": 2`)), body2)
-	assert.Nil(err)
-	result2 := &importOp.ImportServiceListImportsOK{
-		Payload: body2,
+	resp := &imp.ListImportsResp{
+		Imports:       []imp.Import{i},
+		TotalSize:     aws.Int64(2),
+		NextPageToken: aws.String(nextPageToken.String()),
 	}
-	suite.mockClient.On("ListImports", importOp.NewImportServiceListImportsParams().
-		WithClusterID(clusterID).WithPageToken(aws.String(nextPageToken.String())).WithPageSize(&pageSize).WithContext(ctx)).
-		Return(result2, nil)
-	cmd := ListCmd(suite.h)
 
+	orderBy := "create_time desc"
+	suite.mockClient.On("ListImports", ctx, clusterID, &pageSize, mockTool.MatchedBy(func(pageToken *string) bool {
+		return pageToken == nil
+	}), &orderBy).
+		Return(resp, nil)
+
+	resp2 := &imp.ListImportsResp{
+		Imports:       []imp.Import{i},
+		TotalSize:     aws.Int64(2),
+		NextPageToken: nil,
+	}
+	suite.mockClient.On("ListImports", ctx, clusterID, &pageSize, aws.String(nextPageToken.String()), &orderBy).
+		Return(resp2, nil)
+
+	resp3 := &imp.ListImportsResp{
+		Imports:   []imp.Import{i, i},
+		TotalSize: aws.Int64(2),
+	}
+	listResultMultiPageStr, err := json.MarshalIndent(resp3, "", "  ")
+	assert.Nil(err)
+
+	cmd := ListCmd(suite.h)
 	tests := []struct {
 		name         string
 		args         []string
@@ -274,7 +205,7 @@ func (suite *ListImportSuite) TestListImportWithMultiPages() {
 		{
 			name:         "query with multi pages",
 			args:         []string{"-c", clusterID, "--output", "json"},
-			stdoutString: listResultMultiPageStr,
+			stdoutString: string(listResultMultiPageStr) + "\n",
 		},
 	}
 
@@ -283,7 +214,7 @@ func (suite *ListImportSuite) TestListImportWithMultiPages() {
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
-			err = cmd.Execute()
+			err := cmd.Execute()
 			assert.Nil(err)
 
 			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())

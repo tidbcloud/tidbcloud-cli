@@ -25,12 +25,10 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/aws/s3"
-	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
+
+	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/charmbracelet/bubbles/progress"
@@ -53,18 +51,19 @@ type LocalOpts struct {
 	concurrency int
 	h           *internal.Helper
 	interactive bool
+	clusterId   string
 }
 
 func (o LocalOpts) SupportedFileTypes() []string {
 	return []string{
-		string(importModel.V1beta1ImportOptionsFileTypeCSV),
+		string(imp.IMPORTFILETYPEENUM_CSV),
 	}
 }
 
 func (o LocalOpts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
-	var clusterID, fileType, targetDatabase, targetTable, separator, delimiter, filePath string
-	var backslashEscape, trimLastSeparator bool
+	var fileType, targetDatabase, targetTable, filePath string
+	var format *imp.CSVFormat
 	d, err := o.h.Client()
 	if err != nil {
 		return err
@@ -76,23 +75,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 	}
 
 	if o.interactive {
-		cmd.Annotations[telemetry.InteractiveMode] = "true"
-		if !o.h.IOStreams.CanPrompt {
-			return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
-		}
-
 		// interactive mode
-		project, err := cloud.GetSelectedProject(ctx, o.h.QueryPageSize, d)
-		if err != nil {
-			return err
-		}
-
-		cluster, err := cloud.GetSelectedCluster(ctx, project.ID, o.h.QueryPageSize, d)
-		if err != nil {
-			return err
-		}
-		clusterID = cluster.ID
-
 		var fileTypes []interface{}
 		for _, f := range o.SupportedFileTypes() {
 			fileTypes = append(fileTypes, f)
@@ -112,7 +95,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		fileType = formatModel.(ui.SelectModel).Choices[formatModel.(ui.SelectModel).Selected].(string)
 
 		// variables for input
-		p = tea.NewProgram(initialLocalInputModel())
+		p = tea.NewProgram(o.initialInputModel())
 		inputModel, err := p.Run()
 		if err != nil {
 			return errors.Trace(err)
@@ -134,45 +117,35 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 			return errors.New("Target table is required")
 		}
 
-		separator, delimiter, backslashEscape, trimLastSeparator, err = getCSVFormat()
-		if err != nil {
-			return err
+		if fileType == string(imp.IMPORTFILETYPEENUM_CSV) {
+			format, err = getCSVFormat()
+			if err != nil {
+				return err
+			}
 		}
 	} else {
 		// non-interactive mode
-		clusterID = cmd.Flag(flag.ClusterID).Value.String()
 		fileType = cmd.Flag(flag.FileType).Value.String()
 		if !slices.Contains(o.SupportedFileTypes(), fileType) {
 			return fmt.Errorf("file type \"%s\" is not supported, please use one of %q", fileType, o.SupportedFileTypes())
 		}
 		targetDatabase = cmd.Flag(flag.LocalTargetDatabase).Value.String()
 		targetTable = cmd.Flag(flag.LocalTargetTable).Value.String()
-		f := cmd.Flags().Lookup(flag.LocalFilePath)
-		if !f.Changed {
+		filePath, err = cmd.Flags().GetString(flag.LocalFilePath)
+		if err != nil {
+			return errors.Trace(err)
+		}
+		if filePath == "" {
 			return errors.New("required flag(s) \"local.file-path\" not set")
 		}
-		filePath = f.Value.String()
 
-		// optional flags
-		backslashEscape, err = cmd.Flags().GetBool(flag.CSVBackslashEscape)
-		if err != nil {
-			return errors.Trace(err)
-		}
-		separator, err = cmd.Flags().GetString(flag.CSVSeparator)
-		if err != nil {
-			return errors.Trace(err)
-		}
-		delimiter, err = cmd.Flags().GetString(flag.CSVDelimiter)
-		if err != nil {
-			return errors.Trace(err)
-		}
-		trimLastSeparator, err = cmd.Flags().GetBool(flag.CSVTrimLastSeparator)
-		if err != nil {
-			return errors.Trace(err)
+		if fileType == string(imp.IMPORTFILETYPEENUM_CSV) {
+			format, err = getCSVFlagValue(cmd)
+			if err != nil {
+				return errors.Trace(err)
+			}
 		}
 	}
-
-	cmd.Annotations[telemetry.ClusterID] = clusterID
 
 	uploadFile, err := os.Open(filePath)
 	if err != nil {
@@ -193,7 +166,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		DatabaseName:  aws.String(targetDatabase),
 		TableName:     aws.String(targetTable),
 		ContentLength: aws.Int64(stat.Size()),
-		ClusterID:     aws.String(clusterID),
+		ClusterID:     o.clusterId,
 		Body:          uploadFile,
 	}
 	if o.h.IOStreams.CanPrompt {
@@ -208,47 +181,21 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		}
 	}
 
-	body := importOp.ImportServiceCreateImportBody{}
-	err = body.UnmarshalBinary([]byte(fmt.Sprintf(`{
-			"importOptions": {
-				"fileType": "%s",
-				"csvFormat": {
-                	"separator": ",",
-					"delimiter": "\"",
-					"header": true,
-					"backslashEscape": true,
-					"null": "\\N",
-					"trimLastSeparator": false,
-					"notNull": false
-				}
-			},
-			"source": {
-				"local": {
-					"uploadId": "%s",
-					"targetDatabase": "%s",
-					"targetTable": "%s"
-				},
-				"type": "LOCAL"
-			}
-			}`, fileType, uploadID, targetDatabase, targetTable)))
-	if err != nil {
-		return errors.Trace(err)
+	source := imp.NewImportSource(imp.IMPORTSOURCETYPEENUM_LOCAL)
+	source.Local = imp.NewLocalSource(uploadID, targetDatabase, targetTable)
+	options := imp.NewImportOptions(imp.ImportFileTypeEnum(fileType))
+	if fileType == string(imp.IMPORTFILETYPEENUM_CSV) {
+		options.CsvFormat = format
 	}
+	body := imp.NewImportServiceCreateImportBody(*options, *source)
 
-	body.ImportOptions.CsvFormat.Separator = separator
-	body.ImportOptions.CsvFormat.Delimiter = delimiter
-	body.ImportOptions.CsvFormat.BackslashEscape = aws.Bool(backslashEscape)
-	body.ImportOptions.CsvFormat.TrimLastSeparator = aws.Bool(trimLastSeparator)
-
-	params := importOp.NewImportServiceCreateImportParams().WithClusterID(clusterID).
-		WithBody(body).WithContext(ctx)
 	if o.h.IOStreams.CanPrompt {
-		err := spinnerWaitStartOp(ctx, o.h, d, params)
+		err := spinnerWaitStartOp(ctx, o.h, d, o.clusterId, body)
 		if err != nil {
 			return err
 		}
 	} else {
-		err := waitStartOp(o.h, d, params)
+		err := waitStartOp(ctx, o.h, d, o.clusterId, body)
 		if err != nil {
 			return err
 		}
@@ -257,7 +204,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 	return nil
 }
 
-func initialLocalInputModel() ui.TextInputModel {
+func (o LocalOpts) initialInputModel() ui.TextInputModel {
 	m := ui.TextInputModel{
 		Inputs: make([]textinput.Model, 3),
 	}

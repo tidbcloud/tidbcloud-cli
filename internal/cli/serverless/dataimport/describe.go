@@ -23,8 +23,8 @@ import (
 	"tidbcloud-cli/internal/output"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
-	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
+
+	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -105,7 +105,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				selectedImport, err := cloud.GetSelectedImport(ctx, clusterID, h.QueryPageSize, d, []importModel.V1beta1ImportState{})
+				selectedImport, err := cloud.GetSelectedImport(ctx, clusterID, h.QueryPageSize, d, []imp.ImportStateEnum{})
 				if err != nil {
 					return err
 				}
@@ -118,13 +118,12 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 
 			cmd.Annotations[telemetry.ClusterID] = clusterID
 
-			params := importOp.NewImportServiceGetImportParams().WithClusterID(clusterID).WithID(importID).WithContext(cmd.Context())
-			importTask, err := d.GetImport(params)
+			importTask, err := d.GetImport(ctx, clusterID, importID)
 			if err != nil {
 				return errors.Trace(err)
 			}
 
-			err = output.PrintJson(h.IOStreams.Out, importTask.Payload)
+			err = output.PrintJson(h.IOStreams.Out, importTask)
 			return errors.Trace(err)
 		},
 	}

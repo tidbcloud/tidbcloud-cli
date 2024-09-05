@@ -21,51 +21,19 @@ import (
 	"fmt"
 	"os"
 	"testing"
+	"time"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	importOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/client/import_service"
-	importModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_import/models"
 
+	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 )
-
-const getImportResultStr = `{
-  "clusterId": "12345",
-  "completePercent": 100,
-  "completeTime": "2024-04-01T06:49:50.000Z",
-  "createTime": "2024-04-01T06:39:50.000Z",
-  "createdBy": "test",
-  "creationDetails": {
-    "importOptions": {
-      "csvFormat": {
-        "delimiter": ",",
-        "header": true,
-        "null": "\\N",
-        "separator": "\"",
-        "trimLastSeparator": true
-      },
-      "fileType": "CSV"
-    },
-    "source": {
-      "local": {
-        "fileName": "a.csv",
-        "targetDatabase": "test",
-        "targetTable": "test"
-      },
-      "type": "LOCAL"
-    }
-  },
-  "id": "%s",
-  "message": "import success",
-  "name": "import-2024-04-01T06:39:50.000Z",
-  "state": "COMPLETED",
-  "totalSize": "37"
-}
-`
 
 type DescribeImportSuite struct {
 	suite.Suite
@@ -92,18 +60,33 @@ func (suite *DescribeImportSuite) SetupTest() {
 func (suite *DescribeImportSuite) TestDescribeImportArgs() {
 	assert := require.New(suite.T())
 	ctx := context.Background()
-	body := &importModel.V1beta1Import{}
-	err := json.Unmarshal([]byte(getImportResultStr), body)
-	assert.Nil(err)
-	result := &importOp.ImportServiceGetImportOK{
-		Payload: body,
-	}
 
 	clusterID := "12345"
 	importID := "imp-qwert"
-	suite.mockClient.On("GetImport", importOp.NewImportServiceGetImportParams().
-		WithClusterID(clusterID).WithID(importID).WithContext(ctx)).
-		Return(result, nil)
+	t := time.Now()
+	i := imp.Import{
+		ClusterId:       aws.String(clusterID),
+		CompletePercent: aws.Int64(100),
+		CompleteTime:    *imp.NewNullableTime(&t),
+		CreateTime:      &t,
+		CreatedBy:       aws.String("test"),
+		CreationDetails: &imp.CreationDetails{
+			ImportOptions: &imp.ImportOptions{
+				FileType:  "CSV",
+				CsvFormat: imp.NewCSVFormat(),
+			},
+		},
+		Id:        aws.String(importID),
+		Message:   aws.String("import success"),
+		Name:      aws.String("import-2024-04-01T06:39:50.000Z"),
+		State:     (*imp.ImportStateEnum)(aws.String("COMPLETED")),
+		TotalSize: aws.String("37"),
+	}
+	suite.mockClient.On("GetImport", ctx, clusterID, importID).
+		Return(&i, nil)
+
+	getImportResultStr, err := json.MarshalIndent(i, "", "  ")
+	assert.Nil(err)
 
 	tests := []struct {
 		name         string
@@ -115,12 +98,12 @@ func (suite *DescribeImportSuite) TestDescribeImportArgs() {
 		{
 			name:         "describe import success",
 			args:         []string{"--cluster-id", clusterID, "--import-id", importID},
-			stdoutString: getImportResultStr,
+			stdoutString: string(getImportResultStr) + "\n",
 		},
 		{
 			name:         "describe import with shorthand flag",
 			args:         []string{"-c", clusterID, "--import-id", importID},
-			stdoutString: getImportResultStr,
+			stdoutString: string(getImportResultStr) + "\n",
 		},
 		{
 			name: "describe import without required cluster id",
@@ -136,7 +119,7 @@ func (suite *DescribeImportSuite) TestDescribeImportArgs() {
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
 			cmd.SetContext(ctx)
-			err = cmd.Execute()
+			err := cmd.Execute()
 			assert.Equal(tt.err, err)
 
 			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
