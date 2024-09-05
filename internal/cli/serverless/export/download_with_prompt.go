@@ -154,12 +154,12 @@ func NewProcessDownloadModel(fileNames []string, concurrency int, path string,
 func (m *ProcessDownloadModel) Init() tea.Cmd {
 	pro := progress.New(progress.WithDefaultGradient())
 	m.progressBar.progress = &pro
+	// start produce
+	go m.produce()
 	// start consumer goroutine
 	for i := 0; i < m.concurrency; i++ {
 		go m.consume(m.jobsCh)
 	}
-	// start produce
-	go m.produce()
 	return m.doTick()
 }
 
