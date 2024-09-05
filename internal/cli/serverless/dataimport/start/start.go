@@ -209,8 +209,9 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				cmd.Annotations[telemetry.ClusterID] = clusterId
 			}
+
+			cmd.Annotations[telemetry.ClusterID] = clusterId
 
 			if sourceType == imp.IMPORTSOURCETYPEENUM_LOCAL {
 				localOpts := LocalOpts{
