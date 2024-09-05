@@ -18,12 +18,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/dustin/go-humanize"
-	"github.com/fatih/color"
 	"io"
 	"os"
 	"strings"
 	"sync"
+
+	"github.com/dustin/go-humanize"
+	"github.com/fatih/color"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
