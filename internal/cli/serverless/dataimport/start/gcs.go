@@ -16,7 +16,6 @@ package start
 
 import (
 	"fmt"
-	"slices"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/flag"
@@ -37,18 +36,10 @@ type GCSOpts struct {
 	clusterId   string
 }
 
-func (o GCSOpts) SupportedFileTypes() []string {
-	return []string{
-		string(imp.IMPORTFILETYPEENUM_CSV),
-		string(imp.IMPORTFILETYPEENUM_PARQUET),
-		string(imp.IMPORTFILETYPEENUM_SQL),
-		string(imp.IMPORTFILETYPEENUM_AURORA_SNAPSHOT),
-	}
-}
-
 func (o GCSOpts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
-	var fileType, gcsUri, accountKey string
+	var gcsUri, accountKey string
+	var fileType imp.ImportFileTypeEnum
 	var authType imp.ImportGcsAuthTypeEnum
 	var format *imp.CSVFormat
 	d, err := o.h.Client()
@@ -92,7 +83,7 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		}
 
 		var fileTypes []interface{}
-		for _, f := range o.SupportedFileTypes() {
+		for _, f := range imp.AllowedImportFileTypeEnumEnumValues {
 			fileTypes = append(fileTypes, f)
 		}
 		model, err = ui.InitialSelectModel(fileTypes, "Choose the source file type:")
@@ -107,9 +98,9 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		if m, _ := fileTypeModel.(ui.SelectModel); m.Interrupted {
 			return util.InterruptError
 		}
-		fileType = fileTypeModel.(ui.SelectModel).Choices[fileTypeModel.(ui.SelectModel).Selected].(string)
+		fileType = fileTypeModel.(ui.SelectModel).Choices[fileTypeModel.(ui.SelectModel).Selected].(imp.ImportFileTypeEnum)
 
-		if fileType == string(imp.IMPORTFILETYPEENUM_CSV) {
+		if fileType == imp.IMPORTFILETYPEENUM_CSV {
 			format, err = getCSVFormat()
 			if err != nil {
 				return err
@@ -117,12 +108,13 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		}
 	} else {
 		// non-interactive mode
-		fileType, err = cmd.Flags().GetString(flag.FileType)
+		fileTypeStr, err := cmd.Flags().GetString(flag.FileType)
 		if err != nil {
 			return errors.Trace(err)
 		}
-		if !slices.Contains(o.SupportedFileTypes(), fileType) {
-			return fmt.Errorf("file type \"%s\" is not supported, please use one of %q", fileType, o.SupportedFileTypes())
+		fileType = imp.ImportFileTypeEnum(fileTypeStr)
+		if !fileType.IsValid() {
+			return fmt.Errorf("file type \"%s\" is not supported, please use one of %q", fileTypeStr, imp.AllowedImportFileTypeEnumEnumValues)
 		}
 		gcsUri, err = cmd.Flags().GetString(flag.GCSURI)
 		if err != nil {
@@ -142,7 +134,7 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		authType = imp.IMPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY
 
 		// optional flags
-		if fileType == string(imp.IMPORTFILETYPEENUM_CSV) {
+		if fileType == imp.IMPORTFILETYPEENUM_CSV {
 			format, err = getCSVFlagValue(cmd)
 			if err != nil {
 				return errors.Trace(err)
@@ -154,7 +146,7 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 	source.Gcs = imp.NewGCSSource(gcsUri, authType)
 	source.Gcs.ServiceAccountKey = aws.String(accountKey)
 	options := imp.NewImportOptions(imp.ImportFileTypeEnum(fileType))
-	if fileType == string(imp.IMPORTFILETYPEENUM_CSV) {
+	if fileType == imp.IMPORTFILETYPEENUM_CSV {
 		options.CsvFormat = format
 	}
 	body := imp.NewImportServiceCreateImportBody(*options, *source)

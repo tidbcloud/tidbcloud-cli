@@ -16,7 +16,6 @@ package export
 
 import (
 	"fmt"
-	"slices"
 	"strings"
 
 	"tidbcloud-cli/internal/ui"
@@ -33,41 +32,6 @@ import (
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
-)
-
-type TargetType string
-
-const (
-	TargetTypeS3      TargetType = "S3"
-	TargetTypeLOCAL   TargetType = "LOCAL"
-	TargetTypeGCS     TargetType = "GCS"
-	TargetTypeAZBLOB  TargetType = "AZURE_BLOB"
-	TargetTypeUnknown TargetType = "UNKNOWN"
-)
-
-type FileType string
-
-const (
-	FileTypeSQL     FileType = "SQL"
-	FileTypeCSV     FileType = "CSV"
-	FileTypePARQUET FileType = "PARQUET"
-	FileTypeUnknown FileType = "UNKNOWN"
-)
-
-type AuthType string
-
-const (
-	AuthTypeS3AccessKey          AuthType = "S3AccessKey"
-	AuthTypeS3RoleArn            AuthType = "S3RoleArn"
-	AuthTypeGCSServiceAccountKey AuthType = "GCSServiceAccountKey"
-	AuthTypeAzBlobSasToken       AuthType = "AzBlobSasToken"
-)
-
-var (
-	supportedFileType           = []string{string(FileTypeSQL), string(FileTypeCSV), string(FileTypePARQUET)}
-	supportedTargetType         = []string{string(TargetTypeS3), string(TargetTypeLOCAL), string(TargetTypeGCS), string(TargetTypeAZBLOB)}
-	supportedCompression        = []string{"GZIP", "SNAPPY", "ZSTD", "NONE"}
-	supportedParquetCompression = []string{"GZIP", "SNAPPY", "ZSTD", "NONE"}
 )
 
 const (
@@ -174,13 +138,16 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			ctx := cmd.Context()
 
 			// options
-			var targetType, fileType, compression, clusterId, sql, where string
+			var targetType export.ExportTargetTypeEnum
+			var fileType export.ExportFileTypeEnum
+			var compression export.ExportCompressionTypeEnum
+			var clusterId, sql, where string
 			var patterns []string
 			// csv format
 			var csvSeparator, csvDelimiter, csvNullValue string
 			var csvSkipHeader bool
 			// parquet options
-			var parquetCompression string
+			var parquetCompression export.ExportParquetCompressionTypeEnum
 			// s3
 			var s3URI, accessKeyID, secretAccessKey, s3RoleArn string
 			// gcs
@@ -205,17 +172,16 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				clusterId = cluster.ID
 
 				// target
-				selectedTargetType, err := GetSelectedTargetType()
+				targetType, err = GetSelectedTargetType()
 				if err != nil {
 					return err
 				}
-				targetType = string(selectedTargetType)
-				selectedAuthType, err := GetSelectedAuthType(selectedTargetType)
+				selectedAuthType, err := GetSelectedAuthType(targetType)
 				if err != nil {
 					return err
 				}
 				switch selectedAuthType {
-				case AuthTypeS3AccessKey:
+				case string(export.EXPORTS3AUTHTYPEENUM_ACCESS_KEY):
 					inputs := []string{flag.S3URI, flag.S3AccessKeyID, flag.S3SecretAccessKey}
 					textInput, err := ui.InitialInputModel(inputs, inputDescription)
 					if err != nil {
@@ -233,7 +199,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if secretAccessKey == "" {
 						return errors.New("empty S3 secret access key")
 					}
-				case AuthTypeS3RoleArn:
+				case string(export.EXPORTS3AUTHTYPEENUM_ROLE_ARN):
 					inputs := []string{flag.S3URI, flag.S3RoleArn}
 					textInput, err := ui.InitialInputModel(inputs, inputDescription)
 					if err != nil {
@@ -247,7 +213,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if s3RoleArn == "" {
 						return errors.New("empty S3 role arn")
 					}
-				case AuthTypeGCSServiceAccountKey:
+				case string(export.EXPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY):
 					inputs := []string{flag.GCSURI, flag.GCSServiceAccountKey}
 					textInput, err := ui.InitialInputModel(inputs, inputDescription)
 					if err != nil {
@@ -261,7 +227,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if gcsServiceAccountKey == "" {
 						return errors.New("empty GCS service account key")
 					}
-				case AuthTypeAzBlobSasToken:
+				case string(export.EXPORTAZUREBLOBAUTHTYPEENUM_SAS_TOKEN):
 					inputs := []string{flag.AzureBlobURI, flag.AzureBlobSASToken}
 					textInput, err := ui.InitialInputModel(inputs, inputDescription)
 					if err != nil {
@@ -312,13 +278,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 				}
 
-				selectedFileType, err := GetSelectedFileType(filterType)
+				fileType, err = GetSelectedFileType(filterType)
 				if err != nil {
 					return err
 				}
-				fileType = string(selectedFileType)
 				switch fileType {
-				case string(FileTypeCSV):
+				case export.EXPORTFILETYPEENUM_CSV:
 					customCSVFormat := false
 					prompt := &survey.Confirm{
 						Message: "Do you want to customize the CSV format",
@@ -357,7 +322,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if csvNullValue == "" {
 						csvNullValue = CSVNullValueDefaultValue
 					}
-				case string(FileTypePARQUET):
+				case export.EXPORTFILETYPEENUM_PARQUET:
 					customParquetCompression := false
 					prompt := &survey.Confirm{
 						Message: "Do you want change the default parquet compression algorithm ZSTD",
@@ -380,7 +345,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 				}
 
-				if fileType != string(FileTypePARQUET) {
+				if fileType != export.EXPORTFILETYPEENUM_PARQUET {
 					changeCompression := false
 					prompt := &survey.Confirm{
 						Message: "Do you want to change the default compression algorithm GZIP",
@@ -408,22 +373,25 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				targetType, err = cmd.Flags().GetString(flag.TargetType)
+				targetTypeStr, err := cmd.Flags().GetString(flag.TargetType)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if targetType != "" && !slices.Contains(supportedTargetType, strings.ToUpper(targetType)) {
-					return errors.New("unsupported target type: " + targetType)
+				targetType = export.ExportTargetTypeEnum(strings.ToUpper(targetTypeStr))
+				if targetType != "" && !targetType.IsValid() {
+					return errors.New("unsupported target type: " + targetTypeStr)
 				}
-				fileType, err = cmd.Flags().GetString(flag.FileType)
+				fileTypeStr, err := cmd.Flags().GetString(flag.FileType)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if fileType != "" && !slices.Contains(supportedFileType, strings.ToUpper(fileType)) {
-					return errors.New("unsupported file type: " + fileType)
+				fileType = export.ExportFileTypeEnum(strings.ToUpper(fileTypeStr))
+				if fileType != "" && !fileType.IsValid() {
+					return errors.New("unsupported file type: " + fileTypeStr)
 				}
-				switch strings.ToUpper(targetType) {
-				case string(TargetTypeS3):
+
+				switch targetType {
+				case export.EXPORTTARGETTYPEENUM_S3:
 					s3URI, err = cmd.Flags().GetString(flag.S3URI)
 					if err != nil {
 						return errors.Trace(err)
@@ -446,7 +414,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if s3RoleArn == "" && (accessKeyID == "" || secretAccessKey == "") {
 						return errors.New("missing S3 auth information, require either role arn or access key id and secret access key")
 					}
-				case string(TargetTypeGCS):
+				case export.EXPORTTARGETTYPEENUM_GCS:
 					gcsURI, err = cmd.Flags().GetString(flag.GCSURI)
 					if err != nil {
 						return errors.Trace(err)
@@ -461,7 +429,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if gcsServiceAccountKey == "" {
 						return errors.New("GCS service account key is required when target type is GCS")
 					}
-				case string(TargetTypeAZBLOB):
+				case export.EXPORTTARGETTYPEENUM_AZURE_BLOB:
 					azBlobURI, err = cmd.Flags().GetString(flag.AzureBlobURI)
 					if err != nil {
 						return errors.Trace(err)
@@ -478,16 +446,17 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 				}
 
-				compression, err = cmd.Flags().GetString(flag.Compression)
+				compressionStr, err := cmd.Flags().GetString(flag.Compression)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if compression != "" && !slices.Contains(supportedCompression, strings.ToUpper(compression)) {
-					return errors.New("unsupported compression: " + compression)
+				compression = export.ExportCompressionTypeEnum(strings.ToUpper(compressionStr))
+				if compression != "" && !compression.IsValid() {
+					return errors.New("unsupported compression: " + compressionStr)
 				}
 
-				switch strings.ToUpper(fileType) {
-				case string(FileTypeCSV):
+				switch fileType {
+				case export.EXPORTFILETYPEENUM_CSV:
 					csvSeparator, err = cmd.Flags().GetString(flag.CSVSeparator)
 					if err != nil {
 						return errors.Trace(err)
@@ -507,13 +476,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if err != nil {
 						return errors.Trace(err)
 					}
-				case string(FileTypePARQUET):
-					parquetCompression, err = cmd.Flags().GetString(flag.ParquetCompression)
+				case export.EXPORTFILETYPEENUM_PARQUET:
+					parquetCompressionStr, err := cmd.Flags().GetString(flag.ParquetCompression)
 					if err != nil {
 						return errors.Trace(err)
 					}
-					if parquetCompression != "" && !slices.Contains(supportedParquetCompression, strings.ToUpper(parquetCompression)) {
-						return errors.New("unsupported parquet compression: " + parquetCompression)
+					parquetCompression = export.ExportParquetCompressionTypeEnum(strings.ToUpper(parquetCompressionStr))
+					if parquetCompression != "" && !parquetCompression.IsValid() {
+						return errors.New("unsupported parquet compression: " + parquetCompressionStr)
 					}
 					if compression != "" {
 						return errors.New("--compression is not supported when file type is parquet, please use --parquet.compression instead")
@@ -558,26 +528,24 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			// apply default values
-			if strings.ToUpper(fileType) == string(FileTypePARQUET) {
+			if fileType == export.EXPORTFILETYPEENUM_PARQUET {
 				if parquetCompression == "" {
-					parquetCompression = string(ParquetCompressionDefaultValue)
+					parquetCompression = ParquetCompressionDefaultValue
 				}
 			} else if compression == "" {
-				compression = string(CompressionDefaultValue)
+				compression = CompressionDefaultValue
 			}
 			// build param to create export
-			fileTypeEnum := export.ExportFileTypeEnum(strings.ToUpper(fileType))
-			targetTypeEnum := export.ExportTargetTypeEnum(strings.ToUpper(targetType))
 			params := &export.ExportServiceCreateExportBody{
 				ExportOptions: &export.ExportOptions{
-					FileType: &fileTypeEnum,
+					FileType: &fileType,
 				},
 				Target: &export.ExportTarget{
-					Type: &targetTypeEnum,
+					Type: &targetType,
 				},
 			}
 			// add target
-			switch targetTypeEnum {
+			switch targetType {
 			case export.EXPORTTARGETTYPEENUM_S3:
 				if s3RoleArn != "" {
 					params.Target.S3 = &export.S3Target{
@@ -610,8 +578,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 			// add compression
 			if compression != "" {
-				compressionEnum := export.ExportCompressionTypeEnum(strings.ToUpper(compression))
-				params.ExportOptions.Compression = &compressionEnum
+				params.ExportOptions.Compression = &compression
 			}
 			// add filter
 			if sql != "" {
@@ -628,20 +595,17 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 			// add file type
-			switch strings.ToUpper(fileType) {
-			case string(FileTypeCSV):
+			switch fileType {
+			case export.EXPORTFILETYPEENUM_CSV:
 				params.ExportOptions.CsvFormat = &export.ExportOptionsCSVFormat{
 					Separator:  &csvSeparator,
 					Delimiter:  *export.NewNullableString(&csvDelimiter),
 					NullValue:  *export.NewNullableString(&csvNullValue),
 					SkipHeader: &csvSkipHeader,
 				}
-			case string(FileTypePARQUET):
-				if parquetCompression != "" {
-					c := export.ExportParquetCompressionTypeEnum(strings.ToUpper(parquetCompression))
-					params.ExportOptions.ParquetFormat = &export.ExportOptionsParquetFormat{
-						Compression: &c,
-					}
+			case export.EXPORTFILETYPEENUM_PARQUET:
+				params.ExportOptions.ParquetFormat = &export.ExportOptionsParquetFormat{
+					Compression: &parquetCompression,
 				}
 			}
 
