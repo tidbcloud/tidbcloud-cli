@@ -11,7 +11,6 @@ API version: v1beta1
 package br
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,7 +20,8 @@ var _ MappedNullable = &V1beta1RestoreResponse{}
 
 // V1beta1RestoreResponse struct for V1beta1RestoreResponse
 type V1beta1RestoreResponse struct {
-	ClusterId string `json:"clusterId"`
+	ClusterId            string `json:"clusterId"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _V1beta1RestoreResponse V1beta1RestoreResponse
@@ -79,6 +79,11 @@ func (o V1beta1RestoreResponse) MarshalJSON() ([]byte, error) {
 func (o V1beta1RestoreResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["clusterId"] = o.ClusterId
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -106,15 +111,20 @@ func (o *V1beta1RestoreResponse) UnmarshalJSON(data []byte) (err error) {
 
 	varV1beta1RestoreResponse := _V1beta1RestoreResponse{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varV1beta1RestoreResponse)
+	err = json.Unmarshal(data, &varV1beta1RestoreResponse)
 
 	if err != nil {
 		return err
 	}
 
 	*o = V1beta1RestoreResponse(varV1beta1RestoreResponse)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "clusterId")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -21,7 +21,10 @@ var _ MappedNullable = &PrivateGCP{}
 type PrivateGCP struct {
 	// Output_only. The target GCP service attachment name for private access.
 	ServiceAttachmentName *string `json:"serviceAttachmentName,omitempty"`
+	AdditionalProperties  map[string]interface{}
 }
+
+type _PrivateGCP PrivateGCP
 
 // NewPrivateGCP instantiates a new PrivateGCP object
 // This constructor will assign default values to properties that have it defined,
@@ -85,7 +88,33 @@ func (o PrivateGCP) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ServiceAttachmentName) {
 		toSerialize["serviceAttachmentName"] = o.ServiceAttachmentName
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *PrivateGCP) UnmarshalJSON(data []byte) (err error) {
+	varPrivateGCP := _PrivateGCP{}
+
+	err = json.Unmarshal(data, &varPrivateGCP)
+
+	if err != nil {
+		return err
+	}
+
+	*o = PrivateGCP(varPrivateGCP)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "serviceAttachmentName")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullablePrivateGCP struct {

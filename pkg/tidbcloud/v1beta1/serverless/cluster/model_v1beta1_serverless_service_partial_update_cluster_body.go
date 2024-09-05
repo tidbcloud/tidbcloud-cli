@@ -11,7 +11,6 @@ API version: v1beta1
 package cluster
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -23,7 +22,8 @@ var _ MappedNullable = &V1beta1ServerlessServicePartialUpdateClusterBody{}
 type V1beta1ServerlessServicePartialUpdateClusterBody struct {
 	Cluster *RequiredTheClusterToBeUpdated `json:"cluster,omitempty"`
 	// Required. The update mask indicating which fields are to be updated.
-	UpdateMask string `json:"updateMask"`
+	UpdateMask           string `json:"updateMask"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _V1beta1ServerlessServicePartialUpdateClusterBody V1beta1ServerlessServicePartialUpdateClusterBody
@@ -116,6 +116,11 @@ func (o V1beta1ServerlessServicePartialUpdateClusterBody) ToMap() (map[string]in
 		toSerialize["cluster"] = o.Cluster
 	}
 	toSerialize["updateMask"] = o.UpdateMask
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -143,15 +148,21 @@ func (o *V1beta1ServerlessServicePartialUpdateClusterBody) UnmarshalJSON(data []
 
 	varV1beta1ServerlessServicePartialUpdateClusterBody := _V1beta1ServerlessServicePartialUpdateClusterBody{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varV1beta1ServerlessServicePartialUpdateClusterBody)
+	err = json.Unmarshal(data, &varV1beta1ServerlessServicePartialUpdateClusterBody)
 
 	if err != nil {
 		return err
 	}
 
 	*o = V1beta1ServerlessServicePartialUpdateClusterBody(varV1beta1ServerlessServicePartialUpdateClusterBody)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "cluster")
+		delete(additionalProperties, "updateMask")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

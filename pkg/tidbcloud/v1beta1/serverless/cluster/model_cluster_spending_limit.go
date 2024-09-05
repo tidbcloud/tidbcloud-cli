@@ -20,8 +20,11 @@ var _ MappedNullable = &ClusterSpendingLimit{}
 // ClusterSpendingLimit Message for spending limit configuration.
 type ClusterSpendingLimit struct {
 	// Optional. Maximum monthly spending limit in USD cents.
-	Monthly *int32 `json:"monthly,omitempty"`
+	Monthly              *int32 `json:"monthly,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ClusterSpendingLimit ClusterSpendingLimit
 
 // NewClusterSpendingLimit instantiates a new ClusterSpendingLimit object
 // This constructor will assign default values to properties that have it defined,
@@ -85,7 +88,33 @@ func (o ClusterSpendingLimit) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Monthly) {
 		toSerialize["monthly"] = o.Monthly
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ClusterSpendingLimit) UnmarshalJSON(data []byte) (err error) {
+	varClusterSpendingLimit := _ClusterSpendingLimit{}
+
+	err = json.Unmarshal(data, &varClusterSpendingLimit)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ClusterSpendingLimit(varClusterSpendingLimit)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "monthly")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableClusterSpendingLimit struct {

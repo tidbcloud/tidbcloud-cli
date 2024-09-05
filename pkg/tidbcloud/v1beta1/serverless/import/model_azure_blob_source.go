@@ -11,7 +11,6 @@ API version: v1beta1
 package imp
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -26,7 +25,8 @@ type AzureBlobSource struct {
 	// The sas token. This field is input-only.
 	SasToken *string `json:"sasToken,omitempty"`
 	// The Azure Blob URI of the import source. For example: azure://<account>.blob.core.windows.net/<container>/<path>.
-	Uri string `json:"uri"`
+	Uri                  string `json:"uri"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _AzureBlobSource AzureBlobSource
@@ -145,6 +145,11 @@ func (o AzureBlobSource) ToMap() (map[string]interface{}, error) {
 		toSerialize["sasToken"] = o.SasToken
 	}
 	toSerialize["uri"] = o.Uri
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -173,15 +178,22 @@ func (o *AzureBlobSource) UnmarshalJSON(data []byte) (err error) {
 
 	varAzureBlobSource := _AzureBlobSource{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varAzureBlobSource)
+	err = json.Unmarshal(data, &varAzureBlobSource)
 
 	if err != nil {
 		return err
 	}
 
 	*o = AzureBlobSource(varAzureBlobSource)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "authType")
+		delete(additionalProperties, "sasToken")
+		delete(additionalProperties, "uri")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

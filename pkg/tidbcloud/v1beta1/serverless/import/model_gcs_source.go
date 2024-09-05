@@ -11,7 +11,6 @@ API version: v1beta1
 package imp
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,8 +23,9 @@ type GCSSource struct {
 	// The GCS URI of the import source.
 	Uri string `json:"uri"`
 	// The auth method of the import source.
-	AuthType          ImportGcsAuthTypeEnum `json:"authType"`
-	ServiceAccountKey *string               `json:"serviceAccountKey,omitempty"`
+	AuthType             ImportGcsAuthTypeEnum `json:"authType"`
+	ServiceAccountKey    *string               `json:"serviceAccountKey,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _GCSSource GCSSource
@@ -144,6 +144,11 @@ func (o GCSSource) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ServiceAccountKey) {
 		toSerialize["serviceAccountKey"] = o.ServiceAccountKey
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -172,15 +177,22 @@ func (o *GCSSource) UnmarshalJSON(data []byte) (err error) {
 
 	varGCSSource := _GCSSource{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varGCSSource)
+	err = json.Unmarshal(data, &varGCSSource)
 
 	if err != nil {
 		return err
 	}
 
 	*o = GCSSource(varGCSSource)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "uri")
+		delete(additionalProperties, "authType")
+		delete(additionalProperties, "serviceAccountKey")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

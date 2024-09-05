@@ -11,7 +11,6 @@ API version: v1beta1
 package branch
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -49,7 +48,8 @@ type Branch struct {
 	// Output only. The parent display name of this branch.
 	ParentDisplayName *string `json:"parentDisplayName,omitempty"`
 	// Optional. The point in time on the parent branch the branch will be created from.
-	ParentTimestamp NullableTime `json:"parentTimestamp,omitempty"`
+	ParentTimestamp      NullableTime `json:"parentTimestamp,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _Branch Branch
@@ -619,6 +619,11 @@ func (o Branch) ToMap() (map[string]interface{}, error) {
 	if o.ParentTimestamp.IsSet() {
 		toSerialize["parentTimestamp"] = o.ParentTimestamp.Get()
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -646,15 +651,34 @@ func (o *Branch) UnmarshalJSON(data []byte) (err error) {
 
 	varBranch := _Branch{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varBranch)
+	err = json.Unmarshal(data, &varBranch)
 
 	if err != nil {
 		return err
 	}
 
 	*o = Branch(varBranch)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "branchId")
+		delete(additionalProperties, "displayName")
+		delete(additionalProperties, "clusterId")
+		delete(additionalProperties, "parentId")
+		delete(additionalProperties, "createdBy")
+		delete(additionalProperties, "state")
+		delete(additionalProperties, "endpoints")
+		delete(additionalProperties, "userPrefix")
+		delete(additionalProperties, "usage")
+		delete(additionalProperties, "createTime")
+		delete(additionalProperties, "updateTime")
+		delete(additionalProperties, "annotations")
+		delete(additionalProperties, "parentDisplayName")
+		delete(additionalProperties, "parentTimestamp")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

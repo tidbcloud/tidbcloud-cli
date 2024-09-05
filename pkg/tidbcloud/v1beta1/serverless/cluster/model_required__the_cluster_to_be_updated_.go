@@ -28,8 +28,11 @@ type RequiredTheClusterToBeUpdated struct {
 	// Optional. The endpoints for connecting to the cluster.
 	Endpoints *V1beta1ClusterEndpoints `json:"endpoints,omitempty"`
 	// Optional. The labels for the cluster. tidb.cloud/organization. The label for the cluster organization id. tidb.cloud/project. The label for the cluster project id.
-	Labels *map[string]string `json:"labels,omitempty"`
+	Labels               *map[string]string `json:"labels,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _RequiredTheClusterToBeUpdated RequiredTheClusterToBeUpdated
 
 // NewRequiredTheClusterToBeUpdated instantiates a new RequiredTheClusterToBeUpdated object
 // This constructor will assign default values to properties that have it defined,
@@ -233,7 +236,37 @@ func (o RequiredTheClusterToBeUpdated) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Labels) {
 		toSerialize["labels"] = o.Labels
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *RequiredTheClusterToBeUpdated) UnmarshalJSON(data []byte) (err error) {
+	varRequiredTheClusterToBeUpdated := _RequiredTheClusterToBeUpdated{}
+
+	err = json.Unmarshal(data, &varRequiredTheClusterToBeUpdated)
+
+	if err != nil {
+		return err
+	}
+
+	*o = RequiredTheClusterToBeUpdated(varRequiredTheClusterToBeUpdated)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "displayName")
+		delete(additionalProperties, "spendingLimit")
+		delete(additionalProperties, "automatedBackupPolicy")
+		delete(additionalProperties, "endpoints")
+		delete(additionalProperties, "labels")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableRequiredTheClusterToBeUpdated struct {

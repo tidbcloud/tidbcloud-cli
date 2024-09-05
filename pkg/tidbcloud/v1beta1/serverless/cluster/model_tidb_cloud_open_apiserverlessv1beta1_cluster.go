@@ -11,7 +11,6 @@ API version: v1beta1
 package cluster
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -55,7 +54,8 @@ type TidbCloudOpenApiserverlessv1beta1Cluster struct {
 	// Output_only. Timestamp when the cluster was created.
 	CreateTime *time.Time `json:"createTime,omitempty"`
 	// Output_only. Timestamp when the cluster was last updated.
-	UpdateTime *time.Time `json:"updateTime,omitempty"`
+	UpdateTime           *time.Time `json:"updateTime,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _TidbCloudOpenApiserverlessv1beta1Cluster TidbCloudOpenApiserverlessv1beta1Cluster
@@ -664,6 +664,11 @@ func (o TidbCloudOpenApiserverlessv1beta1Cluster) ToMap() (map[string]interface{
 	if !IsNil(o.UpdateTime) {
 		toSerialize["updateTime"] = o.UpdateTime
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -692,15 +697,36 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) UnmarshalJSON(data []byte) (e
 
 	varTidbCloudOpenApiserverlessv1beta1Cluster := _TidbCloudOpenApiserverlessv1beta1Cluster{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varTidbCloudOpenApiserverlessv1beta1Cluster)
+	err = json.Unmarshal(data, &varTidbCloudOpenApiserverlessv1beta1Cluster)
 
 	if err != nil {
 		return err
 	}
 
 	*o = TidbCloudOpenApiserverlessv1beta1Cluster(varTidbCloudOpenApiserverlessv1beta1Cluster)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "clusterId")
+		delete(additionalProperties, "displayName")
+		delete(additionalProperties, "region")
+		delete(additionalProperties, "spendingLimit")
+		delete(additionalProperties, "version")
+		delete(additionalProperties, "createdBy")
+		delete(additionalProperties, "automatedBackupPolicy")
+		delete(additionalProperties, "userPrefix")
+		delete(additionalProperties, "endpoints")
+		delete(additionalProperties, "state")
+		delete(additionalProperties, "usage")
+		delete(additionalProperties, "encryptionConfig")
+		delete(additionalProperties, "labels")
+		delete(additionalProperties, "annotations")
+		delete(additionalProperties, "createTime")
+		delete(additionalProperties, "updateTime")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

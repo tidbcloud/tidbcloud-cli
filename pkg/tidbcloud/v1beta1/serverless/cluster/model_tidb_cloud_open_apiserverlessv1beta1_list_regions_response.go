@@ -20,8 +20,11 @@ var _ MappedNullable = &TidbCloudOpenApiserverlessv1beta1ListRegionsResponse{}
 // TidbCloudOpenApiserverlessv1beta1ListRegionsResponse Responses message to the request for listing of available regions in TiDB Serverless.
 type TidbCloudOpenApiserverlessv1beta1ListRegionsResponse struct {
 	// A list of available regions.
-	Regions []Commonv1beta1Region `json:"regions,omitempty"`
+	Regions              []Commonv1beta1Region `json:"regions,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _TidbCloudOpenApiserverlessv1beta1ListRegionsResponse TidbCloudOpenApiserverlessv1beta1ListRegionsResponse
 
 // NewTidbCloudOpenApiserverlessv1beta1ListRegionsResponse instantiates a new TidbCloudOpenApiserverlessv1beta1ListRegionsResponse object
 // This constructor will assign default values to properties that have it defined,
@@ -85,7 +88,33 @@ func (o TidbCloudOpenApiserverlessv1beta1ListRegionsResponse) ToMap() (map[strin
 	if !IsNil(o.Regions) {
 		toSerialize["regions"] = o.Regions
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *TidbCloudOpenApiserverlessv1beta1ListRegionsResponse) UnmarshalJSON(data []byte) (err error) {
+	varTidbCloudOpenApiserverlessv1beta1ListRegionsResponse := _TidbCloudOpenApiserverlessv1beta1ListRegionsResponse{}
+
+	err = json.Unmarshal(data, &varTidbCloudOpenApiserverlessv1beta1ListRegionsResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TidbCloudOpenApiserverlessv1beta1ListRegionsResponse(varTidbCloudOpenApiserverlessv1beta1ListRegionsResponse)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "regions")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableTidbCloudOpenApiserverlessv1beta1ListRegionsResponse struct {

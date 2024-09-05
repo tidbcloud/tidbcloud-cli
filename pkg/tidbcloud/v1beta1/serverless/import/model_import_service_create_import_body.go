@@ -11,7 +11,6 @@ API version: v1beta1
 package imp
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,7 +23,8 @@ type ImportServiceCreateImportBody struct {
 	// The options of the import.
 	ImportOptions ImportOptions `json:"importOptions"`
 	// The source of the import.
-	Source ImportSource `json:"source"`
+	Source               ImportSource `json:"source"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _ImportServiceCreateImportBody ImportServiceCreateImportBody
@@ -108,6 +108,11 @@ func (o ImportServiceCreateImportBody) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["importOptions"] = o.ImportOptions
 	toSerialize["source"] = o.Source
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -136,15 +141,21 @@ func (o *ImportServiceCreateImportBody) UnmarshalJSON(data []byte) (err error) {
 
 	varImportServiceCreateImportBody := _ImportServiceCreateImportBody{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varImportServiceCreateImportBody)
+	err = json.Unmarshal(data, &varImportServiceCreateImportBody)
 
 	if err != nil {
 		return err
 	}
 
 	*o = ImportServiceCreateImportBody(varImportServiceCreateImportBody)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "importOptions")
+		delete(additionalProperties, "source")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

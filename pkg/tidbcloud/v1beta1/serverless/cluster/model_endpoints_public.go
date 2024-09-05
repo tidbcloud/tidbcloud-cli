@@ -24,8 +24,11 @@ type EndpointsPublic struct {
 	// Output_only. The port of the public endpoint.
 	Port *int32 `json:"port,omitempty"`
 	// Optional. Whether the public endpoint is disabled.
-	Disabled *bool `json:"disabled,omitempty"`
+	Disabled             *bool `json:"disabled,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _EndpointsPublic EndpointsPublic
 
 // NewEndpointsPublic instantiates a new EndpointsPublic object
 // This constructor will assign default values to properties that have it defined,
@@ -159,7 +162,35 @@ func (o EndpointsPublic) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Disabled) {
 		toSerialize["disabled"] = o.Disabled
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *EndpointsPublic) UnmarshalJSON(data []byte) (err error) {
+	varEndpointsPublic := _EndpointsPublic{}
+
+	err = json.Unmarshal(data, &varEndpointsPublic)
+
+	if err != nil {
+		return err
+	}
+
+	*o = EndpointsPublic(varEndpointsPublic)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "host")
+		delete(additionalProperties, "port")
+		delete(additionalProperties, "disabled")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableEndpointsPublic struct {

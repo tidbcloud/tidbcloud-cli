@@ -24,8 +24,11 @@ type V1beta1ListBackupsResponse struct {
 	// Token provided to retrieve the next page of results.
 	NextPageToken *string `json:"nextPageToken,omitempty"`
 	// Total number of backups.
-	TotalSize *int64 `json:"totalSize,omitempty"`
+	TotalSize            *int64 `json:"totalSize,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _V1beta1ListBackupsResponse V1beta1ListBackupsResponse
 
 // NewV1beta1ListBackupsResponse instantiates a new V1beta1ListBackupsResponse object
 // This constructor will assign default values to properties that have it defined,
@@ -159,7 +162,35 @@ func (o V1beta1ListBackupsResponse) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.TotalSize) {
 		toSerialize["totalSize"] = o.TotalSize
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *V1beta1ListBackupsResponse) UnmarshalJSON(data []byte) (err error) {
+	varV1beta1ListBackupsResponse := _V1beta1ListBackupsResponse{}
+
+	err = json.Unmarshal(data, &varV1beta1ListBackupsResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1beta1ListBackupsResponse(varV1beta1ListBackupsResponse)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "backups")
+		delete(additionalProperties, "nextPageToken")
+		delete(additionalProperties, "totalSize")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableV1beta1ListBackupsResponse struct {

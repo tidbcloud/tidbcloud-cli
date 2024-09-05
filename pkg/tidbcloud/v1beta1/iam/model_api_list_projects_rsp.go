@@ -20,9 +20,12 @@ var _ MappedNullable = &ApiListProjectsRsp{}
 // ApiListProjectsRsp struct for ApiListProjectsRsp
 type ApiListProjectsRsp struct {
 	// `next_page_token` can be sent in a subsequent call to fetch more results
-	NextPageToken *string      `json:"nextPageToken,omitempty"`
-	Projects      []ApiProject `json:"projects,omitempty"`
+	NextPageToken        *string      `json:"nextPageToken,omitempty"`
+	Projects             []ApiProject `json:"projects,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ApiListProjectsRsp ApiListProjectsRsp
 
 // NewApiListProjectsRsp instantiates a new ApiListProjectsRsp object
 // This constructor will assign default values to properties that have it defined,
@@ -121,7 +124,34 @@ func (o ApiListProjectsRsp) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Projects) {
 		toSerialize["projects"] = o.Projects
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ApiListProjectsRsp) UnmarshalJSON(data []byte) (err error) {
+	varApiListProjectsRsp := _ApiListProjectsRsp{}
+
+	err = json.Unmarshal(data, &varApiListProjectsRsp)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ApiListProjectsRsp(varApiListProjectsRsp)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "nextPageToken")
+		delete(additionalProperties, "projects")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableApiListProjectsRsp struct {

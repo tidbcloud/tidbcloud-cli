@@ -32,8 +32,11 @@ type ApiOpenApiMspCustomer struct {
 	// The org name of the MSP customer.
 	OrgName *string `json:"orgName,omitempty"`
 	// The state of the MSP customer.
-	State *string `json:"state,omitempty"`
+	State                *string `json:"state,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ApiOpenApiMspCustomer ApiOpenApiMspCustomer
 
 // NewApiOpenApiMspCustomer instantiates a new ApiOpenApiMspCustomer object
 // This constructor will assign default values to properties that have it defined,
@@ -307,7 +310,39 @@ func (o ApiOpenApiMspCustomer) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.State) {
 		toSerialize["state"] = o.State
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ApiOpenApiMspCustomer) UnmarshalJSON(data []byte) (err error) {
+	varApiOpenApiMspCustomer := _ApiOpenApiMspCustomer{}
+
+	err = json.Unmarshal(data, &varApiOpenApiMspCustomer)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ApiOpenApiMspCustomer(varApiOpenApiMspCustomer)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "effectedTime")
+		delete(additionalProperties, "email")
+		delete(additionalProperties, "expiredTime")
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "orgId")
+		delete(additionalProperties, "orgName")
+		delete(additionalProperties, "state")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableApiOpenApiMspCustomer struct {

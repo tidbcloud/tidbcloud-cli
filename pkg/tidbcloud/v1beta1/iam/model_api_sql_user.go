@@ -19,11 +19,14 @@ var _ MappedNullable = &ApiSqlUser{}
 
 // ApiSqlUser struct for ApiSqlUser
 type ApiSqlUser struct {
-	AuthMethod  *string  `json:"authMethod,omitempty"`
-	BuiltinRole *string  `json:"builtinRole,omitempty"`
-	CustomRoles []string `json:"customRoles,omitempty"`
-	UserName    *string  `json:"userName,omitempty"`
+	AuthMethod           *string  `json:"authMethod,omitempty"`
+	BuiltinRole          *string  `json:"builtinRole,omitempty"`
+	CustomRoles          []string `json:"customRoles,omitempty"`
+	UserName             *string  `json:"userName,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ApiSqlUser ApiSqlUser
 
 // NewApiSqlUser instantiates a new ApiSqlUser object
 // This constructor will assign default values to properties that have it defined,
@@ -192,7 +195,36 @@ func (o ApiSqlUser) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.UserName) {
 		toSerialize["userName"] = o.UserName
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ApiSqlUser) UnmarshalJSON(data []byte) (err error) {
+	varApiSqlUser := _ApiSqlUser{}
+
+	err = json.Unmarshal(data, &varApiSqlUser)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ApiSqlUser(varApiSqlUser)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "authMethod")
+		delete(additionalProperties, "builtinRole")
+		delete(additionalProperties, "customRoles")
+		delete(additionalProperties, "userName")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableApiSqlUser struct {

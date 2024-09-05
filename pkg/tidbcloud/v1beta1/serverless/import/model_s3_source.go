@@ -11,7 +11,6 @@ API version: v1beta1
 package imp
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -27,7 +26,8 @@ type S3Source struct {
 	AuthType ImportS3AuthTypeEnum `json:"authType"`
 	RoleArn  *string              `json:"roleArn,omitempty"`
 	// The access key.
-	AccessKey *S3SourceAccessKey `json:"accessKey,omitempty"`
+	AccessKey            *S3SourceAccessKey `json:"accessKey,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _S3Source S3Source
@@ -181,6 +181,11 @@ func (o S3Source) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.AccessKey) {
 		toSerialize["accessKey"] = o.AccessKey
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -209,15 +214,23 @@ func (o *S3Source) UnmarshalJSON(data []byte) (err error) {
 
 	varS3Source := _S3Source{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varS3Source)
+	err = json.Unmarshal(data, &varS3Source)
 
 	if err != nil {
 		return err
 	}
 
 	*o = S3Source(varS3Source)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "uri")
+		delete(additionalProperties, "authType")
+		delete(additionalProperties, "roleArn")
+		delete(additionalProperties, "accessKey")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

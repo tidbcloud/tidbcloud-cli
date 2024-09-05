@@ -20,11 +20,14 @@ var _ MappedNullable = &ExportTarget{}
 // ExportTarget struct for ExportTarget
 type ExportTarget struct {
 	// Optional. The exported file type. Default is LOCAL.
-	Type      *ExportTargetTypeEnum `json:"type,omitempty"`
-	S3        *S3Target             `json:"s3,omitempty"`
-	Gcs       *GCSTarget            `json:"gcs,omitempty"`
-	AzureBlob *AzureBlobTarget      `json:"azureBlob,omitempty"`
+	Type                 *ExportTargetTypeEnum `json:"type,omitempty"`
+	S3                   *S3Target             `json:"s3,omitempty"`
+	Gcs                  *GCSTarget            `json:"gcs,omitempty"`
+	AzureBlob            *AzureBlobTarget      `json:"azureBlob,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ExportTarget ExportTarget
 
 // NewExportTarget instantiates a new ExportTarget object
 // This constructor will assign default values to properties that have it defined,
@@ -193,7 +196,36 @@ func (o ExportTarget) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.AzureBlob) {
 		toSerialize["azureBlob"] = o.AzureBlob
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ExportTarget) UnmarshalJSON(data []byte) (err error) {
+	varExportTarget := _ExportTarget{}
+
+	err = json.Unmarshal(data, &varExportTarget)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ExportTarget(varExportTarget)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "s3")
+		delete(additionalProperties, "gcs")
+		delete(additionalProperties, "azureBlob")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableExportTarget struct {

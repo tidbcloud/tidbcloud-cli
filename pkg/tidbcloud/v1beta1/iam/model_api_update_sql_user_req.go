@@ -19,10 +19,13 @@ var _ MappedNullable = &ApiUpdateSqlUserReq{}
 
 // ApiUpdateSqlUserReq struct for ApiUpdateSqlUserReq
 type ApiUpdateSqlUserReq struct {
-	BuiltinRole *string  `json:"builtinRole,omitempty"`
-	CustomRoles []string `json:"customRoles,omitempty"`
-	Password    *string  `json:"password,omitempty"`
+	BuiltinRole          *string  `json:"builtinRole,omitempty"`
+	CustomRoles          []string `json:"customRoles,omitempty"`
+	Password             *string  `json:"password,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ApiUpdateSqlUserReq ApiUpdateSqlUserReq
 
 // NewApiUpdateSqlUserReq instantiates a new ApiUpdateSqlUserReq object
 // This constructor will assign default values to properties that have it defined,
@@ -156,7 +159,35 @@ func (o ApiUpdateSqlUserReq) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Password) {
 		toSerialize["password"] = o.Password
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ApiUpdateSqlUserReq) UnmarshalJSON(data []byte) (err error) {
+	varApiUpdateSqlUserReq := _ApiUpdateSqlUserReq{}
+
+	err = json.Unmarshal(data, &varApiUpdateSqlUserReq)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ApiUpdateSqlUserReq(varApiUpdateSqlUserReq)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "builtinRole")
+		delete(additionalProperties, "customRoles")
+		delete(additionalProperties, "password")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableApiUpdateSqlUserReq struct {

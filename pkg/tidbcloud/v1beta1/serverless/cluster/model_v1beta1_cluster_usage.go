@@ -24,8 +24,11 @@ type V1beta1ClusterUsage struct {
 	// Output_only. The storage used on row-based storage in bytes.
 	RowBasedStorage *float64 `json:"rowBasedStorage,omitempty"`
 	// Output_only. The storage used on column-based storage in bytes.
-	ColumnarStorage *float64 `json:"columnarStorage,omitempty"`
+	ColumnarStorage      *float64 `json:"columnarStorage,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _V1beta1ClusterUsage V1beta1ClusterUsage
 
 // NewV1beta1ClusterUsage instantiates a new V1beta1ClusterUsage object
 // This constructor will assign default values to properties that have it defined,
@@ -159,7 +162,35 @@ func (o V1beta1ClusterUsage) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ColumnarStorage) {
 		toSerialize["columnarStorage"] = o.ColumnarStorage
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *V1beta1ClusterUsage) UnmarshalJSON(data []byte) (err error) {
+	varV1beta1ClusterUsage := _V1beta1ClusterUsage{}
+
+	err = json.Unmarshal(data, &varV1beta1ClusterUsage)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1beta1ClusterUsage(varV1beta1ClusterUsage)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "requestUnit")
+		delete(additionalProperties, "rowBasedStorage")
+		delete(additionalProperties, "columnarStorage")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableV1beta1ClusterUsage struct {

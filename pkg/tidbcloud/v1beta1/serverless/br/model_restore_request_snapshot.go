@@ -19,8 +19,11 @@ var _ MappedNullable = &RestoreRequestSnapshot{}
 
 // RestoreRequestSnapshot struct for RestoreRequestSnapshot
 type RestoreRequestSnapshot struct {
-	BackupId *string `json:"backupId,omitempty"`
+	BackupId             *string `json:"backupId,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _RestoreRequestSnapshot RestoreRequestSnapshot
 
 // NewRestoreRequestSnapshot instantiates a new RestoreRequestSnapshot object
 // This constructor will assign default values to properties that have it defined,
@@ -84,7 +87,33 @@ func (o RestoreRequestSnapshot) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.BackupId) {
 		toSerialize["backupId"] = o.BackupId
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *RestoreRequestSnapshot) UnmarshalJSON(data []byte) (err error) {
+	varRestoreRequestSnapshot := _RestoreRequestSnapshot{}
+
+	err = json.Unmarshal(data, &varRestoreRequestSnapshot)
+
+	if err != nil {
+		return err
+	}
+
+	*o = RestoreRequestSnapshot(varRestoreRequestSnapshot)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "backupId")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableRestoreRequestSnapshot struct {

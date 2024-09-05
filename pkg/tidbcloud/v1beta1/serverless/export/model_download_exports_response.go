@@ -20,8 +20,11 @@ var _ MappedNullable = &DownloadExportsResponse{}
 // DownloadExportsResponse struct for DownloadExportsResponse
 type DownloadExportsResponse struct {
 	// The download urls of the export.
-	Downloads []DownloadUrl `json:"downloads,omitempty"`
+	Downloads            []DownloadUrl `json:"downloads,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _DownloadExportsResponse DownloadExportsResponse
 
 // NewDownloadExportsResponse instantiates a new DownloadExportsResponse object
 // This constructor will assign default values to properties that have it defined,
@@ -85,7 +88,33 @@ func (o DownloadExportsResponse) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Downloads) {
 		toSerialize["downloads"] = o.Downloads
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *DownloadExportsResponse) UnmarshalJSON(data []byte) (err error) {
+	varDownloadExportsResponse := _DownloadExportsResponse{}
+
+	err = json.Unmarshal(data, &varDownloadExportsResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = DownloadExportsResponse(varDownloadExportsResponse)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "downloads")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableDownloadExportsResponse struct {

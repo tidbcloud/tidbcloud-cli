@@ -20,9 +20,12 @@ var _ MappedNullable = &RestoreRequestPointInTime{}
 
 // RestoreRequestPointInTime struct for RestoreRequestPointInTime
 type RestoreRequestPointInTime struct {
-	ClusterId  *string    `json:"clusterId,omitempty"`
-	BackupTime *time.Time `json:"backupTime,omitempty"`
+	ClusterId            *string    `json:"clusterId,omitempty"`
+	BackupTime           *time.Time `json:"backupTime,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _RestoreRequestPointInTime RestoreRequestPointInTime
 
 // NewRestoreRequestPointInTime instantiates a new RestoreRequestPointInTime object
 // This constructor will assign default values to properties that have it defined,
@@ -121,7 +124,34 @@ func (o RestoreRequestPointInTime) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.BackupTime) {
 		toSerialize["backupTime"] = o.BackupTime
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *RestoreRequestPointInTime) UnmarshalJSON(data []byte) (err error) {
+	varRestoreRequestPointInTime := _RestoreRequestPointInTime{}
+
+	err = json.Unmarshal(data, &varRestoreRequestPointInTime)
+
+	if err != nil {
+		return err
+	}
+
+	*o = RestoreRequestPointInTime(varRestoreRequestPointInTime)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "clusterId")
+		delete(additionalProperties, "backupTime")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableRestoreRequestPointInTime struct {

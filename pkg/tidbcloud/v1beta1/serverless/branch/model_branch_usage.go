@@ -24,8 +24,11 @@ type BranchUsage struct {
 	// Output Only. The latest value of Row Storage Metric for this cluster.
 	RowStorage *float64 `json:"rowStorage,omitempty"`
 	// Output Only. The latest value of Columnar Storage Metric for this cluster.
-	ColumnarStorage *float64 `json:"columnarStorage,omitempty"`
+	ColumnarStorage      *float64 `json:"columnarStorage,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _BranchUsage BranchUsage
 
 // NewBranchUsage instantiates a new BranchUsage object
 // This constructor will assign default values to properties that have it defined,
@@ -159,7 +162,35 @@ func (o BranchUsage) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ColumnarStorage) {
 		toSerialize["columnarStorage"] = o.ColumnarStorage
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *BranchUsage) UnmarshalJSON(data []byte) (err error) {
+	varBranchUsage := _BranchUsage{}
+
+	err = json.Unmarshal(data, &varBranchUsage)
+
+	if err != nil {
+		return err
+	}
+
+	*o = BranchUsage(varBranchUsage)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "requestUnit")
+		delete(additionalProperties, "rowStorage")
+		delete(additionalProperties, "columnarStorage")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableBranchUsage struct {

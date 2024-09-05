@@ -20,8 +20,11 @@ var _ MappedNullable = &ExportOptionsParquetFormat{}
 // ExportOptionsParquetFormat struct for ExportOptionsParquetFormat
 type ExportOptionsParquetFormat struct {
 	// Optional. The compression of the parquet. Default is ZSTD.
-	Compression *ExportParquetCompressionTypeEnum `json:"compression,omitempty"`
+	Compression          *ExportParquetCompressionTypeEnum `json:"compression,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ExportOptionsParquetFormat ExportOptionsParquetFormat
 
 // NewExportOptionsParquetFormat instantiates a new ExportOptionsParquetFormat object
 // This constructor will assign default values to properties that have it defined,
@@ -85,7 +88,33 @@ func (o ExportOptionsParquetFormat) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Compression) {
 		toSerialize["compression"] = o.Compression
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ExportOptionsParquetFormat) UnmarshalJSON(data []byte) (err error) {
+	varExportOptionsParquetFormat := _ExportOptionsParquetFormat{}
+
+	err = json.Unmarshal(data, &varExportOptionsParquetFormat)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ExportOptionsParquetFormat(varExportOptionsParquetFormat)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "compression")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableExportOptionsParquetFormat struct {

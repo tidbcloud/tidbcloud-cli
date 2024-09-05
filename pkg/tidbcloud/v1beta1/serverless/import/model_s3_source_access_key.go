@@ -11,7 +11,6 @@ API version: v1beta1
 package imp
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,7 +23,8 @@ type S3SourceAccessKey struct {
 	// The access key id.
 	Id string `json:"id"`
 	// The secret access key. This field is input-only.
-	Secret string `json:"secret"`
+	Secret               string `json:"secret"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _S3SourceAccessKey S3SourceAccessKey
@@ -108,6 +108,11 @@ func (o S3SourceAccessKey) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["id"] = o.Id
 	toSerialize["secret"] = o.Secret
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -136,15 +141,21 @@ func (o *S3SourceAccessKey) UnmarshalJSON(data []byte) (err error) {
 
 	varS3SourceAccessKey := _S3SourceAccessKey{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varS3SourceAccessKey)
+	err = json.Unmarshal(data, &varS3SourceAccessKey)
 
 	if err != nil {
 		return err
 	}
 
 	*o = S3SourceAccessKey(varS3SourceAccessKey)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "secret")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

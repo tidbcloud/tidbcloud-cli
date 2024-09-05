@@ -22,8 +22,11 @@ type BranchEndpointsPrivateAWS struct {
 	// Output Only. Service Name for Private Link Service.
 	ServiceName *string `json:"serviceName,omitempty"`
 	// Output Only. Availability Zone for Private Link Service.
-	AvailabilityZone []string `json:"availabilityZone,omitempty"`
+	AvailabilityZone     []string `json:"availabilityZone,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _BranchEndpointsPrivateAWS BranchEndpointsPrivateAWS
 
 // NewBranchEndpointsPrivateAWS instantiates a new BranchEndpointsPrivateAWS object
 // This constructor will assign default values to properties that have it defined,
@@ -122,7 +125,34 @@ func (o BranchEndpointsPrivateAWS) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.AvailabilityZone) {
 		toSerialize["availabilityZone"] = o.AvailabilityZone
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *BranchEndpointsPrivateAWS) UnmarshalJSON(data []byte) (err error) {
+	varBranchEndpointsPrivateAWS := _BranchEndpointsPrivateAWS{}
+
+	err = json.Unmarshal(data, &varBranchEndpointsPrivateAWS)
+
+	if err != nil {
+		return err
+	}
+
+	*o = BranchEndpointsPrivateAWS(varBranchEndpointsPrivateAWS)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "serviceName")
+		delete(additionalProperties, "availabilityZone")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableBranchEndpointsPrivateAWS struct {

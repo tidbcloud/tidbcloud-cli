@@ -30,8 +30,11 @@ type ExportOptions struct {
 	// Optional. The format of the csv.
 	CsvFormat *ExportOptionsCSVFormat `json:"csvFormat,omitempty"`
 	// Optional. The format of the parquet.
-	ParquetFormat *ExportOptionsParquetFormat `json:"parquetFormat,omitempty"`
+	ParquetFormat        *ExportOptionsParquetFormat `json:"parquetFormat,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ExportOptions ExportOptions
 
 // NewExportOptions instantiates a new ExportOptions object
 // This constructor will assign default values to properties that have it defined,
@@ -305,7 +308,39 @@ func (o ExportOptions) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ParquetFormat) {
 		toSerialize["parquetFormat"] = o.ParquetFormat
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ExportOptions) UnmarshalJSON(data []byte) (err error) {
+	varExportOptions := _ExportOptions{}
+
+	err = json.Unmarshal(data, &varExportOptions)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ExportOptions(varExportOptions)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "fileType")
+		delete(additionalProperties, "database")
+		delete(additionalProperties, "table")
+		delete(additionalProperties, "compression")
+		delete(additionalProperties, "filter")
+		delete(additionalProperties, "csvFormat")
+		delete(additionalProperties, "parquetFormat")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableExportOptions struct {

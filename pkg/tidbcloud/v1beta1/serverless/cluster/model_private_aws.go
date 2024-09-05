@@ -22,8 +22,11 @@ type PrivateAWS struct {
 	// Output_only. The AWS service name for private access.
 	ServiceName *string `json:"serviceName,omitempty"`
 	// Output_only. The availability zones that the service is available in.
-	AvailabilityZone []string `json:"availabilityZone,omitempty"`
+	AvailabilityZone     []string `json:"availabilityZone,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _PrivateAWS PrivateAWS
 
 // NewPrivateAWS instantiates a new PrivateAWS object
 // This constructor will assign default values to properties that have it defined,
@@ -122,7 +125,34 @@ func (o PrivateAWS) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.AvailabilityZone) {
 		toSerialize["availabilityZone"] = o.AvailabilityZone
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *PrivateAWS) UnmarshalJSON(data []byte) (err error) {
+	varPrivateAWS := _PrivateAWS{}
+
+	err = json.Unmarshal(data, &varPrivateAWS)
+
+	if err != nil {
+		return err
+	}
+
+	*o = PrivateAWS(varPrivateAWS)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "serviceName")
+		delete(additionalProperties, "availabilityZone")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullablePrivateAWS struct {

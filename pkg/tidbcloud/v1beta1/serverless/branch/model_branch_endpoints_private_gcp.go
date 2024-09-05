@@ -21,7 +21,10 @@ var _ MappedNullable = &BranchEndpointsPrivateGCP{}
 type BranchEndpointsPrivateGCP struct {
 	// Output Only. Target Service Account for Private Link Service.
 	ServiceAttachmentName *string `json:"serviceAttachmentName,omitempty"`
+	AdditionalProperties  map[string]interface{}
 }
+
+type _BranchEndpointsPrivateGCP BranchEndpointsPrivateGCP
 
 // NewBranchEndpointsPrivateGCP instantiates a new BranchEndpointsPrivateGCP object
 // This constructor will assign default values to properties that have it defined,
@@ -85,7 +88,33 @@ func (o BranchEndpointsPrivateGCP) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ServiceAttachmentName) {
 		toSerialize["serviceAttachmentName"] = o.ServiceAttachmentName
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *BranchEndpointsPrivateGCP) UnmarshalJSON(data []byte) (err error) {
+	varBranchEndpointsPrivateGCP := _BranchEndpointsPrivateGCP{}
+
+	err = json.Unmarshal(data, &varBranchEndpointsPrivateGCP)
+
+	if err != nil {
+		return err
+	}
+
+	*o = BranchEndpointsPrivateGCP(varBranchEndpointsPrivateGCP)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "serviceAttachmentName")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableBranchEndpointsPrivateGCP struct {

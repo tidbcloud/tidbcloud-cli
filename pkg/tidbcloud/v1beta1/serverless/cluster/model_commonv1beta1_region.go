@@ -27,8 +27,11 @@ type Commonv1beta1Region struct {
 	// User-friendly display name of the region.
 	DisplayName *string `json:"displayName,omitempty"`
 	// Optional provider name for the region. Only used for serverless cluster. Deprecated.
-	Provider NullableString `json:"provider,omitempty"`
+	Provider             NullableString `json:"provider,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _Commonv1beta1Region Commonv1beta1Region
 
 // NewCommonv1beta1Region instantiates a new Commonv1beta1Region object
 // This constructor will assign default values to properties that have it defined,
@@ -243,7 +246,37 @@ func (o Commonv1beta1Region) ToMap() (map[string]interface{}, error) {
 	if o.Provider.IsSet() {
 		toSerialize["provider"] = o.Provider.Get()
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *Commonv1beta1Region) UnmarshalJSON(data []byte) (err error) {
+	varCommonv1beta1Region := _Commonv1beta1Region{}
+
+	err = json.Unmarshal(data, &varCommonv1beta1Region)
+
+	if err != nil {
+		return err
+	}
+
+	*o = Commonv1beta1Region(varCommonv1beta1Region)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "regionId")
+		delete(additionalProperties, "cloudProvider")
+		delete(additionalProperties, "displayName")
+		delete(additionalProperties, "provider")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableCommonv1beta1Region struct {

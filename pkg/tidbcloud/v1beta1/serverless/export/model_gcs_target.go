@@ -11,7 +11,6 @@ API version: v1beta1
 package export
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,8 +23,9 @@ type GCSTarget struct {
 	// The GCS URI of the export target.
 	Uri string `json:"uri"`
 	// The auth method of the export target.
-	AuthType          ExportGcsAuthTypeEnum `json:"authType"`
-	ServiceAccountKey *string               `json:"serviceAccountKey,omitempty"`
+	AuthType             ExportGcsAuthTypeEnum `json:"authType"`
+	ServiceAccountKey    *string               `json:"serviceAccountKey,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _GCSTarget GCSTarget
@@ -144,6 +144,11 @@ func (o GCSTarget) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ServiceAccountKey) {
 		toSerialize["serviceAccountKey"] = o.ServiceAccountKey
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -172,15 +177,22 @@ func (o *GCSTarget) UnmarshalJSON(data []byte) (err error) {
 
 	varGCSTarget := _GCSTarget{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varGCSTarget)
+	err = json.Unmarshal(data, &varGCSTarget)
 
 	if err != nil {
 		return err
 	}
 
 	*o = GCSTarget(varGCSTarget)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "uri")
+		delete(additionalProperties, "authType")
+		delete(additionalProperties, "serviceAccountKey")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

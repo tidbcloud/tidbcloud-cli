@@ -24,8 +24,11 @@ type TidbCloudOpenApiserverlessv1beta1ListClustersResponse struct {
 	// Token provided to retrieve the next page of results.
 	NextPageToken *string `json:"nextPageToken,omitempty"`
 	// Total number of available clusters.
-	TotalSize *int64 `json:"totalSize,omitempty"`
+	TotalSize            *int64 `json:"totalSize,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _TidbCloudOpenApiserverlessv1beta1ListClustersResponse TidbCloudOpenApiserverlessv1beta1ListClustersResponse
 
 // NewTidbCloudOpenApiserverlessv1beta1ListClustersResponse instantiates a new TidbCloudOpenApiserverlessv1beta1ListClustersResponse object
 // This constructor will assign default values to properties that have it defined,
@@ -159,7 +162,35 @@ func (o TidbCloudOpenApiserverlessv1beta1ListClustersResponse) ToMap() (map[stri
 	if !IsNil(o.TotalSize) {
 		toSerialize["totalSize"] = o.TotalSize
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *TidbCloudOpenApiserverlessv1beta1ListClustersResponse) UnmarshalJSON(data []byte) (err error) {
+	varTidbCloudOpenApiserverlessv1beta1ListClustersResponse := _TidbCloudOpenApiserverlessv1beta1ListClustersResponse{}
+
+	err = json.Unmarshal(data, &varTidbCloudOpenApiserverlessv1beta1ListClustersResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TidbCloudOpenApiserverlessv1beta1ListClustersResponse(varTidbCloudOpenApiserverlessv1beta1ListClustersResponse)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "clusters")
+		delete(additionalProperties, "nextPageToken")
+		delete(additionalProperties, "totalSize")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableTidbCloudOpenApiserverlessv1beta1ListClustersResponse struct {

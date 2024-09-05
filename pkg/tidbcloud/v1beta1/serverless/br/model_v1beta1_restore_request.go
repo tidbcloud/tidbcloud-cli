@@ -19,9 +19,12 @@ var _ MappedNullable = &V1beta1RestoreRequest{}
 
 // V1beta1RestoreRequest struct for V1beta1RestoreRequest
 type V1beta1RestoreRequest struct {
-	Snapshot    *RestoreRequestSnapshot    `json:"snapshot,omitempty"`
-	PointInTime *RestoreRequestPointInTime `json:"pointInTime,omitempty"`
+	Snapshot             *RestoreRequestSnapshot    `json:"snapshot,omitempty"`
+	PointInTime          *RestoreRequestPointInTime `json:"pointInTime,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _V1beta1RestoreRequest V1beta1RestoreRequest
 
 // NewV1beta1RestoreRequest instantiates a new V1beta1RestoreRequest object
 // This constructor will assign default values to properties that have it defined,
@@ -120,7 +123,34 @@ func (o V1beta1RestoreRequest) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.PointInTime) {
 		toSerialize["pointInTime"] = o.PointInTime
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *V1beta1RestoreRequest) UnmarshalJSON(data []byte) (err error) {
+	varV1beta1RestoreRequest := _V1beta1RestoreRequest{}
+
+	err = json.Unmarshal(data, &varV1beta1RestoreRequest)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1beta1RestoreRequest(varV1beta1RestoreRequest)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "snapshot")
+		delete(additionalProperties, "pointInTime")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableV1beta1RestoreRequest struct {

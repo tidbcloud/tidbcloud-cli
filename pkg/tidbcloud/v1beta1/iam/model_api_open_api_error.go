@@ -19,11 +19,14 @@ var _ MappedNullable = &ApiOpenApiError{}
 
 // ApiOpenApiError struct for ApiOpenApiError
 type ApiOpenApiError struct {
-	Code      *string                `json:"code,omitempty"`
-	Error     map[string]interface{} `json:"error,omitempty"`
-	MsgPrefix *string                `json:"msgPrefix,omitempty"`
-	Status    *int32                 `json:"status,omitempty"`
+	Code                 *string                `json:"code,omitempty"`
+	Error                map[string]interface{} `json:"error,omitempty"`
+	MsgPrefix            *string                `json:"msgPrefix,omitempty"`
+	Status               *int32                 `json:"status,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ApiOpenApiError ApiOpenApiError
 
 // NewApiOpenApiError instantiates a new ApiOpenApiError object
 // This constructor will assign default values to properties that have it defined,
@@ -192,7 +195,36 @@ func (o ApiOpenApiError) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Status) {
 		toSerialize["status"] = o.Status
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ApiOpenApiError) UnmarshalJSON(data []byte) (err error) {
+	varApiOpenApiError := _ApiOpenApiError{}
+
+	err = json.Unmarshal(data, &varApiOpenApiError)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ApiOpenApiError(varApiOpenApiError)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "code")
+		delete(additionalProperties, "error")
+		delete(additionalProperties, "msgPrefix")
+		delete(additionalProperties, "status")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableApiOpenApiError struct {

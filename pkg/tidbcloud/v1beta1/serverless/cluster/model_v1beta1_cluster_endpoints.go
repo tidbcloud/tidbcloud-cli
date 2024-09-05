@@ -22,8 +22,11 @@ type V1beta1ClusterEndpoints struct {
 	// Optional. Public endpoint to connect to the cluster.
 	Public *EndpointsPublic `json:"public,omitempty"`
 	// Output_only. Private endpoint to securely connect to the cluster.
-	Private *EndpointsPrivate `json:"private,omitempty"`
+	Private              *EndpointsPrivate `json:"private,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _V1beta1ClusterEndpoints V1beta1ClusterEndpoints
 
 // NewV1beta1ClusterEndpoints instantiates a new V1beta1ClusterEndpoints object
 // This constructor will assign default values to properties that have it defined,
@@ -122,7 +125,34 @@ func (o V1beta1ClusterEndpoints) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Private) {
 		toSerialize["private"] = o.Private
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *V1beta1ClusterEndpoints) UnmarshalJSON(data []byte) (err error) {
+	varV1beta1ClusterEndpoints := _V1beta1ClusterEndpoints{}
+
+	err = json.Unmarshal(data, &varV1beta1ClusterEndpoints)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1beta1ClusterEndpoints(varV1beta1ClusterEndpoints)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "public")
+		delete(additionalProperties, "private")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableV1beta1ClusterEndpoints struct {
