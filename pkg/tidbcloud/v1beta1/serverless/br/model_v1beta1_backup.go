@@ -11,7 +11,6 @@ API version: v1beta1
 package br
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -29,7 +28,8 @@ type V1beta1Backup struct {
 	// Required. The cluster ID that backup belong to.
 	ClusterId string `json:"clusterId"`
 	// Output_only. Timestamp when the backup was created.
-	CreateTime *time.Time `json:"createTime,omitempty"`
+	CreateTime           *time.Time `json:"createTime,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _V1beta1Backup V1beta1Backup
@@ -192,6 +192,11 @@ func (o V1beta1Backup) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.CreateTime) {
 		toSerialize["createTime"] = o.CreateTime
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -219,15 +224,23 @@ func (o *V1beta1Backup) UnmarshalJSON(data []byte) (err error) {
 
 	varV1beta1Backup := _V1beta1Backup{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varV1beta1Backup)
+	err = json.Unmarshal(data, &varV1beta1Backup)
 
 	if err != nil {
 		return err
 	}
 
 	*o = V1beta1Backup(varV1beta1Backup)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "backupId")
+		delete(additionalProperties, "clusterId")
+		delete(additionalProperties, "createTime")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

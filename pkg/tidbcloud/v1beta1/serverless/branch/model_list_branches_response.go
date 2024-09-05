@@ -21,9 +21,12 @@ var _ MappedNullable = &ListBranchesResponse{}
 type ListBranchesResponse struct {
 	Branches []Branch `json:"branches,omitempty"`
 	// A token identifying a page of results the server should return.
-	NextPageToken *string `json:"nextPageToken,omitempty"`
-	TotalSize     *int64  `json:"totalSize,omitempty"`
+	NextPageToken        *string `json:"nextPageToken,omitempty"`
+	TotalSize            *int64  `json:"totalSize,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ListBranchesResponse ListBranchesResponse
 
 // NewListBranchesResponse instantiates a new ListBranchesResponse object
 // This constructor will assign default values to properties that have it defined,
@@ -157,7 +160,35 @@ func (o ListBranchesResponse) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.TotalSize) {
 		toSerialize["totalSize"] = o.TotalSize
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ListBranchesResponse) UnmarshalJSON(data []byte) (err error) {
+	varListBranchesResponse := _ListBranchesResponse{}
+
+	err = json.Unmarshal(data, &varListBranchesResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ListBranchesResponse(varListBranchesResponse)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "branches")
+		delete(additionalProperties, "nextPageToken")
+		delete(additionalProperties, "totalSize")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableListBranchesResponse struct {

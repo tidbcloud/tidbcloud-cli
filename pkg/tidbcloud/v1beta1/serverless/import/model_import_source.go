@@ -11,7 +11,6 @@ API version: v1beta1
 package imp
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -22,11 +21,12 @@ var _ MappedNullable = &ImportSource{}
 // ImportSource struct for ImportSource
 type ImportSource struct {
 	// The import source type.
-	Type      ImportSourceTypeEnum `json:"type"`
-	Local     *LocalSource         `json:"local,omitempty"`
-	S3        *S3Source            `json:"s3,omitempty"`
-	Gcs       *GCSSource           `json:"gcs,omitempty"`
-	AzureBlob *AzureBlobSource     `json:"azureBlob,omitempty"`
+	Type                 ImportSourceTypeEnum `json:"type"`
+	Local                *LocalSource         `json:"local,omitempty"`
+	S3                   *S3Source            `json:"s3,omitempty"`
+	Gcs                  *GCSSource           `json:"gcs,omitempty"`
+	AzureBlob            *AzureBlobSource     `json:"azureBlob,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _ImportSource ImportSource
@@ -224,6 +224,11 @@ func (o ImportSource) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.AzureBlob) {
 		toSerialize["azureBlob"] = o.AzureBlob
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -251,15 +256,24 @@ func (o *ImportSource) UnmarshalJSON(data []byte) (err error) {
 
 	varImportSource := _ImportSource{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varImportSource)
+	err = json.Unmarshal(data, &varImportSource)
 
 	if err != nil {
 		return err
 	}
 
 	*o = ImportSource(varImportSource)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "local")
+		delete(additionalProperties, "s3")
+		delete(additionalProperties, "gcs")
+		delete(additionalProperties, "azureBlob")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

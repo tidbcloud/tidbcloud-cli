@@ -24,8 +24,11 @@ type DownloadUrl struct {
 	// The download url.
 	Url *string `json:"url,omitempty"`
 	// The size in bytes of the the download file.
-	Size *int64 `json:"size,omitempty"`
+	Size                 *int64 `json:"size,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _DownloadUrl DownloadUrl
 
 // NewDownloadUrl instantiates a new DownloadUrl object
 // This constructor will assign default values to properties that have it defined,
@@ -159,7 +162,35 @@ func (o DownloadUrl) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Size) {
 		toSerialize["size"] = o.Size
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *DownloadUrl) UnmarshalJSON(data []byte) (err error) {
+	varDownloadUrl := _DownloadUrl{}
+
+	err = json.Unmarshal(data, &varDownloadUrl)
+
+	if err != nil {
+		return err
+	}
+
+	*o = DownloadUrl(varDownloadUrl)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "url")
+		delete(additionalProperties, "size")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableDownloadUrl struct {

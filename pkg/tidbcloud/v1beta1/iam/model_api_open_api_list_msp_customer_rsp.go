@@ -22,8 +22,11 @@ type ApiOpenApiListMspCustomerRsp struct {
 	// The list of matching MSP Customers.
 	MspCustomers []ApiOpenApiMspCustomer `json:"mspCustomers,omitempty"`
 	// `next_page_token` can be sent in a subsequent call to fetch more results
-	NextPageToken *string `json:"nextPageToken,omitempty"`
+	NextPageToken        *string `json:"nextPageToken,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ApiOpenApiListMspCustomerRsp ApiOpenApiListMspCustomerRsp
 
 // NewApiOpenApiListMspCustomerRsp instantiates a new ApiOpenApiListMspCustomerRsp object
 // This constructor will assign default values to properties that have it defined,
@@ -122,7 +125,34 @@ func (o ApiOpenApiListMspCustomerRsp) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.NextPageToken) {
 		toSerialize["nextPageToken"] = o.NextPageToken
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ApiOpenApiListMspCustomerRsp) UnmarshalJSON(data []byte) (err error) {
+	varApiOpenApiListMspCustomerRsp := _ApiOpenApiListMspCustomerRsp{}
+
+	err = json.Unmarshal(data, &varApiOpenApiListMspCustomerRsp)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ApiOpenApiListMspCustomerRsp(varApiOpenApiListMspCustomerRsp)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "mspCustomers")
+		delete(additionalProperties, "nextPageToken")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableApiOpenApiListMspCustomerRsp struct {

@@ -24,8 +24,11 @@ type GooglerpcStatus struct {
 	// A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
 	Message *string `json:"message,omitempty"`
 	// A list of messages that carry the error details.  There is a common set of message types for APIs to use.
-	Details []ProtobufAny `json:"details,omitempty"`
+	Details              []ProtobufAny `json:"details,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _GooglerpcStatus GooglerpcStatus
 
 // NewGooglerpcStatus instantiates a new GooglerpcStatus object
 // This constructor will assign default values to properties that have it defined,
@@ -159,7 +162,35 @@ func (o GooglerpcStatus) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Details) {
 		toSerialize["details"] = o.Details
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *GooglerpcStatus) UnmarshalJSON(data []byte) (err error) {
+	varGooglerpcStatus := _GooglerpcStatus{}
+
+	err = json.Unmarshal(data, &varGooglerpcStatus)
+
+	if err != nil {
+		return err
+	}
+
+	*o = GooglerpcStatus(varGooglerpcStatus)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "code")
+		delete(additionalProperties, "message")
+		delete(additionalProperties, "details")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableGooglerpcStatus struct {

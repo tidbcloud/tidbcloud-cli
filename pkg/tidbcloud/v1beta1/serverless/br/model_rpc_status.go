@@ -19,10 +19,13 @@ var _ MappedNullable = &RpcStatus{}
 
 // RpcStatus struct for RpcStatus
 type RpcStatus struct {
-	Code    *int32        `json:"code,omitempty"`
-	Message *string       `json:"message,omitempty"`
-	Details []ProtobufAny `json:"details,omitempty"`
+	Code                 *int32        `json:"code,omitempty"`
+	Message              *string       `json:"message,omitempty"`
+	Details              []ProtobufAny `json:"details,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _RpcStatus RpcStatus
 
 // NewRpcStatus instantiates a new RpcStatus object
 // This constructor will assign default values to properties that have it defined,
@@ -156,7 +159,35 @@ func (o RpcStatus) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Details) {
 		toSerialize["details"] = o.Details
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *RpcStatus) UnmarshalJSON(data []byte) (err error) {
+	varRpcStatus := _RpcStatus{}
+
+	err = json.Unmarshal(data, &varRpcStatus)
+
+	if err != nil {
+		return err
+	}
+
+	*o = RpcStatus(varRpcStatus)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "code")
+		delete(additionalProperties, "message")
+		delete(additionalProperties, "details")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableRpcStatus struct {

@@ -11,7 +11,6 @@ API version: v1beta1
 package imp
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,7 +23,8 @@ type ImportOptions struct {
 	// The exported file type.
 	FileType ImportFileTypeEnum `json:"fileType"`
 	// Optional. The CSV format.
-	CsvFormat *CSVFormat `json:"csvFormat,omitempty"`
+	CsvFormat            *CSVFormat `json:"csvFormat,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _ImportOptions ImportOptions
@@ -117,6 +117,11 @@ func (o ImportOptions) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.CsvFormat) {
 		toSerialize["csvFormat"] = o.CsvFormat
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -144,15 +149,21 @@ func (o *ImportOptions) UnmarshalJSON(data []byte) (err error) {
 
 	varImportOptions := _ImportOptions{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varImportOptions)
+	err = json.Unmarshal(data, &varImportOptions)
 
 	if err != nil {
 		return err
 	}
 
 	*o = ImportOptions(varImportOptions)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "fileType")
+		delete(additionalProperties, "csvFormat")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -22,8 +22,11 @@ type CreationDetails struct {
 	// Optional. The options of the import.
 	ImportOptions *ImportOptions `json:"importOptions,omitempty"`
 	// Optional. The source of the import.
-	Source *ImportSource `json:"source,omitempty"`
+	Source               *ImportSource `json:"source,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _CreationDetails CreationDetails
 
 // NewCreationDetails instantiates a new CreationDetails object
 // This constructor will assign default values to properties that have it defined,
@@ -122,7 +125,34 @@ func (o CreationDetails) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Source) {
 		toSerialize["source"] = o.Source
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *CreationDetails) UnmarshalJSON(data []byte) (err error) {
+	varCreationDetails := _CreationDetails{}
+
+	err = json.Unmarshal(data, &varCreationDetails)
+
+	if err != nil {
+		return err
+	}
+
+	*o = CreationDetails(varCreationDetails)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "importOptions")
+		delete(additionalProperties, "source")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableCreationDetails struct {

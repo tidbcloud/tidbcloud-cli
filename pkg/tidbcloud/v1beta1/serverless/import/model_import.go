@@ -43,8 +43,11 @@ type Import struct {
 	// The creation details of the import.
 	CreationDetails *CreationDetails `json:"creationDetails,omitempty"`
 	// The ID of the import.
-	ImportId *string `json:"importId,omitempty"`
+	ImportId             *string `json:"importId,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _Import Import
 
 // NewImport instantiates a new Import object
 // This constructor will assign default values to properties that have it defined,
@@ -504,7 +507,44 @@ func (o Import) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ImportId) {
 		toSerialize["importId"] = o.ImportId
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *Import) UnmarshalJSON(data []byte) (err error) {
+	varImport := _Import{}
+
+	err = json.Unmarshal(data, &varImport)
+
+	if err != nil {
+		return err
+	}
+
+	*o = Import(varImport)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "clusterId")
+		delete(additionalProperties, "totalSize")
+		delete(additionalProperties, "createTime")
+		delete(additionalProperties, "completeTime")
+		delete(additionalProperties, "state")
+		delete(additionalProperties, "completePercent")
+		delete(additionalProperties, "message")
+		delete(additionalProperties, "createdBy")
+		delete(additionalProperties, "creationDetails")
+		delete(additionalProperties, "importId")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableImport struct {

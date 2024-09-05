@@ -11,7 +11,6 @@ API version: v1beta1
 package export
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,7 +23,8 @@ type S3TargetAccessKey struct {
 	// The access key id of the s3.
 	Id string `json:"id"`
 	// Input_Only. The secret access key of the s3.
-	Secret string `json:"secret"`
+	Secret               string `json:"secret"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _S3TargetAccessKey S3TargetAccessKey
@@ -108,6 +108,11 @@ func (o S3TargetAccessKey) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["id"] = o.Id
 	toSerialize["secret"] = o.Secret
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -136,15 +141,21 @@ func (o *S3TargetAccessKey) UnmarshalJSON(data []byte) (err error) {
 
 	varS3TargetAccessKey := _S3TargetAccessKey{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varS3TargetAccessKey)
+	err = json.Unmarshal(data, &varS3TargetAccessKey)
 
 	if err != nil {
 		return err
 	}
 
 	*o = S3TargetAccessKey(varS3TargetAccessKey)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "secret")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -22,8 +22,11 @@ type BranchEndpoints struct {
 	// Optional. Public Endpoint for this branch.
 	Public *BranchEndpointsPublic `json:"public,omitempty"`
 	// Output only. Private Endpoint for this branch.
-	Private *BranchEndpointsPrivate `json:"private,omitempty"`
+	Private              *BranchEndpointsPrivate `json:"private,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _BranchEndpoints BranchEndpoints
 
 // NewBranchEndpoints instantiates a new BranchEndpoints object
 // This constructor will assign default values to properties that have it defined,
@@ -122,7 +125,34 @@ func (o BranchEndpoints) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Private) {
 		toSerialize["private"] = o.Private
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *BranchEndpoints) UnmarshalJSON(data []byte) (err error) {
+	varBranchEndpoints := _BranchEndpoints{}
+
+	err = json.Unmarshal(data, &varBranchEndpoints)
+
+	if err != nil {
+		return err
+	}
+
+	*o = BranchEndpoints(varBranchEndpoints)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "public")
+		delete(additionalProperties, "private")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableBranchEndpoints struct {

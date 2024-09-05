@@ -11,7 +11,6 @@ API version: v1beta1
 package export
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -30,7 +29,8 @@ type S3Target struct {
 	// Optional. The access key of the s3.
 	AccessKey *S3TargetAccessKey `json:"accessKey,omitempty"`
 	// Optional. The role arn of the s3.
-	RoleArn *string `json:"roleArn,omitempty"`
+	RoleArn              *string `json:"roleArn,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _S3Target S3Target
@@ -228,6 +228,11 @@ func (o S3Target) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.RoleArn) {
 		toSerialize["roleArn"] = o.RoleArn
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -255,15 +260,24 @@ func (o *S3Target) UnmarshalJSON(data []byte) (err error) {
 
 	varS3Target := _S3Target{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varS3Target)
+	err = json.Unmarshal(data, &varS3Target)
 
 	if err != nil {
 		return err
 	}
 
 	*o = S3Target(varS3Target)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "bucketUri")
+		delete(additionalProperties, "uri")
+		delete(additionalProperties, "authType")
+		delete(additionalProperties, "accessKey")
+		delete(additionalProperties, "roleArn")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

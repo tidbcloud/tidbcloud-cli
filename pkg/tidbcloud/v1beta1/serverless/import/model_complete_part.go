@@ -11,7 +11,6 @@ API version: v1beta1
 package imp
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,8 +20,9 @@ var _ MappedNullable = &CompletePart{}
 
 // CompletePart struct for CompletePart
 type CompletePart struct {
-	PartNumber int32  `json:"partNumber"`
-	Etag       string `json:"etag"`
+	PartNumber           int32  `json:"partNumber"`
+	Etag                 string `json:"etag"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _CompletePart CompletePart
@@ -106,6 +106,11 @@ func (o CompletePart) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["partNumber"] = o.PartNumber
 	toSerialize["etag"] = o.Etag
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -134,15 +139,21 @@ func (o *CompletePart) UnmarshalJSON(data []byte) (err error) {
 
 	varCompletePart := _CompletePart{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varCompletePart)
+	err = json.Unmarshal(data, &varCompletePart)
 
 	if err != nil {
 		return err
 	}
 
 	*o = CompletePart(varCompletePart)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "partNumber")
+		delete(additionalProperties, "etag")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

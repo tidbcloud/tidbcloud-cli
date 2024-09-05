@@ -22,8 +22,11 @@ type ApiGetDbuserRsp struct {
 	// The username connect to the cluster
 	Dbuser *string `json:"dbuser,omitempty"`
 	// JWT to connect to the cluster
-	Jwt *string `json:"jwt,omitempty"`
+	Jwt                  *string `json:"jwt,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ApiGetDbuserRsp ApiGetDbuserRsp
 
 // NewApiGetDbuserRsp instantiates a new ApiGetDbuserRsp object
 // This constructor will assign default values to properties that have it defined,
@@ -122,7 +125,34 @@ func (o ApiGetDbuserRsp) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Jwt) {
 		toSerialize["jwt"] = o.Jwt
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ApiGetDbuserRsp) UnmarshalJSON(data []byte) (err error) {
+	varApiGetDbuserRsp := _ApiGetDbuserRsp{}
+
+	err = json.Unmarshal(data, &varApiGetDbuserRsp)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ApiGetDbuserRsp(varApiGetDbuserRsp)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "dbuser")
+		delete(additionalProperties, "jwt")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableApiGetDbuserRsp struct {

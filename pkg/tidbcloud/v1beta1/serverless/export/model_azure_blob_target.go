@@ -11,7 +11,6 @@ API version: v1beta1
 package export
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -26,7 +25,8 @@ type AzureBlobTarget struct {
 	// The sas token. This field is input-only.
 	SasToken *string `json:"sasToken,omitempty"`
 	// The Azure Blob URI of the export target. For example: https://accountname.blob.core.windows.net/container/blob.
-	Uri string `json:"uri"`
+	Uri                  string `json:"uri"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _AzureBlobTarget AzureBlobTarget
@@ -145,6 +145,11 @@ func (o AzureBlobTarget) ToMap() (map[string]interface{}, error) {
 		toSerialize["sasToken"] = o.SasToken
 	}
 	toSerialize["uri"] = o.Uri
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -173,15 +178,22 @@ func (o *AzureBlobTarget) UnmarshalJSON(data []byte) (err error) {
 
 	varAzureBlobTarget := _AzureBlobTarget{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varAzureBlobTarget)
+	err = json.Unmarshal(data, &varAzureBlobTarget)
 
 	if err != nil {
 		return err
 	}
 
 	*o = AzureBlobTarget(varAzureBlobTarget)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "authType")
+		delete(additionalProperties, "sasToken")
+		delete(additionalProperties, "uri")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

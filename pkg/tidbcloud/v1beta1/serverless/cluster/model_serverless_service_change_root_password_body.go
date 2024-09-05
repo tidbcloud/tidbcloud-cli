@@ -11,7 +11,6 @@ API version: v1beta1
 package cluster
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -22,7 +21,8 @@ var _ MappedNullable = &ServerlessServiceChangeRootPasswordBody{}
 // ServerlessServiceChangeRootPasswordBody Message for requesting to change the root password of a TiDB Serverless cluster.
 type ServerlessServiceChangeRootPasswordBody struct {
 	// Required. The new root password for the cluster.
-	Password string `json:"password"`
+	Password             string `json:"password"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _ServerlessServiceChangeRootPasswordBody ServerlessServiceChangeRootPasswordBody
@@ -80,6 +80,11 @@ func (o ServerlessServiceChangeRootPasswordBody) MarshalJSON() ([]byte, error) {
 func (o ServerlessServiceChangeRootPasswordBody) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["password"] = o.Password
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -107,15 +112,20 @@ func (o *ServerlessServiceChangeRootPasswordBody) UnmarshalJSON(data []byte) (er
 
 	varServerlessServiceChangeRootPasswordBody := _ServerlessServiceChangeRootPasswordBody{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varServerlessServiceChangeRootPasswordBody)
+	err = json.Unmarshal(data, &varServerlessServiceChangeRootPasswordBody)
 
 	if err != nil {
 		return err
 	}
 
 	*o = ServerlessServiceChangeRootPasswordBody(varServerlessServiceChangeRootPasswordBody)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "password")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

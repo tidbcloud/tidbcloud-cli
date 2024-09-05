@@ -11,7 +11,6 @@ API version: v1beta1
 package cluster
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -32,7 +31,8 @@ type V1beta1PartialUpdateClusterRequestPartialUpdateCluster struct {
 	// Optional. The endpoints for connecting to the cluster.
 	Endpoints *V1beta1ClusterEndpoints `json:"endpoints,omitempty"`
 	// Optional. The labels for the cluster. tidb.cloud/organization. The label for the cluster organization id. tidb.cloud/project. The label for the cluster project id.
-	Labels *map[string]string `json:"labels,omitempty"`
+	Labels               *map[string]string `json:"labels,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _V1beta1PartialUpdateClusterRequestPartialUpdateCluster V1beta1PartialUpdateClusterRequestPartialUpdateCluster
@@ -265,6 +265,11 @@ func (o V1beta1PartialUpdateClusterRequestPartialUpdateCluster) ToMap() (map[str
 	if !IsNil(o.Labels) {
 		toSerialize["labels"] = o.Labels
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -292,15 +297,25 @@ func (o *V1beta1PartialUpdateClusterRequestPartialUpdateCluster) UnmarshalJSON(d
 
 	varV1beta1PartialUpdateClusterRequestPartialUpdateCluster := _V1beta1PartialUpdateClusterRequestPartialUpdateCluster{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varV1beta1PartialUpdateClusterRequestPartialUpdateCluster)
+	err = json.Unmarshal(data, &varV1beta1PartialUpdateClusterRequestPartialUpdateCluster)
 
 	if err != nil {
 		return err
 	}
 
 	*o = V1beta1PartialUpdateClusterRequestPartialUpdateCluster(varV1beta1PartialUpdateClusterRequestPartialUpdateCluster)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "clusterId")
+		delete(additionalProperties, "displayName")
+		delete(additionalProperties, "spendingLimit")
+		delete(additionalProperties, "automatedBackupPolicy")
+		delete(additionalProperties, "endpoints")
+		delete(additionalProperties, "labels")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

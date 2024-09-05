@@ -24,8 +24,11 @@ type ListExportsResponse struct {
 	// Token provided to retrieve the next page of results.
 	NextPageToken *string `json:"nextPageToken,omitempty"`
 	// Total number of exports.
-	TotalSize *int64 `json:"totalSize,omitempty"`
+	TotalSize            *int64 `json:"totalSize,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ListExportsResponse ListExportsResponse
 
 // NewListExportsResponse instantiates a new ListExportsResponse object
 // This constructor will assign default values to properties that have it defined,
@@ -159,7 +162,35 @@ func (o ListExportsResponse) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.TotalSize) {
 		toSerialize["totalSize"] = o.TotalSize
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ListExportsResponse) UnmarshalJSON(data []byte) (err error) {
+	varListExportsResponse := _ListExportsResponse{}
+
+	err = json.Unmarshal(data, &varListExportsResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ListExportsResponse(varListExportsResponse)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "exports")
+		delete(additionalProperties, "nextPageToken")
+		delete(additionalProperties, "totalSize")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableListExportsResponse struct {

@@ -22,8 +22,11 @@ type ApiOpenApiMspCustomerSignupUrl struct {
 	// The signup URL of the MSP customer.
 	CustomerSignupUrl *string `json:"customerSignupUrl,omitempty"`
 	// The expired time of the MSP customer signup url.
-	ExpiredAt *string `json:"expiredAt,omitempty"`
+	ExpiredAt            *string `json:"expiredAt,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ApiOpenApiMspCustomerSignupUrl ApiOpenApiMspCustomerSignupUrl
 
 // NewApiOpenApiMspCustomerSignupUrl instantiates a new ApiOpenApiMspCustomerSignupUrl object
 // This constructor will assign default values to properties that have it defined,
@@ -122,7 +125,34 @@ func (o ApiOpenApiMspCustomerSignupUrl) ToMap() (map[string]interface{}, error) 
 	if !IsNil(o.ExpiredAt) {
 		toSerialize["expiredAt"] = o.ExpiredAt
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ApiOpenApiMspCustomerSignupUrl) UnmarshalJSON(data []byte) (err error) {
+	varApiOpenApiMspCustomerSignupUrl := _ApiOpenApiMspCustomerSignupUrl{}
+
+	err = json.Unmarshal(data, &varApiOpenApiMspCustomerSignupUrl)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ApiOpenApiMspCustomerSignupUrl(varApiOpenApiMspCustomerSignupUrl)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "customerSignupUrl")
+		delete(additionalProperties, "expiredAt")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableApiOpenApiMspCustomerSignupUrl struct {

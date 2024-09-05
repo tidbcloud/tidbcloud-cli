@@ -24,8 +24,11 @@ type ExportServiceCreateExportBody struct {
 	// Optional. The target of the export.
 	Target *ExportTarget `json:"target,omitempty"`
 	// Optional. The display name of the export. Default: SNAPSHOT_{snapshot_time}.
-	DisplayName *string `json:"displayName,omitempty"`
+	DisplayName          *string `json:"displayName,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ExportServiceCreateExportBody ExportServiceCreateExportBody
 
 // NewExportServiceCreateExportBody instantiates a new ExportServiceCreateExportBody object
 // This constructor will assign default values to properties that have it defined,
@@ -159,7 +162,35 @@ func (o ExportServiceCreateExportBody) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DisplayName) {
 		toSerialize["displayName"] = o.DisplayName
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ExportServiceCreateExportBody) UnmarshalJSON(data []byte) (err error) {
+	varExportServiceCreateExportBody := _ExportServiceCreateExportBody{}
+
+	err = json.Unmarshal(data, &varExportServiceCreateExportBody)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ExportServiceCreateExportBody(varExportServiceCreateExportBody)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "exportOptions")
+		delete(additionalProperties, "target")
+		delete(additionalProperties, "displayName")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableExportServiceCreateExportBody struct {

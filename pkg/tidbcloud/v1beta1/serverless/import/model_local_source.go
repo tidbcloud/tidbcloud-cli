@@ -11,7 +11,6 @@ API version: v1beta1
 package imp
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -28,7 +27,8 @@ type LocalSource struct {
 	// The target table of import.
 	TargetTable string `json:"targetTable"`
 	// The file name of import source file.
-	FileName *string `json:"fileName,omitempty"`
+	FileName             *string `json:"fileName,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _LocalSource LocalSource
@@ -173,6 +173,11 @@ func (o LocalSource) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.FileName) {
 		toSerialize["fileName"] = o.FileName
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -202,15 +207,23 @@ func (o *LocalSource) UnmarshalJSON(data []byte) (err error) {
 
 	varLocalSource := _LocalSource{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varLocalSource)
+	err = json.Unmarshal(data, &varLocalSource)
 
 	if err != nil {
 		return err
 	}
 
 	*o = LocalSource(varLocalSource)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "uploadId")
+		delete(additionalProperties, "targetDatabase")
+		delete(additionalProperties, "targetTable")
+		delete(additionalProperties, "fileName")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

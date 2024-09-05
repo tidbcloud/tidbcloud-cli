@@ -20,8 +20,11 @@ var _ MappedNullable = &ApiOpenApiCreateMspCustomerSignupUrlReq{}
 // ApiOpenApiCreateMspCustomerSignupUrlReq struct for ApiOpenApiCreateMspCustomerSignupUrlReq
 type ApiOpenApiCreateMspCustomerSignupUrlReq struct {
 	// The ID of the MSP.
-	OrgId *string `json:"orgId,omitempty"`
+	OrgId                *string `json:"orgId,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ApiOpenApiCreateMspCustomerSignupUrlReq ApiOpenApiCreateMspCustomerSignupUrlReq
 
 // NewApiOpenApiCreateMspCustomerSignupUrlReq instantiates a new ApiOpenApiCreateMspCustomerSignupUrlReq object
 // This constructor will assign default values to properties that have it defined,
@@ -85,7 +88,33 @@ func (o ApiOpenApiCreateMspCustomerSignupUrlReq) ToMap() (map[string]interface{}
 	if !IsNil(o.OrgId) {
 		toSerialize["orgId"] = o.OrgId
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ApiOpenApiCreateMspCustomerSignupUrlReq) UnmarshalJSON(data []byte) (err error) {
+	varApiOpenApiCreateMspCustomerSignupUrlReq := _ApiOpenApiCreateMspCustomerSignupUrlReq{}
+
+	err = json.Unmarshal(data, &varApiOpenApiCreateMspCustomerSignupUrlReq)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ApiOpenApiCreateMspCustomerSignupUrlReq(varApiOpenApiCreateMspCustomerSignupUrlReq)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "orgId")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableApiOpenApiCreateMspCustomerSignupUrlReq struct {

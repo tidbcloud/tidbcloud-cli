@@ -26,8 +26,11 @@ type ExportOptionsCSVFormat struct {
 	// Representation of null values in CSV files. Default is \"\\N\".
 	NullValue NullableString `json:"nullValue,omitempty"`
 	// Export CSV files of the tables without header. Default is false.
-	SkipHeader *bool `json:"skipHeader,omitempty"`
+	SkipHeader           *bool `json:"skipHeader,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ExportOptionsCSVFormat ExportOptionsCSVFormat
 
 // NewExportOptionsCSVFormat instantiates a new ExportOptionsCSVFormat object
 // This constructor will assign default values to properties that have it defined,
@@ -218,7 +221,36 @@ func (o ExportOptionsCSVFormat) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.SkipHeader) {
 		toSerialize["skipHeader"] = o.SkipHeader
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ExportOptionsCSVFormat) UnmarshalJSON(data []byte) (err error) {
+	varExportOptionsCSVFormat := _ExportOptionsCSVFormat{}
+
+	err = json.Unmarshal(data, &varExportOptionsCSVFormat)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ExportOptionsCSVFormat(varExportOptionsCSVFormat)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "separator")
+		delete(additionalProperties, "delimiter")
+		delete(additionalProperties, "nullValue")
+		delete(additionalProperties, "skipHeader")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableExportOptionsCSVFormat struct {

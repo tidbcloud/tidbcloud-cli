@@ -24,8 +24,11 @@ type ListImportsResp struct {
 	// The total size of the imports.
 	TotalSize *int64 `json:"totalSize,omitempty"`
 	// The next page token.
-	NextPageToken *string `json:"nextPageToken,omitempty"`
+	NextPageToken        *string `json:"nextPageToken,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ListImportsResp ListImportsResp
 
 // NewListImportsResp instantiates a new ListImportsResp object
 // This constructor will assign default values to properties that have it defined,
@@ -159,7 +162,35 @@ func (o ListImportsResp) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.NextPageToken) {
 		toSerialize["nextPageToken"] = o.NextPageToken
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ListImportsResp) UnmarshalJSON(data []byte) (err error) {
+	varListImportsResp := _ListImportsResp{}
+
+	err = json.Unmarshal(data, &varListImportsResp)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ListImportsResp(varListImportsResp)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "imports")
+		delete(additionalProperties, "totalSize")
+		delete(additionalProperties, "nextPageToken")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableListImportsResp struct {

@@ -22,8 +22,11 @@ type ExportOptionsFilterTable struct {
 	// Optional. The table-filter expressions.
 	Patterns []string `json:"patterns,omitempty"`
 	// Optional. Export only selected records.
-	Where *string `json:"where,omitempty"`
+	Where                *string `json:"where,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ExportOptionsFilterTable ExportOptionsFilterTable
 
 // NewExportOptionsFilterTable instantiates a new ExportOptionsFilterTable object
 // This constructor will assign default values to properties that have it defined,
@@ -122,7 +125,34 @@ func (o ExportOptionsFilterTable) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Where) {
 		toSerialize["where"] = o.Where
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ExportOptionsFilterTable) UnmarshalJSON(data []byte) (err error) {
+	varExportOptionsFilterTable := _ExportOptionsFilterTable{}
+
+	err = json.Unmarshal(data, &varExportOptionsFilterTable)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ExportOptionsFilterTable(varExportOptionsFilterTable)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "patterns")
+		delete(additionalProperties, "where")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableExportOptionsFilterTable struct {

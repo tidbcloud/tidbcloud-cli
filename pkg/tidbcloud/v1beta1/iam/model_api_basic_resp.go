@@ -19,9 +19,12 @@ var _ MappedNullable = &ApiBasicResp{}
 
 // ApiBasicResp struct for ApiBasicResp
 type ApiBasicResp struct {
-	Code    *int32  `json:"code,omitempty"`
-	Message *string `json:"message,omitempty"`
+	Code                 *int32  `json:"code,omitempty"`
+	Message              *string `json:"message,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ApiBasicResp ApiBasicResp
 
 // NewApiBasicResp instantiates a new ApiBasicResp object
 // This constructor will assign default values to properties that have it defined,
@@ -120,7 +123,34 @@ func (o ApiBasicResp) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Message) {
 		toSerialize["message"] = o.Message
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ApiBasicResp) UnmarshalJSON(data []byte) (err error) {
+	varApiBasicResp := _ApiBasicResp{}
+
+	err = json.Unmarshal(data, &varApiBasicResp)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ApiBasicResp(varApiBasicResp)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "code")
+		delete(additionalProperties, "message")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableApiBasicResp struct {

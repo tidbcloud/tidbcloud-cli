@@ -29,8 +29,11 @@ type ApiCreateSqlUserReq struct {
 	CustomRoles []string `json:"customRoles,omitempty"`
 	Password    *string  `json:"password,omitempty"`
 	// The username of the sql user, if cluster is serverless and autoPrefix is false, the userName must be start with serverless token.
-	UserName *string `json:"userName,omitempty"`
+	UserName             *string `json:"userName,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ApiCreateSqlUserReq ApiCreateSqlUserReq
 
 // NewApiCreateSqlUserReq instantiates a new ApiCreateSqlUserReq object
 // This constructor will assign default values to properties that have it defined,
@@ -269,7 +272,38 @@ func (o ApiCreateSqlUserReq) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.UserName) {
 		toSerialize["userName"] = o.UserName
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ApiCreateSqlUserReq) UnmarshalJSON(data []byte) (err error) {
+	varApiCreateSqlUserReq := _ApiCreateSqlUserReq{}
+
+	err = json.Unmarshal(data, &varApiCreateSqlUserReq)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ApiCreateSqlUserReq(varApiCreateSqlUserReq)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "authMethod")
+		delete(additionalProperties, "autoPrefix")
+		delete(additionalProperties, "builtinRole")
+		delete(additionalProperties, "customRoles")
+		delete(additionalProperties, "password")
+		delete(additionalProperties, "userName")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableApiCreateSqlUserReq struct {

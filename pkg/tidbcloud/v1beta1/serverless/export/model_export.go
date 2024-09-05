@@ -11,7 +11,6 @@ API version: v1beta1
 package export
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -49,7 +48,8 @@ type Export struct {
 	// Output_only. Snapshot time of the export.
 	SnapshotTime NullableTime `json:"snapshotTime,omitempty"`
 	// Output_only. Expire time of the export.
-	ExpireTime NullableTime `json:"expireTime,omitempty"`
+	ExpireTime           NullableTime `json:"expireTime,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _Export Export
@@ -617,6 +617,11 @@ func (o Export) ToMap() (map[string]interface{}, error) {
 	if o.ExpireTime.IsSet() {
 		toSerialize["expireTime"] = o.ExpireTime.Get()
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -644,15 +649,33 @@ func (o *Export) UnmarshalJSON(data []byte) (err error) {
 
 	varExport := _Export{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varExport)
+	err = json.Unmarshal(data, &varExport)
 
 	if err != nil {
 		return err
 	}
 
 	*o = Export(varExport)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "exportId")
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "clusterId")
+		delete(additionalProperties, "createdBy")
+		delete(additionalProperties, "state")
+		delete(additionalProperties, "exportOptions")
+		delete(additionalProperties, "target")
+		delete(additionalProperties, "reason")
+		delete(additionalProperties, "displayName")
+		delete(additionalProperties, "createTime")
+		delete(additionalProperties, "updateTime")
+		delete(additionalProperties, "completeTime")
+		delete(additionalProperties, "snapshotTime")
+		delete(additionalProperties, "expireTime")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

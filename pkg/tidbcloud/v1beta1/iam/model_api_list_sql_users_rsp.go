@@ -22,8 +22,11 @@ type ApiListSqlUsersRsp struct {
 	// `next_page_token` can be sent in a subsequent call to fetch more results
 	NextPageToken *string `json:"nextPageToken,omitempty"`
 	// SqlUsers []*SqlUser `json:\"sqlUsers\"`
-	SqlUsers []ApiSqlUser `json:"sqlUsers,omitempty"`
+	SqlUsers             []ApiSqlUser `json:"sqlUsers,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ApiListSqlUsersRsp ApiListSqlUsersRsp
 
 // NewApiListSqlUsersRsp instantiates a new ApiListSqlUsersRsp object
 // This constructor will assign default values to properties that have it defined,
@@ -122,7 +125,34 @@ func (o ApiListSqlUsersRsp) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.SqlUsers) {
 		toSerialize["sqlUsers"] = o.SqlUsers
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ApiListSqlUsersRsp) UnmarshalJSON(data []byte) (err error) {
+	varApiListSqlUsersRsp := _ApiListSqlUsersRsp{}
+
+	err = json.Unmarshal(data, &varApiListSqlUsersRsp)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ApiListSqlUsersRsp(varApiListSqlUsersRsp)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "nextPageToken")
+		delete(additionalProperties, "sqlUsers")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableApiListSqlUsersRsp struct {

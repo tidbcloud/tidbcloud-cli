@@ -21,7 +21,10 @@ var _ MappedNullable = &V1beta1ClusterEncryptionConfig{}
 type V1beta1ClusterEncryptionConfig struct {
 	// Optional. Whether enhanced encryption for cluster data is enabled.
 	EnhancedEncryptionEnabled *bool `json:"enhancedEncryptionEnabled,omitempty"`
+	AdditionalProperties      map[string]interface{}
 }
+
+type _V1beta1ClusterEncryptionConfig V1beta1ClusterEncryptionConfig
 
 // NewV1beta1ClusterEncryptionConfig instantiates a new V1beta1ClusterEncryptionConfig object
 // This constructor will assign default values to properties that have it defined,
@@ -85,7 +88,33 @@ func (o V1beta1ClusterEncryptionConfig) ToMap() (map[string]interface{}, error) 
 	if !IsNil(o.EnhancedEncryptionEnabled) {
 		toSerialize["enhancedEncryptionEnabled"] = o.EnhancedEncryptionEnabled
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *V1beta1ClusterEncryptionConfig) UnmarshalJSON(data []byte) (err error) {
+	varV1beta1ClusterEncryptionConfig := _V1beta1ClusterEncryptionConfig{}
+
+	err = json.Unmarshal(data, &varV1beta1ClusterEncryptionConfig)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1beta1ClusterEncryptionConfig(varV1beta1ClusterEncryptionConfig)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "enhancedEncryptionEnabled")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableV1beta1ClusterEncryptionConfig struct {

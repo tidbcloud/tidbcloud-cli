@@ -32,8 +32,11 @@ type ApiProject struct {
 	// The org id  of the project.
 	OrgId *string `json:"org_id,omitempty"`
 	// Number of users in the project.
-	UserCount *int32 `json:"user_count,omitempty"`
+	UserCount            *int32 `json:"user_count,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ApiProject ApiProject
 
 // NewApiProject instantiates a new ApiProject object
 // This constructor will assign default values to properties that have it defined,
@@ -307,7 +310,39 @@ func (o ApiProject) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.UserCount) {
 		toSerialize["user_count"] = o.UserCount
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ApiProject) UnmarshalJSON(data []byte) (err error) {
+	varApiProject := _ApiProject{}
+
+	err = json.Unmarshal(data, &varApiProject)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ApiProject(varApiProject)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "aws_cmek_enabled")
+		delete(additionalProperties, "cluster_count")
+		delete(additionalProperties, "create_timestamp")
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "org_id")
+		delete(additionalProperties, "user_count")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableApiProject struct {

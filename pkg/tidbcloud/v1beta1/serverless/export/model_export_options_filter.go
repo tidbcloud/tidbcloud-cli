@@ -22,8 +22,11 @@ type ExportOptionsFilter struct {
 	// Optional. Use SQL to filter the export.
 	Sql *string `json:"sql,omitempty"`
 	// Optional. Use table-filter to filter the export.
-	Table *ExportOptionsFilterTable `json:"table,omitempty"`
+	Table                *ExportOptionsFilterTable `json:"table,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ExportOptionsFilter ExportOptionsFilter
 
 // NewExportOptionsFilter instantiates a new ExportOptionsFilter object
 // This constructor will assign default values to properties that have it defined,
@@ -122,7 +125,34 @@ func (o ExportOptionsFilter) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Table) {
 		toSerialize["table"] = o.Table
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ExportOptionsFilter) UnmarshalJSON(data []byte) (err error) {
+	varExportOptionsFilter := _ExportOptionsFilter{}
+
+	err = json.Unmarshal(data, &varExportOptionsFilter)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ExportOptionsFilter(varExportOptionsFilter)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "sql")
+		delete(additionalProperties, "table")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableExportOptionsFilter struct {

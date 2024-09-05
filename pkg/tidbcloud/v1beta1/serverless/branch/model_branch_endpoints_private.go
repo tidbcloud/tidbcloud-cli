@@ -22,10 +22,13 @@ type BranchEndpointsPrivate struct {
 	// Output Only. Host Name of Public Endpoint.
 	Host *string `json:"host,omitempty"`
 	// Output Only. Port of Public Endpoint.
-	Port *int32                     `json:"port,omitempty"`
-	Aws  *BranchEndpointsPrivateAWS `json:"aws,omitempty"`
-	Gcp  *BranchEndpointsPrivateGCP `json:"gcp,omitempty"`
+	Port                 *int32                     `json:"port,omitempty"`
+	Aws                  *BranchEndpointsPrivateAWS `json:"aws,omitempty"`
+	Gcp                  *BranchEndpointsPrivateGCP `json:"gcp,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _BranchEndpointsPrivate BranchEndpointsPrivate
 
 // NewBranchEndpointsPrivate instantiates a new BranchEndpointsPrivate object
 // This constructor will assign default values to properties that have it defined,
@@ -194,7 +197,36 @@ func (o BranchEndpointsPrivate) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Gcp) {
 		toSerialize["gcp"] = o.Gcp
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *BranchEndpointsPrivate) UnmarshalJSON(data []byte) (err error) {
+	varBranchEndpointsPrivate := _BranchEndpointsPrivate{}
+
+	err = json.Unmarshal(data, &varBranchEndpointsPrivate)
+
+	if err != nil {
+		return err
+	}
+
+	*o = BranchEndpointsPrivate(varBranchEndpointsPrivate)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "host")
+		delete(additionalProperties, "port")
+		delete(additionalProperties, "aws")
+		delete(additionalProperties, "gcp")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableBranchEndpointsPrivate struct {

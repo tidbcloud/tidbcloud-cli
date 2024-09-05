@@ -19,10 +19,13 @@ var _ MappedNullable = &BranchEndpointsPublic{}
 
 // BranchEndpointsPublic Message for Public Endpoint for this branch.
 type BranchEndpointsPublic struct {
-	Host     *string `json:"host,omitempty"`
-	Port     *int32  `json:"port,omitempty"`
-	Disabled *bool   `json:"disabled,omitempty"`
+	Host                 *string `json:"host,omitempty"`
+	Port                 *int32  `json:"port,omitempty"`
+	Disabled             *bool   `json:"disabled,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _BranchEndpointsPublic BranchEndpointsPublic
 
 // NewBranchEndpointsPublic instantiates a new BranchEndpointsPublic object
 // This constructor will assign default values to properties that have it defined,
@@ -156,7 +159,35 @@ func (o BranchEndpointsPublic) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Disabled) {
 		toSerialize["disabled"] = o.Disabled
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *BranchEndpointsPublic) UnmarshalJSON(data []byte) (err error) {
+	varBranchEndpointsPublic := _BranchEndpointsPublic{}
+
+	err = json.Unmarshal(data, &varBranchEndpointsPublic)
+
+	if err != nil {
+		return err
+	}
+
+	*o = BranchEndpointsPublic(varBranchEndpointsPublic)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "host")
+		delete(additionalProperties, "port")
+		delete(additionalProperties, "disabled")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableBranchEndpointsPublic struct {

@@ -22,10 +22,13 @@ type EndpointsPrivate struct {
 	// Output_only. The hostname of the private endpoint.
 	Host *string `json:"host,omitempty"`
 	// Output_only. The port of the private endpoint.
-	Port *int32      `json:"port,omitempty"`
-	Aws  *PrivateAWS `json:"aws,omitempty"`
-	Gcp  *PrivateGCP `json:"gcp,omitempty"`
+	Port                 *int32      `json:"port,omitempty"`
+	Aws                  *PrivateAWS `json:"aws,omitempty"`
+	Gcp                  *PrivateGCP `json:"gcp,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _EndpointsPrivate EndpointsPrivate
 
 // NewEndpointsPrivate instantiates a new EndpointsPrivate object
 // This constructor will assign default values to properties that have it defined,
@@ -194,7 +197,36 @@ func (o EndpointsPrivate) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Gcp) {
 		toSerialize["gcp"] = o.Gcp
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *EndpointsPrivate) UnmarshalJSON(data []byte) (err error) {
+	varEndpointsPrivate := _EndpointsPrivate{}
+
+	err = json.Unmarshal(data, &varEndpointsPrivate)
+
+	if err != nil {
+		return err
+	}
+
+	*o = EndpointsPrivate(varEndpointsPrivate)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "host")
+		delete(additionalProperties, "port")
+		delete(additionalProperties, "aws")
+		delete(additionalProperties, "gcp")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableEndpointsPrivate struct {

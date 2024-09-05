@@ -19,9 +19,12 @@ var _ MappedNullable = &StartUploadResponse{}
 
 // StartUploadResponse struct for StartUploadResponse
 type StartUploadResponse struct {
-	UploadUrl []string `json:"uploadUrl,omitempty"`
-	UploadId  *string  `json:"uploadId,omitempty"`
+	UploadUrl            []string `json:"uploadUrl,omitempty"`
+	UploadId             *string  `json:"uploadId,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _StartUploadResponse StartUploadResponse
 
 // NewStartUploadResponse instantiates a new StartUploadResponse object
 // This constructor will assign default values to properties that have it defined,
@@ -120,7 +123,34 @@ func (o StartUploadResponse) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.UploadId) {
 		toSerialize["uploadId"] = o.UploadId
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *StartUploadResponse) UnmarshalJSON(data []byte) (err error) {
+	varStartUploadResponse := _StartUploadResponse{}
+
+	err = json.Unmarshal(data, &varStartUploadResponse)
+
+	if err != nil {
+		return err
+	}
+
+	*o = StartUploadResponse(varStartUploadResponse)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "uploadUrl")
+		delete(additionalProperties, "uploadId")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableStartUploadResponse struct {

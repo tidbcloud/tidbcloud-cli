@@ -22,8 +22,11 @@ type V1beta1ClusterAutomatedBackupPolicy struct {
 	// Optional. Cron expression for when automated backups should start.
 	StartTime *string `json:"startTime,omitempty"`
 	// Optional. Number of days to retain automated backups.
-	RetentionDays *int32 `json:"retentionDays,omitempty"`
+	RetentionDays        *int32 `json:"retentionDays,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _V1beta1ClusterAutomatedBackupPolicy V1beta1ClusterAutomatedBackupPolicy
 
 // NewV1beta1ClusterAutomatedBackupPolicy instantiates a new V1beta1ClusterAutomatedBackupPolicy object
 // This constructor will assign default values to properties that have it defined,
@@ -122,7 +125,34 @@ func (o V1beta1ClusterAutomatedBackupPolicy) ToMap() (map[string]interface{}, er
 	if !IsNil(o.RetentionDays) {
 		toSerialize["retentionDays"] = o.RetentionDays
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *V1beta1ClusterAutomatedBackupPolicy) UnmarshalJSON(data []byte) (err error) {
+	varV1beta1ClusterAutomatedBackupPolicy := _V1beta1ClusterAutomatedBackupPolicy{}
+
+	err = json.Unmarshal(data, &varV1beta1ClusterAutomatedBackupPolicy)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1beta1ClusterAutomatedBackupPolicy(varV1beta1ClusterAutomatedBackupPolicy)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "startTime")
+		delete(additionalProperties, "retentionDays")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableV1beta1ClusterAutomatedBackupPolicy struct {
