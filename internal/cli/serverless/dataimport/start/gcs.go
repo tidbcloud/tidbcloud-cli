@@ -20,7 +20,6 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
@@ -36,6 +35,7 @@ import (
 type GCSOpts struct {
 	h           *internal.Helper
 	interactive bool
+	clusterId   string
 }
 
 func (o GCSOpts) SupportedFileTypes() []string {
@@ -49,7 +49,8 @@ func (o GCSOpts) SupportedFileTypes() []string {
 
 func (o GCSOpts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
-	var clusterID, fileType, gcsUri, accountKey string
+	var fileType, gcsUri, accountKey string
+	clusterId := o.clusterId
 	var authType imp.ImportGcsAuthTypeEnum
 	var format *imp.CSVFormat
 	d, err := o.h.Client()
@@ -64,17 +65,6 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		}
 
 		// interactive mode
-		project, err := cloud.GetSelectedProject(ctx, o.h.QueryPageSize, d)
-		if err != nil {
-			return err
-		}
-
-		cluster, err := cloud.GetSelectedCluster(ctx, project.ID, o.h.QueryPageSize, d)
-		if err != nil {
-			return err
-		}
-		clusterID = cluster.ID
-
 		authTypes := []interface{}{imp.IMPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY}
 		model, err := ui.InitialSelectModel(authTypes, "Choose the auth type:")
 		if err != nil {
@@ -134,7 +124,7 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		}
 	} else {
 		// non-interactive mode
-		clusterID, err = cmd.Flags().GetString(flag.ClusterID)
+		clusterId, err = cmd.Flags().GetString(flag.ClusterID)
 		if err != nil {
 			return errors.Trace(err)
 		}
@@ -169,7 +159,7 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		}
 	}
 
-	cmd.Annotations[telemetry.ClusterID] = clusterID
+	cmd.Annotations[telemetry.ClusterID] = clusterId
 
 	source := imp.NewImportSource(imp.IMPORTSOURCETYPEENUM_GCS)
 	source.Gcs = imp.NewGCSSource(gcsUri, authType)
@@ -179,12 +169,12 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 	body := imp.NewImportServiceCreateImportBody(*options, *source)
 
 	if o.h.IOStreams.CanPrompt {
-		err := spinnerWaitStartOp(ctx, o.h, d, clusterID, body)
+		err := spinnerWaitStartOp(ctx, o.h, d, clusterId, body)
 		if err != nil {
 			return err
 		}
 	} else {
-		err := waitStartOp(ctx, o.h, d, clusterID, body)
+		err := waitStartOp(ctx, o.h, d, clusterId, body)
 		if err != nil {
 			return err
 		}

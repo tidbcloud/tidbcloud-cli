@@ -17,6 +17,7 @@ package dataimport
 import (
 	"fmt"
 	"strconv"
+	"time"
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
@@ -169,7 +170,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 						*item.ImportId,
 						st,
 						string(*item.State),
-						item.CreateTime.String(),
+						item.CreateTime.Format(time.RFC3339),
 						source,
 						ft,
 						convertToStoreSize(*item.TotalSize),

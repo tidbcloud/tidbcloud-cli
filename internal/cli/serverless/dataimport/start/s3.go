@@ -20,7 +20,6 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
@@ -34,6 +33,7 @@ import (
 type S3Opts struct {
 	h           *internal.Helper
 	interactive bool
+	clusterId   string
 }
 
 func (o S3Opts) SupportedFileTypes() []string {
@@ -47,7 +47,8 @@ func (o S3Opts) SupportedFileTypes() []string {
 
 func (o S3Opts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
-	var clusterID, fileType, s3Uri, s3Arn, accessKeyID, secretAccessKey string
+	var fileType, s3Uri, s3Arn, accessKeyID, secretAccessKey string
+	clusterId := o.clusterId
 	var authType imp.ImportS3AuthTypeEnum
 	var format *imp.CSVFormat
 	d, err := o.h.Client()
@@ -62,17 +63,6 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		}
 
 		// interactive mode
-		project, err := cloud.GetSelectedProject(ctx, o.h.QueryPageSize, d)
-		if err != nil {
-			return err
-		}
-
-		cluster, err := cloud.GetSelectedCluster(ctx, project.ID, o.h.QueryPageSize, d)
-		if err != nil {
-			return err
-		}
-		clusterID = cluster.ID
-
 		authTypes := []interface{}{imp.IMPORTS3AUTHTYPEENUM_ROLE_ARN, imp.IMPORTS3AUTHTYPEENUM_ACCESS_KEY}
 		model, err := ui.InitialSelectModel(authTypes, "Choose the auth type:")
 		if err != nil {
@@ -150,7 +140,7 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		}
 	} else {
 		// non-interactive mode
-		clusterID, err = cmd.Flags().GetString(flag.ClusterID)
+		clusterId, err = cmd.Flags().GetString(flag.ClusterID)
 		if err != nil {
 			return errors.Trace(err)
 		}
@@ -195,7 +185,7 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		}
 	}
 
-	cmd.Annotations[telemetry.ClusterID] = clusterID
+	cmd.Annotations[telemetry.ClusterID] = clusterId
 
 	source := imp.NewImportSource(imp.IMPORTSOURCETYPEENUM_S3)
 	source.S3 = imp.NewS3Source(s3Uri, authType)
@@ -214,12 +204,12 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 	body := imp.NewImportServiceCreateImportBody(*options, *source)
 
 	if o.h.IOStreams.CanPrompt {
-		err := spinnerWaitStartOp(ctx, o.h, d, clusterID, body)
+		err := spinnerWaitStartOp(ctx, o.h, d, clusterId, body)
 		if err != nil {
 			return err
 		}
 	} else {
-		err := waitStartOp(ctx, o.h, d, clusterID, body)
+		err := waitStartOp(ctx, o.h, d, clusterId, body)
 		if err != nil {
 			return err
 		}

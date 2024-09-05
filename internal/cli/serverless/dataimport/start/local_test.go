@@ -176,6 +176,11 @@ func (suite *LocalImportSuite) TestLocalImportArgs() {
 			args: []string{"--source-type", "LOCAL", "-c", clusterID, "--file-type", string(fileType), "--local.target-database", targetDatabase, "--local.target-table", targetTable},
 			err:  fmt.Errorf("required flag(s) \"local.file-path\" not set"),
 		},
+		{
+			name: "start import with unsupported data format",
+			args: []string{"--source-type", "LOCAL", "-c", clusterID, "--file-type", string(fileType), "--local.target-database", targetDatabase, "--local.target-table", targetTable, "--file-type", "PARQUET"},
+			err:  fmt.Errorf("file type \"PARQUET\" is not supported, please use one of [\"CSV\"]"),
+		},
 	}
 
 	for _, tt := range tests {

@@ -25,7 +25,6 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/aws/s3"
-	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
@@ -53,6 +52,7 @@ type LocalOpts struct {
 	concurrency int
 	h           *internal.Helper
 	interactive bool
+	clusterId   string
 }
 
 func (o LocalOpts) SupportedFileTypes() []string {
@@ -63,7 +63,8 @@ func (o LocalOpts) SupportedFileTypes() []string {
 
 func (o LocalOpts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
-	var clusterID, fileType, targetDatabase, targetTable, filePath string
+	var fileType, targetDatabase, targetTable, filePath string
+	clusterId := o.clusterId
 	var format *imp.CSVFormat
 	d, err := o.h.Client()
 	if err != nil {
@@ -82,17 +83,6 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		}
 
 		// interactive mode
-		project, err := cloud.GetSelectedProject(ctx, o.h.QueryPageSize, d)
-		if err != nil {
-			return err
-		}
-
-		cluster, err := cloud.GetSelectedCluster(ctx, project.ID, o.h.QueryPageSize, d)
-		if err != nil {
-			return err
-		}
-		clusterID = cluster.ID
-
 		var fileTypes []interface{}
 		for _, f := range o.SupportedFileTypes() {
 			fileTypes = append(fileTypes, f)
@@ -142,7 +132,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		}
 	} else {
 		// non-interactive mode
-		clusterID = cmd.Flag(flag.ClusterID).Value.String()
+		clusterId = cmd.Flag(flag.ClusterID).Value.String()
 		fileType = cmd.Flag(flag.FileType).Value.String()
 		if !slices.Contains(o.SupportedFileTypes(), fileType) {
 			return fmt.Errorf("file type \"%s\" is not supported, please use one of %q", fileType, o.SupportedFileTypes())
@@ -161,7 +151,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		}
 	}
 
-	cmd.Annotations[telemetry.ClusterID] = clusterID
+	cmd.Annotations[telemetry.ClusterID] = clusterId
 
 	uploadFile, err := os.Open(filePath)
 	if err != nil {
@@ -182,7 +172,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		DatabaseName:  aws.String(targetDatabase),
 		TableName:     aws.String(targetTable),
 		ContentLength: aws.Int64(stat.Size()),
-		ClusterID:     clusterID,
+		ClusterID:     clusterId,
 		Body:          uploadFile,
 	}
 	if o.h.IOStreams.CanPrompt {
@@ -204,12 +194,12 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 	body := imp.NewImportServiceCreateImportBody(*options, *source)
 
 	if o.h.IOStreams.CanPrompt {
-		err := spinnerWaitStartOp(ctx, o.h, d, clusterID, body)
+		err := spinnerWaitStartOp(ctx, o.h, d, clusterId, body)
 		if err != nil {
 			return err
 		}
 	} else {
-		err := waitStartOp(ctx, o.h, d, clusterID, body)
+		err := waitStartOp(ctx, o.h, d, clusterId, body)
 		if err != nil {
 			return err
 		}

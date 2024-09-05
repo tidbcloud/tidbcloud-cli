@@ -32,7 +32,6 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
@@ -51,19 +50,10 @@ var inputDescription = map[string]string{
 	flag.CSVSeparator:         "Input the csv separator: separator of each value in CSV files, skip to use default value (,)",
 	flag.CSVDelimiter:         "Input the csv delimiter: delimiter of string type variables in CSV files, skip to use default value (\"). If you want to set empty string, please use non-interactive mode",
 	flag.CSVNullValue:         "Input the csv null value: representation of null values in CSV files, skip to use default value (\\N). If you want to set empty string, please use non-interactive mode",
-	flag.CSVSkipHeader:        "Input the csv skip header: export CSV files of the tables without header. Type `true` to skip header, others will not skip header",
+	flag.CSVSkipHeader:        "Input the csv skip header: export CSV files of the tables without header. Type `true` to skip header, others will not skip header, default value (false)",
 	flag.CSVBackslashEscape:   "Input the csv backslash-escape: whether to interpret backslash escapes inside fields, skip to use default value (true)",
 	flag.CSVTrimLastSeparator: "Input the csv trim-last-separator: remove the last separator when a line ends with a separator, skip to use default value (false)",
-}
-
-var CSVFormatInputFields = map[string]int{
-	flag.CSVSeparator:         0,
-	flag.CSVDelimiter:         1,
-	flag.CSVSkipHeader:        2,
-	flag.CSVNotNull:           3,
-	flag.CSVNullValue:         4,
-	flag.CSVBackslashEscape:   5,
-	flag.CSVTrimLastSeparator: 6,
+	flag.CSVNotNull:           "Input the csv not-null: whether the CSV can contains any NULL value, skip to use default value (false)",
 }
 
 var sourceTypes = []imp.ImportSourceTypeEnum{
@@ -80,13 +70,42 @@ type StartOpts struct {
 func (o StartOpts) SupportedFileTypes() []string {
 	return []string{
 		string(imp.IMPORTFILETYPEENUM_CSV),
+		string(imp.IMPORTFILETYPEENUM_PARQUET),
+		string(imp.IMPORTFILETYPEENUM_SQL),
+		string(imp.IMPORTFILETYPEENUM_AURORA_SNAPSHOT),
 	}
 }
 
-func (c StartOpts) NonInteractiveFlags() []string {
+func (o StartOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.FileType,
+		flag.SourceType,
+		flag.LocalFilePath,
+		flag.LocalTargetDatabase,
+		flag.LocalTargetTable,
+		flag.LocalConcurrency,
+		flag.S3URI,
+		flag.S3AccessKeyID,
+		flag.S3SecretAccessKey,
+		flag.S3RoleArn,
+		flag.GCSURI,
+		flag.GCSServiceAccountKey,
+		flag.AzureBlobURI,
+		flag.AzureBlobSASToken,
+		flag.CSVSeparator,
+		flag.CSVDelimiter,
+		flag.CSVNotNull,
+		flag.CSVNullValue,
+		flag.CSVBackslashEscape,
+		flag.CSVTrimLastSeparator,
+		flag.CSVSkipHeader,
+	}
+}
+
+func (o StartOpts) RequiredFlags() []string {
+	return []string{
+		flag.ClusterID,
 	}
 }
 
@@ -125,7 +144,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 
 			// mark required flags in non-interactive mode
 			if !opts.interactive {
-				for _, fn := range flags {
+				for _, fn := range opts.RequiredFlags() {
 					err := cmd.MarkFlagRequired(fn)
 					if err != nil {
 						return errors.Trace(err)
@@ -137,12 +156,29 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var sourceType imp.ImportSourceTypeEnum
+			var clusterId string
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
 				var err error
+				ctx := cmd.Context()
+				d, err := h.Client()
+				if err != nil {
+					return err
+				}
+				project, err := cloud.GetSelectedProject(ctx, h.QueryPageSize, d)
+				if err != nil {
+					return err
+				}
+
+				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
+				if err != nil {
+					return err
+				}
+				clusterId = cluster.ID
+
 				sourceType, err = getSelectedSourceType()
 				if err != nil {
 					return err
@@ -156,24 +192,28 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 					concurrency: concurrency,
 					h:           h,
 					interactive: opts.interactive,
+					clusterId:   clusterId,
 				}
 				return localOpts.Run(cmd)
 			} else if sourceType == imp.IMPORTSOURCETYPEENUM_S3 {
 				s3Opts := S3Opts{
 					h:           h,
 					interactive: opts.interactive,
+					clusterId:   clusterId,
 				}
 				return s3Opts.Run(cmd)
 			} else if sourceType == imp.IMPORTSOURCETYPEENUM_GCS {
 				gcsOpts := GCSOpts{
 					h:           h,
 					interactive: opts.interactive,
+					clusterId:   clusterId,
 				}
 				return gcsOpts.Run(cmd)
 			} else if sourceType == imp.IMPORTSOURCETYPEENUM_AZURE_BLOB {
 				azBlobOpts := AzBlobOpts{
 					h:           h,
 					interactive: opts.interactive,
+					clusterId:   clusterId,
 				}
 				return azBlobOpts.Run(cmd)
 			} else {
@@ -308,7 +348,7 @@ func getCSVFormat() (format *imp.CSVFormat, errToReturn error) {
 
 	needCustomCSV := false
 	prompt := &survey.Confirm{
-		Message: "Do you need to custom CSV format?",
+		Message: "Do you need to customize CSV format?",
 	}
 	err := survey.AskOne(prompt, &needCustomCSV)
 	if err != nil {
@@ -323,27 +363,23 @@ func getCSVFormat() (format *imp.CSVFormat, errToReturn error) {
 
 	if needCustomCSV {
 		// variables for input
-		p := tea.NewProgram(initialCSVFormatInputModel())
-		inputModel, err := p.Run()
+		inputs := []string{flag.CSVSeparator, flag.CSVDelimiter, flag.CSVBackslashEscape, flag.CSVTrimLastSeparator,
+			flag.CSVNotNull, flag.CSVNullValue, flag.CSVSkipHeader}
+		inputModel, err := ui.InitialInputModel(inputs, inputDescription)
 		if err != nil {
-			errToReturn = errors.Trace(err)
-			return
-		}
-		if inputModel.(ui.TextInputModel).Interrupted {
-			errToReturn = util.InterruptError
-			return
+			return nil, err
 		}
 
 		// If user input is blank, use the default value.
-		v := inputModel.(ui.TextInputModel).Inputs[CSVFormatInputFields[flag.CSVSeparator]].Value()
+		v := inputModel.Inputs[0].Value()
 		if len(v) > 0 {
 			separator = v
 		}
-		v = inputModel.(ui.TextInputModel).Inputs[CSVFormatInputFields[flag.CSVDelimiter]].Value()
+		v = inputModel.Inputs[1].Value()
 		if len(v) > 0 {
 			delimiter = v
 		}
-		v = inputModel.(ui.TextInputModel).Inputs[CSVFormatInputFields[flag.CSVBackslashEscape]].Value()
+		v = inputModel.Inputs[2].Value()
 		if len(v) > 0 {
 			backslashEscape, err = strconv.ParseBool(v)
 			if err != nil {
@@ -351,7 +387,7 @@ func getCSVFormat() (format *imp.CSVFormat, errToReturn error) {
 				return
 			}
 		}
-		v = inputModel.(ui.TextInputModel).Inputs[CSVFormatInputFields[flag.CSVTrimLastSeparator]].Value()
+		v = inputModel.Inputs[3].Value()
 		if len(v) > 0 {
 			trimLastSeparator, err = strconv.ParseBool(v)
 			if err != nil {
@@ -359,7 +395,7 @@ func getCSVFormat() (format *imp.CSVFormat, errToReturn error) {
 				return
 			}
 		}
-		v = inputModel.(ui.TextInputModel).Inputs[CSVFormatInputFields[flag.CSVNotNull]].Value()
+		v = inputModel.Inputs[4].Value()
 		if len(v) > 0 {
 			notNull, err = strconv.ParseBool(v)
 			if err != nil {
@@ -367,11 +403,11 @@ func getCSVFormat() (format *imp.CSVFormat, errToReturn error) {
 				return
 			}
 		}
-		v = inputModel.(ui.TextInputModel).Inputs[CSVFormatInputFields[flag.CSVNullValue]].Value()
+		v = inputModel.Inputs[5].Value()
 		if len(v) > 0 {
 			nullValue = v
 		}
-		v = inputModel.(ui.TextInputModel).Inputs[CSVFormatInputFields[flag.CSVSkipHeader]].Value()
+		v = inputModel.Inputs[6].Value()
 		if len(v) > 0 {
 			skipHeader, err = strconv.ParseBool(v)
 			if err != nil {
@@ -391,43 +427,6 @@ func getCSVFormat() (format *imp.CSVFormat, errToReturn error) {
 		NotNull:           *imp.NewNullableBool(aws.Bool(notNull)),
 	}
 	return
-}
-
-func initialCSVFormatInputModel() ui.TextInputModel {
-	m := ui.TextInputModel{
-		Inputs: make([]textinput.Model, len(CSVFormatInputFields)),
-	}
-
-	var t textinput.Model
-	for k, v := range CSVFormatInputFields {
-		t = textinput.New()
-		t.Cursor.Style = config.FocusedStyle
-		t.CharLimit = 0
-
-		switch k {
-		case flag.CSVSeparator:
-			t.Placeholder = "CSV separator: separator of each value in CSV files, skip to use default value (,)"
-			t.Focus()
-			t.PromptStyle = config.FocusedStyle
-			t.TextStyle = config.FocusedStyle
-		case flag.CSVDelimiter:
-			t.Placeholder = "CSV delimiter: delimiter of string type variables in CSV files, skip to use default value (\"). If you want to set empty string, please use non-interactive mode"
-		case flag.CSVBackslashEscape:
-			t.Placeholder = "CSV backslash-escape: whether to interpret backslash escapes inside fields, skip to use default value (true)"
-		case flag.CSVTrimLastSeparator:
-			t.Placeholder = "CSV trim-last-separator: remove the last separator when a line ends with a separator, skip to use default value (false)"
-		case flag.CSVNotNull:
-			t.Placeholder = "CSV not-null: whether the CSV can contains any NULL value, skip to use default value (false)"
-		case flag.CSVNullValue:
-			t.Placeholder = "CSV null-value: representation of null values in CSV files(only work when `not-null` is false), skip to use default value (\\N). If you want to set empty string, please use non-interactive mode"
-		case flag.CSVSkipHeader:
-			t.Placeholder = "CSV skip-header: whether the CSV file contains a header line, if `true`, the first row is also imported as CSV data ,skip to use default value (false)"
-		}
-
-		m.Inputs[v] = t
-	}
-
-	return m
 }
 
 func getCSVFlagValue(cmd *cobra.Command) (*imp.CSVFormat, error) {
