@@ -1,0 +1,236 @@
+openapi: 3.0.1
+info:
+  description: TiDB Cloud Serverless Open API
+  title: TiDB Cloud Serverless Open API
+  version: v1beta1
+servers:
+- url: https://serverless.tidbapi.com/
+tags:
+- name: BackupRestoreService
+paths:
+  /v1beta1/backups:
+    get:
+      operationId: BackupRestoreService_ListBackups
+      parameters:
+      - description: Optional. The maximum number of clusters to return.
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: Optional. The page token from the previous response for pagination.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: Required. The cluster ID to list backups for.
+        in: query
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1ListBackupsResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Provides a list of backups.
+      tags:
+      - BackupRestoreService
+  /v1beta1/backups/{backupId}:
+    delete:
+      operationId: BackupRestoreService_DeleteBackup
+      parameters:
+      - description: Required. The ID of the backup to be retrieved.
+        in: path
+        name: backupId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1Backup'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Deletes a specific backup.
+      tags:
+      - BackupRestoreService
+    get:
+      operationId: BackupRestoreService_GetBackup
+      parameters:
+      - description: Required. The ID of the backup to be retrieved.
+        in: path
+        name: backupId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1Backup'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Retrieves details of a specific backup.
+      tags:
+      - BackupRestoreService
+  /v1beta1/clusters:restore:
+    post:
+      operationId: BackupRestoreService_Restore
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1beta1RestoreRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1RestoreResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      tags:
+      - BackupRestoreService
+      x-codegen-request-body-name: body
+components:
+  schemas:
+    RestoreRequestPointInTime:
+      properties:
+        clusterId:
+          type: string
+        backupTime:
+          format: date-time
+          type: string
+      type: object
+    RestoreRequestSnapshot:
+      properties:
+        backupId:
+          type: string
+      type: object
+    protobufAny:
+      additionalProperties:
+        type: object
+      example:
+        '@type': '@type'
+      properties:
+        '@type':
+          type: string
+      type: object
+    rpcStatus:
+      example:
+        code: 6
+        details:
+        - '@type': '@type'
+        - '@type': '@type'
+        message: message
+      properties:
+        code:
+          format: int32
+          type: integer
+        message:
+          type: string
+        details:
+          items:
+            $ref: '#/components/schemas/protobufAny'
+          type: array
+      type: object
+    v1beta1Backup:
+      description: Message for backup resource.
+      example:
+        createTime: 2000-01-23T04:56:07.000+00:00
+        backupId: backupId
+        name: name
+        clusterId: clusterId
+      properties:
+        name:
+          description: Output_only. The unique name of the backup.
+          readOnly: true
+          type: string
+        backupId:
+          description: Output_only. The unique ID of the backup.
+          readOnly: true
+          type: string
+        clusterId:
+          description: Required. The cluster ID that backup belong to.
+          type: string
+        createTime:
+          description: Output_only. Timestamp when the backup was created.
+          format: date-time
+          readOnly: true
+          type: string
+      required:
+      - clusterId
+      type: object
+    v1beta1ListBackupsResponse:
+      example:
+        totalSize: 0
+        nextPageToken: nextPageToken
+        backups:
+        - createTime: 2000-01-23T04:56:07.000+00:00
+          backupId: backupId
+          name: name
+          clusterId: clusterId
+        - createTime: 2000-01-23T04:56:07.000+00:00
+          backupId: backupId
+          name: name
+          clusterId: clusterId
+      properties:
+        backups:
+          description: A list of clusters.
+          items:
+            $ref: '#/components/schemas/v1beta1Backup'
+          type: array
+        nextPageToken:
+          description: Token provided to retrieve the next page of results.
+          type: string
+        totalSize:
+          description: Total number of backups.
+          format: int64
+          type: integer
+      type: object
+    v1beta1RestoreRequest:
+      properties:
+        snapshot:
+          $ref: '#/components/schemas/RestoreRequestSnapshot'
+        pointInTime:
+          $ref: '#/components/schemas/RestoreRequestPointInTime'
+      type: object
+    v1beta1RestoreResponse:
+      example:
+        clusterId: clusterId
+      properties:
+        clusterId:
+          type: string
+      required:
+      - clusterId
+      type: object
+x-original-swagger-version: "2.0"

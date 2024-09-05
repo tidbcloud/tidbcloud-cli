@@ -25,8 +25,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -59,20 +58,15 @@ func (suite *SpendingLimitSuite) TestSetSpendingLimit() {
 	ctx := context.Background()
 
 	clusterID := "0"
-	monthly := 10
-	cluster := &serverlessApi.ServerlessServicePartialUpdateClusterParamsBodyCluster{
-		SpendingLimit: &serverlessModel.ClusterSpendingLimit{
-			Monthly: int32(monthly),
+	var monthly int32 = 10
+	body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
+		Cluster: &cluster.RequiredTheClusterToBeUpdated{
+			SpendingLimit: &cluster.ClusterSpendingLimit{},
 		},
 	}
-	body := serverlessApi.ServerlessServicePartialUpdateClusterBody{
-		Cluster:    cluster,
-		UpdateMask: &SpendingLimitMonthlyMask,
-	}
-
-	suite.mockClient.On("PartialUpdateCluster", serverlessApi.NewServerlessServicePartialUpdateClusterParams().
-		WithClusterClusterID(clusterID).WithBody(body).WithContext(ctx)).
-		Return(&serverlessApi.ServerlessServicePartialUpdateClusterOK{}, nil)
+	body.UpdateMask = SpendingLimitMonthlyMask
+	body.Cluster.SpendingLimit.Monthly = &monthly
+	suite.mockClient.On("PartialUpdateCluster", ctx, clusterID, body).Return(&cluster.TidbCloudOpenApiserverlessv1beta1Cluster{}, nil)
 
 	tests := []struct {
 		name         string

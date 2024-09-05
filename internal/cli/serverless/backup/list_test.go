@@ -26,8 +26,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
-	brModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/models"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -38,7 +37,7 @@ const listResultStr = `{
     {
       "backupId": "289048",
       "clusterId": "10048930788495339885",
-      "createTime": "2023-12-15T07:00:00.000Z",
+      "createTime": "2023-12-15T07:00:00Z",
       "name": "backups/289048"
     }
   ],
@@ -51,13 +50,13 @@ const listResultMultiPageStr = `{
     {
       "backupId": "289048",
       "clusterId": "10048930788495339885",
-      "createTime": "2023-12-15T07:00:00.000Z",
+      "createTime": "2023-12-15T07:00:00Z",
       "name": "backups/289048"
     },
     {
       "backupId": "289048",
       "clusterId": "10048930788495339885",
-      "createTime": "2023-12-15T07:00:00.000Z",
+      "createTime": "2023-12-15T07:00:00Z",
       "name": "backups/289048"
     }
   ],
@@ -92,17 +91,13 @@ func (suite *ListBackupSuite) TestListBackups() {
 	assert := require.New(suite.T())
 	ctx := context.Background()
 
-	body := &brModel.V1beta1ListBackupsResponse{}
+	body := &br.V1beta1ListBackupsResponse{}
 	err := json.Unmarshal([]byte(listResultStr), body)
 	assert.Nil(err)
-	result := &brApi.BackupRestoreServiceListBackupsOK{
-		Payload: body,
-	}
 	pageSize := int32(suite.pageSize)
 	clusterID := "10048930788495339885"
-	suite.mockClient.On("ListBackups", brApi.NewBackupRestoreServiceListBackupsParams().
-		WithClusterID(clusterID).WithPageSize(&pageSize).WithContext(ctx)).
-		Return(result, nil)
+	suite.mockClient.On("ListBackups", ctx, &clusterID, &pageSize, (*string)(nil)).
+		Return(body, nil)
 
 	tests := []struct {
 		name         string
@@ -156,20 +151,18 @@ func (suite *ListBackupSuite) TestListBackupsWithMultiPages() {
 	pageToken := "2"
 	clusterID := "10048930788495339885"
 
-	body := &brModel.V1beta1ListBackupsResponse{}
+	body := &br.V1beta1ListBackupsResponse{}
 	err := json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"total": 1`, `"total": 2`)), body)
 	assert.Nil(err)
-	body.NextPageToken = pageToken
-	suite.mockClient.On("ListBackups", brApi.NewBackupRestoreServiceListBackupsParams().
-		WithClusterID(clusterID).WithPageSize(&pageSize).WithContext(ctx)).
-		Return(&brApi.BackupRestoreServiceListBackupsOK{Payload: body}, nil)
+	body.NextPageToken = &pageToken
+	suite.mockClient.On("ListBackups", ctx, &clusterID, &pageSize, (*string)(nil)).
+		Return(body, nil)
 
-	body2 := &brModel.V1beta1ListBackupsResponse{}
+	body2 := &br.V1beta1ListBackupsResponse{}
 	err = json.Unmarshal([]byte(strings.ReplaceAll(listResultStr, `"total": 1`, `"total": 2`)), body2)
 	assert.Nil(err)
-	suite.mockClient.On("ListBackups", brApi.NewBackupRestoreServiceListBackupsParams().
-		WithClusterID(clusterID).WithPageToken(&pageToken).WithPageSize(&pageSize).WithContext(ctx)).
-		Return(&brApi.BackupRestoreServiceListBackupsOK{Payload: body2}, nil)
+	suite.mockClient.On("ListBackups", ctx, &clusterID, &pageSize, &pageToken).
+		Return(body2, nil)
 
 	tests := []struct {
 		name         string

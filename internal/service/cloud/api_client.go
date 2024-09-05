@@ -29,13 +29,11 @@ import (
 	pingchatClient "tidbcloud-cli/pkg/tidbcloud/pingchat/client"
 	pingchatOp "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
-	serverlessClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client"
-	serverlessOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
-	brClient "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client"
-	brOp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
 
 	apiClient "github.com/c4pt0r/go-tidbcloud-sdk-v1/client"
 	httpTransport "github.com/go-openapi/runtime/client"
@@ -45,23 +43,23 @@ import (
 
 const (
 	DefaultApiUrl             = "https://" + apiClient.DefaultHost
-	DefaultServerlessEndpoint = "https://" + serverlessClient.DefaultHost
+	DefaultServerlessEndpoint = "https://serverless.tidbapi.com"
 	DefaultIAMEndpoint        = "https://iam.tidbapi.com"
 	userAgent                 = "User-Agent"
 )
 
 type TiDBCloudClient interface {
-	CreateCluster(params *serverlessOp.ServerlessServiceCreateClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceCreateClusterOK, error)
+	CreateCluster(ctx context.Context, body *cluster.TidbCloudOpenApiserverlessv1beta1Cluster) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)
 
-	DeleteCluster(params *serverlessOp.ServerlessServiceDeleteClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceDeleteClusterOK, error)
+	DeleteCluster(ctx context.Context, clusterId string) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)
 
-	GetCluster(params *serverlessOp.ServerlessServiceGetClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceGetClusterOK, error)
+	GetCluster(ctx context.Context, clusterId string) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)
 
-	ListClustersOfProject(params *serverlessOp.ServerlessServiceListClustersParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListClustersOK, error)
+	ListClusters(ctx context.Context, filter *string, pageSize *int32, pageToken *string, orderBy *string, skip *int32) (*cluster.TidbCloudOpenApiserverlessv1beta1ListClustersResponse, error)
 
-	PartialUpdateCluster(params *serverlessOp.ServerlessServicePartialUpdateClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServicePartialUpdateClusterOK, error)
+	PartialUpdateCluster(ctx context.Context, clusterId string, body *cluster.V1beta1ServerlessServicePartialUpdateClusterBody) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)
 
-	ListProviderRegions(params *serverlessOp.ServerlessServiceListRegionsParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListRegionsOK, error)
+	ListProviderRegions(ctx context.Context) (*cluster.TidbCloudOpenApiserverlessv1beta1ListRegionsResponse, error)
 
 	ListProjects(ctx context.Context, pageSize *int32, pageToken *string) (*iam.ApiListProjectsRsp, error)
 
@@ -83,13 +81,13 @@ type TiDBCloudClient interface {
 
 	Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.ClientOption) (*pingchatOp.ChatOK, error)
 
-	DeleteBackup(params *brOp.BackupRestoreServiceDeleteBackupParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceDeleteBackupOK, error)
+	DeleteBackup(ctx context.Context, backupId string) (*br.V1beta1Backup, error)
 
-	GetBackup(params *brOp.BackupRestoreServiceGetBackupParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceGetBackupOK, error)
+	GetBackup(ctx context.Context, backupId string) (*br.V1beta1Backup, error)
 
-	ListBackups(params *brOp.BackupRestoreServiceListBackupsParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceListBackupsOK, error)
+	ListBackups(ctx context.Context, clusterId *string, pageSize *int32, pageToken *string) (*br.V1beta1ListBackupsResponse, error)
 
-	Restore(params *brOp.BackupRestoreServiceRestoreParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceRestoreOK, error)
+	Restore(ctx context.Context, body *br.V1beta1RestoreRequest) (*br.V1beta1RestoreResponse, error)
 
 	StartUpload(ctx context.Context, clusterId string, fileName, targetDatabase, targetTable *string, partNumber *int32) (*imp.StartUploadResponse, error)
 
@@ -124,8 +122,8 @@ type ClientDelegate struct {
 	ic  *iam.APIClient
 	bc  *branch.APIClient
 	pc  *pingchatClient.TidbcloudPingchat
-	sc  *serverlessClient.TidbcloudServerless
-	brc *brClient.TidbcloudServerless
+	brc *br.APIClient
+	sc  *cluster.APIClient
 	sic *imp.APIClient
 	ec  *export.APIClient
 }
@@ -164,28 +162,58 @@ func NewClientDelegateWithApiKey(publicKey string, privateKey string, apiUrl str
 	}, nil
 }
 
-func (d *ClientDelegate) CreateCluster(params *serverlessOp.ServerlessServiceCreateClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceCreateClusterOK, error) {
-	return d.sc.ServerlessService.ServerlessServiceCreateCluster(params, opts...)
+func (d *ClientDelegate) CreateCluster(ctx context.Context, body *cluster.TidbCloudOpenApiserverlessv1beta1Cluster) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+	r := d.sc.ServerlessServiceAPI.ServerlessServiceCreateCluster(ctx)
+	if body != nil {
+		r = r.Cluster(*body)
+	}
+	c, h, err := r.Execute()
+	return c, parseError(err, h)
 }
 
-func (d *ClientDelegate) DeleteCluster(params *serverlessOp.ServerlessServiceDeleteClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceDeleteClusterOK, error) {
-	return d.sc.ServerlessService.ServerlessServiceDeleteCluster(params, opts...)
+func (d *ClientDelegate) DeleteCluster(ctx context.Context, clusterId string) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+	c, h, err := d.sc.ServerlessServiceAPI.ServerlessServiceDeleteCluster(ctx, clusterId).Execute()
+	return c, parseError(err, h)
 }
 
-func (d *ClientDelegate) GetCluster(params *serverlessOp.ServerlessServiceGetClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceGetClusterOK, error) {
-	return d.sc.ServerlessService.ServerlessServiceGetCluster(params, opts...)
+func (d *ClientDelegate) GetCluster(ctx context.Context, clusterId string) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+	c, h, err := d.sc.ServerlessServiceAPI.ServerlessServiceGetCluster(ctx, clusterId).Execute()
+	return c, parseError(err, h)
 }
 
-func (d *ClientDelegate) ListProviderRegions(params *serverlessOp.ServerlessServiceListRegionsParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListRegionsOK, error) {
-	return d.sc.ServerlessService.ServerlessServiceListRegions(params, opts...)
+func (d *ClientDelegate) ListProviderRegions(ctx context.Context) (*cluster.TidbCloudOpenApiserverlessv1beta1ListRegionsResponse, error) {
+	resp, h, err := d.sc.ServerlessServiceAPI.ServerlessServiceListRegions(ctx).Execute()
+	return resp, parseError(err, h)
 }
 
-func (d *ClientDelegate) ListClustersOfProject(params *serverlessOp.ServerlessServiceListClustersParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServiceListClustersOK, error) {
-	return d.sc.ServerlessService.ServerlessServiceListClusters(params, opts...)
+func (d *ClientDelegate) ListClusters(ctx context.Context, filter *string, pageSize *int32, pageToken *string, orderBy *string, skip *int32) (*cluster.TidbCloudOpenApiserverlessv1beta1ListClustersResponse, error) {
+	r := d.sc.ServerlessServiceAPI.ServerlessServiceListClusters(ctx)
+	if filter != nil {
+		r = r.Filter(*filter)
+	}
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	if orderBy != nil {
+		r = r.OrderBy(*orderBy)
+	}
+	if skip != nil {
+		r = r.Skip(*skip)
+	}
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
 }
 
-func (d *ClientDelegate) PartialUpdateCluster(params *serverlessOp.ServerlessServicePartialUpdateClusterParams, opts ...serverlessOp.ClientOption) (*serverlessOp.ServerlessServicePartialUpdateClusterOK, error) {
-	return d.sc.ServerlessService.ServerlessServicePartialUpdateCluster(params, opts...)
+func (d *ClientDelegate) PartialUpdateCluster(ctx context.Context, clusterId string, body *cluster.V1beta1ServerlessServicePartialUpdateClusterBody) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+	r := d.sc.ServerlessServiceAPI.ServerlessServicePartialUpdateCluster(ctx, clusterId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	c, h, err := r.Execute()
+	return c, parseError(err, h)
 }
 
 func (d *ClientDelegate) ListProjects(ctx context.Context, pageSize *int32, pageToken *string) (*iam.ApiListProjectsRsp, error) {
@@ -269,20 +297,38 @@ func (d *ClientDelegate) Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.
 	return d.pc.Operations.Chat(params, opts...)
 }
 
-func (d *ClientDelegate) DeleteBackup(params *brOp.BackupRestoreServiceDeleteBackupParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceDeleteBackupOK, error) {
-	return d.brc.BackupRestoreService.BackupRestoreServiceDeleteBackup(params, opts...)
+func (d *ClientDelegate) DeleteBackup(ctx context.Context, backupId string) (*br.V1beta1Backup, error) {
+	b, h, err := d.brc.BackupRestoreServiceAPI.BackupRestoreServiceDeleteBackup(ctx, backupId).Execute()
+	return b, parseError(err, h)
 }
 
-func (d *ClientDelegate) GetBackup(params *brOp.BackupRestoreServiceGetBackupParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceGetBackupOK, error) {
-	return d.brc.BackupRestoreService.BackupRestoreServiceGetBackup(params, opts...)
+func (d *ClientDelegate) GetBackup(ctx context.Context, backupId string) (*br.V1beta1Backup, error) {
+	b, h, err := d.brc.BackupRestoreServiceAPI.BackupRestoreServiceGetBackup(ctx, backupId).Execute()
+	return b, parseError(err, h)
 }
 
-func (d *ClientDelegate) ListBackups(params *brOp.BackupRestoreServiceListBackupsParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceListBackupsOK, error) {
-	return d.brc.BackupRestoreService.BackupRestoreServiceListBackups(params, opts...)
+func (d *ClientDelegate) ListBackups(ctx context.Context, clusterId *string, pageSize *int32, pageToken *string) (*br.V1beta1ListBackupsResponse, error) {
+	r := d.brc.BackupRestoreServiceAPI.BackupRestoreServiceListBackups(ctx)
+	if clusterId != nil {
+		r = r.ClusterId(*clusterId)
+	}
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	bs, h, err := r.Execute()
+	return bs, parseError(err, h)
 }
 
-func (d *ClientDelegate) Restore(params *brOp.BackupRestoreServiceRestoreParams, opts ...brOp.ClientOption) (*brOp.BackupRestoreServiceRestoreOK, error) {
-	return d.brc.BackupRestoreService.BackupRestoreServiceRestore(params, opts...)
+func (d *ClientDelegate) Restore(ctx context.Context, body *br.V1beta1RestoreRequest) (*br.V1beta1RestoreResponse, error) {
+	r := d.brc.BackupRestoreServiceAPI.BackupRestoreServiceRestore(ctx)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	bs, h, err := r.Execute()
+	return bs, parseError(err, h)
 }
 
 func (d *ClientDelegate) StartUpload(ctx context.Context, clusterId string, fileName, targetDatabase, targetTable *string, partNumber *int32) (*imp.StartUploadResponse, error) {
@@ -412,7 +458,7 @@ func (d *ClientDelegate) UpdateSQLUser(ctx context.Context, clusterID string, us
 	return res, parseError(err, h)
 }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *serverlessClient.TidbcloudServerless, *pingchatClient.TidbcloudPingchat, *brClient.TidbcloudServerless, *imp.APIClient, *export.APIClient, *iam.APIClient, error) {
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *pingchatClient.TidbcloudPingchat, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}
@@ -430,9 +476,6 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 		return nil, nil, nil, nil, nil, nil, nil, err
 	}
 
-	serverlessTransport := httpTransport.NewWithClient(serverlessURL.Host, serverlessClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
-	backRestoreTransport := httpTransport.NewWithClient(serverlessURL.Host, brClient.DefaultBasePath, []string{serverlessURL.Scheme}, httpclient)
-
 	iamCfg := iam.NewConfiguration()
 	iamCfg.HTTPClient = httpclient
 	iamURL, err := prop.ValidateApiUrl(iamEndpoint)
@@ -440,6 +483,10 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 		return nil, nil, nil, nil, nil, nil, nil, err
 	}
 	iamCfg.Host = iamURL.Host
+
+	clusterCfg := cluster.NewConfiguration()
+	clusterCfg.HTTPClient = httpclient
+	clusterCfg.Host = serverlessURL.Host
 
 	branchCfg := branch.NewConfiguration()
 	branchCfg.HTTPClient = httpclient
@@ -453,8 +500,12 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	importCfg.HTTPClient = httpclient
 	importCfg.Host = serverlessURL.Host
 
-	return branch.NewAPIClient(branchCfg), serverlessClient.New(serverlessTransport, strfmt.Default),
-		pingchatClient.New(transport, strfmt.Default), brClient.New(backRestoreTransport, strfmt.Default),
+	backupRestoreCfg := br.NewConfiguration()
+	backupRestoreCfg.HTTPClient = httpclient
+	backupRestoreCfg.Host = serverlessURL.Host
+
+	return branch.NewAPIClient(branchCfg), cluster.NewAPIClient(clusterCfg),
+		pingchatClient.New(transport, strfmt.Default), br.NewAPIClient(backupRestoreCfg),
 		imp.NewAPIClient(importCfg), export.NewAPIClient(exportCfg),
 		iam.NewAPIClient(iamCfg), nil
 }

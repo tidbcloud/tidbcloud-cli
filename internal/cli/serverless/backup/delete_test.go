@@ -25,7 +25,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -57,9 +57,8 @@ func (suite *DeleteBackupSuite) TestDeleteBackup() {
 	ctx := context.Background()
 
 	backupID := "289048"
-	suite.mockClient.On("DeleteBackup", brApi.NewBackupRestoreServiceDeleteBackupParams().
-		WithBackupID(backupID).WithContext(ctx)).
-		Return(&brApi.BackupRestoreServiceDeleteBackupOK{}, nil)
+	suite.mockClient.On("DeleteBackup", ctx, backupID).
+		Return(&br.V1beta1Backup{}, nil)
 
 	tests := []struct {
 		name         string

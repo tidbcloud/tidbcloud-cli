@@ -18,20 +18,18 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
+	"time"
 
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
-	serverlessApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/client/serverless_service"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
-	serverlessModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/models"
-	brApi "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/client/backup_restore_service"
-	brModel "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless_br/models"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/go-openapi/strfmt"
 	"github.com/juju/errors"
 )
 
@@ -66,7 +64,7 @@ type Region struct {
 type ServerlessBackup struct {
 	ID         string
 	Name       string
-	CreateTime strfmt.DateTime
+	CreateTime *time.Time
 }
 
 type Export struct {
@@ -172,9 +170,9 @@ func GetSelectedCluster(ctx context.Context, projectID string, pageSize int64, c
 	var items = make([]interface{}, 0, len(clusterItems))
 	for _, item := range clusterItems {
 		items = append(items, &Cluster{
-			ID:          item.ClusterID,
-			DisplayName: *item.DisplayName,
-			UserPrefix:  item.UserPrefix,
+			ID:          *item.ClusterId,
+			DisplayName: item.DisplayName,
+			UserPrefix:  *item.UserPrefix,
 		})
 	}
 	if len(items) == 0 {
@@ -416,8 +414,8 @@ func GetSelectedServerlessBackup(ctx context.Context, clusterID string, pageSize
 	var items = make([]interface{}, 0, len(backupItems))
 	for _, item := range backupItems {
 		items = append(items, &ServerlessBackup{
-			ID:         item.BackupID,
-			Name:       item.Name,
+			ID:         *item.BackupId,
+			Name:       *item.Name,
 			CreateTime: item.CreateTime,
 		})
 	}
@@ -611,30 +609,31 @@ func RetrieveProjects(ctx context.Context, pageSize int64, d TiDBCloudClient) (i
 	return int64(len(items)), items, nil
 }
 
-func RetrieveClusters(ctx context.Context, pID string, pageSize int64, d TiDBCloudClient) (int64, []*serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
-	params := serverlessApi.NewServerlessServiceListClustersParams().WithContext(ctx)
+func RetrieveClusters(ctx context.Context, pID string, pageSize int64, d TiDBCloudClient) (int64, []cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+	var items []cluster.TidbCloudOpenApiserverlessv1beta1Cluster
+	pageSizeInt32 := int32(pageSize)
+	var pageToken *string
+	var filter *string
 	if pID != "" {
 		projectFilter := fmt.Sprintf("projectId=%s", pID)
-		params.WithFilter(&projectFilter)
+		filter = &projectFilter
 	}
-	pageSizeInt32 := int32(pageSize)
-	var pageToken string
-	var items []*serverlessModel.TidbCloudOpenApiserverlessv1beta1Cluster
-	clusters, err := d.ListClustersOfProject(params.WithPageSize(&pageSizeInt32))
+
+	clusters, err := d.ListClusters(ctx, filter, &pageSizeInt32, nil, nil, nil)
 	if err != nil {
 		return 0, nil, errors.Trace(err)
 	}
-	items = append(items, clusters.Payload.Clusters...)
+	items = append(items, clusters.Clusters...)
 	for {
-		pageToken = clusters.Payload.NextPageToken
-		if pageToken == "" {
+		pageToken = clusters.NextPageToken
+		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
-		clusters, err = d.ListClustersOfProject(params.WithPageToken(&pageToken).WithPageSize(&pageSizeInt32))
+		clusters, err = d.ListClusters(ctx, filter, &pageSizeInt32, pageToken, nil, nil)
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
-		items = append(items, clusters.Payload.Clusters...)
+		items = append(items, clusters.Clusters...)
 	}
 	return int64(len(items)), items, nil
 }
@@ -690,27 +689,26 @@ func RetrieveExports(ctx context.Context, cID string, pageSize int64, d TiDBClou
 	return int64(len(items)), items, nil
 }
 
-func RetrieveServerlessBackups(ctx context.Context, cID string, pageSize int32, d TiDBCloudClient) (int64, []*brModel.V1beta1Backup, error) {
-	var items []*brModel.V1beta1Backup
-	var pageToken string
+func RetrieveServerlessBackups(ctx context.Context, cID string, pageSize int32, d TiDBCloudClient) (int64, []br.V1beta1Backup, error) {
+	var items []br.V1beta1Backup
+	var pageToken *string
 
-	params := brApi.NewBackupRestoreServiceListBackupsParams().WithClusterID(cID).WithContext(ctx)
-	backups, err := d.ListBackups(params.WithPageSize(&pageSize))
+	backups, err := d.ListBackups(ctx, &cID, &pageSize, nil)
 	if err != nil {
 		return 0, nil, errors.Trace(err)
 	}
-	items = append(items, backups.Payload.Backups...)
+	items = append(items, backups.Backups...)
 	// loop to get all backups
 	for {
-		pageToken = backups.Payload.NextPageToken
-		if pageToken == "" {
+		pageToken = backups.NextPageToken
+		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
-		backups, err = d.ListBackups(params.WithPageSize(&pageSize).WithPageToken(&pageToken))
+		backups, err = d.ListBackups(ctx, &cID, &pageSize, pageToken)
 		if err != nil {
 			return 0, nil, errors.Trace(err)
 		}
-		items = append(items, backups.Payload.Backups...)
+		items = append(items, backups.Backups...)
 	}
 	return int64(len(items)), items, nil
 }

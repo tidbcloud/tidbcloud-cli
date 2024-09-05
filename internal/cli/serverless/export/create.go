@@ -74,8 +74,9 @@ const (
 	CSVSeparatorDefaultValue       = ","
 	CSVDelimiterDefaultValue       = "\""
 	CSVNullValueDefaultValue       = "\\N"
-	CompressionDefaultValue        = "GZIP"
-	ParquetCompressionDefaultValue = "ZSTD"
+	CSVSkipHeaderDefaultValue      = false
+	CompressionDefaultValue        = export.EXPORTCOMPRESSIONTYPEENUM_GZIP
+	ParquetCompressionDefaultValue = export.EXPORTPARQUETCOMPRESSIONTYPEENUM_ZSTD
 )
 
 type CreateOpts struct {
@@ -559,10 +560,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			// apply default values
 			if strings.ToUpper(fileType) == string(FileTypePARQUET) {
 				if parquetCompression == "" {
-					parquetCompression = ParquetCompressionDefaultValue
+					parquetCompression = string(ParquetCompressionDefaultValue)
 				}
 			} else if compression == "" {
-				compression = CompressionDefaultValue
+				compression = string(CompressionDefaultValue)
 			}
 			// build param to create export
 			fileTypeEnum := export.ExportFileTypeEnum(strings.ToUpper(fileType))
@@ -670,7 +671,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.CSVDelimiter, CSVDelimiterDefaultValue, "Delimiter of string type variables in CSV files.")
 	createCmd.Flags().String(flag.CSVSeparator, CSVSeparatorDefaultValue, "Separator of each value in CSV files.")
 	createCmd.Flags().String(flag.CSVNullValue, CSVNullValueDefaultValue, "Representation of null values in CSV files.")
-	createCmd.Flags().Bool(flag.CSVSkipHeader, false, "Export CSV files of the tables without header.")
+	createCmd.Flags().Bool(flag.CSVSkipHeader, CSVSkipHeaderDefaultValue, "Export CSV files of the tables without header.")
 	createCmd.Flags().String(flag.S3RoleArn, "", "The role arn of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
 	createCmd.Flags().String(flag.GCSURI, "", "The GCS URI in gcs://<bucket>/<path> format. Required when target type is GCS.")
 	createCmd.Flags().String(flag.GCSServiceAccountKey, "", "The base64 encoded service account key of GCS.")
