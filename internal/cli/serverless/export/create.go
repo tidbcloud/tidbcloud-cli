@@ -622,12 +622,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster, in which the export will be created.")
-	createCmd.Flags().String(flag.FileType, "CSV", "The export file type. One of [\"CSV\" \"SQL\" \"PARQUET\"].")
-	createCmd.Flags().String(flag.TargetType, "LOCAL", "The export target. One of [\"LOCAL\" \"S3\" \"GCS\" \"AZURE_BLOB\"].")
+	createCmd.Flags().String(flag.FileType, "CSV", fmt.Sprintf("The export file type. One of %q.", export.AllowedExportFileTypeEnumEnumValues))
+	createCmd.Flags().String(flag.TargetType, "LOCAL", fmt.Sprintf("The export target. One of %q.", export.AllowedExportTargetTypeEnumEnumValues))
 	createCmd.Flags().String(flag.S3URI, "", "The S3 URI in s3://<bucket>/<path> format. Required when target type is S3.")
 	createCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
 	createCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
-	createCmd.Flags().String(flag.Compression, "", "The compression algorithm of the export file. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"].")
+	createCmd.Flags().String(flag.Compression, "", fmt.Sprintf("The compression algorithm of the export file. One of %q.", export.AllowedExportCompressionTypeEnumEnumValues))
 	createCmd.Flags().StringSlice(flag.TableFilter, nil, "Specify the exported table(s) with table filter patterns. See https://docs.pingcap.com/tidb/stable/table-filter to learn table filter.")
 	createCmd.Flags().String(flag.TableWhere, "", "Filter the exported table(s) with the where condition.")
 	createCmd.Flags().String(flag.SQL, "", "Filter the exported data with SQL SELECT statement.")
@@ -641,7 +641,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.GCSServiceAccountKey, "", "The base64 encoded service account key of GCS.")
 	createCmd.Flags().String(flag.AzureBlobURI, "", "The Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format. Required when target type is AZURE_BLOB.")
 	createCmd.Flags().String(flag.AzureBlobSASToken, "", "The SAS token of Azure Blob.")
-	createCmd.Flags().String(flag.ParquetCompression, "ZSTD", "The parquet compression algorithm. One of [\"GZIP\" \"SNAPPY\" \"ZSTD\" \"NONE\"].")
+	createCmd.Flags().String(flag.ParquetCompression, "ZSTD", fmt.Sprintf("The parquet compression algorithm. One of %q.", export.AllowedExportParquetCompressionTypeEnumEnumValues))
 
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableFilter, flag.SQL)
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableWhere, flag.SQL)
