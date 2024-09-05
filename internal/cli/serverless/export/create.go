@@ -154,7 +154,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   Export all data with S3 type in non-interactive mode:
   $ %[1]s serverless export create -c <cluster-id> --target-type S3 --s3.uri <s3-uri> --s3.access-key-id <access-key-id> --s3.secret-access-key <secret-access-key>
 
-  Export all data and customize csv format in non-interactive mode:
+  Export all data and customize CSV format in non-interactive mode:
   $ %[1]s serverless export create -c <cluster-id> --file-type CSV --csv.separator ";" --csv.delimiter "\"" --csv.null-value 'NaN' --csv.skip-header
 
   Export test.t1 and test.t2 in non-interactive mode:

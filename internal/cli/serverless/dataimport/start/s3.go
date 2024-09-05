@@ -20,7 +20,6 @@ import (
 
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
@@ -48,7 +47,6 @@ func (o S3Opts) SupportedFileTypes() []string {
 func (o S3Opts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
 	var fileType, s3Uri, s3Arn, accessKeyID, secretAccessKey string
-	clusterId := o.clusterId
 	var authType imp.ImportS3AuthTypeEnum
 	var format *imp.CSVFormat
 	d, err := o.h.Client()
@@ -57,11 +55,6 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 	}
 
 	if o.interactive {
-		cmd.Annotations[telemetry.InteractiveMode] = "true"
-		if !o.h.IOStreams.CanPrompt {
-			return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
-		}
-
 		// interactive mode
 		authTypes := []interface{}{imp.IMPORTS3AUTHTYPEENUM_ROLE_ARN, imp.IMPORTS3AUTHTYPEENUM_ACCESS_KEY}
 		model, err := ui.InitialSelectModel(authTypes, "Choose the auth type:")
@@ -140,10 +133,6 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		}
 	} else {
 		// non-interactive mode
-		clusterId, err = cmd.Flags().GetString(flag.ClusterID)
-		if err != nil {
-			return errors.Trace(err)
-		}
 		fileType, err = cmd.Flags().GetString(flag.FileType)
 		if err != nil {
 			return errors.Trace(err)
@@ -160,9 +149,11 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		}
 
 		// optional flags
-		format, err = getCSVFlagValue(cmd)
-		if err != nil {
-			return errors.Trace(err)
+		if fileType == string(imp.IMPORTFILETYPEENUM_CSV) {
+			format, err = getCSVFlagValue(cmd)
+			if err != nil {
+				return errors.Trace(err)
+			}
 		}
 		s3Arn, err = cmd.Flags().GetString(flag.S3RoleArn)
 		if err != nil {
@@ -185,8 +176,6 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		}
 	}
 
-	cmd.Annotations[telemetry.ClusterID] = clusterId
-
 	source := imp.NewImportSource(imp.IMPORTSOURCETYPEENUM_S3)
 	source.S3 = imp.NewS3Source(s3Uri, authType)
 	if authType == imp.IMPORTS3AUTHTYPEENUM_ROLE_ARN {
@@ -200,16 +189,18 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		}
 	}
 	options := imp.NewImportOptions(imp.ImportFileTypeEnum(fileType))
-	options.CsvFormat = format
+	if fileType == string(imp.IMPORTFILETYPEENUM_CSV) {
+		options.CsvFormat = format
+	}
 	body := imp.NewImportServiceCreateImportBody(*options, *source)
 
 	if o.h.IOStreams.CanPrompt {
-		err := spinnerWaitStartOp(ctx, o.h, d, clusterId, body)
+		err := spinnerWaitStartOp(ctx, o.h, d, o.clusterId, body)
 		if err != nil {
 			return err
 		}
 	} else {
-		err := waitStartOp(ctx, o.h, d, clusterId, body)
+		err := waitStartOp(ctx, o.h, d, o.clusterId, body)
 		if err != nil {
 			return err
 		}

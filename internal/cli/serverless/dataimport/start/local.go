@@ -25,7 +25,6 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
 	"tidbcloud-cli/internal/service/aws/s3"
-	"tidbcloud-cli/internal/telemetry"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 
@@ -64,7 +63,6 @@ func (o LocalOpts) SupportedFileTypes() []string {
 func (o LocalOpts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
 	var fileType, targetDatabase, targetTable, filePath string
-	clusterId := o.clusterId
 	var format *imp.CSVFormat
 	d, err := o.h.Client()
 	if err != nil {
@@ -77,11 +75,6 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 	}
 
 	if o.interactive {
-		cmd.Annotations[telemetry.InteractiveMode] = "true"
-		if !o.h.IOStreams.CanPrompt {
-			return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
-		}
-
 		// interactive mode
 		var fileTypes []interface{}
 		for _, f := range o.SupportedFileTypes() {
@@ -132,26 +125,27 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		}
 	} else {
 		// non-interactive mode
-		clusterId = cmd.Flag(flag.ClusterID).Value.String()
 		fileType = cmd.Flag(flag.FileType).Value.String()
 		if !slices.Contains(o.SupportedFileTypes(), fileType) {
 			return fmt.Errorf("file type \"%s\" is not supported, please use one of %q", fileType, o.SupportedFileTypes())
 		}
 		targetDatabase = cmd.Flag(flag.LocalTargetDatabase).Value.String()
 		targetTable = cmd.Flag(flag.LocalTargetTable).Value.String()
-		f := cmd.Flags().Lookup(flag.LocalFilePath)
-		if !f.Changed {
-			return errors.New("required flag(s) \"local.file-path\" not set")
-		}
-		filePath = f.Value.String()
-
-		format, err = getCSVFlagValue(cmd)
+		filePath, err = cmd.Flags().GetString(flag.LocalFilePath)
 		if err != nil {
 			return errors.Trace(err)
 		}
-	}
+		if filePath == "" {
+			return errors.New("required flag(s) \"local.file-path\" not set")
+		}
 
-	cmd.Annotations[telemetry.ClusterID] = clusterId
+		if fileType == string(imp.IMPORTFILETYPEENUM_CSV) {
+			format, err = getCSVFlagValue(cmd)
+			if err != nil {
+				return errors.Trace(err)
+			}
+		}
+	}
 
 	uploadFile, err := os.Open(filePath)
 	if err != nil {
@@ -172,7 +166,7 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 		DatabaseName:  aws.String(targetDatabase),
 		TableName:     aws.String(targetTable),
 		ContentLength: aws.Int64(stat.Size()),
-		ClusterID:     clusterId,
+		ClusterID:     o.clusterId,
 		Body:          uploadFile,
 	}
 	if o.h.IOStreams.CanPrompt {
@@ -190,16 +184,18 @@ func (o LocalOpts) Run(cmd *cobra.Command) error {
 	source := imp.NewImportSource(imp.IMPORTSOURCETYPEENUM_LOCAL)
 	source.Local = imp.NewLocalSource(uploadID, targetDatabase, targetTable)
 	options := imp.NewImportOptions(imp.ImportFileTypeEnum(fileType))
-	options.CsvFormat = format
+	if fileType == string(imp.IMPORTFILETYPEENUM_CSV) {
+		options.CsvFormat = format
+	}
 	body := imp.NewImportServiceCreateImportBody(*options, *source)
 
 	if o.h.IOStreams.CanPrompt {
-		err := spinnerWaitStartOp(ctx, o.h, d, clusterId, body)
+		err := spinnerWaitStartOp(ctx, o.h, d, o.clusterId, body)
 		if err != nil {
 			return err
 		}
 	} else {
-		err := waitStartOp(ctx, o.h, d, clusterId, body)
+		err := waitStartOp(ctx, o.h, d, o.clusterId, body)
 		if err != nil {
 			return err
 		}

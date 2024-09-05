@@ -38,6 +38,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	defaultCsvSeparator         = ","
+	defaultCsvDelimiter         = "\""
+	defaultCsvNullValue         = "\\N"
+	defaultCsvNotNull           = false
+	defaultCsvSkipHeader        = false
+	defaultCsvBackslashEscape   = true
+	defaultCsvTrimLastSeparator = false
+)
+
 var inputDescription = map[string]string{
 	flag.S3URI:                "Input your S3 URI in s3://<bucket>/<path> format",
 	flag.S3AccessKeyID:        "Input your S3 access key id",
@@ -47,13 +57,13 @@ var inputDescription = map[string]string{
 	flag.AzureBlobSASToken:    "Input your Azure Blob SAS token",
 	flag.GCSURI:               "Input your GCS URI in gcs://<bucket>/<path> format",
 	flag.GCSServiceAccountKey: "Input your base64 encoded GCS service account key",
-	flag.CSVSeparator:         "Input the csv separator: separator of each value in CSV files, skip to use default value (,)",
-	flag.CSVDelimiter:         "Input the csv delimiter: delimiter of string type variables in CSV files, skip to use default value (\"). If you want to set empty string, please use non-interactive mode",
-	flag.CSVNullValue:         "Input the csv null value: representation of null values in CSV files, skip to use default value (\\N). If you want to set empty string, please use non-interactive mode",
-	flag.CSVSkipHeader:        "Input the csv skip header: export CSV files of the tables without header. Type `true` to skip header, others will not skip header, default value (false)",
-	flag.CSVBackslashEscape:   "Input the csv backslash-escape: whether to interpret backslash escapes inside fields, skip to use default value (true)",
-	flag.CSVTrimLastSeparator: "Input the csv trim-last-separator: remove the last separator when a line ends with a separator, skip to use default value (false)",
-	flag.CSVNotNull:           "Input the csv not-null: whether the CSV can contains any NULL value, skip to use default value (false)",
+	flag.CSVSeparator:         "Input the CSV separator: separator of each value in CSV files, skip to use default value (,)",
+	flag.CSVDelimiter:         "Input the CSV delimiter: delimiter of string type variables in CSV files, skip to use default value (\"). If you want to set empty string, please use non-interactive mode",
+	flag.CSVNullValue:         "Input the CSV null value: representation of null values in CSV files, skip to use default value (\\N). If you want to set empty string, please use non-interactive mode",
+	flag.CSVSkipHeader:        "Input the CSV skip header: export CSV files of the tables without header. Type `true` to skip header, others will not skip header, default value (false)",
+	flag.CSVBackslashEscape:   "Input the CSV backslash-escape: whether to interpret backslash escapes inside fields, skip to use default value (true)",
+	flag.CSVTrimLastSeparator: "Input the CSV trim-last-separator: remove the last separator when a line ends with a separator, skip to use default value (false)",
+	flag.CSVNotNull:           "Input the CSV not-null: whether the CSV can contains any NULL value, skip to use default value (false)",
 }
 
 var sourceTypes = []imp.ImportSourceTypeEnum{
@@ -131,6 +141,15 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	
   Start a local import task with custom CSV format:
   $ %[1]s serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --file-type CSV --local.target-database <target-database> --local.target-table <target-table> --csv.separator \" --csv.delimiter \' --csv.backslash-escape=false --csv.trim-last-separator=true
+
+  Start an S3 import task in non-interactive mode:
+  $ %[1]s serverless import start --source-type S3 --s3.uri <s3-uri> --cluster-id <cluster-id> --file-type <file-type> --s3.role-arn <role-arn>
+
+  Start a GCS import task in non-interactive mode:
+  $ %[1]s serverless import start --source-type GCS --gcs.uri <gcs-uri> --cluster-id <cluster-id> --file-type <file-type> --gcs.service-account-key <service-account-key>
+
+  Start an Azure Blob import task in non-interactive mode:
+  $ %[1]s serverless import start --source-type AZURE_BLOB --azblob.uri <azure-blob-uri> --cluster-id <cluster-id> --file-type <file-type> --azblob.sas-token <sas-token>
 `,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -185,6 +204,12 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 				}
 			} else {
 				sourceType = imp.ImportSourceTypeEnum(cmd.Flag(flag.SourceType).Value.String())
+				var err error
+				clusterId, err = cmd.Flags().GetString(flag.ClusterID)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				cmd.Annotations[telemetry.ClusterID] = clusterId
 			}
 
 			if sourceType == imp.IMPORTSOURCETYPEENUM_LOCAL {
@@ -231,27 +256,27 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	startCmd.Flags().String(flag.LocalTargetTable, "", "Target table to which import data.")
 	startCmd.Flags().IntVar(&concurrency, flag.LocalConcurrency, 5, "The concurrency for uploading file.")
 
-	startCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID for S3.")
-	startCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key for S3.")
-	startCmd.Flags().String(flag.S3RoleArn, "", "The role ARN for S3.")
-	startCmd.Flags().String(flag.S3URI, "", "The S3 folder URI for import.")
+	startCmd.Flags().String(flag.S3AccessKeyID, "", "The access key ID of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
+	startCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
+	startCmd.Flags().String(flag.S3RoleArn, "", "The role arn of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
+	startCmd.Flags().String(flag.S3URI, "", "The S3 URI in s3://<bucket>/<path> format. Required when source type is S3.")
 	startCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3AccessKeyID)
 	startCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3SecretAccessKey)
 	startCmd.MarkFlagsRequiredTogether(flag.S3AccessKeyID, flag.S3SecretAccessKey)
 
-	startCmd.Flags().String(flag.GCSURI, "", "The GCS folder URI for import.")
+	startCmd.Flags().String(flag.GCSURI, "", "The GCS URI in gcs://<bucket>/<path> format. Required when source type is GCS.")
 	startCmd.Flags().String(flag.GCSServiceAccountKey, "", "The base64 encoded service account key of GCS.")
 
 	startCmd.Flags().String(flag.AzureBlobURI, "", "The Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format.")
 	startCmd.Flags().String(flag.AzureBlobSASToken, "", "The SAS token of Azure Blob.")
 
-	startCmd.Flags().String(flag.CSVDelimiter, "\"", "The delimiter used for quoting of CSV file.")
-	startCmd.Flags().String(flag.CSVSeparator, ",", "The field separator of CSV file.")
-	startCmd.Flags().Bool(flag.CSVTrimLastSeparator, false, "Specifies whether to treat separator as the line terminator and trim all trailing separators in the CSV file.")
-	startCmd.Flags().Bool(flag.CSVBackslashEscape, true, "Specifies whether to interpret backslash escapes inside fields in the CSV file.")
-	startCmd.Flags().Bool(flag.CSVNotNull, false, "Specifies whether a CSV file can contain any NULL values.")
-	startCmd.Flags().String(flag.CSVNullValue, `\N`, "The representation of NULL values in the CSV file.")
-	startCmd.Flags().Bool(flag.CSVSkipHeader, false, "Specifies whether the CSV file contains a header line.")
+	startCmd.Flags().String(flag.CSVDelimiter, defaultCsvDelimiter, "The delimiter used for quoting of CSV file.")
+	startCmd.Flags().String(flag.CSVSeparator, defaultCsvSeparator, "The field separator of CSV file.")
+	startCmd.Flags().Bool(flag.CSVTrimLastSeparator, defaultCsvTrimLastSeparator, "Specifies whether to treat separator as the line terminator and trim all trailing separators in the CSV file.")
+	startCmd.Flags().Bool(flag.CSVBackslashEscape, defaultCsvBackslashEscape, "Specifies whether to interpret backslash escapes inside fields in the CSV file.")
+	startCmd.Flags().Bool(flag.CSVNotNull, defaultCsvNotNull, "Specifies whether a CSV file can contain any NULL values.")
+	startCmd.Flags().String(flag.CSVNullValue, defaultCsvNullValue, "The representation of NULL values in the CSV file.")
+	startCmd.Flags().Bool(flag.CSVSkipHeader, defaultCsvSkipHeader, "Specifies whether the CSV file contains a header line.")
 	return startCmd
 }
 
@@ -343,8 +368,8 @@ func spinnerWaitStartOp(ctx context.Context, h *internal.Helper, d cloud.TiDBClo
 }
 
 func getCSVFormat() (format *imp.CSVFormat, errToReturn error) {
-	separator, delimiter, nullValue := ",", `"`, `\N`
-	backslashEscape, trimLastSeparator, skipHeader, notNull := true, false, false, false
+	separator, delimiter, nullValue := defaultCsvSeparator, defaultCsvDelimiter, defaultCsvNullValue
+	backslashEscape, trimLastSeparator, skipHeader, notNull := defaultCsvBackslashEscape, defaultCsvTrimLastSeparator, defaultCsvSkipHeader, defaultCsvNotNull
 
 	needCustomCSV := false
 	prompt := &survey.Confirm{

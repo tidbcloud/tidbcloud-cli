@@ -35,10 +35,10 @@ var inputDescription = map[string]string{
 	flag.SQL:                  "Input the SELECT SQL statement",
 	flag.TableFilter:          "Input the table filter patterns (comma separated). Example: database.table,database.*,`database-1`.`table-1`",
 	flag.TableWhere:           "Input the where clause which will apply to all filtered tables. Example: id > 10",
-	flag.CSVSeparator:         "Input the csv separator: separator of each value in CSV files, skip to use default value (,)",
-	flag.CSVDelimiter:         "Input the csv delimiter: delimiter of string type variables in CSV files, skip to use default value (\"). If you want to set empty string, please use non-interactive mode",
-	flag.CSVNullValue:         "Input the csv null value: representation of null values in CSV files, skip to use default value (\\N). If you want to set empty string, please use non-interactive mode",
-	flag.CSVSkipHeader:        "Input the csv skip header: export CSV files of the tables without header. Type `true` to skip header, others will not skip header",
+	flag.CSVSeparator:         "Input the CSV separator: separator of each value in CSV files, skip to use default value (,)",
+	flag.CSVDelimiter:         "Input the CSV delimiter: delimiter of string type variables in CSV files, skip to use default value (\"). If you want to set empty string, please use non-interactive mode",
+	flag.CSVNullValue:         "Input the CSV null value: representation of null values in CSV files, skip to use default value (\\N). If you want to set empty string, please use non-interactive mode",
+	flag.CSVSkipHeader:        "Input the CSV skip header: export CSV files of the tables without header. Type `true` to skip header, others will not skip header",
 }
 
 func GetSelectedParquetCompression() (string, error) {
