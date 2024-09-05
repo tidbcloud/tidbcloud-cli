@@ -207,3 +207,33 @@ func GetSelectedFilterType() (FilterType, error) {
 	}
 	return filterType.(FilterType), nil
 }
+
+func initialDownloadPathInputModel() ui.TextInputModel {
+	m := ui.TextInputModel{
+		Inputs: make([]textinput.Model, len(DownloadPathInputFields)),
+	}
+	for k, v := range DownloadPathInputFields {
+		t := textinput.New()
+		switch k {
+		case flag.OutputPath:
+			t.Placeholder = "Where you want to download the file. Press Enter to skip and download to the current directory"
+			t.Focus()
+			t.PromptStyle = config.FocusedStyle
+			t.TextStyle = config.FocusedStyle
+		}
+		m.Inputs[v] = t
+	}
+	return m
+}
+
+func GetDownloadPathInput() (tea.Model, error) {
+	p := tea.NewProgram(initialDownloadPathInputModel())
+	inputModel, err := p.Run()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if inputModel.(ui.TextInputModel).Interrupted {
+		return nil, util.InterruptError
+	}
+	return inputModel, nil
+}

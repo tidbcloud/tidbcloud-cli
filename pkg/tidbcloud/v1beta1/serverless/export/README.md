@@ -82,7 +82,9 @@ Class | Method | HTTP request | Description
 *ExportServiceAPI* | [**ExportServiceCreateExport**](docs/ExportServiceAPI.md#exportservicecreateexport) | **Post** /v1beta1/clusters/{clusterId}/exports | Create an export job
 *ExportServiceAPI* | [**ExportServiceDeleteExport**](docs/ExportServiceAPI.md#exportservicedeleteexport) | **Delete** /v1beta1/clusters/{clusterId}/exports/{exportId} | Delete an export job
 *ExportServiceAPI* | [**ExportServiceDownloadExport**](docs/ExportServiceAPI.md#exportservicedownloadexport) | **Post** /v1beta1/clusters/{clusterId}/exports/{exportId}:download | Generate download url
+*ExportServiceAPI* | [**ExportServiceDownloadExportFiles**](docs/ExportServiceAPI.md#exportservicedownloadexportfiles) | **Post** /v1beta1/clusters/{clusterId}/exports/{exportId}/files:download | Generate export files download url
 *ExportServiceAPI* | [**ExportServiceGetExport**](docs/ExportServiceAPI.md#exportservicegetexport) | **Get** /v1beta1/clusters/{clusterId}/exports/{exportId} | Retrieves details of an export job.
+*ExportServiceAPI* | [**ExportServiceListExportFiles**](docs/ExportServiceAPI.md#exportservicelistexportfiles) | **Get** /v1beta1/clusters/{clusterId}/exports/{exportId}/files | List export files
 *ExportServiceAPI* | [**ExportServiceListExports**](docs/ExportServiceAPI.md#exportservicelistexports) | **Get** /v1beta1/clusters/{clusterId}/exports | Provides a list of export jobs.
 
 
@@ -90,11 +92,13 @@ Class | Method | HTTP request | Description
 
  - [Any](docs/Any.md)
  - [AzureBlobTarget](docs/AzureBlobTarget.md)
+ - [DownloadExportFilesResponse](docs/DownloadExportFilesResponse.md)
  - [DownloadExportsResponse](docs/DownloadExportsResponse.md)
  - [DownloadUrl](docs/DownloadUrl.md)
  - [Export](docs/Export.md)
  - [ExportAzureBlobAuthTypeEnum](docs/ExportAzureBlobAuthTypeEnum.md)
  - [ExportCompressionTypeEnum](docs/ExportCompressionTypeEnum.md)
+ - [ExportFile](docs/ExportFile.md)
  - [ExportFileTypeEnum](docs/ExportFileTypeEnum.md)
  - [ExportGcsAuthTypeEnum](docs/ExportGcsAuthTypeEnum.md)
  - [ExportOptions](docs/ExportOptions.md)
@@ -105,10 +109,12 @@ Class | Method | HTTP request | Description
  - [ExportParquetCompressionTypeEnum](docs/ExportParquetCompressionTypeEnum.md)
  - [ExportS3AuthTypeEnum](docs/ExportS3AuthTypeEnum.md)
  - [ExportServiceCreateExportBody](docs/ExportServiceCreateExportBody.md)
+ - [ExportServiceDownloadExportFilesBody](docs/ExportServiceDownloadExportFilesBody.md)
  - [ExportStateEnum](docs/ExportStateEnum.md)
  - [ExportTarget](docs/ExportTarget.md)
  - [ExportTargetTypeEnum](docs/ExportTargetTypeEnum.md)
  - [GCSTarget](docs/GCSTarget.md)
+ - [ListExportFilesResponse](docs/ListExportFilesResponse.md)
  - [ListExportsResponse](docs/ListExportsResponse.md)
  - [S3Target](docs/S3Target.md)
  - [S3TargetAccessKey](docs/S3TargetAccessKey.md)
