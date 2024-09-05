@@ -191,6 +191,9 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 
 			fileNames := make([]string, 0)
 			for _, file := range exportFiles {
+				if *file.Name == "metadata" {
+					continue
+				}
 				fileNames = append(fileNames, *file.Name)
 			}
 			if h.IOStreams.CanPrompt {

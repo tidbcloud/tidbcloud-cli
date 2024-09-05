@@ -38,7 +38,7 @@ import (
 const (
 	processDownloadModelPadding  = 2
 	processDownloadModelMaxWidth = 80
-	PromptBatchSize              = 3
+	PromptBatchSize              = 20
 )
 
 type ResultMsg struct {
@@ -154,12 +154,12 @@ func NewProcessDownloadModel(fileNames []string, concurrency int, path string,
 func (m *ProcessDownloadModel) Init() tea.Cmd {
 	pro := progress.New(progress.WithDefaultGradient())
 	m.progressBar.progress = &pro
-	// start produce
-	go m.produce()
 	// start consumer goroutine
 	for i := 0; i < m.concurrency; i++ {
 		go m.consume(m.jobsCh)
 	}
+	// start produce
+	go m.produce()
 	return m.doTick()
 }
 
@@ -330,22 +330,21 @@ func (m *ProcessDownloadModel) consume(jobs <-chan *FileJob) {
 				},
 			}
 			job.pw = pw
-			println("recieve jobs")
 			pw.Start()
 		}()
 	}
 }
 
-// doTick update the download size and speed every 500ms
+// doTick update the download size and speed every 100ms
 func (m *ProcessDownloadModel) doTick() tea.Cmd {
-	return tea.Tick(time.Millisecond*500, func(t time.Time) tea.Msg {
+	return tea.Tick(time.Millisecond*100, func(t time.Time) tea.Msg {
 		totalDownloaded := 0
 		for _, job := range m.jobInfo.startedJobs {
 			if job.pw != nil {
 				totalDownloaded += job.pw.downloadedSize
 			}
 		}
-		m.progressBar.speed = (totalDownloaded - m.progressBar.downloadedSize) * 2
+		m.progressBar.speed = (totalDownloaded - m.progressBar.downloadedSize) * 10
 		m.progressBar.downloadedSize = totalDownloaded
 		return ui.TickMsg(t)
 	})
