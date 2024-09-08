@@ -30,8 +30,8 @@ generate-mocks: ## Generate mock objects
 generate-pingchat-client: ## Generate PingChat client
 	@echo "==> Generating PingChat client"
 	rm -rf pkg/tidbcloud/pingchat
-	cd tools/openapi-generator && npx openapi-generator-cli generate --additional-properties=withGoMod=false,enumClassPrefix=true --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/pingchat.swagger.json -g go -o ../../pkg/tidbcloud/pingchat --package-name pingchat
-	go fmt ./pkg/...
+	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/pingchat.swagger.json -g go -o ../../pkg/tidbcloud/pingchat --package-name pingchat
+	go fmt ./pkg/pingchat/...
 
 .PHONY: addcopy
 addcopy: ## Add copyright to all files
@@ -57,7 +57,7 @@ generate-v1beta1-client: install-openapi-generator ## Generate v1beta1 client
 	@echo "==> Generating serverless import client"
 	rm -rf pkg/tidbcloud/v1beta1/serverless/import
 	cd tools/openapi-generator && npx openapi-generator-cli generate --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/import.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/import --package-name imp
-	go fmt ./pkg/...
+	go fmt ./pkg/v1beta1/...
 
 .PHONY: install-openapi-generator
 install-openapi-generator:

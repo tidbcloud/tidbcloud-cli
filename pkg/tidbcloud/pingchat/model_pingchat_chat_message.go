@@ -22,9 +22,8 @@ var _ MappedNullable = &PingchatChatMessage{}
 // PingchatChatMessage struct for PingchatChatMessage
 type PingchatChatMessage struct {
 	// Dialogue content
-	Content string `json:"content"`
-	// User's input as \"user\", AI assistant's reply as \"assistant\", see https://github.com/gin-gonic/gin/issues/3234.
-	Role string `json:"role"`
+	Content string                  `json:"content"`
+	Role    PingchatChatMessageRole `json:"role"`
 }
 
 type _PingchatChatMessage PingchatChatMessage
@@ -33,7 +32,7 @@ type _PingchatChatMessage PingchatChatMessage
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPingchatChatMessage(content string, role string) *PingchatChatMessage {
+func NewPingchatChatMessage(content string, role PingchatChatMessageRole) *PingchatChatMessage {
 	this := PingchatChatMessage{}
 	this.Content = content
 	this.Role = role
@@ -73,9 +72,9 @@ func (o *PingchatChatMessage) SetContent(v string) {
 }
 
 // GetRole returns the Role field value
-func (o *PingchatChatMessage) GetRole() string {
+func (o *PingchatChatMessage) GetRole() PingchatChatMessageRole {
 	if o == nil {
-		var ret string
+		var ret PingchatChatMessageRole
 		return ret
 	}
 
@@ -84,7 +83,7 @@ func (o *PingchatChatMessage) GetRole() string {
 
 // GetRoleOk returns a tuple with the Role field value
 // and a boolean to check if the value has been set.
-func (o *PingchatChatMessage) GetRoleOk() (*string, bool) {
+func (o *PingchatChatMessage) GetRoleOk() (*PingchatChatMessageRole, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -92,7 +91,7 @@ func (o *PingchatChatMessage) GetRoleOk() (*string, bool) {
 }
 
 // SetRole sets field value
-func (o *PingchatChatMessage) SetRole(v string) {
+func (o *PingchatChatMessage) SetRole(v PingchatChatMessageRole) {
 	o.Role = v
 }
 

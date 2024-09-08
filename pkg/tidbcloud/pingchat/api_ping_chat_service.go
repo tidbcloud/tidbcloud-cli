@@ -18,12 +18,12 @@ import (
 	"net/url"
 )
 
-// DefaultAPIService DefaultAPI service
-type DefaultAPIService service
+// PingChatServiceAPIService PingChatServiceAPI service
+type PingChatServiceAPIService service
 
 type ApiChatRequest struct {
 	ctx        context.Context
-	ApiService *DefaultAPIService
+	ApiService *PingChatServiceAPIService
 	chatInfo   *PingchatChatInfo
 }
 
@@ -45,7 +45,7 @@ Chat with PingChat
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@return ApiChatRequest
 */
-func (a *DefaultAPIService) Chat(ctx context.Context) ApiChatRequest {
+func (a *PingChatServiceAPIService) Chat(ctx context.Context) ApiChatRequest {
 	return ApiChatRequest{
 		ApiService: a,
 		ctx:        ctx,
@@ -55,7 +55,7 @@ func (a *DefaultAPIService) Chat(ctx context.Context) ApiChatRequest {
 // Execute executes the request
 //
 //	@return PingchatChatResponse
-func (a *DefaultAPIService) ChatExecute(r ApiChatRequest) (*PingchatChatResponse, *http.Response, error) {
+func (a *PingChatServiceAPIService) ChatExecute(r ApiChatRequest) (*PingchatChatResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPost
 		localVarPostBody    interface{}
@@ -63,7 +63,7 @@ func (a *DefaultAPIService) ChatExecute(r ApiChatRequest) (*PingchatChatResponse
 		localVarReturnValue *PingchatChatResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DefaultAPIService.Chat")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PingChatServiceAPIService.Chat")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -78,7 +78,7 @@ func (a *DefaultAPIService) ChatExecute(r ApiChatRequest) (*PingchatChatResponse
 	}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
+	localVarHTTPContentTypes := []string{"application/json"}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)

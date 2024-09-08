@@ -90,7 +90,7 @@ func NewConfiguration() *Configuration {
 		Debug:         false,
 		Servers: ServerConfigurations{
 			{
-				URL:         "https://localhost:8080",
+				URL:         "https://api.tidbcloud.com",
 				Description: "No description provided",
 			},
 		},

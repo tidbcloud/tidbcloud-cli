@@ -74,17 +74,19 @@ ctx = context.WithValue(context.Background(), pingchat.ContextOperationServerVar
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *https://localhost:8080*
+All URIs are relative to *https://api.tidbcloud.com*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*DefaultAPI* | [**Chat**](docs/DefaultAPI.md#chat) | **Post** /ecosystem/api/internal/pingchat/chat | 
+*PingChatServiceAPI* | [**Chat**](docs/PingChatServiceAPI.md#chat) | **Post** /ecosystem/api/internal/pingchat/chat | 
 
 
 ## Documentation For Models
 
  - [PingchatChatInfo](docs/PingchatChatInfo.md)
+ - [PingchatChatInfoDomainInner](docs/PingchatChatInfoDomainInner.md)
  - [PingchatChatMessage](docs/PingchatChatMessage.md)
+ - [PingchatChatMessageRole](docs/PingchatChatMessageRole.md)
  - [PingchatChatResponse](docs/PingchatChatResponse.md)
  - [PingchatLink](docs/PingchatLink.md)
 

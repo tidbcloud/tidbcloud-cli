@@ -21,7 +21,7 @@ var _ MappedNullable = &PingchatChatInfo{}
 
 // PingchatChatInfo struct for PingchatChatInfo
 type PingchatChatInfo struct {
-	Domain []string `json:"domain,omitempty"`
+	Domain []PingchatChatInfoDomainInner `json:"domain,omitempty"`
 	// https://pkg.go.dev/gopkg.in/bluesuncorp/validator.v9#hdr-Dive
 	Messages []PingchatChatMessage `json:"messages"`
 }
@@ -47,9 +47,9 @@ func NewPingchatChatInfoWithDefaults() *PingchatChatInfo {
 }
 
 // GetDomain returns the Domain field value if set, zero value otherwise.
-func (o *PingchatChatInfo) GetDomain() []string {
+func (o *PingchatChatInfo) GetDomain() []PingchatChatInfoDomainInner {
 	if o == nil || IsNil(o.Domain) {
-		var ret []string
+		var ret []PingchatChatInfoDomainInner
 		return ret
 	}
 	return o.Domain
@@ -57,7 +57,7 @@ func (o *PingchatChatInfo) GetDomain() []string {
 
 // GetDomainOk returns a tuple with the Domain field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PingchatChatInfo) GetDomainOk() ([]string, bool) {
+func (o *PingchatChatInfo) GetDomainOk() ([]PingchatChatInfoDomainInner, bool) {
 	if o == nil || IsNil(o.Domain) {
 		return nil, false
 	}
@@ -73,8 +73,8 @@ func (o *PingchatChatInfo) HasDomain() bool {
 	return false
 }
 
-// SetDomain gets a reference to the given []string and assigns it to the Domain field.
-func (o *PingchatChatInfo) SetDomain(v []string) {
+// SetDomain gets a reference to the given []PingchatChatInfoDomainInner and assigns it to the Domain field.
+func (o *PingchatChatInfo) SetDomain(v []PingchatChatInfoDomainInner) {
 	o.Domain = v
 }
 

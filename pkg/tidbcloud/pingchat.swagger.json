@@ -9,13 +9,19 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:8080",
+    "host": "api.tidbcloud.com",
     "paths": {
         "/ecosystem/api/internal/pingchat/chat": {
             "post": {
                 "description": "Chat with PingChat",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "PingChatService"
                 ],
                 "operationId": "Chat",
                 "parameters": [
