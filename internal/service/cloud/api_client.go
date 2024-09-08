@@ -610,9 +610,13 @@ func parseError(err error, resp *http.Response) error {
 	if err1 != nil {
 		return err
 	}
-	path := "[path]"
+	path := "<path>"
 	if resp.Request != nil {
 		path = fmt.Sprintf("[%s %s]", resp.Request.Method, resp.Request.URL.Path)
 	}
-	return fmt.Errorf("%s[%s] %s", path, err.Error(), body)
+	traceId := "<trace_id>"
+	if resp.Header.Get("X-Debug-Trace-Id") != "" {
+		traceId = resp.Header.Get("X-Debug-Trace-Id")
+	}
+	return fmt.Errorf("%s[%s][%s] %s", path, err.Error(), traceId, body)
 }
