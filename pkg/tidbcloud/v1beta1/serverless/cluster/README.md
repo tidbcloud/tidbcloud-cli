@@ -100,6 +100,7 @@ Class | Method | HTTP request | Description
  - [ProtobufAny](docs/ProtobufAny.md)
  - [RequiredTheClusterToBeUpdated](docs/RequiredTheClusterToBeUpdated.md)
  - [ServerlessServiceChangeRootPasswordBody](docs/ServerlessServiceChangeRootPasswordBody.md)
+ - [ServerlessServiceGetClusterViewParameter](docs/ServerlessServiceGetClusterViewParameter.md)
  - [Serverlessv1beta1ClusterView](docs/Serverlessv1beta1ClusterView.md)
  - [TidbCloudOpenApiserverlessv1beta1Cluster](docs/TidbCloudOpenApiserverlessv1beta1Cluster.md)
  - [TidbCloudOpenApiserverlessv1beta1ListClustersResponse](docs/TidbCloudOpenApiserverlessv1beta1ListClustersResponse.md)

@@ -263,11 +263,11 @@ type ApiBranchServiceGetBranchRequest struct {
 	ApiService *BranchServiceAPIService
 	clusterId  string
 	branchId   string
-	view       *string
+	view       *BranchServiceGetBranchViewParameter
 }
 
 // Optional. The view of the branch to return. Defaults to FULL   - BASIC: Basic response contains basic information for a branch.  - FULL: FULL response contains all detailed information for a branch.
-func (r ApiBranchServiceGetBranchRequest) View(view string) ApiBranchServiceGetBranchRequest {
+func (r ApiBranchServiceGetBranchRequest) View(view BranchServiceGetBranchViewParameter) ApiBranchServiceGetBranchRequest {
 	r.view = &view
 	return r
 }
