@@ -37,7 +37,7 @@ const (
 
 var (
 	re     = regexp.MustCompile(regexPattern)
-	domain = []string{"tidbcloud"}
+	domain = []pingchat.PingchatChatInfoDomainInner{"tidbcloud"}
 )
 
 type AIOpts struct {
@@ -163,7 +163,7 @@ func AICmd(h *internal.Helper) *cobra.Command {
 					Messages: []pingchat.PingchatChatMessage{
 						{
 							Content: query,
-							Role:    "user",
+							Role:    pingchat.PINGCHATCHATMESSAGEROLE_USER,
 						},
 					},
 					Domain: domain,
@@ -184,12 +184,12 @@ func AICmd(h *internal.Helper) *cobra.Command {
 	return cmd
 }
 
-func convertRole(role ui.Role) (string, error) {
+func convertRole(role ui.Role) (pingchat.PingchatChatMessageRole, error) {
 	switch role {
 	case ui.RoleUser:
-		return "user", nil
+		return pingchat.PINGCHATCHATMESSAGEROLE_USER, nil
 	case ui.RoleBot:
-		return "assistant", nil
+		return pingchat.PINGCHATCHATMESSAGEROLE_ASSISTANT, nil
 	default:
 		return "", errors.New("unknown chat role")
 	}

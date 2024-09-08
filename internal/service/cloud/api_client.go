@@ -290,7 +290,7 @@ func (d *ClientDelegate) DeleteBranch(ctx context.Context, clusterId string, bra
 }
 
 func (d *ClientDelegate) Chat(ctx context.Context, chatInfo *pingchat.PingchatChatInfo) (*pingchat.PingchatChatResponse, error) {
-	r := d.pc.DefaultAPI.Chat(ctx)
+	r := d.pc.PingChatServiceAPI.Chat(ctx)
 	if chatInfo != nil {
 		r = r.ChatInfo(*chatInfo)
 	}
