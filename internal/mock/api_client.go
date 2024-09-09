@@ -470,36 +470,6 @@ func (_m *TiDBCloudClient) DownloadExport(ctx context.Context, clusterId string,
 	return r0, r1
 }
 
-// DownloadExportFiles provides a mock function with given fields: ctx, clusterId, exportId, body
-func (_m *TiDBCloudClient) DownloadExportFiles(ctx context.Context, clusterId string, exportId string, body *export.ExportServiceDownloadExportFilesBody) (*export.DownloadExportFilesResponse, error) {
-	ret := _m.Called(ctx, clusterId, exportId, body)
-
-	if len(ret) == 0 {
-		panic("no return value specified for DownloadExportFiles")
-	}
-
-	var r0 *export.DownloadExportFilesResponse
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, *export.ExportServiceDownloadExportFilesBody) (*export.DownloadExportFilesResponse, error)); ok {
-		return rf(ctx, clusterId, exportId, body)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, *export.ExportServiceDownloadExportFilesBody) *export.DownloadExportFilesResponse); ok {
-		r0 = rf(ctx, clusterId, exportId, body)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*export.DownloadExportFilesResponse)
-		}
-	}
-
-	if rf, ok := ret.Get(1).(func(context.Context, string, string, *export.ExportServiceDownloadExportFilesBody) error); ok {
-		r1 = rf(ctx, clusterId, exportId, body)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 // GetBackup provides a mock function with given fields: ctx, backupId
 func (_m *TiDBCloudClient) GetBackup(ctx context.Context, backupId string) (*br.V1beta1Backup, error) {
 	ret := _m.Called(ctx, backupId)
@@ -770,9 +740,9 @@ func (_m *TiDBCloudClient) ListClusters(ctx context.Context, filter *string, pag
 	return r0, r1
 }
 
-// ListExportFiles provides a mock function with given fields: ctx, clusterId, exportId, pageSize, pageToken
-func (_m *TiDBCloudClient) ListExportFiles(ctx context.Context, clusterId string, exportId string, pageSize *int32, pageToken *string) (*export.ListExportFilesResponse, error) {
-	ret := _m.Called(ctx, clusterId, exportId, pageSize, pageToken)
+// ListExportFiles provides a mock function with given fields: ctx, clusterId, exportId, pageSize, pageToken, isGenerateUrl
+func (_m *TiDBCloudClient) ListExportFiles(ctx context.Context, clusterId string, exportId string, pageSize *int32, pageToken *string, isGenerateUrl bool) (*export.ListExportFilesResponse, error) {
+	ret := _m.Called(ctx, clusterId, exportId, pageSize, pageToken, isGenerateUrl)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ListExportFiles")
@@ -780,19 +750,49 @@ func (_m *TiDBCloudClient) ListExportFiles(ctx context.Context, clusterId string
 
 	var r0 *export.ListExportFilesResponse
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, *int32, *string) (*export.ListExportFilesResponse, error)); ok {
-		return rf(ctx, clusterId, exportId, pageSize, pageToken)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *int32, *string, bool) (*export.ListExportFilesResponse, error)); ok {
+		return rf(ctx, clusterId, exportId, pageSize, pageToken, isGenerateUrl)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, *int32, *string) *export.ListExportFilesResponse); ok {
-		r0 = rf(ctx, clusterId, exportId, pageSize, pageToken)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *int32, *string, bool) *export.ListExportFilesResponse); ok {
+		r0 = rf(ctx, clusterId, exportId, pageSize, pageToken, isGenerateUrl)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*export.ListExportFilesResponse)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string, string, *int32, *string) error); ok {
-		r1 = rf(ctx, clusterId, exportId, pageSize, pageToken)
+	if rf, ok := ret.Get(1).(func(context.Context, string, string, *int32, *string, bool) error); ok {
+		r1 = rf(ctx, clusterId, exportId, pageSize, pageToken, isGenerateUrl)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ListExportFilesWithRetry provides a mock function with given fields: ctx, clusterId, exportId, pageSize, pageToken, isGenerateUrl
+func (_m *TiDBCloudClient) ListExportFilesWithRetry(ctx context.Context, clusterId string, exportId string, pageSize *int32, pageToken *string, isGenerateUrl bool) (*export.ListExportFilesResponse, error) {
+	ret := _m.Called(ctx, clusterId, exportId, pageSize, pageToken, isGenerateUrl)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListExportFilesWithRetry")
+	}
+
+	var r0 *export.ListExportFilesResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *int32, *string, bool) (*export.ListExportFilesResponse, error)); ok {
+		return rf(ctx, clusterId, exportId, pageSize, pageToken, isGenerateUrl)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *int32, *string, bool) *export.ListExportFilesResponse); ok {
+		r0 = rf(ctx, clusterId, exportId, pageSize, pageToken, isGenerateUrl)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*export.ListExportFilesResponse)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string, *int32, *string, bool) error); ok {
+		r1 = rf(ctx, clusterId, exportId, pageSize, pageToken, isGenerateUrl)
 	} else {
 		r1 = ret.Error(1)
 	}
