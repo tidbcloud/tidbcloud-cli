@@ -93,6 +93,7 @@ Class | Method | HTTP request | Description
  - [BranchEndpointsPrivateAWS](docs/BranchEndpointsPrivateAWS.md)
  - [BranchEndpointsPrivateGCP](docs/BranchEndpointsPrivateGCP.md)
  - [BranchEndpointsPublic](docs/BranchEndpointsPublic.md)
+ - [BranchServiceGetBranchViewParameter](docs/BranchServiceGetBranchViewParameter.md)
  - [BranchState](docs/BranchState.md)
  - [BranchUsage](docs/BranchUsage.md)
  - [BranchView](docs/BranchView.md)

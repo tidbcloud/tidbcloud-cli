@@ -26,8 +26,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/version"
-	pingchatClient "tidbcloud-cli/pkg/tidbcloud/pingchat/client"
-	pingchatOp "tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
+	"tidbcloud-cli/pkg/tidbcloud/pingchat"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
@@ -35,14 +34,11 @@ import (
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
 
-	apiClient "github.com/c4pt0r/go-tidbcloud-sdk-v1/client"
-	httpTransport "github.com/go-openapi/runtime/client"
-	"github.com/go-openapi/strfmt"
 	"github.com/icholy/digest"
 )
 
 const (
-	DefaultApiUrl             = "https://" + apiClient.DefaultHost
+	DefaultApiUrl             = "https://api.tidbcloud.com"
 	DefaultServerlessEndpoint = "https://serverless.tidbapi.com"
 	DefaultIAMEndpoint        = "https://iam.tidbapi.com"
 	userAgent                 = "User-Agent"
@@ -79,7 +75,7 @@ type TiDBCloudClient interface {
 
 	DeleteBranch(ctx context.Context, clusterId string, branchId string) (*branch.Branch, error)
 
-	Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.ClientOption) (*pingchatOp.ChatOK, error)
+	Chat(ctx context.Context, chatInfo *pingchat.PingchatChatInfo) (*pingchat.PingchatChatResponse, error)
 
 	DeleteBackup(ctx context.Context, backupId string) (*br.V1beta1Backup, error)
 
@@ -124,7 +120,7 @@ type TiDBCloudClient interface {
 type ClientDelegate struct {
 	ic  *iam.APIClient
 	bc  *branch.APIClient
-	pc  *pingchatClient.TidbcloudPingchat
+	pc  *pingchat.APIClient
 	brc *br.APIClient
 	sc  *cluster.APIClient
 	sic *imp.APIClient
@@ -296,8 +292,13 @@ func (d *ClientDelegate) DeleteBranch(ctx context.Context, clusterId string, bra
 	return b, parseError(err, h)
 }
 
-func (d *ClientDelegate) Chat(params *pingchatOp.ChatParams, opts ...pingchatOp.ClientOption) (*pingchatOp.ChatOK, error) {
-	return d.pc.Operations.Chat(params, opts...)
+func (d *ClientDelegate) Chat(ctx context.Context, chatInfo *pingchat.PingchatChatInfo) (*pingchat.PingchatChatResponse, error) {
+	r := d.pc.PingChatServiceAPI.Chat(ctx)
+	if chatInfo != nil {
+		r = r.ChatInfo(*chatInfo)
+	}
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
 }
 
 func (d *ClientDelegate) DeleteBackup(ctx context.Context, backupId string) (*br.V1beta1Backup, error) {
@@ -482,7 +483,7 @@ func (d *ClientDelegate) UpdateSQLUser(ctx context.Context, clusterID string, us
 	return res, parseError(err, h)
 }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *pingchatClient.TidbcloudPingchat, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, error) {
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *pingchat.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}
@@ -492,7 +493,6 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	if err != nil {
 		return nil, nil, nil, nil, nil, nil, nil, err
 	}
-	transport := httpTransport.NewWithClient(u.Host, u.Path, []string{u.Scheme}, httpclient)
 
 	// v1beta1 api (serverless)
 	serverlessURL, err := prop.ValidateApiUrl(serverlessEndpoint)
@@ -500,12 +500,13 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 		return nil, nil, nil, nil, nil, nil, nil, err
 	}
 
-	iamCfg := iam.NewConfiguration()
-	iamCfg.HTTPClient = httpclient
 	iamURL, err := prop.ValidateApiUrl(iamEndpoint)
 	if err != nil {
 		return nil, nil, nil, nil, nil, nil, nil, err
 	}
+
+	iamCfg := iam.NewConfiguration()
+	iamCfg.HTTPClient = httpclient
 	iamCfg.Host = iamURL.Host
 
 	clusterCfg := cluster.NewConfiguration()
@@ -528,8 +529,12 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	backupRestoreCfg.HTTPClient = httpclient
 	backupRestoreCfg.Host = serverlessURL.Host
 
+	pingchatCfg := pingchat.NewConfiguration()
+	pingchatCfg.HTTPClient = httpclient
+	pingchatCfg.Host = u.Host
+
 	return branch.NewAPIClient(branchCfg), cluster.NewAPIClient(clusterCfg),
-		pingchatClient.New(transport, strfmt.Default), br.NewAPIClient(backupRestoreCfg),
+		pingchat.NewAPIClient(pingchatCfg), br.NewAPIClient(backupRestoreCfg),
 		imp.NewAPIClient(importCfg), export.NewAPIClient(exportCfg),
 		iam.NewAPIClient(iamCfg), nil
 }
@@ -634,9 +639,13 @@ func parseError(err error, resp *http.Response) error {
 	if err1 != nil {
 		return err
 	}
-	path := "[path]"
+	path := "<path>"
 	if resp.Request != nil {
 		path = fmt.Sprintf("[%s %s]", resp.Request.Method, resp.Request.URL.Path)
 	}
-	return fmt.Errorf("%s[%s] %s", path, err.Error(), body)
+	traceId := "<trace_id>"
+	if resp.Header.Get("X-Debug-Trace-Id") != "" {
+		traceId = resp.Header.Get("X-Debug-Trace-Id")
+	}
+	return fmt.Errorf("%s[%s][%s] %s", path, err.Error(), traceId, body)
 }

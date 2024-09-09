@@ -66,24 +66,8 @@ var inputDescription = map[string]string{
 	flag.CSVNotNull:           "Input the CSV not-null: whether the CSV can contains any NULL value, skip to use default value (false)",
 }
 
-var sourceTypes = []imp.ImportSourceTypeEnum{
-	imp.IMPORTSOURCETYPEENUM_S3,
-	imp.IMPORTSOURCETYPEENUM_LOCAL,
-	imp.IMPORTSOURCETYPEENUM_GCS,
-	imp.IMPORTSOURCETYPEENUM_AZURE_BLOB,
-}
-
 type StartOpts struct {
 	interactive bool
-}
-
-func (o StartOpts) SupportedFileTypes() []string {
-	return []string{
-		string(imp.IMPORTFILETYPEENUM_CSV),
-		string(imp.IMPORTFILETYPEENUM_PARQUET),
-		string(imp.IMPORTFILETYPEENUM_SQL),
-		string(imp.IMPORTFILETYPEENUM_AURORA_SNAPSHOT),
-	}
 }
 
 func (o StartOpts) NonInteractiveFlags() []string {
@@ -249,8 +233,8 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	startCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID.")
-	startCmd.Flags().String(flag.SourceType, "LOCAL", fmt.Sprintf("The import source type, one of %q.", sourceTypes))
-	startCmd.Flags().String(flag.FileType, "", fmt.Sprintf("The import file type, one of %q.", opts.SupportedFileTypes()))
+	startCmd.Flags().String(flag.SourceType, "LOCAL", fmt.Sprintf("The import source type, one of %q.", imp.AllowedImportSourceTypeEnumEnumValues))
+	startCmd.Flags().String(flag.FileType, "", fmt.Sprintf("The import file type, one of %q.", imp.AllowedImportFileTypeEnumEnumValues))
 
 	startCmd.Flags().String(flag.LocalFilePath, "", "The local file path to import.")
 	startCmd.Flags().String(flag.LocalTargetDatabase, "", "Target database to which import data.")
@@ -282,8 +266,8 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 }
 
 func getSelectedSourceType() (imp.ImportSourceTypeEnum, error) {
-	SourceTypes := make([]interface{}, 0, len(sourceTypes))
-	for _, sourceType := range sourceTypes {
+	SourceTypes := make([]interface{}, 0, len(imp.AllowedImportSourceTypeEnumEnumValues))
+	for _, sourceType := range imp.AllowedImportSourceTypeEnumEnumValues {
 		SourceTypes = append(SourceTypes, sourceType)
 	}
 	model, err := ui.InitialSelectModel(SourceTypes, "Choose import source type:")

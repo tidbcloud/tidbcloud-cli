@@ -138,7 +138,7 @@ func (suite *GCSImportSuite) TestGCSImportArgs() {
 		{
 			name: "start import with unsupported data format",
 			args: []string{"--source-type", "GCS", "--cluster-id", clusterID, "--file-type", "yaml"},
-			err:  fmt.Errorf("file type \"yaml\" is not supported, please use one of [\"CSV\" \"PARQUET\" \"SQL\" \"AURORA_SNAPSHOT\"]"),
+			err:  fmt.Errorf("file type \"yaml\" is not supported, please use one of [\"CSV\" \"SQL\" \"AURORA_SNAPSHOT\" \"PARQUET\"]"),
 		},
 		{
 			name: "start import without required cluster id",
