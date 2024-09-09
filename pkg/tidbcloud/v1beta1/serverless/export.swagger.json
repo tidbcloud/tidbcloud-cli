@@ -332,7 +332,7 @@
             "type": "string"
           },
           {
-            "name": "isGenerateUrl",
+            "name": "generateUrl",
             "description": "Optional. Whether return the file download urls, default is false",
             "in": "query",
             "required": false,

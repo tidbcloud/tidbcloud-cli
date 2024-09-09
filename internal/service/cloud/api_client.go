@@ -430,7 +430,7 @@ func (d *ClientDelegate) ListExportFiles(ctx context.Context, clusterId string, 
 		r = r.PageToken(*pageToken)
 	}
 	if isGenerateUrl {
-		r = r.IsGenerateUrl(true)
+		r = r.GenerateUrl(true)
 	}
 	res, h, err := r.Execute()
 	return res, parseError(err, h)

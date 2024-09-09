@@ -622,13 +622,13 @@ func (a *ExportServiceAPIService) ExportServiceGetExportExecute(r ApiExportServi
 }
 
 type ApiExportServiceListExportFilesRequest struct {
-	ctx           context.Context
-	ApiService    *ExportServiceAPIService
-	clusterId     string
-	exportId      string
-	pageSize      *int32
-	pageToken     *string
-	isGenerateUrl *bool
+	ctx         context.Context
+	ApiService  *ExportServiceAPIService
+	clusterId   string
+	exportId    string
+	pageSize    *int32
+	pageToken   *string
+	generateUrl *bool
 }
 
 // Optional. The maximum number to return.
@@ -644,8 +644,8 @@ func (r ApiExportServiceListExportFilesRequest) PageToken(pageToken string) ApiE
 }
 
 // Optional. Whether return the file download urls, default is false
-func (r ApiExportServiceListExportFilesRequest) IsGenerateUrl(isGenerateUrl bool) ApiExportServiceListExportFilesRequest {
-	r.isGenerateUrl = &isGenerateUrl
+func (r ApiExportServiceListExportFilesRequest) GenerateUrl(generateUrl bool) ApiExportServiceListExportFilesRequest {
+	r.generateUrl = &generateUrl
 	return r
 }
 
@@ -700,8 +700,8 @@ func (a *ExportServiceAPIService) ExportServiceListExportFilesExecute(r ApiExpor
 	if r.pageToken != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "pageToken", r.pageToken, "", "")
 	}
-	if r.isGenerateUrl != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "isGenerateUrl", r.isGenerateUrl, "", "")
+	if r.generateUrl != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "generateUrl", r.generateUrl, "", "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}

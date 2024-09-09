@@ -255,7 +255,7 @@ paths:
       - description: "Optional. Whether return the file download urls, default is\
           \ false"
         in: query
-        name: isGenerateUrl
+        name: generateUrl
         schema:
           type: boolean
       responses:
