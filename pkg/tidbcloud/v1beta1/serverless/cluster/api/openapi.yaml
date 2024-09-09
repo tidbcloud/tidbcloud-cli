@@ -127,10 +127,7 @@ paths:
         in: query
         name: view
         schema:
-          enum:
-          - BASIC
-          - FULL
-          type: string
+          $ref: '#/components/schemas/ServerlessService_GetCluster_view_parameter'
       responses:
         "200":
           content:
@@ -875,6 +872,11 @@ components:
       required:
       - updateMask
       type: object
+    ServerlessService_GetCluster_view_parameter:
+      enum:
+      - BASIC
+      - FULL
+      type: string
     Required__The_cluster_to_be_updated_:
       description: Required. The cluster to be updated.
       properties:

@@ -1,0 +1,120 @@
+openapi: 3.0.1
+info:
+  contact: {}
+  termsOfService: http://swagger.io/terms/
+  title: PingChat Swagger API
+  version: "1.0"
+servers:
+- url: https://api.tidbcloud.com/
+paths:
+  /ecosystem/api/internal/pingchat/chat:
+    post:
+      description: Chat with PingChat
+      operationId: Chat
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pingchat.ChatInfo'
+        description: chat information
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/pingchat.ChatResponse'
+          description: ok
+        "400":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: error
+        "500":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: error
+        default:
+          content:
+            application/json:
+              schema:
+                type: object
+          description: other error
+      tags:
+      - PingChatService
+      x-codegen-request-body-name: chatInfo
+components:
+  schemas:
+    pingchat.ChatInfo:
+      properties:
+        domain:
+          items:
+            $ref: '#/components/schemas/pingchat_ChatInfo_domain_inner'
+          type: array
+        messages:
+          description: https://pkg.go.dev/gopkg.in/bluesuncorp/validator.v9#hdr-Dive
+          items:
+            $ref: '#/components/schemas/pingchat.ChatMessage'
+          type: array
+      required:
+      - messages
+      type: object
+    pingchat.ChatMessage:
+      properties:
+        content:
+          description: Dialogue content
+          type: string
+        role:
+          $ref: '#/components/schemas/pingchat_ChatMessage_role'
+      required:
+      - content
+      - role
+      type: object
+    pingchat.ChatResponse:
+      example:
+        links:
+        - link: link
+          title: title
+        - link: link
+          title: title
+        content: content
+      properties:
+        content:
+          type: string
+        links:
+          description: Reference Document Links
+          items:
+            $ref: '#/components/schemas/pingchat.Link'
+          type: array
+      type: object
+    pingchat.Link:
+      example:
+        link: link
+        title: title
+      properties:
+        link:
+          type: string
+        title:
+          type: string
+      type: object
+    pingchat_ChatInfo_domain_inner:
+      enum:
+      - tidb
+      - tidbcloud
+      - asktug
+      - blog
+      - community
+      - knowledge-base-cn
+      - kb
+      type: string
+    pingchat_ChatMessage_role:
+      description: "User's input as \"user\", AI assistant's reply as \"assistant\"\
+        , see https://github.com/gin-gonic/gin/issues/3234."
+      enum:
+      - user
+      - assistant
+      type: string
+x-original-swagger-version: "2.0"
