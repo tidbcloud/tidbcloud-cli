@@ -16,6 +16,7 @@ package ai
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -25,8 +26,7 @@ import (
 	"tidbcloud-cli/internal/iostream"
 	"tidbcloud-cli/internal/mock"
 	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/pkg/tidbcloud/pingchat/client/operations"
-	"tidbcloud-cli/pkg/tidbcloud/pingchat/models"
+	"tidbcloud-cli/pkg/tidbcloud/pingchat"
 
 	mockTool "github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -56,20 +56,21 @@ func (suite *AISuite) SetupTest() {
 func (suite *AISuite) TestAIArgs() {
 	assert := require.New(suite.T())
 
-	links := []*models.PingchatLink{
+	link := "https://tidbcloud.com"
+	links := []pingchat.PingchatLink{
 		{
-			Link: "https://tidbcloud.com",
+			Link: &link,
 		},
 	}
-	chatOK := operations.ChatOK{Payload: &models.PingchatChatResponse{
-		Content: "hello",
+	answer := "hello"
+	chatResp := &pingchat.PingchatChatResponse{
+		Content: &answer,
 		Links:   links,
-	}}
+	}
 
-	res, _ := json.MarshalIndent(chatOK.Payload, "", "  ")
+	res, _ := json.MarshalIndent(chatResp, "", "  ")
 
-	suite.mockClient.On("Chat", mockTool.Anything).
-		Return(&chatOK, nil)
+	suite.mockClient.On("Chat", context.Background(), mockTool.Anything).Return(chatResp, nil)
 
 	tests := []struct {
 		name         string

@@ -375,11 +375,11 @@ type ApiServerlessServiceGetClusterRequest struct {
 	ctx        context.Context
 	ApiService *ServerlessServiceAPIService
 	clusterId  string
-	view       *string
+	view       *ServerlessServiceGetClusterViewParameter
 }
 
 // Optional. The level of detail to return for the cluster.   - BASIC: Only basic information about the cluster is returned.  - FULL: All details about the cluster are returned.
-func (r ApiServerlessServiceGetClusterRequest) View(view string) ApiServerlessServiceGetClusterRequest {
+func (r ApiServerlessServiceGetClusterRequest) View(view ServerlessServiceGetClusterViewParameter) ApiServerlessServiceGetClusterRequest {
 	r.view = &view
 	return r
 }

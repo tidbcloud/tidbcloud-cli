@@ -1,0 +1,17 @@
+.gitignore
+.openapi-generator-ignore
+.travis.yml
+README.md
+api/openapi.yaml
+api_ping_chat_service.go
+client.go
+configuration.go
+git_push.sh
+model_pingchat_chat_info.go
+model_pingchat_chat_info_domain_inner.go
+model_pingchat_chat_message.go
+model_pingchat_chat_message_role.go
+model_pingchat_chat_response.go
+model_pingchat_link.go
+response.go
+utils.go
