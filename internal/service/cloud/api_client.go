@@ -42,7 +42,6 @@ const (
 	DefaultApiUrl             = "https://api.tidbcloud.com"
 	DefaultServerlessEndpoint = "https://serverless.tidbapi.com"
 	DefaultIAMEndpoint        = "https://iam.tidbapi.com"
-	userAgent                 = "User-Agent"
 )
 
 type TiDBCloudClient interface {
@@ -512,33 +511,42 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 		return nil, nil, nil, nil, nil, nil, nil, err
 	}
 
+	userAgent := fmt.Sprintf("%s/%s", config.CliName, version.Version)
+
 	iamCfg := iam.NewConfiguration()
 	iamCfg.HTTPClient = httpclient
 	iamCfg.Host = iamURL.Host
+	iamCfg.UserAgent = userAgent
 
 	clusterCfg := cluster.NewConfiguration()
 	clusterCfg.HTTPClient = httpclient
 	clusterCfg.Host = serverlessURL.Host
+	clusterCfg.UserAgent = userAgent
 
 	branchCfg := branch.NewConfiguration()
 	branchCfg.HTTPClient = httpclient
 	branchCfg.Host = serverlessURL.Host
+	branchCfg.UserAgent = userAgent
 
 	exportCfg := export.NewConfiguration()
 	exportCfg.HTTPClient = httpclient
 	exportCfg.Host = serverlessURL.Host
+	exportCfg.UserAgent = userAgent
 
 	importCfg := imp.NewConfiguration()
 	importCfg.HTTPClient = httpclient
 	importCfg.Host = serverlessURL.Host
+	importCfg.UserAgent = userAgent
 
 	backupRestoreCfg := br.NewConfiguration()
 	backupRestoreCfg.HTTPClient = httpclient
 	backupRestoreCfg.Host = serverlessURL.Host
+	backupRestoreCfg.UserAgent = userAgent
 
 	pingchatCfg := pingchat.NewConfiguration()
 	pingchatCfg.HTTPClient = httpclient
 	pingchatCfg.Host = u.Host
+	pingchatCfg.UserAgent = userAgent
 
 	return branch.NewAPIClient(branchCfg), cluster.NewAPIClient(clusterCfg),
 		pingchat.NewAPIClient(pingchatCfg), br.NewAPIClient(backupRestoreCfg),
@@ -547,35 +555,15 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 }
 
 func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {
-	return NewTransportWithAgent(&digest.Transport{
+	return &digest.Transport{
 		Username:  publicKey,
 		Password:  privateKey,
 		Transport: NewDebugTransport(http.DefaultTransport),
-	}, fmt.Sprintf("%s/%s", config.CliName, version.Version))
-}
-
-func NewBearTokenTransport(token string) http.RoundTripper {
-	return NewTransportWithAgent(NewTransportWithBearToken(NewDebugTransport(http.DefaultTransport), token),
-		fmt.Sprintf("%s/%s", config.CliName, version.Version))
-}
-
-// NewTransportWithAgent returns a new http.RoundTripper that add the User-Agent header,
-// according to https://github.com/go-swagger/go-swagger/issues/1563.
-func NewTransportWithAgent(inner http.RoundTripper, userAgent string) http.RoundTripper {
-	return &UserAgentTransport{
-		inner: inner,
-		Agent: userAgent,
 	}
 }
 
-type UserAgentTransport struct {
-	inner http.RoundTripper
-	Agent string
-}
-
-func (ug *UserAgentTransport) RoundTrip(r *http.Request) (*http.Response, error) {
-	r.Header.Set(userAgent, ug.Agent)
-	return ug.inner.RoundTrip(r)
+func NewBearTokenTransport(token string) http.RoundTripper {
+	return NewTransportWithBearToken(NewDebugTransport(http.DefaultTransport), token)
 }
 
 func NewTransportWithBearToken(inner http.RoundTripper, token string) http.RoundTripper {
