@@ -189,21 +189,13 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			} else {
 				fmt.Fprintf(h.IOStreams.Out, "%s\n", color.BlueString(fileMessage))
 			}
-
-			fileNames := make([]string, 0)
-			for _, file := range exportFiles {
-				if *file.Name == "metadata" {
-					continue
-				}
-				fileNames = append(fileNames, *file.Name)
-			}
 			if h.IOStreams.CanPrompt {
-				err = DownloadFilesPrompt(h, fileNames, path, concurrency, exportID, clusterID, d, totalSize)
+				err = DownloadFilesPrompt(h, path, concurrency, exportID, clusterID, totalSize, len(exportFiles), d)
 				if err != nil {
 					return errors.Trace(err)
 				}
 			} else {
-				err = DownloadFilesWithoutPrompt(h, fileNames, path, concurrency, exportID, clusterID, d)
+				err = DownloadFilesWithoutPrompt(h, path, concurrency, exportID, clusterID, len(exportFiles), d)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -221,8 +213,8 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 	return downloadCmd
 }
 
-func DownloadFilesPrompt(h *internal.Helper, fileNames []string, path string,
-	concurrency int, exportID, clusterID string, client cloud.TiDBCloudClient, totalSize int64) error {
+func DownloadFilesPrompt(h *internal.Helper, path string,
+	concurrency int, exportID, clusterID string, totalSize int64, count int, client cloud.TiDBCloudClient) error {
 	if concurrency <= 0 {
 		concurrency = DefaultConcurrency
 	}
@@ -236,13 +228,13 @@ func DownloadFilesPrompt(h *internal.Helper, fileNames []string, path string,
 	// init the concurrency progress model
 	var p *tea.Program
 	m := NewProcessDownloadModel(
-		fileNames,
 		concurrency,
 		path,
 		exportID,
 		clusterID,
 		client,
 		int(totalSize),
+		count,
 	)
 
 	// run the program
@@ -284,9 +276,9 @@ func DownloadFilesPrompt(h *internal.Helper, fileNames []string, path string,
 	return nil
 }
 
-func DownloadFilesWithoutPrompt(h *internal.Helper, files []string, path string,
-	concurrency int, exportID, clusterID string, client cloud.TiDBCloudClient) error {
-	exportDownloadPool, err := NewDownloadPool(h, files, path, concurrency, exportID, clusterID, client)
+func DownloadFilesWithoutPrompt(h *internal.Helper, path string,
+	concurrency int, exportID, clusterID string, count int, client cloud.TiDBCloudClient) error {
+	exportDownloadPool, err := NewDownloadPool(h, path, concurrency, exportID, clusterID, count, client)
 	if err != nil {
 		return errors.Trace(err)
 	}

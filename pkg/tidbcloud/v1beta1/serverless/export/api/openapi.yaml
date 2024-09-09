@@ -252,6 +252,12 @@ paths:
         name: pageToken
         schema:
           type: string
+      - description: "Optional. Whether return the file download urls, default is\
+          \ false"
+        in: query
+        name: isGenerateUrl
+        schema:
+          type: boolean
       responses:
         "200":
           content:
@@ -268,45 +274,6 @@ paths:
       summary: List export files
       tags:
       - ExportService
-  /v1beta1/clusters/{clusterId}/exports/{exportId}/files:download:
-    post:
-      operationId: ExportService_DownloadExportFiles
-      parameters:
-      - description: Required. The ID of the cluster.
-        in: path
-        name: clusterId
-        required: true
-        schema:
-          type: string
-      - description: Required. The ID of the export.
-        in: path
-        name: exportId
-        required: true
-        schema:
-          type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ExportService.DownloadExportFilesBody'
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DownloadExportFilesResponse'
-          description: A successful response.
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-          description: An unexpected error response.
-      summary: Generate export files download url
-      tags:
-      - ExportService
-      x-codegen-request-body-name: body
 components:
   schemas:
     Any:
@@ -334,22 +301,6 @@ components:
       required:
       - authType
       - uri
-      type: object
-    DownloadExportFilesResponse:
-      example:
-        files:
-        - size: 0
-          name: name
-          downloadUrl: downloadUrl
-        - size: 0
-          name: name
-          downloadUrl: downloadUrl
-      properties:
-        files:
-          description: The files with download url of the export.
-          items:
-            $ref: '#/components/schemas/ExportFile'
-          type: array
       type: object
     DownloadExportsResponse:
       example:
@@ -493,7 +444,7 @@ components:
       example:
         size: 0
         name: name
-        downloadUrl: downloadUrl
+        url: url
       properties:
         name:
           description: The name of the file.
@@ -502,7 +453,7 @@ components:
           description: The size in bytes of the file.
           format: int64
           type: integer
-        downloadUrl:
+        url:
           description: download url of the file.
           type: string
       type: object
@@ -646,16 +597,6 @@ components:
       type: object
     ExportService.DownloadExportBody:
       type: object
-    ExportService.DownloadExportFilesBody:
-      properties:
-        fileNames:
-          description: Required. The name of the files to be downloaded.
-          items:
-            type: string
-          type: array
-      required:
-      - fileNames
-      type: object
     ExportState.Enum:
       description: |-
         Output Only. Export State.
@@ -719,15 +660,14 @@ components:
       type: object
     ListExportFilesResponse:
       example:
-        totalSize: 6
         nextPageToken: nextPageToken
         files:
         - size: 0
           name: name
-          downloadUrl: downloadUrl
+          url: url
         - size: 0
           name: name
-          downloadUrl: downloadUrl
+          url: url
       properties:
         files:
           description: The files of the export.
@@ -737,10 +677,6 @@ components:
         nextPageToken:
           description: Token provided to retrieve the next page of results.
           type: string
-        totalSize:
-          description: Total number of export files.
-          format: int64
-          type: integer
       type: object
     ListExportsResponse:
       example:

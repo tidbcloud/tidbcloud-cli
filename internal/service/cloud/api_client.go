@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"time"
 
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
@@ -103,9 +104,9 @@ type TiDBCloudClient interface {
 
 	DownloadExport(ctx context.Context, clusterId string, exportId string) (*export.DownloadExportsResponse, error)
 
-	ListExportFiles(ctx context.Context, clusterId string, exportId string, pageSize *int32, pageToken *string) (*export.ListExportFilesResponse, error)
+	ListExportFiles(ctx context.Context, clusterId string, exportId string, pageSize *int32, pageToken *string, isGenerateUrl bool) (*export.ListExportFilesResponse, error)
 
-	DownloadExportFiles(ctx context.Context, clusterId string, exportId string, body *export.ExportServiceDownloadExportFilesBody) (*export.DownloadExportFilesResponse, error)
+	ListExportFilesWithRetry(ctx context.Context, clusterId string, exportId string, pageSize *int32, pageToken *string, isGenerateUrl bool) (*export.ListExportFilesResponse, error)
 
 	ListSQLUsers(ctx context.Context, clusterID string, pageSize *int32, pageToken *string) (*iam.ApiListSqlUsersRsp, error)
 
@@ -420,25 +421,31 @@ func (d *ClientDelegate) DownloadExport(ctx context.Context, clusterId string, e
 	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) ListExportFiles(ctx context.Context, clusterId string, exportId string, pageSize *int32, pageToken *string) (*export.ListExportFilesResponse, error) {
+func (d *ClientDelegate) ListExportFiles(ctx context.Context, clusterId string, exportId string, pageSize *int32,
+	pageToken *string, isGenerateUrl bool) (*export.ListExportFilesResponse, error) {
 	r := d.ec.ExportServiceAPI.ExportServiceListExportFiles(ctx, clusterId, exportId)
 	if pageSize != nil {
 		r = r.PageSize(*pageSize)
 	}
-	if pageToken != nil {
+	if pageToken != nil && *pageToken != "" {
 		r = r.PageToken(*pageToken)
+	}
+	if isGenerateUrl {
+		r = r.IsGenerateUrl(true)
 	}
 	res, h, err := r.Execute()
 	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) DownloadExportFiles(ctx context.Context, clusterId string, exportId string, body *export.ExportServiceDownloadExportFilesBody) (*export.DownloadExportFilesResponse, error) {
-	r := d.ec.ExportServiceAPI.ExportServiceDownloadExportFiles(ctx, clusterId, exportId)
-	if body != nil {
-		r = r.Body(*body)
+func (d *ClientDelegate) ListExportFilesWithRetry(ctx context.Context, clusterId string, exportId string, pageSize *int32, pageToken *string, isGenerateUrl bool) (res *export.ListExportFilesResponse, err error) {
+	for i := 0; i < 3; i++ {
+		res, err = d.ListExportFiles(ctx, clusterId, exportId, pageSize, pageToken, isGenerateUrl)
+		if err == nil {
+			return
+		}
+		time.Sleep(1 * time.Second)
 	}
-	res, h, err := r.Execute()
-	return res, parseError(err, h)
+	return
 }
 
 func (d *ClientDelegate) ListSQLUsers(ctx context.Context, clusterID string, pageSize *int32, pageToken *string) (*iam.ApiListSqlUsersRsp, error) {

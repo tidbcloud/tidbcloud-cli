@@ -810,7 +810,7 @@ func GetAllExportFiles(ctx context.Context, cID string, eID string, d TiDBCloudC
 	var items []export.ExportFile
 	var pageSize int32 = 1000
 	var pageToken *string
-	exportFilesResp, err := d.ListExportFiles(ctx, cID, eID, &pageSize, nil)
+	exportFilesResp, err := d.ListExportFiles(ctx, cID, eID, &pageSize, nil, false)
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -820,7 +820,7 @@ func GetAllExportFiles(ctx context.Context, cID string, eID string, d TiDBCloudC
 		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
-		exportFilesResp, err = d.ListExportFiles(ctx, cID, eID, &pageSize, pageToken)
+		exportFilesResp, err = d.ListExportFiles(ctx, cID, eID, &pageSize, pageToken, false)
 		if err != nil {
 			return nil, errors.Trace(err)
 		}

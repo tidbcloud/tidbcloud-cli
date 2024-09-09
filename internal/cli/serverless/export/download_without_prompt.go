@@ -30,7 +30,6 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 )
 
 var wg = sync.WaitGroup{}
@@ -41,11 +40,11 @@ const BatchSize = 20
 type downloadPool struct {
 	path        string
 	concurrency int
-	fileNames   []string
 	client      cloud.TiDBCloudClient
 	// The size of the batch to request download url
 	clusterID string
 	exportID  string
+	count     int
 	h         *internal.Helper
 
 	jobs    chan *downloadJob
@@ -56,9 +55,9 @@ type downloadPool struct {
 	batchSize int
 }
 
-func NewDownloadPool(h *internal.Helper, files []string, path string,
-	concurrency int, exportID, clusterID string, client cloud.TiDBCloudClient) (*downloadPool, error) {
-	if len(files) <= 0 {
+func NewDownloadPool(h *internal.Helper, path string,
+	concurrency int, exportID, clusterID string, count int, client cloud.TiDBCloudClient) (*downloadPool, error) {
+	if count <= 0 {
 		return nil, errors.New("no files to download")
 	}
 	if concurrency <= 0 {
@@ -66,23 +65,23 @@ func NewDownloadPool(h *internal.Helper, files []string, path string,
 	}
 
 	jobBufferSize := 2 * concurrency
-	if jobBufferSize > len(files) {
-		jobBufferSize = len(files)
+	if jobBufferSize > count {
+		jobBufferSize = count
 	}
 	jobs := make(chan *downloadJob, jobBufferSize)
-	results := make(chan *downloadResult, len(files))
+	results := make(chan *downloadResult, count)
 
 	return &downloadPool{
 		h:           h,
 		path:        path,
 		concurrency: concurrency,
-		fileNames:   files,
 		client:      client,
 		clusterID:   clusterID,
 		exportID:    exportID,
 		jobs:        jobs,
 		results:     results,
 		batchSize:   BatchSize,
+		count:       count,
 	}, nil
 }
 
@@ -161,30 +160,25 @@ func (d *downloadPool) Start() error {
 }
 
 func (d *downloadPool) produce() {
-	jobSize := len(d.fileNames)
+	pageSize := int32(d.batchSize)
+	var pageToken *string
 	ctx := context.Background()
-	for i := 0; i < jobSize; i++ {
+	for i := 0; i < d.count; i++ {
 		// request the next batch when the fileJobs are not enough
 		if len(d.fileJobs) < i+1 {
-			size := d.batchSize
-			if size > len(d.fileNames) {
-				size = len(d.fileNames)
-			}
-			downloadFileNames := d.fileNames[:size]
-			d.fileNames = d.fileNames[size:]
-			body := &export.ExportServiceDownloadExportFilesBody{
-				FileNames: downloadFileNames,
-			}
-			resp, err := d.client.DownloadExportFiles(ctx, d.clusterID, d.exportID, body)
+			resp, err := d.client.ListExportFilesWithRetry(ctx, d.clusterID, d.exportID, &pageSize, pageToken, true)
 			if err != nil {
-				for _, file := range downloadFileNames {
-					d.fileJobs = append(d.fileJobs, &downloadJob{fileName: file, err: err})
+				// skip the rest of files
+				errCount := d.count - len(d.fileJobs)
+				for j := 0; j < errCount; j++ {
+					d.fileJobs = append(d.fileJobs, &downloadJob{fileName: "unknown", err: err})
 				}
 			} else {
+				pageToken = resp.NextPageToken
 				for _, file := range resp.Files {
 					job := &downloadJob{
 						fileName:    *file.Name,
-						downloadUrl: file.DownloadUrl,
+						downloadUrl: file.Url,
 					}
 					d.fileJobs = append(d.fileJobs, job)
 				}

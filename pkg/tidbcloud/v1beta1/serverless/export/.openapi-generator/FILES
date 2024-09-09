@@ -9,7 +9,6 @@ configuration.go
 git_push.sh
 model_any.go
 model_azure_blob_target.go
-model_download_export_files_response.go
 model_download_exports_response.go
 model_download_url.go
 model_export.go
@@ -26,7 +25,6 @@ model_export_options_parquet_format.go
 model_export_parquet_compression_type_enum.go
 model_export_s3_auth_type_enum.go
 model_export_service_create_export_body.go
-model_export_service_download_export_files_body.go
 model_export_state_enum.go
 model_export_target.go
 model_export_target_type_enum.go

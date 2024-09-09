@@ -24,15 +24,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/charmbracelet/bubbles/progress"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/dustin/go-humanize"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
-
-	"github.com/charmbracelet/bubbles/progress"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/dustin/go-humanize"
 )
 
 const (
@@ -87,8 +85,6 @@ type JobInfo struct {
 	// totalNumber is the total number of jobs
 	totalNumber int
 	lock        sync.Mutex
-	// fileNames is the name of the files that need to be downloaded
-	fileNames []string
 	// fileJobs is a list of jobs that will be set to the jobs channel
 	fileJobs []*FileJob
 }
@@ -123,18 +119,17 @@ func (m *ProcessDownloadModel) GetFinishedJobs() []*FileJob {
 	return m.jobInfo.finishedJobs
 }
 
-func NewProcessDownloadModel(fileNames []string, concurrency int, path string,
-	exportID, clusterID string, client cloud.TiDBCloudClient, totalSize int) *ProcessDownloadModel {
+func NewProcessDownloadModel(concurrency int, path string,
+	exportID, clusterID string, client cloud.TiDBCloudClient, totalSize int, count int) *ProcessDownloadModel {
 	jobInfo := &JobInfo{
 		idToJob:      make(map[int]*FileJob),
-		startedJobs:  make([]*FileJob, 0, len(fileNames)),
+		startedJobs:  make([]*FileJob, 0, count),
 		finishedJobs: make([]*FileJob, 0),
-		totalNumber:  len(fileNames),
-		fileNames:    fileNames,
+		totalNumber:  count,
 	}
 	jobBufferSize := 2 * concurrency
-	if jobBufferSize > len(fileNames) {
-		jobBufferSize = len(fileNames)
+	if jobBufferSize > count {
+		jobBufferSize = count
 	}
 	return &ProcessDownloadModel{
 		jobsCh:      make(chan *FileJob, jobBufferSize),
@@ -241,36 +236,34 @@ func (m *ProcessDownloadModel) View() string {
 }
 
 func (m *ProcessDownloadModel) produce() {
-	jobSize := len(m.jobInfo.fileNames)
+	pageSize := int32(m.batchSize)
+	var pageToken *string
 	jobId := 0
 	ctx := context.Background()
-	for i := 0; i < jobSize; i++ {
+	for i := 0; i < m.jobInfo.totalNumber; i++ {
 		// request the next batch when the fileJobs are not enough
 		if len(m.jobInfo.fileJobs) < i+1 {
-			size := m.batchSize
-			if size > len(m.jobInfo.fileNames) {
-				size = len(m.jobInfo.fileNames)
-			}
-			downloadFileNames := m.jobInfo.fileNames[:size]
-			m.jobInfo.fileNames = m.jobInfo.fileNames[size:]
-			body := &export.ExportServiceDownloadExportFilesBody{
-				FileNames: downloadFileNames,
-			}
-			resp, err := m.client.DownloadExportFiles(ctx, m.clusterID, m.exportID, body)
+			resp, err := m.client.ListExportFilesWithRetry(ctx, m.clusterID, m.exportID, &pageSize, pageToken, true)
 			if err != nil {
-				for _, name := range downloadFileNames {
+				// skip this round of fetching
+				errCount := m.batchSize
+				if len(m.jobInfo.fileJobs)+errCount > m.jobInfo.totalNumber {
+					errCount = m.jobInfo.totalNumber - len(m.jobInfo.fileJobs)
+				}
+				for j := 0; j < errCount; j++ {
 					jobId++
-					job := &FileJob{id: jobId, name: name, err: err}
+					job := &FileJob{id: jobId, name: "unknown", err: err}
 					m.jobInfo.idToJob[jobId] = job
 					m.jobInfo.fileJobs = append(m.jobInfo.fileJobs, job)
 				}
 			} else {
+				pageToken = resp.NextPageToken
 				for _, file := range resp.Files {
 					jobId++
 					job := &FileJob{
 						id:   jobId,
 						name: *file.Name,
-						url:  file.DownloadUrl,
+						url:  file.Url,
 					}
 					m.jobInfo.idToJob[jobId] = job
 					m.jobInfo.fileJobs = append(m.jobInfo.fileJobs, job)

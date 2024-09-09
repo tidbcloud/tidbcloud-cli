@@ -330,53 +330,13 @@
             "in": "query",
             "required": false,
             "type": "string"
-          }
-        ],
-        "tags": [
-          "ExportService"
-        ]
-      }
-    },
-    "/v1beta1/clusters/{clusterId}/exports/{exportId}/files:download": {
-      "post": {
-        "summary": "Generate export files download url",
-        "operationId": "ExportService_DownloadExportFiles",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/DownloadExportFilesResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/Status"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "clusterId",
-            "description": "Required. The ID of the cluster.",
-            "in": "path",
-            "required": true,
-            "type": "string"
           },
           {
-            "name": "exportId",
-            "description": "Required. The ID of the export.",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ExportService.DownloadExportFilesBody"
-            }
+            "name": "isGenerateUrl",
+            "description": "Optional. Whether return the file download urls, default is false",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
           }
         ],
         "tags": [
@@ -419,19 +379,6 @@
         "authType",
         "uri"
       ]
-    },
-    "DownloadExportFilesResponse": {
-      "type": "object",
-      "properties": {
-        "files": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/ExportFile"
-          },
-          "description": "The files with download url of the export."
-        }
-      }
     },
     "DownloadExportsResponse": {
       "type": "object",
@@ -590,7 +537,7 @@
           "format": "int64",
           "description": "The size in bytes of the file."
         },
-        "downloadUrl": {
+        "url": {
           "type": "string",
           "description": "download url of the file."
         }
@@ -783,21 +730,6 @@
     "ExportService.DownloadExportBody": {
       "type": "object"
     },
-    "ExportService.DownloadExportFilesBody": {
-      "type": "object",
-      "properties": {
-        "fileNames": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Required. The name of the files to be downloaded."
-        }
-      },
-      "required": [
-        "fileNames"
-      ]
-    },
     "ExportState.Enum": {
       "type": "string",
       "enum": [
@@ -881,11 +813,6 @@
         "nextPageToken": {
           "type": "string",
           "description": "Token provided to retrieve the next page of results."
-        },
-        "totalSize": {
-          "type": "integer",
-          "format": "int64",
-          "description": "Total number of export files."
         }
       }
     },

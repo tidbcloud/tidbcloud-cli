@@ -22,9 +22,7 @@ type ListExportFilesResponse struct {
 	// The files of the export.
 	Files []ExportFile `json:"files,omitempty"`
 	// Token provided to retrieve the next page of results.
-	NextPageToken *string `json:"nextPageToken,omitempty"`
-	// Total number of export files.
-	TotalSize            *int64 `json:"totalSize,omitempty"`
+	NextPageToken        *string `json:"nextPageToken,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -111,38 +109,6 @@ func (o *ListExportFilesResponse) SetNextPageToken(v string) {
 	o.NextPageToken = &v
 }
 
-// GetTotalSize returns the TotalSize field value if set, zero value otherwise.
-func (o *ListExportFilesResponse) GetTotalSize() int64 {
-	if o == nil || IsNil(o.TotalSize) {
-		var ret int64
-		return ret
-	}
-	return *o.TotalSize
-}
-
-// GetTotalSizeOk returns a tuple with the TotalSize field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *ListExportFilesResponse) GetTotalSizeOk() (*int64, bool) {
-	if o == nil || IsNil(o.TotalSize) {
-		return nil, false
-	}
-	return o.TotalSize, true
-}
-
-// HasTotalSize returns a boolean if a field has been set.
-func (o *ListExportFilesResponse) HasTotalSize() bool {
-	if o != nil && !IsNil(o.TotalSize) {
-		return true
-	}
-
-	return false
-}
-
-// SetTotalSize gets a reference to the given int64 and assigns it to the TotalSize field.
-func (o *ListExportFilesResponse) SetTotalSize(v int64) {
-	o.TotalSize = &v
-}
-
 func (o ListExportFilesResponse) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -158,9 +124,6 @@ func (o ListExportFilesResponse) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.NextPageToken) {
 		toSerialize["nextPageToken"] = o.NextPageToken
-	}
-	if !IsNil(o.TotalSize) {
-		toSerialize["totalSize"] = o.TotalSize
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -186,7 +149,6 @@ func (o *ListExportFilesResponse) UnmarshalJSON(data []byte) (err error) {
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "files")
 		delete(additionalProperties, "nextPageToken")
-		delete(additionalProperties, "totalSize")
 		o.AdditionalProperties = additionalProperties
 	}
 
