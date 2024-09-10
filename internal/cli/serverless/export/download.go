@@ -160,11 +160,15 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			var totalSize int64
+			fileNames := make([]string, 0)
 			for _, file := range exportFiles {
 				totalSize += *file.Size
+				if *file.Name == "metadata" {
+					continue
+				}
+				fileNames = append(fileNames, *file.Name)
 			}
-			fileMessage := fmt.Sprintf("There are %d files to download, total size is %s.", len(exportFiles), humanize.IBytes(uint64(totalSize)))
-
+			fileMessage := fmt.Sprintf("There are %d files to download, total size is %s.", len(fileNames), humanize.IBytes(uint64(totalSize)))
 			if !force {
 				if !h.IOStreams.CanPrompt {
 					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to download")
@@ -190,12 +194,12 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				fmt.Fprintf(h.IOStreams.Out, "%s\n", color.BlueString(fileMessage))
 			}
 			if h.IOStreams.CanPrompt {
-				err = DownloadFilesPrompt(h, path, concurrency, exportID, clusterID, totalSize, len(exportFiles), d)
+				err = DownloadFilesPrompt(h, path, concurrency, exportID, clusterID, totalSize, fileNames, d)
 				if err != nil {
 					return errors.Trace(err)
 				}
 			} else {
-				err = DownloadFilesWithoutPrompt(h, path, concurrency, exportID, clusterID, len(exportFiles), d)
+				err = DownloadFilesWithoutPrompt(h, path, concurrency, exportID, clusterID, fileNames, d)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -214,7 +218,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 }
 
 func DownloadFilesPrompt(h *internal.Helper, path string,
-	concurrency int, exportID, clusterID string, totalSize int64, count int, client cloud.TiDBCloudClient) error {
+	concurrency int, exportID, clusterID string, totalSize int64, fileNames []string, client cloud.TiDBCloudClient) error {
 	if concurrency <= 0 {
 		concurrency = DefaultConcurrency
 	}
@@ -234,7 +238,7 @@ func DownloadFilesPrompt(h *internal.Helper, path string,
 		clusterID,
 		client,
 		int(totalSize),
-		count,
+		fileNames,
 	)
 
 	// run the program
@@ -277,8 +281,8 @@ func DownloadFilesPrompt(h *internal.Helper, path string,
 }
 
 func DownloadFilesWithoutPrompt(h *internal.Helper, path string,
-	concurrency int, exportID, clusterID string, count int, client cloud.TiDBCloudClient) error {
-	exportDownloadPool, err := NewDownloadPool(h, path, concurrency, exportID, clusterID, count, client)
+	concurrency int, exportID, clusterID string, fileNames []string, client cloud.TiDBCloudClient) error {
+	exportDownloadPool, err := NewDownloadPool(h, path, concurrency, exportID, clusterID, fileNames, client)
 	if err != nil {
 		return errors.Trace(err)
 	}

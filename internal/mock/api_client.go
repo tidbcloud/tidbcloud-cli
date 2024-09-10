@@ -440,29 +440,29 @@ func (_m *TiDBCloudClient) DeleteSQLUser(ctx context.Context, clusterID string, 
 	return r0, r1
 }
 
-// DownloadExport provides a mock function with given fields: ctx, clusterId, exportId
-func (_m *TiDBCloudClient) DownloadExport(ctx context.Context, clusterId string, exportId string) (*export.DownloadExportsResponse, error) {
-	ret := _m.Called(ctx, clusterId, exportId)
+// DownloadExportFiles provides a mock function with given fields: ctx, clusterId, exportId, body
+func (_m *TiDBCloudClient) DownloadExportFiles(ctx context.Context, clusterId string, exportId string, body *export.ExportServiceDownloadExportFilesBody) (*export.DownloadExportFilesResponse, error) {
+	ret := _m.Called(ctx, clusterId, exportId, body)
 
 	if len(ret) == 0 {
-		panic("no return value specified for DownloadExport")
+		panic("no return value specified for DownloadExportFiles")
 	}
 
-	var r0 *export.DownloadExportsResponse
+	var r0 *export.DownloadExportFilesResponse
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*export.DownloadExportsResponse, error)); ok {
-		return rf(ctx, clusterId, exportId)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *export.ExportServiceDownloadExportFilesBody) (*export.DownloadExportFilesResponse, error)); ok {
+		return rf(ctx, clusterId, exportId, body)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string, string) *export.DownloadExportsResponse); ok {
-		r0 = rf(ctx, clusterId, exportId)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *export.ExportServiceDownloadExportFilesBody) *export.DownloadExportFilesResponse); ok {
+		r0 = rf(ctx, clusterId, exportId, body)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*export.DownloadExportsResponse)
+			r0 = ret.Get(0).(*export.DownloadExportFilesResponse)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
-		r1 = rf(ctx, clusterId, exportId)
+	if rf, ok := ret.Get(1).(func(context.Context, string, string, *export.ExportServiceDownloadExportFilesBody) error); ok {
+		r1 = rf(ctx, clusterId, exportId, body)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -746,36 +746,6 @@ func (_m *TiDBCloudClient) ListExportFiles(ctx context.Context, clusterId string
 
 	if len(ret) == 0 {
 		panic("no return value specified for ListExportFiles")
-	}
-
-	var r0 *export.ListExportFilesResponse
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, *int32, *string, bool) (*export.ListExportFilesResponse, error)); ok {
-		return rf(ctx, clusterId, exportId, pageSize, pageToken, isGenerateUrl)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, *int32, *string, bool) *export.ListExportFilesResponse); ok {
-		r0 = rf(ctx, clusterId, exportId, pageSize, pageToken, isGenerateUrl)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*export.ListExportFilesResponse)
-		}
-	}
-
-	if rf, ok := ret.Get(1).(func(context.Context, string, string, *int32, *string, bool) error); ok {
-		r1 = rf(ctx, clusterId, exportId, pageSize, pageToken, isGenerateUrl)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// ListExportFilesWithRetry provides a mock function with given fields: ctx, clusterId, exportId, pageSize, pageToken, isGenerateUrl
-func (_m *TiDBCloudClient) ListExportFilesWithRetry(ctx context.Context, clusterId string, exportId string, pageSize *int32, pageToken *string, isGenerateUrl bool) (*export.ListExportFilesResponse, error) {
-	ret := _m.Called(ctx, clusterId, exportId, pageSize, pageToken, isGenerateUrl)
-
-	if len(ret) == 0 {
-		panic("no return value specified for ListExportFilesWithRetry")
 	}
 
 	var r0 *export.ListExportFilesResponse

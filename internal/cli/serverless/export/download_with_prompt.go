@@ -18,26 +18,25 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/charmbracelet/bubbles/progress"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/dustin/go-humanize"
 	"io"
 	"os"
 	"strings"
 	"sync"
-	"time"
-
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
-
-	"github.com/charmbracelet/bubbles/progress"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/dustin/go-humanize"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
+	"time"
 )
 
 const (
 	processDownloadModelPadding  = 2
 	processDownloadModelMaxWidth = 80
-	PromptBatchSize              = 20
+	MaxBatchSize                 = 100
 )
 
 type ResultMsg struct {
@@ -86,8 +85,8 @@ type JobInfo struct {
 	// totalNumber is the total number of jobs
 	totalNumber int
 	lock        sync.Mutex
-	// fileJobs is a list of jobs that will be set to the jobs channel
-	fileJobs []*FileJob
+	// fileNames is the name of the files that need to be downloaded
+	fileNames []string
 }
 
 type progressBar struct {
@@ -109,7 +108,6 @@ type ProcessDownloadModel struct {
 	exportID  string
 	clusterID string
 	client    cloud.TiDBCloudClient
-	batchSize int
 }
 
 func (m *ProcessDownloadModel) SetProgram(p *tea.Program) {
@@ -121,14 +119,16 @@ func (m *ProcessDownloadModel) GetFinishedJobs() []*FileJob {
 }
 
 func NewProcessDownloadModel(concurrency int, path string,
-	exportID, clusterID string, client cloud.TiDBCloudClient, totalSize int, count int) *ProcessDownloadModel {
+	exportID, clusterID string, client cloud.TiDBCloudClient, totalSize int, fileNames []string) *ProcessDownloadModel {
+	count := len(fileNames)
 	jobInfo := &JobInfo{
 		idToJob:      make(map[int]*FileJob),
 		startedJobs:  make([]*FileJob, 0, count),
 		finishedJobs: make([]*FileJob, 0),
 		totalNumber:  count,
+		fileNames:    fileNames,
 	}
-	jobBufferSize := 2 * concurrency
+	jobBufferSize := concurrency
 	if jobBufferSize > count {
 		jobBufferSize = count
 	}
@@ -143,7 +143,6 @@ func NewProcessDownloadModel(concurrency int, path string,
 		exportID:  exportID,
 		clusterID: clusterID,
 		client:    client,
-		batchSize: PromptBatchSize,
 	}
 }
 
@@ -236,46 +235,51 @@ func (m *ProcessDownloadModel) View() string {
 	return viewString
 }
 
+func (m *ProcessDownloadModel) GetBatchSize() int {
+	batchSize := 2 * m.concurrency
+	if batchSize > MaxBatchSize {
+		batchSize = MaxBatchSize
+	}
+	return batchSize
+}
+
 func (m *ProcessDownloadModel) produce() {
-	pageSize := int32(m.batchSize)
-	var pageToken *string
+	batchSize := m.GetBatchSize()
 	jobId := 0
 	ctx := context.Background()
-	for i := 0; i < m.jobInfo.totalNumber; i++ {
-		// request the next batch when the fileJobs are not enough
-		if len(m.jobInfo.fileJobs) < i+1 {
-			resp, err := m.client.ListExportFilesWithRetry(ctx, m.clusterID, m.exportID, &pageSize, pageToken, true)
-			if err != nil {
-				// skip this round of fetching
-				errCount := m.batchSize
-				if len(m.jobInfo.fileJobs)+errCount > m.jobInfo.totalNumber {
-					errCount = m.jobInfo.totalNumber - len(m.jobInfo.fileJobs)
-				}
-				for j := 0; j < errCount; j++ {
-					jobId++
-					job := &FileJob{id: jobId, name: "unknown", err: err}
-					m.jobInfo.idToJob[jobId] = job
-					m.jobInfo.fileJobs = append(m.jobInfo.fileJobs, job)
-				}
-			} else {
-				pageToken = resp.NextPageToken
-				for _, file := range resp.Files {
-					jobId++
-					job := &FileJob{
-						id:   jobId,
-						name: *file.Name,
-						url:  file.Url,
-					}
-					m.jobInfo.idToJob[jobId] = job
-					m.jobInfo.fileJobs = append(m.jobInfo.fileJobs, job)
-				}
-			}
+	for len(m.jobInfo.fileNames) > 0 {
+		// request the next batch
+		if batchSize > len(m.jobInfo.fileNames) {
+			batchSize = len(m.jobInfo.fileNames)
 		}
-		m.jobsCh <- m.jobInfo.fileJobs[i]
+		downloadFileNames := m.jobInfo.fileNames[:batchSize]
+		m.jobInfo.fileNames = m.jobInfo.fileNames[batchSize:]
+		body := &export.ExportServiceDownloadExportFilesBody{
+			FileNames: downloadFileNames,
+		}
+		resp, err := m.client.DownloadExportFiles(ctx, m.clusterID, m.exportID, body)
+		if err != nil {
+			for _, name := range downloadFileNames {
+				jobId++
+				job := &FileJob{id: jobId, name: name, err: err}
+				m.jobInfo.idToJob[jobId] = job
+				m.jobsCh <- job
+			}
+			continue
+		}
+		for _, file := range resp.Files {
+			jobId++
+			job := &FileJob{
+				id:   jobId,
+				name: *file.Name,
+				url:  file.Url,
+			}
+			m.jobInfo.idToJob[jobId] = job
+			m.jobsCh <- job
+		}
 	}
 	close(m.jobsCh)
 }
-
 func (m *ProcessDownloadModel) consume(jobs <-chan *FileJob) {
 	for job := range jobs {
 		func() {
