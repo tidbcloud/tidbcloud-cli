@@ -43,7 +43,6 @@ type downloadPool struct {
 	// The size of the batch to request download url
 	clusterID string
 	exportID  string
-	count     int
 	h         *internal.Helper
 
 	fileNames []string
