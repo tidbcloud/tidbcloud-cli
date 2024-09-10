@@ -22,7 +22,6 @@ import (
 	"os"
 	"strings"
 	"sync"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 
 	"github.com/dustin/go-humanize"
 	"github.com/fatih/color"
@@ -31,6 +30,7 @@ import (
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/util"
+	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 )
 
 var wg = sync.WaitGroup{}
@@ -154,16 +154,8 @@ func (d *downloadPool) Start() error {
 	return nil
 }
 
-func (d *downloadPool) GetBatchSize() int {
-	batchSize := 2 * d.concurrency
-	if batchSize > MaxBatchSize {
-		batchSize = MaxBatchSize
-	}
-	return batchSize
-}
-
 func (d *downloadPool) produce() {
-	batchSize := d.GetBatchSize()
+	batchSize := GetBatchSize(d.concurrency)
 	ctx := context.Background()
 	for len(d.fileNames) > 0 {
 		// request the next batch

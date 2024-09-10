@@ -22,12 +22,13 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"time"
+
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/service/cloud"
 	"tidbcloud-cli/internal/ui"
 	"tidbcloud-cli/internal/util"
 	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
-	"time"
 
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
@@ -37,7 +38,6 @@ import (
 const (
 	processDownloadModelPadding  = 2
 	processDownloadModelMaxWidth = 80
-	MaxBatchSize                 = 100
 )
 
 type ResultMsg struct {
@@ -236,16 +236,8 @@ func (m *ProcessDownloadModel) View() string {
 	return viewString
 }
 
-func (m *ProcessDownloadModel) GetBatchSize() int {
-	batchSize := 2 * m.concurrency
-	if batchSize > MaxBatchSize {
-		batchSize = MaxBatchSize
-	}
-	return batchSize
-}
-
 func (m *ProcessDownloadModel) produce() {
-	batchSize := m.GetBatchSize()
+	batchSize := GetBatchSize(m.concurrency)
 	jobId := 0
 	ctx := context.Background()
 	for len(m.jobInfo.fileNames) > 0 {

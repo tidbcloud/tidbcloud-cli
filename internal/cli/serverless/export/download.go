@@ -16,6 +16,7 @@ package export
 
 import (
 	"fmt"
+
 	"tidbcloud-cli/internal"
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/flag"
@@ -32,7 +33,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const DefaultConcurrency = 3
+const (
+	DefaultConcurrency = 3
+	MaxBatchSize       = 100
+)
 
 var DownloadPathInputFields = map[string]int{
 	flag.OutputPath: 0,
@@ -291,4 +295,12 @@ func DownloadFilesWithoutPrompt(h *internal.Helper, path string,
 		return errors.Trace(err)
 	}
 	return nil
+}
+
+func GetBatchSize(concurrency int) int {
+	batchSize := 2 * concurrency
+	if batchSize > MaxBatchSize {
+		batchSize = MaxBatchSize
+	}
+	return batchSize
 }
