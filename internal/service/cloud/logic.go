@@ -805,3 +805,26 @@ func GetSelectedParentID(ctx context.Context, cluster *Cluster, pageSize int64, 
 	}
 	return parent.(*Branch).ID, nil
 }
+
+func GetAllExportFiles(ctx context.Context, cID string, eID string, d TiDBCloudClient) ([]export.ExportFile, error) {
+	var items []export.ExportFile
+	var pageSize int32 = 1000
+	var pageToken *string
+	exportFilesResp, err := d.ListExportFiles(ctx, cID, eID, &pageSize, nil, false)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	items = append(items, exportFilesResp.Files...)
+	for {
+		pageToken = exportFilesResp.NextPageToken
+		if util.IsNilOrEmpty(pageToken) {
+			break
+		}
+		exportFilesResp, err = d.ListExportFiles(ctx, cID, eID, &pageSize, pageToken, false)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		items = append(items, exportFilesResp.Files...)
+	}
+	return items, nil
+}

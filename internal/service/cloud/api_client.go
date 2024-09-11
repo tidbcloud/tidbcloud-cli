@@ -22,7 +22,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
-
 	"tidbcloud-cli/internal/config"
 	"tidbcloud-cli/internal/prop"
 	"tidbcloud-cli/internal/version"
@@ -100,7 +99,9 @@ type TiDBCloudClient interface {
 
 	ListExports(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*export.ListExportsResponse, error)
 
-	DownloadExport(ctx context.Context, clusterId string, exportId string) (*export.DownloadExportsResponse, error)
+	ListExportFiles(ctx context.Context, clusterId string, exportId string, pageSize *int32, pageToken *string, isGenerateUrl bool) (*export.ListExportFilesResponse, error)
+
+	DownloadExportFiles(ctx context.Context, clusterId string, exportId string, body *export.ExportServiceDownloadExportFilesBody) (*export.DownloadExportFilesResponse, error)
 
 	ListSQLUsers(ctx context.Context, clusterID string, pageSize *int32, pageToken *string) (*iam.ApiListSqlUsersRsp, error)
 
@@ -112,7 +113,6 @@ type TiDBCloudClient interface {
 
 	UpdateSQLUser(ctx context.Context, clusterID string, userName string, body *iam.ApiUpdateSqlUserReq) (*iam.ApiSqlUser, error)
 }
-
 type ClientDelegate struct {
 	ic  *iam.APIClient
 	bc  *branch.APIClient
@@ -409,9 +409,27 @@ func (d *ClientDelegate) ListExports(ctx context.Context, clusterId string, page
 	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) DownloadExport(ctx context.Context, clusterId string, exportId string) (*export.DownloadExportsResponse, error) {
-	r := d.ec.ExportServiceAPI.ExportServiceDownloadExport(ctx, clusterId, exportId)
-	r = r.Body(make(map[string]interface{}))
+func (d *ClientDelegate) ListExportFiles(ctx context.Context, clusterId string, exportId string, pageSize *int32,
+	pageToken *string, isGenerateUrl bool) (*export.ListExportFilesResponse, error) {
+	r := d.ec.ExportServiceAPI.ExportServiceListExportFiles(ctx, clusterId, exportId)
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	if isGenerateUrl {
+		r = r.GenerateUrl(isGenerateUrl)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) DownloadExportFiles(ctx context.Context, clusterId string, exportId string, body *export.ExportServiceDownloadExportFilesBody) (*export.DownloadExportFilesResponse, error) {
+	r := d.ec.ExportServiceAPI.ExportServiceDownloadExportFiles(ctx, clusterId, exportId)
+	if body != nil {
+		r = r.Body(*body)
+	}
 	res, h, err := r.Execute()
 	return res, parseError(err, h)
 }

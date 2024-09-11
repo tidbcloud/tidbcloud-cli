@@ -19,7 +19,7 @@ var _ MappedNullable = &ExportOptions{}
 
 // ExportOptions struct for ExportOptions
 type ExportOptions struct {
-	// Optional. The exported file type. Default: CSV with sql filter, SQL with other filter.
+	// Optional. The exported file type. Default: CSV.
 	FileType *ExportFileTypeEnum `json:"fileType,omitempty"`
 	Database *string             `json:"database,omitempty"`
 	Table    *string             `json:"table,omitempty"`

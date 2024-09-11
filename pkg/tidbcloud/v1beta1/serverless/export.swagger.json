@@ -280,6 +280,115 @@
         ],
         "tags": [
           "ExportService"
+        ],
+        "deprecated": true
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/exports/{exportId}/files": {
+      "get": {
+        "summary": "List export files",
+        "operationId": "ExportService_ListExportFiles",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListExportFilesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "exportId",
+            "description": "Required. The ID of the export.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "Optional. The maximum number to return.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "Optional. The page token from the previous response for pagination.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "generateUrl",
+            "description": "Optional. Whether return the file download urls, default is false",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "ExportService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/exports/{exportId}/files:download": {
+      "post": {
+        "summary": "Generate export files download url",
+        "operationId": "ExportService_DownloadExportFiles",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DownloadExportFilesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "exportId",
+            "description": "Required. The ID of the export.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ExportService.DownloadExportFilesBody"
+            }
+          }
+        ],
+        "tags": [
+          "ExportService"
         ]
       }
     }
@@ -311,13 +420,26 @@
         },
         "uri": {
           "type": "string",
-          "description": "The Azure Blob URI of the export target. For example: https://accountname.blob.core.windows.net/container/blob."
+          "description": "The Azure Blob URI of the export target. For example: azure://<account>.blob.core.windows.net/<container>/<path>."
         }
       },
       "required": [
         "authType",
         "uri"
       ]
+    },
+    "DownloadExportFilesResponse": {
+      "type": "object",
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/ExportFile"
+          },
+          "description": "The files with download url of the export."
+        }
+      }
     },
     "DownloadExportsResponse": {
       "type": "object",
@@ -346,7 +468,7 @@
         "size": {
           "type": "integer",
           "format": "int64",
-          "description": "The size in bytes of the the download file."
+          "description": "The size in bytes of the download file."
         }
       }
     },
@@ -464,6 +586,24 @@
       ],
       "description": " - GZIP: Gzip compression.\n - SNAPPY: Snappy compression.\n - ZSTD: Zstd compression.\n - NONE: No compression."
     },
+    "ExportFile": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the file."
+        },
+        "size": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The size in bytes of the file."
+        },
+        "url": {
+          "type": "string",
+          "description": "download url of the file."
+        }
+      }
+    },
     "ExportFileType.Enum": {
       "type": "string",
       "enum": [
@@ -484,7 +624,7 @@
       "type": "object",
       "properties": {
         "fileType": {
-          "description": "Optional. The exported file type. Default: CSV with sql filter, SQL with other filter.",
+          "description": "Optional. The exported file type. Default: CSV.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportFileType.Enum"
@@ -651,6 +791,21 @@
     "ExportService.DownloadExportBody": {
       "type": "object"
     },
+    "ExportService.DownloadExportFilesBody": {
+      "type": "object",
+      "properties": {
+        "fileNames": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Required. The name of the files to be downloaded."
+        }
+      },
+      "required": [
+        "fileNames"
+      ]
+    },
     "ExportState.Enum": {
       "type": "string",
       "enum": [
@@ -719,6 +874,23 @@
         "uri",
         "authType"
       ]
+    },
+    "ListExportFilesResponse": {
+      "type": "object",
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/ExportFile"
+          },
+          "description": "The files of the export."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Token provided to retrieve the next page of results."
+        }
+      }
     },
     "ListExportsResponse": {
       "type": "object",
