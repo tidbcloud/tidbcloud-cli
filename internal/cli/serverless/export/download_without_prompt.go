@@ -155,7 +155,7 @@ func (d *downloadPool) Start() error {
 }
 
 func (d *downloadPool) produce() {
-	batchSize := GetBatchSize(d.concurrency)
+	batchSize := getBatchSize(d.concurrency)
 	ctx := context.Background()
 	for len(d.fileNames) > 0 {
 		// request the next batch

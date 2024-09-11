@@ -297,7 +297,7 @@ func DownloadFilesWithoutPrompt(h *internal.Helper, path string,
 	return nil
 }
 
-func GetBatchSize(concurrency int) int {
+func getBatchSize(concurrency int) int {
 	batchSize := 2 * concurrency
 	if batchSize > MaxBatchSize {
 		batchSize = MaxBatchSize

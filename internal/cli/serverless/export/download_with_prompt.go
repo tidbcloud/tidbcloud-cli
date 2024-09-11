@@ -237,7 +237,7 @@ func (m *ProcessDownloadModel) View() string {
 }
 
 func (m *ProcessDownloadModel) produce() {
-	batchSize := GetBatchSize(m.concurrency)
+	batchSize := getBatchSize(m.concurrency)
 	jobId := 0
 	ctx := context.Background()
 	for len(m.jobInfo.fileNames) > 0 {
