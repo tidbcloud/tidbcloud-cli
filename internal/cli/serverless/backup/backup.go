@@ -15,7 +15,7 @@
 package backup
 
 import (
-	"tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
 
 	"github.com/spf13/cobra"
 )

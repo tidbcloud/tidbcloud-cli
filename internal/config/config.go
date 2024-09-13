@@ -17,7 +17,7 @@ package config
 import (
 	"os"
 
-	"tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 
 	"github.com/charmbracelet/lipgloss"
 )

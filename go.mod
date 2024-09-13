@@ -1,4 +1,4 @@
-module tidbcloud-cli
+module github.com/tidbcloud/tidbcloud-cli
 
 go 1.22
 

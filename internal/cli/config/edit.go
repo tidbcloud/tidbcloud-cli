@@ -19,8 +19,8 @@ import (
 	"os"
 	"runtime"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 
 	"github.com/fatih/color"
 	"github.com/juju/errors"

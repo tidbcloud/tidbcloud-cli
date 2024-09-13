@@ -17,8 +17,8 @@ package main
 import (
 	"log"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/cli"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/cli"
 
 	"github.com/spf13/cobra/doc"
 )

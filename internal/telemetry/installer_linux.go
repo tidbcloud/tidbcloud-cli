@@ -20,7 +20,7 @@ package telemetry
 import (
 	"os"
 
-	"tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 )
 
 func readInstaller() *string {

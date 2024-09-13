@@ -23,10 +23,10 @@ import (
 	"testing"
 	"time"
 
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/prop"
-	"tidbcloud-cli/internal/util"
-	"tidbcloud-cli/internal/version"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/prop"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/internal/version"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

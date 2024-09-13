@@ -22,13 +22,13 @@ import (
 	"testing"
 	"time"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/iostream"
-	"tidbcloud-cli/internal/mock"
-	"tidbcloud-cli/internal/service/aws/s3"
-	"tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/iostream"
+	"github.com/tidbcloud/tidbcloud-cli/internal/mock"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/aws/s3"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 
-	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	mockTool "github.com/stretchr/testify/mock"

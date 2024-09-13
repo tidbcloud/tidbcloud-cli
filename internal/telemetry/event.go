@@ -20,8 +20,8 @@ import (
 	"strings"
 	"time"
 
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/version"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/version"
 
 	"github.com/mattn/go-isatty"
 	"github.com/pingcap/log"
