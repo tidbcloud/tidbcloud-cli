@@ -20,11 +20,11 @@ import (
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/output"
-	"tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/output"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 )
 
 type DescribeOpts struct {

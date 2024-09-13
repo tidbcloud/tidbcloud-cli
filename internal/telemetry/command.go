@@ -15,7 +15,7 @@
 package telemetry
 
 import (
-	"tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 
 	"github.com/pingcap/log"
 	"github.com/spf13/cobra"

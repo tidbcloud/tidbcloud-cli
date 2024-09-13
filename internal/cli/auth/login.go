@@ -21,12 +21,12 @@ import (
 	"runtime"
 	"time"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/config/store"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/util"
-	ver "tidbcloud-cli/internal/version"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config/store"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	ver "github.com/tidbcloud/tidbcloud-cli/internal/version"
 
 	"github.com/fatih/color"
 	"github.com/go-resty/resty/v2"

@@ -17,7 +17,7 @@ package export
 import (
 	"github.com/spf13/cobra"
 
-	"tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
 )
 
 func Cmd(h *internal.Helper) *cobra.Command {

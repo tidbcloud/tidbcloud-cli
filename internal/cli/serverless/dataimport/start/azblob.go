@@ -17,12 +17,12 @@ package start
 import (
 	"fmt"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 
-	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/juju/errors"

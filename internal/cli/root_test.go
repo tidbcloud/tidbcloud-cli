@@ -19,9 +19,9 @@ import (
 	"os"
 	"testing"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/iostream"
-	"tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/iostream"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"

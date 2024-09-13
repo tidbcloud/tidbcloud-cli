@@ -15,9 +15,9 @@
 package internal
 
 import (
-	"tidbcloud-cli/internal/iostream"
-	"tidbcloud-cli/internal/service/aws/s3"
-	"tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal/iostream"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/aws/s3"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 )
 
 const (

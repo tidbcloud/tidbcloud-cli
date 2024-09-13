@@ -15,8 +15,8 @@
 package dataimport
 
 import (
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/cli/serverless/dataimport/start"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/dataimport/start"
 
 	"github.com/spf13/cobra"
 )

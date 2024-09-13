@@ -19,9 +19,9 @@ import (
 	"io"
 	"strings"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/prop"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/prop"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
