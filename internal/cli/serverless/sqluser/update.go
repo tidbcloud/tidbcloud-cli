@@ -218,6 +218,9 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
+				if util.IsNilOrEmpty(u.BuiltinRole) {
+					return errors.New("built-in role must be set")
+				}
 			}
 
 			if len(addRole) != 0 {
