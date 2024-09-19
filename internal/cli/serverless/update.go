@@ -145,7 +145,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					}
 				} else {
 					// variables for input
-					inputModel, err := GetUpdateClusterInput()
+					inputModel, err := GetUpdateClusterInput(fieldName)
 					if err != nil {
 						return err
 					}
@@ -223,14 +223,19 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 	return updateCmd
 }
 
-func GetUpdateClusterInput() (tea.Model, error) {
+func GetUpdateClusterInput(fieldName string) (tea.Model, error) {
 	m := ui.TextInputModel{
 		Inputs: make([]textinput.Model, 1),
 	}
 	t := textinput.New()
 	t.Cursor.Style = config.CursorStyle
 	t.CharLimit = 64
-	t.Placeholder = "update labels, e.g. {\"label1\":\"value1\",\"label2\":\"value2\"}"
+	switch fieldName {
+	case string(Labels):
+		t.Placeholder = "update labels, e.g. {\"label1\":\"value1\",\"label2\":\"value2\"}"
+	default:
+		t.Placeholder = "new value"
+	}
 	t.Focus()
 	t.PromptStyle = config.FocusedStyle
 	t.TextStyle = config.FocusedStyle
