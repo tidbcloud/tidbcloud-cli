@@ -17,6 +17,7 @@ package branch
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
@@ -170,6 +171,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
+			parentTimestampStr = strings.TrimSpace(parentTimestampStr)
 			if len(parentTimestampStr) != 0 {
 				parentTimestamp, err = time.Parse(time.RFC3339, parentTimestampStr)
 				if err != nil {
