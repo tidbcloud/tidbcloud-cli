@@ -85,4 +85,4 @@ There are many features we want to add to the CLI.
 - CLI supports generating demo code for using TiDB Cloud cluster.
 - CLI supports managing the dedicated cluster.
 - CLI supports backing up and restoring the TiDB Cloud cluster.
-- CLI supports importing/exporting to external cloud storages.
+- CLI supports connecting in shell command without SQL user.
