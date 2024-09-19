@@ -247,8 +247,9 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					if deleteBuiltinRole == u.BuiltinRole {
 						// it doesn't work yet, because the API doesn't support to delete the builtin role
 						u.BuiltinRole = nil
+						return errors.New("can not delete built-in role")
 					} else {
-						return errors.New("can not delte built-in role")
+						return errors.New("can not delete built-in role")
 					}
 				}
 				for _, role := range deleteCustomRoles {
