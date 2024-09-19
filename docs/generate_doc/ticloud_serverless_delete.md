@@ -1,6 +1,6 @@
 ## ticloud serverless delete
 
-Delete a TiDB Serverless cluster
+Delete a TiDB Cloud Serverless cluster
 
 ```
 ticloud serverless delete [flags]
@@ -9,10 +9,10 @@ ticloud serverless delete [flags]
 ### Examples
 
 ```
-  Delete a TiDB Serverless cluster in interactive mode:
+  Delete a TiDB Cloud Serverless cluster in interactive mode:
  $ ticloud serverless delete
 
- Delete a TiDB Serverless cluster in non-interactive mode:
+ Delete a TiDB Cloud Serverless cluster in non-interactive mode:
  $ ticloud serverless delete -c <cluster-id>
 ```
 
@@ -34,5 +34,5 @@ ticloud serverless delete [flags]
 
 ### SEE ALSO
 
-* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Serverless clusters
+* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Cloud Serverless clusters
 

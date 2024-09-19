@@ -1,6 +1,6 @@
 ## ticloud serverless branch
 
-Manage TiDB Serverless branches
+Manage TiDB Cloud Serverless branches
 
 ### Options
 
@@ -18,7 +18,7 @@ Manage TiDB Serverless branches
 
 ### SEE ALSO
 
-* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Serverless clusters
+* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Cloud Serverless clusters
 * [ticloud serverless branch create](ticloud_serverless_branch_create.md)	 - Create a branch
 * [ticloud serverless branch delete](ticloud_serverless_branch_delete.md)	 - Delete a branch
 * [ticloud serverless branch describe](ticloud_serverless_branch_describe.md)	 - Describe a branch

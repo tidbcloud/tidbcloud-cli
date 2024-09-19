@@ -1,6 +1,6 @@
 ## ticloud serverless import
 
-Manage TiDB Serverless data imports
+Manage TiDB Cloud Serverless data imports
 
 ### Options
 
@@ -18,7 +18,7 @@ Manage TiDB Serverless data imports
 
 ### SEE ALSO
 
-* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Serverless clusters
+* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Cloud Serverless clusters
 * [ticloud serverless import cancel](ticloud_serverless_import_cancel.md)	 - Cancel a data import task
 * [ticloud serverless import describe](ticloud_serverless_import_describe.md)	 - Describe a data import task
 * [ticloud serverless import list](ticloud_serverless_import_list.md)	 - List data import tasks

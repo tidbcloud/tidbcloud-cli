@@ -74,16 +74,16 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 
 	var updateCmd = &cobra.Command{
 		Use:         "update",
-		Short:       "Update a TiDB Serverless cluster",
+		Short:       "Update a TiDB Cloud Serverless cluster",
 		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Update a TiDB Serverless cluster in interactive mode:
+		Example: fmt.Sprintf(`  Update a TiDB Cloud Serverless cluster in interactive mode:
   $ %[1]s serverless update
 
-  Update displayName of a TiDB Serverless cluster in non-interactive mode:
+  Update displayName of a TiDB Cloud Serverless cluster in non-interactive mode:
   $ %[1]s serverless update -c <cluster-id> --display-name <new-cluster-name>
  
-  Update labels of a TiDB Serverless cluster in non-interactive mode:
+  Update labels of a TiDB Cloud Serverless cluster in non-interactive mode:
   $ %[1]s serverless update -c <cluster-id> --labels "{\"label1\":\"value1\"}"`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()

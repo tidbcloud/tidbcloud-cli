@@ -35,5 +35,5 @@ ticloud serverless export cancel [flags]
 
 ### SEE ALSO
 
-* [ticloud serverless export](ticloud_serverless_export.md)	 - Manage TiDB Serverless exports
+* [ticloud serverless export](ticloud_serverless_export.md)	 - Manage TiDB Cloud Serverless exports
 

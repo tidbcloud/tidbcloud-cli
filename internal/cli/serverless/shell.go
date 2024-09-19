@@ -50,14 +50,14 @@ func ShellCmd(h *internal.Helper) *cobra.Command {
 
 	var shellCmd = &cobra.Command{
 		Use:   "shell",
-		Short: "Connect to a TiDB Serverless cluster",
-		Long: `Connect to a TiDB Serverless cluster.
+		Short: "Connect to a TiDB Cloud Serverless cluster",
+		Long: `Connect to a TiDB Cloud Serverless cluster.
 The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_ansi) for the session.`,
 		Args: cobra.NoArgs,
-		Example: fmt.Sprintf(`  Connect to a TiDB Serverless cluster in interactive mode:
+		Example: fmt.Sprintf(`  Connect to a TiDB Cloud Serverless cluster in interactive mode:
   $ %[1]s serverless shell
 
-  Connect to a TiDB Serverless cluster with default user in non-interactive mode:
+  Connect to a TiDB Cloud Serverless cluster with default user in non-interactive mode:
   $ %[1]s serverless shell -c <cluster-id>
 
   Connect to a serverless cluster with default user and password in non-interactive mode:
