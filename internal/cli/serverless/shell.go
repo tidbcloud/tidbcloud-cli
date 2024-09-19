@@ -40,6 +40,8 @@ type ShellOpts struct {
 func (c ShellOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
+		flag.User,
+		flag.Password,
 	}
 }
 
@@ -67,8 +69,7 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
   $ %[1]s serverless shell -c <cluster-id> -u <user-name> --password <password>`, config.CliName),
 
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			flags := opts.NonInteractiveFlags()
-			for _, fn := range flags {
+			for _, fn := range opts.NonInteractiveFlags() {
 				f := cmd.Flags().Lookup(fn)
 				if f != nil && f.Changed {
 					opts.interactive = false
@@ -77,11 +78,9 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 
 			// mark required flags in non-interactive mode
 			if !opts.interactive {
-				for _, fn := range flags {
-					err := cmd.MarkFlagRequired(fn)
-					if err != nil {
-						return errors.Trace(err)
-					}
+				err := cmd.MarkFlagRequired(flag.ClusterID)
+				if err != nil {
+					return errors.Trace(err)
 				}
 			}
 
