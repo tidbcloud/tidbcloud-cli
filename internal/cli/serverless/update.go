@@ -138,7 +138,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 
-				if fieldName == string(PublicEndpointDisabledHumanReadable) {
+				if fieldName == PublicEndpointDisabledHumanReadable {
 					publicEndpointDisabled, err = cloud.GetSelectedBool("Disable the public endpoint of the cluster?")
 					if err != nil {
 						return err
@@ -230,7 +230,7 @@ func GetUpdateClusterInput() (tea.Model, error) {
 	t := textinput.New()
 	t.Cursor.Style = config.CursorStyle
 	t.CharLimit = 64
-	t.Placeholder = "New value"
+	t.Placeholder = "update labels, e.g. {\"label1\":\"value1\",\"label2\":\"value2\"}"
 	t.Focus()
 	t.PromptStyle = config.FocusedStyle
 	t.TextStyle = config.FocusedStyle

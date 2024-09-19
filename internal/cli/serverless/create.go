@@ -306,8 +306,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().StringP(flag.Region, flag.RegionShort, "", "The name of cloud region. You can use \"ticloud serverless region\" to see all regions.")
 	createCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project, in which the cluster will be created. (default: \"default project\")")
 	createCmd.Flags().Int32(flag.SpendingLimitMonthly, 0, "Maximum monthly spending limit in USD cents. (optional)")
-	createCmd.Flags().Bool(flag.Encryption, false, "Whether Enhanced Encryption at Rest is enabled. (optional)")
-	createCmd.Flags().Bool(flag.PublicEndpointDisabled, false, "Whether the public endpoint is disabled. (optional)")
+	createCmd.Flags().Bool(flag.Encryption, false, "Whether Enhanced Encryption at Rest is enabled. (optional, default: false)")
+	createCmd.Flags().Bool(flag.PublicEndpointDisabled, false, "Whether the public endpoint is disabled. (optional, default: false)")
 	return createCmd
 }
 
