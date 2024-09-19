@@ -82,6 +82,7 @@ Class | Method | HTTP request | Description
 *BranchServiceAPI* | [**BranchServiceDeleteBranch**](docs/BranchServiceAPI.md#branchservicedeletebranch) | **Delete** /v1beta1/clusters/{clusterId}/branches/{branchId} | Deletes a branch.
 *BranchServiceAPI* | [**BranchServiceGetBranch**](docs/BranchServiceAPI.md#branchservicegetbranch) | **Get** /v1beta1/clusters/{clusterId}/branches/{branchId} | Gets information about a branch.
 *BranchServiceAPI* | [**BranchServiceListBranches**](docs/BranchServiceAPI.md#branchservicelistbranches) | **Get** /v1beta1/clusters/{clusterId}/branches | Lists information about branches.
+*BranchServiceAPI* | [**BranchServiceResetBranch**](docs/BranchServiceAPI.md#branchserviceresetbranch) | **Post** /v1beta1/clusters/{clusterId}/branches/{branchId}:reset | Resets a branch.
 
 
 ## Documentation For Models

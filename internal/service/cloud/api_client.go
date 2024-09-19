@@ -74,6 +74,8 @@ type TiDBCloudClient interface {
 
 	DeleteBranch(ctx context.Context, clusterId string, branchId string) (*branch.Branch, error)
 
+	ResetBranch(ctx context.Context, clusterId string, branchId string) (*branch.Branch, error)
+
 	Chat(ctx context.Context, chatInfo *pingchat.PingchatChatInfo) (*pingchat.PingchatChatResponse, error)
 
 	DeleteBackup(ctx context.Context, backupId string) (*br.V1beta1Backup, error)
@@ -285,6 +287,11 @@ func (d *ClientDelegate) CreateBranch(ctx context.Context, clusterId string, bod
 
 func (d *ClientDelegate) DeleteBranch(ctx context.Context, clusterId string, branchId string) (*branch.Branch, error) {
 	b, h, err := d.bc.BranchServiceAPI.BranchServiceDeleteBranch(ctx, clusterId, branchId).Execute()
+	return b, parseError(err, h)
+}
+
+func (d *ClientDelegate) ResetBranch(ctx context.Context, clusterId string, branchId string) (*branch.Branch, error) {
+	b, h, err := d.bc.BranchServiceAPI.BranchServiceResetBranch(ctx, clusterId, branchId).Execute()
 	return b, parseError(err, h)
 }
 

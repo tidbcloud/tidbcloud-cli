@@ -511,3 +511,117 @@ func (a *BranchServiceAPIService) BranchServiceListBranchesExecute(r ApiBranchSe
 
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
+
+type ApiBranchServiceResetBranchRequest struct {
+	ctx        context.Context
+	ApiService *BranchServiceAPIService
+	clusterId  string
+	branchId   string
+}
+
+func (r ApiBranchServiceResetBranchRequest) Execute() (*Branch, *http.Response, error) {
+	return r.ApiService.BranchServiceResetBranchExecute(r)
+}
+
+/*
+BranchServiceResetBranch Resets a branch.
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId Required. The cluster ID of the branch
+	@param branchId Required. The branch ID
+	@return ApiBranchServiceResetBranchRequest
+*/
+func (a *BranchServiceAPIService) BranchServiceResetBranch(ctx context.Context, clusterId string, branchId string) ApiBranchServiceResetBranchRequest {
+	return ApiBranchServiceResetBranchRequest{
+		ApiService: a,
+		ctx:        ctx,
+		clusterId:  clusterId,
+		branchId:   branchId,
+	}
+}
+
+// Execute executes the request
+//
+//	@return Branch
+func (a *BranchServiceAPIService) BranchServiceResetBranchExecute(r ApiBranchServiceResetBranchRequest) (*Branch, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Branch
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BranchServiceAPIService.BranchServiceResetBranch")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/branches/{branchId}:reset"
+	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"branchId"+"}", url.PathEscape(parameterValueToString(r.branchId, "branchId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v Status
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}

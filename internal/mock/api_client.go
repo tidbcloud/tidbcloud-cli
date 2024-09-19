@@ -920,6 +920,36 @@ func (_m *TiDBCloudClient) PartialUpdateCluster(ctx context.Context, clusterId s
 	return r0, r1
 }
 
+// ResetBranch provides a mock function with given fields: ctx, clusterId, branchId
+func (_m *TiDBCloudClient) ResetBranch(ctx context.Context, clusterId string, branchId string) (*branch.Branch, error) {
+	ret := _m.Called(ctx, clusterId, branchId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ResetBranch")
+	}
+
+	var r0 *branch.Branch
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*branch.Branch, error)); ok {
+		return rf(ctx, clusterId, branchId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *branch.Branch); ok {
+		r0 = rf(ctx, clusterId, branchId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*branch.Branch)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, branchId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Restore provides a mock function with given fields: ctx, body
 func (_m *TiDBCloudClient) Restore(ctx context.Context, body *br.V1beta1RestoreRequest) (*br.V1beta1RestoreResponse, error) {
 	ret := _m.Called(ctx, body)

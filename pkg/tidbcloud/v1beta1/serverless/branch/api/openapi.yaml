@@ -153,6 +153,38 @@ paths:
       summary: Gets information about a branch.
       tags:
       - BranchService
+  /v1beta1/clusters/{clusterId}/branches/{branchId}:reset:
+    post:
+      operationId: BranchService_ResetBranch
+      parameters:
+      - description: Required. The cluster ID of the branch
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: Required. The branch ID
+        in: path
+        name: branchId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Resets a branch.
+      tags:
+      - BranchService
 components:
   schemas:
     Any:
@@ -342,11 +374,13 @@ components:
          - ACTIVE: The branch is active and running.
          - DELETED: The branch is being deleted.
          - MAINTENANCE: The branch is under maintenance.
+         - RESTORING: The branch is restoring.
       enum:
       - CREATING
       - ACTIVE
       - DELETED
       - MAINTENANCE
+      - RESTORING
       type: string
     Branch.Usage:
       description: Message for usage metrics for this cluster.
