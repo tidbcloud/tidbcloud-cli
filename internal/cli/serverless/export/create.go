@@ -660,7 +660,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.AzureBlobURI, "", "The Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format. Required when target type is AZURE_BLOB.")
 	createCmd.Flags().String(flag.AzureBlobSASToken, "", "The SAS token of Azure Blob.")
 	createCmd.Flags().String(flag.ParquetCompression, "ZSTD", fmt.Sprintf("The parquet compression algorithm. One of %q.", export.AllowedExportParquetCompressionTypeEnumEnumValues))
-	createCmd.Flags().String(flag.DisplayName, "", "The display name of the export. default is SNAPSHOT_{snapshot_time}.")
+	createCmd.Flags().String(flag.DisplayName, "", "The display name of the export. (default: SNAPSHOT_<snapshot_time>)")
 
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableFilter, flag.SQL)
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableWhere, flag.SQL)
