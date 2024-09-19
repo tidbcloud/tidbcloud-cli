@@ -377,9 +377,7 @@ func (d *ClientDelegate) GetExport(ctx context.Context, clusterId string, export
 }
 
 func (d *ClientDelegate) CancelExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error) {
-	r := d.ec.ExportServiceAPI.ExportServiceCancelExport(ctx, clusterId, exportId)
-	r = r.Body(make(map[string]interface{}))
-	res, h, err := r.Execute()
+	res, h, err := d.ec.ExportServiceAPI.ExportServiceCancelExport(ctx, clusterId, exportId).Execute()
 	return res, parseError(err, h)
 }
 

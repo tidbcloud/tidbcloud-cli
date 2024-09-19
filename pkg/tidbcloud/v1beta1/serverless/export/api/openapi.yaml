@@ -163,12 +163,6 @@ paths:
         required: true
         schema:
           type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ExportService.CancelExportBody'
-        required: true
       responses:
         "200":
           content:
@@ -185,7 +179,6 @@ paths:
       summary: Cancel a specific export job.
       tags:
       - ExportService
-      x-codegen-request-body-name: body
   /v1beta1/clusters/{clusterId}/exports/{exportId}:download:
     post:
       deprecated: true
@@ -633,8 +626,6 @@ components:
       - ROLE_ARN
       - ACCESS_KEY
       type: string
-    ExportService.CancelExportBody:
-      type: object
     ExportService.CreateExportBody:
       properties:
         exportOptions:
@@ -656,7 +647,7 @@ components:
     ExportService.DownloadExportFilesBody:
       properties:
         fileNames:
-          description: Required. The name of the files to be downloaded.
+          description: Required. The name of the files to download.
           items:
             type: string
           type: array

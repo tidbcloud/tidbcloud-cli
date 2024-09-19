@@ -27,12 +27,6 @@ type ApiExportServiceCancelExportRequest struct {
 	ApiService *ExportServiceAPIService
 	clusterId  string
 	exportId   string
-	body       *map[string]interface{}
-}
-
-func (r ApiExportServiceCancelExportRequest) Body(body map[string]interface{}) ApiExportServiceCancelExportRequest {
-	r.body = &body
-	return r
 }
 
 func (r ApiExportServiceCancelExportRequest) Execute() (*Export, *http.Response, error) {
@@ -79,12 +73,9 @@ func (a *ExportServiceAPIService) ExportServiceCancelExportExecute(r ApiExportSe
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.body == nil {
-		return localVarReturnValue, nil, reportError("body is required and must be specified")
-	}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
+	localVarHTTPContentTypes := []string{}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -100,8 +91,6 @@ func (a *ExportServiceAPIService) ExportServiceCancelExportExecute(r ApiExportSe
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	// body params
-	localVarPostBody = r.body
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err
