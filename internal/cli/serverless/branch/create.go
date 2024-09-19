@@ -53,6 +53,7 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.DisplayName,
 		flag.ClusterID,
+		flag.ParentID,
 		flag.ParentTimestamp,
 	}
 }
