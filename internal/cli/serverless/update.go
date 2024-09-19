@@ -18,6 +18,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
@@ -139,9 +141,17 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				if fieldName == PublicEndpointDisabledHumanReadable {
-					publicEndpointDisabled, err = cloud.GetSelectedBool("Disable the public endpoint of the cluster?")
+					prompt := &survey.Confirm{
+						Message: "Disable the public endpoint of the cluster?",
+						Default: false,
+					}
+					err = survey.AskOne(prompt, &publicEndpointDisabled)
 					if err != nil {
-						return err
+						if err == terminal.InterruptErr {
+							return util.InterruptError
+						} else {
+							return err
+						}
 					}
 				} else {
 					// variables for input
@@ -211,7 +221,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("cluster %s updated", clusterID)))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("Cluster %s updated", clusterID)))
 			return nil
 		},
 	}

@@ -81,7 +81,7 @@ func (suite *UpdateClusterSuite) TestUpdateClusterArgs() {
 		{
 			name:         "update displayName success",
 			args:         []string{"--cluster-id", clusterID, "--display-name", displayName},
-			stdoutString: fmt.Sprintf("cluster %s updated\n", clusterID),
+			stdoutString: fmt.Sprintf("Cluster %s updated\n", clusterID),
 		},
 	}
 
@@ -133,7 +133,7 @@ func (suite *UpdateClusterSuite) TestUpdateLabels() {
 		{
 			name:         "update labels success",
 			args:         []string{"-c", clusterID, "--labels", "{\"labels\":\"values\"}"},
-			stdoutString: fmt.Sprintf("cluster %s updated\n", clusterID),
+			stdoutString: fmt.Sprintf("Cluster %s updated\n", clusterID),
 		},
 	}
 
