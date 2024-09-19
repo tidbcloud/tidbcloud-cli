@@ -119,7 +119,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 
 			if !force {
 				if !h.IOStreams.CanPrompt {
-					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to delete the cluster")
+					return errors.New("The terminal doesn't support prompt, please run with --force to delete the cluster")
 				}
 
 				confirmationMessage := fmt.Sprintf("%s %s %s", color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to confirm:"))
@@ -139,7 +139,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				if userInput != confirmed {
-					return errors.New("incorrect confirm string entered, skipping database deletion")
+					return errors.New("Incorrect confirm string entered, skipping database deletion")
 				}
 			}
 
@@ -151,7 +151,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("cluster %s deleted", clusterID)))
 				return nil
 			} else {
-				return errors.New(fmt.Sprintf("delete cluster %s failed, please check status on dashboard", clusterID))
+				return errors.New(fmt.Sprintf("Delete cluster %s failed, please check status on dashboard", clusterID))
 			}
 		},
 	}
