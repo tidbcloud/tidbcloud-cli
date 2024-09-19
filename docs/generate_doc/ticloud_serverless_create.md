@@ -22,9 +22,9 @@ ticloud serverless create [flags]
 ### Options
 
 ```
-      --disable-public-endpoint        Whether the public endpoint is disabled. (optional)
+      --disable-public-endpoint        Whether the public endpoint is disabled.
   -n, --display-name string            Display name of the cluster to de created.
-      --encryption                     Whether Enhanced Encryption at Rest is enabled. (optional)
+      --encryption                     Whether Enhanced Encryption at Rest is enabled.
   -h, --help                           help for create
   -p, --project-id string              The ID of the project, in which the cluster will be created. (default: "default project")
   -r, --region string                  The name of cloud region. You can use "ticloud serverless region" to see all regions.

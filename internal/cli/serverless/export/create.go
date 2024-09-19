@@ -69,6 +69,7 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 		flag.AzureBlobURI,
 		flag.AzureBlobSASToken,
 		flag.ParquetCompression,
+		flag.DisplayName,
 	}
 }
 
@@ -154,6 +155,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			var gcsURI, gcsServiceAccountKey string
 			// azure
 			var azBlobURI, azBlobSasToken string
+			var displayName string
 
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
@@ -170,6 +172,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				clusterId = cluster.ID
+
+				// display name
+				fmt.Fprintln(h.IOStreams.Out, color.HiGreenString("Input the display name (optional):"))
+				inputs := []string{flag.DisplayName}
+				textInput, err := ui.InitialInputModel(inputs, inputDescription)
+				if err != nil {
+					return err
+				}
+				displayName = textInput.Inputs[0].Value()
 
 				// target
 				targetType, err = GetSelectedTargetType()
@@ -369,6 +380,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			} else {
 				// non-interactive mode, get values from flags
 				var err error
+				displayName, err = cmd.Flags().GetString(flag.DisplayName)
+				if err != nil {
+					return errors.Trace(err)
+				}
 				clusterId, err = cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
@@ -544,6 +559,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					Type: &targetType,
 				},
 			}
+			if displayName != "" {
+				params.DisplayName = &displayName
+			}
 			// add target
 			switch targetType {
 			case export.EXPORTTARGETTYPEENUM_S3:
@@ -642,6 +660,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.AzureBlobURI, "", "The Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format. Required when target type is AZURE_BLOB.")
 	createCmd.Flags().String(flag.AzureBlobSASToken, "", "The SAS token of Azure Blob.")
 	createCmd.Flags().String(flag.ParquetCompression, "ZSTD", fmt.Sprintf("The parquet compression algorithm. One of %q.", export.AllowedExportParquetCompressionTypeEnumEnumValues))
+	createCmd.Flags().String(flag.DisplayName, "", "The display name of the export. (default: SNAPSHOT_<snapshot_time>)")
 
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableFilter, flag.SQL)
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableWhere, flag.SQL)

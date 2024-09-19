@@ -221,14 +221,6 @@
             "in": "path",
             "required": true,
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ExportService.CancelExportBody"
-            }
           }
         ],
         "tags": [
@@ -760,9 +752,6 @@
       ],
       "description": " - ROLE_ARN: The access method is role arn.\n - ACCESS_KEY: The access method is access key."
     },
-    "ExportService.CancelExportBody": {
-      "type": "object"
-    },
     "ExportService.CreateExportBody": {
       "type": "object",
       "properties": {
@@ -799,7 +788,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Required. The name of the files to be downloaded."
+          "description": "Required. The name of the files to download."
         }
       },
       "required": [

@@ -42,6 +42,7 @@ var inputDescription = map[string]string{
 	flag.CSVDelimiter:         "Input the CSV delimiter: delimiter of string type variables in CSV files, skip to use default value (\"). If you want to set empty string, please use non-interactive mode",
 	flag.CSVNullValue:         "Input the CSV null value: representation of null values in CSV files, skip to use default value (\\N). If you want to set empty string, please use non-interactive mode",
 	flag.CSVSkipHeader:        "Input the CSV skip header: export CSV files of the tables without header. Type `true` to skip header, others will not skip header",
+	flag.DisplayName:          "Input the name of export. You can skip and use the default name SNAPSHOT_<snapshot_time> by pressing Enter",
 }
 
 func GetSelectedParquetCompression() (export.ExportParquetCompressionTypeEnum, error) {

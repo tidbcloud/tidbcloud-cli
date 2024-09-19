@@ -20,7 +20,7 @@ var _ MappedNullable = &ExportServiceDownloadExportFilesBody{}
 
 // ExportServiceDownloadExportFilesBody struct for ExportServiceDownloadExportFilesBody
 type ExportServiceDownloadExportFilesBody struct {
-	// Required. The name of the files to be downloaded.
+	// Required. The name of the files to download.
 	FileNames            []string `json:"fileNames"`
 	AdditionalProperties map[string]interface{}
 }
