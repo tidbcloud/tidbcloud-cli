@@ -200,6 +200,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
+			if util.IsNilOrEmpty(builtinRole) {
+				return errors.New("at least one built-in role must be set")
+			}
+
 			authMethod := util.MYSQLNATIVEPASSWORD
 			autoPrefix := DefaultAutoPrefix
 			params := &iam.ApiCreateSqlUserReq{
