@@ -30,7 +30,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
 type ResetOpts struct {
 	interactive bool
 }
