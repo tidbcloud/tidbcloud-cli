@@ -53,7 +53,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		Aliases:     []string{"ls"},
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  List all SQL users in interactive mode:
-  $ %[1]s user list
+  $ %[1]s serverless sql-user list
 
   List all SQL users in non-interactive mode:
   $ %[1]s serverless sql-user list -c <cluster-id>

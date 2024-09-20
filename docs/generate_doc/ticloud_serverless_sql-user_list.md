@@ -10,7 +10,7 @@ ticloud serverless sql-user list [flags]
 
 ```
   List all SQL users in interactive mode:
-  $ ticloud user list
+  $ ticloud serverless sql-user list
 
   List all SQL users in non-interactive mode:
   $ ticloud serverless sql-user list -c <cluster-id>
