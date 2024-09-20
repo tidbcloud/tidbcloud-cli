@@ -134,6 +134,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			} else if format == output.HumanFormat {
 				columns := []output.Column{
 					"ID",
+					"DisplayName",
 					"State",
 					"Target",
 					"File",
@@ -144,6 +145,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				for _, item := range items {
 					rows = append(rows, output.Row{
 						*item.ExportId,
+						*item.DisplayName,
 						string(*item.State),
 						string(*item.Target.Type),
 						string(*item.ExportOptions.FileType),
