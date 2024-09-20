@@ -34,5 +34,5 @@ ticloud serverless export describe [flags]
 
 ### SEE ALSO
 
-* [ticloud serverless export](ticloud_serverless_export.md)	 - Manage TiDB Serverless exports
+* [ticloud serverless export](ticloud_serverless_export.md)	 - Manage TiDB Cloud Serverless exports
 

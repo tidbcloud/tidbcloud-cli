@@ -23,7 +23,7 @@ import (
 func Cmd(h *internal.Helper) *cobra.Command {
 	var exportCmd = &cobra.Command{
 		Use:   "export",
-		Short: "Manage TiDB Serverless exports",
+		Short: "Manage TiDB Cloud Serverless exports",
 	}
 
 	exportCmd.AddCommand(CreateCmd(h))

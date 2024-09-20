@@ -30,10 +30,10 @@ import (
 func RegionCmd(h *internal.Helper) *cobra.Command {
 	var regionCmd = &cobra.Command{
 		Use:         "region",
-		Short:       "List all available regions for TiDB Serverless",
+		Short:       "List all available regions for TiDB Cloud Serverless",
 		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  List all available regions for TiDB Serverless:
+		Example: fmt.Sprintf(`  List all available regions for TiDB Cloud Serverless:
   $ %[1]s serverless region`, config.CliName),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			d, err := h.Client()

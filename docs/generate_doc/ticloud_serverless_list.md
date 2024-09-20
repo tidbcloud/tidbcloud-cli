@@ -1,6 +1,6 @@
 ## ticloud serverless list
 
-List all TiDB Serverless clusters
+List all TiDB Cloud Serverless clusters
 
 ```
 ticloud serverless list [flags]
@@ -9,13 +9,13 @@ ticloud serverless list [flags]
 ### Examples
 
 ```
-  List all TiDB Serverless clusters in interactive mode):
+  List all TiDB Cloud Serverless clusters in interactive mode):
   $ ticloud serverless list
 
-  List all TiDB Serverless clusters in non-interactive mode:
+  List all TiDB Cloud Serverless clusters in non-interactive mode:
   $ ticloud serverless list -p <project-id>
 
-  List all TiDB Serverless clusters in non-interactive mode:
+  List all TiDB Cloud Serverless clusters in non-interactive mode:
   $ ticloud serverless list -p <project-id> -o json
 ```
 
@@ -37,5 +37,5 @@ ticloud serverless list [flags]
 
 ### SEE ALSO
 
-* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Serverless clusters
+* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Cloud Serverless clusters
 

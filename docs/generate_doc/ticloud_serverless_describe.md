@@ -1,6 +1,6 @@
 ## ticloud serverless describe
 
-Describe a TiDB Serverless cluster
+Describe a TiDB Cloud Serverless cluster
 
 ```
 ticloud serverless describe [flags]
@@ -9,10 +9,10 @@ ticloud serverless describe [flags]
 ### Examples
 
 ```
-  Get a TiDB Serverless cluster in interactive mode:
+  Get a TiDB Cloud Serverless cluster in interactive mode:
  $ ticloud serverless describe
 
- Get a TiDB Serverless cluster in non-interactive mode:
+ Get a TiDB Cloud Serverless cluster in non-interactive mode:
  $ ticloud serverless describe -c <cluster-id>
 ```
 
@@ -33,5 +33,5 @@ ticloud serverless describe [flags]
 
 ### SEE ALSO
 
-* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Serverless clusters
+* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Cloud Serverless clusters
 

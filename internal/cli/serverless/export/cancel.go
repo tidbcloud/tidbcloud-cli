@@ -107,7 +107,7 @@ func CancelCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				export, err := cloud.GetSelectedExport(ctx, clusterID, h.QueryPageSize, d)
+				export, err := cloud.GetSelectedRunningExport(ctx, clusterID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}

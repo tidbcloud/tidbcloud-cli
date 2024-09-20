@@ -45,14 +45,14 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 
 	var describeCmd = &cobra.Command{
 		Use:         "describe",
-		Short:       "Describe a TiDB Serverless cluster",
+		Short:       "Describe a TiDB Cloud Serverless cluster",
 		Args:        cobra.NoArgs,
 		Aliases:     []string{"get"},
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Get a TiDB Serverless cluster in interactive mode:
+		Example: fmt.Sprintf(`  Get a TiDB Cloud Serverless cluster in interactive mode:
  $ %[1]s serverless describe
 
- Get a TiDB Serverless cluster in non-interactive mode:
+ Get a TiDB Cloud Serverless cluster in non-interactive mode:
  $ %[1]s serverless describe -c <cluster-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()

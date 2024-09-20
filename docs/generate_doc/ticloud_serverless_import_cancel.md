@@ -35,5 +35,5 @@ ticloud serverless import cancel [flags]
 
 ### SEE ALSO
 
-* [ticloud serverless import](ticloud_serverless_import.md)	 - Manage TiDB Serverless data imports
+* [ticloud serverless import](ticloud_serverless_import.md)	 - Manage TiDB Cloud Serverless data imports
 

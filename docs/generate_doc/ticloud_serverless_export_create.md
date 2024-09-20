@@ -1,6 +1,6 @@
 ## ticloud serverless export create
 
-Export data from a TiDB Serverless cluster
+Export data from a TiDB Cloud Serverless cluster
 
 ```
 ticloud serverless export create [flags]
@@ -66,5 +66,5 @@ ticloud serverless export create [flags]
 
 ### SEE ALSO
 
-* [ticloud serverless export](ticloud_serverless_export.md)	 - Manage TiDB Serverless exports
+* [ticloud serverless export](ticloud_serverless_export.md)	 - Manage TiDB Cloud Serverless exports
 

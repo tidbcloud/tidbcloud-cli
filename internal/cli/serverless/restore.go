@@ -72,16 +72,16 @@ func RestoreCmd(h *internal.Helper) *cobra.Command {
 
 	var restoreCmd = &cobra.Command{
 		Use:         "restore",
-		Short:       "Restore a TiDB Serverless cluster",
+		Short:       "Restore a TiDB Cloud Serverless cluster",
 		Annotations: make(map[string]string),
 		Args:        cobra.NoArgs,
-		Example: fmt.Sprintf(`  Restore a TiDB Serverless cluster in interactive mode:
+		Example: fmt.Sprintf(`  Restore a TiDB Cloud Serverless cluster in interactive mode:
  $ %[1]s serverless restore
 
- Restore a TiDB Serverless cluster with snaphot mode in non-interactive mode:
+ Restore a TiDB Cloud Serverless cluster with snaphot mode in non-interactive mode:
  $ %[1]s serverless restore --backup-id <backup-id>
 
- Restore a TiDB Serverless cluster with pointInTime mode in non-interactive mode:
+ Restore a TiDB Cloud Serverless cluster with pointInTime mode in non-interactive mode:
  $ %[1]s serverless restore -c <cluster-id> --backup-time <backup-time>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			err := opts.MarkInteractive(cmd)

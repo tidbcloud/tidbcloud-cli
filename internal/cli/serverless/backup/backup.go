@@ -23,7 +23,7 @@ import (
 func Cmd(h *internal.Helper) *cobra.Command {
 	var backupCmd = &cobra.Command{
 		Use:   "backup",
-		Short: "Manage TiDB Serverless backups",
+		Short: "Manage TiDB Cloud Serverless backups",
 	}
 
 	backupCmd.AddCommand(ListCmd(h))

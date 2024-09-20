@@ -1,6 +1,6 @@
 ## ticloud serverless create
 
-Create a TiDB Serverless cluster
+Create a TiDB Cloud Serverless cluster
 
 ```
 ticloud serverless create [flags]
@@ -9,13 +9,13 @@ ticloud serverless create [flags]
 ### Examples
 
 ```
-  Create a TiDB Serverless cluster in interactive mode:
+  Create a TiDB Cloud Serverless cluster in interactive mode:
   $ ticloud serverless create
 
-  Create a TiDB Serverless cluster of the default ptoject in non-interactive mode:
+  Create a TiDB Cloud Serverless cluster of the default ptoject in non-interactive mode:
   $ ticloud serverless create --display-name <cluster-name> --region <region>
 
-  Create a TiDB Serverless cluster in non-interactive mode:
+  Create a TiDB Cloud Serverless cluster in non-interactive mode:
   $ ticloud serverless create --project-id <project-id> --display-name <cluster-name> --region <region>
 ```
 
@@ -41,5 +41,5 @@ ticloud serverless create [flags]
 
 ### SEE ALSO
 
-* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Serverless clusters
+* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Cloud Serverless clusters
 

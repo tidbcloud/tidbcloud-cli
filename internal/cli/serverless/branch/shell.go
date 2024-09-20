@@ -41,12 +41,20 @@ func (c ShellOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.BranchID,
+		flag.User,
+		flag.Password,
+	}
+}
+
+func (c ShellOpts) RequiredFlags() []string {
+	return []string{
+		flag.ClusterID,
+		flag.BranchID,
 	}
 }
 
 func (c *ShellOpts) MarkInteractive(cmd *cobra.Command) error {
-	flags := c.NonInteractiveFlags()
-	for _, fn := range flags {
+	for _, fn := range c.NonInteractiveFlags() {
 		f := cmd.Flags().Lookup(fn)
 		if f != nil && f.Changed {
 			c.interactive = false
@@ -55,7 +63,7 @@ func (c *ShellOpts) MarkInteractive(cmd *cobra.Command) error {
 	}
 	// Mark required flags
 	if !c.interactive {
-		for _, fn := range flags {
+		for _, fn := range c.RequiredFlags() {
 			err := cmd.MarkFlagRequired(fn)
 			if err != nil {
 				return err

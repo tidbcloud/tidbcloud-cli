@@ -1,6 +1,6 @@
 ## ticloud serverless region
 
-List all available regions for TiDB Serverless
+List all available regions for TiDB Cloud Serverless
 
 ```
 ticloud serverless region [flags]
@@ -9,7 +9,7 @@ ticloud serverless region [flags]
 ### Examples
 
 ```
-  List all available regions for TiDB Serverless:
+  List all available regions for TiDB Cloud Serverless:
   $ ticloud serverless region
 ```
 
@@ -30,5 +30,5 @@ ticloud serverless region [flags]
 
 ### SEE ALSO
 
-* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Serverless clusters
+* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Cloud Serverless clusters
 
