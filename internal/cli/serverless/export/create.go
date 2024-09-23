@@ -225,7 +225,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.New("empty S3 role arn")
 					}
 				case string(export.EXPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY):
-					inputs := []string{flag.GCSURI, flag.GCSServiceAccountKey}
+					inputs := []string{flag.GCSURI}
 					textInput, err := ui.InitialInputModel(inputs, inputDescription)
 					if err != nil {
 						return err
@@ -234,7 +234,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if gcsURI == "" {
 						return errors.New("empty GCS URI")
 					}
-					gcsServiceAccountKey = textInput.Inputs[1].Value()
+					areaInput, err := ui.InitialTextAreaModel(inputDescription[flag.GCSServiceAccountKey])
+					if err != nil {
+						return errors.Trace(err)
+					}
+					gcsServiceAccountKey = areaInput.Textarea.Value()
 					if gcsServiceAccountKey == "" {
 						return errors.New("empty GCS service account key")
 					}
@@ -655,7 +659,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.CSVNullValue, CSVNullValueDefaultValue, "Representation of null values in CSV files.")
 	createCmd.Flags().Bool(flag.CSVSkipHeader, CSVSkipHeaderDefaultValue, "Export CSV files of the tables without header.")
 	createCmd.Flags().String(flag.S3RoleArn, "", "The role arn of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
-	createCmd.Flags().String(flag.GCSURI, "", "The GCS URI in gcs://<bucket>/<path> format. Required when target type is GCS.")
+	createCmd.Flags().String(flag.GCSURI, "", "The GCS URI in gs://<bucket>/<path> format. Required when target type is GCS.")
 	createCmd.Flags().String(flag.GCSServiceAccountKey, "", "The base64 encoded service account key of GCS.")
 	createCmd.Flags().String(flag.AzureBlobURI, "", "The Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format. Required when target type is AZURE_BLOB.")
 	createCmd.Flags().String(flag.AzureBlobSASToken, "", "The SAS token of Azure Blob.")

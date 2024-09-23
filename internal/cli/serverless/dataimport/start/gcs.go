@@ -65,7 +65,7 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(imp.ImportGcsAuthTypeEnum)
 
 		if authType == imp.IMPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY {
-			inputs := []string{flag.GCSURI, flag.GCSServiceAccountKey}
+			inputs := []string{flag.GCSURI}
 			textInput, err := ui.InitialInputModel(inputs, inputDescription)
 			if err != nil {
 				return err
@@ -74,7 +74,11 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 			if gcsUri == "" {
 				return errors.New("empty GCS URI")
 			}
-			accountKey = textInput.Inputs[1].Value()
+			areaInput, err := ui.InitialTextAreaModel(inputDescription[flag.GCSServiceAccountKey])
+			if err != nil {
+				return errors.Trace(err)
+			}
+			accountKey = areaInput.Textarea.Value()
 			if accountKey == "" {
 				return errors.New("empty GCS service account key")
 			}

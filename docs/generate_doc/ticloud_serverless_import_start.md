@@ -47,7 +47,7 @@ ticloud serverless import start [flags]
       --csv.trim-last-separator          Specifies whether to treat separator as the line terminator and trim all trailing separators in the CSV file.
       --file-type string                 The import file type, one of ["CSV" "SQL" "AURORA_SNAPSHOT" "PARQUET"].
       --gcs.service-account-key string   The base64 encoded service account key of GCS.
-      --gcs.uri string                   The GCS URI in gcs://<bucket>/<path> format. Required when source type is GCS.
+      --gcs.uri string                   The GCS URI in gs://<bucket>/<path> format. Required when source type is GCS.
   -h, --help                             help for start
       --local.concurrency int            The concurrency for uploading file. (default 5)
       --local.file-path string           The local file path to import.
