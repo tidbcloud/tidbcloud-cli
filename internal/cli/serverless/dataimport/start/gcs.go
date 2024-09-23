@@ -17,12 +17,12 @@ package start
 import (
 	"fmt"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 
-	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	tea "github.com/charmbracelet/bubbletea"
@@ -65,7 +65,7 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(imp.ImportGcsAuthTypeEnum)
 
 		if authType == imp.IMPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY {
-			inputs := []string{flag.GCSURI, flag.GCSServiceAccountKey}
+			inputs := []string{flag.GCSURI}
 			textInput, err := ui.InitialInputModel(inputs, inputDescription)
 			if err != nil {
 				return err
@@ -74,7 +74,11 @@ func (o GCSOpts) Run(cmd *cobra.Command) error {
 			if gcsUri == "" {
 				return errors.New("empty GCS URI")
 			}
-			accountKey = textInput.Inputs[1].Value()
+			areaInput, err := ui.InitialTextAreaModel(inputDescription[flag.GCSServiceAccountKey])
+			if err != nil {
+				return errors.Trace(err)
+			}
+			accountKey = areaInput.Textarea.Value()
 			if accountKey == "" {
 				return errors.New("empty GCS service account key")
 			}

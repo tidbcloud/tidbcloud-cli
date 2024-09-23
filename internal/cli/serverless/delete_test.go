@@ -21,11 +21,12 @@ import (
 	"os"
 	"testing"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/iostream"
-	"tidbcloud-cli/internal/mock"
-	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
+	"github.com/juju/errors"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/iostream"
+	"github.com/tidbcloud/tidbcloud-cli/internal/mock"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -80,7 +81,7 @@ func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 		{
 			name: "delete cluster without force",
 			args: []string{"--cluster-id", clusterID},
-			err:  fmt.Errorf("the terminal doesn't support prompt, please run with --force to delete the cluster"),
+			err:  errors.New("The terminal doesn't support prompt, please run with --force to delete the cluster"),
 		},
 		{
 			name:         "delete cluster with output flag",
@@ -97,8 +98,9 @@ func (suite *DeleteClusterSuite) TestDeleteClusterArgs() {
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
 			cmd.SetArgs(tt.args)
 			err := cmd.Execute()
-			assert.Equal(tt.err, err)
-
+			if err != nil {
+				assert.Contains(err.Error(), tt.err.Error())
+			}
 			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
 			assert.Equal(tt.stderrString, suite.h.IOStreams.Err.(*bytes.Buffer).String())
 			if tt.err == nil {

@@ -1,6 +1,6 @@
 ## ticloud serverless export
 
-Manage TiDB Serverless exports
+Manage TiDB Cloud Serverless exports
 
 ### Options
 
@@ -18,9 +18,9 @@ Manage TiDB Serverless exports
 
 ### SEE ALSO
 
-* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Serverless clusters
+* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Cloud Serverless clusters
 * [ticloud serverless export cancel](ticloud_serverless_export_cancel.md)	 - Cancel an export task
-* [ticloud serverless export create](ticloud_serverless_export_create.md)	 - Export data from a TiDB Serverless cluster
+* [ticloud serverless export create](ticloud_serverless_export_create.md)	 - Export data from a TiDB Cloud Serverless cluster
 * [ticloud serverless export describe](ticloud_serverless_export_describe.md)	 - Describe an export task
 * [ticloud serverless export download](ticloud_serverless_export_download.md)	 - Download the exported data
 * [ticloud serverless export list](ticloud_serverless_export_list.md)	 - List export tasks

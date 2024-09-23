@@ -20,15 +20,15 @@ import (
 	"strings"
 	"time"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/internal/telemetry"
-	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal/telemetry"
+	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -198,6 +198,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			builtinRole, customRoles, err := getBuiltinRoleAndCustomRoles(userRole)
 			if err != nil {
 				return errors.Trace(err)
+			}
+
+			if util.IsNilOrEmpty(builtinRole) {
+				return errors.New("built-in role must be set")
 			}
 
 			authMethod := util.MYSQLNATIVEPASSWORD

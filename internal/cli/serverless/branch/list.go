@@ -18,12 +18,12 @@ import (
 	"fmt"
 	"time"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/output"
-	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/output"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"

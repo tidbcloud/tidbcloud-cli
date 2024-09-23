@@ -64,7 +64,7 @@ func (m ProcessModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var cmds []tea.Cmd
 
 		if msg >= 1.0 {
-			cmds = append(cmds, tea.Sequence(finalPause(), tea.Quit))
+			cmds = append(cmds, tea.Sequence(FinalPause(), tea.Quit))
 		}
 
 		cmds = append(cmds, m.Progress.SetPercent(float64(msg)))

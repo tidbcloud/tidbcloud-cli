@@ -23,16 +23,16 @@ import (
 	"net/http/httputil"
 	"os"
 
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/prop"
-	"tidbcloud-cli/internal/version"
-	"tidbcloud-cli/pkg/tidbcloud/pingchat"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
-	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/prop"
+	"github.com/tidbcloud/tidbcloud-cli/internal/version"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/pingchat"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 
 	"github.com/icholy/digest"
 )
@@ -102,7 +102,9 @@ type TiDBCloudClient interface {
 
 	ListExports(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*export.ListExportsResponse, error)
 
-	DownloadExport(ctx context.Context, clusterId string, exportId string) (*export.DownloadExportsResponse, error)
+	ListExportFiles(ctx context.Context, clusterId string, exportId string, pageSize *int32, pageToken *string, isGenerateUrl bool) (*export.ListExportFilesResponse, error)
+
+	DownloadExportFiles(ctx context.Context, clusterId string, exportId string, body *export.ExportServiceDownloadExportFilesBody) (*export.DownloadExportFilesResponse, error)
 
 	ListSQLUsers(ctx context.Context, clusterID string, pageSize *int32, pageToken *string) (*iam.ApiListSqlUsersRsp, error)
 
@@ -114,7 +116,6 @@ type TiDBCloudClient interface {
 
 	UpdateSQLUser(ctx context.Context, clusterID string, userName string, body *iam.ApiUpdateSqlUserReq) (*iam.ApiSqlUser, error)
 }
-
 type ClientDelegate struct {
 	ic  *iam.APIClient
 	bc  *branch.APIClient
@@ -416,9 +417,27 @@ func (d *ClientDelegate) ListExports(ctx context.Context, clusterId string, page
 	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) DownloadExport(ctx context.Context, clusterId string, exportId string) (*export.DownloadExportsResponse, error) {
-	r := d.ec.ExportServiceAPI.ExportServiceDownloadExport(ctx, clusterId, exportId)
-	r = r.Body(make(map[string]interface{}))
+func (d *ClientDelegate) ListExportFiles(ctx context.Context, clusterId string, exportId string, pageSize *int32,
+	pageToken *string, isGenerateUrl bool) (*export.ListExportFilesResponse, error) {
+	r := d.ec.ExportServiceAPI.ExportServiceListExportFiles(ctx, clusterId, exportId)
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	if isGenerateUrl {
+		r = r.GenerateUrl(isGenerateUrl)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) DownloadExportFiles(ctx context.Context, clusterId string, exportId string, body *export.ExportServiceDownloadExportFilesBody) (*export.DownloadExportFilesResponse, error) {
+	r := d.ec.ExportServiceAPI.ExportServiceDownloadExportFiles(ctx, clusterId, exportId)
+	if body != nil {
+		r = r.Body(*body)
+	}
 	res, h, err := r.Execute()
 	return res, parseError(err, h)
 }

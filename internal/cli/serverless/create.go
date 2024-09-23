@@ -21,14 +21,14 @@ import (
 	"strconv"
 	"time"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/internal/telemetry"
-	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal/telemetry"
+	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -79,16 +79,16 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	var createCmd = &cobra.Command{
 		Use:         "create",
-		Short:       "Create a TiDB Serverless cluster",
+		Short:       "Create a TiDB Cloud Serverless cluster",
 		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Create a TiDB Serverless cluster in interactive mode:
+		Example: fmt.Sprintf(`  Create a TiDB Cloud Serverless cluster in interactive mode:
   $ %[1]s serverless create
 
-  Create a TiDB Serverless cluster of the default ptoject in non-interactive mode:
+  Create a TiDB Cloud Serverless cluster of the default ptoject in non-interactive mode:
   $ %[1]s serverless create --display-name <cluster-name> --region <region>
 
-  Create a TiDB Serverless cluster in non-interactive mode:
+  Create a TiDB Cloud Serverless cluster in non-interactive mode:
   $ %[1]s serverless create --project-id <project-id> --display-name <cluster-name> --region <region>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -306,8 +306,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().StringP(flag.Region, flag.RegionShort, "", "The name of cloud region. You can use \"ticloud serverless region\" to see all regions.")
 	createCmd.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The ID of the project, in which the cluster will be created. (default: \"default project\")")
 	createCmd.Flags().Int32(flag.SpendingLimitMonthly, 0, "Maximum monthly spending limit in USD cents. (optional)")
-	createCmd.Flags().Bool(flag.Encryption, false, "Whether Enhanced Encryption at Rest is enabled. (optional)")
-	createCmd.Flags().Bool(flag.PublicEndpointDisabled, false, "Whether the public endpoint is disabled. (optional)")
+	createCmd.Flags().Bool(flag.Encryption, false, "Whether Enhanced Encryption at Rest is enabled.")
+	createCmd.Flags().Bool(flag.PublicEndpointDisabled, false, "Whether the public endpoint is disabled.")
 	return createCmd
 }
 

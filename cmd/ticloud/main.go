@@ -19,7 +19,7 @@ import (
 	"os"
 	"os/signal"
 
-	"tidbcloud-cli/internal/cli"
+	"github.com/tidbcloud/tidbcloud-cli/internal/cli"
 
 	"github.com/spf13/cobra"
 )

@@ -18,7 +18,7 @@ Manage cluster SQL users
 
 ### SEE ALSO
 
-* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Serverless clusters
+* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Cloud Serverless clusters
 * [ticloud serverless sql-user create](ticloud_serverless_sql-user_create.md)	 - Create a SQL user
 * [ticloud serverless sql-user delete](ticloud_serverless_sql-user_delete.md)	 - Delete a SQL user
 * [ticloud serverless sql-user list](ticloud_serverless_sql-user_list.md)	 - List all accessible SQL users

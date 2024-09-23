@@ -15,7 +15,7 @@
 package backup
 
 import (
-	"tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
 
 	"github.com/spf13/cobra"
 )
@@ -23,7 +23,7 @@ import (
 func Cmd(h *internal.Helper) *cobra.Command {
 	var backupCmd = &cobra.Command{
 		Use:   "backup",
-		Short: "Manage TiDB Serverless backups",
+		Short: "Manage TiDB Cloud Serverless backups",
 	}
 
 	backupCmd.AddCommand(ListCmd(h))

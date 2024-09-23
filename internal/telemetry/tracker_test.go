@@ -19,7 +19,7 @@ import (
 	"errors"
 	"testing"
 
-	"tidbcloud-cli/internal/mock"
+	"github.com/tidbcloud/tidbcloud-cli/internal/mock"
 
 	"github.com/spf13/cobra"
 	mockUtils "github.com/stretchr/testify/mock"

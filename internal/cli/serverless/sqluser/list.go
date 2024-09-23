@@ -17,15 +17,15 @@ package sqluser
 import (
 	"fmt"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/output"
-	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/internal/telemetry"
-	"tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/output"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal/telemetry"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -53,7 +53,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		Aliases:     []string{"ls"},
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  List all SQL users in interactive mode:
-  $ %[1]s user list
+  $ %[1]s serverless sql-user list
 
   List all SQL users in non-interactive mode:
   $ %[1]s serverless sql-user list -c <cluster-id>

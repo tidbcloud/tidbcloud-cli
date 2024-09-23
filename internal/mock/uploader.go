@@ -4,7 +4,7 @@ package mock
 
 import (
 	context "context"
-	s3 "tidbcloud-cli/internal/service/aws/s3"
+	s3 "github.com/tidbcloud/tidbcloud-cli/internal/service/aws/s3"
 
 	mock "github.com/stretchr/testify/mock"
 )

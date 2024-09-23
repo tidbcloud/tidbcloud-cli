@@ -18,13 +18,13 @@ import (
 	"fmt"
 	"strconv"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -57,13 +57,13 @@ func SpendingLimitCmd(h *internal.Helper) *cobra.Command {
 
 	var spendingLimitCmd = &cobra.Command{
 		Use:         "spending-limit",
-		Short:       "Set spending limit for a TiDB Serverless cluster",
+		Short:       "Set spending limit for a TiDB Cloud Serverless cluster",
 		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Set spending limit for a TiDB Serverless cluster in interactive mode:
+		Example: fmt.Sprintf(`  Set spending limit for a TiDB Cloud Serverless cluster in interactive mode:
   $ %[1]s serverless spending-limit
 
-  Set spending limit for a TiDB Serverless cluster in non-interactive mode:
+  Set spending limit for a TiDB Cloud Serverless cluster in non-interactive mode:
   $ %[1]s serverless spending-limit -c <cluster-id> --monthly <spending-limit-monthly>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()

@@ -18,11 +18,11 @@ import (
 	"fmt"
 	"strconv"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -40,6 +40,8 @@ type ShellOpts struct {
 func (c ShellOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
+		flag.User,
+		flag.Password,
 	}
 }
 
@@ -50,14 +52,14 @@ func ShellCmd(h *internal.Helper) *cobra.Command {
 
 	var shellCmd = &cobra.Command{
 		Use:   "shell",
-		Short: "Connect to a TiDB Serverless cluster",
-		Long: `Connect to a TiDB Serverless cluster.
+		Short: "Connect to a TiDB Cloud Serverless cluster",
+		Long: `Connect to a TiDB Cloud Serverless cluster.
 The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_ansi) for the session.`,
 		Args: cobra.NoArgs,
-		Example: fmt.Sprintf(`  Connect to a TiDB Serverless cluster in interactive mode:
+		Example: fmt.Sprintf(`  Connect to a TiDB Cloud Serverless cluster in interactive mode:
   $ %[1]s serverless shell
 
-  Connect to a TiDB Serverless cluster with default user in non-interactive mode:
+  Connect to a TiDB Cloud Serverless cluster with default user in non-interactive mode:
   $ %[1]s serverless shell -c <cluster-id>
 
   Connect to a serverless cluster with default user and password in non-interactive mode:
@@ -67,8 +69,7 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
   $ %[1]s serverless shell -c <cluster-id> -u <user-name> --password <password>`, config.CliName),
 
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			flags := opts.NonInteractiveFlags()
-			for _, fn := range flags {
+			for _, fn := range opts.NonInteractiveFlags() {
 				f := cmd.Flags().Lookup(fn)
 				if f != nil && f.Changed {
 					opts.interactive = false
@@ -77,11 +78,9 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 
 			// mark required flags in non-interactive mode
 			if !opts.interactive {
-				for _, fn := range flags {
-					err := cmd.MarkFlagRequired(fn)
-					if err != nil {
-						return errors.Trace(err)
-					}
+				err := cmd.MarkFlagRequired(flag.ClusterID)
+				if err != nil {
+					return errors.Trace(err)
 				}
 			}
 

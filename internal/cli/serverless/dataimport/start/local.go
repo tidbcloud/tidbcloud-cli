@@ -21,14 +21,14 @@ import (
 	"slices"
 	"time"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/aws/s3"
-	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/aws/s3"
+	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 
-	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/charmbracelet/bubbles/progress"

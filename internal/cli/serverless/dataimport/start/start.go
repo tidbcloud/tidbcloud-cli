@@ -20,14 +20,14 @@ import (
 	"strconv"
 	"time"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/internal/telemetry"
-	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
-	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal/telemetry"
+	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -55,7 +55,7 @@ var inputDescription = map[string]string{
 	flag.S3RoleArn:            "Input your S3 role arn",
 	flag.AzureBlobURI:         "Input your Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format",
 	flag.AzureBlobSASToken:    "Input your Azure Blob SAS token",
-	flag.GCSURI:               "Input your GCS URI in gcs://<bucket>/<path> format",
+	flag.GCSURI:               "Input your GCS URI in gs://<bucket>/<path> format",
 	flag.GCSServiceAccountKey: "Input your base64 encoded GCS service account key",
 	flag.CSVSeparator:         "Input the CSV separator: separator of each value in CSV files, skip to use default value (,)",
 	flag.CSVDelimiter:         "Input the CSV delimiter: delimiter of string type variables in CSV files, skip to use default value (\"). If you want to set empty string, please use non-interactive mode",
@@ -249,7 +249,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	startCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3SecretAccessKey)
 	startCmd.MarkFlagsRequiredTogether(flag.S3AccessKeyID, flag.S3SecretAccessKey)
 
-	startCmd.Flags().String(flag.GCSURI, "", "The GCS URI in gcs://<bucket>/<path> format. Required when source type is GCS.")
+	startCmd.Flags().String(flag.GCSURI, "", "The GCS URI in gs://<bucket>/<path> format. Required when source type is GCS.")
 	startCmd.Flags().String(flag.GCSServiceAccountKey, "", "The base64 encoded service account key of GCS.")
 
 	startCmd.Flags().String(flag.AzureBlobURI, "", "The Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format.")

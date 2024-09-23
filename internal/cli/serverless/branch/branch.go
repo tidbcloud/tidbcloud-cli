@@ -15,7 +15,7 @@
 package branch
 
 import (
-	"tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
 
 	"github.com/spf13/cobra"
 )
@@ -23,7 +23,7 @@ import (
 func Cmd(h *internal.Helper) *cobra.Command {
 	var branchCmd = &cobra.Command{
 		Use:   "branch",
-		Short: "Manage TiDB Serverless branches",
+		Short: "Manage TiDB Cloud Serverless branches",
 	}
 
 	branchCmd.AddCommand(CreateCmd(h))

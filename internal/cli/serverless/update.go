@@ -18,14 +18,16 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/internal/telemetry"
-	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal/telemetry"
+	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -72,16 +74,16 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 
 	var updateCmd = &cobra.Command{
 		Use:         "update",
-		Short:       "Update a TiDB Serverless cluster",
+		Short:       "Update a TiDB Cloud Serverless cluster",
 		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Update a TiDB Serverless cluster in interactive mode:
+		Example: fmt.Sprintf(`  Update a TiDB Cloud Serverless cluster in interactive mode:
   $ %[1]s serverless update
 
-  Update displayName of a TiDB Serverless cluster in non-interactive mode:
+  Update displayName of a TiDB Cloud Serverless cluster in non-interactive mode:
   $ %[1]s serverless update -c <cluster-id> --display-name <new-cluster-name>
  
-  Update labels of a TiDB Serverless cluster in non-interactive mode:
+  Update labels of a TiDB Cloud Serverless cluster in non-interactive mode:
   $ %[1]s serverless update -c <cluster-id> --labels "{\"label1\":\"value1\"}"`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -138,14 +140,22 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 
-				if fieldName == string(PublicEndpointDisabledHumanReadable) {
-					publicEndpointDisabled, err = cloud.GetSelectedBool("Disable the public endpoint of the cluster?")
+				if fieldName == PublicEndpointDisabledHumanReadable {
+					prompt := &survey.Confirm{
+						Message: "Disable the public endpoint of the cluster?",
+						Default: false,
+					}
+					err = survey.AskOne(prompt, &publicEndpointDisabled)
 					if err != nil {
-						return err
+						if err == terminal.InterruptErr {
+							return util.InterruptError
+						} else {
+							return err
+						}
 					}
 				} else {
 					// variables for input
-					inputModel, err := GetUpdateClusterInput()
+					inputModel, err := GetUpdateClusterInput(fieldName)
 					if err != nil {
 						return err
 					}
@@ -211,7 +221,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("cluster %s updated", clusterID)))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("Cluster %s updated", clusterID)))
 			return nil
 		},
 	}
@@ -223,14 +233,19 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 	return updateCmd
 }
 
-func GetUpdateClusterInput() (tea.Model, error) {
+func GetUpdateClusterInput(fieldName string) (tea.Model, error) {
 	m := ui.TextInputModel{
 		Inputs: make([]textinput.Model, 1),
 	}
 	t := textinput.New()
 	t.Cursor.Style = config.CursorStyle
 	t.CharLimit = 64
-	t.Placeholder = "New value"
+	switch fieldName {
+	case string(Labels):
+		t.Placeholder = "update labels, e.g. {\"label1\":\"value1\",\"label2\":\"value2\"}"
+	default:
+		t.Placeholder = "new value"
+	}
 	t.Focus()
 	t.PromptStyle = config.FocusedStyle
 	t.TextStyle = config.FocusedStyle

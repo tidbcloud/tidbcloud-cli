@@ -22,11 +22,11 @@ import (
 	"os"
 	"testing"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/iostream"
-	"tidbcloud-cli/internal/mock"
-	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/pkg/tidbcloud/pingchat"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/iostream"
+	"github.com/tidbcloud/tidbcloud-cli/internal/mock"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/pingchat"
 
 	mockTool "github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"

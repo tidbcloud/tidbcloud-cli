@@ -18,13 +18,13 @@ import (
 	"fmt"
 	"slices"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -218,6 +218,9 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
+				if util.IsNilOrEmpty(u.BuiltinRole) {
+					return errors.New("built-in role must be set")
+				}
 			}
 
 			if len(addRole) != 0 {
@@ -244,8 +247,9 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					if deleteBuiltinRole == u.BuiltinRole {
 						// it doesn't work yet, because the API doesn't support to delete the builtin role
 						u.BuiltinRole = nil
+						return errors.New("can not delete built-in role")
 					} else {
-						return errors.New(fmt.Sprintf("role %s doesn't exist in the SQL user", *deleteBuiltinRole))
+						return errors.New("can not delete built-in role")
 					}
 				}
 				for _, role := range deleteCustomRoles {

@@ -1,6 +1,6 @@
 ## ticloud serverless export create
 
-Export data from a TiDB Serverless cluster
+Export data from a TiDB Cloud Serverless cluster
 
 ```
 ticloud serverless export create [flags]
@@ -18,7 +18,7 @@ ticloud serverless export create [flags]
   Export all data with S3 type in non-interactive mode:
   $ ticloud serverless export create -c <cluster-id> --target-type S3 --s3.uri <s3-uri> --s3.access-key-id <access-key-id> --s3.secret-access-key <secret-access-key>
 
-  Export all data and customize csv format in non-interactive mode:
+  Export all data and customize CSV format in non-interactive mode:
   $ ticloud serverless export create -c <cluster-id> --file-type CSV --csv.separator ";" --csv.delimiter "\"" --csv.null-value 'NaN' --csv.skip-header
 
   Export test.t1 and test.t2 in non-interactive mode:
@@ -39,11 +39,12 @@ ticloud serverless export create [flags]
       --csv.null-value string            Representation of null values in CSV files. (default "\\N")
       --csv.separator string             Separator of each value in CSV files. (default ",")
       --csv.skip-header                  Export CSV files of the tables without header.
-      --file-type string                 The export file type. One of ["CSV" "SQL" "PARQUET"]. (default "CSV")
+      --display-name string              The display name of the export. (default: SNAPSHOT_<snapshot_time>)
+      --file-type string                 The export file type. One of ["SQL" "CSV" "PARQUET"]. (default "CSV")
       --filter strings                   Specify the exported table(s) with table filter patterns. See https://docs.pingcap.com/tidb/stable/table-filter to learn table filter.
       --force                            Create without confirmation. You need to confirm when you want to export the whole cluster in non-interactive mode.
       --gcs.service-account-key string   The base64 encoded service account key of GCS.
-      --gcs.uri string                   The GCS URI in gcs://<bucket>/<path> format. Required when target type is GCS.
+      --gcs.uri string                   The GCS URI in gs://<bucket>/<path> format. Required when target type is GCS.
   -h, --help                             help for create
       --parquet.compression string       The parquet compression algorithm. One of ["GZIP" "SNAPPY" "ZSTD" "NONE"]. (default "ZSTD")
       --s3.access-key-id string          The access key ID of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].
@@ -65,5 +66,5 @@ ticloud serverless export create [flags]
 
 ### SEE ALSO
 
-* [ticloud serverless export](ticloud_serverless_export.md)	 - Manage TiDB Serverless exports
+* [ticloud serverless export](ticloud_serverless_export.md)	 - Manage TiDB Cloud Serverless exports
 

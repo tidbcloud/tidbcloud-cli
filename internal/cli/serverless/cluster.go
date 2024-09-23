@@ -15,11 +15,11 @@
 package serverless
 
 import (
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/cli/serverless/branch"
-	"tidbcloud-cli/internal/cli/serverless/dataimport"
-	"tidbcloud-cli/internal/cli/serverless/export"
-	"tidbcloud-cli/internal/cli/serverless/sqluser"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/branch"
+	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/dataimport"
+	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/export"
+	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/sqluser"
 
 	"github.com/spf13/cobra"
 )
@@ -27,7 +27,7 @@ import (
 func Cmd(h *internal.Helper) *cobra.Command {
 	var serverlessCmd = &cobra.Command{
 		Use:     "serverless",
-		Short:   "Manage TiDB Serverless clusters",
+		Short:   "Manage TiDB Cloud Serverless clusters",
 		Aliases: []string{"s"},
 	}
 

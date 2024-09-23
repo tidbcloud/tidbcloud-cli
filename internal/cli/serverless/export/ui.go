@@ -15,11 +15,13 @@
 package export
 
 import (
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/juju/errors"
 )
@@ -31,7 +33,7 @@ var inputDescription = map[string]string{
 	flag.S3RoleArn:            "Input your S3 role arn",
 	flag.AzureBlobURI:         "Input your Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format",
 	flag.AzureBlobSASToken:    "Input your Azure Blob SAS token",
-	flag.GCSURI:               "Input your GCS URI in gcs://<bucket>/<path> format",
+	flag.GCSURI:               "Input your GCS URI in gs://<bucket>/<path> format",
 	flag.GCSServiceAccountKey: "Input your base64 encoded GCS service account key",
 	flag.SQL:                  "Input the SELECT SQL statement",
 	flag.TableFilter:          "Input the table filter patterns (comma separated). Example: database.table,database.*,`database-1`.`table-1`",
@@ -40,6 +42,7 @@ var inputDescription = map[string]string{
 	flag.CSVDelimiter:         "Input the CSV delimiter: delimiter of string type variables in CSV files, skip to use default value (\"). If you want to set empty string, please use non-interactive mode",
 	flag.CSVNullValue:         "Input the CSV null value: representation of null values in CSV files, skip to use default value (\\N). If you want to set empty string, please use non-interactive mode",
 	flag.CSVSkipHeader:        "Input the CSV skip header: export CSV files of the tables without header. Type `true` to skip header, others will not skip header",
+	flag.DisplayName:          "Input the name of export. You can skip and use the default name SNAPSHOT_<snapshot_time> by pressing Enter",
 }
 
 func GetSelectedParquetCompression() (export.ExportParquetCompressionTypeEnum, error) {
@@ -207,4 +210,34 @@ func GetSelectedFilterType() (FilterType, error) {
 		return "", errors.New("no filter type selected")
 	}
 	return filterType.(FilterType), nil
+}
+
+func initialDownloadPathInputModel() ui.TextInputModel {
+	m := ui.TextInputModel{
+		Inputs: make([]textinput.Model, len(DownloadPathInputFields)),
+	}
+	for k, v := range DownloadPathInputFields {
+		t := textinput.New()
+		switch k {
+		case flag.OutputPath:
+			t.Placeholder = "Where you want to download the file. Press Enter to skip and download to the current directory"
+			t.Focus()
+			t.PromptStyle = config.FocusedStyle
+			t.TextStyle = config.FocusedStyle
+		}
+		m.Inputs[v] = t
+	}
+	return m
+}
+
+func GetDownloadPathInput() (tea.Model, error) {
+	p := tea.NewProgram(initialDownloadPathInputModel())
+	inputModel, err := p.Run()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if inputModel.(ui.TextInputModel).Interrupted {
+		return nil, util.InterruptError
+	}
+	return inputModel, nil
 }

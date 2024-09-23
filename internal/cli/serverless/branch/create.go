@@ -17,15 +17,16 @@ package branch
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -52,6 +53,7 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.DisplayName,
 		flag.ClusterID,
+		flag.ParentID,
 		flag.ParentTimestamp,
 	}
 }
@@ -170,6 +172,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
+			parentTimestampStr = strings.TrimSpace(parentTimestampStr)
 			if len(parentTimestampStr) != 0 {
 				parentTimestamp, err = time.Parse(time.RFC3339, parentTimestampStr)
 				if err != nil {

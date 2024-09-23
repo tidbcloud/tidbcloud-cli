@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"strings"
 
-	"tidbcloud-cli/internal/ui"
+	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -26,12 +26,12 @@ import (
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/internal/util"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 )
 
 const (
@@ -69,6 +69,7 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 		flag.AzureBlobURI,
 		flag.AzureBlobSASToken,
 		flag.ParquetCompression,
+		flag.DisplayName,
 	}
 }
 
@@ -107,7 +108,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	var createCmd = &cobra.Command{
 		Use:   "create",
-		Short: "Export data from a TiDB Serverless cluster",
+		Short: "Export data from a TiDB Cloud Serverless cluster",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Create an export in interactive mode:
   $ %[1]s serverless export create
@@ -154,6 +155,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			var gcsURI, gcsServiceAccountKey string
 			// azure
 			var azBlobURI, azBlobSasToken string
+			var displayName string
 
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
@@ -170,6 +172,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				clusterId = cluster.ID
+
+				// display name
+				fmt.Fprintln(h.IOStreams.Out, color.HiGreenString("Input the display name (optional):"))
+				inputs := []string{flag.DisplayName}
+				textInput, err := ui.InitialInputModel(inputs, inputDescription)
+				if err != nil {
+					return err
+				}
+				displayName = textInput.Inputs[0].Value()
 
 				// target
 				targetType, err = GetSelectedTargetType()
@@ -214,7 +225,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.New("empty S3 role arn")
 					}
 				case string(export.EXPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY):
-					inputs := []string{flag.GCSURI, flag.GCSServiceAccountKey}
+					inputs := []string{flag.GCSURI}
 					textInput, err := ui.InitialInputModel(inputs, inputDescription)
 					if err != nil {
 						return err
@@ -223,7 +234,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if gcsURI == "" {
 						return errors.New("empty GCS URI")
 					}
-					gcsServiceAccountKey = textInput.Inputs[1].Value()
+					areaInput, err := ui.InitialTextAreaModel(inputDescription[flag.GCSServiceAccountKey])
+					if err != nil {
+						return errors.Trace(err)
+					}
+					gcsServiceAccountKey = areaInput.Textarea.Value()
 					if gcsServiceAccountKey == "" {
 						return errors.New("empty GCS service account key")
 					}
@@ -369,6 +384,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			} else {
 				// non-interactive mode, get values from flags
 				var err error
+				displayName, err = cmd.Flags().GetString(flag.DisplayName)
+				if err != nil {
+					return errors.Trace(err)
+				}
 				clusterId, err = cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
@@ -544,6 +563,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					Type: &targetType,
 				},
 			}
+			if displayName != "" {
+				params.DisplayName = &displayName
+			}
 			// add target
 			switch targetType {
 			case export.EXPORTTARGETTYPEENUM_S3:
@@ -637,11 +659,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.CSVNullValue, CSVNullValueDefaultValue, "Representation of null values in CSV files.")
 	createCmd.Flags().Bool(flag.CSVSkipHeader, CSVSkipHeaderDefaultValue, "Export CSV files of the tables without header.")
 	createCmd.Flags().String(flag.S3RoleArn, "", "The role arn of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
-	createCmd.Flags().String(flag.GCSURI, "", "The GCS URI in gcs://<bucket>/<path> format. Required when target type is GCS.")
+	createCmd.Flags().String(flag.GCSURI, "", "The GCS URI in gs://<bucket>/<path> format. Required when target type is GCS.")
 	createCmd.Flags().String(flag.GCSServiceAccountKey, "", "The base64 encoded service account key of GCS.")
 	createCmd.Flags().String(flag.AzureBlobURI, "", "The Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format. Required when target type is AZURE_BLOB.")
 	createCmd.Flags().String(flag.AzureBlobSASToken, "", "The SAS token of Azure Blob.")
 	createCmd.Flags().String(flag.ParquetCompression, "ZSTD", fmt.Sprintf("The parquet compression algorithm. One of %q.", export.AllowedExportParquetCompressionTypeEnumEnumValues))
+	createCmd.Flags().String(flag.DisplayName, "", "The display name of the export. (default: SNAPSHOT_<snapshot_time>)")
 
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableFilter, flag.SQL)
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableWhere, flag.SQL)

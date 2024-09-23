@@ -18,13 +18,13 @@ import (
 	"fmt"
 	"time"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/output"
-	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/internal/telemetry"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/output"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal/telemetry"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -47,16 +47,16 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 	var listCmd = &cobra.Command{
 		Use:         "list",
-		Short:       "List all TiDB Serverless clusters",
+		Short:       "List all TiDB Cloud Serverless clusters",
 		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  List all TiDB Serverless clusters in interactive mode):
+		Example: fmt.Sprintf(`  List all TiDB Cloud Serverless clusters in interactive mode):
   $ %[1]s serverless list
 
-  List all TiDB Serverless clusters in non-interactive mode:
+  List all TiDB Cloud Serverless clusters in non-interactive mode:
   $ %[1]s serverless list -p <project-id>
 
-  List all TiDB Serverless clusters in non-interactive mode:
+  List all TiDB Cloud Serverless clusters in non-interactive mode:
   $ %[1]s serverless list -p <project-id> -o json`, config.CliName),
 		Aliases: []string{"ls"},
 		PreRun: func(cmd *cobra.Command, args []string) {

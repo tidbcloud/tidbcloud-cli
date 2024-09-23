@@ -1,6 +1,6 @@
 ## ticloud serverless update
 
-Update a TiDB Serverless cluster
+Update a TiDB Cloud Serverless cluster
 
 ```
 ticloud serverless update [flags]
@@ -9,13 +9,13 @@ ticloud serverless update [flags]
 ### Examples
 
 ```
-  Update a TiDB Serverless cluster in interactive mode:
+  Update a TiDB Cloud Serverless cluster in interactive mode:
   $ ticloud serverless update
 
-  Update displayName of a TiDB Serverless cluster in non-interactive mode:
+  Update displayName of a TiDB Cloud Serverless cluster in non-interactive mode:
   $ ticloud serverless update -c <cluster-id> --display-name <new-cluster-name>
  
-  Update labels of a TiDB Serverless cluster in non-interactive mode:
+  Update labels of a TiDB Cloud Serverless cluster in non-interactive mode:
   $ ticloud serverless update -c <cluster-id> --labels "{\"label1\":\"value1\"}"
 ```
 
@@ -41,5 +41,5 @@ ticloud serverless update [flags]
 
 ### SEE ALSO
 
-* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Serverless clusters
+* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Cloud Serverless clusters
 

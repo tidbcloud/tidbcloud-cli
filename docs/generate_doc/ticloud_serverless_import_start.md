@@ -21,6 +21,15 @@ ticloud serverless import start [flags]
   Start a local import task with custom CSV format:
   $ ticloud serverless import start --local.file-path <file-path> --cluster-id <cluster-id> --file-type CSV --local.target-database <target-database> --local.target-table <target-table> --csv.separator \" --csv.delimiter \' --csv.backslash-escape=false --csv.trim-last-separator=true
 
+  Start an S3 import task in non-interactive mode:
+  $ ticloud serverless import start --source-type S3 --s3.uri <s3-uri> --cluster-id <cluster-id> --file-type <file-type> --s3.role-arn <role-arn>
+
+  Start a GCS import task in non-interactive mode:
+  $ ticloud serverless import start --source-type GCS --gcs.uri <gcs-uri> --cluster-id <cluster-id> --file-type <file-type> --gcs.service-account-key <service-account-key>
+
+  Start an Azure Blob import task in non-interactive mode:
+  $ ticloud serverless import start --source-type AZURE_BLOB --azblob.uri <azure-blob-uri> --cluster-id <cluster-id> --file-type <file-type> --azblob.sas-token <sas-token>
+
 ```
 
 ### Options
@@ -36,19 +45,19 @@ ticloud serverless import start [flags]
       --csv.separator string             The field separator of CSV file. (default ",")
       --csv.skip-header                  Specifies whether the CSV file contains a header line.
       --csv.trim-last-separator          Specifies whether to treat separator as the line terminator and trim all trailing separators in the CSV file.
-      --file-type string                 The import file type, one of ["CSV"].
+      --file-type string                 The import file type, one of ["CSV" "SQL" "AURORA_SNAPSHOT" "PARQUET"].
       --gcs.service-account-key string   The base64 encoded service account key of GCS.
-      --gcs.uri string                   The GCS folder URI for import.
+      --gcs.uri string                   The GCS URI in gs://<bucket>/<path> format. Required when source type is GCS.
   -h, --help                             help for start
       --local.concurrency int            The concurrency for uploading file. (default 5)
       --local.file-path string           The local file path to import.
       --local.target-database string     Target database to which import data.
       --local.target-table string        Target table to which import data.
-      --s3.access-key-id string          The access key ID for S3.
-      --s3.role-arn string               The role ARN for S3.
-      --s3.secret-access-key string      The secret access key for S3.
-      --s3.uri string                    The S3 folder URI for import.
-      --source-type string               The import source type, one of ["S3" "LOCAL" "GCS" "AZURE_BLOB"]. (default "LOCAL")
+      --s3.access-key-id string          The access key ID of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].
+      --s3.role-arn string               The role arn of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].
+      --s3.secret-access-key string      The secret access key of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].
+      --s3.uri string                    The S3 URI in s3://<bucket>/<path> format. Required when source type is S3.
+      --source-type string               The import source type, one of ["LOCAL" "S3" "GCS" "AZURE_BLOB"]. (default "LOCAL")
 ```
 
 ### Options inherited from parent commands
@@ -61,5 +70,5 @@ ticloud serverless import start [flags]
 
 ### SEE ALSO
 
-* [ticloud serverless import](ticloud_serverless_import.md)	 - Manage TiDB Serverless data imports
+* [ticloud serverless import](ticloud_serverless_import.md)	 - Manage TiDB Cloud Serverless data imports
 

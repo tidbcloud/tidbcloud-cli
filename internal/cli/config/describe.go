@@ -18,9 +18,9 @@ import (
 	"fmt"
 	"strings"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/output"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/output"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"

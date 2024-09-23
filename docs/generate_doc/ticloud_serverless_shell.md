@@ -1,10 +1,10 @@
 ## ticloud serverless shell
 
-Connect to a TiDB Serverless cluster
+Connect to a TiDB Cloud Serverless cluster
 
 ### Synopsis
 
-Connect to a TiDB Serverless cluster.
+Connect to a TiDB Cloud Serverless cluster.
 The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/en/sql-mode.html#sqlmode_ansi) for the session.
 
 ```
@@ -14,10 +14,10 @@ ticloud serverless shell [flags]
 ### Examples
 
 ```
-  Connect to a TiDB Serverless cluster in interactive mode:
+  Connect to a TiDB Cloud Serverless cluster in interactive mode:
   $ ticloud serverless shell
 
-  Connect to a TiDB Serverless cluster with default user in non-interactive mode:
+  Connect to a TiDB Cloud Serverless cluster with default user in non-interactive mode:
   $ ticloud serverless shell -c <cluster-id>
 
   Connect to a serverless cluster with default user and password in non-interactive mode:
@@ -46,5 +46,5 @@ ticloud serverless shell [flags]
 
 ### SEE ALSO
 
-* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Serverless clusters
+* [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Cloud Serverless clusters
 

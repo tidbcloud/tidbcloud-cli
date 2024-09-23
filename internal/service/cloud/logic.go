@@ -18,16 +18,17 @@ import (
 	"context"
 	"fmt"
 	"slices"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
 	"time"
 
-	"tidbcloud-cli/internal/ui"
-	"tidbcloud-cli/internal/util"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
-	imp "tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/import"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
+
+	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/juju/errors"
@@ -68,7 +69,8 @@ type ServerlessBackup struct {
 }
 
 type Export struct {
-	ID string
+	DisplayName string
+	ID          string
 }
 
 func (c ServerlessBackup) String() string {
@@ -96,7 +98,7 @@ func (c Cluster) String() string {
 }
 
 func (e Export) String() string {
-	return e.ID
+	return fmt.Sprintf("%s(%s)", e.DisplayName, e.ID)
 }
 
 type Import struct {
@@ -230,32 +232,6 @@ func GetSelectedField(mutableFields []string) (string, error) {
 	return field.(string), nil
 }
 
-func GetSelectedBool(notice string) (bool, error) {
-	items := []interface{}{
-		"true",
-		"false",
-	}
-
-	model, err := ui.InitialSelectModel(items, notice)
-	if err != nil {
-		return false, errors.Trace(err)
-	}
-
-	p := tea.NewProgram(model)
-	bModel, err := p.Run()
-	if err != nil {
-		return false, errors.Trace(err)
-	}
-	if m, _ := bModel.(ui.SelectModel); m.Interrupted {
-		return false, util.InterruptError
-	}
-	value := bModel.(ui.SelectModel).GetSelectedItem()
-	if value == nil {
-		return false, errors.New("no value selected")
-	}
-	return value.(string) == "true", nil
-}
-
 func GetSpendingLimitField(mutableFields []string) (string, error) {
 	var items = make([]interface{}, 0, len(mutableFields))
 	for _, item := range mutableFields {
@@ -334,7 +310,8 @@ func GetSelectedExport(ctx context.Context, clusterID string, pageSize int64, cl
 	var items = make([]interface{}, 0, len(exportItems))
 	for _, item := range exportItems {
 		items = append(items, &Export{
-			ID: *item.ExportId,
+			ID:          *item.ExportId,
+			DisplayName: *item.DisplayName,
 		})
 	}
 	if len(items) == 0 {
@@ -342,6 +319,48 @@ func GetSelectedExport(ctx context.Context, clusterID string, pageSize int64, cl
 	}
 
 	model, err := ui.InitialSelectModel(items, "Choose the export:")
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	eModel, err := p.Run()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if m, _ := eModel.(ui.SelectModel); m.Interrupted {
+		return nil, util.InterruptError
+	}
+	export := eModel.(ui.SelectModel).GetSelectedItem()
+	if export == nil {
+		return nil, errors.New("no export selected")
+	}
+	return export.(*Export), nil
+}
+
+func GetSelectedRunningExport(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*Export, error) {
+	_, exportItems, err := RetrieveExports(ctx, clusterID, pageSize, client)
+	if err != nil {
+		return nil, err
+	}
+
+	var items = make([]interface{}, 0, len(exportItems))
+	for _, item := range exportItems {
+		if *item.State == export.EXPORTSTATEENUM_RUNNING {
+			items = append(items, &Export{
+				ID:          *item.ExportId,
+				DisplayName: *item.DisplayName,
+			})
+		}
+	}
+	if len(items) == 0 {
+		return nil, fmt.Errorf("no running exports found")
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the running export:")
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
@@ -374,7 +393,8 @@ func GetSelectedLocalExport(ctx context.Context, clusterID string, pageSize int6
 	for _, item := range exportItems {
 		if *item.Target.Type == export.EXPORTTARGETTYPEENUM_LOCAL && *item.State == export.EXPORTSTATEENUM_SUCCEEDED {
 			items = append(items, &Export{
-				ID: *item.ExportId,
+				ID:          *item.ExportId,
+				DisplayName: *item.DisplayName,
 			})
 		}
 	}
@@ -804,4 +824,27 @@ func GetSelectedParentID(ctx context.Context, cluster *Cluster, pageSize int64, 
 		return "", errors.New("no parent selected")
 	}
 	return parent.(*Branch).ID, nil
+}
+
+func GetAllExportFiles(ctx context.Context, cID string, eID string, d TiDBCloudClient) ([]export.ExportFile, error) {
+	var items []export.ExportFile
+	var pageSize int32 = 1000
+	var pageToken *string
+	exportFilesResp, err := d.ListExportFiles(ctx, cID, eID, &pageSize, nil, false)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	items = append(items, exportFilesResp.Files...)
+	for {
+		pageToken = exportFilesResp.NextPageToken
+		if util.IsNilOrEmpty(pageToken) {
+			break
+		}
+		exportFilesResp, err = d.ListExportFiles(ctx, cID, eID, &pageSize, pageToken, false)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		items = append(items, exportFilesResp.Files...)
+	}
+	return items, nil
 }

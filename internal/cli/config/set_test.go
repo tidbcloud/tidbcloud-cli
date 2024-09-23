@@ -21,10 +21,10 @@ import (
 	"os"
 	"testing"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/iostream"
-	"tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/iostream"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 
 	"github.com/juju/errors"
 	"github.com/spf13/viper"

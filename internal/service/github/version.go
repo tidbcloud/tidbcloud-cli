@@ -21,8 +21,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"tidbcloud-cli/internal/config"
-	ver "tidbcloud-cli/internal/version"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	ver "github.com/tidbcloud/tidbcloud-cli/internal/version"
 
 	"github.com/hashicorp/go-version"
 	"github.com/juju/errors"

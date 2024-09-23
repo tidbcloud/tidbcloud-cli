@@ -17,13 +17,13 @@ package serverless
 import (
 	"fmt"
 
-	"tidbcloud-cli/internal"
-	"tidbcloud-cli/internal/config"
-	"tidbcloud-cli/internal/flag"
-	"tidbcloud-cli/internal/service/cloud"
-	"tidbcloud-cli/internal/telemetry"
-	"tidbcloud-cli/internal/util"
-	"tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
+	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal/telemetry"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -52,13 +52,13 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 	var force bool
 	var deleteCmd = &cobra.Command{
 		Use:         "delete",
-		Short:       "Delete a TiDB Serverless cluster",
+		Short:       "Delete a TiDB Cloud Serverless cluster",
 		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Delete a TiDB Serverless cluster in interactive mode:
+		Example: fmt.Sprintf(`  Delete a TiDB Cloud Serverless cluster in interactive mode:
  $ %[1]s serverless delete
 
- Delete a TiDB Serverless cluster in non-interactive mode:
+ Delete a TiDB Cloud Serverless cluster in non-interactive mode:
  $ %[1]s serverless delete -c <cluster-id>`, config.CliName),
 		Aliases: []string{"rm"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -119,7 +119,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 
 			if !force {
 				if !h.IOStreams.CanPrompt {
-					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to delete the cluster")
+					return errors.New("The terminal doesn't support prompt, please run with --force to delete the cluster")
 				}
 
 				confirmationMessage := fmt.Sprintf("%s %s %s", color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to confirm:"))
@@ -139,7 +139,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				if userInput != confirmed {
-					return errors.New("incorrect confirm string entered, skipping database deletion")
+					return errors.New("Incorrect confirm string entered, skipping database deletion")
 				}
 			}
 
@@ -151,7 +151,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("cluster %s deleted", clusterID)))
 				return nil
 			} else {
-				return errors.New(fmt.Sprintf("delete cluster %s failed, please check status on dashboard", clusterID))
+				return errors.New(fmt.Sprintf("Delete cluster %s failed, please check status on dashboard", clusterID))
 			}
 		},
 	}

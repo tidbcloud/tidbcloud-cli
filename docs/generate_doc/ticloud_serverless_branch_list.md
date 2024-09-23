@@ -37,5 +37,5 @@ ticloud serverless branch list [flags]
 
 ### SEE ALSO
 
-* [ticloud serverless branch](ticloud_serverless_branch.md)	 - Manage TiDB Serverless branches
+* [ticloud serverless branch](ticloud_serverless_branch.md)	 - Manage TiDB Cloud Serverless branches
 
