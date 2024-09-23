@@ -76,7 +76,7 @@ func (suite *GCSImportSuite) TestGCSImportArgs() {
 	clusterID := "12345"
 	importID := "imp-asdasd"
 	accountKey := "xasdas"
-	gcsUri := "gcs://xxx"
+	gcsUri := "gs://xxx"
 	t := time.Now()
 	fileType := imp.IMPORTFILETYPEENUM_CSV
 	csvFormat := &imp.CSVFormat{

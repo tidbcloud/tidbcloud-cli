@@ -44,7 +44,7 @@ ticloud serverless export create [flags]
       --filter strings                   Specify the exported table(s) with table filter patterns. See https://docs.pingcap.com/tidb/stable/table-filter to learn table filter.
       --force                            Create without confirmation. You need to confirm when you want to export the whole cluster in non-interactive mode.
       --gcs.service-account-key string   The base64 encoded service account key of GCS.
-      --gcs.uri string                   The GCS URI in gcs://<bucket>/<path> format. Required when target type is GCS.
+      --gcs.uri string                   The GCS URI in gs://<bucket>/<path> format. Required when target type is GCS.
   -h, --help                             help for create
       --parquet.compression string       The parquet compression algorithm. One of ["GZIP" "SNAPPY" "ZSTD" "NONE"]. (default "ZSTD")
       --s3.access-key-id string          The access key ID of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].

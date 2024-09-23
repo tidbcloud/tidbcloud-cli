@@ -33,7 +33,7 @@ var inputDescription = map[string]string{
 	flag.S3RoleArn:            "Input your S3 role arn",
 	flag.AzureBlobURI:         "Input your Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format",
 	flag.AzureBlobSASToken:    "Input your Azure Blob SAS token",
-	flag.GCSURI:               "Input your GCS URI in gcs://<bucket>/<path> format",
+	flag.GCSURI:               "Input your GCS URI in gs://<bucket>/<path> format",
 	flag.GCSServiceAccountKey: "Input your base64 encoded GCS service account key",
 	flag.SQL:                  "Input the SELECT SQL statement",
 	flag.TableFilter:          "Input the table filter patterns (comma separated). Example: database.table,database.*,`database-1`.`table-1`",
