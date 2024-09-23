@@ -225,7 +225,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.New("empty S3 role arn")
 					}
 				case string(export.EXPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY):
-					inputs := []string{flag.GCSURI, flag.GCSServiceAccountKey}
+					inputs := []string{flag.GCSURI}
 					textInput, err := ui.InitialInputModel(inputs, inputDescription)
 					if err != nil {
 						return err
@@ -234,7 +234,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if gcsURI == "" {
 						return errors.New("empty GCS URI")
 					}
-					gcsServiceAccountKey = textInput.Inputs[1].Value()
+					areaInput, err := ui.InitialTextAreaModel(inputDescription[flag.GCSServiceAccountKey])
+					if err != nil {
+						return errors.Trace(err)
+					}
+					gcsServiceAccountKey = areaInput.Textarea.Value()
 					if gcsServiceAccountKey == "" {
 						return errors.New("empty GCS service account key")
 					}
