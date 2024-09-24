@@ -42,16 +42,16 @@ func Cmd(h *internal.Helper) *cobra.Command {
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			// If is managed by TiUP, we should disable the update command since binpath is different.
+			// If is managed by TiUP, we should disable the upgrade command since binpath is different.
 			if config.IsUnderTiUP {
-				return errors.New("the CLI is managed by TiUP, please update it by `tiup update cloud`")
+				return errors.New("the CLI is managed by TiUP, please upgrade it by `tiup update cloud`")
 			}
 
-			// When update CLI, we don't need to check the version again after command executes.
+			// When upgrade CLI, we don't need to check the version again after command executes.
 			newRelease, err := github.CheckForUpdate(ctx, false)
-			// If we can't get the latest version, we should update the CLI assuming it's not the latest version.
+			// If we can't get the latest version, we should upgrade the CLI assuming it's not the latest version.
 			if err != nil {
-				log.Debug("Failed to check for update, update the CLI assuming it's not the latest version", zap.Error(err))
+				log.Debug("Failed to check for upgrade, upgrade the CLI assuming it's not the latest version", zap.Error(err))
 				newRelease = &github.ReleaseInfo{
 					Version: "latest",
 				}
@@ -74,7 +74,7 @@ func Cmd(h *internal.Helper) *cobra.Command {
 }
 
 func updateAndWaitReady(ctx context.Context, h *internal.Helper, newRelease *github.ReleaseInfo) error {
-	fmt.Fprintf(h.IOStreams.Out, "... Updating the CLI to version %s\n", newRelease.Version)
+	fmt.Fprintf(h.IOStreams.Out, "... Upgrading the CLI to version %s\n", newRelease.Version)
 
 	ctx, cancel := context.WithTimeout(ctx, 1*time.Minute)
 	defer cancel()
@@ -160,7 +160,7 @@ func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, newRelease *g
 				if err != nil {
 					return err
 				} else {
-					return ui.Result("Update successfully!")
+					return ui.Result("Upgrade successfully!")
 				}
 			case <-ctx.Done():
 				return util.InterruptError
@@ -170,7 +170,7 @@ func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, newRelease *g
 		}
 	}
 
-	p := tea.NewProgram(ui.InitialSpinnerModel(task, fmt.Sprintf("Updating the CLI to version %s", newRelease.Version)))
+	p := tea.NewProgram(ui.InitialSpinnerModel(task, fmt.Sprintf("Upgrading the CLI to version %s", newRelease.Version)))
 	model, err := p.Run()
 	if err != nil {
 		return errors.Trace(err)
