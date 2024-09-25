@@ -253,7 +253,7 @@ func CreateAndSpinnerWait(ctx context.Context, h *internal.Helper, d cloud.TiDBC
 		for {
 			select {
 			case <-timer:
-				return ui.Result(fmt.Sprintf("Timeout waiting for branch %s to be ready, please check status on dashboard.", newBranchID))
+				return errors.New(fmt.Sprintf("Timeout waiting for branch %s to be ready, please check status on dashboard.", newBranchID))
 			case <-ticker.C:
 				b, err := d.GetBranch(ctx, clusterId, newBranchID)
 				if err != nil {
