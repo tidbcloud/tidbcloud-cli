@@ -23,5 +23,6 @@ Manage TiDB Cloud Serverless branches
 * [ticloud serverless branch delete](ticloud_serverless_branch_delete.md)	 - Delete a branch
 * [ticloud serverless branch describe](ticloud_serverless_branch_describe.md)	 - Describe a branch
 * [ticloud serverless branch list](ticloud_serverless_branch_list.md)	 - List branches
+* [ticloud serverless branch reset](ticloud_serverless_branch_reset.md)	 - Reset a branch to its parent's current state
 * [ticloud serverless branch shell](ticloud_serverless_branch_shell.md)	 - Connect to a branch
 

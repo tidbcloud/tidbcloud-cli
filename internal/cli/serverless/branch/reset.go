@@ -15,13 +15,18 @@
 package branch
 
 import (
+	"context"
 	"fmt"
+	"time"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -70,7 +75,7 @@ func ResetCmd(h *internal.Helper) *cobra.Command {
 	var force bool
 	var resetCmd = &cobra.Command{
 		Use:   "reset",
-		Short: "Reset a branch",
+		Short: "Reset a branch to its parent's current state",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Reset a branch in interactive mode:
   $ %[1]s serverless branch reset
@@ -155,12 +160,19 @@ func ResetCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			_, err = d.ResetBranch(ctx, clusterID, branchID)
-			if err != nil {
-				return errors.Trace(err)
-			}
 			// print success for reset branch is a sync operation
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("branch %s reset", branchID))
+			if h.IOStreams.CanPrompt {
+				err := ResetAndSpinnerWait(ctx, h, d, clusterID, branchID)
+				if err != nil {
+					return errors.Trace(err)
+				}
+			} else {
+				err := ResetAndWaitReady(ctx, h, d, clusterID, branchID)
+				if err != nil {
+					return err
+				}
+			}
+
 			return nil
 		},
 	}
@@ -170,4 +182,76 @@ func ResetCmd(h *internal.Helper) *cobra.Command {
 	resetCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the branch to be reset.")
 
 	return resetCmd
+}
+
+func ResetAndWaitReady(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, clusterID string, branchID string) error {
+	_, err := d.ResetBranch(ctx, clusterID, branchID)
+	if err != nil {
+		return errors.Trace(err)
+	}
+
+	fmt.Fprintln(h.IOStreams.Out, "... Waiting for branch to be ready")
+	ticker := time.NewTicker(WaitInterval)
+	defer ticker.Stop()
+	timer := time.After(WaitTimeout)
+	for {
+		select {
+		case <-timer:
+			return errors.New(fmt.Sprintf("Timeout waiting for branch %s to be ready, please check status on dashboard.", branchID))
+		case <-ticker.C:
+			b, err := d.GetBranch(ctx, clusterID, branchID)
+			if err != nil {
+				return errors.Trace(err)
+			}
+			if *b.State == branch.BRANCHSTATE_ACTIVE {
+				fmt.Fprint(h.IOStreams.Out, color.GreenString("Branch %s is ready.", branchID))
+				return nil
+			}
+		}
+	}
+}
+
+func ResetAndSpinnerWait(ctx context.Context, h *internal.Helper, d cloud.TiDBCloudClient, clusterID string, branchID string) error {
+	// use spinner to indicate that the cluster is resetting
+	task := func() tea.Msg {
+		_, err := d.ResetBranch(ctx, clusterID, branchID)
+		if err != nil {
+			return errors.Trace(err)
+		}
+
+		ticker := time.NewTicker(WaitInterval)
+		defer ticker.Stop()
+		timer := time.After(WaitTimeout)
+		for {
+			select {
+			case <-timer:
+				return ui.Result(fmt.Sprintf("Timeout waiting for branch %s to be ready, please check status on dashboard.", branchID))
+			case <-ticker.C:
+				b, err := d.GetBranch(ctx, clusterID, branchID)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				if *b.State == branch.BRANCHSTATE_ACTIVE {
+					return ui.Result(fmt.Sprintf("Branch %s is ready.", branchID))
+				}
+			case <-ctx.Done():
+				return util.InterruptError
+			}
+		}
+	}
+
+	p := tea.NewProgram(ui.InitialSpinnerModel(task, "Waiting for branch to be ready"))
+	resetModel, err := p.Run()
+	if err != nil {
+		return errors.Trace(err)
+	}
+	if m, _ := resetModel.(ui.SpinnerModel); m.Interrupted {
+		return util.InterruptError
+	}
+	if m, _ := resetModel.(ui.SpinnerModel); m.Err != nil {
+		return m.Err
+	} else {
+		fmt.Fprintln(h.IOStreams.Out, color.GreenString(m.Output))
+	}
+	return nil
 }
