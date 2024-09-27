@@ -75,7 +75,7 @@ func ResetCmd(h *internal.Helper) *cobra.Command {
 	var force bool
 	var resetCmd = &cobra.Command{
 		Use:   "reset",
-		Short: "Reset a branch to its parent's current state",
+		Short: "Reset a branch to its parent's latest state",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Reset a branch in interactive mode:
   $ %[1]s serverless branch reset

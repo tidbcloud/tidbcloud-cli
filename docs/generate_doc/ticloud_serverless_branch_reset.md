@@ -1,6 +1,6 @@
 ## ticloud serverless branch reset
 
-Reset a branch to its parent's current state
+Reset a branch to its parent's latest state
 
 ```
 ticloud serverless branch reset [flags]
