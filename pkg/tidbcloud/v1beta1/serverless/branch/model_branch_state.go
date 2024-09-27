@@ -15,7 +15,7 @@ import (
 	"fmt"
 )
 
-// BranchState Output Only. Branch State.   - CREATING: The branch is being created.  - ACTIVE: The branch is active and running.  - DELETED: The branch is being deleted.  - MAINTENANCE: The branch is under maintenance.
+// BranchState Output Only. Branch State.   - CREATING: The branch is being created.  - ACTIVE: The branch is active and running.  - DELETED: The branch is being deleted.  - MAINTENANCE: The branch is under maintenance.  - RESTORING: The branch is restoring.
 type BranchState string
 
 // List of Branch.State
@@ -24,6 +24,7 @@ const (
 	BRANCHSTATE_ACTIVE      BranchState = "ACTIVE"
 	BRANCHSTATE_DELETED     BranchState = "DELETED"
 	BRANCHSTATE_MAINTENANCE BranchState = "MAINTENANCE"
+	BRANCHSTATE_RESTORING   BranchState = "RESTORING"
 )
 
 // All allowed values of BranchState enum
@@ -32,6 +33,7 @@ var AllowedBranchStateEnumValues = []BranchState{
 	"ACTIVE",
 	"DELETED",
 	"MAINTENANCE",
+	"RESTORING",
 }
 
 func (v *BranchState) UnmarshalJSON(src []byte) error {

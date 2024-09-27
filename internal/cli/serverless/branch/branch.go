@@ -30,6 +30,7 @@ func Cmd(h *internal.Helper) *cobra.Command {
 	branchCmd.AddCommand(ListCmd(h))
 	branchCmd.AddCommand(DescribeCmd(h))
 	branchCmd.AddCommand(DeleteCmd(h))
+	branchCmd.AddCommand(ResetCmd(h))
 	branchCmd.AddCommand(ShellCmd(h))
 	return branchCmd
 }
