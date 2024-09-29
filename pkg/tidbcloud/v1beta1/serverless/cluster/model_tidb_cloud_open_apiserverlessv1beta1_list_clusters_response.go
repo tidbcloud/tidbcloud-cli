@@ -17,7 +17,7 @@ import (
 // checks if the TidbCloudOpenApiserverlessv1beta1ListClustersResponse type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &TidbCloudOpenApiserverlessv1beta1ListClustersResponse{}
 
-// TidbCloudOpenApiserverlessv1beta1ListClustersResponse Responses message to the request for listing of TiDB Serverless clusters.
+// TidbCloudOpenApiserverlessv1beta1ListClustersResponse Responses message to the request for listing of TiDB Cloud Serverless clusters.
 type TidbCloudOpenApiserverlessv1beta1ListClustersResponse struct {
 	// A list of clusters.
 	Clusters []TidbCloudOpenApiserverlessv1beta1Cluster `json:"clusters,omitempty"`

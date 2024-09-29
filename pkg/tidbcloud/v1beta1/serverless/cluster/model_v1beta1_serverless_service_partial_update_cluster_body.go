@@ -18,7 +18,7 @@ import (
 // checks if the V1beta1ServerlessServicePartialUpdateClusterBody type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &V1beta1ServerlessServicePartialUpdateClusterBody{}
 
-// V1beta1ServerlessServicePartialUpdateClusterBody Message for requesting a partial update on a TiDB Serverless cluster.
+// V1beta1ServerlessServicePartialUpdateClusterBody Message for requesting a partial update on a TiDB Cloud Serverless cluster.
 type V1beta1ServerlessServicePartialUpdateClusterBody struct {
 	Cluster *RequiredTheClusterToBeUpdated `json:"cluster,omitempty"`
 	// Required. The update mask indicating which fields are to be updated.

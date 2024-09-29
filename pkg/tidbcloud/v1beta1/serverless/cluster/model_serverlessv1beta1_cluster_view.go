@@ -15,7 +15,7 @@ import (
 	"fmt"
 )
 
-// Serverlessv1beta1ClusterView Enum for the different types of detail view to be returned for a TiDB Serverless cluster.   - BASIC: Only basic information about the cluster is returned.  - FULL: All details about the cluster are returned.
+// Serverlessv1beta1ClusterView Enum for the different types of detail view to be returned for a TiDB Cloud Serverless cluster.   - BASIC: Only basic information about the cluster is returned.  - FULL: All details about the cluster are returned.
 type Serverlessv1beta1ClusterView string
 
 // List of serverlessv1beta1ClusterView

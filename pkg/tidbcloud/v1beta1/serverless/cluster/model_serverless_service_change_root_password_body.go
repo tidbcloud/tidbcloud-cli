@@ -18,7 +18,7 @@ import (
 // checks if the ServerlessServiceChangeRootPasswordBody type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &ServerlessServiceChangeRootPasswordBody{}
 
-// ServerlessServiceChangeRootPasswordBody Message for requesting to change the root password of a TiDB Serverless cluster.
+// ServerlessServiceChangeRootPasswordBody Message for requesting to change the root password of a TiDB Cloud Serverless cluster.
 type ServerlessServiceChangeRootPasswordBody struct {
 	// Required. The new root password for the cluster.
 	Password             string `json:"password"`

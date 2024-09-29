@@ -24,7 +24,7 @@
   "paths": {
     "/clusters": {
       "get": {
-        "summary": "Provides a list of TiDB Serverless clusters in a project.",
+        "summary": "Provides a list of TiDB Cloud Serverless clusters in a project.",
         "operationId": "ServerlessService_ListClusters",
         "responses": {
           "200": {
@@ -121,7 +121,7 @@
     },
     "/clusters/{clusterId}": {
       "get": {
-        "summary": "Retrieves details of a specific TiDB Serverless cluster.",
+        "summary": "Retrieves details of a specific TiDB Cloud Serverless cluster.",
         "operationId": "ServerlessService_GetCluster",
         "responses": {
           "200": {
@@ -162,7 +162,7 @@
         ]
       },
       "delete": {
-        "summary": "Deletes a specific TiDB Serverless cluster.",
+        "summary": "Deletes a specific TiDB Cloud Serverless cluster.",
         "operationId": "ServerlessService_DeleteCluster",
         "responses": {
           "200": {
@@ -194,7 +194,7 @@
     },
     "/clusters/{cluster.clusterId}": {
       "patch": {
-        "summary": "Partially updates a specific TiDB Serverless cluster.",
+        "summary": "Partially updates a specific TiDB Cloud Serverless cluster.",
         "operationId": "ServerlessService_PartialUpdateCluster",
         "responses": {
           "200": {
@@ -234,7 +234,7 @@
     },
     "/clusters/{clusterId}/password": {
       "put": {
-        "summary": "Changes the root password of a specific TiDB Serverless cluster.",
+        "summary": "Changes the root password of a specific TiDB Cloud Serverless cluster.",
         "operationId": "ServerlessService_ChangeRootPassword",
         "responses": {
           "200": {
@@ -274,7 +274,7 @@
     },
     "/regions": {
       "get": {
-        "summary": "Provides a list of available regions for TiDB Serverless clusters.",
+        "summary": "Provides a list of available regions for TiDB Cloud Serverless clusters.",
         "operationId": "ServerlessService_ListRegions",
         "responses": {
           "200": {
@@ -290,6 +290,87 @@
             }
           }
         },
+        "tags": [
+          "ServerlessService"
+        ]
+      }
+    },
+    "/clusters:batchCreate": {
+      "post": {
+        "summary": "Creates new TiDB Cloud Serverless clusters in batch.\nThe operation is atomic: it fails for all clusters or succeeds for all clusters (no partial success).",
+        "operationId": "ServerlessService_BatchCreateClusters",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1BatchCreateClustersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Message for requesting to create a batch of TiDB Cloud Serverless clusters.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1beta1BatchCreateClustersRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ServerlessService"
+        ]
+      }
+    },
+    "/clusters:batchGet": {
+      "get": {
+        "summary": "Retrieves details of TiDB Cloud Serverless clusters in batch.\nThe operation is atomic: it fails for all clusters or succeeds for all clusters (no partial success).\nFor situations requiring partial failures, ListClusters method should be used.",
+        "operationId": "ServerlessService_BatchGetClusters",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1BatchGetClustersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterIds",
+            "description": "A maximum of 1000 clusters can be get in a batch.",
+            "in": "query",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "view",
+            "description": "Optional. The level of detail to return for the cluster.\n\n - BASIC: Only basic information about the cluster is returned.\n - FULL: All details about the cluster are returned.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "BASIC",
+              "FULL"
+            ]
+          }
+        ],
         "tags": [
           "ServerlessService"
         ]
@@ -400,7 +481,7 @@
           "description": "Required. The new root password for the cluster."
         }
       },
-      "description": "Message for requesting to change the root password of a TiDB Serverless cluster.",
+      "description": "Message for requesting to change the root password of a TiDB Cloud Serverless cluster.",
       "required": [
         "password"
       ]
@@ -501,7 +582,7 @@
         "BASIC",
         "FULL"
       ],
-      "description": "Enum for the different types of detail view to be returned for a TiDB Serverless cluster.\n\n - BASIC: Only basic information about the cluster is returned.\n - FULL: All details about the cluster are returned."
+      "description": "Enum for the different types of detail view to be returned for a TiDB Cloud Serverless cluster.\n\n - BASIC: Only basic information about the cluster is returned.\n - FULL: All details about the cluster are returned."
     },
     "tidb_cloud_open_apiserverlessv1beta1Cluster": {
       "type": "object",
@@ -536,6 +617,37 @@
             }
           ]
         },
+        "automatedBackupPolicy": {
+          "description": "Optional. Automated backup policy to set on the cluster.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ClusterAutomatedBackupPolicy"
+            }
+          ]
+        },
+        "endpoints": {
+          "description": "Optional. The endpoints for connecting to the cluster.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ClusterEndpoints"
+            }
+          ]
+        },
+        "rootPassword": {
+          "type": "string",
+          "example": "my-shining-password",
+          "maxLength": 64,
+          "minLength": 8,
+          "pattern": "^.{8,64}$"
+        },
+        "encryptionConfig": {
+          "description": "Optional. Encryption settings for the cluster.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ClusterEncryptionConfig"
+            }
+          ]
+        },
         "version": {
           "type": "string",
           "description": "Output_only. The TiDB version of the cluster.",
@@ -546,26 +658,10 @@
           "description": "Output_only. The email of the creator of the cluster.",
           "readOnly": true
         },
-        "automatedBackupPolicy": {
-          "description": "Optional. Automated backup policy to set on the cluster.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/v1beta1ClusterAutomatedBackupPolicy"
-            }
-          ]
-        },
         "userPrefix": {
           "type": "string",
           "description": "Output_only. The unique prefix in SQL user name.",
           "readOnly": true
-        },
-        "endpoints": {
-          "description": "Optional. The endpoints for connecting to the cluster.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/v1beta1ClusterEndpoints"
-            }
-          ]
         },
         "state": {
           "description": "Output_only. The current state of the cluster.",
@@ -582,14 +678,6 @@
           "allOf": [
             {
               "$ref": "#/definitions/v1beta1ClusterUsage"
-            }
-          ]
-        },
-        "encryptionConfig": {
-          "description": "Optional. Encryption settings for the cluster.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/v1beta1ClusterEncryptionConfig"
             }
           ]
         },
@@ -627,6 +715,23 @@
         "region"
       ]
     },
+    "tidb_cloud_open_apiserverlessv1beta1CreateClusterRequest": {
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "description": "Required. The cluster to be created.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
+            }
+          ]
+        }
+      },
+      "description": "Message for requesting to create a TiDB Cloud Serverless cluster.",
+      "required": [
+        "cluster"
+      ]
+    },
     "tidb_cloud_open_apiserverlessv1beta1ListClustersResponse": {
       "type": "object",
       "properties": {
@@ -648,7 +753,7 @@
           "description": "Total number of available clusters."
         }
       },
-      "description": "Responses message to the request for listing of TiDB Serverless clusters."
+      "description": "Responses message to the request for listing of TiDB Cloud Serverless clusters."
     },
     "tidb_cloud_open_apiserverlessv1beta1ListRegionsResponse": {
       "type": "object",
@@ -662,11 +767,56 @@
           "description": "A list of available regions."
         }
       },
-      "description": "Responses message to the request for listing of available regions in TiDB Serverless."
+      "description": "Responses message to the request for listing of available regions in TiDB Cloud Serverless."
+    },
+    "v1beta1BatchCreateClustersRequest": {
+      "type": "object",
+      "properties": {
+        "requests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1CreateClusterRequest"
+          },
+          "description": "The request message specifying the resources to create.\nA maximum of 1000 clusters can be created in a batch."
+        }
+      },
+      "description": "Message for requesting to create a batch of TiDB Cloud Serverless clusters.",
+      "required": [
+        "requests"
+      ]
+    },
+    "v1beta1BatchCreateClustersResponse": {
+      "type": "object",
+      "properties": {
+        "clusters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
+          },
+          "description": "Clusters created."
+        }
+      },
+      "description": "Responses message to the request for creating a batch of TiDB Cloud Serverless clusters."
+    },
+    "v1beta1BatchGetClustersResponse": {
+      "type": "object",
+      "properties": {
+        "clusters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
+          },
+          "description": "Clusters created."
+        }
+      },
+      "description": "Responses message to the request for retrieving a batch of TiDB Cloud Serverless clusters."
     },
     "v1beta1ChangeRootPasswordResponse": {
       "type": "object",
-      "description": "Responses message to the request for changing the root password of a TiDB Serverless cluster."
+      "description": "Responses message to the request for changing the root password of a TiDB Cloud Serverless cluster."
     },
     "v1beta1ClusterAutomatedBackupPolicy": {
       "type": "object",
@@ -846,7 +996,7 @@
           "description": "Required. The update mask indicating which fields are to be updated."
         }
       },
-      "description": "Message for requesting a partial update on a TiDB Serverless cluster.",
+      "description": "Message for requesting a partial update on a TiDB Cloud Serverless cluster.",
       "required": [
         "updateMask"
       ]

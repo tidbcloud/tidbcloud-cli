@@ -16,11 +16,267 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
 )
 
 // ServerlessServiceAPIService ServerlessServiceAPI service
 type ServerlessServiceAPIService service
+
+type ApiServerlessServiceBatchCreateClustersRequest struct {
+	ctx        context.Context
+	ApiService *ServerlessServiceAPIService
+	body       *V1beta1BatchCreateClustersRequest
+}
+
+// Message for requesting to create a batch of TiDB Cloud Serverless clusters.
+func (r ApiServerlessServiceBatchCreateClustersRequest) Body(body V1beta1BatchCreateClustersRequest) ApiServerlessServiceBatchCreateClustersRequest {
+	r.body = &body
+	return r
+}
+
+func (r ApiServerlessServiceBatchCreateClustersRequest) Execute() (*V1beta1BatchCreateClustersResponse, *http.Response, error) {
+	return r.ApiService.ServerlessServiceBatchCreateClustersExecute(r)
+}
+
+/*
+ServerlessServiceBatchCreateClusters Creates new TiDB Cloud Serverless clusters in batch. The operation is atomic: it fails for all clusters or succeeds for all clusters (no partial success).
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiServerlessServiceBatchCreateClustersRequest
+*/
+func (a *ServerlessServiceAPIService) ServerlessServiceBatchCreateClusters(ctx context.Context) ApiServerlessServiceBatchCreateClustersRequest {
+	return ApiServerlessServiceBatchCreateClustersRequest{
+		ApiService: a,
+		ctx:        ctx,
+	}
+}
+
+// Execute executes the request
+//
+//	@return V1beta1BatchCreateClustersResponse
+func (a *ServerlessServiceAPIService) ServerlessServiceBatchCreateClustersExecute(r ApiServerlessServiceBatchCreateClustersRequest) (*V1beta1BatchCreateClustersResponse, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1BatchCreateClustersResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ServerlessServiceAPIService.ServerlessServiceBatchCreateClusters")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/clusters:batchCreate"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.body == nil {
+		return localVarReturnValue, nil, reportError("body is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.body
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiServerlessServiceBatchGetClustersRequest struct {
+	ctx        context.Context
+	ApiService *ServerlessServiceAPIService
+	clusterIds *[]string
+	view       *ServerlessServiceGetClusterViewParameter
+}
+
+// A maximum of 1000 clusters can be get in a batch.
+func (r ApiServerlessServiceBatchGetClustersRequest) ClusterIds(clusterIds []string) ApiServerlessServiceBatchGetClustersRequest {
+	r.clusterIds = &clusterIds
+	return r
+}
+
+// Optional. The level of detail to return for the cluster.   - BASIC: Only basic information about the cluster is returned.  - FULL: All details about the cluster are returned.
+func (r ApiServerlessServiceBatchGetClustersRequest) View(view ServerlessServiceGetClusterViewParameter) ApiServerlessServiceBatchGetClustersRequest {
+	r.view = &view
+	return r
+}
+
+func (r ApiServerlessServiceBatchGetClustersRequest) Execute() (*V1beta1BatchGetClustersResponse, *http.Response, error) {
+	return r.ApiService.ServerlessServiceBatchGetClustersExecute(r)
+}
+
+/*
+ServerlessServiceBatchGetClusters Retrieves details of TiDB Cloud Serverless clusters in batch. The operation is atomic: it fails for all clusters or succeeds for all clusters (no partial success). For situations requiring partial failures, ListClusters method should be used.
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiServerlessServiceBatchGetClustersRequest
+*/
+func (a *ServerlessServiceAPIService) ServerlessServiceBatchGetClusters(ctx context.Context) ApiServerlessServiceBatchGetClustersRequest {
+	return ApiServerlessServiceBatchGetClustersRequest{
+		ApiService: a,
+		ctx:        ctx,
+	}
+}
+
+// Execute executes the request
+//
+//	@return V1beta1BatchGetClustersResponse
+func (a *ServerlessServiceAPIService) ServerlessServiceBatchGetClustersExecute(r ApiServerlessServiceBatchGetClustersRequest) (*V1beta1BatchGetClustersResponse, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1BatchGetClustersResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ServerlessServiceAPIService.ServerlessServiceBatchGetClusters")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/clusters:batchGet"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.clusterIds == nil {
+		return localVarReturnValue, nil, reportError("clusterIds is required and must be specified")
+	}
+
+	{
+		t := *r.clusterIds
+		if reflect.TypeOf(t).Kind() == reflect.Slice {
+			s := reflect.ValueOf(t)
+			for i := 0; i < s.Len(); i++ {
+				parameterAddToHeaderOrQuery(localVarQueryParams, "clusterIds", s.Index(i).Interface(), "form", "multi")
+			}
+		} else {
+			parameterAddToHeaderOrQuery(localVarQueryParams, "clusterIds", t, "form", "multi")
+		}
+	}
+	if r.view != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "view", r.view, "", "")
+	}
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
 
 type ApiServerlessServiceChangeRootPasswordRequest struct {
 	ctx        context.Context
@@ -39,7 +295,7 @@ func (r ApiServerlessServiceChangeRootPasswordRequest) Execute() (map[string]int
 }
 
 /*
-ServerlessServiceChangeRootPassword Changes the root password of a specific TiDB Serverless cluster.
+ServerlessServiceChangeRootPassword Changes the root password of a specific TiDB Cloud Serverless cluster.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId Required. The ID of the cluster for which the password is to be changed.
@@ -272,7 +528,7 @@ func (r ApiServerlessServiceDeleteClusterRequest) Execute() (*TidbCloudOpenApise
 }
 
 /*
-ServerlessServiceDeleteCluster Deletes a specific TiDB Serverless cluster.
+ServerlessServiceDeleteCluster Deletes a specific TiDB Cloud Serverless cluster.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId Required. The ID of the cluster to be deleted.
@@ -389,7 +645,7 @@ func (r ApiServerlessServiceGetClusterRequest) Execute() (*TidbCloudOpenApiserve
 }
 
 /*
-ServerlessServiceGetCluster Retrieves details of a specific TiDB Serverless cluster.
+ServerlessServiceGetCluster Retrieves details of a specific TiDB Cloud Serverless cluster.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId Required. The ID of the cluster to be retrieved.
@@ -536,7 +792,7 @@ func (r ApiServerlessServiceListClustersRequest) Execute() (*TidbCloudOpenApiser
 }
 
 /*
-ServerlessServiceListClusters Provides a list of TiDB Serverless clusters in a project.
+ServerlessServiceListClusters Provides a list of TiDB Cloud Serverless clusters in a project.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@return ApiServerlessServiceListClustersRequest
@@ -657,7 +913,7 @@ func (r ApiServerlessServiceListRegionsRequest) Execute() (*TidbCloudOpenApiserv
 }
 
 /*
-ServerlessServiceListRegions Provides a list of available regions for TiDB Serverless clusters.
+ServerlessServiceListRegions Provides a list of available regions for TiDB Cloud Serverless clusters.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@return ApiServerlessServiceListRegionsRequest
@@ -770,7 +1026,7 @@ func (r ApiServerlessServicePartialUpdateClusterRequest) Execute() (*TidbCloudOp
 }
 
 /*
-ServerlessServicePartialUpdateCluster Partially updates a specific TiDB Serverless cluster.
+ServerlessServicePartialUpdateCluster Partially updates a specific TiDB Cloud Serverless cluster.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterClusterId Output_only. The unique ID of the cluster.
