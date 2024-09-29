@@ -17,7 +17,7 @@ import (
 // checks if the TidbCloudOpenApiserverlessv1beta1ListRegionsResponse type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &TidbCloudOpenApiserverlessv1beta1ListRegionsResponse{}
 
-// TidbCloudOpenApiserverlessv1beta1ListRegionsResponse Responses message to the request for listing of available regions in TiDB Serverless.
+// TidbCloudOpenApiserverlessv1beta1ListRegionsResponse Responses message to the request for listing of available regions in TiDB Cloud Serverless.
 type TidbCloudOpenApiserverlessv1beta1ListRegionsResponse struct {
 	// A list of available regions.
 	Regions              []Commonv1beta1Region `json:"regions,omitempty"`

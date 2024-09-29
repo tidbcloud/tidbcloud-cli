@@ -78,13 +78,15 @@ All URIs are relative to *https://serverless.tidbapi.com/v1beta1*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*ServerlessServiceAPI* | [**ServerlessServiceChangeRootPassword**](docs/ServerlessServiceAPI.md#serverlessservicechangerootpassword) | **Put** /clusters/{clusterId}/password | Changes the root password of a specific TiDB Serverless cluster.
+*ServerlessServiceAPI* | [**ServerlessServiceBatchCreateClusters**](docs/ServerlessServiceAPI.md#serverlessservicebatchcreateclusters) | **Post** /clusters:batchCreate | Creates new TiDB Cloud Serverless clusters in batch. The operation is atomic: it fails for all clusters or succeeds for all clusters (no partial success).
+*ServerlessServiceAPI* | [**ServerlessServiceBatchGetClusters**](docs/ServerlessServiceAPI.md#serverlessservicebatchgetclusters) | **Get** /clusters:batchGet | Retrieves details of TiDB Cloud Serverless clusters in batch. The operation is atomic: it fails for all clusters or succeeds for all clusters (no partial success). For situations requiring partial failures, ListClusters method should be used.
+*ServerlessServiceAPI* | [**ServerlessServiceChangeRootPassword**](docs/ServerlessServiceAPI.md#serverlessservicechangerootpassword) | **Put** /clusters/{clusterId}/password | Changes the root password of a specific TiDB Cloud Serverless cluster.
 *ServerlessServiceAPI* | [**ServerlessServiceCreateCluster**](docs/ServerlessServiceAPI.md#serverlessservicecreatecluster) | **Post** /clusters | Creates a new TiDB Serverless cluster.
-*ServerlessServiceAPI* | [**ServerlessServiceDeleteCluster**](docs/ServerlessServiceAPI.md#serverlessservicedeletecluster) | **Delete** /clusters/{clusterId} | Deletes a specific TiDB Serverless cluster.
-*ServerlessServiceAPI* | [**ServerlessServiceGetCluster**](docs/ServerlessServiceAPI.md#serverlessservicegetcluster) | **Get** /clusters/{clusterId} | Retrieves details of a specific TiDB Serverless cluster.
-*ServerlessServiceAPI* | [**ServerlessServiceListClusters**](docs/ServerlessServiceAPI.md#serverlessservicelistclusters) | **Get** /clusters | Provides a list of TiDB Serverless clusters in a project.
-*ServerlessServiceAPI* | [**ServerlessServiceListRegions**](docs/ServerlessServiceAPI.md#serverlessservicelistregions) | **Get** /regions | Provides a list of available regions for TiDB Serverless clusters.
-*ServerlessServiceAPI* | [**ServerlessServicePartialUpdateCluster**](docs/ServerlessServiceAPI.md#serverlessservicepartialupdatecluster) | **Patch** /clusters/{cluster.clusterId} | Partially updates a specific TiDB Serverless cluster.
+*ServerlessServiceAPI* | [**ServerlessServiceDeleteCluster**](docs/ServerlessServiceAPI.md#serverlessservicedeletecluster) | **Delete** /clusters/{clusterId} | Deletes a specific TiDB Cloud Serverless cluster.
+*ServerlessServiceAPI* | [**ServerlessServiceGetCluster**](docs/ServerlessServiceAPI.md#serverlessservicegetcluster) | **Get** /clusters/{clusterId} | Retrieves details of a specific TiDB Cloud Serverless cluster.
+*ServerlessServiceAPI* | [**ServerlessServiceListClusters**](docs/ServerlessServiceAPI.md#serverlessservicelistclusters) | **Get** /clusters | Provides a list of TiDB Cloud Serverless clusters in a project.
+*ServerlessServiceAPI* | [**ServerlessServiceListRegions**](docs/ServerlessServiceAPI.md#serverlessservicelistregions) | **Get** /regions | Provides a list of available regions for TiDB Cloud Serverless clusters.
+*ServerlessServiceAPI* | [**ServerlessServicePartialUpdateCluster**](docs/ServerlessServiceAPI.md#serverlessservicepartialupdatecluster) | **Patch** /clusters/{cluster.clusterId} | Partially updates a specific TiDB Cloud Serverless cluster.
 
 
 ## Documentation For Models
@@ -103,8 +105,12 @@ Class | Method | HTTP request | Description
  - [ServerlessServiceGetClusterViewParameter](docs/ServerlessServiceGetClusterViewParameter.md)
  - [Serverlessv1beta1ClusterView](docs/Serverlessv1beta1ClusterView.md)
  - [TidbCloudOpenApiserverlessv1beta1Cluster](docs/TidbCloudOpenApiserverlessv1beta1Cluster.md)
+ - [TidbCloudOpenApiserverlessv1beta1CreateClusterRequest](docs/TidbCloudOpenApiserverlessv1beta1CreateClusterRequest.md)
  - [TidbCloudOpenApiserverlessv1beta1ListClustersResponse](docs/TidbCloudOpenApiserverlessv1beta1ListClustersResponse.md)
  - [TidbCloudOpenApiserverlessv1beta1ListRegionsResponse](docs/TidbCloudOpenApiserverlessv1beta1ListRegionsResponse.md)
+ - [V1beta1BatchCreateClustersRequest](docs/V1beta1BatchCreateClustersRequest.md)
+ - [V1beta1BatchCreateClustersResponse](docs/V1beta1BatchCreateClustersResponse.md)
+ - [V1beta1BatchGetClustersResponse](docs/V1beta1BatchGetClustersResponse.md)
  - [V1beta1ClusterAutomatedBackupPolicy](docs/V1beta1ClusterAutomatedBackupPolicy.md)
  - [V1beta1ClusterEncryptionConfig](docs/V1beta1ClusterEncryptionConfig.md)
  - [V1beta1ClusterEndpoints](docs/V1beta1ClusterEndpoints.md)

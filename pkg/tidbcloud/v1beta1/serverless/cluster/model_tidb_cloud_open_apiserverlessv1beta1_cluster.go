@@ -31,22 +31,23 @@ type TidbCloudOpenApiserverlessv1beta1Cluster struct {
 	Region Commonv1beta1Region `json:"region"`
 	// Optional. The spending limit for the cluster.
 	SpendingLimit *ClusterSpendingLimit `json:"spendingLimit,omitempty"`
+	// Optional. Automated backup policy to set on the cluster.
+	AutomatedBackupPolicy *V1beta1ClusterAutomatedBackupPolicy `json:"automatedBackupPolicy,omitempty"`
+	// Optional. The endpoints for connecting to the cluster.
+	Endpoints    *V1beta1ClusterEndpoints `json:"endpoints,omitempty"`
+	RootPassword *string                  `json:"rootPassword,omitempty" validate:"regexp=^.{8,64}$"`
+	// Optional. Encryption settings for the cluster.
+	EncryptionConfig *V1beta1ClusterEncryptionConfig `json:"encryptionConfig,omitempty"`
 	// Output_only. The TiDB version of the cluster.
 	Version *string `json:"version,omitempty"`
 	// Output_only. The email of the creator of the cluster.
 	CreatedBy *string `json:"createdBy,omitempty"`
-	// Optional. Automated backup policy to set on the cluster.
-	AutomatedBackupPolicy *V1beta1ClusterAutomatedBackupPolicy `json:"automatedBackupPolicy,omitempty"`
 	// Output_only. The unique prefix in SQL user name.
 	UserPrefix *string `json:"userPrefix,omitempty"`
-	// Optional. The endpoints for connecting to the cluster.
-	Endpoints *V1beta1ClusterEndpoints `json:"endpoints,omitempty"`
 	// Output_only. The current state of the cluster.
 	State *Commonv1beta1ClusterState `json:"state,omitempty"`
 	// Output_only. Usage details of the cluster.
 	Usage *V1beta1ClusterUsage `json:"usage,omitempty"`
-	// Optional. Encryption settings for the cluster.
-	EncryptionConfig *V1beta1ClusterEncryptionConfig `json:"encryptionConfig,omitempty"`
 	// Optional. The labels for the cluster. tidb.cloud/organization. The label for the cluster organization id. tidb.cloud/project. The label for the cluster project id.
 	Labels *map[string]string `json:"labels,omitempty"`
 	// OUTPUT_ONLY. The annotations for the cluster. tidb.cloud/has-set-password. The annotation for whether the cluster has set password. tidb.cloud/available-features. The annotation for the available features of the cluster.
@@ -223,6 +224,134 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetSpendingLimit(v ClusterSpe
 	o.SpendingLimit = &v
 }
 
+// GetAutomatedBackupPolicy returns the AutomatedBackupPolicy field value if set, zero value otherwise.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetAutomatedBackupPolicy() V1beta1ClusterAutomatedBackupPolicy {
+	if o == nil || IsNil(o.AutomatedBackupPolicy) {
+		var ret V1beta1ClusterAutomatedBackupPolicy
+		return ret
+	}
+	return *o.AutomatedBackupPolicy
+}
+
+// GetAutomatedBackupPolicyOk returns a tuple with the AutomatedBackupPolicy field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetAutomatedBackupPolicyOk() (*V1beta1ClusterAutomatedBackupPolicy, bool) {
+	if o == nil || IsNil(o.AutomatedBackupPolicy) {
+		return nil, false
+	}
+	return o.AutomatedBackupPolicy, true
+}
+
+// HasAutomatedBackupPolicy returns a boolean if a field has been set.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasAutomatedBackupPolicy() bool {
+	if o != nil && !IsNil(o.AutomatedBackupPolicy) {
+		return true
+	}
+
+	return false
+}
+
+// SetAutomatedBackupPolicy gets a reference to the given V1beta1ClusterAutomatedBackupPolicy and assigns it to the AutomatedBackupPolicy field.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetAutomatedBackupPolicy(v V1beta1ClusterAutomatedBackupPolicy) {
+	o.AutomatedBackupPolicy = &v
+}
+
+// GetEndpoints returns the Endpoints field value if set, zero value otherwise.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetEndpoints() V1beta1ClusterEndpoints {
+	if o == nil || IsNil(o.Endpoints) {
+		var ret V1beta1ClusterEndpoints
+		return ret
+	}
+	return *o.Endpoints
+}
+
+// GetEndpointsOk returns a tuple with the Endpoints field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetEndpointsOk() (*V1beta1ClusterEndpoints, bool) {
+	if o == nil || IsNil(o.Endpoints) {
+		return nil, false
+	}
+	return o.Endpoints, true
+}
+
+// HasEndpoints returns a boolean if a field has been set.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasEndpoints() bool {
+	if o != nil && !IsNil(o.Endpoints) {
+		return true
+	}
+
+	return false
+}
+
+// SetEndpoints gets a reference to the given V1beta1ClusterEndpoints and assigns it to the Endpoints field.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetEndpoints(v V1beta1ClusterEndpoints) {
+	o.Endpoints = &v
+}
+
+// GetRootPassword returns the RootPassword field value if set, zero value otherwise.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetRootPassword() string {
+	if o == nil || IsNil(o.RootPassword) {
+		var ret string
+		return ret
+	}
+	return *o.RootPassword
+}
+
+// GetRootPasswordOk returns a tuple with the RootPassword field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetRootPasswordOk() (*string, bool) {
+	if o == nil || IsNil(o.RootPassword) {
+		return nil, false
+	}
+	return o.RootPassword, true
+}
+
+// HasRootPassword returns a boolean if a field has been set.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasRootPassword() bool {
+	if o != nil && !IsNil(o.RootPassword) {
+		return true
+	}
+
+	return false
+}
+
+// SetRootPassword gets a reference to the given string and assigns it to the RootPassword field.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetRootPassword(v string) {
+	o.RootPassword = &v
+}
+
+// GetEncryptionConfig returns the EncryptionConfig field value if set, zero value otherwise.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetEncryptionConfig() V1beta1ClusterEncryptionConfig {
+	if o == nil || IsNil(o.EncryptionConfig) {
+		var ret V1beta1ClusterEncryptionConfig
+		return ret
+	}
+	return *o.EncryptionConfig
+}
+
+// GetEncryptionConfigOk returns a tuple with the EncryptionConfig field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetEncryptionConfigOk() (*V1beta1ClusterEncryptionConfig, bool) {
+	if o == nil || IsNil(o.EncryptionConfig) {
+		return nil, false
+	}
+	return o.EncryptionConfig, true
+}
+
+// HasEncryptionConfig returns a boolean if a field has been set.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasEncryptionConfig() bool {
+	if o != nil && !IsNil(o.EncryptionConfig) {
+		return true
+	}
+
+	return false
+}
+
+// SetEncryptionConfig gets a reference to the given V1beta1ClusterEncryptionConfig and assigns it to the EncryptionConfig field.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetEncryptionConfig(v V1beta1ClusterEncryptionConfig) {
+	o.EncryptionConfig = &v
+}
+
 // GetVersion returns the Version field value if set, zero value otherwise.
 func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetVersion() string {
 	if o == nil || IsNil(o.Version) {
@@ -287,38 +416,6 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetCreatedBy(v string) {
 	o.CreatedBy = &v
 }
 
-// GetAutomatedBackupPolicy returns the AutomatedBackupPolicy field value if set, zero value otherwise.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetAutomatedBackupPolicy() V1beta1ClusterAutomatedBackupPolicy {
-	if o == nil || IsNil(o.AutomatedBackupPolicy) {
-		var ret V1beta1ClusterAutomatedBackupPolicy
-		return ret
-	}
-	return *o.AutomatedBackupPolicy
-}
-
-// GetAutomatedBackupPolicyOk returns a tuple with the AutomatedBackupPolicy field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetAutomatedBackupPolicyOk() (*V1beta1ClusterAutomatedBackupPolicy, bool) {
-	if o == nil || IsNil(o.AutomatedBackupPolicy) {
-		return nil, false
-	}
-	return o.AutomatedBackupPolicy, true
-}
-
-// HasAutomatedBackupPolicy returns a boolean if a field has been set.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasAutomatedBackupPolicy() bool {
-	if o != nil && !IsNil(o.AutomatedBackupPolicy) {
-		return true
-	}
-
-	return false
-}
-
-// SetAutomatedBackupPolicy gets a reference to the given V1beta1ClusterAutomatedBackupPolicy and assigns it to the AutomatedBackupPolicy field.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetAutomatedBackupPolicy(v V1beta1ClusterAutomatedBackupPolicy) {
-	o.AutomatedBackupPolicy = &v
-}
-
 // GetUserPrefix returns the UserPrefix field value if set, zero value otherwise.
 func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetUserPrefix() string {
 	if o == nil || IsNil(o.UserPrefix) {
@@ -349,38 +446,6 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasUserPrefix() bool {
 // SetUserPrefix gets a reference to the given string and assigns it to the UserPrefix field.
 func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetUserPrefix(v string) {
 	o.UserPrefix = &v
-}
-
-// GetEndpoints returns the Endpoints field value if set, zero value otherwise.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetEndpoints() V1beta1ClusterEndpoints {
-	if o == nil || IsNil(o.Endpoints) {
-		var ret V1beta1ClusterEndpoints
-		return ret
-	}
-	return *o.Endpoints
-}
-
-// GetEndpointsOk returns a tuple with the Endpoints field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetEndpointsOk() (*V1beta1ClusterEndpoints, bool) {
-	if o == nil || IsNil(o.Endpoints) {
-		return nil, false
-	}
-	return o.Endpoints, true
-}
-
-// HasEndpoints returns a boolean if a field has been set.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasEndpoints() bool {
-	if o != nil && !IsNil(o.Endpoints) {
-		return true
-	}
-
-	return false
-}
-
-// SetEndpoints gets a reference to the given V1beta1ClusterEndpoints and assigns it to the Endpoints field.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetEndpoints(v V1beta1ClusterEndpoints) {
-	o.Endpoints = &v
 }
 
 // GetState returns the State field value if set, zero value otherwise.
@@ -445,38 +510,6 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasUsage() bool {
 // SetUsage gets a reference to the given V1beta1ClusterUsage and assigns it to the Usage field.
 func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetUsage(v V1beta1ClusterUsage) {
 	o.Usage = &v
-}
-
-// GetEncryptionConfig returns the EncryptionConfig field value if set, zero value otherwise.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetEncryptionConfig() V1beta1ClusterEncryptionConfig {
-	if o == nil || IsNil(o.EncryptionConfig) {
-		var ret V1beta1ClusterEncryptionConfig
-		return ret
-	}
-	return *o.EncryptionConfig
-}
-
-// GetEncryptionConfigOk returns a tuple with the EncryptionConfig field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetEncryptionConfigOk() (*V1beta1ClusterEncryptionConfig, bool) {
-	if o == nil || IsNil(o.EncryptionConfig) {
-		return nil, false
-	}
-	return o.EncryptionConfig, true
-}
-
-// HasEncryptionConfig returns a boolean if a field has been set.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasEncryptionConfig() bool {
-	if o != nil && !IsNil(o.EncryptionConfig) {
-		return true
-	}
-
-	return false
-}
-
-// SetEncryptionConfig gets a reference to the given V1beta1ClusterEncryptionConfig and assigns it to the EncryptionConfig field.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetEncryptionConfig(v V1beta1ClusterEncryptionConfig) {
-	o.EncryptionConfig = &v
 }
 
 // GetLabels returns the Labels field value if set, zero value otherwise.
@@ -628,29 +661,32 @@ func (o TidbCloudOpenApiserverlessv1beta1Cluster) ToMap() (map[string]interface{
 	if !IsNil(o.SpendingLimit) {
 		toSerialize["spendingLimit"] = o.SpendingLimit
 	}
+	if !IsNil(o.AutomatedBackupPolicy) {
+		toSerialize["automatedBackupPolicy"] = o.AutomatedBackupPolicy
+	}
+	if !IsNil(o.Endpoints) {
+		toSerialize["endpoints"] = o.Endpoints
+	}
+	if !IsNil(o.RootPassword) {
+		toSerialize["rootPassword"] = o.RootPassword
+	}
+	if !IsNil(o.EncryptionConfig) {
+		toSerialize["encryptionConfig"] = o.EncryptionConfig
+	}
 	if !IsNil(o.Version) {
 		toSerialize["version"] = o.Version
 	}
 	if !IsNil(o.CreatedBy) {
 		toSerialize["createdBy"] = o.CreatedBy
 	}
-	if !IsNil(o.AutomatedBackupPolicy) {
-		toSerialize["automatedBackupPolicy"] = o.AutomatedBackupPolicy
-	}
 	if !IsNil(o.UserPrefix) {
 		toSerialize["userPrefix"] = o.UserPrefix
-	}
-	if !IsNil(o.Endpoints) {
-		toSerialize["endpoints"] = o.Endpoints
 	}
 	if !IsNil(o.State) {
 		toSerialize["state"] = o.State
 	}
 	if !IsNil(o.Usage) {
 		toSerialize["usage"] = o.Usage
-	}
-	if !IsNil(o.EncryptionConfig) {
-		toSerialize["encryptionConfig"] = o.EncryptionConfig
 	}
 	if !IsNil(o.Labels) {
 		toSerialize["labels"] = o.Labels
@@ -713,14 +749,15 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) UnmarshalJSON(data []byte) (e
 		delete(additionalProperties, "displayName")
 		delete(additionalProperties, "region")
 		delete(additionalProperties, "spendingLimit")
+		delete(additionalProperties, "automatedBackupPolicy")
+		delete(additionalProperties, "endpoints")
+		delete(additionalProperties, "rootPassword")
+		delete(additionalProperties, "encryptionConfig")
 		delete(additionalProperties, "version")
 		delete(additionalProperties, "createdBy")
-		delete(additionalProperties, "automatedBackupPolicy")
 		delete(additionalProperties, "userPrefix")
-		delete(additionalProperties, "endpoints")
 		delete(additionalProperties, "state")
 		delete(additionalProperties, "usage")
-		delete(additionalProperties, "encryptionConfig")
 		delete(additionalProperties, "labels")
 		delete(additionalProperties, "annotations")
 		delete(additionalProperties, "createTime")

@@ -55,7 +55,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Provides a list of TiDB Serverless clusters in a project.
+      summary: Provides a list of TiDB Cloud Serverless clusters in a project.
       tags:
       - ServerlessService
     post:
@@ -107,7 +107,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Deletes a specific TiDB Serverless cluster.
+      summary: Deletes a specific TiDB Cloud Serverless cluster.
       tags:
       - ServerlessService
     get:
@@ -141,7 +141,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Retrieves details of a specific TiDB Serverless cluster.
+      summary: Retrieves details of a specific TiDB Cloud Serverless cluster.
       tags:
       - ServerlessService
   /clusters/{cluster.clusterId}:
@@ -173,7 +173,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Partially updates a specific TiDB Serverless cluster.
+      summary: Partially updates a specific TiDB Cloud Serverless cluster.
       tags:
       - ServerlessService
       x-codegen-request-body-name: body
@@ -207,7 +207,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Changes the root password of a specific TiDB Serverless cluster.
+      summary: Changes the root password of a specific TiDB Cloud Serverless cluster.
       tags:
       - ServerlessService
       x-codegen-request-body-name: body
@@ -227,7 +227,79 @@ paths:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Provides a list of available regions for TiDB Serverless clusters.
+      summary: Provides a list of available regions for TiDB Cloud Serverless clusters.
+      tags:
+      - ServerlessService
+  /clusters:batchCreate:
+    post:
+      operationId: ServerlessService_BatchCreateClusters
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1beta1BatchCreateClustersRequest'
+        description: Message for requesting to create a batch of TiDB Cloud Serverless
+          clusters.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1BatchCreateClustersResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: |-
+        Creates new TiDB Cloud Serverless clusters in batch.
+        The operation is atomic: it fails for all clusters or succeeds for all clusters (no partial success).
+      tags:
+      - ServerlessService
+      x-codegen-request-body-name: body
+  /clusters:batchGet:
+    get:
+      operationId: ServerlessService_BatchGetClusters
+      parameters:
+      - description: A maximum of 1000 clusters can be get in a batch.
+        explode: true
+        in: query
+        name: clusterIds
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: |-
+          Optional. The level of detail to return for the cluster.
+
+           - BASIC: Only basic information about the cluster is returned.
+           - FULL: All details about the cluster are returned.
+        in: query
+        name: view
+        schema:
+          $ref: '#/components/schemas/ServerlessService_GetCluster_view_parameter'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1BatchGetClustersResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: |-
+        Retrieves details of TiDB Cloud Serverless clusters in batch.
+        The operation is atomic: it fails for all clusters or succeeds for all clusters (no partial success).
+        For situations requiring partial failures, ListClusters method should be used.
       tags:
       - ServerlessService
 components:
@@ -302,8 +374,8 @@ components:
           type: string
       type: object
     ServerlessServiceChangeRootPasswordBody:
-      description: Message for requesting to change the root password of a TiDB Serverless
-        cluster.
+      description: Message for requesting to change the root password of a TiDB Cloud
+        Serverless cluster.
       example:
         password: password
       properties:
@@ -554,7 +626,7 @@ components:
       type: object
     serverlessv1beta1ClusterView:
       description: |-
-        Enum for the different types of detail view to be returned for a TiDB Serverless cluster.
+        Enum for the different types of detail view to be returned for a TiDB Cloud Serverless cluster.
 
          - BASIC: Only basic information about the cluster is returned.
          - FULL: All details about the cluster are returned.
@@ -584,6 +656,7 @@ components:
         userPrefix: userPrefix
         state: "{}"
         region: "{}"
+        rootPassword: my-shining-password
       properties:
         name:
           description: Output_only. The unique name of the cluster.
@@ -606,6 +679,27 @@ components:
           - $ref: '#/components/schemas/ClusterSpendingLimit'
           description: Optional. The spending limit for the cluster.
           type: object
+        automatedBackupPolicy:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterAutomatedBackupPolicy'
+          description: Optional. Automated backup policy to set on the cluster.
+          type: object
+        endpoints:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterEndpoints'
+          description: Optional. The endpoints for connecting to the cluster.
+          type: object
+        rootPassword:
+          example: my-shining-password
+          maxLength: 64
+          minLength: 8
+          pattern: "^.{8,64}$"
+          type: string
+        encryptionConfig:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterEncryptionConfig'
+          description: Optional. Encryption settings for the cluster.
+          type: object
         version:
           description: Output_only. The TiDB version of the cluster.
           readOnly: true
@@ -614,20 +708,10 @@ components:
           description: Output_only. The email of the creator of the cluster.
           readOnly: true
           type: string
-        automatedBackupPolicy:
-          allOf:
-          - $ref: '#/components/schemas/v1beta1ClusterAutomatedBackupPolicy'
-          description: Optional. Automated backup policy to set on the cluster.
-          type: object
         userPrefix:
           description: Output_only. The unique prefix in SQL user name.
           readOnly: true
           type: string
-        endpoints:
-          allOf:
-          - $ref: '#/components/schemas/v1beta1ClusterEndpoints'
-          description: Optional. The endpoints for connecting to the cluster.
-          type: object
         state:
           allOf:
           - $ref: '#/components/schemas/commonv1beta1ClusterState'
@@ -637,11 +721,6 @@ components:
           allOf:
           - $ref: '#/components/schemas/v1beta1ClusterUsage'
           description: Output_only. Usage details of the cluster.
-          type: object
-        encryptionConfig:
-          allOf:
-          - $ref: '#/components/schemas/v1beta1ClusterEncryptionConfig'
-          description: Optional. Encryption settings for the cluster.
           type: object
         labels:
           additionalProperties:
@@ -674,8 +753,19 @@ components:
       - displayName
       - region
       type: object
+    tidb_cloud_open_apiserverlessv1beta1CreateClusterRequest:
+      description: Message for requesting to create a TiDB Cloud Serverless cluster.
+      properties:
+        cluster:
+          allOf:
+          - $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1Cluster'
+          description: Required. The cluster to be created.
+          type: object
+      required:
+      - cluster
+      type: object
     tidb_cloud_open_apiserverlessv1beta1ListClustersResponse:
-      description: Responses message to the request for listing of TiDB Serverless
+      description: Responses message to the request for listing of TiDB Cloud Serverless
         clusters.
       example:
         totalSize: 0
@@ -700,6 +790,7 @@ components:
           userPrefix: userPrefix
           state: "{}"
           region: "{}"
+          rootPassword: my-shining-password
         - encryptionConfig: "{}"
           endpoints: "{}"
           automatedBackupPolicy: "{}"
@@ -719,6 +810,7 @@ components:
           userPrefix: userPrefix
           state: "{}"
           region: "{}"
+          rootPassword: my-shining-password
       properties:
         clusters:
           description: A list of clusters.
@@ -735,7 +827,7 @@ components:
       type: object
     tidb_cloud_open_apiserverlessv1beta1ListRegionsResponse:
       description: Responses message to the request for listing of available regions
-        in TiDB Serverless.
+        in TiDB Cloud Serverless.
       example:
         regions:
         - regionId: regionId
@@ -755,9 +847,127 @@ components:
             $ref: '#/components/schemas/commonv1beta1Region'
           type: array
       type: object
+    v1beta1BatchCreateClustersRequest:
+      description: Message for requesting to create a batch of TiDB Cloud Serverless
+        clusters.
+      properties:
+        requests:
+          description: |-
+            The request message specifying the resources to create.
+            A maximum of 1000 clusters can be created in a batch.
+          items:
+            $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1CreateClusterRequest'
+          type: array
+      required:
+      - requests
+      type: object
+    v1beta1BatchCreateClustersResponse:
+      description: Responses message to the request for creating a batch of TiDB Cloud
+        Serverless clusters.
+      example:
+        clusters:
+        - encryptionConfig: "{}"
+          endpoints: "{}"
+          automatedBackupPolicy: "{}"
+          displayName: displayName
+          usage: "{}"
+          annotations:
+            key: annotations
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          version: version
+          labels:
+            key: labels
+          spendingLimit: "{}"
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          name: name
+          userPrefix: userPrefix
+          state: "{}"
+          region: "{}"
+          rootPassword: my-shining-password
+        - encryptionConfig: "{}"
+          endpoints: "{}"
+          automatedBackupPolicy: "{}"
+          displayName: displayName
+          usage: "{}"
+          annotations:
+            key: annotations
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          version: version
+          labels:
+            key: labels
+          spendingLimit: "{}"
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          name: name
+          userPrefix: userPrefix
+          state: "{}"
+          region: "{}"
+          rootPassword: my-shining-password
+      properties:
+        clusters:
+          description: Clusters created.
+          items:
+            $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1Cluster'
+          type: array
+      type: object
+    v1beta1BatchGetClustersResponse:
+      description: Responses message to the request for retrieving a batch of TiDB
+        Cloud Serverless clusters.
+      example:
+        clusters:
+        - encryptionConfig: "{}"
+          endpoints: "{}"
+          automatedBackupPolicy: "{}"
+          displayName: displayName
+          usage: "{}"
+          annotations:
+            key: annotations
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          version: version
+          labels:
+            key: labels
+          spendingLimit: "{}"
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          name: name
+          userPrefix: userPrefix
+          state: "{}"
+          region: "{}"
+          rootPassword: my-shining-password
+        - encryptionConfig: "{}"
+          endpoints: "{}"
+          automatedBackupPolicy: "{}"
+          displayName: displayName
+          usage: "{}"
+          annotations:
+            key: annotations
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          version: version
+          labels:
+            key: labels
+          spendingLimit: "{}"
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          name: name
+          userPrefix: userPrefix
+          state: "{}"
+          region: "{}"
+          rootPassword: my-shining-password
+      properties:
+        clusters:
+          description: Clusters created.
+          items:
+            $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1Cluster'
+          type: array
+      type: object
     v1beta1ChangeRootPasswordResponse:
       description: Responses message to the request for changing the root password
-        of a TiDB Serverless cluster.
+        of a TiDB Cloud Serverless cluster.
       type: object
     v1beta1ClusterAutomatedBackupPolicy:
       description: Message for automated backup configuration for a cluster.
@@ -861,7 +1071,8 @@ components:
       - azure
       type: string
     v1beta1ServerlessServicePartialUpdateClusterBody:
-      description: Message for requesting a partial update on a TiDB Serverless cluster.
+      description: Message for requesting a partial update on a TiDB Cloud Serverless
+        cluster.
       properties:
         cluster:
           $ref: '#/components/schemas/Required__The_cluster_to_be_updated_'
