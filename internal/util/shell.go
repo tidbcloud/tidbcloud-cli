@@ -17,6 +17,7 @@ package util
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -84,7 +85,7 @@ func generateDsnWithPassword(clusterType string, userName string, host string, p
 	} else if clusterType == DEDICATED {
 		dsn = fmt.Sprintf("tidb://%s:%s@%s:%s?tls=skip-verify", userName, pass, host, port)
 	} else {
-		return "", fmt.Errorf("unsupproted cluster type: %s", clusterType)
+		return "", fmt.Errorf("unsupported cluster type: %s", clusterType)
 	}
 	return dsn, nil
 }
@@ -103,13 +104,13 @@ func generateDsnWithoutPassword(clusterType string, userName string, host string
 	} else if clusterType == DEDICATED {
 		dsn = fmt.Sprintf("tidb://%s@%s:%s?tls=skip-verify", userName, host, port)
 	} else {
-		return "", fmt.Errorf("unsupproted cluster type: %s", clusterType)
+		return "", fmt.Errorf("unsupported cluster type: %s", clusterType)
 	}
 
 	// Prompt for password
 	dsn, err := h.Password(dsn)
-	if err != nil {
-		return "", err
+	if err != nil && errors.Is(err, rline.ErrInterrupt) {
+		return "", InterruptError
 	}
-	return dsn, nil
+	return dsn, err
 }
