@@ -22,6 +22,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/output"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -124,7 +125,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			branch, err := d.GetBranch(ctx, clusterID, branchID)
+			branch, err := d.GetBranch(ctx, clusterID, branchID, branch.BRANCHSERVICEGETBRANCHVIEWPARAMETER_FULL)
 			if err != nil {
 				return errors.Trace(err)
 			}

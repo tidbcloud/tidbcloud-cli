@@ -226,7 +226,7 @@ func CreateAndWaitReady(ctx context.Context, h *internal.Helper, d cloud.TiDBClo
 		case <-timer:
 			return errors.New(fmt.Sprintf("Timeout waiting for branch %s to be ready, please check status on dashboard.", newBranchID))
 		case <-ticker.C:
-			b, err := d.GetBranch(ctx, clusterId, newBranchID)
+			b, err := d.GetBranch(ctx, clusterId, newBranchID, branch.BRANCHSERVICEGETBRANCHVIEWPARAMETER_BASIC)
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -255,7 +255,7 @@ func CreateAndSpinnerWait(ctx context.Context, h *internal.Helper, d cloud.TiDBC
 			case <-timer:
 				return errors.New(fmt.Sprintf("Timeout waiting for branch %s to be ready, please check status on dashboard.", newBranchID))
 			case <-ticker.C:
-				b, err := d.GetBranch(ctx, clusterId, newBranchID)
+				b, err := d.GetBranch(ctx, clusterId, newBranchID, branch.BRANCHSERVICEGETBRANCHVIEWPARAMETER_BASIC)
 				if err != nil {
 					return errors.Trace(err)
 				}

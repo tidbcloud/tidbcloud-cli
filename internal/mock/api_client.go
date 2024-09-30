@@ -14,7 +14,7 @@ import (
 
 	iam "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 
-	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
+	imp "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 
 	mock "github.com/stretchr/testify/mock"
 
@@ -500,9 +500,9 @@ func (_m *TiDBCloudClient) GetBackup(ctx context.Context, backupId string) (*br.
 	return r0, r1
 }
 
-// GetBranch provides a mock function with given fields: ctx, clusterId, branchId
-func (_m *TiDBCloudClient) GetBranch(ctx context.Context, clusterId string, branchId string) (*branch.Branch, error) {
-	ret := _m.Called(ctx, clusterId, branchId)
+// GetBranch provides a mock function with given fields: ctx, clusterId, branchId, view
+func (_m *TiDBCloudClient) GetBranch(ctx context.Context, clusterId string, branchId string, view branch.BranchServiceGetBranchViewParameter) (*branch.Branch, error) {
+	ret := _m.Called(ctx, clusterId, branchId, view)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetBranch")
@@ -510,19 +510,19 @@ func (_m *TiDBCloudClient) GetBranch(ctx context.Context, clusterId string, bran
 
 	var r0 *branch.Branch
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*branch.Branch, error)); ok {
-		return rf(ctx, clusterId, branchId)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, branch.BranchServiceGetBranchViewParameter) (*branch.Branch, error)); ok {
+		return rf(ctx, clusterId, branchId, view)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string, string) *branch.Branch); ok {
-		r0 = rf(ctx, clusterId, branchId)
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, branch.BranchServiceGetBranchViewParameter) *branch.Branch); ok {
+		r0 = rf(ctx, clusterId, branchId, view)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*branch.Branch)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
-		r1 = rf(ctx, clusterId, branchId)
+	if rf, ok := ret.Get(1).(func(context.Context, string, string, branch.BranchServiceGetBranchViewParameter) error); ok {
+		r1 = rf(ctx, clusterId, branchId, view)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -530,9 +530,9 @@ func (_m *TiDBCloudClient) GetBranch(ctx context.Context, clusterId string, bran
 	return r0, r1
 }
 
-// GetCluster provides a mock function with given fields: ctx, clusterId
-func (_m *TiDBCloudClient) GetCluster(ctx context.Context, clusterId string) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
-	ret := _m.Called(ctx, clusterId)
+// GetCluster provides a mock function with given fields: ctx, clusterId, view
+func (_m *TiDBCloudClient) GetCluster(ctx context.Context, clusterId string, view cluster.ServerlessServiceGetClusterViewParameter) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+	ret := _m.Called(ctx, clusterId, view)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GetCluster")
@@ -540,19 +540,19 @@ func (_m *TiDBCloudClient) GetCluster(ctx context.Context, clusterId string) (*c
 
 	var r0 *cluster.TidbCloudOpenApiserverlessv1beta1Cluster
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)); ok {
-		return rf(ctx, clusterId)
+	if rf, ok := ret.Get(0).(func(context.Context, string, cluster.ServerlessServiceGetClusterViewParameter) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)); ok {
+		return rf(ctx, clusterId, view)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string) *cluster.TidbCloudOpenApiserverlessv1beta1Cluster); ok {
-		r0 = rf(ctx, clusterId)
+	if rf, ok := ret.Get(0).(func(context.Context, string, cluster.ServerlessServiceGetClusterViewParameter) *cluster.TidbCloudOpenApiserverlessv1beta1Cluster); ok {
+		r0 = rf(ctx, clusterId, view)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*cluster.TidbCloudOpenApiserverlessv1beta1Cluster)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
-		r1 = rf(ctx, clusterId)
+	if rf, ok := ret.Get(1).(func(context.Context, string, cluster.ServerlessServiceGetClusterViewParameter) error); ok {
+		r1 = rf(ctx, clusterId, view)
 	} else {
 		r1 = ret.Error(1)
 	}

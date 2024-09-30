@@ -23,6 +23,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -197,7 +198,7 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 			}
 
 			var host, name, port string
-			branchInfo, err := d.GetBranch(ctx, clusterID, branchID)
+			branchInfo, err := d.GetBranch(ctx, clusterID, branchID, branch.BRANCHSERVICEGETBRANCHVIEWPARAMETER_BASIC)
 			if err != nil {
 				return errors.Trace(err)
 			}

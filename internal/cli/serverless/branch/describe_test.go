@@ -90,7 +90,7 @@ func (suite *DescribeBranchSuite) TestDescribeBranchArgs() {
 	assert.Nil(err)
 	clusterID := "10202848322613926203"
 	branchID := "bran-fgwdnpasmrahnh5iozqawnmijq"
-	suite.mockClient.On("GetBranch", ctx, clusterID, branchID).Return(body, nil)
+	suite.mockClient.On("GetBranch", ctx, clusterID, branchID, branch.BRANCHSERVICEGETBRANCHVIEWPARAMETER_FULL).Return(body, nil)
 
 	tests := []struct {
 		name         string

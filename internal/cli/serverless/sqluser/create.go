@@ -29,6 +29,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -266,7 +267,7 @@ func initialCreateInputModel(userPrefix string) ui.TextInputModel {
 }
 
 func getUserPrefix(ctx context.Context, d cloud.TiDBCloudClient, clusterID string) (string, error) {
-	cluster, err := d.GetCluster(ctx, clusterID)
+	cluster, err := d.GetCluster(ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
 	if err != nil {
 		return "", errors.Trace(err)
 	}

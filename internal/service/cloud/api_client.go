@@ -48,7 +48,7 @@ type TiDBCloudClient interface {
 
 	DeleteCluster(ctx context.Context, clusterId string) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)
 
-	GetCluster(ctx context.Context, clusterId string) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)
+	GetCluster(ctx context.Context, clusterId string, view cluster.ServerlessServiceGetClusterViewParameter) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)
 
 	ListClusters(ctx context.Context, filter *string, pageSize *int32, pageToken *string, orderBy *string, skip *int32) (*cluster.TidbCloudOpenApiserverlessv1beta1ListClustersResponse, error)
 
@@ -66,7 +66,7 @@ type TiDBCloudClient interface {
 
 	ListImports(ctx context.Context, clusterId string, pageSize *int32, pageToken, orderBy *string) (*imp.ListImportsResp, error)
 
-	GetBranch(ctx context.Context, clusterId, branchId string) (*branch.Branch, error)
+	GetBranch(ctx context.Context, clusterId, branchId string, view branch.BranchServiceGetBranchViewParameter) (*branch.Branch, error)
 
 	ListBranches(ctx context.Context, clusterId string, pageSize *int32, pageToken *string) (*branch.ListBranchesResponse, error)
 
@@ -174,8 +174,10 @@ func (d *ClientDelegate) DeleteCluster(ctx context.Context, clusterId string) (*
 	return c, parseError(err, h)
 }
 
-func (d *ClientDelegate) GetCluster(ctx context.Context, clusterId string) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
-	c, h, err := d.sc.ServerlessServiceAPI.ServerlessServiceGetCluster(ctx, clusterId).Execute()
+func (d *ClientDelegate) GetCluster(ctx context.Context, clusterId string, view cluster.ServerlessServiceGetClusterViewParameter) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+	r := d.sc.ServerlessServiceAPI.ServerlessServiceGetCluster(ctx, clusterId)
+	r = r.View(view)
+	c, h, err := r.Execute()
 	return c, parseError(err, h)
 }
 
@@ -260,8 +262,10 @@ func (d *ClientDelegate) ListImports(ctx context.Context, clusterId string, page
 	return is, parseError(err, h)
 }
 
-func (d *ClientDelegate) GetBranch(ctx context.Context, clusterId, branchId string) (*branch.Branch, error) {
-	b, h, err := d.bc.BranchServiceAPI.BranchServiceGetBranch(ctx, clusterId, branchId).Execute()
+func (d *ClientDelegate) GetBranch(ctx context.Context, clusterId, branchId string, view branch.BranchServiceGetBranchViewParameter) (*branch.Branch, error) {
+	r := d.bc.BranchServiceAPI.BranchServiceGetBranch(ctx, clusterId, branchId)
+	r = r.View(view)
+	b, h, err := r.Execute()
 	return b, parseError(err, h)
 }
 
