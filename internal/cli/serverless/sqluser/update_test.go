@@ -83,7 +83,7 @@ func (suite *UpdateSQLUserSuite) TestUpdateSQLUserArgs() {
 	res := &cluster.TidbCloudOpenApiserverlessv1beta1Cluster{}
 	err = json.Unmarshal([]byte(getClusterResultStr), res)
 	assert.Nil(err)
-	suite.mockClient.On("GetCluster", ctx, clusterID).Return(res, nil)
+	suite.mockClient.On("GetCluster", ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC).Return(res, nil)
 
 	updateBody := &iam.ApiUpdateSqlUserReq{
 		BuiltinRole: &builtinRole,

@@ -73,7 +73,7 @@ func (suite *CreateBranchSuite) TestCreateBranchArgs() {
 	body := &branch.Branch{}
 	err := json.Unmarshal([]byte(getBranchResultStr), body)
 	assert.Nil(err)
-	suite.mockClient.On("GetBranch", ctx, clusterID, branchId).Return(body, nil)
+	suite.mockClient.On("GetBranch", ctx, clusterID, branchId, branch.BRANCHSERVICEGETBRANCHVIEWPARAMETER_BASIC).Return(body, nil)
 
 	tests := []struct {
 		name         string

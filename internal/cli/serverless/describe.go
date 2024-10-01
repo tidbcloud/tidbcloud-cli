@@ -23,6 +23,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/output"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 	"github.com/tidbcloud/tidbcloud-cli/internal/telemetry"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -110,7 +111,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cID
 			}
 
-			c, err := d.GetCluster(ctx, clusterID)
+			c, err := d.GetCluster(ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_FULL)
 			if err != nil {
 				return errors.Trace(err)
 			}

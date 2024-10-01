@@ -327,7 +327,7 @@ func CreateAndWaitReady(ctx context.Context, h *internal.Helper, d cloud.TiDBClo
 		case <-timer:
 			return errors.New(fmt.Sprintf("Timeout waiting for cluster %s to be ready, please check status on dashboard.", newClusterID))
 		case <-ticker.C:
-			clusterResult, err := d.GetCluster(ctx, newClusterID)
+			clusterResult, err := d.GetCluster(ctx, newClusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -356,7 +356,7 @@ func CreateAndSpinnerWait(ctx context.Context, h *internal.Helper, d cloud.TiDBC
 			case <-timer:
 				return ui.Result(fmt.Sprintf("Timeout waiting for cluster %s to be ready, please check status on dashboard.", newClusterID))
 			case <-ticker.C:
-				clusterResult, err := d.GetCluster(ctx, newClusterID)
+				clusterResult, err := d.GetCluster(ctx, newClusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
 				if err != nil {
 					return errors.Trace(err)
 				}
