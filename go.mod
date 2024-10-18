@@ -38,6 +38,7 @@ require (
 	golang.org/x/oauth2 v0.21.0
 	golang.org/x/sys v0.21.0
 	gopkg.in/yaml.v3 v3.0.1
+	github.com/tidbcloud/tidbcloud-cli/pkg v0.0.0-00010101000000-000000000000
 )
 
 require (
