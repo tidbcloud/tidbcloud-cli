@@ -1,6 +1,6 @@
 module github.com/tidbcloud/tidbcloud-cli
 
-go 1.22
+go 1.22.0
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6
@@ -31,6 +31,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.9.0
+	github.com/tidbcloud/tidbcloud-cli/pkg v0.0.1
 	github.com/xo/usql v0.19.2
 	github.com/zalando/go-keyring v0.2.3
 	go.einride.tech/aip v0.67.1
@@ -38,7 +39,6 @@ require (
 	golang.org/x/oauth2 v0.21.0
 	golang.org/x/sys v0.21.0
 	gopkg.in/yaml.v3 v3.0.1
-	github.com/tidbcloud/tidbcloud-cli/pkg v0.0.0-00010101000000-000000000000
 )
 
 require (
@@ -119,3 +119,5 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 )
+
+replace github.com/tidbcloud/tidbcloud-cli/pkg => ./pkg
