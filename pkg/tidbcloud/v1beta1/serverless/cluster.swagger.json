@@ -107,10 +107,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster",
-              "required": [
-                "cluster"
-              ]
+              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
             }
           }
         ],
@@ -378,6 +375,14 @@
     }
   },
   "definitions": {
+    "ClusterHighAvailabilityType": {
+      "type": "string",
+      "enum": [
+        "ZONAL",
+        "REGIONAL"
+      ],
+      "title": "- ZONAL: High availability within a single zone\n - REGIONAL: High availability across multiple zones within a region"
+    },
     "ClusterSpendingLimit": {
       "type": "object",
       "properties": {
@@ -648,6 +653,9 @@
             }
           ]
         },
+        "highAvailabilityType": {
+          "$ref": "#/definitions/ClusterHighAvailabilityType"
+        },
         "version": {
           "type": "string",
           "description": "Output_only. The TiDB version of the cluster.",
@@ -727,10 +735,7 @@
           ]
         }
       },
-      "description": "Message for requesting to create a TiDB Cloud Serverless cluster.",
-      "required": [
-        "cluster"
-      ]
+      "description": "Message for requesting to create a TiDB Cloud Serverless cluster."
     },
     "tidb_cloud_open_apiserverlessv1beta1ListClustersResponse": {
       "type": "object",
