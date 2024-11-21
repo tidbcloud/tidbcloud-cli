@@ -7,7 +7,6 @@ linters:
     - bodyclose
     - durationcheck
     - errcheck
-    - exportloopref
     - goimports
     - gosec
     - gosimple
@@ -31,6 +30,7 @@ linters-settings:
     confidence: "low"
     excludes:
       - G101
+      - G115
       - G404
       # exclude warnings of using crypto/sha1
       - G505

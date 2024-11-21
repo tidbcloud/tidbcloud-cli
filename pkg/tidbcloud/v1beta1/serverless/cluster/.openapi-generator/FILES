@@ -7,6 +7,7 @@ api_serverless_service.go
 client.go
 configuration.go
 git_push.sh
+model_cluster_high_availability_type.go
 model_cluster_spending_limit.go
 model_commonv1beta1_cluster_state.go
 model_commonv1beta1_region.go

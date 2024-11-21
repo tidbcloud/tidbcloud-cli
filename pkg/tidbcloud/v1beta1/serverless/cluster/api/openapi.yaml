@@ -304,6 +304,14 @@ paths:
       - ServerlessService
 components:
   schemas:
+    ClusterHighAvailabilityType:
+      enum:
+      - ZONAL
+      - REGIONAL
+      title: |-
+        - ZONAL: High availability within a single zone
+         - REGIONAL: High availability across multiple zones within a region
+      type: string
     ClusterSpendingLimit:
       description: Message for spending limit configuration.
       properties:
@@ -652,6 +660,7 @@ components:
         spendingLimit: "{}"
         createdBy: createdBy
         createTime: 2000-01-23T04:56:07.000+00:00
+        highAvailabilityType: ZONAL
         name: name
         userPrefix: userPrefix
         state: "{}"
@@ -700,6 +709,8 @@ components:
           - $ref: '#/components/schemas/v1beta1ClusterEncryptionConfig'
           description: Optional. Encryption settings for the cluster.
           type: object
+        highAvailabilityType:
+          $ref: '#/components/schemas/ClusterHighAvailabilityType'
         version:
           description: Output_only. The TiDB version of the cluster.
           readOnly: true
@@ -761,8 +772,6 @@ components:
           - $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1Cluster'
           description: Required. The cluster to be created.
           type: object
-      required:
-      - cluster
       type: object
     tidb_cloud_open_apiserverlessv1beta1ListClustersResponse:
       description: Responses message to the request for listing of TiDB Cloud Serverless
@@ -786,6 +795,7 @@ components:
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
+          highAvailabilityType: ZONAL
           name: name
           userPrefix: userPrefix
           state: "{}"
@@ -806,6 +816,7 @@ components:
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
+          highAvailabilityType: ZONAL
           name: name
           userPrefix: userPrefix
           state: "{}"
@@ -881,6 +892,7 @@ components:
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
+          highAvailabilityType: ZONAL
           name: name
           userPrefix: userPrefix
           state: "{}"
@@ -901,6 +913,7 @@ components:
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
+          highAvailabilityType: ZONAL
           name: name
           userPrefix: userPrefix
           state: "{}"
@@ -933,6 +946,7 @@ components:
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
+          highAvailabilityType: ZONAL
           name: name
           userPrefix: userPrefix
           state: "{}"
@@ -953,6 +967,7 @@ components:
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
+          highAvailabilityType: ZONAL
           name: name
           userPrefix: userPrefix
           state: "{}"

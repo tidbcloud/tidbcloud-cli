@@ -91,6 +91,7 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [ClusterHighAvailabilityType](docs/ClusterHighAvailabilityType.md)
  - [ClusterSpendingLimit](docs/ClusterSpendingLimit.md)
  - [Commonv1beta1ClusterState](docs/Commonv1beta1ClusterState.md)
  - [Commonv1beta1Region](docs/Commonv1beta1Region.md)
