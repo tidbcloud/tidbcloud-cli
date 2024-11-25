@@ -41,7 +41,7 @@ addcopy: ## Add copyright to all files
 generate-v1beta1-client: generate-v1beta1-serverless-client generate-v1beta1-iam-client generate-v1beta1-dedicated-client ## Generate v1beta1 client
 
 .PHONY: generate-v1beta1-serverless-client
-generate-v1beta1-client: install-openapi-generator ## Generate v1beta1 client
+generate-v1beta1-serverless-client: install-openapi-generator ## Generate v1beta1 client
 	@echo "==> Generating serverless branch client"
 	rm -rf pkg/tidbcloud/v1beta1/serverless/branch
 	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/branch.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/branch --package-name branch
