@@ -19,7 +19,7 @@ var _ MappedNullable = &V1beta1ShowNodeQuotaResponse{}
 
 // V1beta1ShowNodeQuotaResponse struct for V1beta1ShowNodeQuotaResponse
 type V1beta1ShowNodeQuotaResponse struct {
-	ComponentQuotas []ShowNodeQuotaResponseComponentQuota `json:"componentQuotas,omitempty"`
+	ComponentQuotas      []ShowNodeQuotaResponseComponentQuota `json:"componentQuotas,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -75,7 +75,7 @@ func (o *V1beta1ShowNodeQuotaResponse) SetComponentQuotas(v []ShowNodeQuotaRespo
 }
 
 func (o V1beta1ShowNodeQuotaResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -151,5 +151,3 @@ func (v *NullableV1beta1ShowNodeQuotaResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

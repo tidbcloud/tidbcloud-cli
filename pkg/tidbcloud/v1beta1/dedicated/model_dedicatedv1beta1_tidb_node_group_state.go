@@ -20,9 +20,9 @@ type Dedicatedv1beta1TidbNodeGroupState string
 
 // List of dedicatedv1beta1TidbNodeGroupState
 const (
-	DEDICATEDV1BETA1TIDBNODEGROUPSTATE_ACTIVE Dedicatedv1beta1TidbNodeGroupState = "ACTIVE"
+	DEDICATEDV1BETA1TIDBNODEGROUPSTATE_ACTIVE    Dedicatedv1beta1TidbNodeGroupState = "ACTIVE"
 	DEDICATEDV1BETA1TIDBNODEGROUPSTATE_MODIFYING Dedicatedv1beta1TidbNodeGroupState = "MODIFYING"
-	DEDICATEDV1BETA1TIDBNODEGROUPSTATE_PAUSED Dedicatedv1beta1TidbNodeGroupState = "PAUSED"
+	DEDICATEDV1BETA1TIDBNODEGROUPSTATE_PAUSED    Dedicatedv1beta1TidbNodeGroupState = "PAUSED"
 )
 
 // All allowed values of Dedicatedv1beta1TidbNodeGroupState enum
@@ -110,4 +110,3 @@ func (v *NullableDedicatedv1beta1TidbNodeGroupState) UnmarshalJSON(src []byte) e
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

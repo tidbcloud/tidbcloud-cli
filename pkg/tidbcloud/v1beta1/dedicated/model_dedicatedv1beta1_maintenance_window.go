@@ -12,8 +12,8 @@ package dedicated
 
 import (
 	"encoding/json"
-	"time"
 	"fmt"
+	"time"
 )
 
 // checks if the Dedicatedv1beta1MaintenanceWindow type satisfies the MappedNullable interface at compile time
@@ -21,18 +21,18 @@ var _ MappedNullable = &Dedicatedv1beta1MaintenanceWindow{}
 
 // Dedicatedv1beta1MaintenanceWindow MaintenanceWindow is a singleton resource that represents the maintenance window under a project.
 type Dedicatedv1beta1MaintenanceWindow struct {
-	Name *string `json:"name,omitempty"`
+	Name                *string `json:"name,omitempty"`
 	MaintenanceWindowId *string `json:"maintenanceWindowId,omitempty"`
-	ProjectId string `json:"projectId"`
+	ProjectId           string  `json:"projectId"`
 	// 0-6, 0 is Sunday.
 	WeekDay int32 `json:"weekDay"`
 	// 0-23 in UTC.
 	DayHour int32 `json:"dayHour"`
 	// 0-59 in UTC.
-	HourMinute int32 `json:"hourMinute"`
-	NextMaintenanceDate *time.Time `json:"nextMaintenanceDate,omitempty"`
+	HourMinute                int32                    `json:"hourMinute"`
+	NextMaintenanceDate       *time.Time               `json:"nextMaintenanceDate,omitempty"`
 	UnchangedMaintenanceTasks []V1beta1MaintenanceTask `json:"unchangedMaintenanceTasks,omitempty"`
-	AdditionalProperties map[string]interface{}
+	AdditionalProperties      map[string]interface{}
 }
 
 type _Dedicatedv1beta1MaintenanceWindow Dedicatedv1beta1MaintenanceWindow
@@ -283,7 +283,7 @@ func (o *Dedicatedv1beta1MaintenanceWindow) SetUnchangedMaintenanceTasks(v []V1b
 }
 
 func (o Dedicatedv1beta1MaintenanceWindow) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -332,10 +332,10 @@ func (o *Dedicatedv1beta1MaintenanceWindow) UnmarshalJSON(data []byte) (err erro
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -403,5 +403,3 @@ func (v *NullableDedicatedv1beta1MaintenanceWindow) UnmarshalJSON(src []byte) er
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -19,8 +19,8 @@ var _ MappedNullable = &TidbNodeGroupServiceUpdateTidbNodeGroupRequest{}
 
 // TidbNodeGroupServiceUpdateTidbNodeGroupRequest struct for TidbNodeGroupServiceUpdateTidbNodeGroupRequest
 type TidbNodeGroupServiceUpdateTidbNodeGroupRequest struct {
-	DisplayName *string `json:"displayName,omitempty"`
-	NodeCount NullableInt32 `json:"nodeCount,omitempty"`
+	DisplayName          *string       `json:"displayName,omitempty"`
+	NodeCount            NullableInt32 `json:"nodeCount,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -107,6 +107,7 @@ func (o *TidbNodeGroupServiceUpdateTidbNodeGroupRequest) HasNodeCount() bool {
 func (o *TidbNodeGroupServiceUpdateTidbNodeGroupRequest) SetNodeCount(v int32) {
 	o.NodeCount.Set(&v)
 }
+
 // SetNodeCountNil sets the value for NodeCount to be an explicit nil
 func (o *TidbNodeGroupServiceUpdateTidbNodeGroupRequest) SetNodeCountNil() {
 	o.NodeCount.Set(nil)
@@ -118,7 +119,7 @@ func (o *TidbNodeGroupServiceUpdateTidbNodeGroupRequest) UnsetNodeCount() {
 }
 
 func (o TidbNodeGroupServiceUpdateTidbNodeGroupRequest) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -198,5 +199,3 @@ func (v *NullableTidbNodeGroupServiceUpdateTidbNodeGroupRequest) UnmarshalJSON(s
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -20,12 +20,12 @@ var _ MappedNullable = &V1beta1ClusterStorageNodeSetting{}
 
 // V1beta1ClusterStorageNodeSetting struct for V1beta1ClusterStorageNodeSetting
 type V1beta1ClusterStorageNodeSetting struct {
-	NodeCount int32 `json:"nodeCount"`
-	NodeSpecKey string `json:"nodeSpecKey"`
-	StorageSizeGi int32 `json:"storageSizeGi"`
-	StorageType ClusterStorageNodeSettingStorageType `json:"storageType"`
-	NodeSpecDisplayName *string `json:"nodeSpecDisplayName,omitempty"`
-	NodeChangingProgress *ClusterNodeChangingProgress `json:"nodeChangingProgress,omitempty"`
+	NodeCount            int32                                `json:"nodeCount"`
+	NodeSpecKey          string                               `json:"nodeSpecKey"`
+	StorageSizeGi        int32                                `json:"storageSizeGi"`
+	StorageType          ClusterStorageNodeSettingStorageType `json:"storageType"`
+	NodeSpecDisplayName  *string                              `json:"nodeSpecDisplayName,omitempty"`
+	NodeChangingProgress *ClusterNodeChangingProgress         `json:"nodeChangingProgress,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -213,7 +213,7 @@ func (o *V1beta1ClusterStorageNodeSetting) SetNodeChangingProgress(v ClusterNode
 }
 
 func (o V1beta1ClusterStorageNodeSetting) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -256,10 +256,10 @@ func (o *V1beta1ClusterStorageNodeSetting) UnmarshalJSON(data []byte) (err error
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -325,5 +325,3 @@ func (v *NullableV1beta1ClusterStorageNodeSetting) UnmarshalJSON(src []byte) err
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

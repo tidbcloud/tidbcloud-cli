@@ -19,17 +19,16 @@ import (
 	"strings"
 )
 
-
 // RegionServiceAPIService RegionServiceAPI service
 type RegionServiceAPIService service
 
 type ApiRegionServiceGetNodeSpecRequest struct {
-	ctx context.Context
-	ApiService *RegionServiceAPIService
-	regionId string
+	ctx           context.Context
+	ApiService    *RegionServiceAPIService
+	regionId      string
 	componentType ClusterServiceListNodeInstancesComponentTypeParameter
-	nodeSpecKey string
-	projectId *string
+	nodeSpecKey   string
+	projectId     *string
 }
 
 // If unspecified, the project ID of default project is used.
@@ -45,30 +44,31 @@ func (r ApiRegionServiceGetNodeSpecRequest) Execute() (*Dedicatedv1beta1NodeSpec
 /*
 RegionServiceGetNodeSpec Get a node spec
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param regionId Format: {cloud_provider}-{region_code}
- @param componentType
- @param nodeSpecKey
- @return ApiRegionServiceGetNodeSpecRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param regionId Format: {cloud_provider}-{region_code}
+	@param componentType
+	@param nodeSpecKey
+	@return ApiRegionServiceGetNodeSpecRequest
 */
 func (a *RegionServiceAPIService) RegionServiceGetNodeSpec(ctx context.Context, regionId string, componentType ClusterServiceListNodeInstancesComponentTypeParameter, nodeSpecKey string) ApiRegionServiceGetNodeSpecRequest {
 	return ApiRegionServiceGetNodeSpecRequest{
-		ApiService: a,
-		ctx: ctx,
-		regionId: regionId,
+		ApiService:    a,
+		ctx:           ctx,
+		regionId:      regionId,
 		componentType: componentType,
-		nodeSpecKey: nodeSpecKey,
+		nodeSpecKey:   nodeSpecKey,
 	}
 }
 
 // Execute executes the request
-//  @return Dedicatedv1beta1NodeSpec
+//
+//	@return Dedicatedv1beta1NodeSpec
 func (a *RegionServiceAPIService) RegionServiceGetNodeSpecExecute(r ApiRegionServiceGetNodeSpecRequest) (*Dedicatedv1beta1NodeSpec, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Dedicatedv1beta1NodeSpec
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1NodeSpec
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RegionServiceAPIService.RegionServiceGetNodeSpec")
@@ -148,8 +148,8 @@ func (a *RegionServiceAPIService) RegionServiceGetNodeSpecExecute(r ApiRegionSer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -159,8 +159,8 @@ func (a *RegionServiceAPIService) RegionServiceGetNodeSpecExecute(r ApiRegionSer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -170,8 +170,8 @@ func (a *RegionServiceAPIService) RegionServiceGetNodeSpecExecute(r ApiRegionSer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -181,8 +181,8 @@ func (a *RegionServiceAPIService) RegionServiceGetNodeSpecExecute(r ApiRegionSer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -192,18 +192,18 @@ func (a *RegionServiceAPIService) RegionServiceGetNodeSpecExecute(r ApiRegionSer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -220,10 +220,10 @@ func (a *RegionServiceAPIService) RegionServiceGetNodeSpecExecute(r ApiRegionSer
 }
 
 type ApiRegionServiceGetRegionRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *RegionServiceAPIService
-	regionId string
-	projectId *string
+	regionId   string
+	projectId  *string
 }
 
 // If unspecified, the project ID of default project is used.
@@ -239,26 +239,27 @@ func (r ApiRegionServiceGetRegionRequest) Execute() (*Commonv1beta1Region, *http
 /*
 RegionServiceGetRegion Get a region
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param regionId Format: {cloud_provider}-{region_code}
- @return ApiRegionServiceGetRegionRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param regionId Format: {cloud_provider}-{region_code}
+	@return ApiRegionServiceGetRegionRequest
 */
 func (a *RegionServiceAPIService) RegionServiceGetRegion(ctx context.Context, regionId string) ApiRegionServiceGetRegionRequest {
 	return ApiRegionServiceGetRegionRequest{
 		ApiService: a,
-		ctx: ctx,
-		regionId: regionId,
+		ctx:        ctx,
+		regionId:   regionId,
 	}
 }
 
 // Execute executes the request
-//  @return Commonv1beta1Region
+//
+//	@return Commonv1beta1Region
 func (a *RegionServiceAPIService) RegionServiceGetRegionExecute(r ApiRegionServiceGetRegionRequest) (*Commonv1beta1Region, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Commonv1beta1Region
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Commonv1beta1Region
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RegionServiceAPIService.RegionServiceGetRegion")
@@ -336,8 +337,8 @@ func (a *RegionServiceAPIService) RegionServiceGetRegionExecute(r ApiRegionServi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -347,8 +348,8 @@ func (a *RegionServiceAPIService) RegionServiceGetRegionExecute(r ApiRegionServi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -358,8 +359,8 @@ func (a *RegionServiceAPIService) RegionServiceGetRegionExecute(r ApiRegionServi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -369,8 +370,8 @@ func (a *RegionServiceAPIService) RegionServiceGetRegionExecute(r ApiRegionServi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -380,18 +381,18 @@ func (a *RegionServiceAPIService) RegionServiceGetRegionExecute(r ApiRegionServi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -408,14 +409,14 @@ func (a *RegionServiceAPIService) RegionServiceGetRegionExecute(r ApiRegionServi
 }
 
 type ApiRegionServiceListNodeSpecsRequest struct {
-	ctx context.Context
-	ApiService *RegionServiceAPIService
-	regionId string
+	ctx           context.Context
+	ApiService    *RegionServiceAPIService
+	regionId      string
 	componentType *ClusterServiceListNodeInstancesComponentTypeParameter
-	projectId *string
-	pageSize *int32
-	pageToken *string
-	skip *int32
+	projectId     *string
+	pageSize      *int32
+	pageToken     *string
+	skip          *int32
 }
 
 // If specified, only node specs of the specified component type will be returned.
@@ -455,26 +456,27 @@ func (r ApiRegionServiceListNodeSpecsRequest) Execute() (*V1beta1ListNodeSpecsRe
 /*
 RegionServiceListNodeSpecs List node specs for creating or scaling a cluster
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param regionId Format: {cloud_provider}-{region_code}
- @return ApiRegionServiceListNodeSpecsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param regionId Format: {cloud_provider}-{region_code}
+	@return ApiRegionServiceListNodeSpecsRequest
 */
 func (a *RegionServiceAPIService) RegionServiceListNodeSpecs(ctx context.Context, regionId string) ApiRegionServiceListNodeSpecsRequest {
 	return ApiRegionServiceListNodeSpecsRequest{
 		ApiService: a,
-		ctx: ctx,
-		regionId: regionId,
+		ctx:        ctx,
+		regionId:   regionId,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1ListNodeSpecsResponse
+//
+//	@return V1beta1ListNodeSpecsResponse
 func (a *RegionServiceAPIService) RegionServiceListNodeSpecsExecute(r ApiRegionServiceListNodeSpecsRequest) (*V1beta1ListNodeSpecsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1ListNodeSpecsResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1ListNodeSpecsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RegionServiceAPIService.RegionServiceListNodeSpecs")
@@ -564,8 +566,8 @@ func (a *RegionServiceAPIService) RegionServiceListNodeSpecsExecute(r ApiRegionS
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -575,8 +577,8 @@ func (a *RegionServiceAPIService) RegionServiceListNodeSpecsExecute(r ApiRegionS
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -586,8 +588,8 @@ func (a *RegionServiceAPIService) RegionServiceListNodeSpecsExecute(r ApiRegionS
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -597,8 +599,8 @@ func (a *RegionServiceAPIService) RegionServiceListNodeSpecsExecute(r ApiRegionS
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -608,18 +610,18 @@ func (a *RegionServiceAPIService) RegionServiceListNodeSpecsExecute(r ApiRegionS
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -636,13 +638,13 @@ func (a *RegionServiceAPIService) RegionServiceListNodeSpecsExecute(r ApiRegionS
 }
 
 type ApiRegionServiceListRegionsRequest struct {
-	ctx context.Context
-	ApiService *RegionServiceAPIService
+	ctx           context.Context
+	ApiService    *RegionServiceAPIService
 	cloudProvider *string
-	projectId *string
-	pageSize *int32
-	pageToken *string
-	skip *int32
+	projectId     *string
+	pageSize      *int32
+	pageToken     *string
+	skip          *int32
 }
 
 // If specified, only regions of the specified cloud provider will be returned.
@@ -682,24 +684,25 @@ func (r ApiRegionServiceListRegionsRequest) Execute() (*TidbCloudOpenApidedicate
 /*
 RegionServiceListRegions List regions for creating a cluster
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiRegionServiceListRegionsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiRegionServiceListRegionsRequest
 */
 func (a *RegionServiceAPIService) RegionServiceListRegions(ctx context.Context) ApiRegionServiceListRegionsRequest {
 	return ApiRegionServiceListRegionsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return TidbCloudOpenApidedicatedv1beta1ListRegionsResponse
+//
+//	@return TidbCloudOpenApidedicatedv1beta1ListRegionsResponse
 func (a *RegionServiceAPIService) RegionServiceListRegionsExecute(r ApiRegionServiceListRegionsRequest) (*TidbCloudOpenApidedicatedv1beta1ListRegionsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *TidbCloudOpenApidedicatedv1beta1ListRegionsResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *TidbCloudOpenApidedicatedv1beta1ListRegionsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RegionServiceAPIService.RegionServiceListRegions")
@@ -788,8 +791,8 @@ func (a *RegionServiceAPIService) RegionServiceListRegionsExecute(r ApiRegionSer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -799,8 +802,8 @@ func (a *RegionServiceAPIService) RegionServiceListRegionsExecute(r ApiRegionSer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -810,8 +813,8 @@ func (a *RegionServiceAPIService) RegionServiceListRegionsExecute(r ApiRegionSer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -821,8 +824,8 @@ func (a *RegionServiceAPIService) RegionServiceListRegionsExecute(r ApiRegionSer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -832,18 +835,18 @@ func (a *RegionServiceAPIService) RegionServiceListRegionsExecute(r ApiRegionSer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -860,9 +863,9 @@ func (a *RegionServiceAPIService) RegionServiceListRegionsExecute(r ApiRegionSer
 }
 
 type ApiRegionServiceShowCloudProvidersRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *RegionServiceAPIService
-	projectId *string
+	projectId  *string
 }
 
 // If unspecified, the project ID of default project is used.
@@ -878,24 +881,25 @@ func (r ApiRegionServiceShowCloudProvidersRequest) Execute() (*V1beta1ShowCloudP
 /*
 RegionServiceShowCloudProviders Show cloud providers for creating a cluster
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiRegionServiceShowCloudProvidersRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiRegionServiceShowCloudProvidersRequest
 */
 func (a *RegionServiceAPIService) RegionServiceShowCloudProviders(ctx context.Context) ApiRegionServiceShowCloudProvidersRequest {
 	return ApiRegionServiceShowCloudProvidersRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1ShowCloudProvidersResponse
+//
+//	@return V1beta1ShowCloudProvidersResponse
 func (a *RegionServiceAPIService) RegionServiceShowCloudProvidersExecute(r ApiRegionServiceShowCloudProvidersRequest) (*V1beta1ShowCloudProvidersResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1ShowCloudProvidersResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1ShowCloudProvidersResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RegionServiceAPIService.RegionServiceShowCloudProviders")
@@ -972,8 +976,8 @@ func (a *RegionServiceAPIService) RegionServiceShowCloudProvidersExecute(r ApiRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -983,8 +987,8 @@ func (a *RegionServiceAPIService) RegionServiceShowCloudProvidersExecute(r ApiRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -994,8 +998,8 @@ func (a *RegionServiceAPIService) RegionServiceShowCloudProvidersExecute(r ApiRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1005,8 +1009,8 @@ func (a *RegionServiceAPIService) RegionServiceShowCloudProvidersExecute(r ApiRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1016,18 +1020,18 @@ func (a *RegionServiceAPIService) RegionServiceShowCloudProvidersExecute(r ApiRe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

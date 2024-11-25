@@ -22,12 +22,12 @@ var _ MappedNullable = &DatabaseAuditLogServiceCreateAuditLogConfigRequest{}
 type DatabaseAuditLogServiceCreateAuditLogConfigRequest struct {
 	Name *string `json:"name,omitempty"`
 	// Default is false.
-	Enabled *bool `json:"enabled,omitempty"`
-	BucketUri string `json:"bucketUri"`
-	BucketRegionId *string `json:"bucketRegionId,omitempty"`
-	AwsRoleArn *string `json:"awsRoleArn,omitempty"`
-	AzureSasToken *string `json:"azureSasToken,omitempty"`
-	BucketWriteCheck *AuditLogConfigBucketWriteCheck `json:"bucketWriteCheck,omitempty"`
+	Enabled              *bool                           `json:"enabled,omitempty"`
+	BucketUri            string                          `json:"bucketUri"`
+	BucketRegionId       *string                         `json:"bucketRegionId,omitempty"`
+	AwsRoleArn           *string                         `json:"awsRoleArn,omitempty"`
+	AzureSasToken        *string                         `json:"azureSasToken,omitempty"`
+	BucketWriteCheck     *AuditLogConfigBucketWriteCheck `json:"bucketWriteCheck,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -268,7 +268,7 @@ func (o *DatabaseAuditLogServiceCreateAuditLogConfigRequest) SetBucketWriteCheck
 }
 
 func (o DatabaseAuditLogServiceCreateAuditLogConfigRequest) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -317,10 +317,10 @@ func (o *DatabaseAuditLogServiceCreateAuditLogConfigRequest) UnmarshalJSON(data 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -387,5 +387,3 @@ func (v *NullableDatabaseAuditLogServiceCreateAuditLogConfigRequest) UnmarshalJS
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

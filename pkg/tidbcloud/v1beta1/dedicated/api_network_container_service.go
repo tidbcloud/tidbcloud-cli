@@ -19,15 +19,14 @@ import (
 	"strings"
 )
 
-
 // NetworkContainerServiceAPIService NetworkContainerServiceAPI service
 type NetworkContainerServiceAPIService service
 
 type ApiNetworkContainerServiceCreateNetworkContainerRequest struct {
-	ctx context.Context
-	ApiService *NetworkContainerServiceAPIService
+	ctx              context.Context
+	ApiService       *NetworkContainerServiceAPIService
 	networkContainer *V1beta1NetworkContainer
-	validateOnly *bool
+	validateOnly     *bool
 }
 
 func (r ApiNetworkContainerServiceCreateNetworkContainerRequest) NetworkContainer(networkContainer V1beta1NetworkContainer) ApiNetworkContainerServiceCreateNetworkContainerRequest {
@@ -47,24 +46,25 @@ func (r ApiNetworkContainerServiceCreateNetworkContainerRequest) Execute() (*V1b
 /*
 NetworkContainerServiceCreateNetworkContainer Create a network container
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiNetworkContainerServiceCreateNetworkContainerRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiNetworkContainerServiceCreateNetworkContainerRequest
 */
 func (a *NetworkContainerServiceAPIService) NetworkContainerServiceCreateNetworkContainer(ctx context.Context) ApiNetworkContainerServiceCreateNetworkContainerRequest {
 	return ApiNetworkContainerServiceCreateNetworkContainerRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1NetworkContainer
+//
+//	@return V1beta1NetworkContainer
 func (a *NetworkContainerServiceAPIService) NetworkContainerServiceCreateNetworkContainerExecute(r ApiNetworkContainerServiceCreateNetworkContainerRequest) (*V1beta1NetworkContainer, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1NetworkContainer
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1NetworkContainer
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkContainerServiceAPIService.NetworkContainerServiceCreateNetworkContainer")
@@ -146,8 +146,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceCreateNetwork
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -157,8 +157,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceCreateNetwork
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -168,8 +168,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceCreateNetwork
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -179,8 +179,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceCreateNetwork
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -190,18 +190,18 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceCreateNetwork
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -218,7 +218,7 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceCreateNetwork
 }
 
 type ApiNetworkContainerServiceCreateVpcPeeringRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *NetworkContainerServiceAPIService
 	vpcPeering *Dedicatedv1beta1VpcPeering
 }
@@ -235,24 +235,25 @@ func (r ApiNetworkContainerServiceCreateVpcPeeringRequest) Execute() (*Dedicated
 /*
 NetworkContainerServiceCreateVpcPeering Create a VPC peering
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiNetworkContainerServiceCreateVpcPeeringRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiNetworkContainerServiceCreateVpcPeeringRequest
 */
 func (a *NetworkContainerServiceAPIService) NetworkContainerServiceCreateVpcPeering(ctx context.Context) ApiNetworkContainerServiceCreateVpcPeeringRequest {
 	return ApiNetworkContainerServiceCreateVpcPeeringRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return Dedicatedv1beta1VpcPeering
+//
+//	@return Dedicatedv1beta1VpcPeering
 func (a *NetworkContainerServiceAPIService) NetworkContainerServiceCreateVpcPeeringExecute(r ApiNetworkContainerServiceCreateVpcPeeringRequest) (*Dedicatedv1beta1VpcPeering, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Dedicatedv1beta1VpcPeering
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1VpcPeering
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkContainerServiceAPIService.NetworkContainerServiceCreateVpcPeering")
@@ -331,8 +332,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceCreateVpcPeer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -342,8 +343,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceCreateVpcPeer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -353,8 +354,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceCreateVpcPeer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -364,8 +365,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceCreateVpcPeer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -375,18 +376,18 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceCreateVpcPeer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -403,8 +404,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceCreateVpcPeer
 }
 
 type ApiNetworkContainerServiceDeleteNetworkContainerRequest struct {
-	ctx context.Context
-	ApiService *NetworkContainerServiceAPIService
+	ctx                context.Context
+	ApiService         *NetworkContainerServiceAPIService
 	networkContainerId string
 }
 
@@ -415,26 +416,27 @@ func (r ApiNetworkContainerServiceDeleteNetworkContainerRequest) Execute() (map[
 /*
 NetworkContainerServiceDeleteNetworkContainer Delete a network container
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param networkContainerId
- @return ApiNetworkContainerServiceDeleteNetworkContainerRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param networkContainerId
+	@return ApiNetworkContainerServiceDeleteNetworkContainerRequest
 */
 func (a *NetworkContainerServiceAPIService) NetworkContainerServiceDeleteNetworkContainer(ctx context.Context, networkContainerId string) ApiNetworkContainerServiceDeleteNetworkContainerRequest {
 	return ApiNetworkContainerServiceDeleteNetworkContainerRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:         a,
+		ctx:                ctx,
 		networkContainerId: networkContainerId,
 	}
 }
 
 // Execute executes the request
-//  @return map[string]interface{}
+//
+//	@return map[string]interface{}
 func (a *NetworkContainerServiceAPIService) NetworkContainerServiceDeleteNetworkContainerExecute(r ApiNetworkContainerServiceDeleteNetworkContainerRequest) (map[string]interface{}, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  map[string]interface{}
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue map[string]interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkContainerServiceAPIService.NetworkContainerServiceDeleteNetworkContainer")
@@ -509,8 +511,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceDeleteNetwork
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -520,8 +522,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceDeleteNetwork
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -531,8 +533,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceDeleteNetwork
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -542,8 +544,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceDeleteNetwork
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -553,18 +555,18 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceDeleteNetwork
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -581,8 +583,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceDeleteNetwork
 }
 
 type ApiNetworkContainerServiceDeleteVpcPeeringRequest struct {
-	ctx context.Context
-	ApiService *NetworkContainerServiceAPIService
+	ctx          context.Context
+	ApiService   *NetworkContainerServiceAPIService
 	vpcPeeringId string
 }
 
@@ -593,26 +595,27 @@ func (r ApiNetworkContainerServiceDeleteVpcPeeringRequest) Execute() (map[string
 /*
 NetworkContainerServiceDeleteVpcPeering Delete a VPC peering
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param vpcPeeringId Format {cloud_provider}-{random_suffix}
- @return ApiNetworkContainerServiceDeleteVpcPeeringRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param vpcPeeringId Format {cloud_provider}-{random_suffix}
+	@return ApiNetworkContainerServiceDeleteVpcPeeringRequest
 */
 func (a *NetworkContainerServiceAPIService) NetworkContainerServiceDeleteVpcPeering(ctx context.Context, vpcPeeringId string) ApiNetworkContainerServiceDeleteVpcPeeringRequest {
 	return ApiNetworkContainerServiceDeleteVpcPeeringRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:   a,
+		ctx:          ctx,
 		vpcPeeringId: vpcPeeringId,
 	}
 }
 
 // Execute executes the request
-//  @return map[string]interface{}
+//
+//	@return map[string]interface{}
 func (a *NetworkContainerServiceAPIService) NetworkContainerServiceDeleteVpcPeeringExecute(r ApiNetworkContainerServiceDeleteVpcPeeringRequest) (map[string]interface{}, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  map[string]interface{}
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue map[string]interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkContainerServiceAPIService.NetworkContainerServiceDeleteVpcPeering")
@@ -687,8 +690,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceDeleteVpcPeer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -698,8 +701,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceDeleteVpcPeer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -709,8 +712,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceDeleteVpcPeer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -720,8 +723,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceDeleteVpcPeer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -731,18 +734,18 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceDeleteVpcPeer
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -759,8 +762,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceDeleteVpcPeer
 }
 
 type ApiNetworkContainerServiceGetNetworkContainerRequest struct {
-	ctx context.Context
-	ApiService *NetworkContainerServiceAPIService
+	ctx                context.Context
+	ApiService         *NetworkContainerServiceAPIService
 	networkContainerId string
 }
 
@@ -771,26 +774,27 @@ func (r ApiNetworkContainerServiceGetNetworkContainerRequest) Execute() (*V1beta
 /*
 NetworkContainerServiceGetNetworkContainer Get a network container
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param networkContainerId
- @return ApiNetworkContainerServiceGetNetworkContainerRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param networkContainerId
+	@return ApiNetworkContainerServiceGetNetworkContainerRequest
 */
 func (a *NetworkContainerServiceAPIService) NetworkContainerServiceGetNetworkContainer(ctx context.Context, networkContainerId string) ApiNetworkContainerServiceGetNetworkContainerRequest {
 	return ApiNetworkContainerServiceGetNetworkContainerRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:         a,
+		ctx:                ctx,
 		networkContainerId: networkContainerId,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1NetworkContainer
+//
+//	@return V1beta1NetworkContainer
 func (a *NetworkContainerServiceAPIService) NetworkContainerServiceGetNetworkContainerExecute(r ApiNetworkContainerServiceGetNetworkContainerRequest) (*V1beta1NetworkContainer, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1NetworkContainer
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1NetworkContainer
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkContainerServiceAPIService.NetworkContainerServiceGetNetworkContainer")
@@ -865,8 +869,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceGetNetworkCon
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -876,8 +880,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceGetNetworkCon
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -887,8 +891,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceGetNetworkCon
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -898,8 +902,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceGetNetworkCon
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -909,18 +913,18 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceGetNetworkCon
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -937,8 +941,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceGetNetworkCon
 }
 
 type ApiNetworkContainerServiceGetVpcPeeringRequest struct {
-	ctx context.Context
-	ApiService *NetworkContainerServiceAPIService
+	ctx          context.Context
+	ApiService   *NetworkContainerServiceAPIService
 	vpcPeeringId string
 }
 
@@ -949,26 +953,27 @@ func (r ApiNetworkContainerServiceGetVpcPeeringRequest) Execute() (*Dedicatedv1b
 /*
 NetworkContainerServiceGetVpcPeering Get a VPC peering
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param vpcPeeringId Format {cloud_provider}-{random_suffix}
- @return ApiNetworkContainerServiceGetVpcPeeringRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param vpcPeeringId Format {cloud_provider}-{random_suffix}
+	@return ApiNetworkContainerServiceGetVpcPeeringRequest
 */
 func (a *NetworkContainerServiceAPIService) NetworkContainerServiceGetVpcPeering(ctx context.Context, vpcPeeringId string) ApiNetworkContainerServiceGetVpcPeeringRequest {
 	return ApiNetworkContainerServiceGetVpcPeeringRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:   a,
+		ctx:          ctx,
 		vpcPeeringId: vpcPeeringId,
 	}
 }
 
 // Execute executes the request
-//  @return Dedicatedv1beta1VpcPeering
+//
+//	@return Dedicatedv1beta1VpcPeering
 func (a *NetworkContainerServiceAPIService) NetworkContainerServiceGetVpcPeeringExecute(r ApiNetworkContainerServiceGetVpcPeeringRequest) (*Dedicatedv1beta1VpcPeering, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Dedicatedv1beta1VpcPeering
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1VpcPeering
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkContainerServiceAPIService.NetworkContainerServiceGetVpcPeering")
@@ -1043,8 +1048,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceGetVpcPeering
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1054,8 +1059,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceGetVpcPeering
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1065,8 +1070,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceGetVpcPeering
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1076,8 +1081,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceGetVpcPeering
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1087,18 +1092,18 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceGetVpcPeering
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1115,13 +1120,13 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceGetVpcPeering
 }
 
 type ApiNetworkContainerServiceListNetworkContainersRequest struct {
-	ctx context.Context
-	ApiService *NetworkContainerServiceAPIService
-	projectId *string
+	ctx           context.Context
+	ApiService    *NetworkContainerServiceAPIService
+	projectId     *string
 	cloudProvider *PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter
-	pageSize *int32
-	pageToken *string
-	skip *int32
+	pageSize      *int32
+	pageToken     *string
+	skip          *int32
 }
 
 // If unspecified, the project ID of default project is used.
@@ -1130,7 +1135,7 @@ func (r ApiNetworkContainerServiceListNetworkContainersRequest) ProjectId(projec
 	return r
 }
 
-//  - aws: Amazon Web Services. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE  - gcp: Google Cloud Platform. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE  - azure: Microsoft Azure. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+// - aws: Amazon Web Services. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE  - gcp: Google Cloud Platform. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE  - azure: Microsoft Azure. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
 func (r ApiNetworkContainerServiceListNetworkContainersRequest) CloudProvider(cloudProvider PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter) ApiNetworkContainerServiceListNetworkContainersRequest {
 	r.cloudProvider = &cloudProvider
 	return r
@@ -1161,24 +1166,25 @@ func (r ApiNetworkContainerServiceListNetworkContainersRequest) Execute() (*V1be
 /*
 NetworkContainerServiceListNetworkContainers List network containers
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiNetworkContainerServiceListNetworkContainersRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiNetworkContainerServiceListNetworkContainersRequest
 */
 func (a *NetworkContainerServiceAPIService) NetworkContainerServiceListNetworkContainers(ctx context.Context) ApiNetworkContainerServiceListNetworkContainersRequest {
 	return ApiNetworkContainerServiceListNetworkContainersRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1ListNetworkContainersResponse
+//
+//	@return V1beta1ListNetworkContainersResponse
 func (a *NetworkContainerServiceAPIService) NetworkContainerServiceListNetworkContainersExecute(r ApiNetworkContainerServiceListNetworkContainersRequest) (*V1beta1ListNetworkContainersResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1ListNetworkContainersResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1ListNetworkContainersResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkContainerServiceAPIService.NetworkContainerServiceListNetworkContainers")
@@ -1267,8 +1273,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceListNetworkCo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1278,8 +1284,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceListNetworkCo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1289,8 +1295,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceListNetworkCo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1300,8 +1306,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceListNetworkCo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1311,18 +1317,18 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceListNetworkCo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1339,12 +1345,12 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceListNetworkCo
 }
 
 type ApiNetworkContainerServiceListVpcPeeringsRequest struct {
-	ctx context.Context
-	ApiService *NetworkContainerServiceAPIService
-	projectId *string
+	ctx           context.Context
+	ApiService    *NetworkContainerServiceAPIService
+	projectId     *string
 	cloudProvider *PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter
-	pageSize *int32
-	pageToken *string
+	pageSize      *int32
+	pageToken     *string
 }
 
 // If unspecified, the project ID of default project is used.
@@ -1378,24 +1384,25 @@ func (r ApiNetworkContainerServiceListVpcPeeringsRequest) Execute() (*Dedicatedv
 /*
 NetworkContainerServiceListVpcPeerings List VPC peerings
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiNetworkContainerServiceListVpcPeeringsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiNetworkContainerServiceListVpcPeeringsRequest
 */
 func (a *NetworkContainerServiceAPIService) NetworkContainerServiceListVpcPeerings(ctx context.Context) ApiNetworkContainerServiceListVpcPeeringsRequest {
 	return ApiNetworkContainerServiceListVpcPeeringsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return Dedicatedv1beta1ListVpcPeeringsResponse
+//
+//	@return Dedicatedv1beta1ListVpcPeeringsResponse
 func (a *NetworkContainerServiceAPIService) NetworkContainerServiceListVpcPeeringsExecute(r ApiNetworkContainerServiceListVpcPeeringsRequest) (*Dedicatedv1beta1ListVpcPeeringsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Dedicatedv1beta1ListVpcPeeringsResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1ListVpcPeeringsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "NetworkContainerServiceAPIService.NetworkContainerServiceListVpcPeerings")
@@ -1481,8 +1488,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceListVpcPeerin
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1492,8 +1499,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceListVpcPeerin
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1503,8 +1510,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceListVpcPeerin
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1514,8 +1521,8 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceListVpcPeerin
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1525,18 +1532,18 @@ func (a *NetworkContainerServiceAPIService) NetworkContainerServiceListVpcPeerin
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

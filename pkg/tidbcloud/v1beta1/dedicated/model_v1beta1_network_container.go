@@ -20,18 +20,18 @@ var _ MappedNullable = &V1beta1NetworkContainer{}
 
 // V1beta1NetworkContainer struct for V1beta1NetworkContainer
 type V1beta1NetworkContainer struct {
-	Name *string `json:"name,omitempty"`
+	Name               *string `json:"name,omitempty"`
 	NetworkContainerId *string `json:"networkContainerId,omitempty"`
 	// The labels of the cluster. If there is no \"project_id\" in labels, resource should be in the default project of the creator's organization.
-	Labels *map[string]string `json:"labels,omitempty"`
-	RegionId string `json:"regionId"`
+	Labels   *map[string]string `json:"labels,omitempty"`
+	RegionId string             `json:"regionId"`
 	// If not set, the default cidr of the region will be used.
-	CidrNotion *string `json:"cidrNotion,omitempty"`
-	CloudProvider *V1beta1RegionCloudProvider `json:"cloudProvider,omitempty"`
-	State *V1beta1NetworkContainerState `json:"state,omitempty"`
-	RegionDisplayName *string `json:"regionDisplayName,omitempty"`
+	CidrNotion        *string                       `json:"cidrNotion,omitempty"`
+	CloudProvider     *V1beta1RegionCloudProvider   `json:"cloudProvider,omitempty"`
+	State             *V1beta1NetworkContainerState `json:"state,omitempty"`
+	RegionDisplayName *string                       `json:"regionDisplayName,omitempty"`
 	// For AWS, it is the vpc id. For GCP, it is the network name. For Azure, it is the vnet name.
-	VpcId *string `json:"vpcId,omitempty"`
+	VpcId                *string `json:"vpcId,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -336,7 +336,7 @@ func (o *V1beta1NetworkContainer) SetVpcId(v string) {
 }
 
 func (o V1beta1NetworkContainer) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -391,10 +391,10 @@ func (o *V1beta1NetworkContainer) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -463,5 +463,3 @@ func (v *NullableV1beta1NetworkContainer) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

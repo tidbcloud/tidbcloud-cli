@@ -21,8 +21,8 @@ type Dedicatedv1beta1VpcPeeringState string
 // List of dedicatedv1beta1VpcPeeringState
 const (
 	DEDICATEDV1BETA1VPCPEERINGSTATE_PENDING Dedicatedv1beta1VpcPeeringState = "PENDING"
-	DEDICATEDV1BETA1VPCPEERINGSTATE_FAILED Dedicatedv1beta1VpcPeeringState = "FAILED"
-	DEDICATEDV1BETA1VPCPEERINGSTATE_ACTIVE Dedicatedv1beta1VpcPeeringState = "ACTIVE"
+	DEDICATEDV1BETA1VPCPEERINGSTATE_FAILED  Dedicatedv1beta1VpcPeeringState = "FAILED"
+	DEDICATEDV1BETA1VPCPEERINGSTATE_ACTIVE  Dedicatedv1beta1VpcPeeringState = "ACTIVE"
 )
 
 // All allowed values of Dedicatedv1beta1VpcPeeringState enum
@@ -110,4 +110,3 @@ func (v *NullableDedicatedv1beta1VpcPeeringState) UnmarshalJSON(src []byte) erro
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

@@ -20,7 +20,7 @@ type V1beta1NetworkContainerState string
 
 // List of v1beta1NetworkContainerState
 const (
-	V1BETA1NETWORKCONTAINERSTATE_ACTIVE V1beta1NetworkContainerState = "ACTIVE"
+	V1BETA1NETWORKCONTAINERSTATE_ACTIVE   V1beta1NetworkContainerState = "ACTIVE"
 	V1BETA1NETWORKCONTAINERSTATE_INACTIVE V1beta1NetworkContainerState = "INACTIVE"
 )
 
@@ -108,4 +108,3 @@ func (v *NullableV1beta1NetworkContainerState) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

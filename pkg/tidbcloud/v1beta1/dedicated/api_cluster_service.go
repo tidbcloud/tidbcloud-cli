@@ -16,18 +16,17 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
 	"reflect"
+	"strings"
 )
-
 
 // ClusterServiceAPIService ClusterServiceAPI service
 type ClusterServiceAPIService service
 
 type ApiClusterServiceCreateClusterRequest struct {
-	ctx context.Context
-	ApiService *ClusterServiceAPIService
-	cluster *TidbCloudOpenApidedicatedv1beta1Cluster
+	ctx          context.Context
+	ApiService   *ClusterServiceAPIService
+	cluster      *TidbCloudOpenApidedicatedv1beta1Cluster
 	validateOnly *bool
 }
 
@@ -49,24 +48,25 @@ func (r ApiClusterServiceCreateClusterRequest) Execute() (*TidbCloudOpenApidedic
 /*
 ClusterServiceCreateCluster Create a cluster
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiClusterServiceCreateClusterRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiClusterServiceCreateClusterRequest
 */
 func (a *ClusterServiceAPIService) ClusterServiceCreateCluster(ctx context.Context) ApiClusterServiceCreateClusterRequest {
 	return ApiClusterServiceCreateClusterRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return TidbCloudOpenApidedicatedv1beta1Cluster
+//
+//	@return TidbCloudOpenApidedicatedv1beta1Cluster
 func (a *ClusterServiceAPIService) ClusterServiceCreateClusterExecute(r ApiClusterServiceCreateClusterRequest) (*TidbCloudOpenApidedicatedv1beta1Cluster, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *TidbCloudOpenApidedicatedv1beta1Cluster
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *TidbCloudOpenApidedicatedv1beta1Cluster
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClusterServiceAPIService.ClusterServiceCreateCluster")
@@ -148,8 +148,8 @@ func (a *ClusterServiceAPIService) ClusterServiceCreateClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -159,8 +159,8 @@ func (a *ClusterServiceAPIService) ClusterServiceCreateClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -170,8 +170,8 @@ func (a *ClusterServiceAPIService) ClusterServiceCreateClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -181,8 +181,8 @@ func (a *ClusterServiceAPIService) ClusterServiceCreateClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -192,18 +192,18 @@ func (a *ClusterServiceAPIService) ClusterServiceCreateClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -220,9 +220,9 @@ func (a *ClusterServiceAPIService) ClusterServiceCreateClusterExecute(r ApiClust
 }
 
 type ApiClusterServiceDeleteClusterRequest struct {
-	ctx context.Context
-	ApiService *ClusterServiceAPIService
-	clusterId string
+	ctx          context.Context
+	ApiService   *ClusterServiceAPIService
+	clusterId    string
 	validateOnly *bool
 }
 
@@ -239,26 +239,27 @@ func (r ApiClusterServiceDeleteClusterRequest) Execute() (*TidbCloudOpenApidedic
 /*
 ClusterServiceDeleteCluster Delete a cluster
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @return ApiClusterServiceDeleteClusterRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@return ApiClusterServiceDeleteClusterRequest
 */
 func (a *ClusterServiceAPIService) ClusterServiceDeleteCluster(ctx context.Context, clusterId string) ApiClusterServiceDeleteClusterRequest {
 	return ApiClusterServiceDeleteClusterRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 	}
 }
 
 // Execute executes the request
-//  @return TidbCloudOpenApidedicatedv1beta1Cluster
+//
+//	@return TidbCloudOpenApidedicatedv1beta1Cluster
 func (a *ClusterServiceAPIService) ClusterServiceDeleteClusterExecute(r ApiClusterServiceDeleteClusterRequest) (*TidbCloudOpenApidedicatedv1beta1Cluster, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *TidbCloudOpenApidedicatedv1beta1Cluster
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *TidbCloudOpenApidedicatedv1beta1Cluster
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClusterServiceAPIService.ClusterServiceDeleteCluster")
@@ -336,8 +337,8 @@ func (a *ClusterServiceAPIService) ClusterServiceDeleteClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -347,8 +348,8 @@ func (a *ClusterServiceAPIService) ClusterServiceDeleteClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -358,8 +359,8 @@ func (a *ClusterServiceAPIService) ClusterServiceDeleteClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -369,8 +370,8 @@ func (a *ClusterServiceAPIService) ClusterServiceDeleteClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -380,18 +381,18 @@ func (a *ClusterServiceAPIService) ClusterServiceDeleteClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -408,9 +409,9 @@ func (a *ClusterServiceAPIService) ClusterServiceDeleteClusterExecute(r ApiClust
 }
 
 type ApiClusterServiceGetClusterRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *ClusterServiceAPIService
-	clusterId string
+	clusterId  string
 }
 
 func (r ApiClusterServiceGetClusterRequest) Execute() (*TidbCloudOpenApidedicatedv1beta1Cluster, *http.Response, error) {
@@ -420,26 +421,27 @@ func (r ApiClusterServiceGetClusterRequest) Execute() (*TidbCloudOpenApidedicate
 /*
 ClusterServiceGetCluster Get a cluster
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @return ApiClusterServiceGetClusterRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@return ApiClusterServiceGetClusterRequest
 */
 func (a *ClusterServiceAPIService) ClusterServiceGetCluster(ctx context.Context, clusterId string) ApiClusterServiceGetClusterRequest {
 	return ApiClusterServiceGetClusterRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 	}
 }
 
 // Execute executes the request
-//  @return TidbCloudOpenApidedicatedv1beta1Cluster
+//
+//	@return TidbCloudOpenApidedicatedv1beta1Cluster
 func (a *ClusterServiceAPIService) ClusterServiceGetClusterExecute(r ApiClusterServiceGetClusterRequest) (*TidbCloudOpenApidedicatedv1beta1Cluster, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *TidbCloudOpenApidedicatedv1beta1Cluster
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *TidbCloudOpenApidedicatedv1beta1Cluster
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClusterServiceAPIService.ClusterServiceGetCluster")
@@ -514,8 +516,8 @@ func (a *ClusterServiceAPIService) ClusterServiceGetClusterExecute(r ApiClusterS
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -525,8 +527,8 @@ func (a *ClusterServiceAPIService) ClusterServiceGetClusterExecute(r ApiClusterS
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -536,8 +538,8 @@ func (a *ClusterServiceAPIService) ClusterServiceGetClusterExecute(r ApiClusterS
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -547,8 +549,8 @@ func (a *ClusterServiceAPIService) ClusterServiceGetClusterExecute(r ApiClusterS
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -558,18 +560,18 @@ func (a *ClusterServiceAPIService) ClusterServiceGetClusterExecute(r ApiClusterS
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -586,9 +588,9 @@ func (a *ClusterServiceAPIService) ClusterServiceGetClusterExecute(r ApiClusterS
 }
 
 type ApiClusterServiceGetNodeInstanceRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *ClusterServiceAPIService
-	clusterId string
+	clusterId  string
 	instanceId string
 }
 
@@ -599,28 +601,29 @@ func (r ApiClusterServiceGetNodeInstanceRequest) Execute() (*V1beta1NodeInstance
 /*
 ClusterServiceGetNodeInstance Get a node instance
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @param instanceId
- @return ApiClusterServiceGetNodeInstanceRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@param instanceId
+	@return ApiClusterServiceGetNodeInstanceRequest
 */
 func (a *ClusterServiceAPIService) ClusterServiceGetNodeInstance(ctx context.Context, clusterId string, instanceId string) ApiClusterServiceGetNodeInstanceRequest {
 	return ApiClusterServiceGetNodeInstanceRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 		instanceId: instanceId,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1NodeInstance
+//
+//	@return V1beta1NodeInstance
 func (a *ClusterServiceAPIService) ClusterServiceGetNodeInstanceExecute(r ApiClusterServiceGetNodeInstanceRequest) (*V1beta1NodeInstance, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1NodeInstance
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1NodeInstance
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClusterServiceAPIService.ClusterServiceGetNodeInstance")
@@ -696,8 +699,8 @@ func (a *ClusterServiceAPIService) ClusterServiceGetNodeInstanceExecute(r ApiClu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -707,8 +710,8 @@ func (a *ClusterServiceAPIService) ClusterServiceGetNodeInstanceExecute(r ApiClu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -718,8 +721,8 @@ func (a *ClusterServiceAPIService) ClusterServiceGetNodeInstanceExecute(r ApiClu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -729,8 +732,8 @@ func (a *ClusterServiceAPIService) ClusterServiceGetNodeInstanceExecute(r ApiClu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -740,18 +743,18 @@ func (a *ClusterServiceAPIService) ClusterServiceGetNodeInstanceExecute(r ApiClu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -768,15 +771,15 @@ func (a *ClusterServiceAPIService) ClusterServiceGetNodeInstanceExecute(r ApiClu
 }
 
 type ApiClusterServiceListClustersRequest struct {
-	ctx context.Context
-	ApiService *ClusterServiceAPIService
-	projectId *string
-	clusterIds *[]string
-	regionIds *[]string
+	ctx           context.Context
+	ApiService    *ClusterServiceAPIService
+	projectId     *string
+	clusterIds    *[]string
+	regionIds     *[]string
 	clusterStates *[]ClusterServiceListClustersClusterStatesParameterInner
-	pageSize *int32
-	pageToken *string
-	skip *int32
+	pageSize      *int32
+	pageToken     *string
+	skip          *int32
 }
 
 // If unspecified, the project ID of default project is used.
@@ -828,24 +831,25 @@ func (r ApiClusterServiceListClustersRequest) Execute() (*TidbCloudOpenApidedica
 /*
 ClusterServiceListClusters List clusters
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiClusterServiceListClustersRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiClusterServiceListClustersRequest
 */
 func (a *ClusterServiceAPIService) ClusterServiceListClusters(ctx context.Context) ApiClusterServiceListClustersRequest {
 	return ApiClusterServiceListClustersRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return TidbCloudOpenApidedicatedv1beta1ListClustersResponse
+//
+//	@return TidbCloudOpenApidedicatedv1beta1ListClustersResponse
 func (a *ClusterServiceAPIService) ClusterServiceListClustersExecute(r ApiClusterServiceListClustersRequest) (*TidbCloudOpenApidedicatedv1beta1ListClustersResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *TidbCloudOpenApidedicatedv1beta1ListClustersResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *TidbCloudOpenApidedicatedv1beta1ListClustersResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClusterServiceAPIService.ClusterServiceListClusters")
@@ -964,8 +968,8 @@ func (a *ClusterServiceAPIService) ClusterServiceListClustersExecute(r ApiCluste
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -975,8 +979,8 @@ func (a *ClusterServiceAPIService) ClusterServiceListClustersExecute(r ApiCluste
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -986,8 +990,8 @@ func (a *ClusterServiceAPIService) ClusterServiceListClustersExecute(r ApiCluste
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -997,8 +1001,8 @@ func (a *ClusterServiceAPIService) ClusterServiceListClustersExecute(r ApiCluste
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1008,18 +1012,18 @@ func (a *ClusterServiceAPIService) ClusterServiceListClustersExecute(r ApiCluste
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1036,13 +1040,13 @@ func (a *ClusterServiceAPIService) ClusterServiceListClustersExecute(r ApiCluste
 }
 
 type ApiClusterServiceListNodeInstancesRequest struct {
-	ctx context.Context
-	ApiService *ClusterServiceAPIService
-	clusterId string
+	ctx           context.Context
+	ApiService    *ClusterServiceAPIService
+	clusterId     string
 	componentType *ClusterServiceListNodeInstancesComponentTypeParameter
-	pageSize *int32
-	pageToken *string
-	skip *int32
+	pageSize      *int32
+	pageToken     *string
+	skip          *int32
 }
 
 // If specified, only node instances of the specified component type will be returned.
@@ -1076,26 +1080,27 @@ func (r ApiClusterServiceListNodeInstancesRequest) Execute() (*V1beta1ListNodeIn
 /*
 ClusterServiceListNodeInstances List node instances
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @return ApiClusterServiceListNodeInstancesRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@return ApiClusterServiceListNodeInstancesRequest
 */
 func (a *ClusterServiceAPIService) ClusterServiceListNodeInstances(ctx context.Context, clusterId string) ApiClusterServiceListNodeInstancesRequest {
 	return ApiClusterServiceListNodeInstancesRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1ListNodeInstancesResponse
+//
+//	@return V1beta1ListNodeInstancesResponse
 func (a *ClusterServiceAPIService) ClusterServiceListNodeInstancesExecute(r ApiClusterServiceListNodeInstancesRequest) (*V1beta1ListNodeInstancesResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1ListNodeInstancesResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1ListNodeInstancesResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClusterServiceAPIService.ClusterServiceListNodeInstances")
@@ -1182,8 +1187,8 @@ func (a *ClusterServiceAPIService) ClusterServiceListNodeInstancesExecute(r ApiC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1193,8 +1198,8 @@ func (a *ClusterServiceAPIService) ClusterServiceListNodeInstancesExecute(r ApiC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1204,8 +1209,8 @@ func (a *ClusterServiceAPIService) ClusterServiceListNodeInstancesExecute(r ApiC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1215,8 +1220,8 @@ func (a *ClusterServiceAPIService) ClusterServiceListNodeInstancesExecute(r ApiC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1226,18 +1231,18 @@ func (a *ClusterServiceAPIService) ClusterServiceListNodeInstancesExecute(r ApiC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1254,9 +1259,9 @@ func (a *ClusterServiceAPIService) ClusterServiceListNodeInstancesExecute(r ApiC
 }
 
 type ApiClusterServicePauseClusterRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *ClusterServiceAPIService
-	clusterId string
+	clusterId  string
 }
 
 func (r ApiClusterServicePauseClusterRequest) Execute() (*Dedicatedv1beta1PauseClusterResponse, *http.Response, error) {
@@ -1266,26 +1271,27 @@ func (r ApiClusterServicePauseClusterRequest) Execute() (*Dedicatedv1beta1PauseC
 /*
 ClusterServicePauseCluster Pause a cluster
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @return ApiClusterServicePauseClusterRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@return ApiClusterServicePauseClusterRequest
 */
 func (a *ClusterServiceAPIService) ClusterServicePauseCluster(ctx context.Context, clusterId string) ApiClusterServicePauseClusterRequest {
 	return ApiClusterServicePauseClusterRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 	}
 }
 
 // Execute executes the request
-//  @return Dedicatedv1beta1PauseClusterResponse
+//
+//	@return Dedicatedv1beta1PauseClusterResponse
 func (a *ClusterServiceAPIService) ClusterServicePauseClusterExecute(r ApiClusterServicePauseClusterRequest) (*Dedicatedv1beta1PauseClusterResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Dedicatedv1beta1PauseClusterResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1PauseClusterResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClusterServiceAPIService.ClusterServicePauseCluster")
@@ -1360,8 +1366,8 @@ func (a *ClusterServiceAPIService) ClusterServicePauseClusterExecute(r ApiCluste
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1371,8 +1377,8 @@ func (a *ClusterServiceAPIService) ClusterServicePauseClusterExecute(r ApiCluste
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1382,8 +1388,8 @@ func (a *ClusterServiceAPIService) ClusterServicePauseClusterExecute(r ApiCluste
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1393,8 +1399,8 @@ func (a *ClusterServiceAPIService) ClusterServicePauseClusterExecute(r ApiCluste
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1404,18 +1410,18 @@ func (a *ClusterServiceAPIService) ClusterServicePauseClusterExecute(r ApiCluste
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1432,10 +1438,10 @@ func (a *ClusterServiceAPIService) ClusterServicePauseClusterExecute(r ApiCluste
 }
 
 type ApiClusterServiceResetRootPasswordRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *ClusterServiceAPIService
-	clusterId string
-	body *ClusterServiceResetRootPasswordBody
+	clusterId  string
+	body       *ClusterServiceResetRootPasswordBody
 }
 
 func (r ApiClusterServiceResetRootPasswordRequest) Body(body ClusterServiceResetRootPasswordBody) ApiClusterServiceResetRootPasswordRequest {
@@ -1450,26 +1456,27 @@ func (r ApiClusterServiceResetRootPasswordRequest) Execute() (map[string]interfa
 /*
 ClusterServiceResetRootPassword Reset the root password of a cluster
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @return ApiClusterServiceResetRootPasswordRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@return ApiClusterServiceResetRootPasswordRequest
 */
 func (a *ClusterServiceAPIService) ClusterServiceResetRootPassword(ctx context.Context, clusterId string) ApiClusterServiceResetRootPasswordRequest {
 	return ApiClusterServiceResetRootPasswordRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 	}
 }
 
 // Execute executes the request
-//  @return map[string]interface{}
+//
+//	@return map[string]interface{}
 func (a *ClusterServiceAPIService) ClusterServiceResetRootPasswordExecute(r ApiClusterServiceResetRootPasswordRequest) (map[string]interface{}, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  map[string]interface{}
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue map[string]interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClusterServiceAPIService.ClusterServiceResetRootPassword")
@@ -1549,8 +1556,8 @@ func (a *ClusterServiceAPIService) ClusterServiceResetRootPasswordExecute(r ApiC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1560,8 +1567,8 @@ func (a *ClusterServiceAPIService) ClusterServiceResetRootPasswordExecute(r ApiC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1571,8 +1578,8 @@ func (a *ClusterServiceAPIService) ClusterServiceResetRootPasswordExecute(r ApiC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1582,8 +1589,8 @@ func (a *ClusterServiceAPIService) ClusterServiceResetRootPasswordExecute(r ApiC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1593,18 +1600,18 @@ func (a *ClusterServiceAPIService) ClusterServiceResetRootPasswordExecute(r ApiC
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1621,9 +1628,9 @@ func (a *ClusterServiceAPIService) ClusterServiceResetRootPasswordExecute(r ApiC
 }
 
 type ApiClusterServiceResumeClusterRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *ClusterServiceAPIService
-	clusterId string
+	clusterId  string
 }
 
 func (r ApiClusterServiceResumeClusterRequest) Execute() (*Dedicatedv1beta1ResumeClusterResponse, *http.Response, error) {
@@ -1633,26 +1640,27 @@ func (r ApiClusterServiceResumeClusterRequest) Execute() (*Dedicatedv1beta1Resum
 /*
 ClusterServiceResumeCluster Resume a cluster
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @return ApiClusterServiceResumeClusterRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@return ApiClusterServiceResumeClusterRequest
 */
 func (a *ClusterServiceAPIService) ClusterServiceResumeCluster(ctx context.Context, clusterId string) ApiClusterServiceResumeClusterRequest {
 	return ApiClusterServiceResumeClusterRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 	}
 }
 
 // Execute executes the request
-//  @return Dedicatedv1beta1ResumeClusterResponse
+//
+//	@return Dedicatedv1beta1ResumeClusterResponse
 func (a *ClusterServiceAPIService) ClusterServiceResumeClusterExecute(r ApiClusterServiceResumeClusterRequest) (*Dedicatedv1beta1ResumeClusterResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Dedicatedv1beta1ResumeClusterResponse
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1ResumeClusterResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClusterServiceAPIService.ClusterServiceResumeCluster")
@@ -1727,8 +1735,8 @@ func (a *ClusterServiceAPIService) ClusterServiceResumeClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1738,8 +1746,8 @@ func (a *ClusterServiceAPIService) ClusterServiceResumeClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1749,8 +1757,8 @@ func (a *ClusterServiceAPIService) ClusterServiceResumeClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1760,8 +1768,8 @@ func (a *ClusterServiceAPIService) ClusterServiceResumeClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1771,18 +1779,18 @@ func (a *ClusterServiceAPIService) ClusterServiceResumeClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1799,7 +1807,7 @@ func (a *ClusterServiceAPIService) ClusterServiceResumeClusterExecute(r ApiClust
 }
 
 type ApiClusterServiceShowNodeQuotaRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *ClusterServiceAPIService
 }
 
@@ -1810,24 +1818,25 @@ func (r ApiClusterServiceShowNodeQuotaRequest) Execute() (*V1beta1ShowNodeQuotaR
 /*
 ClusterServiceShowNodeQuota Show node quota across the caller's organization
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiClusterServiceShowNodeQuotaRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiClusterServiceShowNodeQuotaRequest
 */
 func (a *ClusterServiceAPIService) ClusterServiceShowNodeQuota(ctx context.Context) ApiClusterServiceShowNodeQuotaRequest {
 	return ApiClusterServiceShowNodeQuotaRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1ShowNodeQuotaResponse
+//
+//	@return V1beta1ShowNodeQuotaResponse
 func (a *ClusterServiceAPIService) ClusterServiceShowNodeQuotaExecute(r ApiClusterServiceShowNodeQuotaRequest) (*V1beta1ShowNodeQuotaResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1ShowNodeQuotaResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1ShowNodeQuotaResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClusterServiceAPIService.ClusterServiceShowNodeQuota")
@@ -1901,8 +1910,8 @@ func (a *ClusterServiceAPIService) ClusterServiceShowNodeQuotaExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1912,8 +1921,8 @@ func (a *ClusterServiceAPIService) ClusterServiceShowNodeQuotaExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1923,8 +1932,8 @@ func (a *ClusterServiceAPIService) ClusterServiceShowNodeQuotaExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1934,8 +1943,8 @@ func (a *ClusterServiceAPIService) ClusterServiceShowNodeQuotaExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1945,18 +1954,18 @@ func (a *ClusterServiceAPIService) ClusterServiceShowNodeQuotaExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1973,11 +1982,11 @@ func (a *ClusterServiceAPIService) ClusterServiceShowNodeQuotaExecute(r ApiClust
 }
 
 type ApiClusterServiceUpdateClusterRequest struct {
-	ctx context.Context
-	ApiService *ClusterServiceAPIService
+	ctx              context.Context
+	ApiService       *ClusterServiceAPIService
 	clusterClusterId string
-	cluster *ClusterServiceUpdateClusterRequest
-	validateOnly *bool
+	cluster          *ClusterServiceUpdateClusterRequest
+	validateOnly     *bool
 }
 
 func (r ApiClusterServiceUpdateClusterRequest) Cluster(cluster ClusterServiceUpdateClusterRequest) ApiClusterServiceUpdateClusterRequest {
@@ -1998,26 +2007,27 @@ func (r ApiClusterServiceUpdateClusterRequest) Execute() (*TidbCloudOpenApidedic
 /*
 ClusterServiceUpdateCluster Update a cluster
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterClusterId
- @return ApiClusterServiceUpdateClusterRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterClusterId
+	@return ApiClusterServiceUpdateClusterRequest
 */
 func (a *ClusterServiceAPIService) ClusterServiceUpdateCluster(ctx context.Context, clusterClusterId string) ApiClusterServiceUpdateClusterRequest {
 	return ApiClusterServiceUpdateClusterRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:       a,
+		ctx:              ctx,
 		clusterClusterId: clusterClusterId,
 	}
 }
 
 // Execute executes the request
-//  @return TidbCloudOpenApidedicatedv1beta1Cluster
+//
+//	@return TidbCloudOpenApidedicatedv1beta1Cluster
 func (a *ClusterServiceAPIService) ClusterServiceUpdateClusterExecute(r ApiClusterServiceUpdateClusterRequest) (*TidbCloudOpenApidedicatedv1beta1Cluster, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPatch
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *TidbCloudOpenApidedicatedv1beta1Cluster
+		localVarHTTPMethod  = http.MethodPatch
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *TidbCloudOpenApidedicatedv1beta1Cluster
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClusterServiceAPIService.ClusterServiceUpdateCluster")
@@ -2100,8 +2110,8 @@ func (a *ClusterServiceAPIService) ClusterServiceUpdateClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -2111,8 +2121,8 @@ func (a *ClusterServiceAPIService) ClusterServiceUpdateClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -2122,8 +2132,8 @@ func (a *ClusterServiceAPIService) ClusterServiceUpdateClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -2133,8 +2143,8 @@ func (a *ClusterServiceAPIService) ClusterServiceUpdateClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -2144,18 +2154,18 @@ func (a *ClusterServiceAPIService) ClusterServiceUpdateClusterExecute(r ApiClust
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

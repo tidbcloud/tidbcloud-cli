@@ -19,9 +19,9 @@ var _ MappedNullable = &V1beta1ListAuditLogFilterRulesResponse{}
 
 // V1beta1ListAuditLogFilterRulesResponse struct for V1beta1ListAuditLogFilterRulesResponse
 type V1beta1ListAuditLogFilterRulesResponse struct {
-	AuditLogFilterRules []V1beta1AuditLogFilterRule `json:"auditLogFilterRules,omitempty"`
-	TotalSize *int32 `json:"totalSize,omitempty"`
-	NextPageToken *string `json:"nextPageToken,omitempty"`
+	AuditLogFilterRules  []V1beta1AuditLogFilterRule `json:"auditLogFilterRules,omitempty"`
+	TotalSize            *int32                      `json:"totalSize,omitempty"`
+	NextPageToken        *string                     `json:"nextPageToken,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -141,7 +141,7 @@ func (o *V1beta1ListAuditLogFilterRulesResponse) SetNextPageToken(v string) {
 }
 
 func (o V1beta1ListAuditLogFilterRulesResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -225,5 +225,3 @@ func (v *NullableV1beta1ListAuditLogFilterRulesResponse) UnmarshalJSON(src []byt
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

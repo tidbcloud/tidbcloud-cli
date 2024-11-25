@@ -12,8 +12,8 @@ package dedicated
 
 import (
 	"encoding/json"
-	"time"
 	"fmt"
+	"time"
 )
 
 // checks if the Dedicatedv1beta1ClusterPausePlan type satisfies the MappedNullable interface at compile time
@@ -21,8 +21,8 @@ var _ MappedNullable = &Dedicatedv1beta1ClusterPausePlan{}
 
 // Dedicatedv1beta1ClusterPausePlan struct for Dedicatedv1beta1ClusterPausePlan
 type Dedicatedv1beta1ClusterPausePlan struct {
-	PauseType Dedicatedv1beta1ClusterPausePlanType `json:"pauseType"`
-	ScheduledResumeTime *time.Time `json:"scheduledResumeTime,omitempty"`
+	PauseType            Dedicatedv1beta1ClusterPausePlanType `json:"pauseType"`
+	ScheduledResumeTime  *time.Time                           `json:"scheduledResumeTime,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -103,7 +103,7 @@ func (o *Dedicatedv1beta1ClusterPausePlan) SetScheduledResumeTime(v time.Time) {
 }
 
 func (o Dedicatedv1beta1ClusterPausePlan) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -137,10 +137,10 @@ func (o *Dedicatedv1beta1ClusterPausePlan) UnmarshalJSON(data []byte) (err error
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -202,5 +202,3 @@ func (v *NullableDedicatedv1beta1ClusterPausePlan) UnmarshalJSON(src []byte) err
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

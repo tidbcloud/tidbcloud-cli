@@ -21,7 +21,7 @@ type V1beta1PrivateLinkServiceState string
 // List of v1beta1PrivateLinkServiceState
 const (
 	V1BETA1PRIVATELINKSERVICESTATE_CREATING V1beta1PrivateLinkServiceState = "CREATING"
-	V1BETA1PRIVATELINKSERVICESTATE_ACTIVE V1beta1PrivateLinkServiceState = "ACTIVE"
+	V1BETA1PRIVATELINKSERVICESTATE_ACTIVE   V1beta1PrivateLinkServiceState = "ACTIVE"
 	V1BETA1PRIVATELINKSERVICESTATE_DELETING V1beta1PrivateLinkServiceState = "DELETING"
 )
 
@@ -110,4 +110,3 @@ func (v *NullableV1beta1PrivateLinkServiceState) UnmarshalJSON(src []byte) error
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

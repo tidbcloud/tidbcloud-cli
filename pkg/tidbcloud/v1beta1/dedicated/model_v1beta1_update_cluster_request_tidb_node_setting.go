@@ -19,8 +19,8 @@ var _ MappedNullable = &V1beta1UpdateClusterRequestTidbNodeSetting{}
 
 // V1beta1UpdateClusterRequestTidbNodeSetting struct for V1beta1UpdateClusterRequestTidbNodeSetting
 type V1beta1UpdateClusterRequestTidbNodeSetting struct {
-	NodeSpecKey *string `json:"nodeSpecKey,omitempty"`
-	TidbNodeGroups []UpdateClusterRequestTidbNodeSettingTidbNodeGroup `json:"tidbNodeGroups,omitempty"`
+	NodeSpecKey          *string                                            `json:"nodeSpecKey,omitempty"`
+	TidbNodeGroups       []UpdateClusterRequestTidbNodeSettingTidbNodeGroup `json:"tidbNodeGroups,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -108,7 +108,7 @@ func (o *V1beta1UpdateClusterRequestTidbNodeSetting) SetTidbNodeGroups(v []Updat
 }
 
 func (o V1beta1UpdateClusterRequestTidbNodeSetting) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -188,5 +188,3 @@ func (v *NullableV1beta1UpdateClusterRequestTidbNodeSetting) UnmarshalJSON(src [
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

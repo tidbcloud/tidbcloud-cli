@@ -20,8 +20,8 @@ type V1beta1RegionCloudProvider string
 
 // List of v1beta1RegionCloudProvider
 const (
-	V1BETA1REGIONCLOUDPROVIDER_AWS V1beta1RegionCloudProvider = "aws"
-	V1BETA1REGIONCLOUDPROVIDER_GCP V1beta1RegionCloudProvider = "gcp"
+	V1BETA1REGIONCLOUDPROVIDER_AWS   V1beta1RegionCloudProvider = "aws"
+	V1BETA1REGIONCLOUDPROVIDER_GCP   V1beta1RegionCloudProvider = "gcp"
 	V1BETA1REGIONCLOUDPROVIDER_AZURE V1beta1RegionCloudProvider = "azure"
 )
 
@@ -110,4 +110,3 @@ func (v *NullableV1beta1RegionCloudProvider) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

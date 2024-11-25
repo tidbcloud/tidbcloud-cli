@@ -20,10 +20,10 @@ var _ MappedNullable = &V1beta1UpdateTidbNodeGroupRequestTidbNodeGroup{}
 
 // V1beta1UpdateTidbNodeGroupRequestTidbNodeGroup struct for V1beta1UpdateTidbNodeGroupRequestTidbNodeGroup
 type V1beta1UpdateTidbNodeGroupRequestTidbNodeGroup struct {
-	ClusterId string `json:"clusterId"`
-	TidbNodeGroupId string `json:"tidbNodeGroupId"`
-	DisplayName *string `json:"displayName,omitempty"`
-	NodeCount NullableInt32 `json:"nodeCount,omitempty"`
+	ClusterId            string        `json:"clusterId"`
+	TidbNodeGroupId      string        `json:"tidbNodeGroupId"`
+	DisplayName          *string       `json:"displayName,omitempty"`
+	NodeCount            NullableInt32 `json:"nodeCount,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -160,6 +160,7 @@ func (o *V1beta1UpdateTidbNodeGroupRequestTidbNodeGroup) HasNodeCount() bool {
 func (o *V1beta1UpdateTidbNodeGroupRequestTidbNodeGroup) SetNodeCount(v int32) {
 	o.NodeCount.Set(&v)
 }
+
 // SetNodeCountNil sets the value for NodeCount to be an explicit nil
 func (o *V1beta1UpdateTidbNodeGroupRequestTidbNodeGroup) SetNodeCountNil() {
 	o.NodeCount.Set(nil)
@@ -171,7 +172,7 @@ func (o *V1beta1UpdateTidbNodeGroupRequestTidbNodeGroup) UnsetNodeCount() {
 }
 
 func (o V1beta1UpdateTidbNodeGroupRequestTidbNodeGroup) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -210,10 +211,10 @@ func (o *V1beta1UpdateTidbNodeGroupRequestTidbNodeGroup) UnmarshalJSON(data []by
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -277,5 +278,3 @@ func (v *NullableV1beta1UpdateTidbNodeGroupRequestTidbNodeGroup) UnmarshalJSON(s
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -20,12 +20,12 @@ var _ MappedNullable = &V1beta1UpdateAuditLogConfigRequestAuditLogConfig{}
 
 // V1beta1UpdateAuditLogConfigRequestAuditLogConfig struct for V1beta1UpdateAuditLogConfigRequestAuditLogConfig
 type V1beta1UpdateAuditLogConfigRequestAuditLogConfig struct {
-	ClusterId string `json:"clusterId"`
-	Enabled NullableBool `json:"enabled,omitempty"`
-	BucketUri *string `json:"bucketUri,omitempty"`
-	BucketRegionId *string `json:"bucketRegionId,omitempty"`
-	AwsRoleArn *string `json:"awsRoleArn,omitempty"`
-	AzureSasToken *string `json:"azureSasToken,omitempty"`
+	ClusterId            string       `json:"clusterId"`
+	Enabled              NullableBool `json:"enabled,omitempty"`
+	BucketUri            *string      `json:"bucketUri,omitempty"`
+	BucketRegionId       *string      `json:"bucketRegionId,omitempty"`
+	AwsRoleArn           *string      `json:"awsRoleArn,omitempty"`
+	AzureSasToken        *string      `json:"azureSasToken,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -105,6 +105,7 @@ func (o *V1beta1UpdateAuditLogConfigRequestAuditLogConfig) HasEnabled() bool {
 func (o *V1beta1UpdateAuditLogConfigRequestAuditLogConfig) SetEnabled(v bool) {
 	o.Enabled.Set(&v)
 }
+
 // SetEnabledNil sets the value for Enabled to be an explicit nil
 func (o *V1beta1UpdateAuditLogConfigRequestAuditLogConfig) SetEnabledNil() {
 	o.Enabled.Set(nil)
@@ -244,7 +245,7 @@ func (o *V1beta1UpdateAuditLogConfigRequestAuditLogConfig) SetAzureSasToken(v st
 }
 
 func (o V1beta1UpdateAuditLogConfigRequestAuditLogConfig) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -290,10 +291,10 @@ func (o *V1beta1UpdateAuditLogConfigRequestAuditLogConfig) UnmarshalJSON(data []
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -359,5 +360,3 @@ func (v *NullableV1beta1UpdateAuditLogConfigRequestAuditLogConfig) UnmarshalJSON
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

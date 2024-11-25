@@ -22,7 +22,7 @@ type ClusterNodeChangingProgress struct {
 	MatchingNodeSpecNodeCount *int32 `json:"matchingNodeSpecNodeCount,omitempty"`
 	// available if some nodes are deleting.
 	RemainingDeletionNodeCount *int32 `json:"remainingDeletionNodeCount,omitempty"`
-	AdditionalProperties map[string]interface{}
+	AdditionalProperties       map[string]interface{}
 }
 
 type _ClusterNodeChangingProgress ClusterNodeChangingProgress
@@ -109,7 +109,7 @@ func (o *ClusterNodeChangingProgress) SetRemainingDeletionNodeCount(v int32) {
 }
 
 func (o ClusterNodeChangingProgress) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -189,5 +189,3 @@ func (v *NullableClusterNodeChangingProgress) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -12,7 +12,6 @@ package cluster
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // checks if the TidbCloudOpenApiserverlessv1beta1CreateClusterRequest type satisfies the MappedNullable interface at compile time
@@ -21,7 +20,7 @@ var _ MappedNullable = &TidbCloudOpenApiserverlessv1beta1CreateClusterRequest{}
 // TidbCloudOpenApiserverlessv1beta1CreateClusterRequest Message for requesting to create a TiDB Cloud Serverless cluster.
 type TidbCloudOpenApiserverlessv1beta1CreateClusterRequest struct {
 	// Required. The cluster to be created.
-	Cluster              TidbCloudOpenApiserverlessv1beta1Cluster `json:"cluster"`
+	Cluster              *TidbCloudOpenApiserverlessv1beta1Cluster `json:"cluster,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -31,9 +30,8 @@ type _TidbCloudOpenApiserverlessv1beta1CreateClusterRequest TidbCloudOpenApiserv
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTidbCloudOpenApiserverlessv1beta1CreateClusterRequest(cluster TidbCloudOpenApiserverlessv1beta1Cluster) *TidbCloudOpenApiserverlessv1beta1CreateClusterRequest {
+func NewTidbCloudOpenApiserverlessv1beta1CreateClusterRequest() *TidbCloudOpenApiserverlessv1beta1CreateClusterRequest {
 	this := TidbCloudOpenApiserverlessv1beta1CreateClusterRequest{}
-	this.Cluster = cluster
 	return &this
 }
 
@@ -45,28 +43,36 @@ func NewTidbCloudOpenApiserverlessv1beta1CreateClusterRequestWithDefaults() *Tid
 	return &this
 }
 
-// GetCluster returns the Cluster field value
+// GetCluster returns the Cluster field value if set, zero value otherwise.
 func (o *TidbCloudOpenApiserverlessv1beta1CreateClusterRequest) GetCluster() TidbCloudOpenApiserverlessv1beta1Cluster {
-	if o == nil {
+	if o == nil || IsNil(o.Cluster) {
 		var ret TidbCloudOpenApiserverlessv1beta1Cluster
 		return ret
 	}
-
-	return o.Cluster
+	return *o.Cluster
 }
 
-// GetClusterOk returns a tuple with the Cluster field value
+// GetClusterOk returns a tuple with the Cluster field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *TidbCloudOpenApiserverlessv1beta1CreateClusterRequest) GetClusterOk() (*TidbCloudOpenApiserverlessv1beta1Cluster, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.Cluster) {
 		return nil, false
 	}
-	return &o.Cluster, true
+	return o.Cluster, true
 }
 
-// SetCluster sets field value
+// HasCluster returns a boolean if a field has been set.
+func (o *TidbCloudOpenApiserverlessv1beta1CreateClusterRequest) HasCluster() bool {
+	if o != nil && !IsNil(o.Cluster) {
+		return true
+	}
+
+	return false
+}
+
+// SetCluster gets a reference to the given TidbCloudOpenApiserverlessv1beta1Cluster and assigns it to the Cluster field.
 func (o *TidbCloudOpenApiserverlessv1beta1CreateClusterRequest) SetCluster(v TidbCloudOpenApiserverlessv1beta1Cluster) {
-	o.Cluster = v
+	o.Cluster = &v
 }
 
 func (o TidbCloudOpenApiserverlessv1beta1CreateClusterRequest) MarshalJSON() ([]byte, error) {
@@ -79,7 +85,9 @@ func (o TidbCloudOpenApiserverlessv1beta1CreateClusterRequest) MarshalJSON() ([]
 
 func (o TidbCloudOpenApiserverlessv1beta1CreateClusterRequest) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["cluster"] = o.Cluster
+	if !IsNil(o.Cluster) {
+		toSerialize["cluster"] = o.Cluster
+	}
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -89,27 +97,6 @@ func (o TidbCloudOpenApiserverlessv1beta1CreateClusterRequest) ToMap() (map[stri
 }
 
 func (o *TidbCloudOpenApiserverlessv1beta1CreateClusterRequest) UnmarshalJSON(data []byte) (err error) {
-	// This validates that all required properties are included in the JSON object
-	// by unmarshalling the object into a generic map with string keys and checking
-	// that every required field exists as a key in the generic map.
-	requiredProperties := []string{
-		"cluster",
-	}
-
-	allProperties := make(map[string]interface{})
-
-	err = json.Unmarshal(data, &allProperties)
-
-	if err != nil {
-		return err
-	}
-
-	for _, requiredProperty := range requiredProperties {
-		if _, exists := allProperties[requiredProperty]; !exists {
-			return fmt.Errorf("no value given for required property %v", requiredProperty)
-		}
-	}
-
 	varTidbCloudOpenApiserverlessv1beta1CreateClusterRequest := _TidbCloudOpenApiserverlessv1beta1CreateClusterRequest{}
 
 	err = json.Unmarshal(data, &varTidbCloudOpenApiserverlessv1beta1CreateClusterRequest)

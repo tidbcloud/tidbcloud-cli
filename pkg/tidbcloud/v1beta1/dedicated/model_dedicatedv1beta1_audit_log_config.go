@@ -20,15 +20,15 @@ var _ MappedNullable = &Dedicatedv1beta1AuditLogConfig{}
 
 // Dedicatedv1beta1AuditLogConfig struct for Dedicatedv1beta1AuditLogConfig
 type Dedicatedv1beta1AuditLogConfig struct {
-	Name *string `json:"name,omitempty"`
-	ClusterId string `json:"clusterId"`
+	Name      *string `json:"name,omitempty"`
+	ClusterId string  `json:"clusterId"`
 	// Default is false.
-	Enabled *bool `json:"enabled,omitempty"`
-	BucketUri string `json:"bucketUri"`
-	BucketRegionId *string `json:"bucketRegionId,omitempty"`
-	AwsRoleArn *string `json:"awsRoleArn,omitempty"`
-	AzureSasToken *string `json:"azureSasToken,omitempty"`
-	BucketWriteCheck *AuditLogConfigBucketWriteCheck `json:"bucketWriteCheck,omitempty"`
+	Enabled              *bool                           `json:"enabled,omitempty"`
+	BucketUri            string                          `json:"bucketUri"`
+	BucketRegionId       *string                         `json:"bucketRegionId,omitempty"`
+	AwsRoleArn           *string                         `json:"awsRoleArn,omitempty"`
+	AzureSasToken        *string                         `json:"azureSasToken,omitempty"`
+	BucketWriteCheck     *AuditLogConfigBucketWriteCheck `json:"bucketWriteCheck,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -294,7 +294,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) SetBucketWriteCheck(v AuditLogConfigBuc
 }
 
 func (o Dedicatedv1beta1AuditLogConfig) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -345,10 +345,10 @@ func (o *Dedicatedv1beta1AuditLogConfig) UnmarshalJSON(data []byte) (err error) 
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -416,5 +416,3 @@ func (v *NullableDedicatedv1beta1AuditLogConfig) UnmarshalJSON(src []byte) error
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

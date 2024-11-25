@@ -19,13 +19,12 @@ import (
 	"strings"
 )
 
-
 // MaintenanceServiceAPIService MaintenanceServiceAPI service
 type MaintenanceServiceAPIService service
 
 type ApiMaintenanceServiceDeferMaintenanceTaskRequest struct {
-	ctx context.Context
-	ApiService *MaintenanceServiceAPIService
+	ctx               context.Context
+	ApiService        *MaintenanceServiceAPIService
 	maintenanceTaskId string
 }
 
@@ -36,26 +35,27 @@ func (r ApiMaintenanceServiceDeferMaintenanceTaskRequest) Execute() (map[string]
 /*
 MaintenanceServiceDeferMaintenanceTask Defer a maintenance task
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param maintenanceTaskId
- @return ApiMaintenanceServiceDeferMaintenanceTaskRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param maintenanceTaskId
+	@return ApiMaintenanceServiceDeferMaintenanceTaskRequest
 */
 func (a *MaintenanceServiceAPIService) MaintenanceServiceDeferMaintenanceTask(ctx context.Context, maintenanceTaskId string) ApiMaintenanceServiceDeferMaintenanceTaskRequest {
 	return ApiMaintenanceServiceDeferMaintenanceTaskRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:        a,
+		ctx:               ctx,
 		maintenanceTaskId: maintenanceTaskId,
 	}
 }
 
 // Execute executes the request
-//  @return map[string]interface{}
+//
+//	@return map[string]interface{}
 func (a *MaintenanceServiceAPIService) MaintenanceServiceDeferMaintenanceTaskExecute(r ApiMaintenanceServiceDeferMaintenanceTaskRequest) (map[string]interface{}, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  map[string]interface{}
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue map[string]interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MaintenanceServiceAPIService.MaintenanceServiceDeferMaintenanceTask")
@@ -130,8 +130,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceDeferMaintenanceTaskExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -141,8 +141,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceDeferMaintenanceTaskExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -152,8 +152,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceDeferMaintenanceTaskExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -163,8 +163,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceDeferMaintenanceTaskExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -174,18 +174,18 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceDeferMaintenanceTaskExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -202,8 +202,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceDeferMaintenanceTaskExe
 }
 
 type ApiMaintenanceServiceGetMaintenanceTaskRequest struct {
-	ctx context.Context
-	ApiService *MaintenanceServiceAPIService
+	ctx               context.Context
+	ApiService        *MaintenanceServiceAPIService
 	maintenanceTaskId string
 }
 
@@ -214,26 +214,27 @@ func (r ApiMaintenanceServiceGetMaintenanceTaskRequest) Execute() (*V1beta1Maint
 /*
 MaintenanceServiceGetMaintenanceTask Get a maintenance task
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param maintenanceTaskId
- @return ApiMaintenanceServiceGetMaintenanceTaskRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param maintenanceTaskId
+	@return ApiMaintenanceServiceGetMaintenanceTaskRequest
 */
 func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceTask(ctx context.Context, maintenanceTaskId string) ApiMaintenanceServiceGetMaintenanceTaskRequest {
 	return ApiMaintenanceServiceGetMaintenanceTaskRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:        a,
+		ctx:               ctx,
 		maintenanceTaskId: maintenanceTaskId,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1MaintenanceTask
+//
+//	@return V1beta1MaintenanceTask
 func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceTaskExecute(r ApiMaintenanceServiceGetMaintenanceTaskRequest) (*V1beta1MaintenanceTask, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1MaintenanceTask
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1MaintenanceTask
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MaintenanceServiceAPIService.MaintenanceServiceGetMaintenanceTask")
@@ -308,8 +309,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceTaskExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -319,8 +320,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceTaskExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -330,8 +331,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceTaskExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -341,8 +342,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceTaskExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -352,18 +353,18 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceTaskExecu
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -380,8 +381,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceTaskExecu
 }
 
 type ApiMaintenanceServiceGetMaintenanceWindowRequest struct {
-	ctx context.Context
-	ApiService *MaintenanceServiceAPIService
+	ctx                 context.Context
+	ApiService          *MaintenanceServiceAPIService
 	maintenanceWindowId string
 }
 
@@ -392,26 +393,27 @@ func (r ApiMaintenanceServiceGetMaintenanceWindowRequest) Execute() (*Dedicatedv
 /*
 MaintenanceServiceGetMaintenanceWindow Get a maintenance window
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param maintenanceWindowId Format: project-{project_id}
- @return ApiMaintenanceServiceGetMaintenanceWindowRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param maintenanceWindowId Format: project-{project_id}
+	@return ApiMaintenanceServiceGetMaintenanceWindowRequest
 */
 func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceWindow(ctx context.Context, maintenanceWindowId string) ApiMaintenanceServiceGetMaintenanceWindowRequest {
 	return ApiMaintenanceServiceGetMaintenanceWindowRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:          a,
+		ctx:                 ctx,
 		maintenanceWindowId: maintenanceWindowId,
 	}
 }
 
 // Execute executes the request
-//  @return Dedicatedv1beta1MaintenanceWindow
+//
+//	@return Dedicatedv1beta1MaintenanceWindow
 func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceWindowExecute(r ApiMaintenanceServiceGetMaintenanceWindowRequest) (*Dedicatedv1beta1MaintenanceWindow, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Dedicatedv1beta1MaintenanceWindow
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1MaintenanceWindow
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MaintenanceServiceAPIService.MaintenanceServiceGetMaintenanceWindow")
@@ -486,8 +488,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceWindowExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -497,8 +499,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceWindowExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -508,8 +510,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceWindowExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -519,8 +521,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceWindowExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -530,18 +532,18 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceWindowExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -558,12 +560,12 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceWindowExe
 }
 
 type ApiMaintenanceServiceListMaintenanceTasksRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *MaintenanceServiceAPIService
-	projectId *string
-	pageSize *int32
-	pageToken *string
-	skip *int32
+	projectId  *string
+	pageSize   *int32
+	pageToken  *string
+	skip       *int32
 }
 
 // If unspecified, the project ID of default project is used.
@@ -597,24 +599,25 @@ func (r ApiMaintenanceServiceListMaintenanceTasksRequest) Execute() (*V1beta1Lis
 /*
 MaintenanceServiceListMaintenanceTasks List maintenance tasks
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiMaintenanceServiceListMaintenanceTasksRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiMaintenanceServiceListMaintenanceTasksRequest
 */
 func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceTasks(ctx context.Context) ApiMaintenanceServiceListMaintenanceTasksRequest {
 	return ApiMaintenanceServiceListMaintenanceTasksRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1ListMaintenanceTasksResponse
+//
+//	@return V1beta1ListMaintenanceTasksResponse
 func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceTasksExecute(r ApiMaintenanceServiceListMaintenanceTasksRequest) (*V1beta1ListMaintenanceTasksResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1ListMaintenanceTasksResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1ListMaintenanceTasksResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MaintenanceServiceAPIService.MaintenanceServiceListMaintenanceTasks")
@@ -700,8 +703,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceTasksExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -711,8 +714,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceTasksExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -722,8 +725,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceTasksExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -733,8 +736,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceTasksExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -744,18 +747,18 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceTasksExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -772,12 +775,12 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceTasksExe
 }
 
 type ApiMaintenanceServiceListMaintenanceWindowsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *MaintenanceServiceAPIService
-	projectId *string
-	pageSize *int32
-	pageToken *string
-	skip *int32
+	projectId  *string
+	pageSize   *int32
+	pageToken  *string
+	skip       *int32
 }
 
 // If unspecified, the project ID of default project is used.
@@ -811,24 +814,25 @@ func (r ApiMaintenanceServiceListMaintenanceWindowsRequest) Execute() (*V1beta1L
 /*
 MaintenanceServiceListMaintenanceWindows List maintenance windows
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @return ApiMaintenanceServiceListMaintenanceWindowsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return ApiMaintenanceServiceListMaintenanceWindowsRequest
 */
 func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceWindows(ctx context.Context) ApiMaintenanceServiceListMaintenanceWindowsRequest {
 	return ApiMaintenanceServiceListMaintenanceWindowsRequest{
 		ApiService: a,
-		ctx: ctx,
+		ctx:        ctx,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1ListMaintenanceWindowsResponse
+//
+//	@return V1beta1ListMaintenanceWindowsResponse
 func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceWindowsExecute(r ApiMaintenanceServiceListMaintenanceWindowsRequest) (*V1beta1ListMaintenanceWindowsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1ListMaintenanceWindowsResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1ListMaintenanceWindowsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MaintenanceServiceAPIService.MaintenanceServiceListMaintenanceWindows")
@@ -914,8 +918,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceWindowsE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -925,8 +929,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceWindowsE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -936,8 +940,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceWindowsE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -947,8 +951,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceWindowsE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -958,18 +962,18 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceWindowsE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -986,10 +990,10 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceWindowsE
 }
 
 type ApiMaintenanceServiceUpdateMaintenanceWindowRequest struct {
-	ctx context.Context
-	ApiService *MaintenanceServiceAPIService
+	ctx                                  context.Context
+	ApiService                           *MaintenanceServiceAPIService
 	maintenanceWindowMaintenanceWindowId string
-	maintenanceWindow *MaintenanceServiceUpdateMaintenanceWindowRequest
+	maintenanceWindow                    *MaintenanceServiceUpdateMaintenanceWindowRequest
 }
 
 func (r ApiMaintenanceServiceUpdateMaintenanceWindowRequest) MaintenanceWindow(maintenanceWindow MaintenanceServiceUpdateMaintenanceWindowRequest) ApiMaintenanceServiceUpdateMaintenanceWindowRequest {
@@ -1004,26 +1008,27 @@ func (r ApiMaintenanceServiceUpdateMaintenanceWindowRequest) Execute() (*Dedicat
 /*
 MaintenanceServiceUpdateMaintenanceWindow Update a maintenance window
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param maintenanceWindowMaintenanceWindowId Format: project-{project_id}
- @return ApiMaintenanceServiceUpdateMaintenanceWindowRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param maintenanceWindowMaintenanceWindowId Format: project-{project_id}
+	@return ApiMaintenanceServiceUpdateMaintenanceWindowRequest
 */
 func (a *MaintenanceServiceAPIService) MaintenanceServiceUpdateMaintenanceWindow(ctx context.Context, maintenanceWindowMaintenanceWindowId string) ApiMaintenanceServiceUpdateMaintenanceWindowRequest {
 	return ApiMaintenanceServiceUpdateMaintenanceWindowRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:                           a,
+		ctx:                                  ctx,
 		maintenanceWindowMaintenanceWindowId: maintenanceWindowMaintenanceWindowId,
 	}
 }
 
 // Execute executes the request
-//  @return Dedicatedv1beta1MaintenanceWindow
+//
+//	@return Dedicatedv1beta1MaintenanceWindow
 func (a *MaintenanceServiceAPIService) MaintenanceServiceUpdateMaintenanceWindowExecute(r ApiMaintenanceServiceUpdateMaintenanceWindowRequest) (*Dedicatedv1beta1MaintenanceWindow, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPatch
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Dedicatedv1beta1MaintenanceWindow
+		localVarHTTPMethod  = http.MethodPatch
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1MaintenanceWindow
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MaintenanceServiceAPIService.MaintenanceServiceUpdateMaintenanceWindow")
@@ -1103,8 +1108,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceUpdateMaintenanceWindow
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1114,8 +1119,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceUpdateMaintenanceWindow
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1125,8 +1130,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceUpdateMaintenanceWindow
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1136,8 +1141,8 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceUpdateMaintenanceWindow
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1147,18 +1152,18 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceUpdateMaintenanceWindow
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

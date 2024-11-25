@@ -21,8 +21,8 @@ var _ MappedNullable = &V1beta1UpdateClusterRequestStorageNodeSetting{}
 type V1beta1UpdateClusterRequestStorageNodeSetting struct {
 	NodeSpecKey *string `json:"nodeSpecKey,omitempty"`
 	// When update TiFlash node setting:   - If the node count is set to 0, the TiFlash node will be removed.   - If the node count is null, the TiFlash node count won't change. For other components, if the node count is set to 0, server will ignore the node count.
-	NodeCount NullableInt32 `json:"nodeCount,omitempty"`
-	StorageSizeGi *int32 `json:"storageSizeGi,omitempty"`
+	NodeCount            NullableInt32 `json:"nodeCount,omitempty"`
+	StorageSizeGi        *int32        `json:"storageSizeGi,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -109,6 +109,7 @@ func (o *V1beta1UpdateClusterRequestStorageNodeSetting) HasNodeCount() bool {
 func (o *V1beta1UpdateClusterRequestStorageNodeSetting) SetNodeCount(v int32) {
 	o.NodeCount.Set(&v)
 }
+
 // SetNodeCountNil sets the value for NodeCount to be an explicit nil
 func (o *V1beta1UpdateClusterRequestStorageNodeSetting) SetNodeCountNil() {
 	o.NodeCount.Set(nil)
@@ -152,7 +153,7 @@ func (o *V1beta1UpdateClusterRequestStorageNodeSetting) SetStorageSizeGi(v int32
 }
 
 func (o V1beta1UpdateClusterRequestStorageNodeSetting) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -236,5 +237,3 @@ func (v *NullableV1beta1UpdateClusterRequestStorageNodeSetting) UnmarshalJSON(sr
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

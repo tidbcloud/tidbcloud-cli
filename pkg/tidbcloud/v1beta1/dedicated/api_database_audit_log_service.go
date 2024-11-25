@@ -19,16 +19,15 @@ import (
 	"strings"
 )
 
-
 // DatabaseAuditLogServiceAPIService DatabaseAuditLogServiceAPI service
 type DatabaseAuditLogServiceAPIService service
 
 type ApiDatabaseAuditLogServiceCreateAuditLogConfigRequest struct {
-	ctx context.Context
-	ApiService *DatabaseAuditLogServiceAPIService
+	ctx                     context.Context
+	ApiService              *DatabaseAuditLogServiceAPIService
 	auditLogConfigClusterId string
-	auditLogConfig *DatabaseAuditLogServiceCreateAuditLogConfigRequest
-	validateOnly *bool
+	auditLogConfig          *DatabaseAuditLogServiceCreateAuditLogConfigRequest
+	validateOnly            *bool
 }
 
 func (r ApiDatabaseAuditLogServiceCreateAuditLogConfigRequest) AuditLogConfig(auditLogConfig DatabaseAuditLogServiceCreateAuditLogConfigRequest) ApiDatabaseAuditLogServiceCreateAuditLogConfigRequest {
@@ -48,26 +47,27 @@ func (r ApiDatabaseAuditLogServiceCreateAuditLogConfigRequest) Execute() (*Dedic
 /*
 DatabaseAuditLogServiceCreateAuditLogConfig Create the audit log config for a cluster
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param auditLogConfigClusterId
- @return ApiDatabaseAuditLogServiceCreateAuditLogConfigRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param auditLogConfigClusterId
+	@return ApiDatabaseAuditLogServiceCreateAuditLogConfigRequest
 */
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLogConfig(ctx context.Context, auditLogConfigClusterId string) ApiDatabaseAuditLogServiceCreateAuditLogConfigRequest {
 	return ApiDatabaseAuditLogServiceCreateAuditLogConfigRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:              a,
+		ctx:                     ctx,
 		auditLogConfigClusterId: auditLogConfigClusterId,
 	}
 }
 
 // Execute executes the request
-//  @return Dedicatedv1beta1AuditLogConfig
+//
+//	@return Dedicatedv1beta1AuditLogConfig
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLogConfigExecute(r ApiDatabaseAuditLogServiceCreateAuditLogConfigRequest) (*Dedicatedv1beta1AuditLogConfig, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Dedicatedv1beta1AuditLogConfig
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1AuditLogConfig
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceCreateAuditLogConfig")
@@ -150,8 +150,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -161,8 +161,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -172,8 +172,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -183,8 +183,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -194,18 +194,18 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -222,10 +222,10 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLo
 }
 
 type ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest struct {
-	ctx context.Context
-	ApiService *DatabaseAuditLogServiceAPIService
+	ctx                         context.Context
+	ApiService                  *DatabaseAuditLogServiceAPIService
 	auditLogFilterRuleClusterId string
-	auditLogFilterRule *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest
+	auditLogFilterRule          *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest
 }
 
 func (r ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) AuditLogFilterRule(auditLogFilterRule DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest {
@@ -240,26 +240,27 @@ func (r ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) Execute() (*V
 /*
 DatabaseAuditLogServiceCreateAuditLogFilterRule Create an audit log filter rule
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param auditLogFilterRuleClusterId
- @return ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param auditLogFilterRuleClusterId
+	@return ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest
 */
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLogFilterRule(ctx context.Context, auditLogFilterRuleClusterId string) ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest {
 	return ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:                  a,
+		ctx:                         ctx,
 		auditLogFilterRuleClusterId: auditLogFilterRuleClusterId,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1AuditLogFilterRule
+//
+//	@return V1beta1AuditLogFilterRule
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLogFilterRuleExecute(r ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) (*V1beta1AuditLogFilterRule, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1AuditLogFilterRule
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1AuditLogFilterRule
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceCreateAuditLogFilterRule")
@@ -339,8 +340,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -350,8 +351,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -361,8 +362,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -372,8 +373,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -383,18 +384,18 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -411,9 +412,9 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLo
 }
 
 type ApiDatabaseAuditLogServiceDeleteAuditLogFilterRuleRequest struct {
-	ctx context.Context
-	ApiService *DatabaseAuditLogServiceAPIService
-	clusterId string
+	ctx                  context.Context
+	ApiService           *DatabaseAuditLogServiceAPIService
+	clusterId            string
 	auditLogFilterRuleId string
 }
 
@@ -424,28 +425,29 @@ func (r ApiDatabaseAuditLogServiceDeleteAuditLogFilterRuleRequest) Execute() (ma
 /*
 DatabaseAuditLogServiceDeleteAuditLogFilterRule Delete an audit log filter rule
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @param auditLogFilterRuleId
- @return ApiDatabaseAuditLogServiceDeleteAuditLogFilterRuleRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@param auditLogFilterRuleId
+	@return ApiDatabaseAuditLogServiceDeleteAuditLogFilterRuleRequest
 */
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceDeleteAuditLogFilterRule(ctx context.Context, clusterId string, auditLogFilterRuleId string) ApiDatabaseAuditLogServiceDeleteAuditLogFilterRuleRequest {
 	return ApiDatabaseAuditLogServiceDeleteAuditLogFilterRuleRequest{
-		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ApiService:           a,
+		ctx:                  ctx,
+		clusterId:            clusterId,
 		auditLogFilterRuleId: auditLogFilterRuleId,
 	}
 }
 
 // Execute executes the request
-//  @return map[string]interface{}
+//
+//	@return map[string]interface{}
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceDeleteAuditLogFilterRuleExecute(r ApiDatabaseAuditLogServiceDeleteAuditLogFilterRuleRequest) (map[string]interface{}, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  map[string]interface{}
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue map[string]interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceDeleteAuditLogFilterRule")
@@ -521,8 +523,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceDeleteAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -532,8 +534,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceDeleteAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -543,8 +545,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceDeleteAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -554,8 +556,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceDeleteAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -565,18 +567,18 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceDeleteAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -593,9 +595,9 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceDeleteAuditLo
 }
 
 type ApiDatabaseAuditLogServiceGetAuditLogConfigRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *DatabaseAuditLogServiceAPIService
-	clusterId string
+	clusterId  string
 }
 
 func (r ApiDatabaseAuditLogServiceGetAuditLogConfigRequest) Execute() (*Dedicatedv1beta1AuditLogConfig, *http.Response, error) {
@@ -605,26 +607,27 @@ func (r ApiDatabaseAuditLogServiceGetAuditLogConfigRequest) Execute() (*Dedicate
 /*
 DatabaseAuditLogServiceGetAuditLogConfig Get the audit log config of a cluster
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @return ApiDatabaseAuditLogServiceGetAuditLogConfigRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@return ApiDatabaseAuditLogServiceGetAuditLogConfigRequest
 */
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogConfig(ctx context.Context, clusterId string) ApiDatabaseAuditLogServiceGetAuditLogConfigRequest {
 	return ApiDatabaseAuditLogServiceGetAuditLogConfigRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 	}
 }
 
 // Execute executes the request
-//  @return Dedicatedv1beta1AuditLogConfig
+//
+//	@return Dedicatedv1beta1AuditLogConfig
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogConfigExecute(r ApiDatabaseAuditLogServiceGetAuditLogConfigRequest) (*Dedicatedv1beta1AuditLogConfig, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Dedicatedv1beta1AuditLogConfig
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1AuditLogConfig
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceGetAuditLogConfig")
@@ -699,8 +702,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogCo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -710,8 +713,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogCo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -721,8 +724,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogCo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -732,8 +735,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogCo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -743,18 +746,18 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogCo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -771,9 +774,9 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogCo
 }
 
 type ApiDatabaseAuditLogServiceGetAuditLogFilterRuleRequest struct {
-	ctx context.Context
-	ApiService *DatabaseAuditLogServiceAPIService
-	clusterId string
+	ctx                  context.Context
+	ApiService           *DatabaseAuditLogServiceAPIService
+	clusterId            string
 	auditLogFilterRuleId string
 }
 
@@ -784,28 +787,29 @@ func (r ApiDatabaseAuditLogServiceGetAuditLogFilterRuleRequest) Execute() (*V1be
 /*
 DatabaseAuditLogServiceGetAuditLogFilterRule Get an audit log filter rule
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @param auditLogFilterRuleId
- @return ApiDatabaseAuditLogServiceGetAuditLogFilterRuleRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@param auditLogFilterRuleId
+	@return ApiDatabaseAuditLogServiceGetAuditLogFilterRuleRequest
 */
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogFilterRule(ctx context.Context, clusterId string, auditLogFilterRuleId string) ApiDatabaseAuditLogServiceGetAuditLogFilterRuleRequest {
 	return ApiDatabaseAuditLogServiceGetAuditLogFilterRuleRequest{
-		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ApiService:           a,
+		ctx:                  ctx,
+		clusterId:            clusterId,
 		auditLogFilterRuleId: auditLogFilterRuleId,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1AuditLogFilterRule
+//
+//	@return V1beta1AuditLogFilterRule
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogFilterRuleExecute(r ApiDatabaseAuditLogServiceGetAuditLogFilterRuleRequest) (*V1beta1AuditLogFilterRule, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1AuditLogFilterRule
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1AuditLogFilterRule
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceGetAuditLogFilterRule")
@@ -881,8 +885,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogFi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -892,8 +896,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogFi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -903,8 +907,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogFi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -914,8 +918,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogFi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -925,18 +929,18 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogFi
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -953,12 +957,12 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogFi
 }
 
 type ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *DatabaseAuditLogServiceAPIService
-	clusterId string
-	pageSize *int32
-	pageToken *string
-	skip *int32
+	clusterId  string
+	pageSize   *int32
+	pageToken  *string
+	skip       *int32
 }
 
 func (r ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest) PageSize(pageSize int32) ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest {
@@ -984,26 +988,27 @@ func (r ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest) Execute() (*V1
 /*
 DatabaseAuditLogServiceListAuditLogFilterRules List audit log filter rules
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @return ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@return ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest
 */
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceListAuditLogFilterRules(ctx context.Context, clusterId string) ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest {
 	return ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1ListAuditLogFilterRulesResponse
+//
+//	@return V1beta1ListAuditLogFilterRulesResponse
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceListAuditLogFilterRulesExecute(r ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest) (*V1beta1ListAuditLogFilterRulesResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1ListAuditLogFilterRulesResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1ListAuditLogFilterRulesResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceListAuditLogFilterRules")
@@ -1087,8 +1092,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceListAuditLogF
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1098,8 +1103,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceListAuditLogF
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1109,8 +1114,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceListAuditLogF
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1120,8 +1125,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceListAuditLogF
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1131,18 +1136,18 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceListAuditLogF
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1159,9 +1164,9 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceListAuditLogF
 }
 
 type ApiDatabaseAuditLogServiceShowObjectStorageAccessIamPrincipalRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *DatabaseAuditLogServiceAPIService
-	clusterId string
+	clusterId  string
 }
 
 func (r ApiDatabaseAuditLogServiceShowObjectStorageAccessIamPrincipalRequest) Execute() (*V1beta1ShowObjectStorageAccessIamPrincipalResponse, *http.Response, error) {
@@ -1171,26 +1176,27 @@ func (r ApiDatabaseAuditLogServiceShowObjectStorageAccessIamPrincipalRequest) Ex
 /*
 DatabaseAuditLogServiceShowObjectStorageAccessIamPrincipal Show IAM principal of TiDB Cloud for accessing customer's object storage
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @return ApiDatabaseAuditLogServiceShowObjectStorageAccessIamPrincipalRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@return ApiDatabaseAuditLogServiceShowObjectStorageAccessIamPrincipalRequest
 */
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceShowObjectStorageAccessIamPrincipal(ctx context.Context, clusterId string) ApiDatabaseAuditLogServiceShowObjectStorageAccessIamPrincipalRequest {
 	return ApiDatabaseAuditLogServiceShowObjectStorageAccessIamPrincipalRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1ShowObjectStorageAccessIamPrincipalResponse
+//
+//	@return V1beta1ShowObjectStorageAccessIamPrincipalResponse
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceShowObjectStorageAccessIamPrincipalExecute(r ApiDatabaseAuditLogServiceShowObjectStorageAccessIamPrincipalRequest) (*V1beta1ShowObjectStorageAccessIamPrincipalResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1ShowObjectStorageAccessIamPrincipalResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1ShowObjectStorageAccessIamPrincipalResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceShowObjectStorageAccessIamPrincipal")
@@ -1265,8 +1271,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceShowObjectSto
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1276,8 +1282,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceShowObjectSto
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1287,8 +1293,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceShowObjectSto
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1298,8 +1304,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceShowObjectSto
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1309,18 +1315,18 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceShowObjectSto
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1337,11 +1343,11 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceShowObjectSto
 }
 
 type ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest struct {
-	ctx context.Context
-	ApiService *DatabaseAuditLogServiceAPIService
+	ctx                     context.Context
+	ApiService              *DatabaseAuditLogServiceAPIService
 	auditLogConfigClusterId string
-	auditLogConfig *DatabaseAuditLogServiceUpdateAuditLogConfigRequest
-	validateOnly *bool
+	auditLogConfig          *DatabaseAuditLogServiceUpdateAuditLogConfigRequest
+	validateOnly            *bool
 }
 
 func (r ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest) AuditLogConfig(auditLogConfig DatabaseAuditLogServiceUpdateAuditLogConfigRequest) ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest {
@@ -1361,26 +1367,27 @@ func (r ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest) Execute() (*Dedic
 /*
 DatabaseAuditLogServiceUpdateAuditLogConfig Update the audit log config of a cluster
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param auditLogConfigClusterId
- @return ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param auditLogConfigClusterId
+	@return ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest
 */
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceUpdateAuditLogConfig(ctx context.Context, auditLogConfigClusterId string) ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest {
 	return ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:              a,
+		ctx:                     ctx,
 		auditLogConfigClusterId: auditLogConfigClusterId,
 	}
 }
 
 // Execute executes the request
-//  @return Dedicatedv1beta1AuditLogConfig
+//
+//	@return Dedicatedv1beta1AuditLogConfig
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceUpdateAuditLogConfigExecute(r ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest) (*Dedicatedv1beta1AuditLogConfig, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPatch
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Dedicatedv1beta1AuditLogConfig
+		localVarHTTPMethod  = http.MethodPatch
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1AuditLogConfig
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceUpdateAuditLogConfig")
@@ -1463,8 +1470,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceUpdateAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1474,8 +1481,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceUpdateAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1485,8 +1492,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceUpdateAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1496,8 +1503,8 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceUpdateAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1507,18 +1514,18 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceUpdateAuditLo
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

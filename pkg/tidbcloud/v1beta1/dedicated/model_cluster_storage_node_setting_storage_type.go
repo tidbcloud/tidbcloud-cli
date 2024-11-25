@@ -20,10 +20,10 @@ type ClusterStorageNodeSettingStorageType string
 
 // List of ClusterStorageNodeSettingStorageType
 const (
-	CLUSTERSTORAGENODESETTINGSTORAGETYPE_BASIC ClusterStorageNodeSettingStorageType = "BASIC"
-	CLUSTERSTORAGENODESETTINGSTORAGETYPE_BASICV2 ClusterStorageNodeSettingStorageType = "BASICV2"
+	CLUSTERSTORAGENODESETTINGSTORAGETYPE_BASIC     ClusterStorageNodeSettingStorageType = "BASIC"
+	CLUSTERSTORAGENODESETTINGSTORAGETYPE_BASICV2   ClusterStorageNodeSettingStorageType = "BASICV2"
 	CLUSTERSTORAGENODESETTINGSTORAGETYPE_OPTIMIZED ClusterStorageNodeSettingStorageType = "OPTIMIZED"
-	CLUSTERSTORAGENODESETTINGSTORAGETYPE_PLUS ClusterStorageNodeSettingStorageType = "PLUS"
+	CLUSTERSTORAGENODESETTINGSTORAGETYPE_PLUS      ClusterStorageNodeSettingStorageType = "PLUS"
 )
 
 // All allowed values of ClusterStorageNodeSettingStorageType enum
@@ -112,4 +112,3 @@ func (v *NullableClusterStorageNodeSettingStorageType) UnmarshalJSON(src []byte)
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

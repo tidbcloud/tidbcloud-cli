@@ -19,17 +19,16 @@ import (
 	"strings"
 )
 
-
 // PrivateEndpointConnectionServiceAPIService PrivateEndpointConnectionServiceAPI service
 type PrivateEndpointConnectionServiceAPIService service
 
 type ApiPrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest struct {
-	ctx context.Context
-	ApiService *PrivateEndpointConnectionServiceAPIService
-	clusterId string
+	ctx                                      context.Context
+	ApiService                               *PrivateEndpointConnectionServiceAPIService
+	clusterId                                string
 	privateEndpointConnectionTidbNodeGroupId string
-	privateEndpointConnection *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest
-	validateOnly *bool
+	privateEndpointConnection                *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest
+	validateOnly                             *bool
 }
 
 func (r ApiPrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) PrivateEndpointConnection(privateEndpointConnection PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) ApiPrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest {
@@ -50,28 +49,29 @@ func (r ApiPrivateEndpointConnectionServiceCreatePrivateEndpointConnectionReques
 /*
 PrivateEndpointConnectionServiceCreatePrivateEndpointConnection Create a private endpoint connection
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @param privateEndpointConnectionTidbNodeGroupId
- @return ApiPrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@param privateEndpointConnectionTidbNodeGroupId
+	@return ApiPrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest
 */
 func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionServiceCreatePrivateEndpointConnection(ctx context.Context, clusterId string, privateEndpointConnectionTidbNodeGroupId string) ApiPrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest {
 	return ApiPrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest{
-		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ApiService:                               a,
+		ctx:                                      ctx,
+		clusterId:                                clusterId,
 		privateEndpointConnectionTidbNodeGroupId: privateEndpointConnectionTidbNodeGroupId,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1PrivateEndpointConnection
+//
+//	@return V1beta1PrivateEndpointConnection
 func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionExecute(r ApiPrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) (*V1beta1PrivateEndpointConnection, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1PrivateEndpointConnection
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1PrivateEndpointConnection
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PrivateEndpointConnectionServiceAPIService.PrivateEndpointConnectionServiceCreatePrivateEndpointConnection")
@@ -155,8 +155,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -166,8 +166,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -177,8 +177,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -188,8 +188,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -199,18 +199,18 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -227,10 +227,10 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 }
 
 type ApiPrivateEndpointConnectionServiceDeletePrivateEndpointConnectionRequest struct {
-	ctx context.Context
-	ApiService *PrivateEndpointConnectionServiceAPIService
-	clusterId string
-	tidbNodeGroupId string
+	ctx                         context.Context
+	ApiService                  *PrivateEndpointConnectionServiceAPIService
+	clusterId                   string
+	tidbNodeGroupId             string
 	privateEndpointConnectionId string
 }
 
@@ -241,30 +241,31 @@ func (r ApiPrivateEndpointConnectionServiceDeletePrivateEndpointConnectionReques
 /*
 PrivateEndpointConnectionServiceDeletePrivateEndpointConnection Delete a private endpoint connection
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @param tidbNodeGroupId
- @param privateEndpointConnectionId
- @return ApiPrivateEndpointConnectionServiceDeletePrivateEndpointConnectionRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@param tidbNodeGroupId
+	@param privateEndpointConnectionId
+	@return ApiPrivateEndpointConnectionServiceDeletePrivateEndpointConnectionRequest
 */
 func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionServiceDeletePrivateEndpointConnection(ctx context.Context, clusterId string, tidbNodeGroupId string, privateEndpointConnectionId string) ApiPrivateEndpointConnectionServiceDeletePrivateEndpointConnectionRequest {
 	return ApiPrivateEndpointConnectionServiceDeletePrivateEndpointConnectionRequest{
-		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
-		tidbNodeGroupId: tidbNodeGroupId,
+		ApiService:                  a,
+		ctx:                         ctx,
+		clusterId:                   clusterId,
+		tidbNodeGroupId:             tidbNodeGroupId,
 		privateEndpointConnectionId: privateEndpointConnectionId,
 	}
 }
 
 // Execute executes the request
-//  @return map[string]interface{}
+//
+//	@return map[string]interface{}
 func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionServiceDeletePrivateEndpointConnectionExecute(r ApiPrivateEndpointConnectionServiceDeletePrivateEndpointConnectionRequest) (map[string]interface{}, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  map[string]interface{}
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue map[string]interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PrivateEndpointConnectionServiceAPIService.PrivateEndpointConnectionServiceDeletePrivateEndpointConnection")
@@ -341,8 +342,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -352,8 +353,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -363,8 +364,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -374,8 +375,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -385,18 +386,18 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -413,10 +414,10 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 }
 
 type ApiPrivateEndpointConnectionServiceGetPrivateEndpointConnectionRequest struct {
-	ctx context.Context
-	ApiService *PrivateEndpointConnectionServiceAPIService
-	clusterId string
-	tidbNodeGroupId string
+	ctx                         context.Context
+	ApiService                  *PrivateEndpointConnectionServiceAPIService
+	clusterId                   string
+	tidbNodeGroupId             string
 	privateEndpointConnectionId string
 }
 
@@ -427,30 +428,31 @@ func (r ApiPrivateEndpointConnectionServiceGetPrivateEndpointConnectionRequest) 
 /*
 PrivateEndpointConnectionServiceGetPrivateEndpointConnection Get a private endpoint connection
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @param tidbNodeGroupId
- @param privateEndpointConnectionId
- @return ApiPrivateEndpointConnectionServiceGetPrivateEndpointConnectionRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@param tidbNodeGroupId
+	@param privateEndpointConnectionId
+	@return ApiPrivateEndpointConnectionServiceGetPrivateEndpointConnectionRequest
 */
 func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionServiceGetPrivateEndpointConnection(ctx context.Context, clusterId string, tidbNodeGroupId string, privateEndpointConnectionId string) ApiPrivateEndpointConnectionServiceGetPrivateEndpointConnectionRequest {
 	return ApiPrivateEndpointConnectionServiceGetPrivateEndpointConnectionRequest{
-		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
-		tidbNodeGroupId: tidbNodeGroupId,
+		ApiService:                  a,
+		ctx:                         ctx,
+		clusterId:                   clusterId,
+		tidbNodeGroupId:             tidbNodeGroupId,
 		privateEndpointConnectionId: privateEndpointConnectionId,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1PrivateEndpointConnection
+//
+//	@return V1beta1PrivateEndpointConnection
 func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionServiceGetPrivateEndpointConnectionExecute(r ApiPrivateEndpointConnectionServiceGetPrivateEndpointConnectionRequest) (*V1beta1PrivateEndpointConnection, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1PrivateEndpointConnection
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1PrivateEndpointConnection
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PrivateEndpointConnectionServiceAPIService.PrivateEndpointConnectionServiceGetPrivateEndpointConnection")
@@ -527,8 +529,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -538,8 +540,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -549,8 +551,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -560,8 +562,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -571,18 +573,18 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -599,9 +601,9 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 }
 
 type ApiPrivateEndpointConnectionServiceGetPrivateLinkServiceRequest struct {
-	ctx context.Context
-	ApiService *PrivateEndpointConnectionServiceAPIService
-	clusterId string
+	ctx             context.Context
+	ApiService      *PrivateEndpointConnectionServiceAPIService
+	clusterId       string
 	tidbNodeGroupId string
 }
 
@@ -612,28 +614,29 @@ func (r ApiPrivateEndpointConnectionServiceGetPrivateLinkServiceRequest) Execute
 /*
 PrivateEndpointConnectionServiceGetPrivateLinkService Get the private link service of a TiDB Node Group
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @param tidbNodeGroupId
- @return ApiPrivateEndpointConnectionServiceGetPrivateLinkServiceRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@param tidbNodeGroupId
+	@return ApiPrivateEndpointConnectionServiceGetPrivateLinkServiceRequest
 */
 func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionServiceGetPrivateLinkService(ctx context.Context, clusterId string, tidbNodeGroupId string) ApiPrivateEndpointConnectionServiceGetPrivateLinkServiceRequest {
 	return ApiPrivateEndpointConnectionServiceGetPrivateLinkServiceRequest{
-		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ApiService:      a,
+		ctx:             ctx,
+		clusterId:       clusterId,
 		tidbNodeGroupId: tidbNodeGroupId,
 	}
 }
 
 // Execute executes the request
-//  @return Dedicatedv1beta1PrivateLinkService
+//
+//	@return Dedicatedv1beta1PrivateLinkService
 func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionServiceGetPrivateLinkServiceExecute(r ApiPrivateEndpointConnectionServiceGetPrivateLinkServiceRequest) (*Dedicatedv1beta1PrivateLinkService, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Dedicatedv1beta1PrivateLinkService
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1PrivateLinkService
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PrivateEndpointConnectionServiceAPIService.PrivateEndpointConnectionServiceGetPrivateLinkService")
@@ -709,8 +712,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -720,8 +723,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -731,8 +734,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -742,8 +745,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -753,18 +756,18 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -781,15 +784,15 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 }
 
 type ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest struct {
-	ctx context.Context
-	ApiService *PrivateEndpointConnectionServiceAPIService
-	clusterId string
+	ctx             context.Context
+	ApiService      *PrivateEndpointConnectionServiceAPIService
+	clusterId       string
 	tidbNodeGroupId string
-	projectId *string
-	cloudProvider *PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter
-	pageSize *int32
-	pageToken *string
-	skip *int32
+	projectId       *string
+	cloudProvider   *PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter
+	pageSize        *int32
+	pageToken       *string
+	skip            *int32
 }
 
 // Pass this project_id only when listing under a project across different clusters and TiDB groups. Both cluster_id and tidb_node_group_id should be set to \&quot;-\&quot; in this case. If unspecified, the project ID of the cluster is used.
@@ -829,28 +832,29 @@ func (r ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest
 /*
 PrivateEndpointConnectionServiceListPrivateEndpointConnections List private endpoint connections
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId To list private link connections across different clusters and TiDB groups, set cluster_id to \"-\".
- @param tidbNodeGroupId To list private link connections across different clusters and TiDB groups, set tidb_node_group_id to \"-\".
- @return ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId To list private link connections across different clusters and TiDB groups, set cluster_id to \"-\".
+	@param tidbNodeGroupId To list private link connections across different clusters and TiDB groups, set tidb_node_group_id to \"-\".
+	@return ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest
 */
 func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionServiceListPrivateEndpointConnections(ctx context.Context, clusterId string, tidbNodeGroupId string) ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest {
 	return ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest{
-		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ApiService:      a,
+		ctx:             ctx,
+		clusterId:       clusterId,
 		tidbNodeGroupId: tidbNodeGroupId,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1ListPrivateEndpointConnectionsResponse
+//
+//	@return V1beta1ListPrivateEndpointConnectionsResponse
 func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionServiceListPrivateEndpointConnectionsExecute(r ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest) (*V1beta1ListPrivateEndpointConnectionsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1ListPrivateEndpointConnectionsResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1ListPrivateEndpointConnectionsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PrivateEndpointConnectionServiceAPIService.PrivateEndpointConnectionServiceListPrivateEndpointConnections")
@@ -941,8 +945,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -952,8 +956,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -963,8 +967,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -974,8 +978,8 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -985,18 +989,18 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

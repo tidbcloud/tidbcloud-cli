@@ -19,18 +19,18 @@ var _ MappedNullable = &Dedicatedv1beta1PrivateLinkService{}
 
 // Dedicatedv1beta1PrivateLinkService struct for Dedicatedv1beta1PrivateLinkService
 type Dedicatedv1beta1PrivateLinkService struct {
-	Name *string `json:"name,omitempty"`
+	Name            *string `json:"name,omitempty"`
 	TidbNodeGroupId *string `json:"tidbNodeGroupId,omitempty"`
 	// For AWS, it's the service name of the Private Link Service. For GCP, it's the resource name of the service attachment. For Azure, it's service resource ID of the Private Link Service.
 	ServiceName *string `json:"serviceName,omitempty"`
 	// For AWS, it's the fully qualified domain name (FQDN) shared for all private endpoints, despite which VPC the endpoint located in. For GCP, it's the zone name (suffix of FQDN) shared for all private endpoints located in a single VPC network. The format of FQDN is `<endpoint_name>.<service_dns_name>`. For Azure, it's the zone name shared across public internet. The format of FQDN is `<endpoint_name>-<random_hash>.<service_dns_name>`.
 	ServiceDnsName *string `json:"serviceDnsName,omitempty"`
 	// Only available for AWS. Same as the `AvailabilityZones` field in response body of `github.com/aws/aws-sdk-go-v2/service/ec2.DescribeVpcEndpointServices` method.
-	AvailableZones []string `json:"availableZones,omitempty"`
-	State *V1beta1PrivateLinkServiceState `json:"state,omitempty"`
-	RegionId *string `json:"regionId,omitempty"`
-	RegionDisplayName *string `json:"regionDisplayName,omitempty"`
-	CloudProvider *V1beta1RegionCloudProvider `json:"cloudProvider,omitempty"`
+	AvailableZones       []string                        `json:"availableZones,omitempty"`
+	State                *V1beta1PrivateLinkServiceState `json:"state,omitempty"`
+	RegionId             *string                         `json:"regionId,omitempty"`
+	RegionDisplayName    *string                         `json:"regionDisplayName,omitempty"`
+	CloudProvider        *V1beta1RegionCloudProvider     `json:"cloudProvider,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -342,7 +342,7 @@ func (o *Dedicatedv1beta1PrivateLinkService) SetCloudProvider(v V1beta1RegionClo
 }
 
 func (o Dedicatedv1beta1PrivateLinkService) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -450,5 +450,3 @@ func (v *NullableDedicatedv1beta1PrivateLinkService) UnmarshalJSON(src []byte) e
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

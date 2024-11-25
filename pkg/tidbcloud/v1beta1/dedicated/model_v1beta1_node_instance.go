@@ -19,9 +19,9 @@ var _ MappedNullable = &V1beta1NodeInstance{}
 
 // V1beta1NodeInstance struct for V1beta1NodeInstance
 type V1beta1NodeInstance struct {
-	Name *string `json:"name,omitempty"`
-	ClusterId *string `json:"clusterId,omitempty"`
-	InstanceId *string `json:"instanceId,omitempty"`
+	Name          *string                        `json:"name,omitempty"`
+	ClusterId     *string                        `json:"clusterId,omitempty"`
+	InstanceId    *string                        `json:"instanceId,omitempty"`
 	ComponentType *Dedicatedv1beta1ComponentType `json:"componentType,omitempty"`
 	// the state of the instance, e.g. \"Available\".
 	State *V1beta1NodeInstanceState `json:"state,omitempty"`
@@ -32,11 +32,11 @@ type V1beta1NodeInstance struct {
 	// the availability zone of the instance, e.g. \"us-west1-a\".
 	AvailabilityZone *string `json:"availabilityZone,omitempty"`
 	// the storage size of the instance, e.g. 100.
-	StorageSizeGi *int32 `json:"storageSizeGi,omitempty"`
-	TidbNodeGroupId NullableString `json:"tidbNodeGroupId,omitempty"`
+	StorageSizeGi            *int32         `json:"storageSizeGi,omitempty"`
+	TidbNodeGroupId          NullableString `json:"tidbNodeGroupId,omitempty"`
 	TidbNodeGroupDisplayName NullableString `json:"tidbNodeGroupDisplayName,omitempty"`
-	IsDefaultTidbNodeGroup NullableBool `json:"isDefaultTidbNodeGroup,omitempty"`
-	AdditionalProperties map[string]interface{}
+	IsDefaultTidbNodeGroup   NullableBool   `json:"isDefaultTidbNodeGroup,omitempty"`
+	AdditionalProperties     map[string]interface{}
 }
 
 type _V1beta1NodeInstance V1beta1NodeInstance
@@ -378,6 +378,7 @@ func (o *V1beta1NodeInstance) HasTidbNodeGroupId() bool {
 func (o *V1beta1NodeInstance) SetTidbNodeGroupId(v string) {
 	o.TidbNodeGroupId.Set(&v)
 }
+
 // SetTidbNodeGroupIdNil sets the value for TidbNodeGroupId to be an explicit nil
 func (o *V1beta1NodeInstance) SetTidbNodeGroupIdNil() {
 	o.TidbNodeGroupId.Set(nil)
@@ -420,6 +421,7 @@ func (o *V1beta1NodeInstance) HasTidbNodeGroupDisplayName() bool {
 func (o *V1beta1NodeInstance) SetTidbNodeGroupDisplayName(v string) {
 	o.TidbNodeGroupDisplayName.Set(&v)
 }
+
 // SetTidbNodeGroupDisplayNameNil sets the value for TidbNodeGroupDisplayName to be an explicit nil
 func (o *V1beta1NodeInstance) SetTidbNodeGroupDisplayNameNil() {
 	o.TidbNodeGroupDisplayName.Set(nil)
@@ -462,6 +464,7 @@ func (o *V1beta1NodeInstance) HasIsDefaultTidbNodeGroup() bool {
 func (o *V1beta1NodeInstance) SetIsDefaultTidbNodeGroup(v bool) {
 	o.IsDefaultTidbNodeGroup.Set(&v)
 }
+
 // SetIsDefaultTidbNodeGroupNil sets the value for IsDefaultTidbNodeGroup to be an explicit nil
 func (o *V1beta1NodeInstance) SetIsDefaultTidbNodeGroupNil() {
 	o.IsDefaultTidbNodeGroup.Set(nil)
@@ -473,7 +476,7 @@ func (o *V1beta1NodeInstance) UnsetIsDefaultTidbNodeGroup() {
 }
 
 func (o V1beta1NodeInstance) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -593,5 +596,3 @@ func (v *NullableV1beta1NodeInstance) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

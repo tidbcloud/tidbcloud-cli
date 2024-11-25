@@ -19,12 +19,12 @@ var _ MappedNullable = &ClusterServiceUpdateClusterRequest{}
 
 // ClusterServiceUpdateClusterRequest struct for ClusterServiceUpdateClusterRequest
 type ClusterServiceUpdateClusterRequest struct {
-	TidbNodeSetting *V1beta1UpdateClusterRequestTidbNodeSetting `json:"tidbNodeSetting,omitempty"`
-	TikvNodeSetting *V1beta1UpdateClusterRequestStorageNodeSetting `json:"tikvNodeSetting,omitempty"`
+	TidbNodeSetting    *V1beta1UpdateClusterRequestTidbNodeSetting    `json:"tidbNodeSetting,omitempty"`
+	TikvNodeSetting    *V1beta1UpdateClusterRequestStorageNodeSetting `json:"tikvNodeSetting,omitempty"`
 	TiflashNodeSetting *V1beta1UpdateClusterRequestStorageNodeSetting `json:"tiflashNodeSetting,omitempty"`
-	DisplayName *string `json:"displayName,omitempty"`
+	DisplayName        *string                                        `json:"displayName,omitempty"`
 	// The project_id key cannot be updated. If the project_id key is specified, it will be ignored.
-	Labels *map[string]string `json:"labels,omitempty"`
+	Labels               *map[string]string `json:"labels,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -208,7 +208,7 @@ func (o *ClusterServiceUpdateClusterRequest) SetLabels(v map[string]string) {
 }
 
 func (o ClusterServiceUpdateClusterRequest) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -300,5 +300,3 @@ func (v *NullableClusterServiceUpdateClusterRequest) UnmarshalJSON(src []byte) e
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

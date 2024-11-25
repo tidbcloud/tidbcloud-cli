@@ -20,7 +20,7 @@ var _ MappedNullable = &Dedicatedv1beta1PauseClusterResponse{}
 
 // Dedicatedv1beta1PauseClusterResponse struct for Dedicatedv1beta1PauseClusterResponse
 type Dedicatedv1beta1PauseClusterResponse struct {
-	Cluster TidbCloudOpenApidedicatedv1beta1Cluster `json:"cluster"`
+	Cluster              TidbCloudOpenApidedicatedv1beta1Cluster `json:"cluster"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -69,7 +69,7 @@ func (o *Dedicatedv1beta1PauseClusterResponse) SetCluster(v TidbCloudOpenApidedi
 }
 
 func (o Dedicatedv1beta1PauseClusterResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -100,10 +100,10 @@ func (o *Dedicatedv1beta1PauseClusterResponse) UnmarshalJSON(data []byte) (err e
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -164,5 +164,3 @@ func (v *NullableDedicatedv1beta1PauseClusterResponse) UnmarshalJSON(src []byte)
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

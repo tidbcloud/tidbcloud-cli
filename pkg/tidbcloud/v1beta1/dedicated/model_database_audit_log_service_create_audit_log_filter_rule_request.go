@@ -19,12 +19,12 @@ var _ MappedNullable = &DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest{}
 
 // DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest struct for DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest
 type DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest struct {
-	Name *string `json:"name,omitempty"`
-	AuditLogFilterRuleId *string `json:"auditLogFilterRuleId,omitempty"`
-	UserExpr *string `json:"userExpr,omitempty"`
-	DbExpr *string `json:"dbExpr,omitempty"`
-	TableExpr *string `json:"tableExpr,omitempty"`
-	AccessTypeList []string `json:"accessTypeList,omitempty"`
+	Name                 *string  `json:"name,omitempty"`
+	AuditLogFilterRuleId *string  `json:"auditLogFilterRuleId,omitempty"`
+	UserExpr             *string  `json:"userExpr,omitempty"`
+	DbExpr               *string  `json:"dbExpr,omitempty"`
+	TableExpr            *string  `json:"tableExpr,omitempty"`
+	AccessTypeList       []string `json:"accessTypeList,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -240,7 +240,7 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) SetAccessTypeLi
 }
 
 func (o DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -336,5 +336,3 @@ func (v *NullableDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) Unmarsh
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -20,8 +20,8 @@ type EndpointConnectionType string
 
 // List of EndpointConnectionType
 const (
-	ENDPOINTCONNECTIONTYPE_PUBLIC EndpointConnectionType = "PUBLIC"
-	ENDPOINTCONNECTIONTYPE_VPC_PEERING EndpointConnectionType = "VPC_PEERING"
+	ENDPOINTCONNECTIONTYPE_PUBLIC           EndpointConnectionType = "PUBLIC"
+	ENDPOINTCONNECTIONTYPE_VPC_PEERING      EndpointConnectionType = "VPC_PEERING"
 	ENDPOINTCONNECTIONTYPE_PRIVATE_ENDPOINT EndpointConnectionType = "PRIVATE_ENDPOINT"
 )
 
@@ -110,4 +110,3 @@ func (v *NullableEndpointConnectionType) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

@@ -19,8 +19,8 @@ var _ MappedNullable = &UpdateClusterRequestTidbNodeSettingTidbNodeGroup{}
 
 // UpdateClusterRequestTidbNodeSettingTidbNodeGroup struct for UpdateClusterRequestTidbNodeSettingTidbNodeGroup
 type UpdateClusterRequestTidbNodeSettingTidbNodeGroup struct {
-	TidbNodeGroupId *string `json:"tidbNodeGroupId,omitempty"`
-	NodeCount NullableInt32 `json:"nodeCount,omitempty"`
+	TidbNodeGroupId      *string       `json:"tidbNodeGroupId,omitempty"`
+	NodeCount            NullableInt32 `json:"nodeCount,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -107,6 +107,7 @@ func (o *UpdateClusterRequestTidbNodeSettingTidbNodeGroup) HasNodeCount() bool {
 func (o *UpdateClusterRequestTidbNodeSettingTidbNodeGroup) SetNodeCount(v int32) {
 	o.NodeCount.Set(&v)
 }
+
 // SetNodeCountNil sets the value for NodeCount to be an explicit nil
 func (o *UpdateClusterRequestTidbNodeSettingTidbNodeGroup) SetNodeCountNil() {
 	o.NodeCount.Set(nil)
@@ -118,7 +119,7 @@ func (o *UpdateClusterRequestTidbNodeSettingTidbNodeGroup) UnsetNodeCount() {
 }
 
 func (o UpdateClusterRequestTidbNodeSettingTidbNodeGroup) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -198,5 +199,3 @@ func (v *NullableUpdateClusterRequestTidbNodeSettingTidbNodeGroup) UnmarshalJSON
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

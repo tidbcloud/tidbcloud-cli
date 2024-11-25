@@ -26,13 +26,13 @@ type TidbNodeGroupServiceCreateTidbNodeGroupRequest struct {
 	// The display name of the TiDB group.
 	DisplayName *string `json:"displayName,omitempty"`
 	// The number of TiDB nodes in the TiDB group.
-	NodeCount int32 `json:"nodeCount"`
-	Endpoints []Dedicatedv1beta1TidbNodeGroupEndpoint `json:"endpoints,omitempty"`
-	NodeSpecKey *string `json:"nodeSpecKey,omitempty"`
-	NodeSpecDisplayName *string `json:"nodeSpecDisplayName,omitempty"`
-	IsDefaultGroup *bool `json:"isDefaultGroup,omitempty"`
-	State *Dedicatedv1beta1TidbNodeGroupState `json:"state,omitempty"`
-	NodeChangingProgress *ClusterNodeChangingProgress `json:"nodeChangingProgress,omitempty"`
+	NodeCount            int32                                   `json:"nodeCount"`
+	Endpoints            []Dedicatedv1beta1TidbNodeGroupEndpoint `json:"endpoints,omitempty"`
+	NodeSpecKey          *string                                 `json:"nodeSpecKey,omitempty"`
+	NodeSpecDisplayName  *string                                 `json:"nodeSpecDisplayName,omitempty"`
+	IsDefaultGroup       *bool                                   `json:"isDefaultGroup,omitempty"`
+	State                *Dedicatedv1beta1TidbNodeGroupState     `json:"state,omitempty"`
+	NodeChangingProgress *ClusterNodeChangingProgress            `json:"nodeChangingProgress,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -369,7 +369,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) SetNodeChangingProgress
 }
 
 func (o TidbNodeGroupServiceCreateTidbNodeGroupRequest) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -427,10 +427,10 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) UnmarshalJSON(data []by
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -500,5 +500,3 @@ func (v *NullableTidbNodeGroupServiceCreateTidbNodeGroupRequest) UnmarshalJSON(s
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

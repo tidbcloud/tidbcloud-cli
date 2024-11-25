@@ -23,7 +23,7 @@ type Dedicatedv1beta1ListTidbNodeGroupsResponse struct {
 	// The total number of TiDB groups that matched the query.
 	TotalSize *int32 `json:"totalSize,omitempty"`
 	// A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.
-	NextPageToken *string `json:"nextPageToken,omitempty"`
+	NextPageToken        *string `json:"nextPageToken,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -143,7 +143,7 @@ func (o *Dedicatedv1beta1ListTidbNodeGroupsResponse) SetNextPageToken(v string) 
 }
 
 func (o Dedicatedv1beta1ListTidbNodeGroupsResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -227,5 +227,3 @@ func (v *NullableDedicatedv1beta1ListTidbNodeGroupsResponse) UnmarshalJSON(src [
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

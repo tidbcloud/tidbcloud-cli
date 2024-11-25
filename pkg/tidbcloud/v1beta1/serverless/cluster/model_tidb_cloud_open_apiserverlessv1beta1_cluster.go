@@ -37,7 +37,8 @@ type TidbCloudOpenApiserverlessv1beta1Cluster struct {
 	Endpoints    *V1beta1ClusterEndpoints `json:"endpoints,omitempty"`
 	RootPassword *string                  `json:"rootPassword,omitempty" validate:"regexp=^.{8,64}$"`
 	// Optional. Encryption settings for the cluster.
-	EncryptionConfig *V1beta1ClusterEncryptionConfig `json:"encryptionConfig,omitempty"`
+	EncryptionConfig     *V1beta1ClusterEncryptionConfig `json:"encryptionConfig,omitempty"`
+	HighAvailabilityType *ClusterHighAvailabilityType    `json:"highAvailabilityType,omitempty"`
 	// Output_only. The TiDB version of the cluster.
 	Version *string `json:"version,omitempty"`
 	// Output_only. The email of the creator of the cluster.
@@ -350,6 +351,38 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasEncryptionConfig() bool {
 // SetEncryptionConfig gets a reference to the given V1beta1ClusterEncryptionConfig and assigns it to the EncryptionConfig field.
 func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetEncryptionConfig(v V1beta1ClusterEncryptionConfig) {
 	o.EncryptionConfig = &v
+}
+
+// GetHighAvailabilityType returns the HighAvailabilityType field value if set, zero value otherwise.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetHighAvailabilityType() ClusterHighAvailabilityType {
+	if o == nil || IsNil(o.HighAvailabilityType) {
+		var ret ClusterHighAvailabilityType
+		return ret
+	}
+	return *o.HighAvailabilityType
+}
+
+// GetHighAvailabilityTypeOk returns a tuple with the HighAvailabilityType field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetHighAvailabilityTypeOk() (*ClusterHighAvailabilityType, bool) {
+	if o == nil || IsNil(o.HighAvailabilityType) {
+		return nil, false
+	}
+	return o.HighAvailabilityType, true
+}
+
+// HasHighAvailabilityType returns a boolean if a field has been set.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasHighAvailabilityType() bool {
+	if o != nil && !IsNil(o.HighAvailabilityType) {
+		return true
+	}
+
+	return false
+}
+
+// SetHighAvailabilityType gets a reference to the given ClusterHighAvailabilityType and assigns it to the HighAvailabilityType field.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetHighAvailabilityType(v ClusterHighAvailabilityType) {
+	o.HighAvailabilityType = &v
 }
 
 // GetVersion returns the Version field value if set, zero value otherwise.
@@ -673,6 +706,9 @@ func (o TidbCloudOpenApiserverlessv1beta1Cluster) ToMap() (map[string]interface{
 	if !IsNil(o.EncryptionConfig) {
 		toSerialize["encryptionConfig"] = o.EncryptionConfig
 	}
+	if !IsNil(o.HighAvailabilityType) {
+		toSerialize["highAvailabilityType"] = o.HighAvailabilityType
+	}
 	if !IsNil(o.Version) {
 		toSerialize["version"] = o.Version
 	}
@@ -753,6 +789,7 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) UnmarshalJSON(data []byte) (e
 		delete(additionalProperties, "endpoints")
 		delete(additionalProperties, "rootPassword")
 		delete(additionalProperties, "encryptionConfig")
+		delete(additionalProperties, "highAvailabilityType")
 		delete(additionalProperties, "version")
 		delete(additionalProperties, "createdBy")
 		delete(additionalProperties, "userPrefix")

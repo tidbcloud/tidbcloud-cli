@@ -23,7 +23,7 @@ type V1beta1ListMaintenanceWindowsResponse struct {
 	// The total number of maintenance windows that matched the query.
 	TotalSize *int32 `json:"totalSize,omitempty"`
 	// A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.
-	NextPageToken *string `json:"nextPageToken,omitempty"`
+	NextPageToken        *string `json:"nextPageToken,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -143,7 +143,7 @@ func (o *V1beta1ListMaintenanceWindowsResponse) SetNextPageToken(v string) {
 }
 
 func (o V1beta1ListMaintenanceWindowsResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -227,5 +227,3 @@ func (v *NullableV1beta1ListMaintenanceWindowsResponse) UnmarshalJSON(src []byte
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

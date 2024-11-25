@@ -12,8 +12,8 @@ package dedicated
 
 import (
 	"encoding/json"
-	"time"
 	"fmt"
+	"time"
 )
 
 // checks if the TidbCloudOpenApidedicatedv1beta1Cluster type satisfies the MappedNullable interface at compile time
@@ -26,14 +26,14 @@ type TidbCloudOpenApidedicatedv1beta1Cluster struct {
 	ClusterId *string `json:"clusterId,omitempty"`
 	// The display name of the cluster.
 	DisplayName string `json:"displayName" validate:"regexp=^[A-Za-z0-9][-A-Za-z0-9]{2,62}[A-Za-z0-9]$"`
-	RegionId string `json:"regionId"`
+	RegionId    string `json:"regionId"`
 	// The labels of the cluster. If there is no \"project_id\" in labels, resource should be in the default project of the creator's organization.
-	Labels *map[string]string `json:"labels,omitempty"`
-	TidbNodeSetting V1beta1ClusterTidbNodeSetting `json:"tidbNodeSetting"`
-	TikvNodeSetting V1beta1ClusterStorageNodeSetting `json:"tikvNodeSetting"`
+	Labels             *map[string]string                `json:"labels,omitempty"`
+	TidbNodeSetting    V1beta1ClusterTidbNodeSetting     `json:"tidbNodeSetting"`
+	TikvNodeSetting    V1beta1ClusterStorageNodeSetting  `json:"tikvNodeSetting"`
 	TiflashNodeSetting *V1beta1ClusterStorageNodeSetting `json:"tiflashNodeSetting,omitempty"`
 	// The port of the cluster. This port applies to all network endpoints of the cluster.
-	Port int32 `json:"port"`
+	Port         int32   `json:"port"`
 	RootPassword *string `json:"rootPassword,omitempty" validate:"regexp=^.{8,64}$"`
 	// The current state of the cluster.
 	State *Commonv1beta1ClusterState `json:"state,omitempty"`
@@ -46,11 +46,11 @@ type TidbCloudOpenApidedicatedv1beta1Cluster struct {
 	// Timestamp when the cluster was last updated.
 	UpdateTime *time.Time `json:"updateTime,omitempty"`
 	// Pause plan of the cluster.
-	PausePlan *Dedicatedv1beta1ClusterPausePlan `json:"pausePlan,omitempty"`
-	RegionDisplayName *string `json:"regionDisplayName,omitempty"`
-	CloudProvider *V1beta1RegionCloudProvider `json:"cloudProvider,omitempty"`
+	PausePlan         *Dedicatedv1beta1ClusterPausePlan `json:"pausePlan,omitempty"`
+	RegionDisplayName *string                           `json:"regionDisplayName,omitempty"`
+	CloudProvider     *V1beta1RegionCloudProvider       `json:"cloudProvider,omitempty"`
 	// OUTPUT_ONLY. The annotations for the cluster. tidb.cloud/has-set-password. The annotation for whether the cluster has set password. tidb.cloud/available-features. The annotation for the available features of the cluster.
-	Annotations *map[string]string `json:"annotations,omitempty"`
+	Annotations          *map[string]string `json:"annotations,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -647,7 +647,7 @@ func (o *TidbCloudOpenApidedicatedv1beta1Cluster) SetAnnotations(v map[string]st
 }
 
 func (o TidbCloudOpenApidedicatedv1beta1Cluster) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -728,10 +728,10 @@ func (o *TidbCloudOpenApidedicatedv1beta1Cluster) UnmarshalJSON(data []byte) (er
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -810,5 +810,3 @@ func (v *NullableTidbCloudOpenApidedicatedv1beta1Cluster) UnmarshalJSON(src []by
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

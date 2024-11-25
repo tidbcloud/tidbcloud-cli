@@ -20,17 +20,17 @@ var _ MappedNullable = &V1beta1MaintenanceTask{}
 
 // V1beta1MaintenanceTask struct for V1beta1MaintenanceTask
 type V1beta1MaintenanceTask struct {
-	Name *string `json:"name,omitempty"`
-	MaintenanceTaskId *string `json:"maintenanceTaskId,omitempty"`
-	ProjectId *string `json:"projectId,omitempty"`
-	Description *string `json:"description,omitempty"`
-	State *V1beta1MaintenanceTaskState `json:"state,omitempty"`
+	Name              *string                      `json:"name,omitempty"`
+	MaintenanceTaskId *string                      `json:"maintenanceTaskId,omitempty"`
+	ProjectId         *string                      `json:"projectId,omitempty"`
+	Description       *string                      `json:"description,omitempty"`
+	State             *V1beta1MaintenanceTaskState `json:"state,omitempty"`
 	// Timestamp when the task was created.
 	CreateTime *time.Time `json:"createTime,omitempty"`
 	// Timestamp when the task run.
 	ScheduledApplyTime *time.Time `json:"scheduledApplyTime,omitempty"`
 	// Timestamp when the task will be expired.
-	Deadline *time.Time `json:"deadline,omitempty"`
+	Deadline             *time.Time `json:"deadline,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -310,7 +310,7 @@ func (o *V1beta1MaintenanceTask) SetDeadline(v time.Time) {
 }
 
 func (o V1beta1MaintenanceTask) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -414,5 +414,3 @@ func (v *NullableV1beta1MaintenanceTask) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

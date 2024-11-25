@@ -19,7 +19,7 @@ var _ MappedNullable = &V1beta1ShowCloudProvidersResponse{}
 
 // V1beta1ShowCloudProvidersResponse struct for V1beta1ShowCloudProvidersResponse
 type V1beta1ShowCloudProvidersResponse struct {
-	CloudProviders []V1beta1RegionCloudProvider `json:"cloudProviders,omitempty"`
+	CloudProviders       []V1beta1RegionCloudProvider `json:"cloudProviders,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -75,7 +75,7 @@ func (o *V1beta1ShowCloudProvidersResponse) SetCloudProviders(v []V1beta1RegionC
 }
 
 func (o V1beta1ShowCloudProvidersResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -151,5 +151,3 @@ func (v *NullableV1beta1ShowCloudProvidersResponse) UnmarshalJSON(src []byte) er
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

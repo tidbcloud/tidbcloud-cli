@@ -20,7 +20,7 @@ type Dedicatedv1beta1ClusterPausePlanType string
 
 // List of dedicatedv1beta1ClusterPausePlanType
 const (
-	DEDICATEDV1BETA1CLUSTERPAUSEPLANTYPE_NORMAL Dedicatedv1beta1ClusterPausePlanType = "NORMAL"
+	DEDICATEDV1BETA1CLUSTERPAUSEPLANTYPE_NORMAL    Dedicatedv1beta1ClusterPausePlanType = "NORMAL"
 	DEDICATEDV1BETA1CLUSTERPAUSEPLANTYPE_DEPRECATE Dedicatedv1beta1ClusterPausePlanType = "DEPRECATE"
 )
 
@@ -108,4 +108,3 @@ func (v *NullableDedicatedv1beta1ClusterPausePlanType) UnmarshalJSON(src []byte)
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

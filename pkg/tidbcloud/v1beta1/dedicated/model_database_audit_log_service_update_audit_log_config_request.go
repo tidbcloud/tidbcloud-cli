@@ -19,11 +19,11 @@ var _ MappedNullable = &DatabaseAuditLogServiceUpdateAuditLogConfigRequest{}
 
 // DatabaseAuditLogServiceUpdateAuditLogConfigRequest struct for DatabaseAuditLogServiceUpdateAuditLogConfigRequest
 type DatabaseAuditLogServiceUpdateAuditLogConfigRequest struct {
-	Enabled NullableBool `json:"enabled,omitempty"`
-	BucketUri *string `json:"bucketUri,omitempty"`
-	BucketRegionId *string `json:"bucketRegionId,omitempty"`
-	AwsRoleArn *string `json:"awsRoleArn,omitempty"`
-	AzureSasToken *string `json:"azureSasToken,omitempty"`
+	Enabled              NullableBool `json:"enabled,omitempty"`
+	BucketUri            *string      `json:"bucketUri,omitempty"`
+	BucketRegionId       *string      `json:"bucketRegionId,omitempty"`
+	AwsRoleArn           *string      `json:"awsRoleArn,omitempty"`
+	AzureSasToken        *string      `json:"azureSasToken,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -78,6 +78,7 @@ func (o *DatabaseAuditLogServiceUpdateAuditLogConfigRequest) HasEnabled() bool {
 func (o *DatabaseAuditLogServiceUpdateAuditLogConfigRequest) SetEnabled(v bool) {
 	o.Enabled.Set(&v)
 }
+
 // SetEnabledNil sets the value for Enabled to be an explicit nil
 func (o *DatabaseAuditLogServiceUpdateAuditLogConfigRequest) SetEnabledNil() {
 	o.Enabled.Set(nil)
@@ -217,7 +218,7 @@ func (o *DatabaseAuditLogServiceUpdateAuditLogConfigRequest) SetAzureSasToken(v 
 }
 
 func (o DatabaseAuditLogServiceUpdateAuditLogConfigRequest) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -309,5 +310,3 @@ func (v *NullableDatabaseAuditLogServiceUpdateAuditLogConfigRequest) UnmarshalJS
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

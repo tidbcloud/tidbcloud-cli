@@ -20,13 +20,13 @@ var _ MappedNullable = &V1beta1UpdateClusterRequestCluster{}
 
 // V1beta1UpdateClusterRequestCluster struct for V1beta1UpdateClusterRequestCluster
 type V1beta1UpdateClusterRequestCluster struct {
-	ClusterId string `json:"clusterId"`
-	TidbNodeSetting *V1beta1UpdateClusterRequestTidbNodeSetting `json:"tidbNodeSetting,omitempty"`
-	TikvNodeSetting *V1beta1UpdateClusterRequestStorageNodeSetting `json:"tikvNodeSetting,omitempty"`
+	ClusterId          string                                         `json:"clusterId"`
+	TidbNodeSetting    *V1beta1UpdateClusterRequestTidbNodeSetting    `json:"tidbNodeSetting,omitempty"`
+	TikvNodeSetting    *V1beta1UpdateClusterRequestStorageNodeSetting `json:"tikvNodeSetting,omitempty"`
 	TiflashNodeSetting *V1beta1UpdateClusterRequestStorageNodeSetting `json:"tiflashNodeSetting,omitempty"`
-	DisplayName *string `json:"displayName,omitempty"`
+	DisplayName        *string                                        `json:"displayName,omitempty"`
 	// The project_id key cannot be updated. If the project_id key is specified, it will be ignored.
-	Labels *map[string]string `json:"labels,omitempty"`
+	Labels               *map[string]string `json:"labels,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -235,7 +235,7 @@ func (o *V1beta1UpdateClusterRequestCluster) SetLabels(v map[string]string) {
 }
 
 func (o V1beta1UpdateClusterRequestCluster) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -281,10 +281,10 @@ func (o *V1beta1UpdateClusterRequestCluster) UnmarshalJSON(data []byte) (err err
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -350,5 +350,3 @@ func (v *NullableV1beta1UpdateClusterRequestCluster) UnmarshalJSON(src []byte) e
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

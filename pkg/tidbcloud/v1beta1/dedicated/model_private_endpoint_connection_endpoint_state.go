@@ -20,10 +20,10 @@ type PrivateEndpointConnectionEndpointState string
 
 // List of PrivateEndpointConnectionEndpointState
 const (
-	PRIVATEENDPOINTCONNECTIONENDPOINTSTATE_PENDING PrivateEndpointConnectionEndpointState = "PENDING"
-	PRIVATEENDPOINTCONNECTIONENDPOINTSTATE_ACTIVE PrivateEndpointConnectionEndpointState = "ACTIVE"
-	PRIVATEENDPOINTCONNECTIONENDPOINTSTATE_DELETING PrivateEndpointConnectionEndpointState = "DELETING"
-	PRIVATEENDPOINTCONNECTIONENDPOINTSTATE_FAILED PrivateEndpointConnectionEndpointState = "FAILED"
+	PRIVATEENDPOINTCONNECTIONENDPOINTSTATE_PENDING    PrivateEndpointConnectionEndpointState = "PENDING"
+	PRIVATEENDPOINTCONNECTIONENDPOINTSTATE_ACTIVE     PrivateEndpointConnectionEndpointState = "ACTIVE"
+	PRIVATEENDPOINTCONNECTIONENDPOINTSTATE_DELETING   PrivateEndpointConnectionEndpointState = "DELETING"
+	PRIVATEENDPOINTCONNECTIONENDPOINTSTATE_FAILED     PrivateEndpointConnectionEndpointState = "FAILED"
 	PRIVATEENDPOINTCONNECTIONENDPOINTSTATE_DISCOVERED PrivateEndpointConnectionEndpointState = "DISCOVERED"
 )
 
@@ -114,4 +114,3 @@ func (v *NullablePrivateEndpointConnectionEndpointState) UnmarshalJSON(src []byt
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

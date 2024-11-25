@@ -20,28 +20,28 @@ var _ MappedNullable = &Dedicatedv1beta1VpcPeering{}
 
 // Dedicatedv1beta1VpcPeering struct for Dedicatedv1beta1VpcPeering
 type Dedicatedv1beta1VpcPeering struct {
-	Name *string `json:"name,omitempty"`
+	Name         *string `json:"name,omitempty"`
 	VpcPeeringId *string `json:"vpcPeeringId,omitempty"`
 	// The labels of the vpc peering. It always contains the `project_id` label.
-	Labels *map[string]string `json:"labels,omitempty"`
-	TidbCloudRegionId string `json:"tidbCloudRegionId"`
+	Labels            *map[string]string `json:"labels,omitempty"`
+	TidbCloudRegionId string             `json:"tidbCloudRegionId"`
 	// Format: {cloud_provider}-{region_code} For AWS, it's required. For GCP, it's optional. Since GCP does not require region_id when creating VPC peering.
 	CustomerRegionId *string `json:"customerRegionId,omitempty"`
 	// In AWS, it is the account ID. In GCP, it is the project name.
 	CustomerAccountId string `json:"customerAccountId"`
 	// In AWS, it is the VPC ID. In GCP, it is the network name.
-	CustomerVpcId string `json:"customerVpcId"`
-	CustomerVpcCidr string `json:"customerVpcCidr"`
+	CustomerVpcId          string                      `json:"customerVpcId"`
+	CustomerVpcCidr        string                      `json:"customerVpcCidr"`
 	TidbCloudCloudProvider *V1beta1RegionCloudProvider `json:"tidbCloudCloudProvider,omitempty"`
 	// In AWS, it is the account ID. In GCP, it is the project name.
 	TidbCloudAccountId *string `json:"tidbCloudAccountId,omitempty"`
 	// In AWS, it is the VPC ID. In GCP, it is the network name.
-	TidbCloudVpcId *string `json:"tidbCloudVpcId,omitempty"`
-	TidbCloudVpcCidr *string `json:"tidbCloudVpcCidr,omitempty"`
-	State *Dedicatedv1beta1VpcPeeringState `json:"state,omitempty"`
+	TidbCloudVpcId   *string                          `json:"tidbCloudVpcId,omitempty"`
+	TidbCloudVpcCidr *string                          `json:"tidbCloudVpcCidr,omitempty"`
+	State            *Dedicatedv1beta1VpcPeeringState `json:"state,omitempty"`
 	// Only for AWS vpc peerings.
 	AwsVpcPeeringConnectionId NullableString `json:"awsVpcPeeringConnectionId,omitempty"`
-	AdditionalProperties map[string]interface{}
+	AdditionalProperties      map[string]interface{}
 }
 
 type _Dedicatedv1beta1VpcPeering Dedicatedv1beta1VpcPeering
@@ -483,6 +483,7 @@ func (o *Dedicatedv1beta1VpcPeering) HasAwsVpcPeeringConnectionId() bool {
 func (o *Dedicatedv1beta1VpcPeering) SetAwsVpcPeeringConnectionId(v string) {
 	o.AwsVpcPeeringConnectionId.Set(&v)
 }
+
 // SetAwsVpcPeeringConnectionIdNil sets the value for AwsVpcPeeringConnectionId to be an explicit nil
 func (o *Dedicatedv1beta1VpcPeering) SetAwsVpcPeeringConnectionIdNil() {
 	o.AwsVpcPeeringConnectionId.Set(nil)
@@ -494,7 +495,7 @@ func (o *Dedicatedv1beta1VpcPeering) UnsetAwsVpcPeeringConnectionId() {
 }
 
 func (o Dedicatedv1beta1VpcPeering) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -561,10 +562,10 @@ func (o *Dedicatedv1beta1VpcPeering) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -638,5 +639,3 @@ func (v *NullableDedicatedv1beta1VpcPeering) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

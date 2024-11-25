@@ -20,28 +20,28 @@ var _ MappedNullable = &PrivateEndpointConnectionServiceCreatePrivateEndpointCon
 
 // PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest struct for PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest
 type PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest struct {
-	Name *string `json:"name,omitempty"`
+	Name                        *string `json:"name,omitempty"`
 	PrivateEndpointConnectionId *string `json:"privateEndpointConnectionId,omitempty"`
-	ClusterId *string `json:"clusterId,omitempty"`
-	ClusterDisplayName *string `json:"clusterDisplayName,omitempty"`
+	ClusterId                   *string `json:"clusterId,omitempty"`
+	ClusterDisplayName          *string `json:"clusterDisplayName,omitempty"`
 	// The labels of private link connection. It always contains the `project_id` label.
 	Labels *map[string]string `json:"labels,omitempty"`
 	// The endpoint ID of the private link connection. For AWS, it's VPC endpoint ID. For GCP, it's private service connect endpoint ID. For Azure, it's private endpoint resource ID.
 	EndpointId string `json:"endpointId"`
 	// The private IP address of the private endpoint in the user's vNet. TiDB Cloud will setup a public DNS record for this private IP address. So the user can use DNS address to connect to the cluster. Only available for Azure clusters.
-	PrivateIpAddress NullableString `json:"privateIpAddress,omitempty"`
-	EndpointState *PrivateEndpointConnectionEndpointState `json:"endpointState,omitempty"`
-	Massage *string `json:"massage,omitempty"`
-	RegionId *string `json:"regionId,omitempty"`
-	RegionDisplayName *string `json:"regionDisplayName,omitempty"`
-	CloudProvider *V1beta1RegionCloudProvider `json:"cloudProvider,omitempty"`
-	PrivateLinkServiceName *string `json:"privateLinkServiceName,omitempty"`
-	PrivateLinkServiceState *V1beta1PrivateLinkServiceState `json:"privateLinkServiceState,omitempty"`
-	TidbNodeGroupDisplayName *string `json:"tidbNodeGroupDisplayName,omitempty"`
+	PrivateIpAddress         NullableString                          `json:"privateIpAddress,omitempty"`
+	EndpointState            *PrivateEndpointConnectionEndpointState `json:"endpointState,omitempty"`
+	Massage                  *string                                 `json:"massage,omitempty"`
+	RegionId                 *string                                 `json:"regionId,omitempty"`
+	RegionDisplayName        *string                                 `json:"regionDisplayName,omitempty"`
+	CloudProvider            *V1beta1RegionCloudProvider             `json:"cloudProvider,omitempty"`
+	PrivateLinkServiceName   *string                                 `json:"privateLinkServiceName,omitempty"`
+	PrivateLinkServiceState  *V1beta1PrivateLinkServiceState         `json:"privateLinkServiceState,omitempty"`
+	TidbNodeGroupDisplayName *string                                 `json:"tidbNodeGroupDisplayName,omitempty"`
 	// Only for GCP private service connections. It's GCP project name.
-	AccountId NullableString `json:"accountId,omitempty"`
-	Host *string `json:"host,omitempty"`
-	Port *int32 `json:"port,omitempty"`
+	AccountId            NullableString `json:"accountId,omitempty"`
+	Host                 *string        `json:"host,omitempty"`
+	Port                 *int32         `json:"port,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -281,6 +281,7 @@ func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest)
 func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) SetPrivateIpAddress(v string) {
 	o.PrivateIpAddress.Set(&v)
 }
+
 // SetPrivateIpAddressNil sets the value for PrivateIpAddress to be an explicit nil
 func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) SetPrivateIpAddressNil() {
 	o.PrivateIpAddress.Set(nil)
@@ -579,6 +580,7 @@ func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest)
 func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) SetAccountId(v string) {
 	o.AccountId.Set(&v)
 }
+
 // SetAccountIdNil sets the value for AccountId to be an explicit nil
 func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) SetAccountIdNil() {
 	o.AccountId.Set(nil)
@@ -654,7 +656,7 @@ func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest)
 }
 
 func (o PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -736,10 +738,10 @@ func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest)
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -817,5 +819,3 @@ func (v *NullablePrivateEndpointConnectionServiceCreatePrivateEndpointConnection
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

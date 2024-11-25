@@ -20,9 +20,9 @@ type V1beta1NodeInstanceState string
 
 // List of v1beta1NodeInstanceState
 const (
-	V1BETA1NODEINSTANCESTATE_CREATING V1beta1NodeInstanceState = "CREATING"
-	V1BETA1NODEINSTANCESTATE_AVAILABLE V1beta1NodeInstanceState = "AVAILABLE"
-	V1BETA1NODEINSTANCESTATE_DELETING V1beta1NodeInstanceState = "DELETING"
+	V1BETA1NODEINSTANCESTATE_CREATING    V1beta1NodeInstanceState = "CREATING"
+	V1BETA1NODEINSTANCESTATE_AVAILABLE   V1beta1NodeInstanceState = "AVAILABLE"
+	V1BETA1NODEINSTANCESTATE_DELETING    V1beta1NodeInstanceState = "DELETING"
 	V1BETA1NODEINSTANCESTATE_UNAVAILABLE V1beta1NodeInstanceState = "UNAVAILABLE"
 )
 
@@ -112,4 +112,3 @@ func (v *NullableV1beta1NodeInstanceState) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

@@ -22,7 +22,7 @@ type V1beta1MaintenanceTaskState string
 const (
 	V1BETA1MAINTENANCETASKSTATE_PENDING V1beta1MaintenanceTaskState = "PENDING"
 	V1BETA1MAINTENANCETASKSTATE_RUNNING V1beta1MaintenanceTaskState = "RUNNING"
-	V1BETA1MAINTENANCETASKSTATE_DONE V1beta1MaintenanceTaskState = "DONE"
+	V1BETA1MAINTENANCETASKSTATE_DONE    V1beta1MaintenanceTaskState = "DONE"
 )
 
 // All allowed values of V1beta1MaintenanceTaskState enum
@@ -110,4 +110,3 @@ func (v *NullableV1beta1MaintenanceTaskState) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

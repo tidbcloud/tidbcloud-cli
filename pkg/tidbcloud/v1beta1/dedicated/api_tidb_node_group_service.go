@@ -19,16 +19,15 @@ import (
 	"strings"
 )
 
-
 // TidbNodeGroupServiceAPIService TidbNodeGroupServiceAPI service
 type TidbNodeGroupServiceAPIService service
 
 type ApiTidbNodeGroupServiceCreateTidbNodeGroupRequest struct {
-	ctx context.Context
-	ApiService *TidbNodeGroupServiceAPIService
+	ctx                    context.Context
+	ApiService             *TidbNodeGroupServiceAPIService
 	tidbNodeGroupClusterId string
-	tidbNodeGroup *TidbNodeGroupServiceCreateTidbNodeGroupRequest
-	validateOnly *bool
+	tidbNodeGroup          *TidbNodeGroupServiceCreateTidbNodeGroupRequest
+	validateOnly           *bool
 }
 
 func (r ApiTidbNodeGroupServiceCreateTidbNodeGroupRequest) TidbNodeGroup(tidbNodeGroup TidbNodeGroupServiceCreateTidbNodeGroupRequest) ApiTidbNodeGroupServiceCreateTidbNodeGroupRequest {
@@ -49,26 +48,27 @@ func (r ApiTidbNodeGroupServiceCreateTidbNodeGroupRequest) Execute() (*Dedicated
 /*
 TidbNodeGroupServiceCreateTidbNodeGroup Create a TiDB Node Group
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param tidbNodeGroupClusterId The cluster ID of the TiDB group. Optional when creating cluster with the default TiDB group. Required when creating non-default TiDB group.
- @return ApiTidbNodeGroupServiceCreateTidbNodeGroupRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param tidbNodeGroupClusterId The cluster ID of the TiDB group. Optional when creating cluster with the default TiDB group. Required when creating non-default TiDB group.
+	@return ApiTidbNodeGroupServiceCreateTidbNodeGroupRequest
 */
 func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceCreateTidbNodeGroup(ctx context.Context, tidbNodeGroupClusterId string) ApiTidbNodeGroupServiceCreateTidbNodeGroupRequest {
 	return ApiTidbNodeGroupServiceCreateTidbNodeGroupRequest{
-		ApiService: a,
-		ctx: ctx,
+		ApiService:             a,
+		ctx:                    ctx,
 		tidbNodeGroupClusterId: tidbNodeGroupClusterId,
 	}
 }
 
 // Execute executes the request
-//  @return Dedicatedv1beta1TidbNodeGroup
+//
+//	@return Dedicatedv1beta1TidbNodeGroup
 func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceCreateTidbNodeGroupExecute(r ApiTidbNodeGroupServiceCreateTidbNodeGroupRequest) (*Dedicatedv1beta1TidbNodeGroup, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPost
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Dedicatedv1beta1TidbNodeGroup
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1TidbNodeGroup
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TidbNodeGroupServiceAPIService.TidbNodeGroupServiceCreateTidbNodeGroup")
@@ -151,8 +151,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceCreateTidbNodeGroup
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -162,8 +162,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceCreateTidbNodeGroup
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -173,8 +173,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceCreateTidbNodeGroup
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -184,8 +184,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceCreateTidbNodeGroup
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -195,18 +195,18 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceCreateTidbNodeGroup
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -223,11 +223,11 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceCreateTidbNodeGroup
 }
 
 type ApiTidbNodeGroupServiceDeleteTidbNodeGroupRequest struct {
-	ctx context.Context
-	ApiService *TidbNodeGroupServiceAPIService
-	clusterId string
+	ctx             context.Context
+	ApiService      *TidbNodeGroupServiceAPIService
+	clusterId       string
 	tidbNodeGroupId string
-	validateOnly *bool
+	validateOnly    *bool
 }
 
 // if validate_only is true, the request will be validated but not executed.
@@ -243,28 +243,29 @@ func (r ApiTidbNodeGroupServiceDeleteTidbNodeGroupRequest) Execute() (map[string
 /*
 TidbNodeGroupServiceDeleteTidbNodeGroup Delete a TiDB Node Group
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @param tidbNodeGroupId
- @return ApiTidbNodeGroupServiceDeleteTidbNodeGroupRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@param tidbNodeGroupId
+	@return ApiTidbNodeGroupServiceDeleteTidbNodeGroupRequest
 */
 func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceDeleteTidbNodeGroup(ctx context.Context, clusterId string, tidbNodeGroupId string) ApiTidbNodeGroupServiceDeleteTidbNodeGroupRequest {
 	return ApiTidbNodeGroupServiceDeleteTidbNodeGroupRequest{
-		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ApiService:      a,
+		ctx:             ctx,
+		clusterId:       clusterId,
 		tidbNodeGroupId: tidbNodeGroupId,
 	}
 }
 
 // Execute executes the request
-//  @return map[string]interface{}
+//
+//	@return map[string]interface{}
 func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceDeleteTidbNodeGroupExecute(r ApiTidbNodeGroupServiceDeleteTidbNodeGroupRequest) (map[string]interface{}, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodDelete
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  map[string]interface{}
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue map[string]interface{}
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TidbNodeGroupServiceAPIService.TidbNodeGroupServiceDeleteTidbNodeGroup")
@@ -343,8 +344,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceDeleteTidbNodeGroup
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -354,8 +355,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceDeleteTidbNodeGroup
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -365,8 +366,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceDeleteTidbNodeGroup
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -376,8 +377,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceDeleteTidbNodeGroup
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -387,18 +388,18 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceDeleteTidbNodeGroup
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -415,9 +416,9 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceDeleteTidbNodeGroup
 }
 
 type ApiTidbNodeGroupServiceGetPublicEndpointSettingRequest struct {
-	ctx context.Context
-	ApiService *TidbNodeGroupServiceAPIService
-	clusterId string
+	ctx             context.Context
+	ApiService      *TidbNodeGroupServiceAPIService
+	clusterId       string
 	tidbNodeGroupId string
 }
 
@@ -428,28 +429,29 @@ func (r ApiTidbNodeGroupServiceGetPublicEndpointSettingRequest) Execute() (*V1be
 /*
 TidbNodeGroupServiceGetPublicEndpointSetting Get the public endpoint setting of a TiDB Node Group
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @param tidbNodeGroupId
- @return ApiTidbNodeGroupServiceGetPublicEndpointSettingRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@param tidbNodeGroupId
+	@return ApiTidbNodeGroupServiceGetPublicEndpointSettingRequest
 */
 func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceGetPublicEndpointSetting(ctx context.Context, clusterId string, tidbNodeGroupId string) ApiTidbNodeGroupServiceGetPublicEndpointSettingRequest {
 	return ApiTidbNodeGroupServiceGetPublicEndpointSettingRequest{
-		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ApiService:      a,
+		ctx:             ctx,
+		clusterId:       clusterId,
 		tidbNodeGroupId: tidbNodeGroupId,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1PublicEndpointSetting
+//
+//	@return V1beta1PublicEndpointSetting
 func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceGetPublicEndpointSettingExecute(r ApiTidbNodeGroupServiceGetPublicEndpointSettingRequest) (*V1beta1PublicEndpointSetting, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1PublicEndpointSetting
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1PublicEndpointSetting
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TidbNodeGroupServiceAPIService.TidbNodeGroupServiceGetPublicEndpointSetting")
@@ -525,8 +527,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceGetPublicEndpointSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -536,8 +538,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceGetPublicEndpointSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -547,8 +549,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceGetPublicEndpointSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -558,8 +560,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceGetPublicEndpointSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -569,18 +571,18 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceGetPublicEndpointSe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -597,9 +599,9 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceGetPublicEndpointSe
 }
 
 type ApiTidbNodeGroupServiceGetTidbNodeGroupRequest struct {
-	ctx context.Context
-	ApiService *TidbNodeGroupServiceAPIService
-	clusterId string
+	ctx             context.Context
+	ApiService      *TidbNodeGroupServiceAPIService
+	clusterId       string
 	tidbNodeGroupId string
 }
 
@@ -610,28 +612,29 @@ func (r ApiTidbNodeGroupServiceGetTidbNodeGroupRequest) Execute() (*Dedicatedv1b
 /*
 TidbNodeGroupServiceGetTidbNodeGroup Get a TiDB Node Group
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @param tidbNodeGroupId
- @return ApiTidbNodeGroupServiceGetTidbNodeGroupRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@param tidbNodeGroupId
+	@return ApiTidbNodeGroupServiceGetTidbNodeGroupRequest
 */
 func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceGetTidbNodeGroup(ctx context.Context, clusterId string, tidbNodeGroupId string) ApiTidbNodeGroupServiceGetTidbNodeGroupRequest {
 	return ApiTidbNodeGroupServiceGetTidbNodeGroupRequest{
-		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ApiService:      a,
+		ctx:             ctx,
+		clusterId:       clusterId,
 		tidbNodeGroupId: tidbNodeGroupId,
 	}
 }
 
 // Execute executes the request
-//  @return Dedicatedv1beta1TidbNodeGroup
+//
+//	@return Dedicatedv1beta1TidbNodeGroup
 func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceGetTidbNodeGroupExecute(r ApiTidbNodeGroupServiceGetTidbNodeGroupRequest) (*Dedicatedv1beta1TidbNodeGroup, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Dedicatedv1beta1TidbNodeGroup
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1TidbNodeGroup
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TidbNodeGroupServiceAPIService.TidbNodeGroupServiceGetTidbNodeGroup")
@@ -707,8 +710,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceGetTidbNodeGroupExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -718,8 +721,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceGetTidbNodeGroupExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -729,8 +732,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceGetTidbNodeGroupExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -740,8 +743,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceGetTidbNodeGroupExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -751,18 +754,18 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceGetTidbNodeGroupExe
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -779,12 +782,12 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceGetTidbNodeGroupExe
 }
 
 type ApiTidbNodeGroupServiceListTidbNodeGroupsRequest struct {
-	ctx context.Context
+	ctx        context.Context
 	ApiService *TidbNodeGroupServiceAPIService
-	clusterId string
-	pageSize *int32
-	pageToken *string
-	skip *int32
+	clusterId  string
+	pageSize   *int32
+	pageToken  *string
+	skip       *int32
 }
 
 // The maximum number of TiDB groups to return. The service may return fewer than this value. If unspecified, at most X TiDB groups will be returned. The maximum value is X; values above X will be coerced to X.
@@ -812,26 +815,27 @@ func (r ApiTidbNodeGroupServiceListTidbNodeGroupsRequest) Execute() (*Dedicatedv
 /*
 TidbNodeGroupServiceListTidbNodeGroups List TiDB Node Groups
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @return ApiTidbNodeGroupServiceListTidbNodeGroupsRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@return ApiTidbNodeGroupServiceListTidbNodeGroupsRequest
 */
 func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceListTidbNodeGroups(ctx context.Context, clusterId string) ApiTidbNodeGroupServiceListTidbNodeGroupsRequest {
 	return ApiTidbNodeGroupServiceListTidbNodeGroupsRequest{
 		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ctx:        ctx,
+		clusterId:  clusterId,
 	}
 }
 
 // Execute executes the request
-//  @return Dedicatedv1beta1ListTidbNodeGroupsResponse
+//
+//	@return Dedicatedv1beta1ListTidbNodeGroupsResponse
 func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceListTidbNodeGroupsExecute(r ApiTidbNodeGroupServiceListTidbNodeGroupsRequest) (*Dedicatedv1beta1ListTidbNodeGroupsResponse, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodGet
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Dedicatedv1beta1ListTidbNodeGroupsResponse
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1ListTidbNodeGroupsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TidbNodeGroupServiceAPIService.TidbNodeGroupServiceListTidbNodeGroups")
@@ -915,8 +919,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceListTidbNodeGroupsE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -926,8 +930,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceListTidbNodeGroupsE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -937,8 +941,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceListTidbNodeGroupsE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -948,8 +952,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceListTidbNodeGroupsE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -959,18 +963,18 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceListTidbNodeGroupsE
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -987,12 +991,12 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceListTidbNodeGroupsE
 }
 
 type ApiTidbNodeGroupServiceUpdatePublicEndpointSettingRequest struct {
-	ctx context.Context
-	ApiService *TidbNodeGroupServiceAPIService
-	clusterId string
+	ctx                                  context.Context
+	ApiService                           *TidbNodeGroupServiceAPIService
+	clusterId                            string
 	publicEndpointSettingTidbNodeGroupId string
-	publicEndpointSetting *TidbNodeGroupServiceUpdatePublicEndpointSettingRequest
-	validateOnly *bool
+	publicEndpointSetting                *TidbNodeGroupServiceUpdatePublicEndpointSettingRequest
+	validateOnly                         *bool
 }
 
 func (r ApiTidbNodeGroupServiceUpdatePublicEndpointSettingRequest) PublicEndpointSetting(publicEndpointSetting TidbNodeGroupServiceUpdatePublicEndpointSettingRequest) ApiTidbNodeGroupServiceUpdatePublicEndpointSettingRequest {
@@ -1013,28 +1017,29 @@ func (r ApiTidbNodeGroupServiceUpdatePublicEndpointSettingRequest) Execute() (*V
 /*
 TidbNodeGroupServiceUpdatePublicEndpointSetting Update the public endpoint setting of a TiDB Node Group
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param clusterId
- @param publicEndpointSettingTidbNodeGroupId If set to \"-\", the default TiDB group will be used.
- @return ApiTidbNodeGroupServiceUpdatePublicEndpointSettingRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@param publicEndpointSettingTidbNodeGroupId If set to \"-\", the default TiDB group will be used.
+	@return ApiTidbNodeGroupServiceUpdatePublicEndpointSettingRequest
 */
 func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceUpdatePublicEndpointSetting(ctx context.Context, clusterId string, publicEndpointSettingTidbNodeGroupId string) ApiTidbNodeGroupServiceUpdatePublicEndpointSettingRequest {
 	return ApiTidbNodeGroupServiceUpdatePublicEndpointSettingRequest{
-		ApiService: a,
-		ctx: ctx,
-		clusterId: clusterId,
+		ApiService:                           a,
+		ctx:                                  ctx,
+		clusterId:                            clusterId,
 		publicEndpointSettingTidbNodeGroupId: publicEndpointSettingTidbNodeGroupId,
 	}
 }
 
 // Execute executes the request
-//  @return V1beta1PublicEndpointSetting
+//
+//	@return V1beta1PublicEndpointSetting
 func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceUpdatePublicEndpointSettingExecute(r ApiTidbNodeGroupServiceUpdatePublicEndpointSettingRequest) (*V1beta1PublicEndpointSetting, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPatch
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *V1beta1PublicEndpointSetting
+		localVarHTTPMethod  = http.MethodPatch
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *V1beta1PublicEndpointSetting
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TidbNodeGroupServiceAPIService.TidbNodeGroupServiceUpdatePublicEndpointSetting")
@@ -1118,8 +1123,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceUpdatePublicEndpoin
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1129,8 +1134,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceUpdatePublicEndpoin
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1140,8 +1145,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceUpdatePublicEndpoin
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1151,8 +1156,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceUpdatePublicEndpoin
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1162,18 +1167,18 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceUpdatePublicEndpoin
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
@@ -1190,12 +1195,12 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceUpdatePublicEndpoin
 }
 
 type ApiTidbNodeGroupServiceUpdateTidbNodeGroupRequest struct {
-	ctx context.Context
-	ApiService *TidbNodeGroupServiceAPIService
-	tidbNodeGroupClusterId string
+	ctx                          context.Context
+	ApiService                   *TidbNodeGroupServiceAPIService
+	tidbNodeGroupClusterId       string
 	tidbNodeGroupTidbNodeGroupId string
-	tidbNodeGroup *TidbNodeGroupServiceUpdateTidbNodeGroupRequest
-	validateOnly *bool
+	tidbNodeGroup                *TidbNodeGroupServiceUpdateTidbNodeGroupRequest
+	validateOnly                 *bool
 }
 
 func (r ApiTidbNodeGroupServiceUpdateTidbNodeGroupRequest) TidbNodeGroup(tidbNodeGroup TidbNodeGroupServiceUpdateTidbNodeGroupRequest) ApiTidbNodeGroupServiceUpdateTidbNodeGroupRequest {
@@ -1216,28 +1221,29 @@ func (r ApiTidbNodeGroupServiceUpdateTidbNodeGroupRequest) Execute() (*Dedicated
 /*
 TidbNodeGroupServiceUpdateTidbNodeGroup Update a TiDB Node Group
 
- @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
- @param tidbNodeGroupClusterId
- @param tidbNodeGroupTidbNodeGroupId
- @return ApiTidbNodeGroupServiceUpdateTidbNodeGroupRequest
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param tidbNodeGroupClusterId
+	@param tidbNodeGroupTidbNodeGroupId
+	@return ApiTidbNodeGroupServiceUpdateTidbNodeGroupRequest
 */
 func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceUpdateTidbNodeGroup(ctx context.Context, tidbNodeGroupClusterId string, tidbNodeGroupTidbNodeGroupId string) ApiTidbNodeGroupServiceUpdateTidbNodeGroupRequest {
 	return ApiTidbNodeGroupServiceUpdateTidbNodeGroupRequest{
-		ApiService: a,
-		ctx: ctx,
-		tidbNodeGroupClusterId: tidbNodeGroupClusterId,
+		ApiService:                   a,
+		ctx:                          ctx,
+		tidbNodeGroupClusterId:       tidbNodeGroupClusterId,
 		tidbNodeGroupTidbNodeGroupId: tidbNodeGroupTidbNodeGroupId,
 	}
 }
 
 // Execute executes the request
-//  @return Dedicatedv1beta1TidbNodeGroup
+//
+//	@return Dedicatedv1beta1TidbNodeGroup
 func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceUpdateTidbNodeGroupExecute(r ApiTidbNodeGroupServiceUpdateTidbNodeGroupRequest) (*Dedicatedv1beta1TidbNodeGroup, *http.Response, error) {
 	var (
-		localVarHTTPMethod   = http.MethodPatch
-		localVarPostBody     interface{}
-		formFiles            []formFile
-		localVarReturnValue  *Dedicatedv1beta1TidbNodeGroup
+		localVarHTTPMethod  = http.MethodPatch
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1TidbNodeGroup
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "TidbNodeGroupServiceAPIService.TidbNodeGroupServiceUpdateTidbNodeGroup")
@@ -1321,8 +1327,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceUpdateTidbNodeGroup
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 401 {
@@ -1332,8 +1338,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceUpdateTidbNodeGroup
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 403 {
@@ -1343,8 +1349,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceUpdateTidbNodeGroup
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 429 {
@@ -1354,8 +1360,8 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceUpdateTidbNodeGroup
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
 		if localVarHTTPResponse.StatusCode == 500 {
@@ -1365,18 +1371,18 @@ func (a *TidbNodeGroupServiceAPIService) TidbNodeGroupServiceUpdateTidbNodeGroup
 				newErr.error = err.Error()
 				return localVarReturnValue, localVarHTTPResponse, newErr
 			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
 			return localVarReturnValue, localVarHTTPResponse, newErr
 		}
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-					newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-					newErr.model = v
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
 		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 

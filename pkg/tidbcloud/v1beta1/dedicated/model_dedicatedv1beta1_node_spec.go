@@ -19,18 +19,18 @@ var _ MappedNullable = &Dedicatedv1beta1NodeSpec{}
 
 // Dedicatedv1beta1NodeSpec struct for Dedicatedv1beta1NodeSpec
 type Dedicatedv1beta1NodeSpec struct {
-	Name *string `json:"name,omitempty"`
-	RegionId *string `json:"regionId,omitempty"`
-	ComponentType *Dedicatedv1beta1ComponentType `json:"componentType,omitempty"`
-	NodeSpecKey *string `json:"nodeSpecKey,omitempty"`
-	DisplayName *string `json:"displayName,omitempty"`
-	VCpu *int32 `json:"vCpu,omitempty"`
-	MemorySizeGi *int32 `json:"memorySizeGi,omitempty"`
-	DefaultStorageSizeGi *int32 `json:"defaultStorageSizeGi,omitempty"`
-	MaxStorageSizeGi *int32 `json:"maxStorageSizeGi,omitempty"`
-	MinStorageSizeGi *int32 `json:"minStorageSizeGi,omitempty"`
-	DefaultNodeCount *int32 `json:"defaultNodeCount,omitempty"`
-	StorageTypes []ClusterStorageNodeSettingStorageType `json:"storageTypes,omitempty"`
+	Name                 *string                                `json:"name,omitempty"`
+	RegionId             *string                                `json:"regionId,omitempty"`
+	ComponentType        *Dedicatedv1beta1ComponentType         `json:"componentType,omitempty"`
+	NodeSpecKey          *string                                `json:"nodeSpecKey,omitempty"`
+	DisplayName          *string                                `json:"displayName,omitempty"`
+	VCpu                 *int32                                 `json:"vCpu,omitempty"`
+	MemorySizeGi         *int32                                 `json:"memorySizeGi,omitempty"`
+	DefaultStorageSizeGi *int32                                 `json:"defaultStorageSizeGi,omitempty"`
+	MaxStorageSizeGi     *int32                                 `json:"maxStorageSizeGi,omitempty"`
+	MinStorageSizeGi     *int32                                 `json:"minStorageSizeGi,omitempty"`
+	DefaultNodeCount     *int32                                 `json:"defaultNodeCount,omitempty"`
+	StorageTypes         []ClusterStorageNodeSettingStorageType `json:"storageTypes,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -438,7 +438,7 @@ func (o *Dedicatedv1beta1NodeSpec) SetStorageTypes(v []ClusterStorageNodeSetting
 }
 
 func (o Dedicatedv1beta1NodeSpec) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -558,5 +558,3 @@ func (v *NullableDedicatedv1beta1NodeSpec) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -20,9 +20,9 @@ var _ MappedNullable = &Dedicatedv1beta1TidbNodeGroupEndpoint{}
 // Dedicatedv1beta1TidbNodeGroupEndpoint struct for Dedicatedv1beta1TidbNodeGroupEndpoint
 type Dedicatedv1beta1TidbNodeGroupEndpoint struct {
 	// When endpoint's type is `PRIVATE_ENDPOINT`, the `host` field behave differently across cloud providers: For AWS clusters, the `host` field is available right after the private link service is ready. For GCP and Azure clusters, the `host` field is available after the user creates a `PrivateEndpointConnection`.
-	Host *string `json:"host,omitempty"`
-	Port *int32 `json:"port,omitempty"`
-	ConnectionType *EndpointConnectionType `json:"connectionType,omitempty"`
+	Host                 *string                 `json:"host,omitempty"`
+	Port                 *int32                  `json:"port,omitempty"`
+	ConnectionType       *EndpointConnectionType `json:"connectionType,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -142,7 +142,7 @@ func (o *Dedicatedv1beta1TidbNodeGroupEndpoint) SetConnectionType(v EndpointConn
 }
 
 func (o Dedicatedv1beta1TidbNodeGroupEndpoint) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -226,5 +226,3 @@ func (v *NullableDedicatedv1beta1TidbNodeGroupEndpoint) UnmarshalJSON(src []byte
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

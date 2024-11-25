@@ -20,10 +20,10 @@ type ClusterServiceListNodeInstancesComponentTypeParameter string
 
 // List of ClusterService_ListNodeInstances_componentType_parameter
 const (
-	CLUSTERSERVICELISTNODEINSTANCESCOMPONENTTYPEPARAMETER_TIKV ClusterServiceListNodeInstancesComponentTypeParameter = "TIKV"
-	CLUSTERSERVICELISTNODEINSTANCESCOMPONENTTYPEPARAMETER_TIDB ClusterServiceListNodeInstancesComponentTypeParameter = "TIDB"
+	CLUSTERSERVICELISTNODEINSTANCESCOMPONENTTYPEPARAMETER_TIKV    ClusterServiceListNodeInstancesComponentTypeParameter = "TIKV"
+	CLUSTERSERVICELISTNODEINSTANCESCOMPONENTTYPEPARAMETER_TIDB    ClusterServiceListNodeInstancesComponentTypeParameter = "TIDB"
 	CLUSTERSERVICELISTNODEINSTANCESCOMPONENTTYPEPARAMETER_TIFLASH ClusterServiceListNodeInstancesComponentTypeParameter = "TIFLASH"
-	CLUSTERSERVICELISTNODEINSTANCESCOMPONENTTYPEPARAMETER_PD ClusterServiceListNodeInstancesComponentTypeParameter = "PD"
+	CLUSTERSERVICELISTNODEINSTANCESCOMPONENTTYPEPARAMETER_PD      ClusterServiceListNodeInstancesComponentTypeParameter = "PD"
 	CLUSTERSERVICELISTNODEINSTANCESCOMPONENTTYPEPARAMETER_TIPROXY ClusterServiceListNodeInstancesComponentTypeParameter = "TIPROXY"
 )
 
@@ -114,4 +114,3 @@ func (v *NullableClusterServiceListNodeInstancesComponentTypeParameter) Unmarsha
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

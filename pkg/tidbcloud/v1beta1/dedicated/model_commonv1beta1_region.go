@@ -27,7 +27,7 @@ type Commonv1beta1Region struct {
 	// User-friendly display name of the region.
 	DisplayName *string `json:"displayName,omitempty"`
 	// Optional provider name for the region. Only used for serverless cluster. Deprecated.
-	Provider NullableString `json:"provider,omitempty"`
+	Provider             NullableString `json:"provider,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -210,6 +210,7 @@ func (o *Commonv1beta1Region) HasProvider() bool {
 func (o *Commonv1beta1Region) SetProvider(v string) {
 	o.Provider.Set(&v)
 }
+
 // SetProviderNil sets the value for Provider to be an explicit nil
 func (o *Commonv1beta1Region) SetProviderNil() {
 	o.Provider.Set(nil)
@@ -221,7 +222,7 @@ func (o *Commonv1beta1Region) UnsetProvider() {
 }
 
 func (o Commonv1beta1Region) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -313,5 +314,3 @@ func (v *NullableCommonv1beta1Region) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -19,9 +19,9 @@ var _ MappedNullable = &MaintenanceServiceUpdateMaintenanceWindowRequest{}
 
 // MaintenanceServiceUpdateMaintenanceWindowRequest struct for MaintenanceServiceUpdateMaintenanceWindowRequest
 type MaintenanceServiceUpdateMaintenanceWindowRequest struct {
-	WeekDay *int32 `json:"weekDay,omitempty"`
-	DayHour *int32 `json:"dayHour,omitempty"`
-	HourMinute *int32 `json:"hourMinute,omitempty"`
+	WeekDay              *int32 `json:"weekDay,omitempty"`
+	DayHour              *int32 `json:"dayHour,omitempty"`
+	HourMinute           *int32 `json:"hourMinute,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -141,7 +141,7 @@ func (o *MaintenanceServiceUpdateMaintenanceWindowRequest) SetHourMinute(v int32
 }
 
 func (o MaintenanceServiceUpdateMaintenanceWindowRequest) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -225,5 +225,3 @@ func (v *NullableMaintenanceServiceUpdateMaintenanceWindowRequest) UnmarshalJSON
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

@@ -20,10 +20,10 @@ var _ MappedNullable = &V1beta1UpdateMaintenanceWindowRequestMaintenanceWindow{}
 
 // V1beta1UpdateMaintenanceWindowRequestMaintenanceWindow struct for V1beta1UpdateMaintenanceWindowRequestMaintenanceWindow
 type V1beta1UpdateMaintenanceWindowRequestMaintenanceWindow struct {
-	MaintenanceWindowId string `json:"maintenanceWindowId"`
-	WeekDay *int32 `json:"weekDay,omitempty"`
-	DayHour *int32 `json:"dayHour,omitempty"`
-	HourMinute *int32 `json:"hourMinute,omitempty"`
+	MaintenanceWindowId  string `json:"maintenanceWindowId"`
+	WeekDay              *int32 `json:"weekDay,omitempty"`
+	DayHour              *int32 `json:"dayHour,omitempty"`
+	HourMinute           *int32 `json:"hourMinute,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -168,7 +168,7 @@ func (o *V1beta1UpdateMaintenanceWindowRequestMaintenanceWindow) SetHourMinute(v
 }
 
 func (o V1beta1UpdateMaintenanceWindowRequestMaintenanceWindow) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -208,10 +208,10 @@ func (o *V1beta1UpdateMaintenanceWindowRequestMaintenanceWindow) UnmarshalJSON(d
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -275,5 +275,3 @@ func (v *NullableV1beta1UpdateMaintenanceWindowRequestMaintenanceWindow) Unmarsh
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

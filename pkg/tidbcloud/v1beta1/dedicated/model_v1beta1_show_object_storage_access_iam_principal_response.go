@@ -19,7 +19,7 @@ var _ MappedNullable = &V1beta1ShowObjectStorageAccessIamPrincipalResponse{}
 
 // V1beta1ShowObjectStorageAccessIamPrincipalResponse struct for V1beta1ShowObjectStorageAccessIamPrincipalResponse
 type V1beta1ShowObjectStorageAccessIamPrincipalResponse struct {
-	IamPrincipal *string `json:"iamPrincipal,omitempty"`
+	IamPrincipal         *string `json:"iamPrincipal,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -75,7 +75,7 @@ func (o *V1beta1ShowObjectStorageAccessIamPrincipalResponse) SetIamPrincipal(v s
 }
 
 func (o V1beta1ShowObjectStorageAccessIamPrincipalResponse) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -151,5 +151,3 @@ func (v *NullableV1beta1ShowObjectStorageAccessIamPrincipalResponse) UnmarshalJS
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

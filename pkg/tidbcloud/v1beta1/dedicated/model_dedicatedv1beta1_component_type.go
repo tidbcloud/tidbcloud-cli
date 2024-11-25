@@ -20,10 +20,10 @@ type Dedicatedv1beta1ComponentType string
 
 // List of dedicatedv1beta1ComponentType
 const (
-	DEDICATEDV1BETA1COMPONENTTYPE_TIKV Dedicatedv1beta1ComponentType = "TIKV"
-	DEDICATEDV1BETA1COMPONENTTYPE_TIDB Dedicatedv1beta1ComponentType = "TIDB"
+	DEDICATEDV1BETA1COMPONENTTYPE_TIKV    Dedicatedv1beta1ComponentType = "TIKV"
+	DEDICATEDV1BETA1COMPONENTTYPE_TIDB    Dedicatedv1beta1ComponentType = "TIDB"
 	DEDICATEDV1BETA1COMPONENTTYPE_TIFLASH Dedicatedv1beta1ComponentType = "TIFLASH"
-	DEDICATEDV1BETA1COMPONENTTYPE_PD Dedicatedv1beta1ComponentType = "PD"
+	DEDICATEDV1BETA1COMPONENTTYPE_PD      Dedicatedv1beta1ComponentType = "PD"
 	DEDICATEDV1BETA1COMPONENTTYPE_TIPROXY Dedicatedv1beta1ComponentType = "TIPROXY"
 )
 
@@ -114,4 +114,3 @@ func (v *NullableDedicatedv1beta1ComponentType) UnmarshalJSON(src []byte) error 
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-

@@ -20,13 +20,13 @@ var _ MappedNullable = &V1beta1AuditLogFilterRule{}
 
 // V1beta1AuditLogFilterRule struct for V1beta1AuditLogFilterRule
 type V1beta1AuditLogFilterRule struct {
-	Name *string `json:"name,omitempty"`
-	AuditLogFilterRuleId *string `json:"auditLogFilterRuleId,omitempty"`
-	ClusterId string `json:"clusterId"`
-	UserExpr *string `json:"userExpr,omitempty"`
-	DbExpr *string `json:"dbExpr,omitempty"`
-	TableExpr *string `json:"tableExpr,omitempty"`
-	AccessTypeList []string `json:"accessTypeList,omitempty"`
+	Name                 *string  `json:"name,omitempty"`
+	AuditLogFilterRuleId *string  `json:"auditLogFilterRuleId,omitempty"`
+	ClusterId            string   `json:"clusterId"`
+	UserExpr             *string  `json:"userExpr,omitempty"`
+	DbExpr               *string  `json:"dbExpr,omitempty"`
+	TableExpr            *string  `json:"tableExpr,omitempty"`
+	AccessTypeList       []string `json:"accessTypeList,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -267,7 +267,7 @@ func (o *V1beta1AuditLogFilterRule) SetAccessTypeList(v []string) {
 }
 
 func (o V1beta1AuditLogFilterRule) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -316,10 +316,10 @@ func (o *V1beta1AuditLogFilterRule) UnmarshalJSON(data []byte) (err error) {
 	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
-		return err;
+		return err
 	}
 
-	for _, requiredProperty := range(requiredProperties) {
+	for _, requiredProperty := range requiredProperties {
 		if _, exists := allProperties[requiredProperty]; !exists {
 			return fmt.Errorf("no value given for required property %v", requiredProperty)
 		}
@@ -386,5 +386,3 @@ func (v *NullableV1beta1AuditLogFilterRule) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-

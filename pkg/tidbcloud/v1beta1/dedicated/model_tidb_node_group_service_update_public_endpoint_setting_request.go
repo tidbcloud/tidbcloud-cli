@@ -19,9 +19,9 @@ var _ MappedNullable = &TidbNodeGroupServiceUpdatePublicEndpointSettingRequest{}
 
 // TidbNodeGroupServiceUpdatePublicEndpointSettingRequest struct for TidbNodeGroupServiceUpdatePublicEndpointSettingRequest
 type TidbNodeGroupServiceUpdatePublicEndpointSettingRequest struct {
-	Name *string `json:"name,omitempty"`
-	Enabled NullableBool `json:"enabled,omitempty"`
-	IpAccessList []PublicEndpointSettingIpAccessList `json:"ipAccessList,omitempty"`
+	Name                 *string                             `json:"name,omitempty"`
+	Enabled              NullableBool                        `json:"enabled,omitempty"`
+	IpAccessList         []PublicEndpointSettingIpAccessList `json:"ipAccessList,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -108,6 +108,7 @@ func (o *TidbNodeGroupServiceUpdatePublicEndpointSettingRequest) HasEnabled() bo
 func (o *TidbNodeGroupServiceUpdatePublicEndpointSettingRequest) SetEnabled(v bool) {
 	o.Enabled.Set(&v)
 }
+
 // SetEnabledNil sets the value for Enabled to be an explicit nil
 func (o *TidbNodeGroupServiceUpdatePublicEndpointSettingRequest) SetEnabledNil() {
 	o.Enabled.Set(nil)
@@ -151,7 +152,7 @@ func (o *TidbNodeGroupServiceUpdatePublicEndpointSettingRequest) SetIpAccessList
 }
 
 func (o TidbNodeGroupServiceUpdatePublicEndpointSettingRequest) MarshalJSON() ([]byte, error) {
-	toSerialize,err := o.ToMap()
+	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
 	}
@@ -235,5 +236,3 @@ func (v *NullableTidbNodeGroupServiceUpdatePublicEndpointSettingRequest) Unmarsh
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
-
-
