@@ -38,6 +38,9 @@ addcopy: ## Add copyright to all files
 	@scripts/add-copy.sh
 
 .PHONY: generate-v1beta1-client
+generate-v1beta1-client: generate-v1beta1-serverless-client generate-v1beta1-dedicated-client generate-v1beta1-iam-client ## Generate v1beta1 client
+
+.PHONY: generate-v1beta1-serverless-client
 generate-v1beta1-client: install-openapi-generator ## Generate v1beta1 client
 	@echo "==> Generating serverless branch client"
 	rm -rf pkg/tidbcloud/v1beta1/serverless/branch
@@ -48,16 +51,26 @@ generate-v1beta1-client: install-openapi-generator ## Generate v1beta1 client
 	@echo "==> Generating serverless export client"
 	rm -rf pkg/tidbcloud/v1beta1/serverless/export
 	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/export.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/export --package-name export
-	@echo "==> Generating iam client"
-	rm -rf pkg/tidbcloud/v1beta1/iam
-	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/iam.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/iam --package-name iam
 	@echo "==> Generating serverless br client"
 	rm -rf pkg/tidbcloud/v1beta1/serverless/br
 	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/br.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/br --package-name br
 	@echo "==> Generating serverless import client"
 	rm -rf pkg/tidbcloud/v1beta1/serverless/imp
 	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/import.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/imp --package-name imp
-	go fmt ./pkg/tidbcloud/v1beta1/...
+	go fmt ./pkg/tidbcloud/v1beta1/serverless/...
+
+.PHONY: generate-v1beta1-dedicated-client
+generate-v1beta1-dedicated-client: install-openapi-generator ## Generate dedicated client
+	@echo "==> Generating dedicated client"
+	# rm -rf pkg/tidbcloud/v1beta1/dedicated
+	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false --skip-validate-spec -i ../../pkg/tidbcloud/v1beta1/services.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/dedicated --package-name dedicated
+	go fmt ./pkg/tidbcloud/v1beta1/dedicated/...
+
+.PHONY: generate-v1beta1-iam-client
+	@echo "==> Generating iam client"
+	rm -rf pkg/tidbcloud/v1beta1/iam
+	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/iam.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/iam --package-name iam
+	go fmt ./pkg/tidbcloud/v1beta1/iam/...
 
 .PHONY: install-openapi-generator
 install-openapi-generator:
