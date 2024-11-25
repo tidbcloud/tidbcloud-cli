@@ -1,0 +1,5726 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "TiDB Cloud Dedicated Open API",
+    "description": "TiDB Cloud Dedicated Open API.",
+    "version": "v1beta1"
+  },
+  "tags": [
+    {
+      "name": "ClusterService"
+    },
+    {
+      "name": "RegionService"
+    },
+    {
+      "name": "TidbNodeGroupService"
+    },
+    {
+      "name": "PrivateEndpointConnectionService"
+    },
+    {
+      "name": "NetworkContainerService"
+    },
+    {
+      "name": "MaintenanceService"
+    },
+    {
+      "name": "DatabaseAuditLogService"
+    }
+  ],
+  "host": "dedicated.tidbapi.com",
+  "basePath": "/v1beta1",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/clusters": {
+      "get": {
+        "summary": "List clusters",
+        "operationId": "ClusterService_ListClusters",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tidb_cloud_open_apidedicatedv1beta1ListClustersResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "projectId",
+            "description": "If unspecified, the project ID of default project is used.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "clusterIds",
+            "description": "If specified, only clusters in the specified cluster_ids will be returned.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "regionIds",
+            "description": "If specified, only clusters in the specified regions will be returned.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "clusterStates",
+            "description": "If specified, only clusters in the specified states will be returned.\n\n - CREATING: Cluster is being created.\n - DELETING: Cluster is being deleted.\n - ACTIVE: Cluster is active for use.\n - RESTORING: Cluster data is being restored.\n - MAINTENANCE: Cluster is under maintenance.\n - DELETED: Cluster has been deleted.\n - INACTIVE: Cluster is not active, but not being deleted.\n - UPGRADING: Cluster is being updated.\nOnly for Dedicated Cluster.\n - IMPORTING: Cluster is being imported.\nOnly for Dedicated Cluster.\n - MODIFYING: Cluster is being modified.\nOnly for Dedicated Cluster.\n - PAUSING: Cluster is being paused.\nOnly for Dedicated Cluster.\n - PAUSED: Cluster is paused.\nOnly for Dedicated Cluster.\n - RESUMING: Cluster is resuming.\nOnly for Dedicated Cluster.",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "CREATING",
+                "DELETING",
+                "ACTIVE",
+                "RESTORING",
+                "MAINTENANCE",
+                "DELETED",
+                "INACTIVE",
+                "UPGRADING",
+                "IMPORTING",
+                "MODIFYING",
+                "PAUSING",
+                "PAUSED",
+                "RESUMING"
+              ]
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "pageSize",
+            "description": "The maximum number of clusters to return. The service may return fewer than this value.\nIf unspecified, at most X clusters will be returned.\nThe maximum value is X; values above X will be coerced to X.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "A page token, received from a previous `ListClusters` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `ListClusters` must match\nthe call that provided the page token.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "description": "The number of individual resources to skip before starting to return results.\nIf the skip value causes the cursor to move past the end of the collection,\nthe response will be 200 OK with an empty result set and no next_page_token.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ]
+      },
+      "post": {
+        "summary": "Create a cluster",
+        "operationId": "ClusterService_CreateCluster",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tidb_cloud_open_apidedicatedv1beta1Cluster"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "cluster",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/tidb_cloud_open_apidedicatedv1beta1Cluster",
+              "required": [
+                "cluster"
+              ]
+            }
+          },
+          {
+            "name": "validateOnly",
+            "description": "if validate_only is true, the request will be validated but not executed.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}": {
+      "get": {
+        "summary": "Get a cluster",
+        "operationId": "ClusterService_GetCluster",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tidb_cloud_open_apidedicatedv1beta1Cluster"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete a cluster",
+        "operationId": "ClusterService_DeleteCluster",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tidb_cloud_open_apidedicatedv1beta1Cluster"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "validateOnly",
+            "description": "if validate_only is true, the request will be validated but not executed.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ]
+      }
+    },
+    "/clusters/{cluster.clusterId}": {
+      "patch": {
+        "summary": "Update a cluster",
+        "operationId": "ClusterService_UpdateCluster",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tidb_cloud_open_apidedicatedv1beta1Cluster"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "cluster.clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cluster",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tidbNodeSetting": {
+                  "$ref": "#/definitions/v1beta1UpdateClusterRequestTidbNodeSetting"
+                },
+                "tikvNodeSetting": {
+                  "$ref": "#/definitions/v1beta1UpdateClusterRequestStorageNodeSetting"
+                },
+                "tiflashNodeSetting": {
+                  "$ref": "#/definitions/v1beta1UpdateClusterRequestStorageNodeSetting"
+                },
+                "displayName": {
+                  "type": "string"
+                },
+                "labels": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "description": "The project_id key cannot be updated. If the project_id key is specified, it will be ignored."
+                }
+              }
+            }
+          },
+          {
+            "name": "validateOnly",
+            "description": "if validate_only is true, the request will be validated but not executed.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}:pauseCluster": {
+      "post": {
+        "summary": "Pause a cluster",
+        "operationId": "ClusterService_PauseCluster",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1PauseClusterResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}:resumeCluster": {
+      "post": {
+        "summary": "Resume a cluster",
+        "operationId": "ClusterService_ResumeCluster",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1ResumeClusterResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}:resetRootPassword": {
+      "post": {
+        "summary": "Reset the root password of a cluster",
+        "operationId": "ClusterService_ResetRootPassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1ResetRootPasswordResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ClusterServiceResetRootPasswordBody"
+            }
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}/nodeInstances": {
+      "get": {
+        "summary": "List node instances",
+        "operationId": "ClusterService_ListNodeInstances",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1ListNodeInstancesResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "componentType",
+            "description": "If specified, only node instances of the specified component type will be returned.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "TIKV",
+              "TIDB",
+              "TIFLASH",
+              "PD",
+              "TIPROXY"
+            ]
+          },
+          {
+            "name": "pageSize",
+            "description": "The maximum number of node instances to return. The service may return fewer than this value.\nIf unspecified, at most X node instances will be returned.\nThe maximum value is X; values above X will be coerced to X.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "A page token, received from a previous `ListNodeInstances` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `ListNodeInstances` must match\nthe call that provided the page token.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "description": "The number of individual resources to skip before starting to return results.\nIf the skip value causes the cursor to move past the end of the collection,\nthe response will be 200 OK with an empty result set and no next_page_token.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}/nodeInstances/{instanceId}": {
+      "get": {
+        "summary": "Get a node instance",
+        "operationId": "ClusterService_GetNodeInstance",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1NodeInstance"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "instanceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ]
+      }
+    },
+    "/clusters:showNodeQuota": {
+      "get": {
+        "summary": "Show node quota across the caller's organization",
+        "operationId": "ClusterService_ShowNodeQuota",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1ShowNodeQuotaResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "ClusterService"
+        ]
+      }
+    },
+    "/regions": {
+      "get": {
+        "summary": "List regions for creating a cluster",
+        "operationId": "RegionService_ListRegions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tidb_cloud_open_apidedicatedv1beta1ListRegionsResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "cloudProvider",
+            "description": "If specified, only regions of the specified cloud provider will be returned.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "projectId",
+            "description": "If unspecified, the project ID of default project is used.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "The maximum number of regions to return. The service may return fewer than this value.\nIf unspecified, at most X regions will be returned.\nThe maximum value is X; values above X will be coerced to X.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "A page token, received from a previous `ListRegions` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `ListRegions` must match\nthe call that provided the page token.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "description": "The number of individual resources to skip before starting to return results.\nIf the skip value causes the cursor to move past the end of the collection,\nthe response will be 200 OK with an empty result set and no next_page_token.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "RegionService"
+        ]
+      }
+    },
+    "/regions/{regionId}": {
+      "get": {
+        "summary": "Get a region",
+        "operationId": "RegionService_GetRegion",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/commonv1beta1Region"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "regionId",
+            "description": "Format: {cloud_provider}-{region_code}",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "projectId",
+            "description": "If unspecified, the project ID of default project is used.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RegionService"
+        ]
+      }
+    },
+    "/regions:showCloudProviders": {
+      "get": {
+        "summary": "Show cloud providers for creating a cluster",
+        "operationId": "RegionService_ShowCloudProviders",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1ShowCloudProvidersResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "projectId",
+            "description": "If unspecified, the project ID of default project is used.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RegionService"
+        ]
+      }
+    },
+    "/regions/{regionId}/nodeSpecs": {
+      "get": {
+        "summary": "List node specs for creating or scaling a cluster",
+        "operationId": "RegionService_ListNodeSpecs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1ListNodeSpecsResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "regionId",
+            "description": "Format: {cloud_provider}-{region_code}",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "componentType",
+            "description": "If specified, only node specs of the specified component type will be returned.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "TIKV",
+              "TIDB",
+              "TIFLASH",
+              "PD",
+              "TIPROXY"
+            ]
+          },
+          {
+            "name": "projectId",
+            "description": "If unspecified, the project ID of default project is used.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "The maximum number of node specs to return. The service may return fewer than this value.\nIf unspecified, at most X node specs will be returned.\nThe maximum value is X; values above X will be coerced to X.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "A page token, received from a previous `ListNodeSpecs` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `ListNodeSpecs` must match\nthe call that provided the page token.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "description": "The number of individual resources to skip before starting to return results.\nIf the skip value causes the cursor to move past the end of the collection,\nthe response will be 200 OK with an empty result set and no next_page_token.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "RegionService"
+        ]
+      }
+    },
+    "/regions/{regionId}/componentTypes/{componentType}/nodeSpecs/{nodeSpecKey}": {
+      "get": {
+        "summary": "Get a node spec",
+        "operationId": "RegionService_GetNodeSpec",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1NodeSpec"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "regionId",
+            "description": "Format: {cloud_provider}-{region_code}",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "componentType",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "TIKV",
+              "TIDB",
+              "TIFLASH",
+              "PD",
+              "TIPROXY"
+            ]
+          },
+          {
+            "name": "nodeSpecKey",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "projectId",
+            "description": "If unspecified, the project ID of default project is used.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RegionService"
+        ]
+      }
+    },
+    "/clusters/{tidbNodeGroup.clusterId}/tidbNodeGroups": {
+      "post": {
+        "summary": "Create a TiDB Node Group",
+        "operationId": "TidbNodeGroupService_CreateTidbNodeGroup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroup"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "tidbNodeGroup.clusterId",
+            "description": "The cluster ID of the TiDB group.\nOptional when creating cluster with the default TiDB group.\nRequired when creating non-default TiDB group.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tidbNodeGroup",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "title": "Format: tidbNodeGroups/{tidb_node_group_id}",
+                  "readOnly": true
+                },
+                "tidbNodeGroupId": {
+                  "type": "string",
+                  "description": "The unique ID of the TiDB group.",
+                  "readOnly": true
+                },
+                "displayName": {
+                  "type": "string",
+                  "description": "The display name of the TiDB group."
+                },
+                "nodeCount": {
+                  "type": "integer",
+                  "format": "int32",
+                  "description": "The number of TiDB nodes in the TiDB group."
+                },
+                "endpoints": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroupEndpoint"
+                  },
+                  "readOnly": true
+                },
+                "nodeSpecKey": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "nodeSpecDisplayName": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "isDefaultGroup": {
+                  "type": "boolean",
+                  "readOnly": true
+                },
+                "state": {
+                  "readOnly": true,
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroupState"
+                    }
+                  ]
+                },
+                "nodeChangingProgress": {
+                  "readOnly": true,
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/ClusterNodeChangingProgress"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "nodeCount"
+              ]
+            }
+          },
+          {
+            "name": "validateOnly",
+            "description": "if validate_only is true, the request will be validated but not executed.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "TidbNodeGroupService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}/tidbNodeGroups": {
+      "get": {
+        "summary": "List TiDB Node Groups",
+        "operationId": "TidbNodeGroupService_ListTidbNodeGroups",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1ListTidbNodeGroupsResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "The maximum number of TiDB groups to return. The service may return fewer than this value.\nIf unspecified, at most X TiDB groups will be returned.\nThe maximum value is X; values above X will be coerced to X.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "A page token, received from a previous `ListTidbNodeGroups` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `ListTidbNodeGroups` must match\nthe call that provided the page token.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "description": "The number of individual resources to skip before starting to return results.\nIf the skip value causes the cursor to move past the end of the collection,\nthe response will be 200 OK with an empty result set and no next_page_token.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "TidbNodeGroupService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}/tidbNodeGroups/{tidbNodeGroupId}": {
+      "get": {
+        "summary": "Get a TiDB Node Group",
+        "operationId": "TidbNodeGroupService_GetTidbNodeGroup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroup"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tidbNodeGroupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "TidbNodeGroupService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete a TiDB Node Group",
+        "operationId": "TidbNodeGroupService_DeleteTidbNodeGroup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tidbNodeGroupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "validateOnly",
+            "description": "if validate_only is true, the request will be validated but not executed.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "TidbNodeGroupService"
+        ]
+      }
+    },
+    "/clusters/{tidbNodeGroup.clusterId}/tidbNodeGroups/{tidbNodeGroup.tidbNodeGroupId}": {
+      "patch": {
+        "summary": "Update a TiDB Node Group",
+        "operationId": "TidbNodeGroupService_UpdateTidbNodeGroup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroup"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "tidbNodeGroup.clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tidbNodeGroup.tidbNodeGroupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tidbNodeGroup",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "displayName": {
+                  "type": "string"
+                },
+                "nodeCount": {
+                  "type": "integer",
+                  "format": "int32",
+                  "x-nullable": true
+                }
+              }
+            }
+          },
+          {
+            "name": "validateOnly",
+            "description": "if validate_only is true, the request will be validated but not executed.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "TidbNodeGroupService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}/tidbNodeGroups/{tidbNodeGroupId}/publicEndpointSetting": {
+      "get": {
+        "summary": "Get the public endpoint setting of a TiDB Node Group",
+        "operationId": "TidbNodeGroupService_GetPublicEndpointSetting",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1PublicEndpointSetting"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tidbNodeGroupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "TidbNodeGroupService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}/tidbNodeGroups/{publicEndpointSetting.tidbNodeGroupId}/publicEndpointSetting": {
+      "patch": {
+        "summary": "Update the public endpoint setting of a TiDB Node Group",
+        "operationId": "TidbNodeGroupService_UpdatePublicEndpointSetting",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1PublicEndpointSetting"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "publicEndpointSetting.tidbNodeGroupId",
+            "description": "If set to \"-\", the default TiDB group will be used.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "publicEndpointSetting",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "title": "Format: tidbNodeGroups/{tidb_node_group_id}/publicEndpointSetting",
+                  "readOnly": true
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "x-nullable": true
+                },
+                "ipAccessList": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/definitions/PublicEndpointSettingIpAccessList"
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "validateOnly",
+            "description": "if validate_only is true, the request will be validated but not executed.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "TidbNodeGroupService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}/tidbNodeGroups/{tidbNodeGroupId}/privateLinkService": {
+      "get": {
+        "summary": "Get the private link service of a TiDB Node Group",
+        "operationId": "PrivateEndpointConnectionService_GetPrivateLinkService",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1PrivateLinkService"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tidbNodeGroupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PrivateEndpointConnectionService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}/tidbNodeGroups/{privateEndpointConnection.tidbNodeGroupId}/privateEndpointConnections": {
+      "post": {
+        "summary": "Create a private endpoint connection",
+        "operationId": "PrivateEndpointConnectionService_CreatePrivateEndpointConnection",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1PrivateEndpointConnection"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "privateEndpointConnection.tidbNodeGroupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "privateEndpointConnection",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "title": "Format: tidbNodeGroups/{tidb_node_group_id}/privateEndpointConnections/{private_endpoint_connection_id}",
+                  "readOnly": true
+                },
+                "privateEndpointConnectionId": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "clusterId": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "clusterDisplayName": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "labels": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "description": "The labels of private link connection. It always contains the `project_id` label.",
+                  "readOnly": true
+                },
+                "endpointId": {
+                  "type": "string",
+                  "description": "The endpoint ID of the private link connection.\nFor AWS, it's VPC endpoint ID.\nFor GCP, it's private service connect endpoint ID.\nFor Azure, it's private endpoint resource ID."
+                },
+                "privateIpAddress": {
+                  "type": "string",
+                  "x-nullable": true,
+                  "description": "The private IP address of the private endpoint in the user's vNet.\nTiDB Cloud will setup a public DNS record for this private IP address. So the user can use DNS address to connect to the cluster.\nOnly available for Azure clusters."
+                },
+                "endpointState": {
+                  "readOnly": true,
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/PrivateEndpointConnectionEndpointState"
+                    }
+                  ]
+                },
+                "massage": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "regionId": {
+                  "type": "string",
+                  "title": "Format: {cloud_provider}-{region_code}",
+                  "readOnly": true
+                },
+                "regionDisplayName": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "cloudProvider": {
+                  "readOnly": true,
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/v1beta1RegionCloudProvider"
+                    }
+                  ]
+                },
+                "privateLinkServiceName": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "privateLinkServiceState": {
+                  "readOnly": true,
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/v1beta1PrivateLinkServiceState"
+                    }
+                  ]
+                },
+                "tidbNodeGroupDisplayName": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "accountId": {
+                  "type": "string",
+                  "x-nullable": true,
+                  "description": "Only for GCP private service connections. It's GCP project name.",
+                  "readOnly": true
+                },
+                "host": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "port": {
+                  "type": "integer",
+                  "format": "int32",
+                  "readOnly": true
+                }
+              },
+              "required": [
+                "endpointId"
+              ]
+            }
+          },
+          {
+            "name": "validateOnly",
+            "description": "Default is false. If true, the request will not be applied and only validation will be performed.\nAt present, this field is only available for Azure provider.",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "PrivateEndpointConnectionService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}/tidbNodeGroups/{tidbNodeGroupId}/privateEndpointConnections": {
+      "get": {
+        "summary": "List private endpoint connections",
+        "operationId": "PrivateEndpointConnectionService_ListPrivateEndpointConnections",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1ListPrivateEndpointConnectionsResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "To list private link connections across different clusters and TiDB groups, set cluster_id to \"-\".",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "[^/]+"
+          },
+          {
+            "name": "tidbNodeGroupId",
+            "description": "To list private link connections across different clusters and TiDB groups, set tidb_node_group_id to \"-\".",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "pattern": "[^/]+"
+          },
+          {
+            "name": "projectId",
+            "description": "Pass this project_id only when listing under a project across different clusters and TiDB groups.\nBoth cluster_id and tidb_node_group_id should be set to \"-\" in this case.\nIf unspecified, the project ID of the cluster is used.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "cloudProvider",
+            "description": "If specified, only private link connections of the specified cloud provider will be returned.\n\n - aws: Amazon Web Services.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - gcp: Google Cloud Platform.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - azure: Microsoft Azure.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "aws",
+              "gcp",
+              "azure"
+            ]
+          },
+          {
+            "name": "pageSize",
+            "description": "The maximum number of private link connections to return. The service may return fewer than this value.\nIf unspecified, at most X private link connections will be returned.\nThe maximum value is X; values above X will be coerced to X.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "A page token, received from a previous `ListPrivateLinkConnections` call.\nProvide this to retrieve the subsequent page.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "description": "The number of individual resources to skip before starting to return results.\nIf the skip value causes the cursor to move past the end of the collection,\nthe response will be 200 OK with an empty result set and no next_page_token.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "PrivateEndpointConnectionService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}/tidbNodeGroups/{tidbNodeGroupId}/privateEndpointConnections/{privateEndpointConnectionId}": {
+      "get": {
+        "summary": "Get a private endpoint connection",
+        "operationId": "PrivateEndpointConnectionService_GetPrivateEndpointConnection",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1PrivateEndpointConnection"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tidbNodeGroupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "privateEndpointConnectionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PrivateEndpointConnectionService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete a private endpoint connection",
+        "operationId": "PrivateEndpointConnectionService_DeletePrivateEndpointConnection",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "tidbNodeGroupId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "privateEndpointConnectionId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PrivateEndpointConnectionService"
+        ]
+      }
+    },
+    "/networkContainers": {
+      "get": {
+        "summary": "List network containers",
+        "operationId": "NetworkContainerService_ListNetworkContainers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1ListNetworkContainersResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "projectId",
+            "description": "If unspecified, the project ID of default project is used.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "cloudProvider",
+            "description": " - aws: Amazon Web Services.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - gcp: Google Cloud Platform.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - azure: Microsoft Azure.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "aws",
+              "gcp",
+              "azure"
+            ]
+          },
+          {
+            "name": "pageSize",
+            "description": "The maximum number of network containers to return. The service may return fewer than this value.\nIf unspecified, at most X network containers will be returned.\nThe maximum value is X; values above X will be coerced to X.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "A page token, received from a previous `ListNetworkContainers` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `ListNetworkContainers` must match\nthe call that provided the page token.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "description": "The number of individual resources to skip before starting to return results.\nIf the skip value causes the cursor to move past the end of the collection,\nthe response will be 200 OK with an empty result set and no next_page_token.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "NetworkContainerService"
+        ]
+      },
+      "post": {
+        "summary": "Create a network container",
+        "operationId": "NetworkContainerService_CreateNetworkContainer",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1NetworkContainer"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "networkContainer",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1beta1NetworkContainer",
+              "required": [
+                "networkContainer"
+              ]
+            }
+          },
+          {
+            "name": "validateOnly",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "NetworkContainerService"
+        ]
+      }
+    },
+    "/networkContainers/{networkContainerId}": {
+      "get": {
+        "summary": "Get a network container",
+        "operationId": "NetworkContainerService_GetNetworkContainer",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1NetworkContainer"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "networkContainerId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "NetworkContainerService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete a network container",
+        "operationId": "NetworkContainerService_DeleteNetworkContainer",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "networkContainerId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "NetworkContainerService"
+        ]
+      }
+    },
+    "/vpcPeerings": {
+      "get": {
+        "summary": "List VPC peerings",
+        "operationId": "NetworkContainerService_ListVpcPeerings",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1ListVpcPeeringsResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "projectId",
+            "description": "If unspecified, the project ID of default project is used.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "cloudProvider",
+            "description": "If specified, only VPC peerings of the specified cloud provider will be returned.\n\n - aws: Amazon Web Services.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - gcp: Google Cloud Platform.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - azure: Microsoft Azure.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "aws",
+              "gcp",
+              "azure"
+            ]
+          },
+          {
+            "name": "pageSize",
+            "description": "The maximum number of VPC peerings to return. The service may return fewer than this value.\nIf unspecified, at most X VPC peerings will be returned.\nThe maximum value is X; values above X will be coerced to X.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "A page token, received from a previous `ListVpcPeerings` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `ListVpcPeerings` must match\nthe call that provided the page token.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "NetworkContainerService"
+        ]
+      },
+      "post": {
+        "summary": "Create a VPC peering",
+        "operationId": "NetworkContainerService_CreateVpcPeering",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1VpcPeering"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "vpcPeering",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1VpcPeering",
+              "required": [
+                "vpcPeering"
+              ]
+            }
+          }
+        ],
+        "tags": [
+          "NetworkContainerService"
+        ]
+      }
+    },
+    "/vpcPeerings/{vpcPeeringId}": {
+      "get": {
+        "summary": "Get a VPC peering",
+        "operationId": "NetworkContainerService_GetVpcPeering",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1VpcPeering"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "vpcPeeringId",
+            "description": "Format {cloud_provider}-{random_suffix}",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "NetworkContainerService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete a VPC peering",
+        "operationId": "NetworkContainerService_DeleteVpcPeering",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "vpcPeeringId",
+            "description": "Format {cloud_provider}-{random_suffix}",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "NetworkContainerService"
+        ]
+      }
+    },
+    "/maintenanceWindows/{maintenanceWindowId}": {
+      "get": {
+        "summary": "Get a maintenance window",
+        "operationId": "MaintenanceService_GetMaintenanceWindow",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1MaintenanceWindow"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "maintenanceWindowId",
+            "description": "Format: project-{project_id}",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MaintenanceService"
+        ]
+      }
+    },
+    "/maintenanceWindows": {
+      "get": {
+        "summary": "List maintenance windows",
+        "operationId": "MaintenanceService_ListMaintenanceWindows",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1ListMaintenanceWindowsResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "projectId",
+            "description": "If unspecified, the project ID of default project is used.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "The maximum number of maintenance windows to return. The service may return fewer than this value.\nIf unspecified, at most X maintenance windows will be returned.\nThe maximum value is X; values above X will be coerced to X.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "A page token, received from a previous `ListMaintenanceWindows` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `ListMaintenanceWindows` must match\nthe call that provided the page token.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "description": "The number of individual resources to skip before starting to return results.\nIf the skip value causes the cursor to move past the end of the collection,\nthe response will be 200 OK with an empty result set and no next_page_token.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "MaintenanceService"
+        ]
+      }
+    },
+    "/maintenanceWindows/{maintenanceWindow.maintenanceWindowId}": {
+      "patch": {
+        "summary": "Update a maintenance window",
+        "operationId": "MaintenanceService_UpdateMaintenanceWindow",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1MaintenanceWindow"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "maintenanceWindow.maintenanceWindowId",
+            "description": "Format: project-{project_id}",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "maintenanceWindow",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "weekDay": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "dayHour": {
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "hourMinute": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "MaintenanceService"
+        ]
+      }
+    },
+    "/maintenanceTasks": {
+      "get": {
+        "summary": "List maintenance tasks",
+        "operationId": "MaintenanceService_ListMaintenanceTasks",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1ListMaintenanceTasksResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "projectId",
+            "description": "If unspecified, the project ID of default project is used.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "The maximum number of maintenance tasks to return. The service may return fewer than this value.\nIf unspecified, at most X maintenance tasks will be returned.\nThe maximum value is X; values above X will be coerced to X.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "A page token, received from a previous `ListMaintenanceTasks` call.\nProvide this to retrieve the subsequent page.\n\nWhen paginating, all other parameters provided to `ListMaintenanceTasks` must match\nthe call that provided the page token.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "description": "The number of individual resources to skip before starting to return results.\nIf the skip value causes the cursor to move past the end of the collection,\nthe response will be 200 OK with an empty result set and no next_page_token.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "MaintenanceService"
+        ]
+      }
+    },
+    "/maintenanceTasks/{maintenanceTaskId}": {
+      "get": {
+        "summary": "Get a maintenance task",
+        "operationId": "MaintenanceService_GetMaintenanceTask",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1MaintenanceTask"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "maintenanceTaskId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MaintenanceService"
+        ]
+      }
+    },
+    "/maintenanceTasks/{maintenanceTaskId}:deferMaintenanceTask": {
+      "post": {
+        "summary": "Defer a maintenance task",
+        "operationId": "MaintenanceService_DeferMaintenanceTask",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1DeferMaintenanceTaskResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "maintenanceTaskId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "MaintenanceService"
+        ]
+      }
+    },
+    "/clusters/{auditLogConfig.clusterId}/auditLogConfig": {
+      "post": {
+        "summary": "Create the audit log config for a cluster",
+        "operationId": "DatabaseAuditLogService_CreateAuditLogConfig",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1AuditLogConfig"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "auditLogConfig.clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "auditLogConfig",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "title": "Format: clusters/{cluster_id}/auditLogConfig",
+                  "readOnly": true
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "Default is false."
+                },
+                "bucketUri": {
+                  "type": "string"
+                },
+                "bucketRegionId": {
+                  "type": "string",
+                  "title": "Format: {cloud_provider}-{region_code}"
+                },
+                "awsRoleArn": {
+                  "type": "string"
+                },
+                "azureSasToken": {
+                  "type": "string"
+                },
+                "bucketWriteCheck": {
+                  "readOnly": true,
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/AuditLogConfigBucketWriteCheck"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "bucketUri"
+              ]
+            }
+          },
+          {
+            "name": "validateOnly",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "DatabaseAuditLogService"
+        ]
+      },
+      "patch": {
+        "summary": "Update the audit log config of a cluster",
+        "operationId": "DatabaseAuditLogService_UpdateAuditLogConfig",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1AuditLogConfig"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "auditLogConfig.clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "auditLogConfig",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "x-nullable": true
+                },
+                "bucketUri": {
+                  "type": "string"
+                },
+                "bucketRegionId": {
+                  "type": "string",
+                  "title": "Format: {cloud_provider}-{region_code}"
+                },
+                "awsRoleArn": {
+                  "type": "string"
+                },
+                "azureSasToken": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          {
+            "name": "validateOnly",
+            "in": "query",
+            "required": false,
+            "type": "boolean"
+          }
+        ],
+        "tags": [
+          "DatabaseAuditLogService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}/auditLogConfig": {
+      "get": {
+        "summary": "Get the audit log config of a cluster",
+        "operationId": "DatabaseAuditLogService_GetAuditLogConfig",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1AuditLogConfig"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DatabaseAuditLogService"
+        ]
+      }
+    },
+    "/clusters/{auditLogFilterRule.clusterId}/auditLogFilterRules": {
+      "post": {
+        "summary": "Create an audit log filter rule",
+        "operationId": "DatabaseAuditLogService_CreateAuditLogFilterRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1AuditLogFilterRule"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "auditLogFilterRule.clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "auditLogFilterRule",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "title": "Format: auditLogFilterRules/{audit_log_filter_rule_id}",
+                  "readOnly": true
+                },
+                "auditLogFilterRuleId": {
+                  "type": "string",
+                  "readOnly": true
+                },
+                "userExpr": {
+                  "type": "string"
+                },
+                "dbExpr": {
+                  "type": "string"
+                },
+                "tableExpr": {
+                  "type": "string"
+                },
+                "accessTypeList": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "DatabaseAuditLogService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}/auditLogFilterRules/{auditLogFilterRuleId}": {
+      "get": {
+        "summary": "Get an audit log filter rule",
+        "operationId": "DatabaseAuditLogService_GetAuditLogFilterRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1AuditLogFilterRule"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "auditLogFilterRuleId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DatabaseAuditLogService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete an audit log filter rule",
+        "operationId": "DatabaseAuditLogService_DeleteAuditLogFilterRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "auditLogFilterRuleId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DatabaseAuditLogService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}/auditLogFilterRules": {
+      "get": {
+        "summary": "List audit log filter rules",
+        "operationId": "DatabaseAuditLogService_ListAuditLogFilterRules",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1ListAuditLogFilterRulesResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "description": "The number of individual resources to skip before starting to return results.\nIf the skip value causes the cursor to move past the end of the collection,\nthe response will be 200 OK with an empty result set and no next_page_token.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "DatabaseAuditLogService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}/auditLogConfig:showObjectStorageAccessIamPrincipal": {
+      "get": {
+        "summary": "Show IAM principal of TiDB Cloud for accessing customer's object storage",
+        "operationId": "DatabaseAuditLogService_ShowObjectStorageAccessIamPrincipal",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1ShowObjectStorageAccessIamPrincipalResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DatabaseAuditLogService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "AuditLogConfigBucketWriteCheck": {
+      "type": "object",
+      "properties": {
+        "writable": {
+          "type": "boolean",
+          "readOnly": true
+        },
+        "errorReason": {
+          "type": "string",
+          "description": "The reason why the bucket is not writable. Output only when `writable` is false.",
+          "readOnly": true
+        }
+      }
+    },
+    "ClusterNodeChangingProgress": {
+      "type": "object",
+      "properties": {
+        "matchingNodeSpecNodeCount": {
+          "type": "integer",
+          "format": "int32",
+          "readOnly": true
+        },
+        "remainingDeletionNodeCount": {
+          "type": "integer",
+          "format": "int32",
+          "description": "available if some nodes are deleting.",
+          "readOnly": true
+        }
+      }
+    },
+    "ClusterServiceResetRootPasswordBody": {
+      "type": "object",
+      "properties": {
+        "rootPassword": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "rootPassword"
+      ]
+    },
+    "ClusterStorageNodeSettingStorageType": {
+      "type": "string",
+      "enum": [
+        "BASIC",
+        "BASICV2",
+        "OPTIMIZED",
+        "PLUS"
+      ],
+      "title": "- BASIC: default\n - BASICV2: separate raft-log and data storage, only for tikv\n - OPTIMIZED: separate raft-log and data storage, and use high performance storage volume for raft-log, only for tikv\n - PLUS: use high performance storage volume"
+    },
+    "EndpointConnectionType": {
+      "type": "string",
+      "enum": [
+        "PUBLIC",
+        "VPC_PEERING",
+        "PRIVATE_ENDPOINT"
+      ],
+      "description": " - PUBLIC: The endpoint is a public endpoint.\n - VPC_PEERING: The endpoint is a VPC peering endpoint.\n - PRIVATE_ENDPOINT: The endpoint is a private link endpoint."
+    },
+    "PrivateEndpointConnectionEndpointState": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "ACTIVE",
+        "DELETING",
+        "FAILED",
+        "DISCOVERED"
+      ],
+      "description": " - PENDING: Customer has posted to TiDB cloud API,\nbut endpoint connection has not been accepted **asynchronously** by TiDB Cloud.\n - DISCOVERED: Customer has created the endpoint in their vpc, but has not posted to TiDB Cloud API."
+    },
+    "PublicEndpointSettingIpAccessList": {
+      "type": "object",
+      "properties": {
+        "cidrNotation": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "cidrNotation"
+      ]
+    },
+    "ShowNodeQuotaResponseComponentQuota": {
+      "type": "object",
+      "properties": {
+        "componentType": {
+          "$ref": "#/definitions/dedicatedv1beta1ComponentType"
+        },
+        "quota": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "UpdateClusterRequestTidbNodeSettingTidbNodeGroup": {
+      "type": "object",
+      "properties": {
+        "tidbNodeGroupId": {
+          "type": "string",
+          "title": "if tidb_node_group_id is empty, it means scale default tidb group"
+        },
+        "nodeCount": {
+          "type": "integer",
+          "format": "int32",
+          "x-nullable": true
+        }
+      }
+    },
+    "commonv1beta1ClusterState": {
+      "type": "string",
+      "enum": [
+        "CREATING",
+        "DELETING",
+        "ACTIVE",
+        "RESTORING",
+        "MAINTENANCE",
+        "DELETED",
+        "INACTIVE",
+        "UPGRADING",
+        "IMPORTING",
+        "MODIFYING",
+        "PAUSING",
+        "PAUSED",
+        "RESUMING"
+      ],
+      "description": "Enum of possible states of a cluster.\n\n - CREATING: Cluster is being created.\n - DELETING: Cluster is being deleted.\n - ACTIVE: Cluster is active for use.\n - RESTORING: Cluster data is being restored.\n - MAINTENANCE: Cluster is under maintenance.\n - DELETED: Cluster has been deleted.\n - INACTIVE: Cluster is not active, but not being deleted.\n - UPGRADING: Cluster is being updated.\nOnly for Dedicated Cluster.\n - IMPORTING: Cluster is being imported.\nOnly for Dedicated Cluster.\n - MODIFYING: Cluster is being modified.\nOnly for Dedicated Cluster.\n - PAUSING: Cluster is being paused.\nOnly for Dedicated Cluster.\n - PAUSED: Cluster is paused.\nOnly for Dedicated Cluster.\n - RESUMING: Cluster is resuming.\nOnly for Dedicated Cluster."
+    },
+    "commonv1beta1Region": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "regions/aws-us-west-2",
+          "title": "The unique name of the region.\nFormat: regions/{region_id}",
+          "pattern": "^regions/(aws|gcp|azure)-(.+)$"
+        },
+        "regionId": {
+          "type": "string",
+          "description": "Format: {cloud_provider}-{region_code}\nRegion code: us-west-2, asia-east1.",
+          "readOnly": true
+        },
+        "cloudProvider": {
+          "description": "The cloud provider for the region.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1RegionCloudProvider"
+            }
+          ]
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User-friendly display name of the region.",
+          "readOnly": true
+        },
+        "provider": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "Optional provider name for the region.\nOnly used for serverless cluster.\nDeprecated.",
+          "readOnly": true
+        }
+      },
+      "description": "A representation of a region for deploying TiDB clusters."
+    },
+    "dedicatedv1beta1AuditLogConfig": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Format: clusters/{cluster_id}/auditLogConfig",
+          "readOnly": true
+        },
+        "clusterId": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Default is false."
+        },
+        "bucketUri": {
+          "type": "string"
+        },
+        "bucketRegionId": {
+          "type": "string",
+          "title": "Format: {cloud_provider}-{region_code}"
+        },
+        "awsRoleArn": {
+          "type": "string"
+        },
+        "azureSasToken": {
+          "type": "string"
+        },
+        "bucketWriteCheck": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/AuditLogConfigBucketWriteCheck"
+            }
+          ]
+        }
+      },
+      "required": [
+        "clusterId",
+        "bucketUri"
+      ]
+    },
+    "dedicatedv1beta1ClusterPausePlan": {
+      "type": "object",
+      "properties": {
+        "pauseType": {
+          "$ref": "#/definitions/dedicatedv1beta1ClusterPausePlanType"
+        },
+        "scheduledResumeTime": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "pauseType"
+      ]
+    },
+    "dedicatedv1beta1ClusterPausePlanType": {
+      "type": "string",
+      "enum": [
+        "NORMAL",
+        "DEPRECATE"
+      ],
+      "title": "- NORMAL: default pause plan\n - DEPRECATE: old pause plan, will be removed"
+    },
+    "dedicatedv1beta1ComponentType": {
+      "type": "string",
+      "enum": [
+        "TIKV",
+        "TIDB",
+        "TIFLASH",
+        "PD",
+        "TIPROXY"
+      ]
+    },
+    "dedicatedv1beta1ListTidbNodeGroupsResponse": {
+      "type": "object",
+      "properties": {
+        "tidbNodeGroups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroup"
+          }
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The total number of TiDB groups that matched the query."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
+        }
+      }
+    },
+    "dedicatedv1beta1ListVpcPeeringsResponse": {
+      "type": "object",
+      "properties": {
+        "vpcPeerings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/dedicatedv1beta1VpcPeering"
+          }
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The total number of VPC peerings that matched the query."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
+        }
+      }
+    },
+    "dedicatedv1beta1MaintenanceWindow": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Format: maintenanceWindows/{maintenance_window_id}",
+          "readOnly": true
+        },
+        "maintenanceWindowId": {
+          "type": "string",
+          "title": "Format: project-{project_id}",
+          "readOnly": true
+        },
+        "projectId": {
+          "type": "string"
+        },
+        "weekDay": {
+          "type": "integer",
+          "format": "int32",
+          "description": "0-6, 0 is Sunday."
+        },
+        "dayHour": {
+          "type": "integer",
+          "format": "int32",
+          "description": "0-23 in UTC."
+        },
+        "hourMinute": {
+          "type": "integer",
+          "format": "int32",
+          "description": "0-59 in UTC."
+        },
+        "nextMaintenanceDate": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        },
+        "unchangedMaintenanceTasks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1beta1MaintenanceTask"
+          },
+          "readOnly": true
+        }
+      },
+      "description": "MaintenanceWindow is a singleton resource that represents the maintenance window under a project.",
+      "required": [
+        "projectId",
+        "weekDay",
+        "dayHour",
+        "hourMinute"
+      ]
+    },
+    "dedicatedv1beta1NodeSpec": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Format: regions/{region_id}/componentTypes/{component_type}/nodeSpecs/{node_spec_key}",
+          "readOnly": true
+        },
+        "regionId": {
+          "type": "string",
+          "title": "Format: {cloud_provider}-{region_code}",
+          "readOnly": true
+        },
+        "componentType": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/dedicatedv1beta1ComponentType"
+            }
+          ]
+        },
+        "nodeSpecKey": {
+          "type": "string",
+          "readOnly": true
+        },
+        "displayName": {
+          "type": "string",
+          "readOnly": true
+        },
+        "vCpu": {
+          "type": "integer",
+          "format": "int32",
+          "readOnly": true
+        },
+        "memorySizeGi": {
+          "type": "integer",
+          "format": "int32",
+          "readOnly": true
+        },
+        "defaultStorageSizeGi": {
+          "type": "integer",
+          "format": "int32",
+          "readOnly": true
+        },
+        "maxStorageSizeGi": {
+          "type": "integer",
+          "format": "int32",
+          "readOnly": true
+        },
+        "minStorageSizeGi": {
+          "type": "integer",
+          "format": "int32",
+          "readOnly": true
+        },
+        "defaultNodeCount": {
+          "type": "integer",
+          "format": "int32",
+          "readOnly": true
+        },
+        "storageTypes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ClusterStorageNodeSettingStorageType"
+          },
+          "readOnly": true
+        }
+      }
+    },
+    "dedicatedv1beta1PauseClusterResponse": {
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "$ref": "#/definitions/tidb_cloud_open_apidedicatedv1beta1Cluster"
+        }
+      },
+      "required": [
+        "cluster"
+      ]
+    },
+    "dedicatedv1beta1PrivateLinkService": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Format: tidbNodeGroups/{tidb_node_group_id}/privateLinkService",
+          "readOnly": true
+        },
+        "tidbNodeGroupId": {
+          "type": "string",
+          "readOnly": true
+        },
+        "serviceName": {
+          "type": "string",
+          "description": "For AWS, it's the service name of the Private Link Service.\nFor GCP, it's the resource name of the service attachment.\nFor Azure, it's service resource ID of the Private Link Service.",
+          "readOnly": true
+        },
+        "serviceDnsName": {
+          "type": "string",
+          "description": "For AWS, it's the fully qualified domain name (FQDN) shared for all private endpoints, despite which VPC the endpoint located in.\nFor GCP, it's the zone name (suffix of FQDN) shared for all private endpoints located in a single VPC network. The format of FQDN is `\u003cendpoint_name\u003e.\u003cservice_dns_name\u003e`.\nFor Azure, it's the zone name shared across public internet. The format of FQDN is `\u003cendpoint_name\u003e-\u003crandom_hash\u003e.\u003cservice_dns_name\u003e`.",
+          "readOnly": true
+        },
+        "availableZones": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Only available for AWS.\nSame as the `AvailabilityZones` field in response body of\n`github.com/aws/aws-sdk-go-v2/service/ec2.DescribeVpcEndpointServices` method.",
+          "readOnly": true
+        },
+        "state": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1PrivateLinkServiceState"
+            }
+          ]
+        },
+        "regionId": {
+          "type": "string",
+          "title": "Format: {cloud_provider}-{region_code}",
+          "readOnly": true
+        },
+        "regionDisplayName": {
+          "type": "string",
+          "readOnly": true
+        },
+        "cloudProvider": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1RegionCloudProvider"
+            }
+          ]
+        }
+      }
+    },
+    "dedicatedv1beta1ResumeClusterResponse": {
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "$ref": "#/definitions/tidb_cloud_open_apidedicatedv1beta1Cluster"
+        }
+      },
+      "required": [
+        "cluster"
+      ]
+    },
+    "dedicatedv1beta1TidbNodeGroup": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Format: tidbNodeGroups/{tidb_node_group_id}",
+          "readOnly": true
+        },
+        "tidbNodeGroupId": {
+          "type": "string",
+          "description": "The unique ID of the TiDB group.",
+          "readOnly": true
+        },
+        "clusterId": {
+          "type": "string",
+          "description": "The cluster ID of the TiDB group.\nOptional when creating cluster with the default TiDB group.\nRequired when creating non-default TiDB group."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The display name of the TiDB group."
+        },
+        "nodeCount": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The number of TiDB nodes in the TiDB group."
+        },
+        "endpoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroupEndpoint"
+          },
+          "readOnly": true
+        },
+        "nodeSpecKey": {
+          "type": "string",
+          "readOnly": true
+        },
+        "nodeSpecDisplayName": {
+          "type": "string",
+          "readOnly": true
+        },
+        "isDefaultGroup": {
+          "type": "boolean",
+          "readOnly": true
+        },
+        "state": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroupState"
+            }
+          ]
+        },
+        "nodeChangingProgress": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/ClusterNodeChangingProgress"
+            }
+          ]
+        }
+      },
+      "required": [
+        "nodeCount"
+      ]
+    },
+    "dedicatedv1beta1TidbNodeGroupEndpoint": {
+      "type": "object",
+      "properties": {
+        "host": {
+          "type": "string",
+          "description": "When endpoint's type is `PRIVATE_ENDPOINT`, the `host` field behave differently across cloud providers:\nFor AWS clusters, the `host` field is available right after the private link service is ready.\nFor GCP and Azure clusters, the `host` field is available after the user creates a `PrivateEndpointConnection`.",
+          "readOnly": true
+        },
+        "port": {
+          "type": "integer",
+          "format": "int32",
+          "readOnly": true
+        },
+        "connectionType": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/EndpointConnectionType"
+            }
+          ]
+        }
+      }
+    },
+    "dedicatedv1beta1TidbNodeGroupState": {
+      "type": "string",
+      "enum": [
+        "ACTIVE",
+        "MODIFYING",
+        "PAUSED"
+      ],
+      "description": " - ACTIVE: All nodes are ready.\n - MODIFYING: When TiDB group is modifying.\n - PAUSED: When cluster is paused."
+    },
+    "dedicatedv1beta1VpcPeering": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Format: vpcPeerings/{vpc_peering_id}",
+          "readOnly": true
+        },
+        "vpcPeeringId": {
+          "type": "string",
+          "title": "Format {cloud_provider}-{random_suffix}",
+          "readOnly": true
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "The labels of the vpc peering. It always contains the `project_id` label.",
+          "readOnly": true
+        },
+        "tidbCloudRegionId": {
+          "type": "string",
+          "title": "Format: {cloud_provider}-{region_code}"
+        },
+        "customerRegionId": {
+          "type": "string",
+          "description": "Format: {cloud_provider}-{region_code}\nFor AWS, it's required.\nFor GCP, it's optional. Since GCP does not require region_id when creating VPC peering."
+        },
+        "customerAccountId": {
+          "type": "string",
+          "description": "In AWS, it is the account ID.\nIn GCP, it is the project name."
+        },
+        "customerVpcId": {
+          "type": "string",
+          "description": "In AWS, it is the VPC ID.\nIn GCP, it is the network name."
+        },
+        "customerVpcCidr": {
+          "type": "string"
+        },
+        "tidbCloudCloudProvider": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1RegionCloudProvider"
+            }
+          ]
+        },
+        "tidbCloudAccountId": {
+          "type": "string",
+          "description": "In AWS, it is the account ID.\nIn GCP, it is the project name.",
+          "readOnly": true
+        },
+        "tidbCloudVpcId": {
+          "type": "string",
+          "description": "In AWS, it is the VPC ID.\nIn GCP, it is the network name.",
+          "readOnly": true
+        },
+        "tidbCloudVpcCidr": {
+          "type": "string",
+          "readOnly": true
+        },
+        "state": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/dedicatedv1beta1VpcPeeringState"
+            }
+          ]
+        },
+        "awsVpcPeeringConnectionId": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "Only for AWS vpc peerings.",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "tidbCloudRegionId",
+        "customerAccountId",
+        "customerVpcId",
+        "customerVpcCidr"
+      ]
+    },
+    "dedicatedv1beta1VpcPeeringState": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "FAILED",
+        "ACTIVE"
+      ]
+    },
+    "googlerpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The status code, which should be an enum value of\n[google.rpc.Code][google.rpc.Code]."
+        },
+        "message": {
+          "type": "string",
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\n[google.rpc.Status.details][google.rpc.Status.details] field, or localized\nby the client."
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          },
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use."
+        }
+      },
+      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https://github.com/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https://cloud.google.com/apis/design/errors)."
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string",
+          "description": "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+        }
+      },
+      "additionalProperties": {},
+      "description": "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(\u0026foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := \u0026pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := \u0026pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": \u003cstring\u003e,\n      \"lastName\": \u003cstring\u003e\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    },
+    "tidb_cloud_open_apidedicatedv1beta1Cluster": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "The name of TiDB cluster resource.\nFormat: clusters/{cluster_id}",
+          "readOnly": true
+        },
+        "clusterId": {
+          "type": "string",
+          "description": "The unique ID of the cluster.",
+          "readOnly": true
+        },
+        "displayName": {
+          "type": "string",
+          "example": "foo-bar",
+          "description": "The display name of the cluster.",
+          "maxLength": 64,
+          "minLength": 4,
+          "pattern": "^[A-Za-z0-9][-A-Za-z0-9]{2,62}[A-Za-z0-9]$"
+        },
+        "regionId": {
+          "type": "string",
+          "title": "Required. Region where the cluster will be created.\nFormat: {cloud_provider}-{region_code}"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "The labels of the cluster.\nIf there is no \"project_id\" in labels, resource should be in the default project of the creator's organization."
+        },
+        "tidbNodeSetting": {
+          "$ref": "#/definitions/v1beta1ClusterTidbNodeSetting"
+        },
+        "tikvNodeSetting": {
+          "$ref": "#/definitions/v1beta1ClusterStorageNodeSetting"
+        },
+        "tiflashNodeSetting": {
+          "$ref": "#/definitions/v1beta1ClusterStorageNodeSetting"
+        },
+        "port": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The port of the cluster. This port applies to all network endpoints of the cluster."
+        },
+        "rootPassword": {
+          "type": "string",
+          "example": "my-shining-password",
+          "maxLength": 64,
+          "minLength": 8,
+          "pattern": "^.{8,64}$"
+        },
+        "state": {
+          "description": "The current state of the cluster.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/commonv1beta1ClusterState"
+            }
+          ]
+        },
+        "version": {
+          "type": "string",
+          "description": "The TiDB version of the cluster.",
+          "readOnly": true
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "The email address or public api key of the creator of the cluster.",
+          "readOnly": true
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the cluster was created.",
+          "readOnly": true
+        },
+        "updateTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the cluster was last updated.",
+          "readOnly": true
+        },
+        "pausePlan": {
+          "description": "Pause plan of the cluster.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/dedicatedv1beta1ClusterPausePlan"
+            }
+          ]
+        },
+        "regionDisplayName": {
+          "type": "string",
+          "readOnly": true
+        },
+        "cloudProvider": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1RegionCloudProvider"
+            }
+          ]
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "OUTPUT_ONLY. The annotations for the cluster.\ntidb.cloud/has-set-password. The annotation for whether the cluster has set password.\ntidb.cloud/available-features. The annotation for the available features of the cluster.",
+          "readOnly": true
+        }
+      },
+      "description": "Cluster represents a dedicated TiDB cluster.",
+      "required": [
+        "displayName",
+        "regionId",
+        "tidbNodeSetting",
+        "tikvNodeSetting",
+        "port"
+      ]
+    },
+    "tidb_cloud_open_apidedicatedv1beta1ListClustersResponse": {
+      "type": "object",
+      "properties": {
+        "clusters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tidb_cloud_open_apidedicatedv1beta1Cluster"
+          }
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The total number of clusters that matched the query."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
+        }
+      }
+    },
+    "tidb_cloud_open_apidedicatedv1beta1ListRegionsResponse": {
+      "type": "object",
+      "properties": {
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/commonv1beta1Region"
+          }
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The total number of regions that matched the query."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
+        }
+      }
+    },
+    "v1beta1AuditLogFilterRule": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Format: auditLogFilterRules/{audit_log_filter_rule_id}",
+          "readOnly": true
+        },
+        "auditLogFilterRuleId": {
+          "type": "string",
+          "readOnly": true
+        },
+        "clusterId": {
+          "type": "string"
+        },
+        "userExpr": {
+          "type": "string"
+        },
+        "dbExpr": {
+          "type": "string"
+        },
+        "tableExpr": {
+          "type": "string"
+        },
+        "accessTypeList": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "clusterId"
+      ]
+    },
+    "v1beta1ClusterStorageNodeSetting": {
+      "type": "object",
+      "properties": {
+        "nodeCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "nodeSpecKey": {
+          "type": "string"
+        },
+        "storageSizeGi": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "storageType": {
+          "$ref": "#/definitions/ClusterStorageNodeSettingStorageType"
+        },
+        "nodeSpecDisplayName": {
+          "type": "string",
+          "title": "output only",
+          "readOnly": true
+        },
+        "nodeChangingProgress": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/ClusterNodeChangingProgress"
+            }
+          ]
+        }
+      },
+      "required": [
+        "nodeCount",
+        "nodeSpecKey",
+        "storageSizeGi",
+        "storageType"
+      ]
+    },
+    "v1beta1ClusterTidbNodeSetting": {
+      "type": "object",
+      "properties": {
+        "nodeSpecKey": {
+          "type": "string"
+        },
+        "tidbNodeGroups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroup"
+          },
+          "description": "When creating a cluster, the length of the `tidb_node_groups` should be 1\nand the `node_count` field of `TidbNodeGroup` should be set."
+        },
+        "nodeSpecDisplayName": {
+          "type": "string",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "nodeSpecKey",
+        "tidbNodeGroups"
+      ]
+    },
+    "v1beta1DeferMaintenanceTaskResponse": {
+      "type": "object"
+    },
+    "v1beta1ListAuditLogFilterRulesResponse": {
+      "type": "object",
+      "properties": {
+        "auditLogFilterRules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1beta1AuditLogFilterRule"
+          }
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "nextPageToken": {
+          "type": "string"
+        }
+      }
+    },
+    "v1beta1ListMaintenanceTasksResponse": {
+      "type": "object",
+      "properties": {
+        "maintenanceTasks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1beta1MaintenanceTask"
+          }
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The total number of maintenance tasks that matched the query."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
+        }
+      }
+    },
+    "v1beta1ListMaintenanceWindowsResponse": {
+      "type": "object",
+      "properties": {
+        "maintenanceWindows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/dedicatedv1beta1MaintenanceWindow"
+          }
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The total number of maintenance windows that matched the query."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
+        }
+      }
+    },
+    "v1beta1ListNetworkContainersResponse": {
+      "type": "object",
+      "properties": {
+        "networkContainers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1beta1NetworkContainer"
+          }
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The total number of network containers that matched the query."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
+        }
+      }
+    },
+    "v1beta1ListNodeInstancesResponse": {
+      "type": "object",
+      "properties": {
+        "nodeInstances": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1beta1NodeInstance"
+          }
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The total number of node instances that matched the query."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
+        }
+      }
+    },
+    "v1beta1ListNodeSpecsResponse": {
+      "type": "object",
+      "properties": {
+        "nodeSpecs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/dedicatedv1beta1NodeSpec"
+          }
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The total number of node specs that matched the query."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
+        }
+      }
+    },
+    "v1beta1ListPrivateEndpointConnectionsResponse": {
+      "type": "object",
+      "properties": {
+        "privateEndpointConnections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1beta1PrivateEndpointConnection"
+          }
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The total number of private link connections that matched the query."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
+        }
+      }
+    },
+    "v1beta1MaintenanceTask": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Format: maintenanceTasks/{maintenance_task_id}",
+          "readOnly": true
+        },
+        "maintenanceTaskId": {
+          "type": "string",
+          "readOnly": true
+        },
+        "projectId": {
+          "type": "string",
+          "readOnly": true
+        },
+        "description": {
+          "type": "string",
+          "readOnly": true
+        },
+        "state": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1MaintenanceTaskState"
+            }
+          ]
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the task was created.",
+          "readOnly": true
+        },
+        "scheduledApplyTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the task run.",
+          "readOnly": true
+        },
+        "deadline": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the task will be expired.",
+          "readOnly": true
+        }
+      }
+    },
+    "v1beta1MaintenanceTaskState": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "RUNNING",
+        "DONE"
+      ]
+    },
+    "v1beta1NetworkContainer": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Format: networkContainers/{network_container_id}",
+          "readOnly": true
+        },
+        "networkContainerId": {
+          "type": "string",
+          "readOnly": true
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "The labels of the cluster.\nIf there is no \"project_id\" in labels, resource should be in the default project of the creator's organization."
+        },
+        "regionId": {
+          "type": "string",
+          "title": "Format: {cloud_provider}-{region_code}"
+        },
+        "cidrNotion": {
+          "type": "string",
+          "description": "If not set, the default cidr of the region will be used."
+        },
+        "cloudProvider": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1RegionCloudProvider"
+            }
+          ]
+        },
+        "state": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1NetworkContainerState"
+            }
+          ]
+        },
+        "regionDisplayName": {
+          "type": "string",
+          "readOnly": true
+        },
+        "vpcId": {
+          "type": "string",
+          "description": "For AWS, it is the vpc id.\nFor GCP, it is the network name.\nFor Azure, it is the vnet name.",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "regionId"
+      ]
+    },
+    "v1beta1NetworkContainerState": {
+      "type": "string",
+      "enum": [
+        "ACTIVE",
+        "INACTIVE"
+      ]
+    },
+    "v1beta1NodeInstance": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Format: clusters/{cluster_id}/nodeInstances/{instance_id}",
+          "readOnly": true
+        },
+        "clusterId": {
+          "type": "string",
+          "readOnly": true
+        },
+        "instanceId": {
+          "type": "string",
+          "title": "Format for TiDB instances in the default TiDB group: tidb-{index}\nFormat for TiDB instances in non-default TiDB groups: {tidb_group_name}-tidb-{index}\nFormat for other instances: {component_type}-{index}",
+          "readOnly": true
+        },
+        "componentType": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/dedicatedv1beta1ComponentType"
+            }
+          ]
+        },
+        "state": {
+          "description": "the state of the instance, e.g. \"Available\".",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1NodeInstanceState"
+            }
+          ]
+        },
+        "vCpu": {
+          "type": "integer",
+          "format": "int32",
+          "description": "the cpu size of the instance, e.g. 2.",
+          "readOnly": true
+        },
+        "memorySizeGi": {
+          "type": "integer",
+          "format": "int32",
+          "description": "the memory size of the instance, e.g. 8.",
+          "readOnly": true
+        },
+        "availabilityZone": {
+          "type": "string",
+          "description": "the availability zone of the instance, e.g. \"us-west1-a\".",
+          "readOnly": true
+        },
+        "storageSizeGi": {
+          "type": "integer",
+          "format": "int32",
+          "description": "the storage size of the instance, e.g. 100.",
+          "readOnly": true
+        },
+        "tidbNodeGroupId": {
+          "type": "string",
+          "x-nullable": true,
+          "readOnly": true
+        },
+        "tidbNodeGroupDisplayName": {
+          "type": "string",
+          "x-nullable": true,
+          "readOnly": true
+        },
+        "isDefaultTidbNodeGroup": {
+          "type": "boolean",
+          "x-nullable": true,
+          "readOnly": true
+        }
+      }
+    },
+    "v1beta1NodeInstanceState": {
+      "type": "string",
+      "enum": [
+        "CREATING",
+        "AVAILABLE",
+        "DELETING",
+        "UNAVAILABLE"
+      ]
+    },
+    "v1beta1PrivateEndpointConnection": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Format: tidbNodeGroups/{tidb_node_group_id}/privateEndpointConnections/{private_endpoint_connection_id}",
+          "readOnly": true
+        },
+        "tidbNodeGroupId": {
+          "type": "string"
+        },
+        "privateEndpointConnectionId": {
+          "type": "string",
+          "readOnly": true
+        },
+        "clusterId": {
+          "type": "string",
+          "readOnly": true
+        },
+        "clusterDisplayName": {
+          "type": "string",
+          "readOnly": true
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "The labels of private link connection. It always contains the `project_id` label.",
+          "readOnly": true
+        },
+        "endpointId": {
+          "type": "string",
+          "description": "The endpoint ID of the private link connection.\nFor AWS, it's VPC endpoint ID.\nFor GCP, it's private service connect endpoint ID.\nFor Azure, it's private endpoint resource ID."
+        },
+        "privateIpAddress": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "The private IP address of the private endpoint in the user's vNet.\nTiDB Cloud will setup a public DNS record for this private IP address. So the user can use DNS address to connect to the cluster.\nOnly available for Azure clusters."
+        },
+        "endpointState": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/PrivateEndpointConnectionEndpointState"
+            }
+          ]
+        },
+        "massage": {
+          "type": "string",
+          "readOnly": true
+        },
+        "regionId": {
+          "type": "string",
+          "title": "Format: {cloud_provider}-{region_code}",
+          "readOnly": true
+        },
+        "regionDisplayName": {
+          "type": "string",
+          "readOnly": true
+        },
+        "cloudProvider": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1RegionCloudProvider"
+            }
+          ]
+        },
+        "privateLinkServiceName": {
+          "type": "string",
+          "readOnly": true
+        },
+        "privateLinkServiceState": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1PrivateLinkServiceState"
+            }
+          ]
+        },
+        "tidbNodeGroupDisplayName": {
+          "type": "string",
+          "readOnly": true
+        },
+        "accountId": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "Only for GCP private service connections. It's GCP project name.",
+          "readOnly": true
+        },
+        "host": {
+          "type": "string",
+          "readOnly": true
+        },
+        "port": {
+          "type": "integer",
+          "format": "int32",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "tidbNodeGroupId",
+        "endpointId"
+      ]
+    },
+    "v1beta1PrivateLinkServiceState": {
+      "type": "string",
+      "enum": [
+        "CREATING",
+        "ACTIVE",
+        "DELETING"
+      ]
+    },
+    "v1beta1PublicEndpointSetting": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Format: tidbNodeGroups/{tidb_node_group_id}/publicEndpointSetting",
+          "readOnly": true
+        },
+        "tidbNodeGroupId": {
+          "type": "string",
+          "description": "If set to \"-\", the default TiDB group will be used."
+        },
+        "enabled": {
+          "type": "boolean",
+          "x-nullable": true
+        },
+        "ipAccessList": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/PublicEndpointSettingIpAccessList"
+          }
+        }
+      },
+      "required": [
+        "tidbNodeGroupId"
+      ]
+    },
+    "v1beta1RegionCloudProvider": {
+      "type": "string",
+      "enum": [
+        "aws",
+        "gcp",
+        "azure"
+      ],
+      "description": "Enum of cloud provider names.\n\n - aws: Amazon Web Services.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - gcp: Google Cloud Platform.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - azure: Microsoft Azure.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE"
+    },
+    "v1beta1ResetRootPasswordResponse": {
+      "type": "object"
+    },
+    "v1beta1ShowCloudProvidersResponse": {
+      "type": "object",
+      "properties": {
+        "cloudProviders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1beta1RegionCloudProvider"
+          }
+        }
+      }
+    },
+    "v1beta1ShowNodeQuotaResponse": {
+      "type": "object",
+      "properties": {
+        "componentQuotas": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/ShowNodeQuotaResponseComponentQuota"
+          }
+        }
+      }
+    },
+    "v1beta1ShowObjectStorageAccessIamPrincipalResponse": {
+      "type": "object",
+      "properties": {
+        "iamPrincipal": {
+          "type": "string"
+        }
+      }
+    },
+    "v1beta1UpdateAuditLogConfigRequestAuditLogConfig": {
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean",
+          "x-nullable": true
+        },
+        "bucketUri": {
+          "type": "string"
+        },
+        "bucketRegionId": {
+          "type": "string",
+          "title": "Format: {cloud_provider}-{region_code}"
+        },
+        "awsRoleArn": {
+          "type": "string"
+        },
+        "azureSasToken": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "clusterId"
+      ]
+    },
+    "v1beta1UpdateClusterRequestCluster": {
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "type": "string"
+        },
+        "tidbNodeSetting": {
+          "$ref": "#/definitions/v1beta1UpdateClusterRequestTidbNodeSetting"
+        },
+        "tikvNodeSetting": {
+          "$ref": "#/definitions/v1beta1UpdateClusterRequestStorageNodeSetting"
+        },
+        "tiflashNodeSetting": {
+          "$ref": "#/definitions/v1beta1UpdateClusterRequestStorageNodeSetting"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "The project_id key cannot be updated. If the project_id key is specified, it will be ignored."
+        }
+      },
+      "required": [
+        "clusterId"
+      ]
+    },
+    "v1beta1UpdateClusterRequestStorageNodeSetting": {
+      "type": "object",
+      "properties": {
+        "nodeSpecKey": {
+          "type": "string"
+        },
+        "nodeCount": {
+          "type": "integer",
+          "format": "int32",
+          "x-nullable": true,
+          "description": "When update TiFlash node setting:\n  - If the node count is set to 0, the TiFlash node will be removed.\n  - If the node count is null, the TiFlash node count won't change.\nFor other components, if the node count is set to 0, server will ignore the node count."
+        },
+        "storageSizeGi": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1beta1UpdateClusterRequestTidbNodeSetting": {
+      "type": "object",
+      "properties": {
+        "nodeSpecKey": {
+          "type": "string"
+        },
+        "tidbNodeGroups": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/UpdateClusterRequestTidbNodeSettingTidbNodeGroup"
+          }
+        }
+      }
+    },
+    "v1beta1UpdateMaintenanceWindowRequestMaintenanceWindow": {
+      "type": "object",
+      "properties": {
+        "maintenanceWindowId": {
+          "type": "string",
+          "title": "Format: project-{project_id}"
+        },
+        "weekDay": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "dayHour": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "hourMinute": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "required": [
+        "maintenanceWindowId"
+      ]
+    },
+    "v1beta1UpdateTidbNodeGroupRequestTidbNodeGroup": {
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "type": "string"
+        },
+        "tidbNodeGroupId": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "nodeCount": {
+          "type": "integer",
+          "format": "int32",
+          "x-nullable": true
+        }
+      },
+      "required": [
+        "clusterId",
+        "tidbNodeGroupId"
+      ]
+    }
+  },
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "description": "Enter the token with the `Bearer: ` prefix, e.g. \"Bearer abcde12345\".",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
+  ],
+  "externalDocs": {
+    "description": "More about TiDB Cloud API",
+    "url": "https://docs.pingcap.com/tidbcloud/api-overview"
+  }
+}

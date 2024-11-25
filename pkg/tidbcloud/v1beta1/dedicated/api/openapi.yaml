@@ -1,0 +1,6018 @@
+openapi: 3.0.1
+info:
+  description: TiDB Cloud Dedicated Open API.
+  title: TiDB Cloud Dedicated Open API
+  version: v1beta1
+externalDocs:
+  description: More about TiDB Cloud API
+  url: https://docs.pingcap.com/tidbcloud/api-overview
+servers:
+- url: https://dedicated.tidbapi.com/v1beta1
+security:
+- Bearer: []
+tags:
+- name: ClusterService
+- name: RegionService
+- name: TidbNodeGroupService
+- name: PrivateEndpointConnectionService
+- name: NetworkContainerService
+- name: MaintenanceService
+- name: DatabaseAuditLogService
+paths:
+  /clusters:
+    get:
+      operationId: ClusterService_ListClusters
+      parameters:
+      - description: "If unspecified, the project ID of default project is used."
+        in: query
+        name: projectId
+        schema:
+          type: string
+      - description: "If specified, only clusters in the specified cluster_ids will\
+          \ be returned."
+        explode: true
+        in: query
+        name: clusterIds
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: "If specified, only clusters in the specified regions will be\
+          \ returned."
+        explode: true
+        in: query
+        name: regionIds
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: |-
+          If specified, only clusters in the specified states will be returned.
+
+           - CREATING: Cluster is being created.
+           - DELETING: Cluster is being deleted.
+           - ACTIVE: Cluster is active for use.
+           - RESTORING: Cluster data is being restored.
+           - MAINTENANCE: Cluster is under maintenance.
+           - DELETED: Cluster has been deleted.
+           - INACTIVE: Cluster is not active, but not being deleted.
+           - UPGRADING: Cluster is being updated.
+          Only for Dedicated Cluster.
+           - IMPORTING: Cluster is being imported.
+          Only for Dedicated Cluster.
+           - MODIFYING: Cluster is being modified.
+          Only for Dedicated Cluster.
+           - PAUSING: Cluster is being paused.
+          Only for Dedicated Cluster.
+           - PAUSED: Cluster is paused.
+          Only for Dedicated Cluster.
+           - RESUMING: Cluster is resuming.
+          Only for Dedicated Cluster.
+        explode: true
+        in: query
+        name: clusterStates
+        schema:
+          items:
+            $ref: '#/components/schemas/ClusterService_ListClusters_clusterStates_parameter_inner'
+          type: array
+        style: form
+      - description: |-
+          The maximum number of clusters to return. The service may return fewer than this value.
+          If unspecified, at most X clusters will be returned.
+          The maximum value is X; values above X will be coerced to X.
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: |-
+          A page token, received from a previous `ListClusters` call.
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListClusters` must match
+          the call that provided the page token.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: |-
+          The number of individual resources to skip before starting to return results.
+          If the skip value causes the cursor to move past the end of the collection,
+          the response will be 200 OK with an empty result set and no next_page_token.
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tidb_cloud_open_apidedicatedv1beta1ListClustersResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: List clusters
+      tags:
+      - ClusterService
+    post:
+      operationId: ClusterService_CreateCluster
+      parameters:
+      - description: "if validate_only is true, the request will be validated but\
+          \ not executed."
+        in: query
+        name: validateOnly
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/tidb_cloud_open_apidedicatedv1beta1Cluster'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tidb_cloud_open_apidedicatedv1beta1Cluster'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Create a cluster
+      tags:
+      - ClusterService
+      x-codegen-request-body-name: cluster
+  /clusters/{clusterId}:
+    delete:
+      operationId: ClusterService_DeleteCluster
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: "if validate_only is true, the request will be validated but\
+          \ not executed."
+        in: query
+        name: validateOnly
+        schema:
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tidb_cloud_open_apidedicatedv1beta1Cluster'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Delete a cluster
+      tags:
+      - ClusterService
+    get:
+      operationId: ClusterService_GetCluster
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tidb_cloud_open_apidedicatedv1beta1Cluster'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Get a cluster
+      tags:
+      - ClusterService
+  /clusters/{cluster.clusterId}:
+    patch:
+      operationId: ClusterService_UpdateCluster
+      parameters:
+      - in: path
+        name: cluster.clusterId
+        required: true
+        schema:
+          type: string
+      - description: "if validate_only is true, the request will be validated but\
+          \ not executed."
+        in: query
+        name: validateOnly
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClusterService_UpdateCluster_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tidb_cloud_open_apidedicatedv1beta1Cluster'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Update a cluster
+      tags:
+      - ClusterService
+      x-codegen-request-body-name: cluster
+  /clusters/{clusterId}:pauseCluster:
+    post:
+      operationId: ClusterService_PauseCluster
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1PauseClusterResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Pause a cluster
+      tags:
+      - ClusterService
+  /clusters/{clusterId}:resumeCluster:
+    post:
+      operationId: ClusterService_ResumeCluster
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1ResumeClusterResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Resume a cluster
+      tags:
+      - ClusterService
+  /clusters/{clusterId}:resetRootPassword:
+    post:
+      operationId: ClusterService_ResetRootPassword
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClusterServiceResetRootPasswordBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1ResetRootPasswordResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Reset the root password of a cluster
+      tags:
+      - ClusterService
+      x-codegen-request-body-name: body
+  /clusters/{clusterId}/nodeInstances:
+    get:
+      operationId: ClusterService_ListNodeInstances
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: "If specified, only node instances of the specified component\
+          \ type will be returned."
+        in: query
+        name: componentType
+        schema:
+          $ref: '#/components/schemas/ClusterService_ListNodeInstances_componentType_parameter'
+      - description: |-
+          The maximum number of node instances to return. The service may return fewer than this value.
+          If unspecified, at most X node instances will be returned.
+          The maximum value is X; values above X will be coerced to X.
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: |-
+          A page token, received from a previous `ListNodeInstances` call.
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListNodeInstances` must match
+          the call that provided the page token.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: |-
+          The number of individual resources to skip before starting to return results.
+          If the skip value causes the cursor to move past the end of the collection,
+          the response will be 200 OK with an empty result set and no next_page_token.
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1ListNodeInstancesResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: List node instances
+      tags:
+      - ClusterService
+  /clusters/{clusterId}/nodeInstances/{instanceId}:
+    get:
+      operationId: ClusterService_GetNodeInstance
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: instanceId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1NodeInstance'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Get a node instance
+      tags:
+      - ClusterService
+  /clusters:showNodeQuota:
+    get:
+      operationId: ClusterService_ShowNodeQuota
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1ShowNodeQuotaResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Show node quota across the caller's organization
+      tags:
+      - ClusterService
+  /regions:
+    get:
+      operationId: RegionService_ListRegions
+      parameters:
+      - description: "If specified, only regions of the specified cloud provider will\
+          \ be returned."
+        in: query
+        name: cloudProvider
+        schema:
+          type: string
+      - description: "If unspecified, the project ID of default project is used."
+        in: query
+        name: projectId
+        schema:
+          type: string
+      - description: |-
+          The maximum number of regions to return. The service may return fewer than this value.
+          If unspecified, at most X regions will be returned.
+          The maximum value is X; values above X will be coerced to X.
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: |-
+          A page token, received from a previous `ListRegions` call.
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListRegions` must match
+          the call that provided the page token.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: |-
+          The number of individual resources to skip before starting to return results.
+          If the skip value causes the cursor to move past the end of the collection,
+          the response will be 200 OK with an empty result set and no next_page_token.
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/tidb_cloud_open_apidedicatedv1beta1ListRegionsResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: List regions for creating a cluster
+      tags:
+      - RegionService
+  /regions/{regionId}:
+    get:
+      operationId: RegionService_GetRegion
+      parameters:
+      - description: "Format: {cloud_provider}-{region_code}"
+        in: path
+        name: regionId
+        required: true
+        schema:
+          type: string
+      - description: "If unspecified, the project ID of default project is used."
+        in: query
+        name: projectId
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/commonv1beta1Region'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Get a region
+      tags:
+      - RegionService
+  /regions:showCloudProviders:
+    get:
+      operationId: RegionService_ShowCloudProviders
+      parameters:
+      - description: "If unspecified, the project ID of default project is used."
+        in: query
+        name: projectId
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1ShowCloudProvidersResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Show cloud providers for creating a cluster
+      tags:
+      - RegionService
+  /regions/{regionId}/nodeSpecs:
+    get:
+      operationId: RegionService_ListNodeSpecs
+      parameters:
+      - description: "Format: {cloud_provider}-{region_code}"
+        in: path
+        name: regionId
+        required: true
+        schema:
+          type: string
+      - description: "If specified, only node specs of the specified component type\
+          \ will be returned."
+        in: query
+        name: componentType
+        schema:
+          $ref: '#/components/schemas/ClusterService_ListNodeInstances_componentType_parameter'
+      - description: "If unspecified, the project ID of default project is used."
+        in: query
+        name: projectId
+        schema:
+          type: string
+      - description: |-
+          The maximum number of node specs to return. The service may return fewer than this value.
+          If unspecified, at most X node specs will be returned.
+          The maximum value is X; values above X will be coerced to X.
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: |-
+          A page token, received from a previous `ListNodeSpecs` call.
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListNodeSpecs` must match
+          the call that provided the page token.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: |-
+          The number of individual resources to skip before starting to return results.
+          If the skip value causes the cursor to move past the end of the collection,
+          the response will be 200 OK with an empty result set and no next_page_token.
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1ListNodeSpecsResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: List node specs for creating or scaling a cluster
+      tags:
+      - RegionService
+  /regions/{regionId}/componentTypes/{componentType}/nodeSpecs/{nodeSpecKey}:
+    get:
+      operationId: RegionService_GetNodeSpec
+      parameters:
+      - description: "Format: {cloud_provider}-{region_code}"
+        in: path
+        name: regionId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: componentType
+        required: true
+        schema:
+          $ref: '#/components/schemas/ClusterService_ListNodeInstances_componentType_parameter'
+      - in: path
+        name: nodeSpecKey
+        required: true
+        schema:
+          type: string
+      - description: "If unspecified, the project ID of default project is used."
+        in: query
+        name: projectId
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1NodeSpec'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Get a node spec
+      tags:
+      - RegionService
+  /clusters/{tidbNodeGroup.clusterId}/tidbNodeGroups:
+    post:
+      operationId: TidbNodeGroupService_CreateTidbNodeGroup
+      parameters:
+      - description: |-
+          The cluster ID of the TiDB group.
+          Optional when creating cluster with the default TiDB group.
+          Required when creating non-default TiDB group.
+        in: path
+        name: tidbNodeGroup.clusterId
+        required: true
+        schema:
+          type: string
+      - description: "if validate_only is true, the request will be validated but\
+          \ not executed."
+        in: query
+        name: validateOnly
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TidbNodeGroupService_CreateTidbNodeGroup_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroup'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Create a TiDB Node Group
+      tags:
+      - TidbNodeGroupService
+      x-codegen-request-body-name: tidbNodeGroup
+  /clusters/{clusterId}/tidbNodeGroups:
+    get:
+      operationId: TidbNodeGroupService_ListTidbNodeGroups
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: |-
+          The maximum number of TiDB groups to return. The service may return fewer than this value.
+          If unspecified, at most X TiDB groups will be returned.
+          The maximum value is X; values above X will be coerced to X.
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: |-
+          A page token, received from a previous `ListTidbNodeGroups` call.
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListTidbNodeGroups` must match
+          the call that provided the page token.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: |-
+          The number of individual resources to skip before starting to return results.
+          If the skip value causes the cursor to move past the end of the collection,
+          the response will be 200 OK with an empty result set and no next_page_token.
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1ListTidbNodeGroupsResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: List TiDB Node Groups
+      tags:
+      - TidbNodeGroupService
+  /clusters/{clusterId}/tidbNodeGroups/{tidbNodeGroupId}:
+    delete:
+      operationId: TidbNodeGroupService_DeleteTidbNodeGroup
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: tidbNodeGroupId
+        required: true
+        schema:
+          type: string
+      - description: "if validate_only is true, the request will be validated but\
+          \ not executed."
+        in: query
+        name: validateOnly
+        schema:
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Delete a TiDB Node Group
+      tags:
+      - TidbNodeGroupService
+    get:
+      operationId: TidbNodeGroupService_GetTidbNodeGroup
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: tidbNodeGroupId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroup'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Get a TiDB Node Group
+      tags:
+      - TidbNodeGroupService
+  /clusters/{tidbNodeGroup.clusterId}/tidbNodeGroups/{tidbNodeGroup.tidbNodeGroupId}:
+    patch:
+      operationId: TidbNodeGroupService_UpdateTidbNodeGroup
+      parameters:
+      - in: path
+        name: tidbNodeGroup.clusterId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: tidbNodeGroup.tidbNodeGroupId
+        required: true
+        schema:
+          type: string
+      - description: "if validate_only is true, the request will be validated but\
+          \ not executed."
+        in: query
+        name: validateOnly
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TidbNodeGroupService_UpdateTidbNodeGroup_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroup'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Update a TiDB Node Group
+      tags:
+      - TidbNodeGroupService
+      x-codegen-request-body-name: tidbNodeGroup
+  /clusters/{clusterId}/tidbNodeGroups/{tidbNodeGroupId}/publicEndpointSetting:
+    get:
+      operationId: TidbNodeGroupService_GetPublicEndpointSetting
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: tidbNodeGroupId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1PublicEndpointSetting'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Get the public endpoint setting of a TiDB Node Group
+      tags:
+      - TidbNodeGroupService
+  /clusters/{clusterId}/tidbNodeGroups/{publicEndpointSetting.tidbNodeGroupId}/publicEndpointSetting:
+    patch:
+      operationId: TidbNodeGroupService_UpdatePublicEndpointSetting
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: "If set to \"-\", the default TiDB group will be used."
+        in: path
+        name: publicEndpointSetting.tidbNodeGroupId
+        required: true
+        schema:
+          type: string
+      - description: "if validate_only is true, the request will be validated but\
+          \ not executed."
+        in: query
+        name: validateOnly
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TidbNodeGroupService_UpdatePublicEndpointSetting_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1PublicEndpointSetting'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Update the public endpoint setting of a TiDB Node Group
+      tags:
+      - TidbNodeGroupService
+      x-codegen-request-body-name: publicEndpointSetting
+  /clusters/{clusterId}/tidbNodeGroups/{tidbNodeGroupId}/privateLinkService:
+    get:
+      operationId: PrivateEndpointConnectionService_GetPrivateLinkService
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: tidbNodeGroupId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1PrivateLinkService'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Get the private link service of a TiDB Node Group
+      tags:
+      - PrivateEndpointConnectionService
+  /clusters/{clusterId}/tidbNodeGroups/{privateEndpointConnection.tidbNodeGroupId}/privateEndpointConnections:
+    post:
+      operationId: PrivateEndpointConnectionService_CreatePrivateEndpointConnection
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: privateEndpointConnection.tidbNodeGroupId
+        required: true
+        schema:
+          type: string
+      - description: |-
+          Default is false. If true, the request will not be applied and only validation will be performed.
+          At present, this field is only available for Azure provider.
+        in: query
+        name: validateOnly
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivateEndpointConnectionService_CreatePrivateEndpointConnection_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1PrivateEndpointConnection'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Create a private endpoint connection
+      tags:
+      - PrivateEndpointConnectionService
+      x-codegen-request-body-name: privateEndpointConnection
+  /clusters/{clusterId}/tidbNodeGroups/{tidbNodeGroupId}/privateEndpointConnections:
+    get:
+      operationId: PrivateEndpointConnectionService_ListPrivateEndpointConnections
+      parameters:
+      - description: "To list private link connections across different clusters and\
+          \ TiDB groups, set cluster_id to \"-\"."
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          pattern: "[^/]+"
+          type: string
+      - description: "To list private link connections across different clusters and\
+          \ TiDB groups, set tidb_node_group_id to \"-\"."
+        in: path
+        name: tidbNodeGroupId
+        required: true
+        schema:
+          pattern: "[^/]+"
+          type: string
+      - description: |-
+          Pass this project_id only when listing under a project across different clusters and TiDB groups.
+          Both cluster_id and tidb_node_group_id should be set to "-" in this case.
+          If unspecified, the project ID of the cluster is used.
+        in: query
+        name: projectId
+        schema:
+          type: string
+      - description: |-
+          If specified, only private link connections of the specified cloud provider will be returned.
+
+           - aws: Amazon Web Services.
+          buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+           - gcp: Google Cloud Platform.
+          buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+           - azure: Microsoft Azure.
+          buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+        in: query
+        name: cloudProvider
+        schema:
+          $ref: '#/components/schemas/PrivateEndpointConnectionService_ListPrivateEndpointConnections_cloudProvider_parameter'
+      - description: |-
+          The maximum number of private link connections to return. The service may return fewer than this value.
+          If unspecified, at most X private link connections will be returned.
+          The maximum value is X; values above X will be coerced to X.
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: |-
+          A page token, received from a previous `ListPrivateLinkConnections` call.
+          Provide this to retrieve the subsequent page.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: |-
+          The number of individual resources to skip before starting to return results.
+          If the skip value causes the cursor to move past the end of the collection,
+          the response will be 200 OK with an empty result set and no next_page_token.
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1ListPrivateEndpointConnectionsResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: List private endpoint connections
+      tags:
+      - PrivateEndpointConnectionService
+  /clusters/{clusterId}/tidbNodeGroups/{tidbNodeGroupId}/privateEndpointConnections/{privateEndpointConnectionId}:
+    delete:
+      operationId: PrivateEndpointConnectionService_DeletePrivateEndpointConnection
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: tidbNodeGroupId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: privateEndpointConnectionId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Delete a private endpoint connection
+      tags:
+      - PrivateEndpointConnectionService
+    get:
+      operationId: PrivateEndpointConnectionService_GetPrivateEndpointConnection
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: tidbNodeGroupId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: privateEndpointConnectionId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1PrivateEndpointConnection'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Get a private endpoint connection
+      tags:
+      - PrivateEndpointConnectionService
+  /networkContainers:
+    get:
+      operationId: NetworkContainerService_ListNetworkContainers
+      parameters:
+      - description: "If unspecified, the project ID of default project is used."
+        in: query
+        name: projectId
+        schema:
+          type: string
+      - description: |2-
+           - aws: Amazon Web Services.
+          buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+           - gcp: Google Cloud Platform.
+          buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+           - azure: Microsoft Azure.
+          buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+        in: query
+        name: cloudProvider
+        schema:
+          $ref: '#/components/schemas/PrivateEndpointConnectionService_ListPrivateEndpointConnections_cloudProvider_parameter'
+      - description: |-
+          The maximum number of network containers to return. The service may return fewer than this value.
+          If unspecified, at most X network containers will be returned.
+          The maximum value is X; values above X will be coerced to X.
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: |-
+          A page token, received from a previous `ListNetworkContainers` call.
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListNetworkContainers` must match
+          the call that provided the page token.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: |-
+          The number of individual resources to skip before starting to return results.
+          If the skip value causes the cursor to move past the end of the collection,
+          the response will be 200 OK with an empty result set and no next_page_token.
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1ListNetworkContainersResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: List network containers
+      tags:
+      - NetworkContainerService
+    post:
+      operationId: NetworkContainerService_CreateNetworkContainer
+      parameters:
+      - in: query
+        name: validateOnly
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1beta1NetworkContainer'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1NetworkContainer'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Create a network container
+      tags:
+      - NetworkContainerService
+      x-codegen-request-body-name: networkContainer
+  /networkContainers/{networkContainerId}:
+    delete:
+      operationId: NetworkContainerService_DeleteNetworkContainer
+      parameters:
+      - in: path
+        name: networkContainerId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Delete a network container
+      tags:
+      - NetworkContainerService
+    get:
+      operationId: NetworkContainerService_GetNetworkContainer
+      parameters:
+      - in: path
+        name: networkContainerId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1NetworkContainer'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Get a network container
+      tags:
+      - NetworkContainerService
+  /vpcPeerings:
+    get:
+      operationId: NetworkContainerService_ListVpcPeerings
+      parameters:
+      - description: "If unspecified, the project ID of default project is used."
+        in: query
+        name: projectId
+        schema:
+          type: string
+      - description: |-
+          If specified, only VPC peerings of the specified cloud provider will be returned.
+
+           - aws: Amazon Web Services.
+          buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+           - gcp: Google Cloud Platform.
+          buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+           - azure: Microsoft Azure.
+          buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+        in: query
+        name: cloudProvider
+        schema:
+          $ref: '#/components/schemas/PrivateEndpointConnectionService_ListPrivateEndpointConnections_cloudProvider_parameter'
+      - description: |-
+          The maximum number of VPC peerings to return. The service may return fewer than this value.
+          If unspecified, at most X VPC peerings will be returned.
+          The maximum value is X; values above X will be coerced to X.
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: |-
+          A page token, received from a previous `ListVpcPeerings` call.
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListVpcPeerings` must match
+          the call that provided the page token.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1ListVpcPeeringsResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: List VPC peerings
+      tags:
+      - NetworkContainerService
+    post:
+      operationId: NetworkContainerService_CreateVpcPeering
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/dedicatedv1beta1VpcPeering'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1VpcPeering'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Create a VPC peering
+      tags:
+      - NetworkContainerService
+      x-codegen-request-body-name: vpcPeering
+  /vpcPeerings/{vpcPeeringId}:
+    delete:
+      operationId: NetworkContainerService_DeleteVpcPeering
+      parameters:
+      - description: "Format {cloud_provider}-{random_suffix}"
+        in: path
+        name: vpcPeeringId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Delete a VPC peering
+      tags:
+      - NetworkContainerService
+    get:
+      operationId: NetworkContainerService_GetVpcPeering
+      parameters:
+      - description: "Format {cloud_provider}-{random_suffix}"
+        in: path
+        name: vpcPeeringId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1VpcPeering'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Get a VPC peering
+      tags:
+      - NetworkContainerService
+  /maintenanceWindows/{maintenanceWindowId}:
+    get:
+      operationId: MaintenanceService_GetMaintenanceWindow
+      parameters:
+      - description: "Format: project-{project_id}"
+        in: path
+        name: maintenanceWindowId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1MaintenanceWindow'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Get a maintenance window
+      tags:
+      - MaintenanceService
+  /maintenanceWindows:
+    get:
+      operationId: MaintenanceService_ListMaintenanceWindows
+      parameters:
+      - description: "If unspecified, the project ID of default project is used."
+        in: query
+        name: projectId
+        schema:
+          type: string
+      - description: |-
+          The maximum number of maintenance windows to return. The service may return fewer than this value.
+          If unspecified, at most X maintenance windows will be returned.
+          The maximum value is X; values above X will be coerced to X.
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: |-
+          A page token, received from a previous `ListMaintenanceWindows` call.
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListMaintenanceWindows` must match
+          the call that provided the page token.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: |-
+          The number of individual resources to skip before starting to return results.
+          If the skip value causes the cursor to move past the end of the collection,
+          the response will be 200 OK with an empty result set and no next_page_token.
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1ListMaintenanceWindowsResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: List maintenance windows
+      tags:
+      - MaintenanceService
+  /maintenanceWindows/{maintenanceWindow.maintenanceWindowId}:
+    patch:
+      operationId: MaintenanceService_UpdateMaintenanceWindow
+      parameters:
+      - description: "Format: project-{project_id}"
+        in: path
+        name: maintenanceWindow.maintenanceWindowId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintenanceService_UpdateMaintenanceWindow_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1MaintenanceWindow'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Update a maintenance window
+      tags:
+      - MaintenanceService
+      x-codegen-request-body-name: maintenanceWindow
+  /maintenanceTasks:
+    get:
+      operationId: MaintenanceService_ListMaintenanceTasks
+      parameters:
+      - description: "If unspecified, the project ID of default project is used."
+        in: query
+        name: projectId
+        schema:
+          type: string
+      - description: |-
+          The maximum number of maintenance tasks to return. The service may return fewer than this value.
+          If unspecified, at most X maintenance tasks will be returned.
+          The maximum value is X; values above X will be coerced to X.
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: |-
+          A page token, received from a previous `ListMaintenanceTasks` call.
+          Provide this to retrieve the subsequent page.
+
+          When paginating, all other parameters provided to `ListMaintenanceTasks` must match
+          the call that provided the page token.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: |-
+          The number of individual resources to skip before starting to return results.
+          If the skip value causes the cursor to move past the end of the collection,
+          the response will be 200 OK with an empty result set and no next_page_token.
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1ListMaintenanceTasksResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: List maintenance tasks
+      tags:
+      - MaintenanceService
+  /maintenanceTasks/{maintenanceTaskId}:
+    get:
+      operationId: MaintenanceService_GetMaintenanceTask
+      parameters:
+      - in: path
+        name: maintenanceTaskId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1MaintenanceTask'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Get a maintenance task
+      tags:
+      - MaintenanceService
+  /maintenanceTasks/{maintenanceTaskId}:deferMaintenanceTask:
+    post:
+      operationId: MaintenanceService_DeferMaintenanceTask
+      parameters:
+      - in: path
+        name: maintenanceTaskId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1DeferMaintenanceTaskResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Defer a maintenance task
+      tags:
+      - MaintenanceService
+  /clusters/{auditLogConfig.clusterId}/auditLogConfig:
+    patch:
+      operationId: DatabaseAuditLogService_UpdateAuditLogConfig
+      parameters:
+      - in: path
+        name: auditLogConfig.clusterId
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: validateOnly
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseAuditLogService_UpdateAuditLogConfig_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1AuditLogConfig'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Update the audit log config of a cluster
+      tags:
+      - DatabaseAuditLogService
+      x-codegen-request-body-name: auditLogConfig
+    post:
+      operationId: DatabaseAuditLogService_CreateAuditLogConfig
+      parameters:
+      - in: path
+        name: auditLogConfig.clusterId
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: validateOnly
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseAuditLogService_CreateAuditLogConfig_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1AuditLogConfig'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Create the audit log config for a cluster
+      tags:
+      - DatabaseAuditLogService
+      x-codegen-request-body-name: auditLogConfig
+  /clusters/{clusterId}/auditLogConfig:
+    get:
+      operationId: DatabaseAuditLogService_GetAuditLogConfig
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1AuditLogConfig'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Get the audit log config of a cluster
+      tags:
+      - DatabaseAuditLogService
+  /clusters/{auditLogFilterRule.clusterId}/auditLogFilterRules:
+    post:
+      operationId: DatabaseAuditLogService_CreateAuditLogFilterRule
+      parameters:
+      - in: path
+        name: auditLogFilterRule.clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatabaseAuditLogService_CreateAuditLogFilterRule_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1AuditLogFilterRule'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Create an audit log filter rule
+      tags:
+      - DatabaseAuditLogService
+      x-codegen-request-body-name: auditLogFilterRule
+  /clusters/{clusterId}/auditLogFilterRules/{auditLogFilterRuleId}:
+    delete:
+      operationId: DatabaseAuditLogService_DeleteAuditLogFilterRule
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: auditLogFilterRuleId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Delete an audit log filter rule
+      tags:
+      - DatabaseAuditLogService
+    get:
+      operationId: DatabaseAuditLogService_GetAuditLogFilterRule
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: auditLogFilterRuleId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1AuditLogFilterRule'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Get an audit log filter rule
+      tags:
+      - DatabaseAuditLogService
+  /clusters/{clusterId}/auditLogFilterRules:
+    get:
+      operationId: DatabaseAuditLogService_ListAuditLogFilterRules
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: |-
+          The number of individual resources to skip before starting to return results.
+          If the skip value causes the cursor to move past the end of the collection,
+          the response will be 200 OK with an empty result set and no next_page_token.
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1ListAuditLogFilterRulesResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: List audit log filter rules
+      tags:
+      - DatabaseAuditLogService
+  /clusters/{clusterId}/auditLogConfig:showObjectStorageAccessIamPrincipal:
+    get:
+      operationId: DatabaseAuditLogService_ShowObjectStorageAccessIamPrincipal
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta1ShowObjectStorageAccessIamPrincipalResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Show IAM principal of TiDB Cloud for accessing customer's object storage
+      tags:
+      - DatabaseAuditLogService
+components:
+  schemas:
+    AuditLogConfigBucketWriteCheck:
+      properties:
+        writable:
+          readOnly: true
+          type: boolean
+        errorReason:
+          description: The reason why the bucket is not writable. Output only when
+            `writable` is false.
+          readOnly: true
+          type: string
+      type: object
+    ClusterNodeChangingProgress:
+      properties:
+        matchingNodeSpecNodeCount:
+          format: int32
+          readOnly: true
+          type: integer
+        remainingDeletionNodeCount:
+          description: available if some nodes are deleting.
+          format: int32
+          readOnly: true
+          type: integer
+      type: object
+    ClusterServiceResetRootPasswordBody:
+      example:
+        rootPassword: rootPassword
+      properties:
+        rootPassword:
+          type: string
+      required:
+      - rootPassword
+      type: object
+    ClusterStorageNodeSettingStorageType:
+      enum:
+      - BASIC
+      - BASICV2
+      - OPTIMIZED
+      - PLUS
+      title: |-
+        - BASIC: default
+         - BASICV2: separate raft-log and data storage, only for tikv
+         - OPTIMIZED: separate raft-log and data storage, and use high performance storage volume for raft-log, only for tikv
+         - PLUS: use high performance storage volume
+      type: string
+    EndpointConnectionType:
+      description: |2-
+         - PUBLIC: The endpoint is a public endpoint.
+         - VPC_PEERING: The endpoint is a VPC peering endpoint.
+         - PRIVATE_ENDPOINT: The endpoint is a private link endpoint.
+      enum:
+      - PUBLIC
+      - VPC_PEERING
+      - PRIVATE_ENDPOINT
+      type: string
+    PrivateEndpointConnectionEndpointState:
+      description: |2-
+         - PENDING: Customer has posted to TiDB cloud API,
+        but endpoint connection has not been accepted **asynchronously** by TiDB Cloud.
+         - DISCOVERED: Customer has created the endpoint in their vpc, but has not posted to TiDB Cloud API.
+      enum:
+      - PENDING
+      - ACTIVE
+      - DELETING
+      - FAILED
+      - DISCOVERED
+      type: string
+    PublicEndpointSettingIpAccessList:
+      example:
+        description: description
+        cidrNotation: cidrNotation
+      properties:
+        cidrNotation:
+          type: string
+        description:
+          type: string
+      required:
+      - cidrNotation
+      type: object
+    ShowNodeQuotaResponseComponentQuota:
+      example:
+        componentType: TIKV
+        quota: 0
+      properties:
+        componentType:
+          $ref: '#/components/schemas/dedicatedv1beta1ComponentType'
+        quota:
+          format: int32
+          type: integer
+      type: object
+    UpdateClusterRequestTidbNodeSettingTidbNodeGroup:
+      properties:
+        tidbNodeGroupId:
+          title: "if tidb_node_group_id is empty, it means scale default tidb group"
+          type: string
+        nodeCount:
+          format: int32
+          nullable: true
+          type: integer
+      type: object
+    commonv1beta1ClusterState:
+      description: |-
+        Enum of possible states of a cluster.
+
+         - CREATING: Cluster is being created.
+         - DELETING: Cluster is being deleted.
+         - ACTIVE: Cluster is active for use.
+         - RESTORING: Cluster data is being restored.
+         - MAINTENANCE: Cluster is under maintenance.
+         - DELETED: Cluster has been deleted.
+         - INACTIVE: Cluster is not active, but not being deleted.
+         - UPGRADING: Cluster is being updated.
+        Only for Dedicated Cluster.
+         - IMPORTING: Cluster is being imported.
+        Only for Dedicated Cluster.
+         - MODIFYING: Cluster is being modified.
+        Only for Dedicated Cluster.
+         - PAUSING: Cluster is being paused.
+        Only for Dedicated Cluster.
+         - PAUSED: Cluster is paused.
+        Only for Dedicated Cluster.
+         - RESUMING: Cluster is resuming.
+        Only for Dedicated Cluster.
+      enum:
+      - CREATING
+      - DELETING
+      - ACTIVE
+      - RESTORING
+      - MAINTENANCE
+      - DELETED
+      - INACTIVE
+      - UPGRADING
+      - IMPORTING
+      - MODIFYING
+      - PAUSING
+      - PAUSED
+      - RESUMING
+      type: string
+    commonv1beta1Region:
+      description: A representation of a region for deploying TiDB clusters.
+      example:
+        regionId: regionId
+        provider: provider
+        displayName: displayName
+        cloudProvider: "{}"
+        name: regions/aws-us-west-2
+      properties:
+        name:
+          example: regions/aws-us-west-2
+          pattern: ^regions/(aws|gcp|azure)-(.+)$
+          title: |-
+            The unique name of the region.
+            Format: regions/{region_id}
+          type: string
+        regionId:
+          description: |-
+            Format: {cloud_provider}-{region_code}
+            Region code: us-west-2, asia-east1.
+          readOnly: true
+          type: string
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1RegionCloudProvider'
+          description: The cloud provider for the region.
+          type: object
+        displayName:
+          description: User-friendly display name of the region.
+          readOnly: true
+          type: string
+        provider:
+          description: |-
+            Optional provider name for the region.
+            Only used for serverless cluster.
+            Deprecated.
+          nullable: true
+          readOnly: true
+          type: string
+      type: object
+    dedicatedv1beta1AuditLogConfig:
+      example:
+        bucketUri: bucketUri
+        azureSasToken: azureSasToken
+        bucketWriteCheck: "{}"
+        name: name
+        bucketRegionId: bucketRegionId
+        clusterId: clusterId
+        enabled: true
+        awsRoleArn: awsRoleArn
+      properties:
+        name:
+          readOnly: true
+          title: "Format: clusters/{cluster_id}/auditLogConfig"
+          type: string
+        clusterId:
+          type: string
+        enabled:
+          description: Default is false.
+          type: boolean
+        bucketUri:
+          type: string
+        bucketRegionId:
+          title: "Format: {cloud_provider}-{region_code}"
+          type: string
+        awsRoleArn:
+          type: string
+        azureSasToken:
+          type: string
+        bucketWriteCheck:
+          allOf:
+          - $ref: '#/components/schemas/AuditLogConfigBucketWriteCheck'
+          type: object
+      required:
+      - bucketUri
+      - clusterId
+      type: object
+    dedicatedv1beta1ClusterPausePlan:
+      properties:
+        pauseType:
+          $ref: '#/components/schemas/dedicatedv1beta1ClusterPausePlanType'
+        scheduledResumeTime:
+          format: date-time
+          readOnly: true
+          type: string
+      required:
+      - pauseType
+      type: object
+    dedicatedv1beta1ClusterPausePlanType:
+      enum:
+      - NORMAL
+      - DEPRECATE
+      title: |-
+        - NORMAL: default pause plan
+         - DEPRECATE: old pause plan, will be removed
+      type: string
+    dedicatedv1beta1ComponentType:
+      enum:
+      - TIKV
+      - TIDB
+      - TIFLASH
+      - PD
+      - TIPROXY
+      type: string
+    dedicatedv1beta1ListTidbNodeGroupsResponse:
+      example:
+        tidbNodeGroups:
+        - isDefaultGroup: true
+          endpoints:
+          - port: 6
+            host: host
+            connectionType: "{}"
+          - port: 6
+            host: host
+            connectionType: "{}"
+          nodeSpecKey: nodeSpecKey
+          nodeSpecDisplayName: nodeSpecDisplayName
+          nodeChangingProgress: "{}"
+          displayName: displayName
+          tidbNodeGroupId: tidbNodeGroupId
+          name: name
+          nodeCount: 0
+          clusterId: clusterId
+          state: "{}"
+        - isDefaultGroup: true
+          endpoints:
+          - port: 6
+            host: host
+            connectionType: "{}"
+          - port: 6
+            host: host
+            connectionType: "{}"
+          nodeSpecKey: nodeSpecKey
+          nodeSpecDisplayName: nodeSpecDisplayName
+          nodeChangingProgress: "{}"
+          displayName: displayName
+          tidbNodeGroupId: tidbNodeGroupId
+          name: name
+          nodeCount: 0
+          clusterId: clusterId
+          state: "{}"
+        totalSize: 0
+        nextPageToken: nextPageToken
+      properties:
+        tidbNodeGroups:
+          items:
+            $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroup'
+          type: array
+        totalSize:
+          description: The total number of TiDB groups that matched the query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: |-
+            A token, which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
+    dedicatedv1beta1ListVpcPeeringsResponse:
+      example:
+        totalSize: 0
+        nextPageToken: nextPageToken
+        vpcPeerings:
+        - tidbCloudVpcCidr: tidbCloudVpcCidr
+          labels:
+            key: labels
+          customerVpcCidr: customerVpcCidr
+          customerRegionId: customerRegionId
+          customerAccountId: customerAccountId
+          tidbCloudVpcId: tidbCloudVpcId
+          name: name
+          vpcPeeringId: vpcPeeringId
+          state: "{}"
+          customerVpcId: customerVpcId
+          tidbCloudCloudProvider: "{}"
+          tidbCloudAccountId: tidbCloudAccountId
+          awsVpcPeeringConnectionId: awsVpcPeeringConnectionId
+          tidbCloudRegionId: tidbCloudRegionId
+        - tidbCloudVpcCidr: tidbCloudVpcCidr
+          labels:
+            key: labels
+          customerVpcCidr: customerVpcCidr
+          customerRegionId: customerRegionId
+          customerAccountId: customerAccountId
+          tidbCloudVpcId: tidbCloudVpcId
+          name: name
+          vpcPeeringId: vpcPeeringId
+          state: "{}"
+          customerVpcId: customerVpcId
+          tidbCloudCloudProvider: "{}"
+          tidbCloudAccountId: tidbCloudAccountId
+          awsVpcPeeringConnectionId: awsVpcPeeringConnectionId
+          tidbCloudRegionId: tidbCloudRegionId
+      properties:
+        vpcPeerings:
+          items:
+            $ref: '#/components/schemas/dedicatedv1beta1VpcPeering'
+          type: array
+        totalSize:
+          description: The total number of VPC peerings that matched the query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: |-
+            A token, which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
+    dedicatedv1beta1MaintenanceWindow:
+      description: MaintenanceWindow is a singleton resource that represents the maintenance
+        window under a project.
+      example:
+        dayHour: 6
+        maintenanceWindowId: maintenanceWindowId
+        unchangedMaintenanceTasks:
+        - maintenanceTaskId: maintenanceTaskId
+          createTime: 2000-01-23T04:56:07.000+00:00
+          name: name
+          description: description
+          scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
+          state: "{}"
+          deadline: 2000-01-23T04:56:07.000+00:00
+          projectId: projectId
+        - maintenanceTaskId: maintenanceTaskId
+          createTime: 2000-01-23T04:56:07.000+00:00
+          name: name
+          description: description
+          scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
+          state: "{}"
+          deadline: 2000-01-23T04:56:07.000+00:00
+          projectId: projectId
+        weekDay: 0
+        nextMaintenanceDate: 2000-01-23T04:56:07.000+00:00
+        name: name
+        hourMinute: 1
+        projectId: projectId
+      properties:
+        name:
+          readOnly: true
+          title: "Format: maintenanceWindows/{maintenance_window_id}"
+          type: string
+        maintenanceWindowId:
+          readOnly: true
+          title: "Format: project-{project_id}"
+          type: string
+        projectId:
+          type: string
+        weekDay:
+          description: "0-6, 0 is Sunday."
+          format: int32
+          type: integer
+        dayHour:
+          description: 0-23 in UTC.
+          format: int32
+          type: integer
+        hourMinute:
+          description: 0-59 in UTC.
+          format: int32
+          type: integer
+        nextMaintenanceDate:
+          format: date-time
+          readOnly: true
+          type: string
+        unchangedMaintenanceTasks:
+          items:
+            $ref: '#/components/schemas/v1beta1MaintenanceTask'
+          readOnly: true
+          type: array
+      required:
+      - dayHour
+      - hourMinute
+      - projectId
+      - weekDay
+      type: object
+    dedicatedv1beta1NodeSpec:
+      example:
+        componentType: "{}"
+        minStorageSizeGi: 5
+        nodeSpecKey: nodeSpecKey
+        defaultStorageSizeGi: 1
+        vCpu: 0
+        regionId: regionId
+        displayName: displayName
+        maxStorageSizeGi: 5
+        defaultNodeCount: 2
+        name: name
+        storageTypes:
+        - BASIC
+        - BASIC
+        memorySizeGi: 6
+      properties:
+        name:
+          readOnly: true
+          title: "Format: regions/{region_id}/componentTypes/{component_type}/nodeSpecs/{node_spec_key}"
+          type: string
+        regionId:
+          readOnly: true
+          title: "Format: {cloud_provider}-{region_code}"
+          type: string
+        componentType:
+          allOf:
+          - $ref: '#/components/schemas/dedicatedv1beta1ComponentType'
+          type: object
+        nodeSpecKey:
+          readOnly: true
+          type: string
+        displayName:
+          readOnly: true
+          type: string
+        vCpu:
+          format: int32
+          readOnly: true
+          type: integer
+        memorySizeGi:
+          format: int32
+          readOnly: true
+          type: integer
+        defaultStorageSizeGi:
+          format: int32
+          readOnly: true
+          type: integer
+        maxStorageSizeGi:
+          format: int32
+          readOnly: true
+          type: integer
+        minStorageSizeGi:
+          format: int32
+          readOnly: true
+          type: integer
+        defaultNodeCount:
+          format: int32
+          readOnly: true
+          type: integer
+        storageTypes:
+          items:
+            $ref: '#/components/schemas/ClusterStorageNodeSettingStorageType'
+          readOnly: true
+          type: array
+      type: object
+    dedicatedv1beta1PauseClusterResponse:
+      example:
+        cluster:
+          tiflashNodeSetting:
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+            nodeChangingProgress: "{}"
+            storageSizeGi: 5
+            storageType: BASIC
+            nodeCount: 1
+          displayName: foo-bar
+          annotations:
+            key: annotations
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          version: version
+          labels:
+            key: labels
+          pausePlan: "{}"
+          regionDisplayName: regionDisplayName
+          tikvNodeSetting:
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+            nodeChangingProgress: "{}"
+            storageSizeGi: 5
+            storageType: BASIC
+            nodeCount: 1
+          regionId: regionId
+          port: 5
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          cloudProvider: "{}"
+          name: name
+          tidbNodeSetting:
+            tidbNodeGroups:
+            - isDefaultGroup: true
+              endpoints:
+              - port: 6
+                host: host
+                connectionType: "{}"
+              - port: 6
+                host: host
+                connectionType: "{}"
+              nodeSpecKey: nodeSpecKey
+              nodeSpecDisplayName: nodeSpecDisplayName
+              nodeChangingProgress: "{}"
+              displayName: displayName
+              tidbNodeGroupId: tidbNodeGroupId
+              name: name
+              nodeCount: 0
+              clusterId: clusterId
+              state: "{}"
+            - isDefaultGroup: true
+              endpoints:
+              - port: 6
+                host: host
+                connectionType: "{}"
+              - port: 6
+                host: host
+                connectionType: "{}"
+              nodeSpecKey: nodeSpecKey
+              nodeSpecDisplayName: nodeSpecDisplayName
+              nodeChangingProgress: "{}"
+              displayName: displayName
+              tidbNodeGroupId: tidbNodeGroupId
+              name: name
+              nodeCount: 0
+              clusterId: clusterId
+              state: "{}"
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+          state: "{}"
+          rootPassword: my-shining-password
+      properties:
+        cluster:
+          $ref: '#/components/schemas/tidb_cloud_open_apidedicatedv1beta1Cluster'
+      required:
+      - cluster
+      type: object
+    dedicatedv1beta1PrivateLinkService:
+      example:
+        regionDisplayName: regionDisplayName
+        serviceDnsName: serviceDnsName
+        availableZones:
+        - availableZones
+        - availableZones
+        regionId: regionId
+        tidbNodeGroupId: tidbNodeGroupId
+        cloudProvider: "{}"
+        name: name
+        state: "{}"
+        serviceName: serviceName
+      properties:
+        name:
+          readOnly: true
+          title: "Format: tidbNodeGroups/{tidb_node_group_id}/privateLinkService"
+          type: string
+        tidbNodeGroupId:
+          readOnly: true
+          type: string
+        serviceName:
+          description: |-
+            For AWS, it's the service name of the Private Link Service.
+            For GCP, it's the resource name of the service attachment.
+            For Azure, it's service resource ID of the Private Link Service.
+          readOnly: true
+          type: string
+        serviceDnsName:
+          description: |-
+            For AWS, it's the fully qualified domain name (FQDN) shared for all private endpoints, despite which VPC the endpoint located in.
+            For GCP, it's the zone name (suffix of FQDN) shared for all private endpoints located in a single VPC network. The format of FQDN is `<endpoint_name>.<service_dns_name>`.
+            For Azure, it's the zone name shared across public internet. The format of FQDN is `<endpoint_name>-<random_hash>.<service_dns_name>`.
+          readOnly: true
+          type: string
+        availableZones:
+          description: |-
+            Only available for AWS.
+            Same as the `AvailabilityZones` field in response body of
+            `github.com/aws/aws-sdk-go-v2/service/ec2.DescribeVpcEndpointServices` method.
+          items:
+            type: string
+          readOnly: true
+          type: array
+        state:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1PrivateLinkServiceState'
+          type: object
+        regionId:
+          readOnly: true
+          title: "Format: {cloud_provider}-{region_code}"
+          type: string
+        regionDisplayName:
+          readOnly: true
+          type: string
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1RegionCloudProvider'
+          type: object
+      type: object
+    dedicatedv1beta1ResumeClusterResponse:
+      example:
+        cluster:
+          tiflashNodeSetting:
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+            nodeChangingProgress: "{}"
+            storageSizeGi: 5
+            storageType: BASIC
+            nodeCount: 1
+          displayName: foo-bar
+          annotations:
+            key: annotations
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          version: version
+          labels:
+            key: labels
+          pausePlan: "{}"
+          regionDisplayName: regionDisplayName
+          tikvNodeSetting:
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+            nodeChangingProgress: "{}"
+            storageSizeGi: 5
+            storageType: BASIC
+            nodeCount: 1
+          regionId: regionId
+          port: 5
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          cloudProvider: "{}"
+          name: name
+          tidbNodeSetting:
+            tidbNodeGroups:
+            - isDefaultGroup: true
+              endpoints:
+              - port: 6
+                host: host
+                connectionType: "{}"
+              - port: 6
+                host: host
+                connectionType: "{}"
+              nodeSpecKey: nodeSpecKey
+              nodeSpecDisplayName: nodeSpecDisplayName
+              nodeChangingProgress: "{}"
+              displayName: displayName
+              tidbNodeGroupId: tidbNodeGroupId
+              name: name
+              nodeCount: 0
+              clusterId: clusterId
+              state: "{}"
+            - isDefaultGroup: true
+              endpoints:
+              - port: 6
+                host: host
+                connectionType: "{}"
+              - port: 6
+                host: host
+                connectionType: "{}"
+              nodeSpecKey: nodeSpecKey
+              nodeSpecDisplayName: nodeSpecDisplayName
+              nodeChangingProgress: "{}"
+              displayName: displayName
+              tidbNodeGroupId: tidbNodeGroupId
+              name: name
+              nodeCount: 0
+              clusterId: clusterId
+              state: "{}"
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+          state: "{}"
+          rootPassword: my-shining-password
+      properties:
+        cluster:
+          $ref: '#/components/schemas/tidb_cloud_open_apidedicatedv1beta1Cluster'
+      required:
+      - cluster
+      type: object
+    dedicatedv1beta1TidbNodeGroup:
+      example:
+        isDefaultGroup: true
+        endpoints:
+        - port: 6
+          host: host
+          connectionType: "{}"
+        - port: 6
+          host: host
+          connectionType: "{}"
+        nodeSpecKey: nodeSpecKey
+        nodeSpecDisplayName: nodeSpecDisplayName
+        nodeChangingProgress: "{}"
+        displayName: displayName
+        tidbNodeGroupId: tidbNodeGroupId
+        name: name
+        nodeCount: 0
+        clusterId: clusterId
+        state: "{}"
+      properties:
+        name:
+          readOnly: true
+          title: "Format: tidbNodeGroups/{tidb_node_group_id}"
+          type: string
+        tidbNodeGroupId:
+          description: The unique ID of the TiDB group.
+          readOnly: true
+          type: string
+        clusterId:
+          description: |-
+            The cluster ID of the TiDB group.
+            Optional when creating cluster with the default TiDB group.
+            Required when creating non-default TiDB group.
+          type: string
+        displayName:
+          description: The display name of the TiDB group.
+          type: string
+        nodeCount:
+          description: The number of TiDB nodes in the TiDB group.
+          format: int32
+          type: integer
+        endpoints:
+          items:
+            $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroupEndpoint'
+          readOnly: true
+          type: array
+        nodeSpecKey:
+          readOnly: true
+          type: string
+        nodeSpecDisplayName:
+          readOnly: true
+          type: string
+        isDefaultGroup:
+          readOnly: true
+          type: boolean
+        state:
+          allOf:
+          - $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroupState'
+          type: object
+        nodeChangingProgress:
+          allOf:
+          - $ref: '#/components/schemas/ClusterNodeChangingProgress'
+          type: object
+      required:
+      - nodeCount
+      type: object
+    dedicatedv1beta1TidbNodeGroupEndpoint:
+      example:
+        port: 6
+        host: host
+        connectionType: "{}"
+      properties:
+        host:
+          description: |-
+            When endpoint's type is `PRIVATE_ENDPOINT`, the `host` field behave differently across cloud providers:
+            For AWS clusters, the `host` field is available right after the private link service is ready.
+            For GCP and Azure clusters, the `host` field is available after the user creates a `PrivateEndpointConnection`.
+          readOnly: true
+          type: string
+        port:
+          format: int32
+          readOnly: true
+          type: integer
+        connectionType:
+          allOf:
+          - $ref: '#/components/schemas/EndpointConnectionType'
+          type: object
+      type: object
+    dedicatedv1beta1TidbNodeGroupState:
+      description: |2-
+         - ACTIVE: All nodes are ready.
+         - MODIFYING: When TiDB group is modifying.
+         - PAUSED: When cluster is paused.
+      enum:
+      - ACTIVE
+      - MODIFYING
+      - PAUSED
+      type: string
+    dedicatedv1beta1VpcPeering:
+      example:
+        tidbCloudVpcCidr: tidbCloudVpcCidr
+        labels:
+          key: labels
+        customerVpcCidr: customerVpcCidr
+        customerRegionId: customerRegionId
+        customerAccountId: customerAccountId
+        tidbCloudVpcId: tidbCloudVpcId
+        name: name
+        vpcPeeringId: vpcPeeringId
+        state: "{}"
+        customerVpcId: customerVpcId
+        tidbCloudCloudProvider: "{}"
+        tidbCloudAccountId: tidbCloudAccountId
+        awsVpcPeeringConnectionId: awsVpcPeeringConnectionId
+        tidbCloudRegionId: tidbCloudRegionId
+      properties:
+        name:
+          readOnly: true
+          title: "Format: vpcPeerings/{vpc_peering_id}"
+          type: string
+        vpcPeeringId:
+          readOnly: true
+          title: "Format {cloud_provider}-{random_suffix}"
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: The labels of the vpc peering. It always contains the `project_id`
+            label.
+          readOnly: true
+          type: object
+        tidbCloudRegionId:
+          title: "Format: {cloud_provider}-{region_code}"
+          type: string
+        customerRegionId:
+          description: |-
+            Format: {cloud_provider}-{region_code}
+            For AWS, it's required.
+            For GCP, it's optional. Since GCP does not require region_id when creating VPC peering.
+          type: string
+        customerAccountId:
+          description: |-
+            In AWS, it is the account ID.
+            In GCP, it is the project name.
+          type: string
+        customerVpcId:
+          description: |-
+            In AWS, it is the VPC ID.
+            In GCP, it is the network name.
+          type: string
+        customerVpcCidr:
+          type: string
+        tidbCloudCloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1RegionCloudProvider'
+          type: object
+        tidbCloudAccountId:
+          description: |-
+            In AWS, it is the account ID.
+            In GCP, it is the project name.
+          readOnly: true
+          type: string
+        tidbCloudVpcId:
+          description: |-
+            In AWS, it is the VPC ID.
+            In GCP, it is the network name.
+          readOnly: true
+          type: string
+        tidbCloudVpcCidr:
+          readOnly: true
+          type: string
+        state:
+          allOf:
+          - $ref: '#/components/schemas/dedicatedv1beta1VpcPeeringState'
+          type: object
+        awsVpcPeeringConnectionId:
+          description: Only for AWS vpc peerings.
+          nullable: true
+          readOnly: true
+          type: string
+      required:
+      - customerAccountId
+      - customerVpcCidr
+      - customerVpcId
+      - tidbCloudRegionId
+      type: object
+    dedicatedv1beta1VpcPeeringState:
+      enum:
+      - PENDING
+      - FAILED
+      - ACTIVE
+      type: string
+    googlerpcStatus:
+      description: |-
+        The `Status` type defines a logical error model that is suitable for
+        different programming environments, including REST APIs and RPC APIs. It is
+        used by [gRPC](https://github.com/grpc). Each `Status` message contains
+        three pieces of data: error code, error message, and error details.
+
+        You can find out more about this error model and how to work with it in the
+        [API Design Guide](https://cloud.google.com/apis/design/errors).
+      example:
+        code: 7
+        details:
+        - '@type': '@type'
+        - '@type': '@type'
+        message: message
+      properties:
+        code:
+          description: |-
+            The status code, which should be an enum value of
+            [google.rpc.Code][google.rpc.Code].
+          format: int32
+          type: integer
+        message:
+          description: |-
+            A developer-facing error message, which should be in English. Any
+            user-facing error message should be localized and sent in the
+            [google.rpc.Status.details][google.rpc.Status.details] field, or localized
+            by the client.
+          type: string
+        details:
+          description: |-
+            A list of messages that carry the error details.  There is a common set of
+            message types for APIs to use.
+          items:
+            $ref: '#/components/schemas/protobufAny'
+          type: array
+      type: object
+    protobufAny:
+      additionalProperties:
+        type: object
+      description: |-
+        `Any` contains an arbitrary serialized protocol buffer message along with a
+        URL that describes the type of the serialized message.
+
+        Protobuf library provides support to pack/unpack Any values in the form
+        of utility functions or additional generated methods of the Any type.
+
+        Example 1: Pack and unpack a message in C++.
+
+            Foo foo = ...;
+            Any any;
+            any.PackFrom(foo);
+            ...
+            if (any.UnpackTo(&foo)) {
+              ...
+            }
+
+        Example 2: Pack and unpack a message in Java.
+
+            Foo foo = ...;
+            Any any = Any.pack(foo);
+            ...
+            if (any.is(Foo.class)) {
+              foo = any.unpack(Foo.class);
+            }
+            // or ...
+            if (any.isSameTypeAs(Foo.getDefaultInstance())) {
+              foo = any.unpack(Foo.getDefaultInstance());
+            }
+
+         Example 3: Pack and unpack a message in Python.
+
+            foo = Foo(...)
+            any = Any()
+            any.Pack(foo)
+            ...
+            if any.Is(Foo.DESCRIPTOR):
+              any.Unpack(foo)
+              ...
+
+         Example 4: Pack and unpack a message in Go
+
+             foo := &pb.Foo{...}
+             any, err := anypb.New(foo)
+             if err != nil {
+               ...
+             }
+             ...
+             foo := &pb.Foo{}
+             if err := any.UnmarshalTo(foo); err != nil {
+               ...
+             }
+
+        The pack methods provided by protobuf library will by default use
+        'type.googleapis.com/full.type.name' as the type URL and the unpack
+        methods only use the fully qualified type name after the last '/'
+        in the type URL, for example "foo.bar.com/x/y.z" will yield type
+        name "y.z".
+
+        JSON
+        ====
+        The JSON representation of an `Any` value uses the regular
+        representation of the deserialized, embedded message, with an
+        additional field `@type` which contains the type URL. Example:
+
+            package google.profile;
+            message Person {
+              string first_name = 1;
+              string last_name = 2;
+            }
+
+            {
+              "@type": "type.googleapis.com/google.profile.Person",
+              "firstName": <string>,
+              "lastName": <string>
+            }
+
+        If the embedded message type is well-known and has a custom JSON
+        representation, that representation will be embedded adding a field
+        `value` which holds the custom JSON in addition to the `@type`
+        field. Example (for message [google.protobuf.Duration][]):
+
+            {
+              "@type": "type.googleapis.com/google.protobuf.Duration",
+              "value": "1.212s"
+            }
+      example:
+        '@type': '@type'
+      properties:
+        '@type':
+          description: |-
+            A URL/resource name that uniquely identifies the type of the serialized
+            protocol buffer message. This string must contain at least
+            one "/" character. The last segment of the URL's path must represent
+            the fully qualified name of the type (as in
+            `path/google.protobuf.Duration`). The name should be in a canonical form
+            (e.g., leading "." is not accepted).
+
+            In practice, teams usually precompile into the binary all types that they
+            expect it to use in the context of Any. However, for URLs which use the
+            scheme `http`, `https`, or no scheme, one can optionally set up a type
+            server that maps type URLs to message definitions as follows:
+
+            * If no scheme is provided, `https` is assumed.
+            * An HTTP GET on the URL must yield a [google.protobuf.Type][]
+              value in binary format, or produce an error.
+            * Applications are allowed to cache lookup results based on the
+              URL, or have them precompiled into a binary to avoid any
+              lookup. Therefore, binary compatibility needs to be preserved
+              on changes to types. (Use versioned type names to manage
+              breaking changes.)
+
+            Note: this functionality is not currently available in the official
+            protobuf release, and it is not used for type URLs beginning with
+            type.googleapis.com. As of May 2023, there are no widely used type server
+            implementations and no plans to implement one.
+
+            Schemes other than `http`, `https` (or the empty scheme) might be
+            used with implementation specific semantics.
+          type: string
+      type: object
+    tidb_cloud_open_apidedicatedv1beta1Cluster:
+      description: Cluster represents a dedicated TiDB cluster.
+      example:
+        tiflashNodeSetting:
+          nodeSpecKey: nodeSpecKey
+          nodeSpecDisplayName: nodeSpecDisplayName
+          nodeChangingProgress: "{}"
+          storageSizeGi: 5
+          storageType: BASIC
+          nodeCount: 1
+        displayName: foo-bar
+        annotations:
+          key: annotations
+        updateTime: 2000-01-23T04:56:07.000+00:00
+        clusterId: clusterId
+        version: version
+        labels:
+          key: labels
+        pausePlan: "{}"
+        regionDisplayName: regionDisplayName
+        tikvNodeSetting:
+          nodeSpecKey: nodeSpecKey
+          nodeSpecDisplayName: nodeSpecDisplayName
+          nodeChangingProgress: "{}"
+          storageSizeGi: 5
+          storageType: BASIC
+          nodeCount: 1
+        regionId: regionId
+        port: 5
+        createdBy: createdBy
+        createTime: 2000-01-23T04:56:07.000+00:00
+        cloudProvider: "{}"
+        name: name
+        tidbNodeSetting:
+          tidbNodeGroups:
+          - isDefaultGroup: true
+            endpoints:
+            - port: 6
+              host: host
+              connectionType: "{}"
+            - port: 6
+              host: host
+              connectionType: "{}"
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+            nodeChangingProgress: "{}"
+            displayName: displayName
+            tidbNodeGroupId: tidbNodeGroupId
+            name: name
+            nodeCount: 0
+            clusterId: clusterId
+            state: "{}"
+          - isDefaultGroup: true
+            endpoints:
+            - port: 6
+              host: host
+              connectionType: "{}"
+            - port: 6
+              host: host
+              connectionType: "{}"
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+            nodeChangingProgress: "{}"
+            displayName: displayName
+            tidbNodeGroupId: tidbNodeGroupId
+            name: name
+            nodeCount: 0
+            clusterId: clusterId
+            state: "{}"
+          nodeSpecKey: nodeSpecKey
+          nodeSpecDisplayName: nodeSpecDisplayName
+        state: "{}"
+        rootPassword: my-shining-password
+      properties:
+        name:
+          readOnly: true
+          title: |-
+            The name of TiDB cluster resource.
+            Format: clusters/{cluster_id}
+          type: string
+        clusterId:
+          description: The unique ID of the cluster.
+          readOnly: true
+          type: string
+        displayName:
+          description: The display name of the cluster.
+          example: foo-bar
+          maxLength: 64
+          minLength: 4
+          pattern: "^[A-Za-z0-9][-A-Za-z0-9]{2,62}[A-Za-z0-9]$"
+          type: string
+        regionId:
+          title: |-
+            Required. Region where the cluster will be created.
+            Format: {cloud_provider}-{region_code}
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: |-
+            The labels of the cluster.
+            If there is no "project_id" in labels, resource should be in the default project of the creator's organization.
+          type: object
+        tidbNodeSetting:
+          $ref: '#/components/schemas/v1beta1ClusterTidbNodeSetting'
+        tikvNodeSetting:
+          $ref: '#/components/schemas/v1beta1ClusterStorageNodeSetting'
+        tiflashNodeSetting:
+          $ref: '#/components/schemas/v1beta1ClusterStorageNodeSetting'
+        port:
+          description: The port of the cluster. This port applies to all network endpoints
+            of the cluster.
+          format: int32
+          type: integer
+        rootPassword:
+          example: my-shining-password
+          maxLength: 64
+          minLength: 8
+          pattern: "^.{8,64}$"
+          type: string
+        state:
+          allOf:
+          - $ref: '#/components/schemas/commonv1beta1ClusterState'
+          description: The current state of the cluster.
+          type: object
+        version:
+          description: The TiDB version of the cluster.
+          readOnly: true
+          type: string
+        createdBy:
+          description: The email address or public api key of the creator of the cluster.
+          readOnly: true
+          type: string
+        createTime:
+          description: Timestamp when the cluster was created.
+          format: date-time
+          readOnly: true
+          type: string
+        updateTime:
+          description: Timestamp when the cluster was last updated.
+          format: date-time
+          readOnly: true
+          type: string
+        pausePlan:
+          allOf:
+          - $ref: '#/components/schemas/dedicatedv1beta1ClusterPausePlan'
+          description: Pause plan of the cluster.
+          type: object
+        regionDisplayName:
+          readOnly: true
+          type: string
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1RegionCloudProvider'
+          type: object
+        annotations:
+          additionalProperties:
+            type: string
+          description: |-
+            OUTPUT_ONLY. The annotations for the cluster.
+            tidb.cloud/has-set-password. The annotation for whether the cluster has set password.
+            tidb.cloud/available-features. The annotation for the available features of the cluster.
+          readOnly: true
+          type: object
+      required:
+      - displayName
+      - port
+      - regionId
+      - tidbNodeSetting
+      - tikvNodeSetting
+      type: object
+    tidb_cloud_open_apidedicatedv1beta1ListClustersResponse:
+      example:
+        totalSize: 2
+        nextPageToken: nextPageToken
+        clusters:
+        - tiflashNodeSetting:
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+            nodeChangingProgress: "{}"
+            storageSizeGi: 5
+            storageType: BASIC
+            nodeCount: 1
+          displayName: foo-bar
+          annotations:
+            key: annotations
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          version: version
+          labels:
+            key: labels
+          pausePlan: "{}"
+          regionDisplayName: regionDisplayName
+          tikvNodeSetting:
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+            nodeChangingProgress: "{}"
+            storageSizeGi: 5
+            storageType: BASIC
+            nodeCount: 1
+          regionId: regionId
+          port: 5
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          cloudProvider: "{}"
+          name: name
+          tidbNodeSetting:
+            tidbNodeGroups:
+            - isDefaultGroup: true
+              endpoints:
+              - port: 6
+                host: host
+                connectionType: "{}"
+              - port: 6
+                host: host
+                connectionType: "{}"
+              nodeSpecKey: nodeSpecKey
+              nodeSpecDisplayName: nodeSpecDisplayName
+              nodeChangingProgress: "{}"
+              displayName: displayName
+              tidbNodeGroupId: tidbNodeGroupId
+              name: name
+              nodeCount: 0
+              clusterId: clusterId
+              state: "{}"
+            - isDefaultGroup: true
+              endpoints:
+              - port: 6
+                host: host
+                connectionType: "{}"
+              - port: 6
+                host: host
+                connectionType: "{}"
+              nodeSpecKey: nodeSpecKey
+              nodeSpecDisplayName: nodeSpecDisplayName
+              nodeChangingProgress: "{}"
+              displayName: displayName
+              tidbNodeGroupId: tidbNodeGroupId
+              name: name
+              nodeCount: 0
+              clusterId: clusterId
+              state: "{}"
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+          state: "{}"
+          rootPassword: my-shining-password
+        - tiflashNodeSetting:
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+            nodeChangingProgress: "{}"
+            storageSizeGi: 5
+            storageType: BASIC
+            nodeCount: 1
+          displayName: foo-bar
+          annotations:
+            key: annotations
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          version: version
+          labels:
+            key: labels
+          pausePlan: "{}"
+          regionDisplayName: regionDisplayName
+          tikvNodeSetting:
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+            nodeChangingProgress: "{}"
+            storageSizeGi: 5
+            storageType: BASIC
+            nodeCount: 1
+          regionId: regionId
+          port: 5
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          cloudProvider: "{}"
+          name: name
+          tidbNodeSetting:
+            tidbNodeGroups:
+            - isDefaultGroup: true
+              endpoints:
+              - port: 6
+                host: host
+                connectionType: "{}"
+              - port: 6
+                host: host
+                connectionType: "{}"
+              nodeSpecKey: nodeSpecKey
+              nodeSpecDisplayName: nodeSpecDisplayName
+              nodeChangingProgress: "{}"
+              displayName: displayName
+              tidbNodeGroupId: tidbNodeGroupId
+              name: name
+              nodeCount: 0
+              clusterId: clusterId
+              state: "{}"
+            - isDefaultGroup: true
+              endpoints:
+              - port: 6
+                host: host
+                connectionType: "{}"
+              - port: 6
+                host: host
+                connectionType: "{}"
+              nodeSpecKey: nodeSpecKey
+              nodeSpecDisplayName: nodeSpecDisplayName
+              nodeChangingProgress: "{}"
+              displayName: displayName
+              tidbNodeGroupId: tidbNodeGroupId
+              name: name
+              nodeCount: 0
+              clusterId: clusterId
+              state: "{}"
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+          state: "{}"
+          rootPassword: my-shining-password
+      properties:
+        clusters:
+          items:
+            $ref: '#/components/schemas/tidb_cloud_open_apidedicatedv1beta1Cluster'
+          type: array
+        totalSize:
+          description: The total number of clusters that matched the query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: |-
+            A token, which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
+    tidb_cloud_open_apidedicatedv1beta1ListRegionsResponse:
+      example:
+        regions:
+        - regionId: regionId
+          provider: provider
+          displayName: displayName
+          cloudProvider: "{}"
+          name: regions/aws-us-west-2
+        - regionId: regionId
+          provider: provider
+          displayName: displayName
+          cloudProvider: "{}"
+          name: regions/aws-us-west-2
+        totalSize: 0
+        nextPageToken: nextPageToken
+      properties:
+        regions:
+          items:
+            $ref: '#/components/schemas/commonv1beta1Region'
+          type: array
+        totalSize:
+          description: The total number of regions that matched the query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: |-
+            A token, which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
+    v1beta1AuditLogFilterRule:
+      example:
+        tableExpr: tableExpr
+        userExpr: userExpr
+        name: name
+        accessTypeList:
+        - accessTypeList
+        - accessTypeList
+        dbExpr: dbExpr
+        auditLogFilterRuleId: auditLogFilterRuleId
+        clusterId: clusterId
+      properties:
+        name:
+          readOnly: true
+          title: "Format: auditLogFilterRules/{audit_log_filter_rule_id}"
+          type: string
+        auditLogFilterRuleId:
+          readOnly: true
+          type: string
+        clusterId:
+          type: string
+        userExpr:
+          type: string
+        dbExpr:
+          type: string
+        tableExpr:
+          type: string
+        accessTypeList:
+          items:
+            type: string
+          type: array
+      required:
+      - clusterId
+      type: object
+    v1beta1ClusterStorageNodeSetting:
+      example:
+        nodeSpecKey: nodeSpecKey
+        nodeSpecDisplayName: nodeSpecDisplayName
+        nodeChangingProgress: "{}"
+        storageSizeGi: 5
+        storageType: BASIC
+        nodeCount: 1
+      properties:
+        nodeCount:
+          format: int32
+          type: integer
+        nodeSpecKey:
+          type: string
+        storageSizeGi:
+          format: int32
+          type: integer
+        storageType:
+          $ref: '#/components/schemas/ClusterStorageNodeSettingStorageType'
+        nodeSpecDisplayName:
+          readOnly: true
+          title: output only
+          type: string
+        nodeChangingProgress:
+          allOf:
+          - $ref: '#/components/schemas/ClusterNodeChangingProgress'
+          type: object
+      required:
+      - nodeCount
+      - nodeSpecKey
+      - storageSizeGi
+      - storageType
+      type: object
+    v1beta1ClusterTidbNodeSetting:
+      example:
+        tidbNodeGroups:
+        - isDefaultGroup: true
+          endpoints:
+          - port: 6
+            host: host
+            connectionType: "{}"
+          - port: 6
+            host: host
+            connectionType: "{}"
+          nodeSpecKey: nodeSpecKey
+          nodeSpecDisplayName: nodeSpecDisplayName
+          nodeChangingProgress: "{}"
+          displayName: displayName
+          tidbNodeGroupId: tidbNodeGroupId
+          name: name
+          nodeCount: 0
+          clusterId: clusterId
+          state: "{}"
+        - isDefaultGroup: true
+          endpoints:
+          - port: 6
+            host: host
+            connectionType: "{}"
+          - port: 6
+            host: host
+            connectionType: "{}"
+          nodeSpecKey: nodeSpecKey
+          nodeSpecDisplayName: nodeSpecDisplayName
+          nodeChangingProgress: "{}"
+          displayName: displayName
+          tidbNodeGroupId: tidbNodeGroupId
+          name: name
+          nodeCount: 0
+          clusterId: clusterId
+          state: "{}"
+        nodeSpecKey: nodeSpecKey
+        nodeSpecDisplayName: nodeSpecDisplayName
+      properties:
+        nodeSpecKey:
+          type: string
+        tidbNodeGroups:
+          description: |-
+            When creating a cluster, the length of the `tidb_node_groups` should be 1
+            and the `node_count` field of `TidbNodeGroup` should be set.
+          items:
+            $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroup'
+          type: array
+        nodeSpecDisplayName:
+          readOnly: true
+          type: string
+      required:
+      - nodeSpecKey
+      - tidbNodeGroups
+      type: object
+    v1beta1DeferMaintenanceTaskResponse:
+      type: object
+    v1beta1ListAuditLogFilterRulesResponse:
+      example:
+        totalSize: 0
+        nextPageToken: nextPageToken
+        auditLogFilterRules:
+        - tableExpr: tableExpr
+          userExpr: userExpr
+          name: name
+          accessTypeList:
+          - accessTypeList
+          - accessTypeList
+          dbExpr: dbExpr
+          auditLogFilterRuleId: auditLogFilterRuleId
+          clusterId: clusterId
+        - tableExpr: tableExpr
+          userExpr: userExpr
+          name: name
+          accessTypeList:
+          - accessTypeList
+          - accessTypeList
+          dbExpr: dbExpr
+          auditLogFilterRuleId: auditLogFilterRuleId
+          clusterId: clusterId
+      properties:
+        auditLogFilterRules:
+          items:
+            $ref: '#/components/schemas/v1beta1AuditLogFilterRule'
+          type: array
+        totalSize:
+          format: int32
+          type: integer
+        nextPageToken:
+          type: string
+      type: object
+    v1beta1ListMaintenanceTasksResponse:
+      example:
+        maintenanceTasks:
+        - maintenanceTaskId: maintenanceTaskId
+          createTime: 2000-01-23T04:56:07.000+00:00
+          name: name
+          description: description
+          scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
+          state: "{}"
+          deadline: 2000-01-23T04:56:07.000+00:00
+          projectId: projectId
+        - maintenanceTaskId: maintenanceTaskId
+          createTime: 2000-01-23T04:56:07.000+00:00
+          name: name
+          description: description
+          scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
+          state: "{}"
+          deadline: 2000-01-23T04:56:07.000+00:00
+          projectId: projectId
+        totalSize: 0
+        nextPageToken: nextPageToken
+      properties:
+        maintenanceTasks:
+          items:
+            $ref: '#/components/schemas/v1beta1MaintenanceTask'
+          type: array
+        totalSize:
+          description: The total number of maintenance tasks that matched the query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: |-
+            A token, which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
+    v1beta1ListMaintenanceWindowsResponse:
+      example:
+        totalSize: 0
+        nextPageToken: nextPageToken
+        maintenanceWindows:
+        - dayHour: 6
+          maintenanceWindowId: maintenanceWindowId
+          unchangedMaintenanceTasks:
+          - maintenanceTaskId: maintenanceTaskId
+            createTime: 2000-01-23T04:56:07.000+00:00
+            name: name
+            description: description
+            scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
+            state: "{}"
+            deadline: 2000-01-23T04:56:07.000+00:00
+            projectId: projectId
+          - maintenanceTaskId: maintenanceTaskId
+            createTime: 2000-01-23T04:56:07.000+00:00
+            name: name
+            description: description
+            scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
+            state: "{}"
+            deadline: 2000-01-23T04:56:07.000+00:00
+            projectId: projectId
+          weekDay: 0
+          nextMaintenanceDate: 2000-01-23T04:56:07.000+00:00
+          name: name
+          hourMinute: 1
+          projectId: projectId
+        - dayHour: 6
+          maintenanceWindowId: maintenanceWindowId
+          unchangedMaintenanceTasks:
+          - maintenanceTaskId: maintenanceTaskId
+            createTime: 2000-01-23T04:56:07.000+00:00
+            name: name
+            description: description
+            scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
+            state: "{}"
+            deadline: 2000-01-23T04:56:07.000+00:00
+            projectId: projectId
+          - maintenanceTaskId: maintenanceTaskId
+            createTime: 2000-01-23T04:56:07.000+00:00
+            name: name
+            description: description
+            scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
+            state: "{}"
+            deadline: 2000-01-23T04:56:07.000+00:00
+            projectId: projectId
+          weekDay: 0
+          nextMaintenanceDate: 2000-01-23T04:56:07.000+00:00
+          name: name
+          hourMinute: 1
+          projectId: projectId
+      properties:
+        maintenanceWindows:
+          items:
+            $ref: '#/components/schemas/dedicatedv1beta1MaintenanceWindow'
+          type: array
+        totalSize:
+          description: The total number of maintenance windows that matched the query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: |-
+            A token, which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
+    v1beta1ListNetworkContainersResponse:
+      example:
+        totalSize: 0
+        nextPageToken: nextPageToken
+        networkContainers:
+        - regionDisplayName: regionDisplayName
+          regionId: regionId
+          cloudProvider: "{}"
+          vpcId: vpcId
+          name: name
+          networkContainerId: networkContainerId
+          cidrNotion: cidrNotion
+          state: "{}"
+          labels:
+            key: labels
+        - regionDisplayName: regionDisplayName
+          regionId: regionId
+          cloudProvider: "{}"
+          vpcId: vpcId
+          name: name
+          networkContainerId: networkContainerId
+          cidrNotion: cidrNotion
+          state: "{}"
+          labels:
+            key: labels
+      properties:
+        networkContainers:
+          items:
+            $ref: '#/components/schemas/v1beta1NetworkContainer'
+          type: array
+        totalSize:
+          description: The total number of network containers that matched the query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: |-
+            A token, which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
+    v1beta1ListNodeInstancesResponse:
+      example:
+        totalSize: 5
+        nextPageToken: nextPageToken
+        nodeInstances:
+        - componentType: "{}"
+          instanceId: instanceId
+          vCpu: 0
+          storageSizeGi: 1
+          tidbNodeGroupId: tidbNodeGroupId
+          name: name
+          clusterId: clusterId
+          state: "{}"
+          availabilityZone: availabilityZone
+          isDefaultTidbNodeGroup: true
+          memorySizeGi: 6
+          tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
+        - componentType: "{}"
+          instanceId: instanceId
+          vCpu: 0
+          storageSizeGi: 1
+          tidbNodeGroupId: tidbNodeGroupId
+          name: name
+          clusterId: clusterId
+          state: "{}"
+          availabilityZone: availabilityZone
+          isDefaultTidbNodeGroup: true
+          memorySizeGi: 6
+          tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
+      properties:
+        nodeInstances:
+          items:
+            $ref: '#/components/schemas/v1beta1NodeInstance'
+          type: array
+        totalSize:
+          description: The total number of node instances that matched the query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: |-
+            A token, which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
+    v1beta1ListNodeSpecsResponse:
+      example:
+        totalSize: 7
+        nextPageToken: nextPageToken
+        nodeSpecs:
+        - componentType: "{}"
+          minStorageSizeGi: 5
+          nodeSpecKey: nodeSpecKey
+          defaultStorageSizeGi: 1
+          vCpu: 0
+          regionId: regionId
+          displayName: displayName
+          maxStorageSizeGi: 5
+          defaultNodeCount: 2
+          name: name
+          storageTypes:
+          - BASIC
+          - BASIC
+          memorySizeGi: 6
+        - componentType: "{}"
+          minStorageSizeGi: 5
+          nodeSpecKey: nodeSpecKey
+          defaultStorageSizeGi: 1
+          vCpu: 0
+          regionId: regionId
+          displayName: displayName
+          maxStorageSizeGi: 5
+          defaultNodeCount: 2
+          name: name
+          storageTypes:
+          - BASIC
+          - BASIC
+          memorySizeGi: 6
+      properties:
+        nodeSpecs:
+          items:
+            $ref: '#/components/schemas/dedicatedv1beta1NodeSpec'
+          type: array
+        totalSize:
+          description: The total number of node specs that matched the query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: |-
+            A token, which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
+    v1beta1ListPrivateEndpointConnectionsResponse:
+      example:
+        privateEndpointConnections:
+        - privateLinkServiceState: "{}"
+          clusterDisplayName: clusterDisplayName
+          endpointId: endpointId
+          tidbNodeGroupId: tidbNodeGroupId
+          privateEndpointConnectionId: privateEndpointConnectionId
+          clusterId: clusterId
+          privateIpAddress: privateIpAddress
+          labels:
+            key: labels
+          tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
+          endpointState: "{}"
+          privateLinkServiceName: privateLinkServiceName
+          accountId: accountId
+          regionDisplayName: regionDisplayName
+          regionId: regionId
+          port: 0
+          cloudProvider: "{}"
+          name: name
+          host: host
+          massage: massage
+        - privateLinkServiceState: "{}"
+          clusterDisplayName: clusterDisplayName
+          endpointId: endpointId
+          tidbNodeGroupId: tidbNodeGroupId
+          privateEndpointConnectionId: privateEndpointConnectionId
+          clusterId: clusterId
+          privateIpAddress: privateIpAddress
+          labels:
+            key: labels
+          tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
+          endpointState: "{}"
+          privateLinkServiceName: privateLinkServiceName
+          accountId: accountId
+          regionDisplayName: regionDisplayName
+          regionId: regionId
+          port: 0
+          cloudProvider: "{}"
+          name: name
+          host: host
+          massage: massage
+        totalSize: 0
+        nextPageToken: nextPageToken
+      properties:
+        privateEndpointConnections:
+          items:
+            $ref: '#/components/schemas/v1beta1PrivateEndpointConnection'
+          type: array
+        totalSize:
+          description: The total number of private link connections that matched the
+            query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: |-
+            A token, which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
+    v1beta1MaintenanceTask:
+      example:
+        maintenanceTaskId: maintenanceTaskId
+        createTime: 2000-01-23T04:56:07.000+00:00
+        name: name
+        description: description
+        scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
+        state: "{}"
+        deadline: 2000-01-23T04:56:07.000+00:00
+        projectId: projectId
+      properties:
+        name:
+          readOnly: true
+          title: "Format: maintenanceTasks/{maintenance_task_id}"
+          type: string
+        maintenanceTaskId:
+          readOnly: true
+          type: string
+        projectId:
+          readOnly: true
+          type: string
+        description:
+          readOnly: true
+          type: string
+        state:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1MaintenanceTaskState'
+          type: object
+        createTime:
+          description: Timestamp when the task was created.
+          format: date-time
+          readOnly: true
+          type: string
+        scheduledApplyTime:
+          description: Timestamp when the task run.
+          format: date-time
+          readOnly: true
+          type: string
+        deadline:
+          description: Timestamp when the task will be expired.
+          format: date-time
+          readOnly: true
+          type: string
+      type: object
+    v1beta1MaintenanceTaskState:
+      enum:
+      - PENDING
+      - RUNNING
+      - DONE
+      type: string
+    v1beta1NetworkContainer:
+      example:
+        regionDisplayName: regionDisplayName
+        regionId: regionId
+        cloudProvider: "{}"
+        vpcId: vpcId
+        name: name
+        networkContainerId: networkContainerId
+        cidrNotion: cidrNotion
+        state: "{}"
+        labels:
+          key: labels
+      properties:
+        name:
+          readOnly: true
+          title: "Format: networkContainers/{network_container_id}"
+          type: string
+        networkContainerId:
+          readOnly: true
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: |-
+            The labels of the cluster.
+            If there is no "project_id" in labels, resource should be in the default project of the creator's organization.
+          type: object
+        regionId:
+          title: "Format: {cloud_provider}-{region_code}"
+          type: string
+        cidrNotion:
+          description: "If not set, the default cidr of the region will be used."
+          type: string
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1RegionCloudProvider'
+          type: object
+        state:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1NetworkContainerState'
+          type: object
+        regionDisplayName:
+          readOnly: true
+          type: string
+        vpcId:
+          description: |-
+            For AWS, it is the vpc id.
+            For GCP, it is the network name.
+            For Azure, it is the vnet name.
+          readOnly: true
+          type: string
+      required:
+      - regionId
+      type: object
+    v1beta1NetworkContainerState:
+      enum:
+      - ACTIVE
+      - INACTIVE
+      type: string
+    v1beta1NodeInstance:
+      example:
+        componentType: "{}"
+        instanceId: instanceId
+        vCpu: 0
+        storageSizeGi: 1
+        tidbNodeGroupId: tidbNodeGroupId
+        name: name
+        clusterId: clusterId
+        state: "{}"
+        availabilityZone: availabilityZone
+        isDefaultTidbNodeGroup: true
+        memorySizeGi: 6
+        tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
+      properties:
+        name:
+          readOnly: true
+          title: "Format: clusters/{cluster_id}/nodeInstances/{instance_id}"
+          type: string
+        clusterId:
+          readOnly: true
+          type: string
+        instanceId:
+          readOnly: true
+          title: |-
+            Format for TiDB instances in the default TiDB group: tidb-{index}
+            Format for TiDB instances in non-default TiDB groups: {tidb_group_name}-tidb-{index}
+            Format for other instances: {component_type}-{index}
+          type: string
+        componentType:
+          allOf:
+          - $ref: '#/components/schemas/dedicatedv1beta1ComponentType'
+          type: object
+        state:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1NodeInstanceState'
+          description: "the state of the instance, e.g. \"Available\"."
+          type: object
+        vCpu:
+          description: "the cpu size of the instance, e.g. 2."
+          format: int32
+          readOnly: true
+          type: integer
+        memorySizeGi:
+          description: "the memory size of the instance, e.g. 8."
+          format: int32
+          readOnly: true
+          type: integer
+        availabilityZone:
+          description: "the availability zone of the instance, e.g. \"us-west1-a\"\
+            ."
+          readOnly: true
+          type: string
+        storageSizeGi:
+          description: "the storage size of the instance, e.g. 100."
+          format: int32
+          readOnly: true
+          type: integer
+        tidbNodeGroupId:
+          nullable: true
+          readOnly: true
+          type: string
+        tidbNodeGroupDisplayName:
+          nullable: true
+          readOnly: true
+          type: string
+        isDefaultTidbNodeGroup:
+          nullable: true
+          readOnly: true
+          type: boolean
+      type: object
+    v1beta1NodeInstanceState:
+      enum:
+      - CREATING
+      - AVAILABLE
+      - DELETING
+      - UNAVAILABLE
+      type: string
+    v1beta1PrivateEndpointConnection:
+      example:
+        privateLinkServiceState: "{}"
+        clusterDisplayName: clusterDisplayName
+        endpointId: endpointId
+        tidbNodeGroupId: tidbNodeGroupId
+        privateEndpointConnectionId: privateEndpointConnectionId
+        clusterId: clusterId
+        privateIpAddress: privateIpAddress
+        labels:
+          key: labels
+        tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
+        endpointState: "{}"
+        privateLinkServiceName: privateLinkServiceName
+        accountId: accountId
+        regionDisplayName: regionDisplayName
+        regionId: regionId
+        port: 0
+        cloudProvider: "{}"
+        name: name
+        host: host
+        massage: massage
+      properties:
+        name:
+          readOnly: true
+          title: "Format: tidbNodeGroups/{tidb_node_group_id}/privateEndpointConnections/{private_endpoint_connection_id}"
+          type: string
+        tidbNodeGroupId:
+          type: string
+        privateEndpointConnectionId:
+          readOnly: true
+          type: string
+        clusterId:
+          readOnly: true
+          type: string
+        clusterDisplayName:
+          readOnly: true
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: The labels of private link connection. It always contains the
+            `project_id` label.
+          readOnly: true
+          type: object
+        endpointId:
+          description: |-
+            The endpoint ID of the private link connection.
+            For AWS, it's VPC endpoint ID.
+            For GCP, it's private service connect endpoint ID.
+            For Azure, it's private endpoint resource ID.
+          type: string
+        privateIpAddress:
+          description: |-
+            The private IP address of the private endpoint in the user's vNet.
+            TiDB Cloud will setup a public DNS record for this private IP address. So the user can use DNS address to connect to the cluster.
+            Only available for Azure clusters.
+          nullable: true
+          type: string
+        endpointState:
+          allOf:
+          - $ref: '#/components/schemas/PrivateEndpointConnectionEndpointState'
+          type: object
+        massage:
+          readOnly: true
+          type: string
+        regionId:
+          readOnly: true
+          title: "Format: {cloud_provider}-{region_code}"
+          type: string
+        regionDisplayName:
+          readOnly: true
+          type: string
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1RegionCloudProvider'
+          type: object
+        privateLinkServiceName:
+          readOnly: true
+          type: string
+        privateLinkServiceState:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1PrivateLinkServiceState'
+          type: object
+        tidbNodeGroupDisplayName:
+          readOnly: true
+          type: string
+        accountId:
+          description: Only for GCP private service connections. It's GCP project
+            name.
+          nullable: true
+          readOnly: true
+          type: string
+        host:
+          readOnly: true
+          type: string
+        port:
+          format: int32
+          readOnly: true
+          type: integer
+      required:
+      - endpointId
+      - tidbNodeGroupId
+      type: object
+    v1beta1PrivateLinkServiceState:
+      enum:
+      - CREATING
+      - ACTIVE
+      - DELETING
+      type: string
+    v1beta1PublicEndpointSetting:
+      example:
+        tidbNodeGroupId: tidbNodeGroupId
+        name: name
+        enabled: true
+        ipAccessList:
+        - description: description
+          cidrNotation: cidrNotation
+        - description: description
+          cidrNotation: cidrNotation
+      properties:
+        name:
+          readOnly: true
+          title: "Format: tidbNodeGroups/{tidb_node_group_id}/publicEndpointSetting"
+          type: string
+        tidbNodeGroupId:
+          description: "If set to \"-\", the default TiDB group will be used."
+          type: string
+        enabled:
+          nullable: true
+          type: boolean
+        ipAccessList:
+          items:
+            $ref: '#/components/schemas/PublicEndpointSettingIpAccessList'
+          type: array
+      required:
+      - tidbNodeGroupId
+      type: object
+    v1beta1RegionCloudProvider:
+      description: |-
+        Enum of cloud provider names.
+
+         - aws: Amazon Web Services.
+        buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+         - gcp: Google Cloud Platform.
+        buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+         - azure: Microsoft Azure.
+        buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+      enum:
+      - aws
+      - gcp
+      - azure
+      type: string
+    v1beta1ResetRootPasswordResponse:
+      type: object
+    v1beta1ShowCloudProvidersResponse:
+      example:
+        cloudProviders:
+        - aws
+        - aws
+      properties:
+        cloudProviders:
+          items:
+            $ref: '#/components/schemas/v1beta1RegionCloudProvider'
+          type: array
+      type: object
+    v1beta1ShowNodeQuotaResponse:
+      example:
+        componentQuotas:
+        - componentType: TIKV
+          quota: 0
+        - componentType: TIKV
+          quota: 0
+      properties:
+        componentQuotas:
+          items:
+            $ref: '#/components/schemas/ShowNodeQuotaResponseComponentQuota'
+          type: array
+      type: object
+    v1beta1ShowObjectStorageAccessIamPrincipalResponse:
+      example:
+        iamPrincipal: iamPrincipal
+      properties:
+        iamPrincipal:
+          type: string
+      type: object
+    v1beta1UpdateAuditLogConfigRequestAuditLogConfig:
+      properties:
+        clusterId:
+          type: string
+        enabled:
+          nullable: true
+          type: boolean
+        bucketUri:
+          type: string
+        bucketRegionId:
+          title: "Format: {cloud_provider}-{region_code}"
+          type: string
+        awsRoleArn:
+          type: string
+        azureSasToken:
+          type: string
+      required:
+      - clusterId
+      type: object
+    v1beta1UpdateClusterRequestCluster:
+      properties:
+        clusterId:
+          type: string
+        tidbNodeSetting:
+          $ref: '#/components/schemas/v1beta1UpdateClusterRequestTidbNodeSetting'
+        tikvNodeSetting:
+          $ref: '#/components/schemas/v1beta1UpdateClusterRequestStorageNodeSetting'
+        tiflashNodeSetting:
+          $ref: '#/components/schemas/v1beta1UpdateClusterRequestStorageNodeSetting'
+        displayName:
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: "The project_id key cannot be updated. If the project_id key\
+            \ is specified, it will be ignored."
+          type: object
+      required:
+      - clusterId
+      type: object
+    v1beta1UpdateClusterRequestStorageNodeSetting:
+      properties:
+        nodeSpecKey:
+          type: string
+        nodeCount:
+          description: |-
+            When update TiFlash node setting:
+              - If the node count is set to 0, the TiFlash node will be removed.
+              - If the node count is null, the TiFlash node count won't change.
+            For other components, if the node count is set to 0, server will ignore the node count.
+          format: int32
+          nullable: true
+          type: integer
+        storageSizeGi:
+          format: int32
+          type: integer
+      type: object
+    v1beta1UpdateClusterRequestTidbNodeSetting:
+      properties:
+        nodeSpecKey:
+          type: string
+        tidbNodeGroups:
+          items:
+            $ref: '#/components/schemas/UpdateClusterRequestTidbNodeSettingTidbNodeGroup'
+          type: array
+      type: object
+    v1beta1UpdateMaintenanceWindowRequestMaintenanceWindow:
+      properties:
+        maintenanceWindowId:
+          title: "Format: project-{project_id}"
+          type: string
+        weekDay:
+          format: int32
+          type: integer
+        dayHour:
+          format: int32
+          type: integer
+        hourMinute:
+          format: int32
+          type: integer
+      required:
+      - maintenanceWindowId
+      type: object
+    v1beta1UpdateTidbNodeGroupRequestTidbNodeGroup:
+      properties:
+        clusterId:
+          type: string
+        tidbNodeGroupId:
+          type: string
+        displayName:
+          type: string
+        nodeCount:
+          format: int32
+          nullable: true
+          type: integer
+      required:
+      - clusterId
+      - tidbNodeGroupId
+      type: object
+    ClusterService_ListClusters_clusterStates_parameter_inner:
+      enum:
+      - CREATING
+      - DELETING
+      - ACTIVE
+      - RESTORING
+      - MAINTENANCE
+      - DELETED
+      - INACTIVE
+      - UPGRADING
+      - IMPORTING
+      - MODIFYING
+      - PAUSING
+      - PAUSED
+      - RESUMING
+      type: string
+    ClusterService_UpdateCluster_request:
+      properties:
+        tidbNodeSetting:
+          $ref: '#/components/schemas/v1beta1UpdateClusterRequestTidbNodeSetting'
+        tikvNodeSetting:
+          $ref: '#/components/schemas/v1beta1UpdateClusterRequestStorageNodeSetting'
+        tiflashNodeSetting:
+          $ref: '#/components/schemas/v1beta1UpdateClusterRequestStorageNodeSetting'
+        displayName:
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: "The project_id key cannot be updated. If the project_id key\
+            \ is specified, it will be ignored."
+          type: object
+      type: object
+    ClusterService_ListNodeInstances_componentType_parameter:
+      enum:
+      - TIKV
+      - TIDB
+      - TIFLASH
+      - PD
+      - TIPROXY
+      type: string
+    TidbNodeGroupService_CreateTidbNodeGroup_request:
+      properties:
+        name:
+          readOnly: true
+          title: "Format: tidbNodeGroups/{tidb_node_group_id}"
+          type: string
+        tidbNodeGroupId:
+          description: The unique ID of the TiDB group.
+          readOnly: true
+          type: string
+        displayName:
+          description: The display name of the TiDB group.
+          type: string
+        nodeCount:
+          description: The number of TiDB nodes in the TiDB group.
+          format: int32
+          type: integer
+        endpoints:
+          items:
+            $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroupEndpoint'
+          readOnly: true
+          type: array
+        nodeSpecKey:
+          readOnly: true
+          type: string
+        nodeSpecDisplayName:
+          readOnly: true
+          type: string
+        isDefaultGroup:
+          readOnly: true
+          type: boolean
+        state:
+          allOf:
+          - $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroupState'
+          type: object
+        nodeChangingProgress:
+          allOf:
+          - $ref: '#/components/schemas/ClusterNodeChangingProgress'
+          type: object
+      required:
+      - nodeCount
+      type: object
+    TidbNodeGroupService_UpdateTidbNodeGroup_request:
+      properties:
+        displayName:
+          type: string
+        nodeCount:
+          format: int32
+          nullable: true
+          type: integer
+      type: object
+    TidbNodeGroupService_UpdatePublicEndpointSetting_request:
+      properties:
+        name:
+          readOnly: true
+          title: "Format: tidbNodeGroups/{tidb_node_group_id}/publicEndpointSetting"
+          type: string
+        enabled:
+          nullable: true
+          type: boolean
+        ipAccessList:
+          items:
+            $ref: '#/components/schemas/PublicEndpointSettingIpAccessList'
+          type: array
+      type: object
+    PrivateEndpointConnectionService_CreatePrivateEndpointConnection_request:
+      properties:
+        name:
+          readOnly: true
+          title: "Format: tidbNodeGroups/{tidb_node_group_id}/privateEndpointConnections/{private_endpoint_connection_id}"
+          type: string
+        privateEndpointConnectionId:
+          readOnly: true
+          type: string
+        clusterId:
+          readOnly: true
+          type: string
+        clusterDisplayName:
+          readOnly: true
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: The labels of private link connection. It always contains the
+            `project_id` label.
+          readOnly: true
+          type: object
+        endpointId:
+          description: |-
+            The endpoint ID of the private link connection.
+            For AWS, it's VPC endpoint ID.
+            For GCP, it's private service connect endpoint ID.
+            For Azure, it's private endpoint resource ID.
+          type: string
+        privateIpAddress:
+          description: |-
+            The private IP address of the private endpoint in the user's vNet.
+            TiDB Cloud will setup a public DNS record for this private IP address. So the user can use DNS address to connect to the cluster.
+            Only available for Azure clusters.
+          nullable: true
+          type: string
+        endpointState:
+          allOf:
+          - $ref: '#/components/schemas/PrivateEndpointConnectionEndpointState'
+          type: object
+        massage:
+          readOnly: true
+          type: string
+        regionId:
+          readOnly: true
+          title: "Format: {cloud_provider}-{region_code}"
+          type: string
+        regionDisplayName:
+          readOnly: true
+          type: string
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1RegionCloudProvider'
+          type: object
+        privateLinkServiceName:
+          readOnly: true
+          type: string
+        privateLinkServiceState:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1PrivateLinkServiceState'
+          type: object
+        tidbNodeGroupDisplayName:
+          readOnly: true
+          type: string
+        accountId:
+          description: Only for GCP private service connections. It's GCP project
+            name.
+          nullable: true
+          readOnly: true
+          type: string
+        host:
+          readOnly: true
+          type: string
+        port:
+          format: int32
+          readOnly: true
+          type: integer
+      required:
+      - endpointId
+      type: object
+    PrivateEndpointConnectionService_ListPrivateEndpointConnections_cloudProvider_parameter:
+      enum:
+      - aws
+      - gcp
+      - azure
+      type: string
+    MaintenanceService_UpdateMaintenanceWindow_request:
+      properties:
+        weekDay:
+          format: int32
+          type: integer
+        dayHour:
+          format: int32
+          type: integer
+        hourMinute:
+          format: int32
+          type: integer
+      type: object
+    DatabaseAuditLogService_CreateAuditLogConfig_request:
+      properties:
+        name:
+          readOnly: true
+          title: "Format: clusters/{cluster_id}/auditLogConfig"
+          type: string
+        enabled:
+          description: Default is false.
+          type: boolean
+        bucketUri:
+          type: string
+        bucketRegionId:
+          title: "Format: {cloud_provider}-{region_code}"
+          type: string
+        awsRoleArn:
+          type: string
+        azureSasToken:
+          type: string
+        bucketWriteCheck:
+          allOf:
+          - $ref: '#/components/schemas/AuditLogConfigBucketWriteCheck'
+          type: object
+      required:
+      - bucketUri
+      type: object
+    DatabaseAuditLogService_UpdateAuditLogConfig_request:
+      properties:
+        enabled:
+          nullable: true
+          type: boolean
+        bucketUri:
+          type: string
+        bucketRegionId:
+          title: "Format: {cloud_provider}-{region_code}"
+          type: string
+        awsRoleArn:
+          type: string
+        azureSasToken:
+          type: string
+      type: object
+    DatabaseAuditLogService_CreateAuditLogFilterRule_request:
+      properties:
+        name:
+          readOnly: true
+          title: "Format: auditLogFilterRules/{audit_log_filter_rule_id}"
+          type: string
+        auditLogFilterRuleId:
+          readOnly: true
+          type: string
+        userExpr:
+          type: string
+        dbExpr:
+          type: string
+        tableExpr:
+          type: string
+        accessTypeList:
+          items:
+            type: string
+          type: array
+      type: object
+  securitySchemes:
+    Bearer:
+      description: "Enter the token with the `Bearer: ` prefix, e.g. \"Bearer abcde12345\"\
+        ."
+      in: header
+      name: Authorization
+      type: apiKey
+x-original-swagger-version: "2.0"
