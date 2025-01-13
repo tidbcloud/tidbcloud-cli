@@ -496,7 +496,7 @@ func GetSelectedRestoreMode() (string, error) {
 // GetSelectedImport get the selected import task. statusFilter is used to filter the available options, only imports has status in statusFilter will be available.
 // statusFilter with no filter will mark all the import tasks as available options just like statusFilter with all status.
 func GetSelectedImport(ctx context.Context, cID string, pageSize int64, client TiDBCloudClient, statusFilter []imp.ImportStateEnum) (*Import, error) {
-	_, importItems, err := RetrieveImports(ctx, cID, pageSize, client)
+	_, importItems, err := RetrieveImports(ctx, cID, pageSize, client, false)
 	if err != nil {
 		return nil, err
 	}
@@ -733,7 +733,7 @@ func RetrieveServerlessBackups(ctx context.Context, cID string, pageSize int32, 
 	return int64(len(items)), items, nil
 }
 
-func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDBCloudClient) (int64, []imp.Import, error) {
+func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDBCloudClient, fetchAll bool) (int64, []imp.Import, error) {
 	orderBy := "create_time desc"
 	ps := int32(pageSize)
 	var items []imp.Import
@@ -743,7 +743,7 @@ func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDB
 	}
 	items = append(items, imports.Imports...)
 	var pageToken *string
-	for {
+	for fetchAll {
 		pageToken = imports.NextPageToken
 		if util.IsNilOrEmpty(pageToken) {
 			break
