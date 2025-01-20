@@ -35,11 +35,11 @@ ticloud serverless export create [flags]
       --azblob.uri string                The Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format. Required when target type is AZURE_BLOB.
   -c, --cluster-id string                The ID of the cluster, in which the export will be created.
       --compression string               The compression algorithm of the export file. One of ["GZIP" "SNAPPY" "ZSTD" "NONE"].
-      --csv.delimiter string             Delimiter of string type variables in CSV files. (default "\"")
-      --csv.null-value string            Representation of null values in CSV files. (default "\\N")
+      --csv.delimiter string             Delimiter of string type variables in CSV files. (default """)
+      --csv.null-value string            Representation of null values in CSV files. (default "\N")
       --csv.separator string             Separator of each value in CSV files. (default ",")
       --csv.skip-header                  Export CSV files of the tables without header.
-      --display-name string              The display name of the export. (default: SNAPSHOT_<snapshot_time>)
+      --display-name string              The display name of the export. (default "SNAPSHOT_<snapshot_time>")
       --file-type string                 The export file type. One of ["SQL" "CSV" "PARQUET"]. (default "CSV")
       --filter strings                   Specify the exported table(s) with table filter patterns. See https://docs.pingcap.com/tidb/stable/table-filter to learn table filter.
       --force                            Create without confirmation. You need to confirm when you want to export the whole cluster in non-interactive mode.

@@ -39,9 +39,9 @@ ticloud serverless import start [flags]
       --azblob.uri string                The Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format.
   -c, --cluster-id string                Cluster ID.
       --csv.backslash-escape             Specifies whether to interpret backslash escapes inside fields in the CSV file. (default true)
-      --csv.delimiter string             The delimiter used for quoting of CSV file. (default "\"")
+      --csv.delimiter string             The delimiter used for quoting of CSV file. (default """)
       --csv.not-null                     Specifies whether a CSV file can contain any NULL values.
-      --csv.null-value string            The representation of NULL values in the CSV file. (default "\\N")
+      --csv.null-value string            The representation of NULL values in the CSV file. (default "\N")
       --csv.separator string             The field separator of CSV file. (default ",")
       --csv.skip-header                  Specifies whether the CSV file contains a header line.
       --csv.trim-last-separator          Specifies whether to treat separator as the line terminator and trim all trailing separators in the CSV file.

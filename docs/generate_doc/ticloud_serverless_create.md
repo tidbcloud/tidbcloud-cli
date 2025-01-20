@@ -26,7 +26,7 @@ ticloud serverless create [flags]
   -n, --display-name string            Display name of the cluster to de created.
       --encryption                     Whether Enhanced Encryption at Rest is enabled.
   -h, --help                           help for create
-  -p, --project-id string              The ID of the project, in which the cluster will be created. (default: "default project")
+  -p, --project-id string              The ID of the project, in which the cluster will be created. (default "default project")
   -r, --region string                  The name of cloud region. You can use "ticloud serverless region" to see all regions.
       --spending-limit-monthly int32   Maximum monthly spending limit in USD cents. (optional)
 ```

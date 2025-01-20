@@ -255,12 +255,12 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	startCmd.Flags().String(flag.AzureBlobURI, "", "The Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format.")
 	startCmd.Flags().String(flag.AzureBlobSASToken, "", "The SAS token of Azure Blob.")
 
-	startCmd.Flags().String(flag.CSVDelimiter, defaultCsvDelimiter, "The delimiter used for quoting of CSV file.")
+	startCmd.Flags().String(flag.CSVDelimiter, "", "The delimiter used for quoting of CSV file. (default \"\"\")")
 	startCmd.Flags().String(flag.CSVSeparator, defaultCsvSeparator, "The field separator of CSV file.")
 	startCmd.Flags().Bool(flag.CSVTrimLastSeparator, defaultCsvTrimLastSeparator, "Specifies whether to treat separator as the line terminator and trim all trailing separators in the CSV file.")
 	startCmd.Flags().Bool(flag.CSVBackslashEscape, defaultCsvBackslashEscape, "Specifies whether to interpret backslash escapes inside fields in the CSV file.")
 	startCmd.Flags().Bool(flag.CSVNotNull, defaultCsvNotNull, "Specifies whether a CSV file can contain any NULL values.")
-	startCmd.Flags().String(flag.CSVNullValue, defaultCsvNullValue, "The representation of NULL values in the CSV file.")
+	startCmd.Flags().String(flag.CSVNullValue, "", "The representation of NULL values in the CSV file. (default \"\\N\")")
 	startCmd.Flags().Bool(flag.CSVSkipHeader, defaultCsvSkipHeader, "Specifies whether the CSV file contains a header line.")
 	return startCmd
 }
@@ -456,6 +456,9 @@ func getCSVFlagValue(cmd *cobra.Command) (*imp.CSVFormat, error) {
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
+	if delimiter == "" && !cmd.Flag(flag.CSVDelimiter).Changed {
+		delimiter = defaultCsvDelimiter
+	}
 	trimLastSeparator, err := cmd.Flags().GetBool(flag.CSVTrimLastSeparator)
 	if err != nil {
 		return nil, errors.Trace(err)
@@ -463,6 +466,9 @@ func getCSVFlagValue(cmd *cobra.Command) (*imp.CSVFormat, error) {
 	nullValue, err := cmd.Flags().GetString(flag.CSVNullValue)
 	if err != nil {
 		return nil, errors.Trace(err)
+	}
+	if nullValue == "" && !cmd.Flag(flag.CSVNullValue).Changed {
+		nullValue = defaultCsvNullValue
 	}
 	skipHeader, err := cmd.Flags().GetBool(flag.CSVSkipHeader)
 	if err != nil {

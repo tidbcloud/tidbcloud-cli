@@ -487,9 +487,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if err != nil {
 						return errors.Trace(err)
 					}
+					if csvDelimiter == "" && !cmd.Flag(flag.CSVDelimiter).Changed {
+						csvDelimiter = CSVDelimiterDefaultValue
+					}
 					csvNullValue, err = cmd.Flags().GetString(flag.CSVNullValue)
 					if err != nil {
 						return errors.Trace(err)
+					}
+					if csvNullValue == "" && !cmd.Flag(flag.CSVNullValue).Changed {
+						csvNullValue = CSVNullValueDefaultValue
 					}
 					csvSkipHeader, err = cmd.Flags().GetBool(flag.CSVSkipHeader)
 					if err != nil {
@@ -654,9 +660,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.TableWhere, "", "Filter the exported table(s) with the where condition.")
 	createCmd.Flags().String(flag.SQL, "", "Filter the exported data with SQL SELECT statement.")
 	createCmd.Flags().BoolVar(&force, flag.Force, false, "Create without confirmation. You need to confirm when you want to export the whole cluster in non-interactive mode.")
-	createCmd.Flags().String(flag.CSVDelimiter, CSVDelimiterDefaultValue, "Delimiter of string type variables in CSV files.")
+	createCmd.Flags().String(flag.CSVDelimiter, "", "Delimiter of string type variables in CSV files. (default \"\"\")")
 	createCmd.Flags().String(flag.CSVSeparator, CSVSeparatorDefaultValue, "Separator of each value in CSV files.")
-	createCmd.Flags().String(flag.CSVNullValue, CSVNullValueDefaultValue, "Representation of null values in CSV files.")
+	createCmd.Flags().String(flag.CSVNullValue, "", "Representation of null values in CSV files. (default \"\\N\")")
 	createCmd.Flags().Bool(flag.CSVSkipHeader, CSVSkipHeaderDefaultValue, "Export CSV files of the tables without header.")
 	createCmd.Flags().String(flag.S3RoleArn, "", "The role arn of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
 	createCmd.Flags().String(flag.GCSURI, "", "The GCS URI in gs://<bucket>/<path> format. Required when target type is GCS.")
@@ -664,7 +670,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.AzureBlobURI, "", "The Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format. Required when target type is AZURE_BLOB.")
 	createCmd.Flags().String(flag.AzureBlobSASToken, "", "The SAS token of Azure Blob.")
 	createCmd.Flags().String(flag.ParquetCompression, "ZSTD", fmt.Sprintf("The parquet compression algorithm. One of %q.", export.AllowedExportParquetCompressionTypeEnumEnumValues))
-	createCmd.Flags().String(flag.DisplayName, "", "The display name of the export. (default: SNAPSHOT_<snapshot_time>)")
+	createCmd.Flags().String(flag.DisplayName, "", "The display name of the export. (default \"SNAPSHOT_<snapshot_time>\")")
 
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableFilter, flag.SQL)
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableWhere, flag.SQL)
