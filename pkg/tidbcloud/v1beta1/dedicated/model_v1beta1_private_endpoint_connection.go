@@ -32,7 +32,7 @@ type V1beta1PrivateEndpointConnection struct {
 	// The private IP address of the private endpoint in the user's vNet. TiDB Cloud will setup a public DNS record for this private IP address. So the user can use DNS address to connect to the cluster. Only available for Azure clusters.
 	PrivateIpAddress         NullableString                          `json:"privateIpAddress,omitempty"`
 	EndpointState            *PrivateEndpointConnectionEndpointState `json:"endpointState,omitempty"`
-	Massage                  *string                                 `json:"massage,omitempty"`
+	Message                  *string                                 `json:"message,omitempty"`
 	RegionId                 *string                                 `json:"regionId,omitempty"`
 	RegionDisplayName        *string                                 `json:"regionDisplayName,omitempty"`
 	CloudProvider            *V1beta1RegionCloudProvider             `json:"cloudProvider,omitempty"`
@@ -350,36 +350,36 @@ func (o *V1beta1PrivateEndpointConnection) SetEndpointState(v PrivateEndpointCon
 	o.EndpointState = &v
 }
 
-// GetMassage returns the Massage field value if set, zero value otherwise.
-func (o *V1beta1PrivateEndpointConnection) GetMassage() string {
-	if o == nil || IsNil(o.Massage) {
+// GetMessage returns the Message field value if set, zero value otherwise.
+func (o *V1beta1PrivateEndpointConnection) GetMessage() string {
+	if o == nil || IsNil(o.Message) {
 		var ret string
 		return ret
 	}
-	return *o.Massage
+	return *o.Message
 }
 
-// GetMassageOk returns a tuple with the Massage field value if set, nil otherwise
+// GetMessageOk returns a tuple with the Message field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetMassageOk() (*string, bool) {
-	if o == nil || IsNil(o.Massage) {
+func (o *V1beta1PrivateEndpointConnection) GetMessageOk() (*string, bool) {
+	if o == nil || IsNil(o.Message) {
 		return nil, false
 	}
-	return o.Massage, true
+	return o.Message, true
 }
 
-// HasMassage returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasMassage() bool {
-	if o != nil && !IsNil(o.Massage) {
+// HasMessage returns a boolean if a field has been set.
+func (o *V1beta1PrivateEndpointConnection) HasMessage() bool {
+	if o != nil && !IsNil(o.Message) {
 		return true
 	}
 
 	return false
 }
 
-// SetMassage gets a reference to the given string and assigns it to the Massage field.
-func (o *V1beta1PrivateEndpointConnection) SetMassage(v string) {
-	o.Massage = &v
+// SetMessage gets a reference to the given string and assigns it to the Message field.
+func (o *V1beta1PrivateEndpointConnection) SetMessage(v string) {
+	o.Message = &v
 }
 
 // GetRegionId returns the RegionId field value if set, zero value otherwise.
@@ -714,8 +714,8 @@ func (o V1beta1PrivateEndpointConnection) ToMap() (map[string]interface{}, error
 	if !IsNil(o.EndpointState) {
 		toSerialize["endpointState"] = o.EndpointState
 	}
-	if !IsNil(o.Massage) {
-		toSerialize["massage"] = o.Massage
+	if !IsNil(o.Message) {
+		toSerialize["message"] = o.Message
 	}
 	if !IsNil(o.RegionId) {
 		toSerialize["regionId"] = o.RegionId
@@ -797,7 +797,7 @@ func (o *V1beta1PrivateEndpointConnection) UnmarshalJSON(data []byte) (err error
 		delete(additionalProperties, "endpointId")
 		delete(additionalProperties, "privateIpAddress")
 		delete(additionalProperties, "endpointState")
-		delete(additionalProperties, "massage")
+		delete(additionalProperties, "message")
 		delete(additionalProperties, "regionId")
 		delete(additionalProperties, "regionDisplayName")
 		delete(additionalProperties, "cloudProvider")

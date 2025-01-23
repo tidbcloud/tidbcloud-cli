@@ -1135,7 +1135,7 @@ func (r ApiNetworkContainerServiceListNetworkContainersRequest) ProjectId(projec
 	return r
 }
 
-// - aws: Amazon Web Services. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE  - gcp: Google Cloud Platform. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE  - azure: Microsoft Azure. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+// - aws: Amazon Web Services.  - gcp: Google Cloud Platform.  - azure: Microsoft Azure.
 func (r ApiNetworkContainerServiceListNetworkContainersRequest) CloudProvider(cloudProvider PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter) ApiNetworkContainerServiceListNetworkContainersRequest {
 	r.cloudProvider = &cloudProvider
 	return r
@@ -1359,7 +1359,7 @@ func (r ApiNetworkContainerServiceListVpcPeeringsRequest) ProjectId(projectId st
 	return r
 }
 
-// If specified, only VPC peerings of the specified cloud provider will be returned.   - aws: Amazon Web Services. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE  - gcp: Google Cloud Platform. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE  - azure: Microsoft Azure. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+// If specified, only VPC peerings of the specified cloud provider will be returned.   - aws: Amazon Web Services.  - gcp: Google Cloud Platform.  - azure: Microsoft Azure.
 func (r ApiNetworkContainerServiceListVpcPeeringsRequest) CloudProvider(cloudProvider PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter) ApiNetworkContainerServiceListVpcPeeringsRequest {
 	r.cloudProvider = &cloudProvider
 	return r

@@ -15,7 +15,7 @@ import (
 	"fmt"
 )
 
-// V1beta1RegionCloudProvider Enum of cloud provider names.   - aws: Amazon Web Services. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE  - gcp: Google Cloud Platform. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE  - azure: Microsoft Azure. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+// V1beta1RegionCloudProvider Enum of cloud provider names.   - aws: Amazon Web Services.  - gcp: Google Cloud Platform.  - azure: Microsoft Azure.
 type V1beta1RegionCloudProvider string
 
 // List of v1beta1RegionCloudProvider

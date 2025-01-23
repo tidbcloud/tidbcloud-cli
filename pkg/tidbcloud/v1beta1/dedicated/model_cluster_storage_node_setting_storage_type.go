@@ -15,23 +15,27 @@ import (
 	"fmt"
 )
 
-// ClusterStorageNodeSettingStorageType the model 'ClusterStorageNodeSettingStorageType'
+// ClusterStorageNodeSettingStorageType Spec https://pingcap.feishu.cn/wiki/R6dcwK0Q3i9XSgkgG1Scoc82nbf.   - Standard: A cost-effective storage type suitable for most workloads, offering balanced performance and affordability.   - Single gp3 disk for TiKV storage Ideal for general-purpose clusters where affordability and reliability are priorities.  - Standard_Optimized: An enhanced version of Standard storage that delivers approximately 10% better overall cluster performance, balancing cost and performance.   - Separate gp3 disk for TiKV raft-log storage   - gp3 disk for TiKV data storage Recommended as the default choice for most clusters, offering an improved balance of cost and performance.  - Performance_Optimized: High-performance storage designed for workloads requiring low latency and greater stability. Provides superior performance for performance-sensitive clusters.   - Separate io2 disk for TiKV raft-log storage   - gp3 disk for TiKV data storage Suitable for clusters where consistent I/O performance and reduced latency are critical.  - Performance: Premium storage option offering the highest levels of performance and stability. Uses a single high-performance disk to minimize jitter and maximize IOPS.   - Single io2 disk for storage Designed for I/O jitter-sensitive clusters with extreme performance demands. Available via allowlist only for select customers.  - Standard_Premium: Reserved.  - Performance_Premium: Reserved.
 type ClusterStorageNodeSettingStorageType string
 
 // List of ClusterStorageNodeSettingStorageType
 const (
-	CLUSTERSTORAGENODESETTINGSTORAGETYPE_BASIC     ClusterStorageNodeSettingStorageType = "BASIC"
-	CLUSTERSTORAGENODESETTINGSTORAGETYPE_BASICV2   ClusterStorageNodeSettingStorageType = "BASICV2"
-	CLUSTERSTORAGENODESETTINGSTORAGETYPE_OPTIMIZED ClusterStorageNodeSettingStorageType = "OPTIMIZED"
-	CLUSTERSTORAGENODESETTINGSTORAGETYPE_PLUS      ClusterStorageNodeSettingStorageType = "PLUS"
+	CLUSTERSTORAGENODESETTINGSTORAGETYPE_STANDARD              ClusterStorageNodeSettingStorageType = "Standard"
+	CLUSTERSTORAGENODESETTINGSTORAGETYPE_STANDARD_OPTIMIZED    ClusterStorageNodeSettingStorageType = "Standard_Optimized"
+	CLUSTERSTORAGENODESETTINGSTORAGETYPE_PERFORMANCE_OPTIMIZED ClusterStorageNodeSettingStorageType = "Performance_Optimized"
+	CLUSTERSTORAGENODESETTINGSTORAGETYPE_PERFORMANCE           ClusterStorageNodeSettingStorageType = "Performance"
+	CLUSTERSTORAGENODESETTINGSTORAGETYPE_STANDARD_PREMIUM      ClusterStorageNodeSettingStorageType = "Standard_Premium"
+	CLUSTERSTORAGENODESETTINGSTORAGETYPE_PERFORMANCE_PREMIUM   ClusterStorageNodeSettingStorageType = "Performance_Premium"
 )
 
 // All allowed values of ClusterStorageNodeSettingStorageType enum
 var AllowedClusterStorageNodeSettingStorageTypeEnumValues = []ClusterStorageNodeSettingStorageType{
-	"BASIC",
-	"BASICV2",
-	"OPTIMIZED",
-	"PLUS",
+	"Standard",
+	"Standard_Optimized",
+	"Performance_Optimized",
+	"Performance",
+	"Standard_Premium",
+	"Performance_Premium",
 }
 
 func (v *ClusterStorageNodeSettingStorageType) UnmarshalJSON(src []byte) error {
