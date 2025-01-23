@@ -801,7 +801,7 @@ func (r ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest
 	return r
 }
 
-// If specified, only private link connections of the specified cloud provider will be returned.   - aws: Amazon Web Services. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE  - gcp: Google Cloud Platform. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE  - azure: Microsoft Azure. buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+// If specified, only private link connections of the specified cloud provider will be returned.   - aws: Amazon Web Services.  - gcp: Google Cloud Platform.  - azure: Microsoft Azure.
 func (r ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest) CloudProvider(cloudProvider PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter) ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest {
 	r.cloudProvider = &cloudProvider
 	return r

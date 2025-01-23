@@ -31,6 +31,7 @@ type Dedicatedv1beta1NodeSpec struct {
 	MinStorageSizeGi     *int32                                 `json:"minStorageSizeGi,omitempty"`
 	DefaultNodeCount     *int32                                 `json:"defaultNodeCount,omitempty"`
 	StorageTypes         []ClusterStorageNodeSettingStorageType `json:"storageTypes,omitempty"`
+	Default              *bool                                  `json:"default,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -437,6 +438,38 @@ func (o *Dedicatedv1beta1NodeSpec) SetStorageTypes(v []ClusterStorageNodeSetting
 	o.StorageTypes = v
 }
 
+// GetDefault returns the Default field value if set, zero value otherwise.
+func (o *Dedicatedv1beta1NodeSpec) GetDefault() bool {
+	if o == nil || IsNil(o.Default) {
+		var ret bool
+		return ret
+	}
+	return *o.Default
+}
+
+// GetDefaultOk returns a tuple with the Default field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Dedicatedv1beta1NodeSpec) GetDefaultOk() (*bool, bool) {
+	if o == nil || IsNil(o.Default) {
+		return nil, false
+	}
+	return o.Default, true
+}
+
+// HasDefault returns a boolean if a field has been set.
+func (o *Dedicatedv1beta1NodeSpec) HasDefault() bool {
+	if o != nil && !IsNil(o.Default) {
+		return true
+	}
+
+	return false
+}
+
+// SetDefault gets a reference to the given bool and assigns it to the Default field.
+func (o *Dedicatedv1beta1NodeSpec) SetDefault(v bool) {
+	o.Default = &v
+}
+
 func (o Dedicatedv1beta1NodeSpec) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -483,6 +516,9 @@ func (o Dedicatedv1beta1NodeSpec) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.StorageTypes) {
 		toSerialize["storageTypes"] = o.StorageTypes
 	}
+	if !IsNil(o.Default) {
+		toSerialize["default"] = o.Default
+	}
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -517,6 +553,7 @@ func (o *Dedicatedv1beta1NodeSpec) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "minStorageSizeGi")
 		delete(additionalProperties, "defaultNodeCount")
 		delete(additionalProperties, "storageTypes")
+		delete(additionalProperties, "default")
 		o.AdditionalProperties = additionalProperties
 	}
 

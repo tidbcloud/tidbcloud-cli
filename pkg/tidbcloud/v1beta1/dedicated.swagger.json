@@ -2092,7 +2092,7 @@
                     }
                   ]
                 },
-                "massage": {
+                "message": {
                   "type": "string",
                   "readOnly": true
                 },
@@ -2237,7 +2237,7 @@
           },
           {
             "name": "cloudProvider",
-            "description": "If specified, only private link connections of the specified cloud provider will be returned.\n\n - aws: Amazon Web Services.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - gcp: Google Cloud Platform.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - azure: Microsoft Azure.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE",
+            "description": "If specified, only private link connections of the specified cloud provider will be returned.\n\n - aws: Amazon Web Services.\n - gcp: Google Cloud Platform.\n - azure: Microsoft Azure.",
             "in": "query",
             "required": false,
             "type": "string",
@@ -2479,7 +2479,7 @@
           },
           {
             "name": "cloudProvider",
-            "description": " - aws: Amazon Web Services.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - gcp: Google Cloud Platform.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - azure: Microsoft Azure.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE",
+            "description": " - aws: Amazon Web Services.\n - gcp: Google Cloud Platform.\n - azure: Microsoft Azure.",
             "in": "query",
             "required": false,
             "type": "string",
@@ -2767,7 +2767,7 @@
           },
           {
             "name": "cloudProvider",
-            "description": "If specified, only VPC peerings of the specified cloud provider will be returned.\n\n - aws: Amazon Web Services.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - gcp: Google Cloud Platform.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - azure: Microsoft Azure.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE",
+            "description": "If specified, only VPC peerings of the specified cloud provider will be returned.\n\n - aws: Amazon Web Services.\n - gcp: Google Cloud Platform.\n - azure: Microsoft Azure.",
             "in": "query",
             "required": false,
             "type": "string",
@@ -4103,12 +4103,14 @@
     "ClusterStorageNodeSettingStorageType": {
       "type": "string",
       "enum": [
-        "BASIC",
-        "BASICV2",
-        "OPTIMIZED",
-        "PLUS"
+        "Standard",
+        "Standard_Optimized",
+        "Performance_Optimized",
+        "Performance",
+        "Standard_Premium",
+        "Performance_Premium"
       ],
-      "title": "- BASIC: default\n - BASICV2: separate raft-log and data storage, only for tikv\n - OPTIMIZED: separate raft-log and data storage, and use high performance storage volume for raft-log, only for tikv\n - PLUS: use high performance storage volume"
+      "description": "Spec https://pingcap.feishu.cn/wiki/R6dcwK0Q3i9XSgkgG1Scoc82nbf.\n\n - Standard: A cost-effective storage type suitable for most workloads, offering balanced performance and affordability.\n  - Single gp3 disk for TiKV storage\nIdeal for general-purpose clusters where affordability and reliability are priorities.\n - Standard_Optimized: An enhanced version of Standard storage that delivers approximately 10% better overall cluster performance, balancing cost and performance.\n  - Separate gp3 disk for TiKV raft-log storage\n  - gp3 disk for TiKV data storage\nRecommended as the default choice for most clusters, offering an improved balance of cost and performance.\n - Performance_Optimized: High-performance storage designed for workloads requiring low latency and greater stability. Provides superior performance for performance-sensitive clusters.\n  - Separate io2 disk for TiKV raft-log storage\n  - gp3 disk for TiKV data storage\nSuitable for clusters where consistent I/O performance and reduced latency are critical.\n - Performance: Premium storage option offering the highest levels of performance and stability. Uses a single high-performance disk to minimize jitter and maximize IOPS.\n  - Single io2 disk for storage\nDesigned for I/O jitter-sensitive clusters with extreme performance demands. Available via allowlist only for select customers.\n - Standard_Premium: Reserved.\n - Performance_Premium: Reserved."
     },
     "EndpointConnectionType": {
       "type": "string",
@@ -4462,6 +4464,9 @@
             "$ref": "#/definitions/ClusterStorageNodeSettingStorageType"
           },
           "readOnly": true
+        },
+        "default": {
+          "type": "boolean"
         }
       }
     },
@@ -5430,7 +5435,7 @@
             }
           ]
         },
-        "massage": {
+        "message": {
           "type": "string",
           "readOnly": true
         },
@@ -5531,7 +5536,7 @@
         "gcp",
         "azure"
       ],
-      "description": "Enum of cloud provider names.\n\n - aws: Amazon Web Services.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - gcp: Google Cloud Platform.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - azure: Microsoft Azure.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE"
+      "description": "Enum of cloud provider names.\n\n - aws: Amazon Web Services.\n - gcp: Google Cloud Platform.\n - azure: Microsoft Azure."
     },
     "v1beta1ResetRootPasswordResponse": {
       "type": "object"
