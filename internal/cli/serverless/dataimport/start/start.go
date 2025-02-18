@@ -53,6 +53,7 @@ var inputDescription = map[string]string{
 	flag.S3AccessKeyID:        "Input your S3 access key id",
 	flag.S3SecretAccessKey:    "Input your S3 secret access key",
 	flag.S3RoleArn:            "Input your S3 role arn",
+	flag.S3Endpoint:           "The custom S3 endpoint(\"https://custom-s3.example.com\"). Used for connecting to non-AWS S3-compatible storage, such as Cloudflare or other cloud providers.",
 	flag.AzureBlobURI:         "Input your Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format",
 	flag.AzureBlobSASToken:    "Input your Azure Blob SAS token",
 	flag.GCSURI:               "Input your GCS URI in gs://<bucket>/<path> format",
@@ -245,6 +246,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	startCmd.Flags().String(flag.S3SecretAccessKey, "", "The secret access key of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
 	startCmd.Flags().String(flag.S3RoleArn, "", "The role arn of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].")
 	startCmd.Flags().String(flag.S3URI, "", "The S3 URI in s3://<bucket>/<path> format. Required when source type is S3.")
+	startCmd.Flags().String(flag.S3Endpoint, "", "The custom S3 endpoint(\"https://custom-s3.example.com\"). Used for connecting to non-AWS S3-compatible storage, such as Cloudflare or other cloud providers.")
 	startCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3AccessKeyID)
 	startCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3SecretAccessKey)
 	startCmd.MarkFlagsRequiredTogether(flag.S3AccessKeyID, flag.S3SecretAccessKey)

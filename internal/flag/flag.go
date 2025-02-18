@@ -63,6 +63,7 @@ const (
 	S3AccessKeyID          string = "s3.access-key-id"
 	S3SecretAccessKey      string = "s3.secret-access-key"
 	S3RoleArn              string = "s3.role-arn"
+	S3Endpoint             string = "s3.endpoint"
 	GCSURI                 string = "gcs.uri"
 	GCSServiceAccountKey   string = "gcs.service-account-key"
 	AzureBlobURI           string = "azblob.uri"

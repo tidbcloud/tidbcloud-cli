@@ -199,8 +199,7 @@
             "description": "The ID of the cluster to import into.",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "uint64"
+            "type": "string"
           },
           {
             "name": "pageToken",
@@ -252,8 +251,7 @@
             "description": "The ID of the cluster to import into.",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "uint64"
+            "type": "string"
           },
           {
             "name": "body",
@@ -293,8 +291,7 @@
             "description": "The ID of the cluster to import into.",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "uint64"
+            "type": "string"
           },
           {
             "name": "id",
@@ -334,8 +331,7 @@
             "description": "The ID of the cluster to import into.",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "uint64"
+            "type": "string"
           },
           {
             "name": "id",
@@ -378,7 +374,7 @@
         },
         "uri": {
           "type": "string",
-          "description": "The Azure Blob URI of the import source. For example: azure://<account>.blob.core.windows.net/<container>/<path>."
+          "description": "The Azure Blob URI of the import source. For example: azure://<account>.blob.core.windows.net/<container>/<path> or https://<account>.blob.core.windows.net/<container>/<path>."
         }
       },
       "required": [
@@ -506,7 +502,6 @@
         },
         "clusterId": {
           "type": "string",
-          "format": "uint64",
           "description": "The ID of the cluster to import into.",
           "readOnly": true
         },
@@ -779,6 +774,11 @@
               "$ref": "#/definitions/S3Source.AccessKey"
             }
           ]
+        },
+        "endpoint": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "The custom S3 endpoint (HTTPS only).\nUsed for connecting to non-AWS S3-compatible storage, such as Cloudflare or other cloud providers.\nEnsure the endpoint is a valid HTTPS URL (e.g., \"https://custom-s3.example.com\")."
         }
       },
       "required": [
