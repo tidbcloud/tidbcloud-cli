@@ -16,15 +16,12 @@ package auditlog
 
 import (
 	"context"
-	"sync"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/export"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/auditlog"
 )
-
-var wg = sync.WaitGroup{}
 
 func DownloadFilesWithoutPrompt(h *internal.Helper, path string,
 	concurrency int, clusterID string, fileNames []string, client cloud.TiDBCloudClient) error {

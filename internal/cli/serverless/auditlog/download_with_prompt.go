@@ -96,7 +96,7 @@ func DownloadFilesPrompt(h *internal.Helper, path string,
 	}
 
 	if failedCount > 0 {
-		return errors.New(fmt.Sprintf("%d file(s) failed to download", failedCount))
+		return fmt.Errorf("%d file(s) failed to download", failedCount)
 	}
 	return nil
 }

@@ -154,7 +154,7 @@ func DownloadAuditLogCmd(h *internal.Helper) *cobra.Command {
 					if err == terminal.InterruptErr {
 						return util.InterruptError
 					} else {
-						return err
+						return errors.Trace(err)
 					}
 				}
 
@@ -175,6 +175,9 @@ func DownloadAuditLogCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				endDate, err = cmd.Flags().GetString(flag.EndDate)
+				if err != nil {
+					return errors.Trace(err)
+				}
 			}
 
 			concurrency, err := cmd.Flags().GetInt(flag.Concurrency)
