@@ -45,6 +45,7 @@ func Cmd(h *internal.Helper) *cobra.Command {
 	serverlessCmd.AddCommand(export.Cmd(h))
 	serverlessCmd.AddCommand(SpendingLimitCmd(h))
 	serverlessCmd.AddCommand(RegionCmd(h))
+	//serverlessCmd.AddCommand(RegionCmd(h))
 
 	return serverlessCmd
 }

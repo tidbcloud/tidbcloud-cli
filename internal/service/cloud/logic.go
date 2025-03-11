@@ -20,6 +20,7 @@ import (
 	"slices"
 	"time"
 
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/auditlog"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
@@ -847,4 +848,46 @@ func GetAllExportFiles(ctx context.Context, cID string, eID string, d TiDBCloudC
 		items = append(items, exportFilesResp.Files...)
 	}
 	return items, nil
+}
+
+// GetAllAuditLogs assumes that the start date and end date are valid
+func GetAllAuditLogs(ctx context.Context, cID, sDate, eDate string, d TiDBCloudClient) ([]auditlog.AuditLog, error) {
+	var auditLogs []auditlog.AuditLog
+	for date := sDate; date <= eDate; date = getNextDay(date) {
+		auditLogsOneDay, err := GetOneDateAuditLogs(ctx, cID, date, d)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		auditLogs = append(auditLogs, auditLogsOneDay...)
+	}
+	return auditLogs, nil
+}
+
+func getNextDay(date string) string {
+	t, _ := time.Parse(time.DateOnly, date)
+	t = t.AddDate(0, 0, 1)
+	return t.Format(time.DateOnly)
+}
+
+func GetOneDateAuditLogs(ctx context.Context, cID, date string, d TiDBCloudClient) ([]auditlog.AuditLog, error) {
+	var auditLogs []auditlog.AuditLog
+	var pageSize int32 = 1000
+	var pageToken *string
+	resp, err := d.ListAuditLogs(ctx, cID, &pageSize, nil, &date)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	auditLogs = append(auditLogs, resp.AuditLogs...)
+	for {
+		pageToken = resp.NextPageToken
+		if util.IsNilOrEmpty(pageToken) {
+			break
+		}
+		resp, err = d.ListAuditLogs(ctx, cID, &pageSize, pageToken, &date)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		auditLogs = append(auditLogs, resp.AuditLogs...)
+	}
+	return auditLogs, nil
 }

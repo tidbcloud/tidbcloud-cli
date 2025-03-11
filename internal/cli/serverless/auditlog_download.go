@@ -1,67 +1,59 @@
-// Copyright 2025 PingCAP, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-package export
+package serverless
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/dustin/go-humanize"
+	"github.com/fatih/color"
+	"github.com/juju/errors"
+	"github.com/spf13/cobra"
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
-
-	"github.com/AlecAivazis/survey/v2"
-	"github.com/AlecAivazis/survey/v2/terminal"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/dustin/go-humanize"
-	"github.com/fatih/color"
-	"github.com/juju/errors"
-	"github.com/spf13/cobra"
 )
+
+var inputDescription = map[string]string{
+	flag.OutputPath: "Input the path where you want to download to. If not specified, download to the current directory.",
+	flag.StartDate:  "Input the start date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.",
+	flag.EndDate:    "Input the end date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.",
+}
 
 const (
 	DefaultConcurrency = 3
 	MaxBatchSize       = 100
+	MaxDateRange       = 7 * 24 * time.Hour
 )
 
 var DownloadPathInputFields = map[string]int{
 	flag.OutputPath: 0,
 }
 
-type DownloadOpts struct {
+type DownloadAuditLogOpts struct {
 	interactive bool
 }
 
-func (c DownloadOpts) NonInteractiveFlags() []string {
+func (c DownloadAuditLogOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.ExportID,
+		flag.StartDate,
+		flag.EndDate,
 		flag.OutputPath,
 	}
 }
 
-func (c DownloadOpts) RequiredFlags() []string {
+func (c DownloadAuditLogOpts) RequiredFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.ExportID,
 	}
 }
 
-func (c *DownloadOpts) MarkInteractive(cmd *cobra.Command) error {
+func (c *DownloadAuditLogOpts) MarkInteractive(cmd *cobra.Command) error {
 	flags := c.NonInteractiveFlags()
 	for _, fn := range flags {
 		f := cmd.Flags().Lookup(fn)
@@ -82,21 +74,21 @@ func (c *DownloadOpts) MarkInteractive(cmd *cobra.Command) error {
 	return nil
 }
 
-func DownloadCmd(h *internal.Helper) *cobra.Command {
+func DownloadAuditLogCmd(h *internal.Helper) *cobra.Command {
 	var force bool
-	opts := DownloadOpts{
+	opts := DownloadAuditLogOpts{
 		interactive: true,
 	}
 
-	var downloadCmd = &cobra.Command{
-		Use:   "download",
-		Short: "Download the exported data",
+	var downloadAuditLogCmd = &cobra.Command{
+		Use:   "download-auditlog",
+		Short: "Download the database audit logs",
 		Args:  cobra.NoArgs,
-		Example: fmt.Sprintf(`  Download the local type export in interactive mode:
-  $ %[1]s serverless export download
+		Example: fmt.Sprintf(`  Download the database audit logs in interactive mode:
+  $ %[1]s serverless download-auditlog
 
-  Download the local type export in non-interactive mode:
-  $ %[1]s serverless export download -c <cluster-id> -e <export-id>`, config.CliName),
+  Download the database audit logs in non-interactive mode:
+  $ %[1]s serverless download-auditlog -c <cluster-id> --date <date>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
@@ -107,7 +99,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			var exportID, clusterID, path string
+			var startDate, endDate, clusterID, path string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -124,25 +116,19 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				export, err := cloud.GetSelectedLocalExport(ctx, clusterID, h.QueryPageSize, d)
+				pathInput, err := ui.InitialInputModel([]string{flag.OutputPath}, inputDescription)
 				if err != nil {
 					return err
 				}
-				exportID = export.ID
+				path = pathInput.Inputs[0].Value()
 
-				downloadPathInputModel, err := GetDownloadPathInput()
+				dateInput, err := ui.InitialInputModel([]string{flag.StartDate, flag.EndDate}, inputDescription)
 				if err != nil {
 					return err
 				}
-				path = downloadPathInputModel.(ui.TextInputModel).
-					Inputs[DownloadPathInputFields[flag.OutputPath]].Value()
+				startDate = dateInput.Inputs[0].Value()
+				endDate = dateInput.Inputs[1].Value()
 			} else {
-				// non-interactive mode, get values from flags
-				exportID, err = cmd.Flags().GetString(flag.ExportID)
-				if err != nil {
-					return errors.Trace(err)
-				}
-
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
@@ -151,28 +137,34 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
+				startDate, err = cmd.Flags().GetString(flag.StartDate)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				endDate, err = cmd.Flags().GetString(flag.EndDate)
 			}
 
 			concurrency, err := cmd.Flags().GetInt(flag.Concurrency)
 			if err != nil {
 				return errors.Trace(err)
 			}
-
-			exportFiles, err := cloud.GetAllExportFiles(ctx, clusterID, exportID, d)
+			// check the date
+			if err := checkDate(startDate, endDate); err != nil {
+				return errors.Trace(err)
+			}
+			// list the audit logs
+			auditLogs, err := cloud.GetAllAuditLogs(ctx, clusterID, startDate, endDate, d)
 			if err != nil {
 				return errors.Trace(err)
 			}
-
 			var totalSize int64
-			fileNames := make([]string, 0)
-			for _, file := range exportFiles {
-				totalSize += *file.Size
-				if *file.Name == "metadata" {
-					continue
-				}
-				fileNames = append(fileNames, *file.Name)
+			auditLogNames := make([]string, 0)
+			for _, log := range auditLogs {
+				totalSize += *log.Size
+				auditLogNames = append(auditLogNames, *log.Name)
 			}
-			fileMessage := fmt.Sprintf("There are %d files to download, total size is %s.", len(fileNames), humanize.IBytes(uint64(totalSize)))
+			// ask for confirmation
+			fileMessage := fmt.Sprintf("There are %d files to download, total size is %s.", len(auditLogNames), humanize.IBytes(uint64(totalSize)))
 			if !force {
 				if !h.IOStreams.CanPrompt {
 					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to download")
@@ -197,6 +189,8 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			} else {
 				fmt.Fprintf(h.IOStreams.Out, "%s\n", color.BlueString(fileMessage))
 			}
+
+			// download the audit logs
 			if h.IOStreams.CanPrompt {
 				err = DownloadFilesPrompt(h, path, concurrency, exportID, clusterID, totalSize, fileNames, d)
 				if err != nil {
@@ -212,13 +206,14 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	downloadCmd.Flags().StringP(flag.ExportID, flag.ExportIDShort, "", "The ID of the export.")
-	downloadCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the export.")
-	downloadCmd.Flags().String(flag.OutputPath, "", "Where you want to download to. If not specified, download to the current directory.")
-	downloadCmd.Flags().BoolVar(&force, flag.Force, false, "Download without confirmation.")
-	downloadCmd.Flags().Int(flag.Concurrency, 3, "Download concurrency.")
-	downloadCmd.MarkFlagsRequiredTogether(flag.ExportID, flag.ClusterID)
-	return downloadCmd
+	downloadAuditLogCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID.")
+	downloadAuditLogCmd.Flags().String(flag.OutputPath, "", "The path where you want to download to. If not specified, download to the current directory.")
+	downloadAuditLogCmd.Flags().BoolVar(&force, flag.Force, false, "Download without confirmation.")
+	downloadAuditLogCmd.Flags().Int(flag.Concurrency, 3, "Download concurrency.")
+	downloadAuditLogCmd.Flags().String(flag.StartDate, "", "The start date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.")
+	downloadAuditLogCmd.Flags().String(flag.EndDate, "", "The end date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.")
+
+	return downloadAuditLogCmd
 }
 
 func DownloadFilesPrompt(h *internal.Helper, path string,
@@ -286,7 +281,6 @@ func DownloadFilesPrompt(h *internal.Helper, path string,
 
 func DownloadFilesWithoutPrompt(h *internal.Helper, path string,
 	concurrency int, exportID, clusterID string, fileNames []string, client cloud.TiDBCloudClient) error {
-
 	exportDownloadPool, err := NewDownloadPool(h, path, concurrency, exportID, clusterID, fileNames, client)
 	if err != nil {
 		return errors.Trace(err)
@@ -304,4 +298,25 @@ func getBatchSize(concurrency int) int {
 		batchSize = MaxBatchSize
 	}
 	return batchSize
+}
+
+func checkDate(startDate, endDate string) error {
+	if startDate == "" {
+		return errors.New("start date is required")
+	}
+	if endDate == "" {
+		return errors.New("end date is required")
+	}
+	st, err := time.Parse(time.DateOnly, startDate)
+	if err != nil {
+		return errors.New("invalid start date, please input the date in the format of 'YYYY-MM-DD'")
+	}
+	et, err := time.Parse(time.DateOnly, endDate)
+	if err != nil {
+		return errors.New("invalid end date, please input the date in the format of 'YYYY-MM-DD'")
+	}
+	if st.Add(MaxDateRange).Before(et) {
+		return errors.New("the date range should be within 7 days")
+	}
+	return nil
 }

@@ -1,0 +1,17 @@
+.gitignore
+.openapi-generator-ignore
+.travis.yml
+README.md
+api/openapi.yaml
+api_audit_log_service.go
+client.go
+configuration.go
+git_push.sh
+model_any.go
+model_audit_log.go
+model_audit_log_service_download_audit_logs_body.go
+model_download_audit_logs_response.go
+model_list_audit_logs_response.go
+model_status.go
+response.go
+utils.go
