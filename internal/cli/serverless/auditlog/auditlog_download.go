@@ -1,4 +1,17 @@
-package serverless
+// Copyright 2025 PingCAP, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+package auditlog
 
 import (
 	"fmt"
@@ -170,6 +183,8 @@ func DownloadAuditLogCmd(h *internal.Helper) *cobra.Command {
 					return fmt.Errorf("the terminal doesn't support prompt, please run with --force to download")
 				}
 
+				confirmed := "yes"
+
 				confirmationMessage := fmt.Sprintf("%s %s %s %s", color.BlueString(fileMessage), color.BlueString("Please type"), color.HiBlueString(confirmed), color.BlueString("to download:"))
 				prompt := &survey.Input{
 					Message: confirmationMessage,
@@ -190,14 +205,14 @@ func DownloadAuditLogCmd(h *internal.Helper) *cobra.Command {
 				fmt.Fprintf(h.IOStreams.Out, "%s\n", color.BlueString(fileMessage))
 			}
 
-			// download the audit logs
+			//download the audit logs
 			if h.IOStreams.CanPrompt {
-				err = DownloadFilesPrompt(h, path, concurrency, exportID, clusterID, totalSize, fileNames, d)
+				err = DownloadFilesPrompt(h, path, concurrency, clusterID, totalSize, auditLogNames, d)
 				if err != nil {
 					return errors.Trace(err)
 				}
 			} else {
-				err = DownloadFilesWithoutPrompt(h, path, concurrency, exportID, clusterID, fileNames, d)
+				err = DownloadFilesWithoutPrompt(h, path, concurrency, clusterID, auditLogNames, d)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -214,82 +229,6 @@ func DownloadAuditLogCmd(h *internal.Helper) *cobra.Command {
 	downloadAuditLogCmd.Flags().String(flag.EndDate, "", "The end date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.")
 
 	return downloadAuditLogCmd
-}
-
-func DownloadFilesPrompt(h *internal.Helper, path string,
-	concurrency int, exportID, clusterID string, totalSize int64, fileNames []string, client cloud.TiDBCloudClient) error {
-	if concurrency <= 0 {
-		concurrency = DefaultConcurrency
-	}
-
-	// create the path if not exist
-	err := util.CreateFolder(path)
-	if err != nil {
-		return err
-	}
-
-	// init the concurrency progress model
-	var p *tea.Program
-	m := NewProcessDownloadModel(
-		concurrency,
-		path,
-		exportID,
-		clusterID,
-		client,
-		int(totalSize),
-		fileNames,
-	)
-
-	// run the program
-	p = tea.NewProgram(m)
-	m.SetProgram(p)
-	model, err := p.Run()
-	if err != nil {
-		return errors.Trace(err)
-	}
-	if m, _ := model.(*ProcessDownloadModel); m.Interrupted {
-		return util.InterruptError
-	}
-
-	succeededCount := 0
-	failedCount := 0
-	skippedCount := 0
-	for _, f := range m.GetFinishedJobs() {
-		switch f.GetStatus() {
-		case Succeeded:
-			succeededCount++
-		case Failed:
-			failedCount++
-		case Skipped:
-			skippedCount++
-		}
-	}
-	fmt.Fprint(h.IOStreams.Out, generateDownloadSummary(succeededCount, skippedCount, failedCount))
-	index := 0
-	for _, f := range m.GetFinishedJobs() {
-		if f.GetStatus() != Succeeded {
-			index++
-			fmt.Fprintf(h.IOStreams.Out, "%d.%s\n", index, f.GetResult())
-		}
-	}
-
-	if failedCount > 0 {
-		return errors.New(fmt.Sprintf("%d file(s) failed to download", failedCount))
-	}
-	return nil
-}
-
-func DownloadFilesWithoutPrompt(h *internal.Helper, path string,
-	concurrency int, exportID, clusterID string, fileNames []string, client cloud.TiDBCloudClient) error {
-	exportDownloadPool, err := NewDownloadPool(h, path, concurrency, exportID, clusterID, fileNames, client)
-	if err != nil {
-		return errors.Trace(err)
-	}
-	err = exportDownloadPool.Start()
-	if err != nil {
-		return errors.Trace(err)
-	}
-	return nil
 }
 
 func getBatchSize(concurrency int) int {

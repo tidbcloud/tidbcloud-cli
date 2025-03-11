@@ -15,6 +15,7 @@
 package export
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
@@ -23,6 +24,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -233,16 +235,28 @@ func DownloadFilesPrompt(h *internal.Helper, path string,
 		return err
 	}
 
+	generateFunc := func(ctx context.Context, fileNames []string) (map[string]*string, error) {
+		resp, err := client.DownloadExportFiles(ctx, clusterID, exportID, &export.ExportServiceDownloadExportFilesBody{
+			FileNames: fileNames,
+		})
+		if err != nil {
+			return nil, err
+		}
+		fileMap := make(map[string]*string)
+		for _, file := range resp.Files {
+			fileMap[*file.Name] = file.Url
+		}
+		return fileMap, nil
+	}
+
 	// init the concurrency progress model
 	var p *tea.Program
 	m := NewProcessDownloadModel(
 		concurrency,
 		path,
-		exportID,
-		clusterID,
-		client,
 		int(totalSize),
 		fileNames,
+		generateFunc,
 	)
 
 	// run the program
@@ -269,7 +283,7 @@ func DownloadFilesPrompt(h *internal.Helper, path string,
 			skippedCount++
 		}
 	}
-	fmt.Fprint(h.IOStreams.Out, generateDownloadSummary(succeededCount, skippedCount, failedCount))
+	fmt.Fprint(h.IOStreams.Out, GenerateDownloadSummary(succeededCount, skippedCount, failedCount))
 	index := 0
 	for _, f := range m.GetFinishedJobs() {
 		if f.GetStatus() != Succeeded {
@@ -287,7 +301,21 @@ func DownloadFilesPrompt(h *internal.Helper, path string,
 func DownloadFilesWithoutPrompt(h *internal.Helper, path string,
 	concurrency int, exportID, clusterID string, fileNames []string, client cloud.TiDBCloudClient) error {
 
-	exportDownloadPool, err := NewDownloadPool(h, path, concurrency, exportID, clusterID, fileNames, client)
+	generateFunc := func(ctx context.Context, fileNames []string) (map[string]*string, error) {
+		resp, err := client.DownloadExportFiles(ctx, clusterID, exportID, &export.ExportServiceDownloadExportFilesBody{
+			FileNames: fileNames,
+		})
+		if err != nil {
+			return nil, err
+		}
+		fileMap := make(map[string]*string)
+		for _, file := range resp.Files {
+			fileMap[*file.Name] = file.Url
+		}
+		return fileMap, nil
+	}
+
+	exportDownloadPool, err := NewDownloadPool(h, path, concurrency, fileNames, generateFunc)
 	if err != nil {
 		return errors.Trace(err)
 	}
