@@ -25,10 +25,8 @@ import (
 	"time"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
-	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
-	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"

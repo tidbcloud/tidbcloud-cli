@@ -27,15 +27,14 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
-	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 )
 
-var inputDescription = map[string]string{
-	flag.OutputPath: "Input the path where you want to download to. If not specified, download to the current directory.",
-	flag.StartDate:  "Input the start date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.",
-	flag.EndDate:    "Input the end date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.",
-}
+// var inputDescription = map[string]string{
+// 	flag.OutputPath: "Input the path where you want to download to. If not specified, download to the current directory.",
+// 	flag.StartDate:  "Input the start date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.",
+// 	flag.EndDate:    "Input the end date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.",
+// }
 
 const (
 	DefaultConcurrency = 3
@@ -129,18 +128,39 @@ func DownloadAuditLogCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				pathInput, err := ui.InitialInputModel([]string{flag.OutputPath}, inputDescription)
-				if err != nil {
-					return err
+				qs := []*survey.Question{
+					{
+						Name:   "path",
+						Prompt: &survey.Input{Message: "The download path, default to the current directory."},
+					},
+					{
+						Name:     "startDate",
+						Prompt:   &survey.Input{Message: "The start date of the download in the format of 'YYYY-MM-DD'"},
+						Validate: survey.Required,
+					},
+					{
+						Name:     "endDate",
+						Prompt:   &survey.Input{Message: "The end date of the download in the format of 'YYYY-MM-DD'"},
+						Validate: survey.Required,
+					},
 				}
-				path = pathInput.Inputs[0].Value()
+				answers := struct {
+					Path      string
+					StartDate string
+					EndDate   string
+				}{}
+				err = survey.Ask(qs, &answers)
+				if err != nil {
+					if err == terminal.InterruptErr {
+						return util.InterruptError
+					} else {
+						return err
+					}
+				}
 
-				dateInput, err := ui.InitialInputModel([]string{flag.StartDate, flag.EndDate}, inputDescription)
-				if err != nil {
-					return err
-				}
-				startDate = dateInput.Inputs[0].Value()
-				endDate = dateInput.Inputs[1].Value()
+				path = answers.Path
+				startDate = answers.StartDate
+				endDate = answers.EndDate
 			} else {
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
@@ -165,6 +185,9 @@ func DownloadAuditLogCmd(h *internal.Helper) *cobra.Command {
 			if err := checkDate(startDate, endDate); err != nil {
 				return errors.Trace(err)
 			}
+
+			println(fmt.Sprintf("path: %s, clusterID: %s, startDate: %s, endDate: %s, concurrency: %d", path, clusterID, startDate, endDate, concurrency))
+
 			// list the audit logs
 			auditLogs, err := cloud.GetAllAuditLogs(ctx, clusterID, startDate, endDate, d)
 			if err != nil {
@@ -229,14 +252,6 @@ func DownloadAuditLogCmd(h *internal.Helper) *cobra.Command {
 	downloadAuditLogCmd.Flags().String(flag.EndDate, "", "The end date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.")
 
 	return downloadAuditLogCmd
-}
-
-func getBatchSize(concurrency int) int {
-	batchSize := 2 * concurrency
-	if batchSize > MaxBatchSize {
-		batchSize = MaxBatchSize
-	}
-	return batchSize
 }
 
 func checkDate(startDate, endDate string) error {
