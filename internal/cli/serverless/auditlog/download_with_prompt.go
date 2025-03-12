@@ -15,7 +15,6 @@ package auditlog
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	tea "github.com/charmbracelet/bubbletea"
