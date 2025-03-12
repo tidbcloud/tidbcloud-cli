@@ -135,7 +135,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				fieldName, err = cloud.GetSelectedField(mutableFields)
+				fieldName, err = cloud.GetSelectedField(mutableFields, "Choose the field to update:")
 				if err != nil {
 					return err
 				}

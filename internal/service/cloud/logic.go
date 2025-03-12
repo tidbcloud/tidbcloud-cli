@@ -205,12 +205,12 @@ func GetSelectedCluster(ctx context.Context, projectID string, pageSize int64, c
 	return cluster.(*Cluster), nil
 }
 
-func GetSelectedField(mutableFields []string) (string, error) {
+func GetSelectedField(mutableFields []string, describe string) (string, error) {
 	var items = make([]interface{}, 0, len(mutableFields))
 	for _, item := range mutableFields {
 		items = append(items, item)
 	}
-	model, err := ui.InitialSelectModel(items, "Choose the field to update:")
+	model, err := ui.InitialSelectModel(items, describe)
 	if err != nil {
 		return "", errors.Trace(err)
 	}

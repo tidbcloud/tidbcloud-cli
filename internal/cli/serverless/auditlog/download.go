@@ -86,21 +86,21 @@ func (c *DownloadAuditLogOpts) MarkInteractive(cmd *cobra.Command) error {
 	return nil
 }
 
-func DownloadAuditLogCmd(h *internal.Helper) *cobra.Command {
+func DownloadCmd(h *internal.Helper) *cobra.Command {
 	var force bool
 	opts := DownloadAuditLogOpts{
 		interactive: true,
 	}
 
-	var downloadAuditLogCmd = &cobra.Command{
-		Use:   "download-auditlog",
+	var downloadCmd = &cobra.Command{
+		Use:   "download",
 		Short: "Download the database audit logs",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Download the database audit logs in interactive mode:
-  $ %[1]s serverless download-auditlog
+  $ %[1]s serverless audit-log download
 
   Download the database audit logs in non-interactive mode:
-  $ %[1]s serverless download-auditlog -c <cluster-id> --date <date>`, config.CliName),
+  $ %[1]s serverless audit-log download -c <cluster-id> --date <date>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
@@ -247,14 +247,14 @@ func DownloadAuditLogCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	downloadAuditLogCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID.")
-	downloadAuditLogCmd.Flags().String(flag.OutputPath, "", "The path where you want to download to. If not specified, download to the current directory.")
-	downloadAuditLogCmd.Flags().BoolVar(&force, flag.Force, false, "Download without confirmation.")
-	downloadAuditLogCmd.Flags().Int(flag.Concurrency, 3, "Download concurrency.")
-	downloadAuditLogCmd.Flags().String(flag.StartDate, "", "The start date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.")
-	downloadAuditLogCmd.Flags().String(flag.EndDate, "", "The end date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.")
+	downloadCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID.")
+	downloadCmd.Flags().String(flag.OutputPath, "", "The path where you want to download to. If not specified, download to the current directory.")
+	downloadCmd.Flags().BoolVar(&force, flag.Force, false, "Download without confirmation.")
+	downloadCmd.Flags().Int(flag.Concurrency, 3, "Download concurrency.")
+	downloadCmd.Flags().String(flag.StartDate, "", "The start date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.")
+	downloadCmd.Flags().String(flag.EndDate, "", "The end date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.")
 
-	return downloadAuditLogCmd
+	return downloadCmd
 }
 
 func checkDate(startDate, endDate string) error {
