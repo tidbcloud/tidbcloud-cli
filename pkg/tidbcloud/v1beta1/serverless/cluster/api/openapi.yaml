@@ -320,6 +320,25 @@ components:
           format: int32
           type: integer
       type: object
+    ClusterUsage:
+      description: Message for usage statistics of a cluster.
+      properties:
+        requestUnit:
+          description: Output_only. The Request Units used in this month.
+          format: int64
+          readOnly: true
+          type: string
+        rowBasedStorage:
+          description: Output_only. The storage used on row-based storage in bytes.
+          format: double
+          readOnly: true
+          type: number
+        columnarStorage:
+          description: Output_only. The storage used on column-based storage in bytes.
+          format: double
+          readOnly: true
+          type: number
+      type: object
     EndpointsPrivate:
       description: Message for private endpoint to securely connect to the cluster.
       properties:
@@ -356,6 +375,24 @@ components:
         disabled:
           description: Optional. Whether the public endpoint is disabled.
           type: boolean
+        authorizedNetworks:
+          items:
+            $ref: '#/components/schemas/EndpointsPublicAuthorizedNetwork'
+          title: The list of networks that are allowed to connect to the cluster
+          type: array
+      type: object
+    EndpointsPublicAuthorizedNetwork:
+      properties:
+        startIpAddress:
+          type: string
+        endIpAddress:
+          type: string
+        displayName:
+          type: string
+      required:
+      - displayName
+      - endIpAddress
+      - startIpAddress
       type: object
     PrivateAWS:
       description: Message for AWS PrivateLink information.
@@ -660,6 +697,7 @@ components:
         spendingLimit: "{}"
         createdBy: createdBy
         createTime: 2000-01-23T04:56:07.000+00:00
+        auditLogConfig: "{}"
         highAvailabilityType: ZONAL
         name: name
         userPrefix: userPrefix
@@ -730,7 +768,7 @@ components:
           type: object
         usage:
           allOf:
-          - $ref: '#/components/schemas/v1beta1ClusterUsage'
+          - $ref: '#/components/schemas/ClusterUsage'
           description: Output_only. Usage details of the cluster.
           type: object
         labels:
@@ -760,6 +798,11 @@ components:
           format: date-time
           readOnly: true
           type: string
+        auditLogConfig:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterAuditLogConfig'
+          description: Optional. The audit log configuration for the cluster.
+          type: object
       required:
       - displayName
       - region
@@ -795,6 +838,7 @@ components:
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
+          auditLogConfig: "{}"
           highAvailabilityType: ZONAL
           name: name
           userPrefix: userPrefix
@@ -816,6 +860,7 @@ components:
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
+          auditLogConfig: "{}"
           highAvailabilityType: ZONAL
           name: name
           userPrefix: userPrefix
@@ -892,6 +937,7 @@ components:
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
+          auditLogConfig: "{}"
           highAvailabilityType: ZONAL
           name: name
           userPrefix: userPrefix
@@ -913,6 +959,7 @@ components:
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
+          auditLogConfig: "{}"
           highAvailabilityType: ZONAL
           name: name
           userPrefix: userPrefix
@@ -946,6 +993,7 @@ components:
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
+          auditLogConfig: "{}"
           highAvailabilityType: ZONAL
           name: name
           userPrefix: userPrefix
@@ -967,6 +1015,7 @@ components:
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
+          auditLogConfig: "{}"
           highAvailabilityType: ZONAL
           name: name
           userPrefix: userPrefix
@@ -984,12 +1033,24 @@ components:
       description: Responses message to the request for changing the root password
         of a TiDB Cloud Serverless cluster.
       type: object
+    v1beta1ClusterAuditLogConfig:
+      description: Message for audit log configuration.
+      properties:
+        enabled:
+          description: Optional. Whether audit log is enabled.
+          nullable: true
+          type: boolean
+        unredacted:
+          description: Optional. Whether unredacted the audit log.
+          nullable: true
+          type: boolean
+      type: object
     v1beta1ClusterAutomatedBackupPolicy:
       description: Message for automated backup configuration for a cluster.
       properties:
         startTime:
-          description: Optional. Cron expression for when automated backups should
-            start.
+          description: "Optional. When automated backups should start, in HH:mm format,\
+            \ UTC."
           type: string
         retentionDays:
           description: Optional. Number of days to retain automated backups.
@@ -1016,25 +1077,6 @@ components:
           - $ref: '#/components/schemas/EndpointsPrivate'
           description: Output_only. Private endpoint to securely connect to the cluster.
           type: object
-      type: object
-    v1beta1ClusterUsage:
-      description: Message for usage statistics of a cluster.
-      properties:
-        requestUnit:
-          description: Output_only. The Request Units used in this month.
-          format: int64
-          readOnly: true
-          type: string
-        rowBasedStorage:
-          description: Output_only. The storage used on row-based storage in bytes.
-          format: double
-          readOnly: true
-          type: number
-        columnarStorage:
-          description: Output_only. The storage used on column-based storage in bytes.
-          format: double
-          readOnly: true
-          type: number
       type: object
     v1beta1PartialUpdateClusterRequestPartialUpdateCluster:
       properties:
@@ -1067,6 +1109,11 @@ components:
             tidb.cloud/organization. The label for the cluster organization id.
             tidb.cloud/project. The label for the cluster project id.
           type: object
+        auditLogConfig:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterAuditLogConfig'
+          description: Optional. The audit log configuration for the cluster.
+          type: object
       required:
       - clusterId
       type: object
@@ -1075,15 +1122,14 @@ components:
         Enum of cloud provider names.
 
          - aws: Amazon Web Services.
-        buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
          - gcp: Google Cloud Platform.
-        buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
          - azure: Microsoft Azure.
-        buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+         - alicloud: Alibaba Cloud
       enum:
       - aws
       - gcp
       - azure
+      - alicloud
       type: string
     v1beta1ServerlessServicePartialUpdateClusterBody:
       description: Message for requesting a partial update on a TiDB Cloud Serverless
@@ -1131,6 +1177,11 @@ components:
             Optional. The labels for the cluster.
             tidb.cloud/organization. The label for the cluster organization id.
             tidb.cloud/project. The label for the cluster project id.
+          type: object
+        auditLogConfig:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterAuditLogConfig'
+          description: Optional. The audit log configuration for the cluster.
           type: object
       title: Required. The cluster to be updated.
       type: object

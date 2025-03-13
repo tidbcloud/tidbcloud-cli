@@ -3,7 +3,9 @@
 package mock
 
 import (
+	auditlog "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/auditlog"
 	br "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
+
 	branch "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 
 	cluster "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
@@ -440,6 +442,36 @@ func (_m *TiDBCloudClient) DeleteSQLUser(ctx context.Context, clusterID string, 
 	return r0, r1
 }
 
+// DownloadAuditLogs provides a mock function with given fields: ctx, clusterID, body
+func (_m *TiDBCloudClient) DownloadAuditLogs(ctx context.Context, clusterID string, body *auditlog.AuditLogServiceDownloadAuditLogsBody) (*auditlog.DownloadAuditLogsResponse, error) {
+	ret := _m.Called(ctx, clusterID, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DownloadAuditLogs")
+	}
+
+	var r0 *auditlog.DownloadAuditLogsResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *auditlog.AuditLogServiceDownloadAuditLogsBody) (*auditlog.DownloadAuditLogsResponse, error)); ok {
+		return rf(ctx, clusterID, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *auditlog.AuditLogServiceDownloadAuditLogsBody) *auditlog.DownloadAuditLogsResponse); ok {
+		r0 = rf(ctx, clusterID, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*auditlog.DownloadAuditLogsResponse)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *auditlog.AuditLogServiceDownloadAuditLogsBody) error); ok {
+		r1 = rf(ctx, clusterID, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // DownloadExportFiles provides a mock function with given fields: ctx, clusterId, exportId, body
 func (_m *TiDBCloudClient) DownloadExportFiles(ctx context.Context, clusterId string, exportId string, body *export.ExportServiceDownloadExportFilesBody) (*export.DownloadExportFilesResponse, error) {
 	ret := _m.Called(ctx, clusterId, exportId, body)
@@ -643,6 +675,36 @@ func (_m *TiDBCloudClient) GetSQLUser(ctx context.Context, clusterID string, use
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
 		r1 = rf(ctx, clusterID, userName)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ListAuditLogs provides a mock function with given fields: ctx, clusterID, pageSize, pageToken, date
+func (_m *TiDBCloudClient) ListAuditLogs(ctx context.Context, clusterID string, pageSize *int32, pageToken *string, date *string) (*auditlog.ListAuditLogsResponse, error) {
+	ret := _m.Called(ctx, clusterID, pageSize, pageToken, date)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListAuditLogs")
+	}
+
+	var r0 *auditlog.ListAuditLogsResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string, *string) (*auditlog.ListAuditLogsResponse, error)); ok {
+		return rf(ctx, clusterID, pageSize, pageToken, date)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string, *string) *auditlog.ListAuditLogsResponse); ok {
+		r0 = rf(ctx, clusterID, pageSize, pageToken, date)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*auditlog.ListAuditLogsResponse)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *int32, *string, *string) error); ok {
+		r1 = rf(ctx, clusterID, pageSize, pageToken, date)
 	} else {
 		r1 = ret.Error(1)
 	}

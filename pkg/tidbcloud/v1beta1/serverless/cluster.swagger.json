@@ -394,6 +394,30 @@
       },
       "description": "Message for spending limit configuration."
     },
+    "ClusterUsage": {
+      "type": "object",
+      "properties": {
+        "requestUnit": {
+          "type": "string",
+          "format": "int64",
+          "description": "Output_only. The Request Units used in this month.",
+          "readOnly": true
+        },
+        "rowBasedStorage": {
+          "type": "number",
+          "format": "double",
+          "description": "Output_only. The storage used on row-based storage in bytes.",
+          "readOnly": true
+        },
+        "columnarStorage": {
+          "type": "number",
+          "format": "double",
+          "description": "Output_only. The storage used on column-based storage in bytes.",
+          "readOnly": true
+        }
+      },
+      "description": "Message for usage statistics of a cluster."
+    },
     "EndpointsPrivate": {
       "type": "object",
       "properties": {
@@ -444,9 +468,36 @@
         "disabled": {
           "type": "boolean",
           "description": "Optional. Whether the public endpoint is disabled."
+        },
+        "authorizedNetworks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/EndpointsPublicAuthorizedNetwork"
+          },
+          "title": "The list of networks that are allowed to connect to the cluster"
         }
       },
       "description": "Message for public endpoint to connect to the cluster."
+    },
+    "EndpointsPublicAuthorizedNetwork": {
+      "type": "object",
+      "properties": {
+        "startIpAddress": {
+          "type": "string"
+        },
+        "endIpAddress": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "startIpAddress",
+        "endIpAddress",
+        "displayName"
+      ]
     },
     "PrivateAWS": {
       "type": "object",
@@ -685,7 +736,7 @@
           "readOnly": true,
           "allOf": [
             {
-              "$ref": "#/definitions/v1beta1ClusterUsage"
+              "$ref": "#/definitions/ClusterUsage"
             }
           ]
         },
@@ -715,6 +766,14 @@
           "format": "date-time",
           "description": "Output_only. Timestamp when the cluster was last updated.",
           "readOnly": true
+        },
+        "auditLogConfig": {
+          "description": "Optional. The audit log configuration for the cluster.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ClusterAuditLogConfig"
+            }
+          ]
         }
       },
       "description": "Message for a serverless TiDB cluster resource.",
@@ -823,12 +882,28 @@
       "type": "object",
       "description": "Responses message to the request for changing the root password of a TiDB Cloud Serverless cluster."
     },
+    "v1beta1ClusterAuditLogConfig": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "x-nullable": true,
+          "description": "Optional. Whether audit log is enabled."
+        },
+        "unredacted": {
+          "type": "boolean",
+          "x-nullable": true,
+          "description": "Optional. Whether unredacted the audit log."
+        }
+      },
+      "description": "Message for audit log configuration."
+    },
     "v1beta1ClusterAutomatedBackupPolicy": {
       "type": "object",
       "properties": {
         "startTime": {
           "type": "string",
-          "description": "Optional. Cron expression for when automated backups should start."
+          "description": "Optional. When automated backups should start, in HH:mm format, UTC."
         },
         "retentionDays": {
           "type": "integer",
@@ -871,30 +946,6 @@
       },
       "description": "Message for endpoint information for connecting to a cluster."
     },
-    "v1beta1ClusterUsage": {
-      "type": "object",
-      "properties": {
-        "requestUnit": {
-          "type": "string",
-          "format": "int64",
-          "description": "Output_only. The Request Units used in this month.",
-          "readOnly": true
-        },
-        "rowBasedStorage": {
-          "type": "number",
-          "format": "double",
-          "description": "Output_only. The storage used on row-based storage in bytes.",
-          "readOnly": true
-        },
-        "columnarStorage": {
-          "type": "number",
-          "format": "double",
-          "description": "Output_only. The storage used on column-based storage in bytes.",
-          "readOnly": true
-        }
-      },
-      "description": "Message for usage statistics of a cluster."
-    },
     "v1beta1PartialUpdateClusterRequestPartialUpdateCluster": {
       "type": "object",
       "properties": {
@@ -936,6 +987,14 @@
             "type": "string"
           },
           "description": "Optional. The labels for the cluster.\ntidb.cloud/organization. The label for the cluster organization id.\ntidb.cloud/project. The label for the cluster project id."
+        },
+        "auditLogConfig": {
+          "description": "Optional. The audit log configuration for the cluster.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ClusterAuditLogConfig"
+            }
+          ]
         }
       },
       "required": [
@@ -947,9 +1006,10 @@
       "enum": [
         "aws",
         "gcp",
-        "azure"
+        "azure",
+        "alicloud"
       ],
-      "description": "Enum of cloud provider names.\n\n - aws: Amazon Web Services.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - gcp: Google Cloud Platform.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - azure: Microsoft Azure.\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE"
+      "description": "Enum of cloud provider names.\n\n - aws: Amazon Web Services.\n - gcp: Google Cloud Platform.\n - azure: Microsoft Azure.\n - alicloud: Alibaba Cloud"
     },
     "v1beta1ServerlessServicePartialUpdateClusterBody": {
       "type": "object",
@@ -991,6 +1051,14 @@
                 "type": "string"
               },
               "description": "Optional. The labels for the cluster.\ntidb.cloud/organization. The label for the cluster organization id.\ntidb.cloud/project. The label for the cluster project id."
+            },
+            "auditLogConfig": {
+              "description": "Optional. The audit log configuration for the cluster.",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/v1beta1ClusterAuditLogConfig"
+                }
+              ]
             }
           },
           "description": "Required. The cluster to be updated.",

@@ -19,7 +19,7 @@ var _ MappedNullable = &V1beta1ClusterAutomatedBackupPolicy{}
 
 // V1beta1ClusterAutomatedBackupPolicy Message for automated backup configuration for a cluster.
 type V1beta1ClusterAutomatedBackupPolicy struct {
-	// Optional. Cron expression for when automated backups should start.
+	// Optional. When automated backups should start, in HH:mm format, UTC.
 	StartTime *string `json:"startTime,omitempty"`
 	// Optional. Number of days to retain automated backups.
 	RetentionDays        *int32 `json:"retentionDays,omitempty"`

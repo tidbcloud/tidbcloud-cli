@@ -14,11 +14,11 @@ import (
 	"encoding/json"
 )
 
-// checks if the V1beta1ClusterUsage type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &V1beta1ClusterUsage{}
+// checks if the ClusterUsage type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ClusterUsage{}
 
-// V1beta1ClusterUsage Message for usage statistics of a cluster.
-type V1beta1ClusterUsage struct {
+// ClusterUsage Message for usage statistics of a cluster.
+type ClusterUsage struct {
 	// Output_only. The Request Units used in this month.
 	RequestUnit *string `json:"requestUnit,omitempty"`
 	// Output_only. The storage used on row-based storage in bytes.
@@ -28,27 +28,27 @@ type V1beta1ClusterUsage struct {
 	AdditionalProperties map[string]interface{}
 }
 
-type _V1beta1ClusterUsage V1beta1ClusterUsage
+type _ClusterUsage ClusterUsage
 
-// NewV1beta1ClusterUsage instantiates a new V1beta1ClusterUsage object
+// NewClusterUsage instantiates a new ClusterUsage object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewV1beta1ClusterUsage() *V1beta1ClusterUsage {
-	this := V1beta1ClusterUsage{}
+func NewClusterUsage() *ClusterUsage {
+	this := ClusterUsage{}
 	return &this
 }
 
-// NewV1beta1ClusterUsageWithDefaults instantiates a new V1beta1ClusterUsage object
+// NewClusterUsageWithDefaults instantiates a new ClusterUsage object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewV1beta1ClusterUsageWithDefaults() *V1beta1ClusterUsage {
-	this := V1beta1ClusterUsage{}
+func NewClusterUsageWithDefaults() *ClusterUsage {
+	this := ClusterUsage{}
 	return &this
 }
 
 // GetRequestUnit returns the RequestUnit field value if set, zero value otherwise.
-func (o *V1beta1ClusterUsage) GetRequestUnit() string {
+func (o *ClusterUsage) GetRequestUnit() string {
 	if o == nil || IsNil(o.RequestUnit) {
 		var ret string
 		return ret
@@ -58,7 +58,7 @@ func (o *V1beta1ClusterUsage) GetRequestUnit() string {
 
 // GetRequestUnitOk returns a tuple with the RequestUnit field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1ClusterUsage) GetRequestUnitOk() (*string, bool) {
+func (o *ClusterUsage) GetRequestUnitOk() (*string, bool) {
 	if o == nil || IsNil(o.RequestUnit) {
 		return nil, false
 	}
@@ -66,7 +66,7 @@ func (o *V1beta1ClusterUsage) GetRequestUnitOk() (*string, bool) {
 }
 
 // HasRequestUnit returns a boolean if a field has been set.
-func (o *V1beta1ClusterUsage) HasRequestUnit() bool {
+func (o *ClusterUsage) HasRequestUnit() bool {
 	if o != nil && !IsNil(o.RequestUnit) {
 		return true
 	}
@@ -75,12 +75,12 @@ func (o *V1beta1ClusterUsage) HasRequestUnit() bool {
 }
 
 // SetRequestUnit gets a reference to the given string and assigns it to the RequestUnit field.
-func (o *V1beta1ClusterUsage) SetRequestUnit(v string) {
+func (o *ClusterUsage) SetRequestUnit(v string) {
 	o.RequestUnit = &v
 }
 
 // GetRowBasedStorage returns the RowBasedStorage field value if set, zero value otherwise.
-func (o *V1beta1ClusterUsage) GetRowBasedStorage() float64 {
+func (o *ClusterUsage) GetRowBasedStorage() float64 {
 	if o == nil || IsNil(o.RowBasedStorage) {
 		var ret float64
 		return ret
@@ -90,7 +90,7 @@ func (o *V1beta1ClusterUsage) GetRowBasedStorage() float64 {
 
 // GetRowBasedStorageOk returns a tuple with the RowBasedStorage field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1ClusterUsage) GetRowBasedStorageOk() (*float64, bool) {
+func (o *ClusterUsage) GetRowBasedStorageOk() (*float64, bool) {
 	if o == nil || IsNil(o.RowBasedStorage) {
 		return nil, false
 	}
@@ -98,7 +98,7 @@ func (o *V1beta1ClusterUsage) GetRowBasedStorageOk() (*float64, bool) {
 }
 
 // HasRowBasedStorage returns a boolean if a field has been set.
-func (o *V1beta1ClusterUsage) HasRowBasedStorage() bool {
+func (o *ClusterUsage) HasRowBasedStorage() bool {
 	if o != nil && !IsNil(o.RowBasedStorage) {
 		return true
 	}
@@ -107,12 +107,12 @@ func (o *V1beta1ClusterUsage) HasRowBasedStorage() bool {
 }
 
 // SetRowBasedStorage gets a reference to the given float64 and assigns it to the RowBasedStorage field.
-func (o *V1beta1ClusterUsage) SetRowBasedStorage(v float64) {
+func (o *ClusterUsage) SetRowBasedStorage(v float64) {
 	o.RowBasedStorage = &v
 }
 
 // GetColumnarStorage returns the ColumnarStorage field value if set, zero value otherwise.
-func (o *V1beta1ClusterUsage) GetColumnarStorage() float64 {
+func (o *ClusterUsage) GetColumnarStorage() float64 {
 	if o == nil || IsNil(o.ColumnarStorage) {
 		var ret float64
 		return ret
@@ -122,7 +122,7 @@ func (o *V1beta1ClusterUsage) GetColumnarStorage() float64 {
 
 // GetColumnarStorageOk returns a tuple with the ColumnarStorage field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1ClusterUsage) GetColumnarStorageOk() (*float64, bool) {
+func (o *ClusterUsage) GetColumnarStorageOk() (*float64, bool) {
 	if o == nil || IsNil(o.ColumnarStorage) {
 		return nil, false
 	}
@@ -130,7 +130,7 @@ func (o *V1beta1ClusterUsage) GetColumnarStorageOk() (*float64, bool) {
 }
 
 // HasColumnarStorage returns a boolean if a field has been set.
-func (o *V1beta1ClusterUsage) HasColumnarStorage() bool {
+func (o *ClusterUsage) HasColumnarStorage() bool {
 	if o != nil && !IsNil(o.ColumnarStorage) {
 		return true
 	}
@@ -139,11 +139,11 @@ func (o *V1beta1ClusterUsage) HasColumnarStorage() bool {
 }
 
 // SetColumnarStorage gets a reference to the given float64 and assigns it to the ColumnarStorage field.
-func (o *V1beta1ClusterUsage) SetColumnarStorage(v float64) {
+func (o *ClusterUsage) SetColumnarStorage(v float64) {
 	o.ColumnarStorage = &v
 }
 
-func (o V1beta1ClusterUsage) MarshalJSON() ([]byte, error) {
+func (o ClusterUsage) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -151,7 +151,7 @@ func (o V1beta1ClusterUsage) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o V1beta1ClusterUsage) ToMap() (map[string]interface{}, error) {
+func (o ClusterUsage) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.RequestUnit) {
 		toSerialize["requestUnit"] = o.RequestUnit
@@ -170,16 +170,16 @@ func (o V1beta1ClusterUsage) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *V1beta1ClusterUsage) UnmarshalJSON(data []byte) (err error) {
-	varV1beta1ClusterUsage := _V1beta1ClusterUsage{}
+func (o *ClusterUsage) UnmarshalJSON(data []byte) (err error) {
+	varClusterUsage := _ClusterUsage{}
 
-	err = json.Unmarshal(data, &varV1beta1ClusterUsage)
+	err = json.Unmarshal(data, &varClusterUsage)
 
 	if err != nil {
 		return err
 	}
 
-	*o = V1beta1ClusterUsage(varV1beta1ClusterUsage)
+	*o = ClusterUsage(varClusterUsage)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -193,38 +193,38 @@ func (o *V1beta1ClusterUsage) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
-type NullableV1beta1ClusterUsage struct {
-	value *V1beta1ClusterUsage
+type NullableClusterUsage struct {
+	value *ClusterUsage
 	isSet bool
 }
 
-func (v NullableV1beta1ClusterUsage) Get() *V1beta1ClusterUsage {
+func (v NullableClusterUsage) Get() *ClusterUsage {
 	return v.value
 }
 
-func (v *NullableV1beta1ClusterUsage) Set(val *V1beta1ClusterUsage) {
+func (v *NullableClusterUsage) Set(val *ClusterUsage) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableV1beta1ClusterUsage) IsSet() bool {
+func (v NullableClusterUsage) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableV1beta1ClusterUsage) Unset() {
+func (v *NullableClusterUsage) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableV1beta1ClusterUsage(val *V1beta1ClusterUsage) *NullableV1beta1ClusterUsage {
-	return &NullableV1beta1ClusterUsage{value: val, isSet: true}
+func NewNullableClusterUsage(val *ClusterUsage) *NullableClusterUsage {
+	return &NullableClusterUsage{value: val, isSet: true}
 }
 
-func (v NullableV1beta1ClusterUsage) MarshalJSON() ([]byte, error) {
+func (v NullableClusterUsage) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableV1beta1ClusterUsage) UnmarshalJSON(src []byte) error {
+func (v *NullableClusterUsage) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
