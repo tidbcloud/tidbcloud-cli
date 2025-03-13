@@ -1,6 +1,9 @@
 module github.com/tidbcloud/tidbcloud-cli
 
-go 1.23
+go 1.23.0
+
+toolchain go1.23.1
+
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6
 	github.com/aws/aws-sdk-go-v2 v1.27.1
