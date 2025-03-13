@@ -141,6 +141,11 @@ func (suite *S3ImportSuite) TestS3ImportArgs() {
 			args: []string{"--source-type", "S3", "-c", clusterID, "--file-type", string(fileType), "--s3.uri", S3Uri},
 			err:  fmt.Errorf("either role arn or access key id and secret access key must be provided"),
 		},
+		{
+			name: "start import with endpoint",
+			args: []string{"--source-type", "S3", "--cluster-id", clusterID, "--file-type", string(fileType), "--s3.uri", S3Uri, "--s3.role-arn", roleArn, "--s3.endpoint", "https://example.com"},
+			err:  fmt.Errorf("Currently endpoint is not supported for role arn"),
+		},
 	}
 
 	for _, tt := range tests {
@@ -235,7 +240,7 @@ func (suite *S3ImportSuite) TestS3ImportArgsAccessKey() {
 		},
 		{
 			name: "start import without required uri",
-			args: []string{"--source-type", "S3", "-c", clusterID, "--file-type", string(fileType), "--s3.role-arn", secretId},
+			args: []string{"--source-type", "S3", "-c", clusterID, "--file-type", string(fileType), "--s3.access-key-id", secretId, "--s3.secret-access-key", secret},
 			err:  fmt.Errorf("empty S3 URI"),
 		},
 		{
