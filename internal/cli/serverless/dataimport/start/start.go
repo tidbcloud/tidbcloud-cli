@@ -53,6 +53,9 @@ var inputDescription = map[string]string{
 	flag.S3AccessKeyID:        "Input your S3 access key id",
 	flag.S3SecretAccessKey:    "Input your S3 secret access key",
 	flag.S3RoleArn:            "Input your S3 role arn",
+	flag.OSSURI:               "Input your OSS URI in oss://<bucket>/<path> format",
+	flag.OSSAccessKeyID:       "Input your OSS access key id",
+	flag.OSSSecretAccessKey:   "Input your OSS secret access key",
 	flag.AzureBlobURI:         "Input your Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format",
 	flag.AzureBlobSASToken:    "Input your Azure Blob SAS token",
 	flag.GCSURI:               "Input your GCS URI in gs://<bucket>/<path> format",
@@ -226,6 +229,13 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 					clusterId:   clusterId,
 				}
 				return azBlobOpts.Run(cmd)
+			} else if sourceType == imp.IMPORTSOURCETYPEENUM_OSS {
+				ossOpts := OSSOpts{
+					h:           h,
+					interactive: opts.interactive,
+					clusterId:   clusterId,
+				}
+				return ossOpts.Run(cmd)
 			} else {
 				return errors.New("unsupported import source type")
 			}
@@ -248,6 +258,11 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	startCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3AccessKeyID)
 	startCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3SecretAccessKey)
 	startCmd.MarkFlagsRequiredTogether(flag.S3AccessKeyID, flag.S3SecretAccessKey)
+
+	startCmd.Flags().String(flag.OSSAccessKeyID, "", "The access key ID of the OSS.")
+	startCmd.Flags().String(flag.OSSSecretAccessKey, "", "The secret access key of the OSS.")
+	startCmd.Flags().String(flag.OSSURI, "", "The OSS URI in oss://<bucket>/<path> format. Required when source type is OSS.")
+	startCmd.MarkFlagsRequiredTogether(flag.OSSAccessKeyID, flag.OSSSecretAccessKey)
 
 	startCmd.Flags().String(flag.GCSURI, "", "The GCS URI in gs://<bucket>/<path> format. Required when source type is GCS.")
 	startCmd.Flags().String(flag.GCSServiceAccountKey, "", "The base64 encoded service account key of GCS.")

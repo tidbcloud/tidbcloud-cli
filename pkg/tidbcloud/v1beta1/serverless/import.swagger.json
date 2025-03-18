@@ -199,8 +199,7 @@
             "description": "The ID of the cluster to import into.",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "uint64"
+            "type": "string"
           },
           {
             "name": "pageToken",
@@ -252,8 +251,7 @@
             "description": "The ID of the cluster to import into.",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "uint64"
+            "type": "string"
           },
           {
             "name": "body",
@@ -293,8 +291,7 @@
             "description": "The ID of the cluster to import into.",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "uint64"
+            "type": "string"
           },
           {
             "name": "id",
@@ -334,8 +331,7 @@
             "description": "The ID of the cluster to import into.",
             "in": "path",
             "required": true,
-            "type": "string",
-            "format": "uint64"
+            "type": "string"
           },
           {
             "name": "id",
@@ -378,7 +374,7 @@
         },
         "uri": {
           "type": "string",
-          "description": "The Azure Blob URI of the import source. For example: azure://<account>.blob.core.windows.net/<container>/<path>."
+          "description": "The Azure Blob URI of the import source. For example: azure://<account>.blob.core.windows.net/<container>/<path> or https://<account>.blob.core.windows.net/<container>/<path>."
         }
       },
       "required": [
@@ -506,7 +502,6 @@
         },
         "clusterId": {
           "type": "string",
-          "format": "uint64",
           "description": "The ID of the cluster to import into.",
           "readOnly": true
         },
@@ -594,6 +589,13 @@
       ],
       "description": " - SERVICE_ACCOUNT_KEY: The access method is service account key."
     },
+    "ImportOSSAuthType.Enum": {
+      "type": "string",
+      "enum": [
+        "ACCESS_KEY"
+      ],
+      "description": " - ACCESS_KEY: The access method is access key."
+    },
     "ImportOptions": {
       "type": "object",
       "properties": {
@@ -625,6 +627,13 @@
         "ACCESS_KEY"
       ],
       "description": " - ROLE_ARN: The access method is role arn.\n - ACCESS_KEY: The access method is access key."
+    },
+    "ImportS3CompatibleAuthType.Enum": {
+      "type": "string",
+      "enum": [
+        "ACCESS_KEY"
+      ],
+      "description": " - ACCESS_KEY: The access method is access key."
     },
     "ImportService.CreateImportBody": {
       "type": "object",
@@ -673,6 +682,12 @@
         },
         "azureBlob": {
           "$ref": "#/definitions/AzureBlobSource"
+        },
+        "s3Compatible": {
+          "$ref": "#/definitions/S3CompatibleSource"
+        },
+        "oss": {
+          "$ref": "#/definitions/OSSSource"
         }
       },
       "required": [
@@ -685,9 +700,11 @@
         "LOCAL",
         "S3",
         "GCS",
-        "AZURE_BLOB"
+        "AZURE_BLOB",
+        "S3_COMPATIBLE",
+        "OSS"
       ],
-      "title": "- LOCAL: Local source.\n - S3: S3 source.\n - GCS: gcs source\n - AZURE_BLOB: azure blob source"
+      "title": "- LOCAL: Local source.\n - S3: S3 source.\n - GCS: gcs source\n - AZURE_BLOB: azure blob source\n - S3_COMPATIBLE: S3 compatible source\n - OSS: OSS source"
     },
     "ImportState.Enum": {
       "type": "string",
@@ -751,6 +768,103 @@
         "uploadId",
         "targetDatabase",
         "targetTable"
+      ]
+    },
+    "OSSSource": {
+      "type": "object",
+      "properties": {
+        "uri": {
+          "type": "string",
+          "description": "The OSS compatible URI of the import source."
+        },
+        "authType": {
+          "description": "The auth method of the import source.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ImportOSSAuthType.Enum"
+            }
+          ]
+        },
+        "accessKey": {
+          "description": "The access key.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/OSSSource.AccessKey"
+            }
+          ]
+        }
+      },
+      "required": [
+        "uri",
+        "authType"
+      ]
+    },
+    "OSSSource.AccessKey": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The access key id."
+        },
+        "secret": {
+          "type": "string",
+          "description": "The secret access key. This field is input-only."
+        }
+      },
+      "required": [
+        "id",
+        "secret"
+      ]
+    },
+    "S3CompatibleSource": {
+      "type": "object",
+      "properties": {
+        "uri": {
+          "type": "string",
+          "description": "The S3 compatible URI of the import source."
+        },
+        "authType": {
+          "description": "The auth method of the import source.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ImportS3CompatibleAuthType.Enum"
+            }
+          ]
+        },
+        "accessKey": {
+          "description": "The access key.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/S3CompatibleSource.AccessKey"
+            }
+          ]
+        },
+        "endpoint": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "The custom S3 endpoint (HTTPS only).\nUsed for connecting to non-AWS S3-compatible storage, such as Cloudflare or other cloud providers.\nEnsure the endpoint is a valid HTTPS URL (e.g., \"https://custom-s3.example.com\")."
+        }
+      },
+      "required": [
+        "uri",
+        "authType"
+      ]
+    },
+    "S3CompatibleSource.AccessKey": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The access key id."
+        },
+        "secret": {
+          "type": "string",
+          "description": "The secret access key. This field is input-only."
+        }
+      },
+      "required": [
+        "id",
+        "secret"
       ]
     },
     "S3Source": {
