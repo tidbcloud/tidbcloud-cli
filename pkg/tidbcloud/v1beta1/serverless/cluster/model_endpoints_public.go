@@ -24,7 +24,8 @@ type EndpointsPublic struct {
 	// Output_only. The port of the public endpoint.
 	Port *int32 `json:"port,omitempty"`
 	// Optional. Whether the public endpoint is disabled.
-	Disabled             *bool `json:"disabled,omitempty"`
+	Disabled             *bool                              `json:"disabled,omitempty"`
+	AuthorizedNetworks   []EndpointsPublicAuthorizedNetwork `json:"authorizedNetworks,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -143,6 +144,38 @@ func (o *EndpointsPublic) SetDisabled(v bool) {
 	o.Disabled = &v
 }
 
+// GetAuthorizedNetworks returns the AuthorizedNetworks field value if set, zero value otherwise.
+func (o *EndpointsPublic) GetAuthorizedNetworks() []EndpointsPublicAuthorizedNetwork {
+	if o == nil || IsNil(o.AuthorizedNetworks) {
+		var ret []EndpointsPublicAuthorizedNetwork
+		return ret
+	}
+	return o.AuthorizedNetworks
+}
+
+// GetAuthorizedNetworksOk returns a tuple with the AuthorizedNetworks field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EndpointsPublic) GetAuthorizedNetworksOk() ([]EndpointsPublicAuthorizedNetwork, bool) {
+	if o == nil || IsNil(o.AuthorizedNetworks) {
+		return nil, false
+	}
+	return o.AuthorizedNetworks, true
+}
+
+// HasAuthorizedNetworks returns a boolean if a field has been set.
+func (o *EndpointsPublic) HasAuthorizedNetworks() bool {
+	if o != nil && !IsNil(o.AuthorizedNetworks) {
+		return true
+	}
+
+	return false
+}
+
+// SetAuthorizedNetworks gets a reference to the given []EndpointsPublicAuthorizedNetwork and assigns it to the AuthorizedNetworks field.
+func (o *EndpointsPublic) SetAuthorizedNetworks(v []EndpointsPublicAuthorizedNetwork) {
+	o.AuthorizedNetworks = v
+}
+
 func (o EndpointsPublic) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -161,6 +194,9 @@ func (o EndpointsPublic) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Disabled) {
 		toSerialize["disabled"] = o.Disabled
+	}
+	if !IsNil(o.AuthorizedNetworks) {
+		toSerialize["authorizedNetworks"] = o.AuthorizedNetworks
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -187,6 +223,7 @@ func (o *EndpointsPublic) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "host")
 		delete(additionalProperties, "port")
 		delete(additionalProperties, "disabled")
+		delete(additionalProperties, "authorizedNetworks")
 		o.AdditionalProperties = additionalProperties
 	}
 

@@ -48,7 +48,7 @@ type TidbCloudOpenApiserverlessv1beta1Cluster struct {
 	// Output_only. The current state of the cluster.
 	State *Commonv1beta1ClusterState `json:"state,omitempty"`
 	// Output_only. Usage details of the cluster.
-	Usage *V1beta1ClusterUsage `json:"usage,omitempty"`
+	Usage *ClusterUsage `json:"usage,omitempty"`
 	// Optional. The labels for the cluster. tidb.cloud/organization. The label for the cluster organization id. tidb.cloud/project. The label for the cluster project id.
 	Labels *map[string]string `json:"labels,omitempty"`
 	// OUTPUT_ONLY. The annotations for the cluster. tidb.cloud/has-set-password. The annotation for whether the cluster has set password. tidb.cloud/available-features. The annotation for the available features of the cluster.
@@ -56,7 +56,9 @@ type TidbCloudOpenApiserverlessv1beta1Cluster struct {
 	// Output_only. Timestamp when the cluster was created.
 	CreateTime *time.Time `json:"createTime,omitempty"`
 	// Output_only. Timestamp when the cluster was last updated.
-	UpdateTime           *time.Time `json:"updateTime,omitempty"`
+	UpdateTime *time.Time `json:"updateTime,omitempty"`
+	// Optional. The audit log configuration for the cluster.
+	AuditLogConfig       *V1beta1ClusterAuditLogConfig `json:"auditLogConfig,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -514,9 +516,9 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetState(v Commonv1beta1Clust
 }
 
 // GetUsage returns the Usage field value if set, zero value otherwise.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetUsage() V1beta1ClusterUsage {
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetUsage() ClusterUsage {
 	if o == nil || IsNil(o.Usage) {
-		var ret V1beta1ClusterUsage
+		var ret ClusterUsage
 		return ret
 	}
 	return *o.Usage
@@ -524,7 +526,7 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetUsage() V1beta1ClusterUsag
 
 // GetUsageOk returns a tuple with the Usage field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetUsageOk() (*V1beta1ClusterUsage, bool) {
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetUsageOk() (*ClusterUsage, bool) {
 	if o == nil || IsNil(o.Usage) {
 		return nil, false
 	}
@@ -540,8 +542,8 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasUsage() bool {
 	return false
 }
 
-// SetUsage gets a reference to the given V1beta1ClusterUsage and assigns it to the Usage field.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetUsage(v V1beta1ClusterUsage) {
+// SetUsage gets a reference to the given ClusterUsage and assigns it to the Usage field.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetUsage(v ClusterUsage) {
 	o.Usage = &v
 }
 
@@ -673,6 +675,38 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetUpdateTime(v time.Time) {
 	o.UpdateTime = &v
 }
 
+// GetAuditLogConfig returns the AuditLogConfig field value if set, zero value otherwise.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetAuditLogConfig() V1beta1ClusterAuditLogConfig {
+	if o == nil || IsNil(o.AuditLogConfig) {
+		var ret V1beta1ClusterAuditLogConfig
+		return ret
+	}
+	return *o.AuditLogConfig
+}
+
+// GetAuditLogConfigOk returns a tuple with the AuditLogConfig field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetAuditLogConfigOk() (*V1beta1ClusterAuditLogConfig, bool) {
+	if o == nil || IsNil(o.AuditLogConfig) {
+		return nil, false
+	}
+	return o.AuditLogConfig, true
+}
+
+// HasAuditLogConfig returns a boolean if a field has been set.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasAuditLogConfig() bool {
+	if o != nil && !IsNil(o.AuditLogConfig) {
+		return true
+	}
+
+	return false
+}
+
+// SetAuditLogConfig gets a reference to the given V1beta1ClusterAuditLogConfig and assigns it to the AuditLogConfig field.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetAuditLogConfig(v V1beta1ClusterAuditLogConfig) {
+	o.AuditLogConfig = &v
+}
+
 func (o TidbCloudOpenApiserverlessv1beta1Cluster) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -735,6 +769,9 @@ func (o TidbCloudOpenApiserverlessv1beta1Cluster) ToMap() (map[string]interface{
 	}
 	if !IsNil(o.UpdateTime) {
 		toSerialize["updateTime"] = o.UpdateTime
+	}
+	if !IsNil(o.AuditLogConfig) {
+		toSerialize["auditLogConfig"] = o.AuditLogConfig
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -799,6 +836,7 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) UnmarshalJSON(data []byte) (e
 		delete(additionalProperties, "annotations")
 		delete(additionalProperties, "createTime")
 		delete(additionalProperties, "updateTime")
+		delete(additionalProperties, "auditLogConfig")
 		o.AdditionalProperties = additionalProperties
 	}
 
