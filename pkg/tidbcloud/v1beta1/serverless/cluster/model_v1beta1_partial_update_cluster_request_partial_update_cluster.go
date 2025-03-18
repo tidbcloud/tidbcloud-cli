@@ -31,7 +31,9 @@ type V1beta1PartialUpdateClusterRequestPartialUpdateCluster struct {
 	// Optional. The endpoints for connecting to the cluster.
 	Endpoints *V1beta1ClusterEndpoints `json:"endpoints,omitempty"`
 	// Optional. The labels for the cluster. tidb.cloud/organization. The label for the cluster organization id. tidb.cloud/project. The label for the cluster project id.
-	Labels               *map[string]string `json:"labels,omitempty"`
+	Labels *map[string]string `json:"labels,omitempty"`
+	// Optional. The audit log configuration for the cluster.
+	AuditLogConfig       *V1beta1ClusterAuditLogConfig `json:"auditLogConfig,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -239,6 +241,38 @@ func (o *V1beta1PartialUpdateClusterRequestPartialUpdateCluster) SetLabels(v map
 	o.Labels = &v
 }
 
+// GetAuditLogConfig returns the AuditLogConfig field value if set, zero value otherwise.
+func (o *V1beta1PartialUpdateClusterRequestPartialUpdateCluster) GetAuditLogConfig() V1beta1ClusterAuditLogConfig {
+	if o == nil || IsNil(o.AuditLogConfig) {
+		var ret V1beta1ClusterAuditLogConfig
+		return ret
+	}
+	return *o.AuditLogConfig
+}
+
+// GetAuditLogConfigOk returns a tuple with the AuditLogConfig field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V1beta1PartialUpdateClusterRequestPartialUpdateCluster) GetAuditLogConfigOk() (*V1beta1ClusterAuditLogConfig, bool) {
+	if o == nil || IsNil(o.AuditLogConfig) {
+		return nil, false
+	}
+	return o.AuditLogConfig, true
+}
+
+// HasAuditLogConfig returns a boolean if a field has been set.
+func (o *V1beta1PartialUpdateClusterRequestPartialUpdateCluster) HasAuditLogConfig() bool {
+	if o != nil && !IsNil(o.AuditLogConfig) {
+		return true
+	}
+
+	return false
+}
+
+// SetAuditLogConfig gets a reference to the given V1beta1ClusterAuditLogConfig and assigns it to the AuditLogConfig field.
+func (o *V1beta1PartialUpdateClusterRequestPartialUpdateCluster) SetAuditLogConfig(v V1beta1ClusterAuditLogConfig) {
+	o.AuditLogConfig = &v
+}
+
 func (o V1beta1PartialUpdateClusterRequestPartialUpdateCluster) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -264,6 +298,9 @@ func (o V1beta1PartialUpdateClusterRequestPartialUpdateCluster) ToMap() (map[str
 	}
 	if !IsNil(o.Labels) {
 		toSerialize["labels"] = o.Labels
+	}
+	if !IsNil(o.AuditLogConfig) {
+		toSerialize["auditLogConfig"] = o.AuditLogConfig
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -314,6 +351,7 @@ func (o *V1beta1PartialUpdateClusterRequestPartialUpdateCluster) UnmarshalJSON(d
 		delete(additionalProperties, "automatedBackupPolicy")
 		delete(additionalProperties, "endpoints")
 		delete(additionalProperties, "labels")
+		delete(additionalProperties, "auditLogConfig")
 		o.AdditionalProperties = additionalProperties
 	}
 
