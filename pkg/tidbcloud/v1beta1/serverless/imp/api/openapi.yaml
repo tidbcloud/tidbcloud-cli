@@ -142,7 +142,6 @@ paths:
         name: clusterId
         required: true
         schema:
-          format: uint64
           type: string
       - description: "Optional. The page token, default is empty."
         in: query
@@ -185,7 +184,6 @@ paths:
         name: clusterId
         required: true
         schema:
-          format: uint64
           type: string
       requestBody:
         content:
@@ -219,7 +217,6 @@ paths:
         name: clusterId
         required: true
         schema:
-          format: uint64
           type: string
       - description: The ID of the import.
         in: path
@@ -252,7 +249,6 @@ paths:
         name: clusterId
         required: true
         schema:
-          format: uint64
           type: string
       - description: The ID of the import.
         in: path
@@ -298,7 +294,8 @@ components:
           description: The sas token. This field is input-only.
           type: string
         uri:
-          description: "The Azure Blob URI of the import source. For example: azure://<account>.blob.core.windows.net/<container>/<path>."
+          description: "The Azure Blob URI of the import source. For example: azure://<account>.blob.core.windows.net/<container>/<path>\
+            \ or https://<account>.blob.core.windows.net/<container>/<path>."
           type: string
       required:
       - authType
@@ -407,7 +404,6 @@ components:
           type: string
         clusterId:
           description: The ID of the cluster to import into.
-          format: uint64
           readOnly: true
           type: string
         totalSize:
@@ -477,6 +473,11 @@ components:
       enum:
       - SERVICE_ACCOUNT_KEY
       type: string
+    ImportOSSAuthType.Enum:
+      description: " - ACCESS_KEY: The access method is access key."
+      enum:
+      - ACCESS_KEY
+      type: string
     ImportOptions:
       properties:
         fileType:
@@ -498,6 +499,11 @@ components:
          - ACCESS_KEY: The access method is access key.
       enum:
       - ROLE_ARN
+      - ACCESS_KEY
+      type: string
+    ImportS3CompatibleAuthType.Enum:
+      description: " - ACCESS_KEY: The access method is access key."
+      enum:
       - ACCESS_KEY
       type: string
     ImportService.CreateImportBody:
@@ -531,6 +537,10 @@ components:
           $ref: '#/components/schemas/GCSSource'
         azureBlob:
           $ref: '#/components/schemas/AzureBlobSource'
+        s3Compatible:
+          $ref: '#/components/schemas/S3CompatibleSource'
+        oss:
+          $ref: '#/components/schemas/OSSSource'
       required:
       - type
       type: object
@@ -540,11 +550,15 @@ components:
       - S3
       - GCS
       - AZURE_BLOB
+      - S3_COMPATIBLE
+      - OSS
       title: |-
         - LOCAL: Local source.
          - S3: S3 source.
          - GCS: gcs source
          - AZURE_BLOB: azure blob source
+         - S3_COMPATIBLE: S3 compatible source
+         - OSS: OSS source
       type: string
     ImportState.Enum:
       description: |2-
@@ -627,6 +641,75 @@ components:
       - targetDatabase
       - targetTable
       - uploadId
+      type: object
+    OSSSource:
+      properties:
+        uri:
+          description: The OSS compatible URI of the import source.
+          type: string
+        authType:
+          allOf:
+          - $ref: '#/components/schemas/ImportOSSAuthType.Enum'
+          description: The auth method of the import source.
+          type: object
+        accessKey:
+          allOf:
+          - $ref: '#/components/schemas/OSSSource.AccessKey'
+          description: The access key.
+          type: object
+      required:
+      - authType
+      - uri
+      type: object
+    OSSSource.AccessKey:
+      properties:
+        id:
+          description: The access key id.
+          type: string
+        secret:
+          description: The secret access key. This field is input-only.
+          type: string
+      required:
+      - id
+      - secret
+      type: object
+    S3CompatibleSource:
+      properties:
+        uri:
+          description: The S3 compatible URI of the import source.
+          type: string
+        authType:
+          allOf:
+          - $ref: '#/components/schemas/ImportS3CompatibleAuthType.Enum'
+          description: The auth method of the import source.
+          type: object
+        accessKey:
+          allOf:
+          - $ref: '#/components/schemas/S3CompatibleSource.AccessKey'
+          description: The access key.
+          type: object
+        endpoint:
+          description: |-
+            The custom S3 endpoint (HTTPS only).
+            Used for connecting to non-AWS S3-compatible storage, such as Cloudflare or other cloud providers.
+            Ensure the endpoint is a valid HTTPS URL (e.g., "https://custom-s3.example.com").
+          nullable: true
+          type: string
+      required:
+      - authType
+      - uri
+      type: object
+    S3CompatibleSource.AccessKey:
+      properties:
+        id:
+          description: The access key id.
+          type: string
+        secret:
+          description: The secret access key. This field is input-only.
+          type: string
+      required:
+      - id
+      - secret
       type: object
     S3Source:
       properties:
