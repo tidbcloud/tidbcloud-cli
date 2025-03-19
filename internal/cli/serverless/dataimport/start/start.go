@@ -38,6 +38,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var allowedImportSourceTypeEnumEnumValues = []imp.ImportSourceTypeEnum{
+	"LOCAL",
+	"S3",
+	"GCS",
+	"AZURE_BLOB",
+	"OSS",
+}
+
 const (
 	defaultCsvSeparator         = ","
 	defaultCsvDelimiter         = "\""
@@ -243,7 +251,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	startCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID.")
-	startCmd.Flags().String(flag.SourceType, "LOCAL", fmt.Sprintf("The import source type, one of %q.", imp.AllowedImportSourceTypeEnumEnumValues))
+	startCmd.Flags().String(flag.SourceType, "LOCAL", fmt.Sprintf("The import source type, one of %q.", allowedImportSourceTypeEnumEnumValues))
 	startCmd.Flags().String(flag.FileType, "", fmt.Sprintf("The import file type, one of %q.", imp.AllowedImportFileTypeEnumEnumValues))
 
 	startCmd.Flags().String(flag.LocalFilePath, "", "The local file path to import.")
@@ -281,8 +289,8 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 }
 
 func getSelectedSourceType() (imp.ImportSourceTypeEnum, error) {
-	SourceTypes := make([]interface{}, 0, len(imp.AllowedImportSourceTypeEnumEnumValues))
-	for _, sourceType := range imp.AllowedImportSourceTypeEnumEnumValues {
+	SourceTypes := make([]interface{}, 0, len(allowedImportSourceTypeEnumEnumValues))
+	for _, sourceType := range allowedImportSourceTypeEnumEnumValues {
 		SourceTypes = append(SourceTypes, sourceType)
 	}
 	model, err := ui.InitialSelectModel(SourceTypes, "Choose import source type:")
