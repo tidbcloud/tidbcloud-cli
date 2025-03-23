@@ -774,6 +774,23 @@
               "$ref": "#/definitions/v1beta1ClusterAuditLogConfig"
             }
           ]
+        },
+        "clusterPlan": {
+          "description": "Output_only. The plan of the cluster.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ClusterClusterPlan"
+            }
+          ]
+        },
+        "autoScaling": {
+          "description": "Optional. The auto scaling config for the cluster.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ClusterAutoScaling"
+            }
+          ]
         }
       },
       "description": "Message for a serverless TiDB cluster resource.",
@@ -898,6 +915,20 @@
       },
       "description": "Message for audit log configuration."
     },
+    "v1beta1ClusterAutoScaling": {
+      "type": "object",
+      "properties": {
+        "rcuMin": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "rcuMax": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "description": "Message for auto scaling configuration."
+    },
     "v1beta1ClusterAutomatedBackupPolicy": {
       "type": "object",
       "properties": {
@@ -912,6 +943,16 @@
         }
       },
       "description": "Message for automated backup configuration for a cluster."
+    },
+    "v1beta1ClusterClusterPlan": {
+      "type": "string",
+      "enum": [
+        "FREE",
+        "SCALABLE",
+        "STARTER",
+        "STANDARD"
+      ],
+      "title": "- FREE: aws free plan\n - SCALABLE: aws scalable plan\n - STARTER: alicloud free plan\n - STANDARD: alicloud scalable plan"
     },
     "v1beta1ClusterEncryptionConfig": {
       "type": "object",
@@ -995,6 +1036,14 @@
               "$ref": "#/definitions/v1beta1ClusterAuditLogConfig"
             }
           ]
+        },
+        "autoScaling": {
+          "description": "Optional. The auto scaling config for the cluster.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ClusterAutoScaling"
+            }
+          ]
         }
       },
       "required": [
@@ -1057,6 +1106,14 @@
               "allOf": [
                 {
                   "$ref": "#/definitions/v1beta1ClusterAuditLogConfig"
+                }
+              ]
+            },
+            "autoScaling": {
+              "description": "Optional. The auto scaling config for the cluster.",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/v1beta1ClusterAutoScaling"
                 }
               ]
             }

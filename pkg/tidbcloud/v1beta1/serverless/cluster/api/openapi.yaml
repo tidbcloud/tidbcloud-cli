@@ -684,6 +684,7 @@ components:
       example:
         encryptionConfig: "{}"
         endpoints: "{}"
+        autoScaling: "{}"
         automatedBackupPolicy: "{}"
         displayName: displayName
         usage: "{}"
@@ -694,6 +695,7 @@ components:
         version: version
         labels:
           key: labels
+        clusterPlan: "{}"
         spendingLimit: "{}"
         createdBy: createdBy
         createTime: 2000-01-23T04:56:07.000+00:00
@@ -803,6 +805,16 @@ components:
           - $ref: '#/components/schemas/v1beta1ClusterAuditLogConfig'
           description: Optional. The audit log configuration for the cluster.
           type: object
+        clusterPlan:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterClusterPlan'
+          description: Output_only. The plan of the cluster.
+          type: object
+        autoScaling:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterAutoScaling'
+          description: Optional. The auto scaling config for the cluster.
+          type: object
       required:
       - displayName
       - region
@@ -825,6 +837,7 @@ components:
         clusters:
         - encryptionConfig: "{}"
           endpoints: "{}"
+          autoScaling: "{}"
           automatedBackupPolicy: "{}"
           displayName: displayName
           usage: "{}"
@@ -835,6 +848,7 @@ components:
           version: version
           labels:
             key: labels
+          clusterPlan: "{}"
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
@@ -847,6 +861,7 @@ components:
           rootPassword: my-shining-password
         - encryptionConfig: "{}"
           endpoints: "{}"
+          autoScaling: "{}"
           automatedBackupPolicy: "{}"
           displayName: displayName
           usage: "{}"
@@ -857,6 +872,7 @@ components:
           version: version
           labels:
             key: labels
+          clusterPlan: "{}"
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
@@ -924,6 +940,7 @@ components:
         clusters:
         - encryptionConfig: "{}"
           endpoints: "{}"
+          autoScaling: "{}"
           automatedBackupPolicy: "{}"
           displayName: displayName
           usage: "{}"
@@ -934,6 +951,7 @@ components:
           version: version
           labels:
             key: labels
+          clusterPlan: "{}"
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
@@ -946,6 +964,7 @@ components:
           rootPassword: my-shining-password
         - encryptionConfig: "{}"
           endpoints: "{}"
+          autoScaling: "{}"
           automatedBackupPolicy: "{}"
           displayName: displayName
           usage: "{}"
@@ -956,6 +975,7 @@ components:
           version: version
           labels:
             key: labels
+          clusterPlan: "{}"
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
@@ -980,6 +1000,7 @@ components:
         clusters:
         - encryptionConfig: "{}"
           endpoints: "{}"
+          autoScaling: "{}"
           automatedBackupPolicy: "{}"
           displayName: displayName
           usage: "{}"
@@ -990,6 +1011,7 @@ components:
           version: version
           labels:
             key: labels
+          clusterPlan: "{}"
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
@@ -1002,6 +1024,7 @@ components:
           rootPassword: my-shining-password
         - encryptionConfig: "{}"
           endpoints: "{}"
+          autoScaling: "{}"
           automatedBackupPolicy: "{}"
           displayName: displayName
           usage: "{}"
@@ -1012,6 +1035,7 @@ components:
           version: version
           labels:
             key: labels
+          clusterPlan: "{}"
           spendingLimit: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
@@ -1045,6 +1069,16 @@ components:
           nullable: true
           type: boolean
       type: object
+    v1beta1ClusterAutoScaling:
+      description: Message for auto scaling configuration.
+      properties:
+        rcuMin:
+          format: int64
+          type: integer
+        rcuMax:
+          format: int64
+          type: integer
+      type: object
     v1beta1ClusterAutomatedBackupPolicy:
       description: Message for automated backup configuration for a cluster.
       properties:
@@ -1057,6 +1091,18 @@ components:
           format: int32
           type: integer
       type: object
+    v1beta1ClusterClusterPlan:
+      enum:
+      - FREE
+      - SCALABLE
+      - STARTER
+      - STANDARD
+      title: |-
+        - FREE: aws free plan
+         - SCALABLE: aws scalable plan
+         - STARTER: alicloud free plan
+         - STANDARD: alicloud scalable plan
+      type: string
     v1beta1ClusterEncryptionConfig:
       description: Message for encryption settings for a cluster.
       properties:
@@ -1113,6 +1159,11 @@ components:
           allOf:
           - $ref: '#/components/schemas/v1beta1ClusterAuditLogConfig'
           description: Optional. The audit log configuration for the cluster.
+          type: object
+        autoScaling:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterAutoScaling'
+          description: Optional. The auto scaling config for the cluster.
           type: object
       required:
       - clusterId
@@ -1182,6 +1233,11 @@ components:
           allOf:
           - $ref: '#/components/schemas/v1beta1ClusterAuditLogConfig'
           description: Optional. The audit log configuration for the cluster.
+          type: object
+        autoScaling:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterAutoScaling'
+          description: Optional. The auto scaling config for the cluster.
           type: object
       title: Required. The cluster to be updated.
       type: object

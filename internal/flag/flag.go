@@ -58,6 +58,8 @@ const (
 	Monthly              string = "monthly"
 	BackupID             string = "backup-id"
 	BackupTime           string = "backup-time"
+	MinRCU               string = "min-rcu"
+	MaxRCU               string = "max-rcu"
 	// External storage
 	S3URI                  string = "s3.uri"
 	S3AccessKeyID          string = "s3.access-key-id"
