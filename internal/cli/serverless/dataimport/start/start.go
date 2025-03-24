@@ -27,6 +27,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/telemetry"
 	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 
 	"github.com/AlecAivazis/survey/v2"
@@ -171,6 +172,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var sourceType imp.ImportSourceTypeEnum
 			var clusterId string
+			var cloudProvider *cluster.V1beta1RegionCloudProvider
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
@@ -187,11 +189,12 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 
-				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
+				c, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				clusterId = cluster.ID
+				clusterId = c.ID
+				cloudProvider = c.CloudProvider
 
 				sourceType, err = getSelectedSourceType()
 				if err != nil {
@@ -218,9 +221,10 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 				return localOpts.Run(cmd)
 			} else if sourceType == imp.IMPORTSOURCETYPEENUM_S3 {
 				s3Opts := S3Opts{
-					h:           h,
-					interactive: opts.interactive,
-					clusterId:   clusterId,
+					h:             h,
+					interactive:   opts.interactive,
+					clusterId:     clusterId,
+					cloudProvider: cloudProvider,
 				}
 				return s3Opts.Run(cmd)
 			} else if sourceType == imp.IMPORTSOURCETYPEENUM_GCS {

@@ -44,10 +44,11 @@ func (p Project) String() string {
 }
 
 type Cluster struct {
-	ID          string
-	Name        string
-	DisplayName string
-	UserPrefix  string
+	ID            string
+	Name          string
+	DisplayName   string
+	UserPrefix    string
+	CloudProvider *cluster.V1beta1RegionCloudProvider
 }
 
 type Branch struct {
@@ -172,9 +173,10 @@ func GetSelectedCluster(ctx context.Context, projectID string, pageSize int64, c
 	var items = make([]interface{}, 0, len(clusterItems))
 	for _, item := range clusterItems {
 		items = append(items, &Cluster{
-			ID:          *item.ClusterId,
-			DisplayName: item.DisplayName,
-			UserPrefix:  *item.UserPrefix,
+			ID:            *item.ClusterId,
+			DisplayName:   item.DisplayName,
+			UserPrefix:    *item.UserPrefix,
+			CloudProvider: item.Region.CloudProvider,
 		})
 	}
 	if len(items) == 0 {
