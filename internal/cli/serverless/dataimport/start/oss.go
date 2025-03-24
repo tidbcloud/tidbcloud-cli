@@ -36,7 +36,7 @@ type OSSOpts struct {
 
 func (o OSSOpts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
-	var ossUri, accessKeyID, secretAccessKey string
+	var ossUri, accessKeyID, accessKeySecret string
 	var fileType imp.ImportFileTypeEnum
 	var authType imp.ImportOSSAuthTypeEnum
 	var format *imp.CSVFormat
@@ -63,7 +63,7 @@ func (o OSSOpts) Run(cmd *cobra.Command) error {
 		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(imp.ImportOSSAuthTypeEnum)
 
 		if authType == imp.IMPORTOSSAUTHTYPEENUM_ACCESS_KEY {
-			inputs := []string{flag.OSSURI, flag.OSSAccessKeyID, flag.OSSSecretAccessKey}
+			inputs := []string{flag.OSSURI, flag.OSSAccessKeyID, flag.OSSAccessKeySecret}
 			textInput, err := ui.InitialInputModel(inputs, inputDescription)
 			if err != nil {
 				return err
@@ -74,11 +74,11 @@ func (o OSSOpts) Run(cmd *cobra.Command) error {
 			}
 			accessKeyID = textInput.Inputs[1].Value()
 			if accessKeyID == "" {
-				return errors.New("empty OSS access key Id")
+				return errors.New("empty OSS AccessKey Id")
 			}
-			secretAccessKey = textInput.Inputs[2].Value()
-			if secretAccessKey == "" {
-				return errors.New("empty OSS secret access key")
+			accessKeySecret = textInput.Inputs[2].Value()
+			if accessKeySecret == "" {
+				return errors.New("empty OSS AccessKey Secret")
 			}
 		} else {
 			return fmt.Errorf("invalid auth type :%s", authType)
@@ -137,14 +137,14 @@ func (o OSSOpts) Run(cmd *cobra.Command) error {
 		if err != nil {
 			return errors.Trace(err)
 		}
-		secretAccessKey, err = cmd.Flags().GetString(flag.OSSSecretAccessKey)
+		accessKeySecret, err = cmd.Flags().GetString(flag.OSSAccessKeySecret)
 		if err != nil {
 			return errors.Trace(err)
 		}
-		if accessKeyID != "" && secretAccessKey != "" {
+		if accessKeyID != "" && accessKeySecret != "" {
 			authType = imp.IMPORTOSSAUTHTYPEENUM_ACCESS_KEY
 		} else {
-			return fmt.Errorf("access key id and secret access key must be provided")
+			return fmt.Errorf("AccessKey ID and AccessKey Secret must be provided")
 		}
 	}
 
@@ -153,7 +153,7 @@ func (o OSSOpts) Run(cmd *cobra.Command) error {
 	source.Oss.AuthType = authType
 	source.Oss.AccessKey = &imp.OSSSourceAccessKey{
 		Id:     accessKeyID,
-		Secret: secretAccessKey,
+		Secret: accessKeySecret,
 	}
 
 	options := imp.NewImportOptions(fileType)

@@ -122,23 +122,23 @@ func (suite *OSSImportSuite) TestOSSImportArgsAccessKey() {
 	}{
 		{
 			name:         "start import success",
-			args:         []string{"--source-type", "OSS", "--cluster-id", clusterID, "--file-type", string(fileType), "--oss.uri", OSSUri, "--oss.access-key-id", secretId, "--oss.secret-access-key", secret},
+			args:         []string{"--source-type", "OSS", "--cluster-id", clusterID, "--file-type", string(fileType), "--oss.uri", OSSUri, "--oss.access-key-id", secretId, "--oss.access-key-secret", secret},
 			stdoutString: fmt.Sprintf("... Starting the import task\nImport task %s started.\n", importID),
 		},
 		{
 			name: "start import without required uri",
-			args: []string{"--source-type", "OSS", "-c", clusterID, "--file-type", string(fileType), "--oss.access-key-id", secretId, "--oss.secret-access-key", secret},
+			args: []string{"--source-type", "OSS", "-c", clusterID, "--file-type", string(fileType), "--oss.access-key-id", secretId, "--oss.access-key-secret", secret},
 			err:  fmt.Errorf("empty OSS URI"),
 		},
 		{
 			name: "start import without required access key id",
-			args: []string{"--source-type", "OSS", "-c", clusterID, "--file-type", string(fileType), "--oss.uri", OSSUri, "--oss.secret-access-key", secret},
-			err:  fmt.Errorf("if any flags in the group [oss.access-key-id oss.secret-access-key] are set they must all be set; missing [oss.access-key-id]"),
+			args: []string{"--source-type", "OSS", "-c", clusterID, "--file-type", string(fileType), "--oss.uri", OSSUri, "--oss.access-key-secret", secret},
+			err:  fmt.Errorf("if any flags in the group [oss.access-key-id oss.access-key-secret] are set they must all be set; missing [oss.access-key-id]"),
 		},
 		{
 			name: "start import without required access key id",
 			args: []string{"--source-type", "OSS", "-c", clusterID, "--file-type", string(fileType), "--oss.uri", OSSUri, "--oss.access-key-id", secretId},
-			err:  fmt.Errorf("if any flags in the group [oss.access-key-id oss.secret-access-key] are set they must all be set; missing [oss.secret-access-key]"),
+			err:  fmt.Errorf("if any flags in the group [oss.access-key-id oss.access-key-secret] are set they must all be set; missing [oss.access-key-secret]"),
 		},
 	}
 
