@@ -16,7 +16,6 @@ package serverless
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
@@ -33,38 +32,40 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type SpendingLimitOpts struct {
+type CapacityOpts struct {
 	interactive bool
 }
 
-func (c SpendingLimitOpts) NonInteractiveFlags() []string {
+func (c CapacityOpts) NonInteractiveFlags() []string {
 	return []string{
-		flag.Monthly,
+		flag.MaxRCU,
+		flag.MinRCU,
 		flag.ClusterID,
 	}
 }
 
-var spendingLimitFields = []string{
-	flag.Monthly,
+var capacityFields = []string{
+	flag.MinRCU,
+	flag.MaxRCU,
 }
 
-var SpendingLimitMonthlyMask = "spendingLimit.monthly"
+var CapacityMask = "auto_scaling"
 
-func SpendingLimitCmd(h *internal.Helper) *cobra.Command {
-	opts := SpendingLimitOpts{
+func CapacityCmd(h *internal.Helper) *cobra.Command {
+	opts := CapacityOpts{
 		interactive: true,
 	}
 
-	var spendingLimitCmd = &cobra.Command{
-		Use:         "spending-limit",
-		Short:       "Set spending limit for a TiDB Cloud Serverless cluster",
+	var capacityCmd = &cobra.Command{
+		Use:         "capacity",
+		Short:       "Set capacity for a TiDB Cloud Serverless cluster",
 		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Set spending limit for a TiDB Cloud Serverless cluster in interactive mode:
-  $ %[1]s serverless spending-limit
+		Example: fmt.Sprintf(`  Set capacity for a TiDB Cloud Serverless cluster in interactive mode:
+  $ %[1]s serverless capacity
 
-  Set spending limit for a TiDB Cloud Serverless cluster in non-interactive mode:
-  $ %[1]s serverless spending-limit -c <cluster-id> --monthly <spending-limit-monthly>`, config.CliName),
+  Set capacity for a TiDB Cloud Serverless cluster in non-interactive mode:
+  $ %[1]s serverless capacity -c <cluster-id> --max-rcu <maximum-rcu> --min-rcu <minimum-rcu>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {
@@ -92,7 +93,7 @@ func SpendingLimitCmd(h *internal.Helper) *cobra.Command {
 			ctx := cmd.Context()
 
 			var clusterID string
-			var monthly int32
+			var maxRcu, minRcu int32
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -110,83 +111,91 @@ func SpendingLimitCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = c.ID
 
-				field, err := cloud.GetSpendingLimitField(spendingLimitFields)
+				fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the capacity for the cluster:"))
+				p := tea.NewProgram(initialCapacityInputModel())
+				inputModel, err := p.Run()
 				if err != nil {
-					return err
+					return errors.Trace(err)
+				}
+				if inputModel.(ui.TextInputModel).Interrupted {
+					return util.InterruptError
 				}
 
-				switch field {
-				case flag.Monthly:
-					inputModel, err := GetMonthlyInput()
-					if err != nil {
-						return err
-					}
-					monthlyValue := inputModel.(ui.TextInputModel).Inputs[0].Value()
-					monthlyInt64, err := strconv.ParseInt(monthlyValue, 10, 32)
-					if err != nil {
-						return errors.Errorf("invalid monthly spending limit %s", monthlyValue)
-					}
-					monthly = int32(monthlyInt64)
-				default:
-					return errors.Errorf("unsupported spending limit field %s", field)
+				minRcuString := inputModel.(ui.TextInputModel).Inputs[0].Value()
+				maxRcuString := inputModel.(ui.TextInputModel).Inputs[1].Value()
+				minRcu, err = getAndCheckNumber(minRcuString, "minimum RCU")
+				if err != nil {
+					return errors.Trace(err)
+				}
+				maxRcu, err = getAndCheckNumber(maxRcuString, "maximum RCU")
+				if err != nil {
+					return errors.Trace(err)
 				}
 			} else {
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				monthly, err = cmd.Flags().GetInt32(flag.Monthly)
+				maxRcu, err = cmd.Flags().GetInt32(flag.MaxRCU)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				minRcu, err = cmd.Flags().GetInt32(flag.MinRCU)
 				if err != nil {
 					return errors.Trace(err)
 				}
 			}
 
-			if monthly <= 0 {
-				return errors.Errorf("invalid monthly spending limit %d", monthly)
+			if err := checkCapacity(minRcu, maxRcu); err != nil {
+				return errors.Trace(err)
 			}
 
 			body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
 				Cluster: &cluster.RequiredTheClusterToBeUpdated{
-					SpendingLimit: &cluster.ClusterSpendingLimit{},
+					AutoScaling: &cluster.V1beta1ClusterAutoScaling{},
 				},
 			}
-			body.UpdateMask = SpendingLimitMonthlyMask
-			body.Cluster.SpendingLimit.Monthly = &monthly
+			body.UpdateMask = CapacityMask
+			body.Cluster.AutoScaling.RcuMin = toInt64Ptr(minRcu)
+			body.Cluster.AutoScaling.RcuMax = toInt64Ptr(maxRcu)
 			_, err = d.PartialUpdateCluster(ctx, clusterID, body)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("set spending limit to %d cents success", monthly)))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("set capacity to [%d, %d] cents success", minRcu, maxRcu)))
 
 			return nil
 		},
 	}
 
-	spendingLimitCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
-	spendingLimitCmd.Flags().Int32(flag.Monthly, 0, "Maximum monthly spending limit in USD cents.")
-	return spendingLimitCmd
+	capacityCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
+	capacityCmd.Flags().Int32(flag.MinRCU, 0, "Minimum RCU for the cluster, at least 2000.")
+	capacityCmd.Flags().Int32(flag.MaxRCU, 0, "Maximum RCU for the cluster, at most 100000.")
+	return capacityCmd
 }
 
-func GetMonthlyInput() (tea.Model, error) {
+func initialCapacityInputModel() ui.TextInputModel {
 	m := ui.TextInputModel{
-		Inputs: make([]textinput.Model, 1),
+		Inputs: make([]textinput.Model, len(capacityFields)),
 	}
-	t := textinput.New()
-	t.Cursor.Style = config.CursorStyle
-	t.CharLimit = 64
-	t.Placeholder = "Input monthly spending limit in USD cents (int)"
-	t.Focus()
-	t.PromptStyle = config.FocusedStyle
-	t.TextStyle = config.FocusedStyle
-	m.Inputs[0] = t
 
-	p := tea.NewProgram(m)
-	inputModel, err := p.Run()
-	if err != nil {
-		return nil, errors.Trace(err)
+	for k, v := range capacityFields {
+		t := textinput.New()
+		t.Cursor.Style = config.CursorStyle
+		t.CharLimit = 64
+
+		switch v {
+		case flag.MinRCU:
+			t.Placeholder = "Minimum RCU, at least 2000"
+			t.Focus()
+			t.PromptStyle = config.FocusedStyle
+			t.TextStyle = config.FocusedStyle
+		case flag.MaxRCU:
+			t.Placeholder = "Maximum RCU, at most 100000"
+			t.PromptStyle = config.FocusedStyle
+			t.TextStyle = config.FocusedStyle
+		}
+		m.Inputs[k] = t
 	}
-	if inputModel.(ui.TextInputModel).Interrupted {
-		return nil, util.InterruptError
-	}
-	return inputModel, nil
+	return m
 }
