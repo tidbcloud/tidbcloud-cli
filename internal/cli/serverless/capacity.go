@@ -49,7 +49,7 @@ var capacityFields = []string{
 	flag.MaxRCU,
 }
 
-var CapacityMask = "auto_scaling"
+var CapacityMask = "autoScaling"
 
 func CapacityCmd(h *internal.Helper) *cobra.Command {
 	opts := CapacityOpts{
@@ -162,7 +162,7 @@ func CapacityCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("set capacity to [%d, %d] cents success", minRcu, maxRcu)))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("set capacity to [%d, %d] success", minRcu, maxRcu)))
 
 			return nil
 		},
