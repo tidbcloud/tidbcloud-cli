@@ -146,6 +146,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if err := CreateProfile(profileName, publicKey, privateKey); err != nil {
 				return err
 			}
+			fgGreen := color.New(color.FgGreen).SprintFunc()
+			hiGreen := color.New(color.FgHiCyan).SprintFunc()
+			fmt.Fprintf(h.IOStreams.Out, "%s %s\n", fgGreen("Current profile has been changed to"), hiGreen(profileName))
 			return nil
 		},
 	}
