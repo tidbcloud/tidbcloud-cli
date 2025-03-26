@@ -337,8 +337,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 			if maxRcu != 0 || minRcu != 0 {
 				v1Cluster.AutoScaling = &cluster.V1beta1ClusterAutoScaling{
-					RcuMin: toInt64Ptr(minRcu),
-					RcuMax: toInt64Ptr(maxRcu),
+					MinRcu: toInt64Ptr(minRcu),
+					MaxRcu: toInt64Ptr(maxRcu),
 				}
 			}
 			if encryption {

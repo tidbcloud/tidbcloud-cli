@@ -918,11 +918,11 @@
     "v1beta1ClusterAutoScaling": {
       "type": "object",
       "properties": {
-        "rcuMin": {
+        "minRcu": {
           "type": "integer",
           "format": "int64"
         },
-        "rcuMax": {
+        "maxRcu": {
           "type": "integer",
           "format": "int64"
         }

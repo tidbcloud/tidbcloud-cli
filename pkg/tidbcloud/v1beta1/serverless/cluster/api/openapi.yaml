@@ -1072,10 +1072,10 @@ components:
     v1beta1ClusterAutoScaling:
       description: Message for auto scaling configuration.
       properties:
-        rcuMin:
+        minRcu:
           format: int64
           type: integer
-        rcuMax:
+        maxRcu:
           format: int64
           type: integer
       type: object

@@ -156,8 +156,8 @@ func CapacityCmd(h *internal.Helper) *cobra.Command {
 				},
 			}
 			body.UpdateMask = CapacityMask
-			body.Cluster.AutoScaling.RcuMin = toInt64Ptr(minRcu)
-			body.Cluster.AutoScaling.RcuMax = toInt64Ptr(maxRcu)
+			body.Cluster.AutoScaling.MinRcu = toInt64Ptr(minRcu)
+			body.Cluster.AutoScaling.MaxRcu = toInt64Ptr(maxRcu)
 			_, err = d.PartialUpdateCluster(ctx, clusterID, body)
 			if err != nil {
 				return errors.Trace(err)

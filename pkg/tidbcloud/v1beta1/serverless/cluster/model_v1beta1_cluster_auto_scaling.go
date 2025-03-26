@@ -19,8 +19,8 @@ var _ MappedNullable = &V1beta1ClusterAutoScaling{}
 
 // V1beta1ClusterAutoScaling Message for auto scaling configuration.
 type V1beta1ClusterAutoScaling struct {
-	RcuMin               *int64 `json:"rcuMin,omitempty"`
-	RcuMax               *int64 `json:"rcuMax,omitempty"`
+	MinRcu               *int64 `json:"minRcu,omitempty"`
+	MaxRcu               *int64 `json:"maxRcu,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -43,68 +43,68 @@ func NewV1beta1ClusterAutoScalingWithDefaults() *V1beta1ClusterAutoScaling {
 	return &this
 }
 
-// GetRcuMin returns the RcuMin field value if set, zero value otherwise.
-func (o *V1beta1ClusterAutoScaling) GetRcuMin() int64 {
-	if o == nil || IsNil(o.RcuMin) {
+// GetMinRcu returns the MinRcu field value if set, zero value otherwise.
+func (o *V1beta1ClusterAutoScaling) GetMinRcu() int64 {
+	if o == nil || IsNil(o.MinRcu) {
 		var ret int64
 		return ret
 	}
-	return *o.RcuMin
+	return *o.MinRcu
 }
 
-// GetRcuMinOk returns a tuple with the RcuMin field value if set, nil otherwise
+// GetMinRcuOk returns a tuple with the MinRcu field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1ClusterAutoScaling) GetRcuMinOk() (*int64, bool) {
-	if o == nil || IsNil(o.RcuMin) {
+func (o *V1beta1ClusterAutoScaling) GetMinRcuOk() (*int64, bool) {
+	if o == nil || IsNil(o.MinRcu) {
 		return nil, false
 	}
-	return o.RcuMin, true
+	return o.MinRcu, true
 }
 
-// HasRcuMin returns a boolean if a field has been set.
-func (o *V1beta1ClusterAutoScaling) HasRcuMin() bool {
-	if o != nil && !IsNil(o.RcuMin) {
+// HasMinRcu returns a boolean if a field has been set.
+func (o *V1beta1ClusterAutoScaling) HasMinRcu() bool {
+	if o != nil && !IsNil(o.MinRcu) {
 		return true
 	}
 
 	return false
 }
 
-// SetRcuMin gets a reference to the given int64 and assigns it to the RcuMin field.
-func (o *V1beta1ClusterAutoScaling) SetRcuMin(v int64) {
-	o.RcuMin = &v
+// SetMinRcu gets a reference to the given int64 and assigns it to the MinRcu field.
+func (o *V1beta1ClusterAutoScaling) SetMinRcu(v int64) {
+	o.MinRcu = &v
 }
 
-// GetRcuMax returns the RcuMax field value if set, zero value otherwise.
-func (o *V1beta1ClusterAutoScaling) GetRcuMax() int64 {
-	if o == nil || IsNil(o.RcuMax) {
+// GetMaxRcu returns the MaxRcu field value if set, zero value otherwise.
+func (o *V1beta1ClusterAutoScaling) GetMaxRcu() int64 {
+	if o == nil || IsNil(o.MaxRcu) {
 		var ret int64
 		return ret
 	}
-	return *o.RcuMax
+	return *o.MaxRcu
 }
 
-// GetRcuMaxOk returns a tuple with the RcuMax field value if set, nil otherwise
+// GetMaxRcuOk returns a tuple with the MaxRcu field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1ClusterAutoScaling) GetRcuMaxOk() (*int64, bool) {
-	if o == nil || IsNil(o.RcuMax) {
+func (o *V1beta1ClusterAutoScaling) GetMaxRcuOk() (*int64, bool) {
+	if o == nil || IsNil(o.MaxRcu) {
 		return nil, false
 	}
-	return o.RcuMax, true
+	return o.MaxRcu, true
 }
 
-// HasRcuMax returns a boolean if a field has been set.
-func (o *V1beta1ClusterAutoScaling) HasRcuMax() bool {
-	if o != nil && !IsNil(o.RcuMax) {
+// HasMaxRcu returns a boolean if a field has been set.
+func (o *V1beta1ClusterAutoScaling) HasMaxRcu() bool {
+	if o != nil && !IsNil(o.MaxRcu) {
 		return true
 	}
 
 	return false
 }
 
-// SetRcuMax gets a reference to the given int64 and assigns it to the RcuMax field.
-func (o *V1beta1ClusterAutoScaling) SetRcuMax(v int64) {
-	o.RcuMax = &v
+// SetMaxRcu gets a reference to the given int64 and assigns it to the MaxRcu field.
+func (o *V1beta1ClusterAutoScaling) SetMaxRcu(v int64) {
+	o.MaxRcu = &v
 }
 
 func (o V1beta1ClusterAutoScaling) MarshalJSON() ([]byte, error) {
@@ -117,11 +117,11 @@ func (o V1beta1ClusterAutoScaling) MarshalJSON() ([]byte, error) {
 
 func (o V1beta1ClusterAutoScaling) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.RcuMin) {
-		toSerialize["rcuMin"] = o.RcuMin
+	if !IsNil(o.MinRcu) {
+		toSerialize["minRcu"] = o.MinRcu
 	}
-	if !IsNil(o.RcuMax) {
-		toSerialize["rcuMax"] = o.RcuMax
+	if !IsNil(o.MaxRcu) {
+		toSerialize["maxRcu"] = o.MaxRcu
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -145,8 +145,8 @@ func (o *V1beta1ClusterAutoScaling) UnmarshalJSON(data []byte) (err error) {
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "rcuMin")
-		delete(additionalProperties, "rcuMax")
+		delete(additionalProperties, "minRcu")
+		delete(additionalProperties, "maxRcu")
 		o.AdditionalProperties = additionalProperties
 	}
 
