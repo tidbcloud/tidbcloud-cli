@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Dedicatedv1beta1TidbNodeGroupState  - ACTIVE: All nodes are ready.  - MODIFYING: When TiDB group is modifying.  - PAUSED: When cluster is paused.

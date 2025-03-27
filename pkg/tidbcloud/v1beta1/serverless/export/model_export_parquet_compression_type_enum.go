@@ -12,7 +12,6 @@ package export
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ExportParquetCompressionTypeEnum  - GZIP: The parquet compression type is GZIP.  - SNAPPY: The parquet compression type is SNAPPY.  - ZSTD: The parquet compression type is ZSTD.  - NONE: No compression.

@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // PrivateEndpointConnectionEndpointState  - PENDING: Customer has posted to TiDB cloud API, but endpoint connection has not been accepted **asynchronously** by TiDB Cloud.  - DISCOVERED: Customer has created the endpoint in their vpc, but has not posted to TiDB Cloud API.

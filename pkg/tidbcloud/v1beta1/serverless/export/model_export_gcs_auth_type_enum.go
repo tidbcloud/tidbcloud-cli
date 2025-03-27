@@ -12,7 +12,6 @@ package export
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ExportGcsAuthTypeEnum  - SERVICE_ACCOUNT_KEY: The access method is service account key.

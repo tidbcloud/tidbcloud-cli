@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // V1beta1PrivateLinkServiceState the model 'V1beta1PrivateLinkServiceState'

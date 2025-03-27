@@ -12,7 +12,6 @@ package imp
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ImportStateEnum  - PREPARING: The import is preparing.  - IMPORTING: The import is importing.  - COMPLETED: The import is completed.  - FAILED: The import is failed.  - CANCELING: The import is canceling.  - CANCELED: The import is canceled.

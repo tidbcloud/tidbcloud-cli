@@ -12,7 +12,6 @@ package imp
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ImportGcsAuthTypeEnum  - SERVICE_ACCOUNT_KEY: The access method is service account key.

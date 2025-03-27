@@ -12,7 +12,6 @@ package pingchat
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // PingchatChatInfoDomainInner the model 'PingchatChatInfoDomainInner'

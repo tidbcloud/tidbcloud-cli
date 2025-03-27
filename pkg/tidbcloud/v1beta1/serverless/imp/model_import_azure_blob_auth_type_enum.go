@@ -12,7 +12,6 @@ package imp
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ImportAzureBlobAuthTypeEnum  - SAS_TOKEN: The access method is sas token.

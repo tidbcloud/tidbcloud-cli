@@ -12,7 +12,6 @@ package branch
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // BranchServiceGetBranchViewParameter the model 'BranchServiceGetBranchViewParameter'

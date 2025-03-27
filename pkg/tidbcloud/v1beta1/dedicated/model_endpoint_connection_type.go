@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // EndpointConnectionType  - PUBLIC: The endpoint is a public endpoint.  - VPC_PEERING: The endpoint is a VPC peering endpoint.  - PRIVATE_ENDPOINT: The endpoint is a private link endpoint.

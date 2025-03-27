@@ -12,7 +12,6 @@ package export
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ExportAzureBlobAuthTypeEnum  - SAS_TOKEN: The access method is sas token.

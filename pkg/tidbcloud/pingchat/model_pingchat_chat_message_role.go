@@ -12,7 +12,6 @@ package pingchat
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // PingchatChatMessageRole User's input as \"user\", AI assistant's reply as \"assistant\", see https://github.com/gin-gonic/gin/issues/3234.

@@ -12,7 +12,6 @@ package imp
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ImportS3AuthTypeEnum  - ROLE_ARN: The access method is role arn.  - ACCESS_KEY: The access method is access key.

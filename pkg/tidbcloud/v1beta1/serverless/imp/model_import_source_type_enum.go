@@ -12,7 +12,6 @@ package imp
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ImportSourceTypeEnum the model 'ImportSourceTypeEnum'

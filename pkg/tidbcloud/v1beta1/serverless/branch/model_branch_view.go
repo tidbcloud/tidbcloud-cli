@@ -12,7 +12,6 @@ package branch
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // BranchView View on branch. Pass this enum to control which subsets of fields to get.   - BASIC: Basic response contains basic information for a branch.  - FULL: FULL response contains all detailed information for a branch.

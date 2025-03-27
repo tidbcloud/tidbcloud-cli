@@ -12,7 +12,6 @@ package export
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ExportFileTypeEnum  - SQL: SQL type.  - CSV: CSV type.  - PARQUET: PARQUET type.

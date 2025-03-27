@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ClusterServiceListClustersClusterStatesParameterInner the model 'ClusterServiceListClustersClusterStatesParameterInner'

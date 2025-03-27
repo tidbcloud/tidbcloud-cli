@@ -12,7 +12,6 @@ package cluster
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ServerlessServiceGetClusterViewParameter the model 'ServerlessServiceGetClusterViewParameter'

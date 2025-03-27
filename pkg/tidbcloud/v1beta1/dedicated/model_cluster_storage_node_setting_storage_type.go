@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ClusterStorageNodeSettingStorageType Spec https://pingcap.feishu.cn/wiki/R6dcwK0Q3i9XSgkgG1Scoc82nbf.   - Standard: A cost-effective storage type suitable for most workloads, offering balanced performance and affordability.   - Single gp3 disk for TiKV storage Ideal for general-purpose clusters where affordability and reliability are priorities.  - Standard_Optimized: An enhanced version of Standard storage that delivers approximately 10% better overall cluster performance, balancing cost and performance.   - Separate gp3 disk for TiKV raft-log storage   - gp3 disk for TiKV data storage Recommended as the default choice for most clusters, offering an improved balance of cost and performance.  - Performance_Optimized: High-performance storage designed for workloads requiring low latency and greater stability. Provides superior performance for performance-sensitive clusters.   - Separate io2 disk for TiKV raft-log storage   - gp3 disk for TiKV data storage Suitable for clusters where consistent I/O performance and reduced latency are critical.  - Performance: Premium storage option offering the highest levels of performance and stability. Uses a single high-performance disk to minimize jitter and maximize IOPS.   - Single io2 disk for storage Designed for I/O jitter-sensitive clusters with extreme performance demands. Available via allowlist only for select customers.  - Standard_Premium: Reserved.  - Performance_Premium: Reserved.

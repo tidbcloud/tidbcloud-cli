@@ -12,7 +12,6 @@ package export
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ExportCompressionTypeEnum  - GZIP: Gzip compression.  - SNAPPY: Snappy compression.  - ZSTD: Zstd compression.  - NONE: No compression.

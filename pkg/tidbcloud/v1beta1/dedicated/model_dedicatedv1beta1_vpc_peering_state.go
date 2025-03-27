@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Dedicatedv1beta1VpcPeeringState the model 'Dedicatedv1beta1VpcPeeringState'

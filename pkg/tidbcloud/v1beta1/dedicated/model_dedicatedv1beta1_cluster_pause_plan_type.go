@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Dedicatedv1beta1ClusterPausePlanType the model 'Dedicatedv1beta1ClusterPausePlanType'

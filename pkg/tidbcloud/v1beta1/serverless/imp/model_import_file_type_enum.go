@@ -12,7 +12,6 @@ package imp
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ImportFileTypeEnum  - CSV: CSV type.  - SQL: SQL type.  - AURORA_SNAPSHOT: Aurora snapshot type.  - PARQUET: Parquet type.

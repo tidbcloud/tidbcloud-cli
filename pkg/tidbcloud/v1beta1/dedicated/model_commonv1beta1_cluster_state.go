@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Commonv1beta1ClusterState Enum of possible states of a cluster.   - CREATING: Cluster is being created.  - DELETING: Cluster is being deleted.  - ACTIVE: Cluster is active for use.  - RESTORING: Cluster data is being restored.  - MAINTENANCE: Cluster is under maintenance.  - DELETED: Cluster has been deleted.  - INACTIVE: Cluster is not active, but not being deleted.  - UPGRADING: Cluster is being updated. Only for Dedicated Cluster.  - IMPORTING: Cluster is being imported. Only for Dedicated Cluster.  - MODIFYING: Cluster is being modified. Only for Dedicated Cluster.  - PAUSING: Cluster is being paused. Only for Dedicated Cluster.  - PAUSED: Cluster is paused. Only for Dedicated Cluster.  - RESUMING: Cluster is resuming. Only for Dedicated Cluster.

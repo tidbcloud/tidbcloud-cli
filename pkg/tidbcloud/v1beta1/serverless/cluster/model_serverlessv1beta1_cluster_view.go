@@ -12,7 +12,6 @@ package cluster
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Serverlessv1beta1ClusterView Enum for the different types of detail view to be returned for a TiDB Cloud Serverless cluster.   - BASIC: Only basic information about the cluster is returned.  - FULL: All details about the cluster are returned.

@@ -12,7 +12,6 @@ package branch
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // BranchState Output Only. Branch State.   - CREATING: The branch is being created.  - ACTIVE: The branch is active and running.  - DELETED: The branch is being deleted.  - MAINTENANCE: The branch is under maintenance.  - RESTORING: The branch is restoring.

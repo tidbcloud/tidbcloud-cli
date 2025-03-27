@@ -12,7 +12,6 @@ package cluster
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // V1beta1RegionCloudProvider Enum of cloud provider names.   - aws: Amazon Web Services.  - gcp: Google Cloud Platform.  - azure: Microsoft Azure.  - alicloud: Alibaba Cloud
