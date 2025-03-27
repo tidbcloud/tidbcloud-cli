@@ -30,7 +30,7 @@ generate-mocks: ## Generate mock objects
 generate-pingchat-client: ## Generate PingChat client
 	@echo "==> Generating PingChat client"
 	rm -rf pkg/tidbcloud/pingchat
-	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/pingchat.swagger.json -g go -o ../../pkg/tidbcloud/pingchat --package-name pingchat
+	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/pingchat.swagger.json -g go -o ../../pkg/tidbcloud/pingchat --package-name pingchat -t go/
 	cd pkg && go fmt ./tidbcloud/pingchat/...
 
 .PHONY: addcopy
@@ -44,33 +44,33 @@ generate-v1beta1-client: generate-v1beta1-serverless-client generate-v1beta1-iam
 generate-v1beta1-serverless-client: install-openapi-generator ## Generate serverless client
 	@echo "==> Generating serverless branch client"
 	rm -rf pkg/tidbcloud/v1beta1/serverless/branch
-	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/branch.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/branch --package-name branch
+	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/branch.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/branch --package-name branch -t go/
 	@echo "==> Generating serverless cluster client"
 	rm -rf pkg/tidbcloud/v1beta1/serverless/cluster
-	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/cluster.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/cluster --package-name cluster
+	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/cluster.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/cluster --package-name cluster -t go/
 	@echo "==> Generating serverless export client"
 	rm -rf pkg/tidbcloud/v1beta1/serverless/export
-	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/export.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/export --package-name export
+	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/export.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/export --package-name export -t go/
 	@echo "==> Generating serverless br client"
 	rm -rf pkg/tidbcloud/v1beta1/serverless/br
-	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/br.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/br --package-name br
+	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/br.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/br --package-name br -t go/
 	@echo "==> Generating serverless import client"
 	rm -rf pkg/tidbcloud/v1beta1/serverless/imp
-	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/import.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/imp --package-name imp
+	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/import.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/imp --package-name imp -t go/
 	cd pkg && go fmt ./tidbcloud/v1beta1/serverless/...
 
 .PHONY: generate-v1beta1-dedicated-client
 generate-v1beta1-dedicated-client: install-openapi-generator ## Generate dedicated client
 	@echo "==> Generating dedicated client"
 	rm -rf pkg/tidbcloud/v1beta1/dedicated
-	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false --skip-validate-spec -i ../../pkg/tidbcloud/v1beta1/dedicated.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/dedicated --package-name dedicated
+	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false --skip-validate-spec -i ../../pkg/tidbcloud/v1beta1/dedicated.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/dedicated --package-name dedicated -t go/
 	cd pkg && go fmt ./tidbcloud/v1beta1/dedicated/...
 
 .PHONY: generate-v1beta1-iam-client
 generate-v1beta1-iam-client: install-openapi-generator ## Generate iam client
 	@echo "==> Generating iam client"
 	rm -rf pkg/tidbcloud/v1beta1/iam
-	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/iam.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/iam --package-name iam
+	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/iam.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/iam --package-name iam -t go/
 	cd pkg && go fmt ./tidbcloud/v1beta1/iam/...
 
 .PHONY: install-openapi-generator

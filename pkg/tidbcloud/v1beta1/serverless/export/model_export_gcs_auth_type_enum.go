@@ -21,11 +21,15 @@ type ExportGcsAuthTypeEnum string
 // List of ExportGcsAuthType.Enum
 const (
 	EXPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY ExportGcsAuthTypeEnum = "SERVICE_ACCOUNT_KEY"
+
+	// Unknown value for handling new enum values gracefully
+	ExportGcsAuthTypeEnum_UNKNOWN ExportGcsAuthTypeEnum = "unknown"
 )
 
 // All allowed values of ExportGcsAuthTypeEnum enum
 var AllowedExportGcsAuthTypeEnumEnumValues = []ExportGcsAuthTypeEnum{
 	"SERVICE_ACCOUNT_KEY",
+	ExportGcsAuthTypeEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ExportGcsAuthTypeEnum) UnmarshalJSON(src []byte) error {
@@ -42,18 +46,20 @@ func (v *ExportGcsAuthTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ExportGcsAuthTypeEnum", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = ExportGcsAuthTypeEnum_UNKNOWN
+	return nil
 }
 
 // NewExportGcsAuthTypeEnumFromValue returns a pointer to a valid ExportGcsAuthTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewExportGcsAuthTypeEnumFromValue(v string) (*ExportGcsAuthTypeEnum, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewExportGcsAuthTypeEnumFromValue(v string) *ExportGcsAuthTypeEnum {
 	ev := ExportGcsAuthTypeEnum(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ExportGcsAuthTypeEnum: valid values are %v", v, AllowedExportGcsAuthTypeEnumEnumValues)
+		return &ev
 	}
+	unknown := ExportGcsAuthTypeEnum_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

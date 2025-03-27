@@ -23,6 +23,9 @@ const (
 	DEDICATEDV1BETA1TIDBNODEGROUPSTATE_ACTIVE    Dedicatedv1beta1TidbNodeGroupState = "ACTIVE"
 	DEDICATEDV1BETA1TIDBNODEGROUPSTATE_MODIFYING Dedicatedv1beta1TidbNodeGroupState = "MODIFYING"
 	DEDICATEDV1BETA1TIDBNODEGROUPSTATE_PAUSED    Dedicatedv1beta1TidbNodeGroupState = "PAUSED"
+
+	// Unknown value for handling new enum values gracefully
+	Dedicatedv1beta1TidbNodeGroupState_UNKNOWN Dedicatedv1beta1TidbNodeGroupState = "unknown"
 )
 
 // All allowed values of Dedicatedv1beta1TidbNodeGroupState enum
@@ -30,6 +33,7 @@ var AllowedDedicatedv1beta1TidbNodeGroupStateEnumValues = []Dedicatedv1beta1Tidb
 	"ACTIVE",
 	"MODIFYING",
 	"PAUSED",
+	Dedicatedv1beta1TidbNodeGroupState_UNKNOWN, // Include unknown
 }
 
 func (v *Dedicatedv1beta1TidbNodeGroupState) UnmarshalJSON(src []byte) error {
@@ -46,18 +50,20 @@ func (v *Dedicatedv1beta1TidbNodeGroupState) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid Dedicatedv1beta1TidbNodeGroupState", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = Dedicatedv1beta1TidbNodeGroupState_UNKNOWN
+	return nil
 }
 
 // NewDedicatedv1beta1TidbNodeGroupStateFromValue returns a pointer to a valid Dedicatedv1beta1TidbNodeGroupState
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewDedicatedv1beta1TidbNodeGroupStateFromValue(v string) (*Dedicatedv1beta1TidbNodeGroupState, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewDedicatedv1beta1TidbNodeGroupStateFromValue(v string) *Dedicatedv1beta1TidbNodeGroupState {
 	ev := Dedicatedv1beta1TidbNodeGroupState(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for Dedicatedv1beta1TidbNodeGroupState: valid values are %v", v, AllowedDedicatedv1beta1TidbNodeGroupStateEnumValues)
+		return &ev
 	}
+	unknown := Dedicatedv1beta1TidbNodeGroupState_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

@@ -22,12 +22,16 @@ type ServerlessServiceGetClusterViewParameter string
 const (
 	SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC ServerlessServiceGetClusterViewParameter = "BASIC"
 	SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_FULL  ServerlessServiceGetClusterViewParameter = "FULL"
+
+	// Unknown value for handling new enum values gracefully
+	ServerlessServiceGetClusterViewParameter_UNKNOWN ServerlessServiceGetClusterViewParameter = "unknown"
 )
 
 // All allowed values of ServerlessServiceGetClusterViewParameter enum
 var AllowedServerlessServiceGetClusterViewParameterEnumValues = []ServerlessServiceGetClusterViewParameter{
 	"BASIC",
 	"FULL",
+	ServerlessServiceGetClusterViewParameter_UNKNOWN, // Include unknown
 }
 
 func (v *ServerlessServiceGetClusterViewParameter) UnmarshalJSON(src []byte) error {
@@ -44,18 +48,20 @@ func (v *ServerlessServiceGetClusterViewParameter) UnmarshalJSON(src []byte) err
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ServerlessServiceGetClusterViewParameter", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = ServerlessServiceGetClusterViewParameter_UNKNOWN
+	return nil
 }
 
 // NewServerlessServiceGetClusterViewParameterFromValue returns a pointer to a valid ServerlessServiceGetClusterViewParameter
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewServerlessServiceGetClusterViewParameterFromValue(v string) (*ServerlessServiceGetClusterViewParameter, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewServerlessServiceGetClusterViewParameterFromValue(v string) *ServerlessServiceGetClusterViewParameter {
 	ev := ServerlessServiceGetClusterViewParameter(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ServerlessServiceGetClusterViewParameter: valid values are %v", v, AllowedServerlessServiceGetClusterViewParameterEnumValues)
+		return &ev
 	}
+	unknown := ServerlessServiceGetClusterViewParameter_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

@@ -22,12 +22,16 @@ type Serverlessv1beta1ClusterView string
 const (
 	SERVERLESSV1BETA1CLUSTERVIEW_BASIC Serverlessv1beta1ClusterView = "BASIC"
 	SERVERLESSV1BETA1CLUSTERVIEW_FULL  Serverlessv1beta1ClusterView = "FULL"
+
+	// Unknown value for handling new enum values gracefully
+	Serverlessv1beta1ClusterView_UNKNOWN Serverlessv1beta1ClusterView = "unknown"
 )
 
 // All allowed values of Serverlessv1beta1ClusterView enum
 var AllowedServerlessv1beta1ClusterViewEnumValues = []Serverlessv1beta1ClusterView{
 	"BASIC",
 	"FULL",
+	Serverlessv1beta1ClusterView_UNKNOWN, // Include unknown
 }
 
 func (v *Serverlessv1beta1ClusterView) UnmarshalJSON(src []byte) error {
@@ -44,18 +48,20 @@ func (v *Serverlessv1beta1ClusterView) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid Serverlessv1beta1ClusterView", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = Serverlessv1beta1ClusterView_UNKNOWN
+	return nil
 }
 
 // NewServerlessv1beta1ClusterViewFromValue returns a pointer to a valid Serverlessv1beta1ClusterView
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewServerlessv1beta1ClusterViewFromValue(v string) (*Serverlessv1beta1ClusterView, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewServerlessv1beta1ClusterViewFromValue(v string) *Serverlessv1beta1ClusterView {
 	ev := Serverlessv1beta1ClusterView(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for Serverlessv1beta1ClusterView: valid values are %v", v, AllowedServerlessv1beta1ClusterViewEnumValues)
+		return &ev
 	}
+	unknown := Serverlessv1beta1ClusterView_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

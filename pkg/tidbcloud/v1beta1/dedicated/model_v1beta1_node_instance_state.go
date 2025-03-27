@@ -24,6 +24,9 @@ const (
 	V1BETA1NODEINSTANCESTATE_AVAILABLE   V1beta1NodeInstanceState = "AVAILABLE"
 	V1BETA1NODEINSTANCESTATE_DELETING    V1beta1NodeInstanceState = "DELETING"
 	V1BETA1NODEINSTANCESTATE_UNAVAILABLE V1beta1NodeInstanceState = "UNAVAILABLE"
+
+	// Unknown value for handling new enum values gracefully
+	V1beta1NodeInstanceState_UNKNOWN V1beta1NodeInstanceState = "unknown"
 )
 
 // All allowed values of V1beta1NodeInstanceState enum
@@ -32,6 +35,7 @@ var AllowedV1beta1NodeInstanceStateEnumValues = []V1beta1NodeInstanceState{
 	"AVAILABLE",
 	"DELETING",
 	"UNAVAILABLE",
+	V1beta1NodeInstanceState_UNKNOWN, // Include unknown
 }
 
 func (v *V1beta1NodeInstanceState) UnmarshalJSON(src []byte) error {
@@ -48,18 +52,20 @@ func (v *V1beta1NodeInstanceState) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid V1beta1NodeInstanceState", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = V1beta1NodeInstanceState_UNKNOWN
+	return nil
 }
 
 // NewV1beta1NodeInstanceStateFromValue returns a pointer to a valid V1beta1NodeInstanceState
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewV1beta1NodeInstanceStateFromValue(v string) (*V1beta1NodeInstanceState, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewV1beta1NodeInstanceStateFromValue(v string) *V1beta1NodeInstanceState {
 	ev := V1beta1NodeInstanceState(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for V1beta1NodeInstanceState: valid values are %v", v, AllowedV1beta1NodeInstanceStateEnumValues)
+		return &ev
 	}
+	unknown := V1beta1NodeInstanceState_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

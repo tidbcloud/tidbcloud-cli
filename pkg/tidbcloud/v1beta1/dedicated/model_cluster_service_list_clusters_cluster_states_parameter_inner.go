@@ -33,6 +33,9 @@ const (
 	CLUSTERSERVICELISTCLUSTERSCLUSTERSTATESPARAMETERINNER_PAUSING     ClusterServiceListClustersClusterStatesParameterInner = "PAUSING"
 	CLUSTERSERVICELISTCLUSTERSCLUSTERSTATESPARAMETERINNER_PAUSED      ClusterServiceListClustersClusterStatesParameterInner = "PAUSED"
 	CLUSTERSERVICELISTCLUSTERSCLUSTERSTATESPARAMETERINNER_RESUMING    ClusterServiceListClustersClusterStatesParameterInner = "RESUMING"
+
+	// Unknown value for handling new enum values gracefully
+	ClusterServiceListClustersClusterStatesParameterInner_UNKNOWN ClusterServiceListClustersClusterStatesParameterInner = "unknown"
 )
 
 // All allowed values of ClusterServiceListClustersClusterStatesParameterInner enum
@@ -50,6 +53,7 @@ var AllowedClusterServiceListClustersClusterStatesParameterInnerEnumValues = []C
 	"PAUSING",
 	"PAUSED",
 	"RESUMING",
+	ClusterServiceListClustersClusterStatesParameterInner_UNKNOWN, // Include unknown
 }
 
 func (v *ClusterServiceListClustersClusterStatesParameterInner) UnmarshalJSON(src []byte) error {
@@ -66,18 +70,20 @@ func (v *ClusterServiceListClustersClusterStatesParameterInner) UnmarshalJSON(sr
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ClusterServiceListClustersClusterStatesParameterInner", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = ClusterServiceListClustersClusterStatesParameterInner_UNKNOWN
+	return nil
 }
 
 // NewClusterServiceListClustersClusterStatesParameterInnerFromValue returns a pointer to a valid ClusterServiceListClustersClusterStatesParameterInner
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewClusterServiceListClustersClusterStatesParameterInnerFromValue(v string) (*ClusterServiceListClustersClusterStatesParameterInner, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewClusterServiceListClustersClusterStatesParameterInnerFromValue(v string) *ClusterServiceListClustersClusterStatesParameterInner {
 	ev := ClusterServiceListClustersClusterStatesParameterInner(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ClusterServiceListClustersClusterStatesParameterInner: valid values are %v", v, AllowedClusterServiceListClustersClusterStatesParameterInnerEnumValues)
+		return &ev
 	}
+	unknown := ClusterServiceListClustersClusterStatesParameterInner_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

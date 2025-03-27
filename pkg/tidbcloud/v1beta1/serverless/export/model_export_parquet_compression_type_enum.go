@@ -24,6 +24,9 @@ const (
 	EXPORTPARQUETCOMPRESSIONTYPEENUM_SNAPPY ExportParquetCompressionTypeEnum = "SNAPPY"
 	EXPORTPARQUETCOMPRESSIONTYPEENUM_ZSTD   ExportParquetCompressionTypeEnum = "ZSTD"
 	EXPORTPARQUETCOMPRESSIONTYPEENUM_NONE   ExportParquetCompressionTypeEnum = "NONE"
+
+	// Unknown value for handling new enum values gracefully
+	ExportParquetCompressionTypeEnum_UNKNOWN ExportParquetCompressionTypeEnum = "unknown"
 )
 
 // All allowed values of ExportParquetCompressionTypeEnum enum
@@ -32,6 +35,7 @@ var AllowedExportParquetCompressionTypeEnumEnumValues = []ExportParquetCompressi
 	"SNAPPY",
 	"ZSTD",
 	"NONE",
+	ExportParquetCompressionTypeEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ExportParquetCompressionTypeEnum) UnmarshalJSON(src []byte) error {
@@ -48,18 +52,20 @@ func (v *ExportParquetCompressionTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ExportParquetCompressionTypeEnum", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = ExportParquetCompressionTypeEnum_UNKNOWN
+	return nil
 }
 
 // NewExportParquetCompressionTypeEnumFromValue returns a pointer to a valid ExportParquetCompressionTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewExportParquetCompressionTypeEnumFromValue(v string) (*ExportParquetCompressionTypeEnum, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewExportParquetCompressionTypeEnumFromValue(v string) *ExportParquetCompressionTypeEnum {
 	ev := ExportParquetCompressionTypeEnum(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ExportParquetCompressionTypeEnum: valid values are %v", v, AllowedExportParquetCompressionTypeEnumEnumValues)
+		return &ev
 	}
+	unknown := ExportParquetCompressionTypeEnum_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

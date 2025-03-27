@@ -23,6 +23,9 @@ const (
 	DEDICATEDV1BETA1VPCPEERINGSTATE_PENDING Dedicatedv1beta1VpcPeeringState = "PENDING"
 	DEDICATEDV1BETA1VPCPEERINGSTATE_FAILED  Dedicatedv1beta1VpcPeeringState = "FAILED"
 	DEDICATEDV1BETA1VPCPEERINGSTATE_ACTIVE  Dedicatedv1beta1VpcPeeringState = "ACTIVE"
+
+	// Unknown value for handling new enum values gracefully
+	Dedicatedv1beta1VpcPeeringState_UNKNOWN Dedicatedv1beta1VpcPeeringState = "unknown"
 )
 
 // All allowed values of Dedicatedv1beta1VpcPeeringState enum
@@ -30,6 +33,7 @@ var AllowedDedicatedv1beta1VpcPeeringStateEnumValues = []Dedicatedv1beta1VpcPeer
 	"PENDING",
 	"FAILED",
 	"ACTIVE",
+	Dedicatedv1beta1VpcPeeringState_UNKNOWN, // Include unknown
 }
 
 func (v *Dedicatedv1beta1VpcPeeringState) UnmarshalJSON(src []byte) error {
@@ -46,18 +50,20 @@ func (v *Dedicatedv1beta1VpcPeeringState) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid Dedicatedv1beta1VpcPeeringState", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = Dedicatedv1beta1VpcPeeringState_UNKNOWN
+	return nil
 }
 
 // NewDedicatedv1beta1VpcPeeringStateFromValue returns a pointer to a valid Dedicatedv1beta1VpcPeeringState
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewDedicatedv1beta1VpcPeeringStateFromValue(v string) (*Dedicatedv1beta1VpcPeeringState, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewDedicatedv1beta1VpcPeeringStateFromValue(v string) *Dedicatedv1beta1VpcPeeringState {
 	ev := Dedicatedv1beta1VpcPeeringState(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for Dedicatedv1beta1VpcPeeringState: valid values are %v", v, AllowedDedicatedv1beta1VpcPeeringStateEnumValues)
+		return &ev
 	}
+	unknown := Dedicatedv1beta1VpcPeeringState_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

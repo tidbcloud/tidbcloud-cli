@@ -25,6 +25,9 @@ const (
 	CLUSTERSERVICELISTNODEINSTANCESCOMPONENTTYPEPARAMETER_TIFLASH ClusterServiceListNodeInstancesComponentTypeParameter = "TIFLASH"
 	CLUSTERSERVICELISTNODEINSTANCESCOMPONENTTYPEPARAMETER_PD      ClusterServiceListNodeInstancesComponentTypeParameter = "PD"
 	CLUSTERSERVICELISTNODEINSTANCESCOMPONENTTYPEPARAMETER_TIPROXY ClusterServiceListNodeInstancesComponentTypeParameter = "TIPROXY"
+
+	// Unknown value for handling new enum values gracefully
+	ClusterServiceListNodeInstancesComponentTypeParameter_UNKNOWN ClusterServiceListNodeInstancesComponentTypeParameter = "unknown"
 )
 
 // All allowed values of ClusterServiceListNodeInstancesComponentTypeParameter enum
@@ -34,6 +37,7 @@ var AllowedClusterServiceListNodeInstancesComponentTypeParameterEnumValues = []C
 	"TIFLASH",
 	"PD",
 	"TIPROXY",
+	ClusterServiceListNodeInstancesComponentTypeParameter_UNKNOWN, // Include unknown
 }
 
 func (v *ClusterServiceListNodeInstancesComponentTypeParameter) UnmarshalJSON(src []byte) error {
@@ -50,18 +54,20 @@ func (v *ClusterServiceListNodeInstancesComponentTypeParameter) UnmarshalJSON(sr
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ClusterServiceListNodeInstancesComponentTypeParameter", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = ClusterServiceListNodeInstancesComponentTypeParameter_UNKNOWN
+	return nil
 }
 
 // NewClusterServiceListNodeInstancesComponentTypeParameterFromValue returns a pointer to a valid ClusterServiceListNodeInstancesComponentTypeParameter
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewClusterServiceListNodeInstancesComponentTypeParameterFromValue(v string) (*ClusterServiceListNodeInstancesComponentTypeParameter, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewClusterServiceListNodeInstancesComponentTypeParameterFromValue(v string) *ClusterServiceListNodeInstancesComponentTypeParameter {
 	ev := ClusterServiceListNodeInstancesComponentTypeParameter(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ClusterServiceListNodeInstancesComponentTypeParameter: valid values are %v", v, AllowedClusterServiceListNodeInstancesComponentTypeParameterEnumValues)
+		return &ev
 	}
+	unknown := ClusterServiceListNodeInstancesComponentTypeParameter_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

@@ -23,6 +23,9 @@ const (
 	EXPORTFILETYPEENUM_SQL     ExportFileTypeEnum = "SQL"
 	EXPORTFILETYPEENUM_CSV     ExportFileTypeEnum = "CSV"
 	EXPORTFILETYPEENUM_PARQUET ExportFileTypeEnum = "PARQUET"
+
+	// Unknown value for handling new enum values gracefully
+	ExportFileTypeEnum_UNKNOWN ExportFileTypeEnum = "unknown"
 )
 
 // All allowed values of ExportFileTypeEnum enum
@@ -30,6 +33,7 @@ var AllowedExportFileTypeEnumEnumValues = []ExportFileTypeEnum{
 	"SQL",
 	"CSV",
 	"PARQUET",
+	ExportFileTypeEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ExportFileTypeEnum) UnmarshalJSON(src []byte) error {
@@ -46,18 +50,20 @@ func (v *ExportFileTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ExportFileTypeEnum", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = ExportFileTypeEnum_UNKNOWN
+	return nil
 }
 
 // NewExportFileTypeEnumFromValue returns a pointer to a valid ExportFileTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewExportFileTypeEnumFromValue(v string) (*ExportFileTypeEnum, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewExportFileTypeEnumFromValue(v string) *ExportFileTypeEnum {
 	ev := ExportFileTypeEnum(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ExportFileTypeEnum: valid values are %v", v, AllowedExportFileTypeEnumEnumValues)
+		return &ev
 	}
+	unknown := ExportFileTypeEnum_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

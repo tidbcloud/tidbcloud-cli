@@ -21,11 +21,15 @@ type ImportGcsAuthTypeEnum string
 // List of ImportGcsAuthType.Enum
 const (
 	IMPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY ImportGcsAuthTypeEnum = "SERVICE_ACCOUNT_KEY"
+
+	// Unknown value for handling new enum values gracefully
+	ImportGcsAuthTypeEnum_UNKNOWN ImportGcsAuthTypeEnum = "unknown"
 )
 
 // All allowed values of ImportGcsAuthTypeEnum enum
 var AllowedImportGcsAuthTypeEnumEnumValues = []ImportGcsAuthTypeEnum{
 	"SERVICE_ACCOUNT_KEY",
+	ImportGcsAuthTypeEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ImportGcsAuthTypeEnum) UnmarshalJSON(src []byte) error {
@@ -42,18 +46,20 @@ func (v *ImportGcsAuthTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ImportGcsAuthTypeEnum", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = ImportGcsAuthTypeEnum_UNKNOWN
+	return nil
 }
 
 // NewImportGcsAuthTypeEnumFromValue returns a pointer to a valid ImportGcsAuthTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewImportGcsAuthTypeEnumFromValue(v string) (*ImportGcsAuthTypeEnum, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewImportGcsAuthTypeEnumFromValue(v string) *ImportGcsAuthTypeEnum {
 	ev := ImportGcsAuthTypeEnum(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ImportGcsAuthTypeEnum: valid values are %v", v, AllowedImportGcsAuthTypeEnumEnumValues)
+		return &ev
 	}
+	unknown := ImportGcsAuthTypeEnum_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

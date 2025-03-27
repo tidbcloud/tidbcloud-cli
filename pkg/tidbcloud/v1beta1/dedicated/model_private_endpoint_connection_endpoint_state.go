@@ -25,6 +25,9 @@ const (
 	PRIVATEENDPOINTCONNECTIONENDPOINTSTATE_DELETING   PrivateEndpointConnectionEndpointState = "DELETING"
 	PRIVATEENDPOINTCONNECTIONENDPOINTSTATE_FAILED     PrivateEndpointConnectionEndpointState = "FAILED"
 	PRIVATEENDPOINTCONNECTIONENDPOINTSTATE_DISCOVERED PrivateEndpointConnectionEndpointState = "DISCOVERED"
+
+	// Unknown value for handling new enum values gracefully
+	PrivateEndpointConnectionEndpointState_UNKNOWN PrivateEndpointConnectionEndpointState = "unknown"
 )
 
 // All allowed values of PrivateEndpointConnectionEndpointState enum
@@ -34,6 +37,7 @@ var AllowedPrivateEndpointConnectionEndpointStateEnumValues = []PrivateEndpointC
 	"DELETING",
 	"FAILED",
 	"DISCOVERED",
+	PrivateEndpointConnectionEndpointState_UNKNOWN, // Include unknown
 }
 
 func (v *PrivateEndpointConnectionEndpointState) UnmarshalJSON(src []byte) error {
@@ -50,18 +54,20 @@ func (v *PrivateEndpointConnectionEndpointState) UnmarshalJSON(src []byte) error
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid PrivateEndpointConnectionEndpointState", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = PrivateEndpointConnectionEndpointState_UNKNOWN
+	return nil
 }
 
 // NewPrivateEndpointConnectionEndpointStateFromValue returns a pointer to a valid PrivateEndpointConnectionEndpointState
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewPrivateEndpointConnectionEndpointStateFromValue(v string) (*PrivateEndpointConnectionEndpointState, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewPrivateEndpointConnectionEndpointStateFromValue(v string) *PrivateEndpointConnectionEndpointState {
 	ev := PrivateEndpointConnectionEndpointState(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for PrivateEndpointConnectionEndpointState: valid values are %v", v, AllowedPrivateEndpointConnectionEndpointStateEnumValues)
+		return &ev
 	}
+	unknown := PrivateEndpointConnectionEndpointState_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

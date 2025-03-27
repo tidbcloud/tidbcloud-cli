@@ -22,12 +22,16 @@ type V1beta1NetworkContainerState string
 const (
 	V1BETA1NETWORKCONTAINERSTATE_ACTIVE   V1beta1NetworkContainerState = "ACTIVE"
 	V1BETA1NETWORKCONTAINERSTATE_INACTIVE V1beta1NetworkContainerState = "INACTIVE"
+
+	// Unknown value for handling new enum values gracefully
+	V1beta1NetworkContainerState_UNKNOWN V1beta1NetworkContainerState = "unknown"
 )
 
 // All allowed values of V1beta1NetworkContainerState enum
 var AllowedV1beta1NetworkContainerStateEnumValues = []V1beta1NetworkContainerState{
 	"ACTIVE",
 	"INACTIVE",
+	V1beta1NetworkContainerState_UNKNOWN, // Include unknown
 }
 
 func (v *V1beta1NetworkContainerState) UnmarshalJSON(src []byte) error {
@@ -44,18 +48,20 @@ func (v *V1beta1NetworkContainerState) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid V1beta1NetworkContainerState", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = V1beta1NetworkContainerState_UNKNOWN
+	return nil
 }
 
 // NewV1beta1NetworkContainerStateFromValue returns a pointer to a valid V1beta1NetworkContainerState
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewV1beta1NetworkContainerStateFromValue(v string) (*V1beta1NetworkContainerState, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewV1beta1NetworkContainerStateFromValue(v string) *V1beta1NetworkContainerState {
 	ev := V1beta1NetworkContainerState(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for V1beta1NetworkContainerState: valid values are %v", v, AllowedV1beta1NetworkContainerStateEnumValues)
+		return &ev
 	}
+	unknown := V1beta1NetworkContainerState_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

@@ -26,6 +26,9 @@ const (
 	IMPORTSTATEENUM_FAILED    ImportStateEnum = "FAILED"
 	IMPORTSTATEENUM_CANCELING ImportStateEnum = "CANCELING"
 	IMPORTSTATEENUM_CANCELED  ImportStateEnum = "CANCELED"
+
+	// Unknown value for handling new enum values gracefully
+	ImportStateEnum_UNKNOWN ImportStateEnum = "unknown"
 )
 
 // All allowed values of ImportStateEnum enum
@@ -36,6 +39,7 @@ var AllowedImportStateEnumEnumValues = []ImportStateEnum{
 	"FAILED",
 	"CANCELING",
 	"CANCELED",
+	ImportStateEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ImportStateEnum) UnmarshalJSON(src []byte) error {
@@ -52,18 +56,20 @@ func (v *ImportStateEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ImportStateEnum", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = ImportStateEnum_UNKNOWN
+	return nil
 }
 
 // NewImportStateEnumFromValue returns a pointer to a valid ImportStateEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewImportStateEnumFromValue(v string) (*ImportStateEnum, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewImportStateEnumFromValue(v string) *ImportStateEnum {
 	ev := ImportStateEnum(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ImportStateEnum: valid values are %v", v, AllowedImportStateEnumEnumValues)
+		return &ev
 	}
+	unknown := ImportStateEnum_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

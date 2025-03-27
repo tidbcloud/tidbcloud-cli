@@ -33,6 +33,9 @@ const (
 	COMMONV1BETA1CLUSTERSTATE_PAUSING     Commonv1beta1ClusterState = "PAUSING"
 	COMMONV1BETA1CLUSTERSTATE_PAUSED      Commonv1beta1ClusterState = "PAUSED"
 	COMMONV1BETA1CLUSTERSTATE_RESUMING    Commonv1beta1ClusterState = "RESUMING"
+
+	// Unknown value for handling new enum values gracefully
+	Commonv1beta1ClusterState_UNKNOWN Commonv1beta1ClusterState = "unknown"
 )
 
 // All allowed values of Commonv1beta1ClusterState enum
@@ -50,6 +53,7 @@ var AllowedCommonv1beta1ClusterStateEnumValues = []Commonv1beta1ClusterState{
 	"PAUSING",
 	"PAUSED",
 	"RESUMING",
+	Commonv1beta1ClusterState_UNKNOWN, // Include unknown
 }
 
 func (v *Commonv1beta1ClusterState) UnmarshalJSON(src []byte) error {
@@ -66,18 +70,20 @@ func (v *Commonv1beta1ClusterState) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid Commonv1beta1ClusterState", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = Commonv1beta1ClusterState_UNKNOWN
+	return nil
 }
 
 // NewCommonv1beta1ClusterStateFromValue returns a pointer to a valid Commonv1beta1ClusterState
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewCommonv1beta1ClusterStateFromValue(v string) (*Commonv1beta1ClusterState, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewCommonv1beta1ClusterStateFromValue(v string) *Commonv1beta1ClusterState {
 	ev := Commonv1beta1ClusterState(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for Commonv1beta1ClusterState: valid values are %v", v, AllowedCommonv1beta1ClusterStateEnumValues)
+		return &ev
 	}
+	unknown := Commonv1beta1ClusterState_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

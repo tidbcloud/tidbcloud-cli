@@ -22,12 +22,16 @@ type ImportS3AuthTypeEnum string
 const (
 	IMPORTS3AUTHTYPEENUM_ROLE_ARN   ImportS3AuthTypeEnum = "ROLE_ARN"
 	IMPORTS3AUTHTYPEENUM_ACCESS_KEY ImportS3AuthTypeEnum = "ACCESS_KEY"
+
+	// Unknown value for handling new enum values gracefully
+	ImportS3AuthTypeEnum_UNKNOWN ImportS3AuthTypeEnum = "unknown"
 )
 
 // All allowed values of ImportS3AuthTypeEnum enum
 var AllowedImportS3AuthTypeEnumEnumValues = []ImportS3AuthTypeEnum{
 	"ROLE_ARN",
 	"ACCESS_KEY",
+	ImportS3AuthTypeEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ImportS3AuthTypeEnum) UnmarshalJSON(src []byte) error {
@@ -44,18 +48,20 @@ func (v *ImportS3AuthTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ImportS3AuthTypeEnum", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = ImportS3AuthTypeEnum_UNKNOWN
+	return nil
 }
 
 // NewImportS3AuthTypeEnumFromValue returns a pointer to a valid ImportS3AuthTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewImportS3AuthTypeEnumFromValue(v string) (*ImportS3AuthTypeEnum, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewImportS3AuthTypeEnumFromValue(v string) *ImportS3AuthTypeEnum {
 	ev := ImportS3AuthTypeEnum(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ImportS3AuthTypeEnum: valid values are %v", v, AllowedImportS3AuthTypeEnumEnumValues)
+		return &ev
 	}
+	unknown := ImportS3AuthTypeEnum_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

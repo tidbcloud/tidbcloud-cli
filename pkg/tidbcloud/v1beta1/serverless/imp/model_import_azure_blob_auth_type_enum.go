@@ -21,11 +21,15 @@ type ImportAzureBlobAuthTypeEnum string
 // List of ImportAzureBlobAuthType.Enum
 const (
 	IMPORTAZUREBLOBAUTHTYPEENUM_SAS_TOKEN ImportAzureBlobAuthTypeEnum = "SAS_TOKEN"
+
+	// Unknown value for handling new enum values gracefully
+	ImportAzureBlobAuthTypeEnum_UNKNOWN ImportAzureBlobAuthTypeEnum = "unknown"
 )
 
 // All allowed values of ImportAzureBlobAuthTypeEnum enum
 var AllowedImportAzureBlobAuthTypeEnumEnumValues = []ImportAzureBlobAuthTypeEnum{
 	"SAS_TOKEN",
+	ImportAzureBlobAuthTypeEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ImportAzureBlobAuthTypeEnum) UnmarshalJSON(src []byte) error {
@@ -42,18 +46,20 @@ func (v *ImportAzureBlobAuthTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ImportAzureBlobAuthTypeEnum", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = ImportAzureBlobAuthTypeEnum_UNKNOWN
+	return nil
 }
 
 // NewImportAzureBlobAuthTypeEnumFromValue returns a pointer to a valid ImportAzureBlobAuthTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewImportAzureBlobAuthTypeEnumFromValue(v string) (*ImportAzureBlobAuthTypeEnum, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewImportAzureBlobAuthTypeEnumFromValue(v string) *ImportAzureBlobAuthTypeEnum {
 	ev := ImportAzureBlobAuthTypeEnum(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ImportAzureBlobAuthTypeEnum: valid values are %v", v, AllowedImportAzureBlobAuthTypeEnumEnumValues)
+		return &ev
 	}
+	unknown := ImportAzureBlobAuthTypeEnum_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

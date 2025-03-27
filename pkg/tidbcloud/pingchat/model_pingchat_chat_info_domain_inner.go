@@ -27,6 +27,9 @@ const (
 	PINGCHATCHATINFODOMAININNER_COMMUNITY         PingchatChatInfoDomainInner = "community"
 	PINGCHATCHATINFODOMAININNER_KNOWLEDGE_BASE_CN PingchatChatInfoDomainInner = "knowledge-base-cn"
 	PINGCHATCHATINFODOMAININNER_KB                PingchatChatInfoDomainInner = "kb"
+
+	// Unknown value for handling new enum values gracefully
+	PingchatChatInfoDomainInner_UNKNOWN PingchatChatInfoDomainInner = "unknown"
 )
 
 // All allowed values of PingchatChatInfoDomainInner enum
@@ -38,6 +41,7 @@ var AllowedPingchatChatInfoDomainInnerEnumValues = []PingchatChatInfoDomainInner
 	"community",
 	"knowledge-base-cn",
 	"kb",
+	PingchatChatInfoDomainInner_UNKNOWN, // Include unknown
 }
 
 func (v *PingchatChatInfoDomainInner) UnmarshalJSON(src []byte) error {
@@ -54,18 +58,20 @@ func (v *PingchatChatInfoDomainInner) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid PingchatChatInfoDomainInner", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = PingchatChatInfoDomainInner_UNKNOWN
+	return nil
 }
 
 // NewPingchatChatInfoDomainInnerFromValue returns a pointer to a valid PingchatChatInfoDomainInner
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewPingchatChatInfoDomainInnerFromValue(v string) (*PingchatChatInfoDomainInner, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewPingchatChatInfoDomainInnerFromValue(v string) *PingchatChatInfoDomainInner {
 	ev := PingchatChatInfoDomainInner(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for PingchatChatInfoDomainInner: valid values are %v", v, AllowedPingchatChatInfoDomainInnerEnumValues)
+		return &ev
 	}
+	unknown := PingchatChatInfoDomainInner_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

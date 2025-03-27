@@ -23,6 +23,9 @@ const (
 	V1BETA1MAINTENANCETASKSTATE_PENDING V1beta1MaintenanceTaskState = "PENDING"
 	V1BETA1MAINTENANCETASKSTATE_RUNNING V1beta1MaintenanceTaskState = "RUNNING"
 	V1BETA1MAINTENANCETASKSTATE_DONE    V1beta1MaintenanceTaskState = "DONE"
+
+	// Unknown value for handling new enum values gracefully
+	V1beta1MaintenanceTaskState_UNKNOWN V1beta1MaintenanceTaskState = "unknown"
 )
 
 // All allowed values of V1beta1MaintenanceTaskState enum
@@ -30,6 +33,7 @@ var AllowedV1beta1MaintenanceTaskStateEnumValues = []V1beta1MaintenanceTaskState
 	"PENDING",
 	"RUNNING",
 	"DONE",
+	V1beta1MaintenanceTaskState_UNKNOWN, // Include unknown
 }
 
 func (v *V1beta1MaintenanceTaskState) UnmarshalJSON(src []byte) error {
@@ -46,18 +50,20 @@ func (v *V1beta1MaintenanceTaskState) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid V1beta1MaintenanceTaskState", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = V1beta1MaintenanceTaskState_UNKNOWN
+	return nil
 }
 
 // NewV1beta1MaintenanceTaskStateFromValue returns a pointer to a valid V1beta1MaintenanceTaskState
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewV1beta1MaintenanceTaskStateFromValue(v string) (*V1beta1MaintenanceTaskState, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewV1beta1MaintenanceTaskStateFromValue(v string) *V1beta1MaintenanceTaskState {
 	ev := V1beta1MaintenanceTaskState(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for V1beta1MaintenanceTaskState: valid values are %v", v, AllowedV1beta1MaintenanceTaskStateEnumValues)
+		return &ev
 	}
+	unknown := V1beta1MaintenanceTaskState_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

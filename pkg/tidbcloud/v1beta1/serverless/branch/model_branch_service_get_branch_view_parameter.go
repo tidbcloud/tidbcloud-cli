@@ -22,12 +22,16 @@ type BranchServiceGetBranchViewParameter string
 const (
 	BRANCHSERVICEGETBRANCHVIEWPARAMETER_BASIC BranchServiceGetBranchViewParameter = "BASIC"
 	BRANCHSERVICEGETBRANCHVIEWPARAMETER_FULL  BranchServiceGetBranchViewParameter = "FULL"
+
+	// Unknown value for handling new enum values gracefully
+	BranchServiceGetBranchViewParameter_UNKNOWN BranchServiceGetBranchViewParameter = "unknown"
 )
 
 // All allowed values of BranchServiceGetBranchViewParameter enum
 var AllowedBranchServiceGetBranchViewParameterEnumValues = []BranchServiceGetBranchViewParameter{
 	"BASIC",
 	"FULL",
+	BranchServiceGetBranchViewParameter_UNKNOWN, // Include unknown
 }
 
 func (v *BranchServiceGetBranchViewParameter) UnmarshalJSON(src []byte) error {
@@ -44,18 +48,20 @@ func (v *BranchServiceGetBranchViewParameter) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid BranchServiceGetBranchViewParameter", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = BranchServiceGetBranchViewParameter_UNKNOWN
+	return nil
 }
 
 // NewBranchServiceGetBranchViewParameterFromValue returns a pointer to a valid BranchServiceGetBranchViewParameter
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewBranchServiceGetBranchViewParameterFromValue(v string) (*BranchServiceGetBranchViewParameter, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewBranchServiceGetBranchViewParameterFromValue(v string) *BranchServiceGetBranchViewParameter {
 	ev := BranchServiceGetBranchViewParameter(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for BranchServiceGetBranchViewParameter: valid values are %v", v, AllowedBranchServiceGetBranchViewParameterEnumValues)
+		return &ev
 	}
+	unknown := BranchServiceGetBranchViewParameter_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

@@ -26,6 +26,9 @@ const (
 	CLUSTERSTORAGENODESETTINGSTORAGETYPE_PERFORMANCE           ClusterStorageNodeSettingStorageType = "Performance"
 	CLUSTERSTORAGENODESETTINGSTORAGETYPE_STANDARD_PREMIUM      ClusterStorageNodeSettingStorageType = "Standard_Premium"
 	CLUSTERSTORAGENODESETTINGSTORAGETYPE_PERFORMANCE_PREMIUM   ClusterStorageNodeSettingStorageType = "Performance_Premium"
+
+	// Unknown value for handling new enum values gracefully
+	ClusterStorageNodeSettingStorageType_UNKNOWN ClusterStorageNodeSettingStorageType = "unknown"
 )
 
 // All allowed values of ClusterStorageNodeSettingStorageType enum
@@ -36,6 +39,7 @@ var AllowedClusterStorageNodeSettingStorageTypeEnumValues = []ClusterStorageNode
 	"Performance",
 	"Standard_Premium",
 	"Performance_Premium",
+	ClusterStorageNodeSettingStorageType_UNKNOWN, // Include unknown
 }
 
 func (v *ClusterStorageNodeSettingStorageType) UnmarshalJSON(src []byte) error {
@@ -52,18 +56,20 @@ func (v *ClusterStorageNodeSettingStorageType) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ClusterStorageNodeSettingStorageType", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = ClusterStorageNodeSettingStorageType_UNKNOWN
+	return nil
 }
 
 // NewClusterStorageNodeSettingStorageTypeFromValue returns a pointer to a valid ClusterStorageNodeSettingStorageType
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewClusterStorageNodeSettingStorageTypeFromValue(v string) (*ClusterStorageNodeSettingStorageType, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func NewClusterStorageNodeSettingStorageTypeFromValue(v string) *ClusterStorageNodeSettingStorageType {
 	ev := ClusterStorageNodeSettingStorageType(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ClusterStorageNodeSettingStorageType: valid values are %v", v, AllowedClusterStorageNodeSettingStorageTypeEnumValues)
+		return &ev
 	}
+	unknown := ClusterStorageNodeSettingStorageType_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise
