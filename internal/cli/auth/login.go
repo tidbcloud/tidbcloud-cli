@@ -19,17 +19,14 @@ import (
 	"context"
 	"fmt"
 	"runtime"
-	"strings"
 	"time"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/tidbcloud/tidbcloud-cli/internal"
-	configCmd "github.com/tidbcloud/tidbcloud-cli/internal/cli/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config/store"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
-	"github.com/tidbcloud/tidbcloud-cli/internal/prop"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 	ver "github.com/tidbcloud/tidbcloud-cli/internal/version"
 
@@ -37,7 +34,6 @@ import (
 	"github.com/go-resty/resty/v2"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	_ "github.com/xo/usql/drivers/mysql"
 )
 
@@ -119,37 +115,23 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if config.GetPublicKey() != "" && config.GetPrivateKey() != "" {
-				color.HiYellow("\nDetect an API key already set in %s profile. Auth token will not take effect as API key has higher precedence!\n\n", config.ActiveProfileName())
-				// color.HiYellow("\nDetect an API key already set in %s profile! Note it will take precedence over auth token.", config.ActiveProfileName())
-				for {
-					confirmationMessage := color.BlueString("Create a new profile to make auth token works. Input the profile name or press Enter to skip:")
-					prompt := &survey.Input{
-						Message: confirmationMessage,
+				color.HiYellow("\nDetect an API key already set in %s profile! Note it will take precedence over auth token", config.ActiveProfileName())
+				prompt := &survey.Confirm{
+					Message: color.BlueString("Your login will not take affect, continue to login?"),
+					Default: true,
+				}
+				login := true
+				err = survey.AskOne(prompt, &login)
+				if err != nil {
+					if err == terminal.InterruptErr {
+						return util.InterruptError
+					} else {
+						return err
 					}
-					var userInput string
-					err = survey.AskOne(prompt, &userInput)
-					if err != nil {
-						if err == terminal.InterruptErr {
-							return util.InterruptError
-						} else {
-							return err
-						}
-					}
-
-					if userInput == "" {
-						break
-					}
-
-					if err = configCmd.CreateProfile(userInput, "", ""); err != nil {
-						if strings.Contains(err.Error(), "already exists") {
-							color.HiRed("profile %s already exists", userInput)
-						} else {
-							color.HiRed(err.Error())
-						}
-						continue
-					}
-					config.SetActiveProfile(viper.GetString(prop.CurProfile))
-					break
+				}
+				if !login {
+					color.HiGreen("\nExit the login process, use `ticloud config create --profile-name <profile-name>` to create a new profile and login again.")
+					return nil
 				}
 			}
 			err = config.SaveAccessToken(now.Add(time.Duration(token.ExpireIn)*time.Second), token.TokenType, token.AccessToken, opts.insecureStorage)
@@ -157,8 +139,7 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			color.HiGreen("\nSuccessfully logged in with %s profile.", config.ActiveProfileName())
-
+			color.HiGreen("\nSuccessfully logged in.")
 			return nil
 		},
 	}

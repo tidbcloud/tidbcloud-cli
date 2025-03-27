@@ -143,12 +143,35 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				privateKey = priKey
 			}
 
-			if err := CreateProfile(profileName, publicKey, privateKey); err != nil {
-				return err
+			if strings.Contains(profileName, `.`) {
+				return fmt.Errorf("profile name cannot contain periods")
 			}
+			if strings.Contains(profileName, "\"") && strings.Contains(profileName, "'") {
+				return fmt.Errorf("profile name cannot contain both single and double quotes")
+			}
+
+			// viper treats all key names as case-insensitive see https://github.com/spf13/viper#does-viper-support-case-sensitive-keys
+			// and lowercases all keys  https://github.com/spf13/viper/blob/d9cca5ef33035202efb1586825bdbb15ff9ec3ba/viper.go#L1303
+			profileName = strings.ToLower(profileName)
+			profiles, err := config.GetAllProfiles()
+			if err != nil {
+				return errors.Trace(err)
+			}
+			if slices.Contains(profiles, profileName) {
+				return fmt.Errorf("profile %s already exists, use `config set` to modify", profileName)
+			}
+
+			viper.Set(fmt.Sprintf("%s.%s", profileName, prop.PublicKey), publicKey)
+			viper.Set(fmt.Sprintf("%s.%s", profileName, prop.PrivateKey), privateKey)
+			viper.Set(prop.CurProfile, profileName)
+			err = viper.WriteConfig()
+			if err != nil {
+				return errors.Trace(err)
+			}
+
 			fgGreen := color.New(color.FgGreen).SprintFunc()
 			hiGreen := color.New(color.FgHiCyan).SprintFunc()
-			fmt.Fprintf(h.IOStreams.Out, "%s %s\n", fgGreen("Current profile has been changed to"), hiGreen(viper.GetString(prop.CurProfile)))
+			fmt.Fprintf(h.IOStreams.Out, "%s %s\n", fgGreen("Current profile has been changed to"), hiGreen(profileName))
 			return nil
 		},
 	}
@@ -157,35 +180,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.PublicKey, "", "The public key of the TiDB Cloud API. (optional)")
 	createCmd.Flags().String(flag.PrivateKey, "", "The private key of the TiDB Cloud API. (optional)")
 	return createCmd
-}
-
-func CreateProfile(profileName, publicKey, privateKey string) error {
-	if strings.Contains(profileName, `.`) {
-		return fmt.Errorf("profile name cannot contain periods")
-	}
-	if strings.Contains(profileName, "\"") && strings.Contains(profileName, "'") {
-		return fmt.Errorf("profile name cannot contain both single and double quotes")
-	}
-
-	// viper treats all key names as case-insensitive see https://github.com/spf13/viper#does-viper-support-case-sensitive-keys
-	// and lowercases all keys  https://github.com/spf13/viper/blob/d9cca5ef33035202efb1586825bdbb15ff9ec3ba/viper.go#L1303
-	profileName = strings.ToLower(profileName)
-	profiles, err := config.GetAllProfiles()
-	if err != nil {
-		return errors.Trace(err)
-	}
-	if slices.Contains(profiles, profileName) {
-		return fmt.Errorf("profile %s already exists, use `config set` to modify", profileName)
-	}
-
-	viper.Set(fmt.Sprintf("%s.%s", profileName, prop.PublicKey), publicKey)
-	viper.Set(fmt.Sprintf("%s.%s", profileName, prop.PrivateKey), privateKey)
-	viper.Set(prop.CurProfile, profileName)
-	err = viper.WriteConfig()
-	if err != nil {
-		return errors.Trace(err)
-	}
-	return nil
 }
 
 func initialCreationInputModel() ui.TextInputModel {

@@ -107,7 +107,7 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 			fmt.Fprintln(h.IOStreams.Out, "Org Name:", orgInfo.Orgname)
 
 			if config.GetPublicKey() != "" && config.GetPrivateKey() != "" {
-				color.HiYellow("\nDetect an API key already set in %s profile. Auth token will not take effect as API key has higher precedence!\n\n", config.ActiveProfileName())
+				color.HiYellow("\nDetect an API key already set in %s profile! Note it will take precedence over auth token", config.ActiveProfileName())
 			}
 			return nil
 		},
