@@ -26,7 +26,7 @@ const (
 	CLUSTERSERVICELISTNODEINSTANCESCOMPONENTTYPEPARAMETER_TIPROXY ClusterServiceListNodeInstancesComponentTypeParameter = "TIPROXY"
 
 	// Unknown value for handling new enum values gracefully
-	ClusterServiceListNodeInstancesComponentTypeParameter_UNKNOWN ClusterServiceListNodeInstancesComponentTypeParameter = "unknown"
+	ClusterServiceListNodeInstancesComponentTypeParameter_UNKNOWN ClusterServiceListNodeInstancesComponentTypeParameter = "UNKNOWN"
 )
 
 // All allowed values of ClusterServiceListNodeInstancesComponentTypeParameter enum
@@ -36,7 +36,6 @@ var AllowedClusterServiceListNodeInstancesComponentTypeParameterEnumValues = []C
 	"TIFLASH",
 	"PD",
 	"TIPROXY",
-	ClusterServiceListNodeInstancesComponentTypeParameter_UNKNOWN, // Include unknown
 }
 
 func (v *ClusterServiceListNodeInstancesComponentTypeParameter) UnmarshalJSON(src []byte) error {

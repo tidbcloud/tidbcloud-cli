@@ -24,7 +24,7 @@ const (
 	V1BETA1MAINTENANCETASKSTATE_DONE    V1beta1MaintenanceTaskState = "DONE"
 
 	// Unknown value for handling new enum values gracefully
-	V1beta1MaintenanceTaskState_UNKNOWN V1beta1MaintenanceTaskState = "unknown"
+	V1beta1MaintenanceTaskState_UNKNOWN V1beta1MaintenanceTaskState = "UNKNOWN"
 )
 
 // All allowed values of V1beta1MaintenanceTaskState enum
@@ -32,7 +32,6 @@ var AllowedV1beta1MaintenanceTaskStateEnumValues = []V1beta1MaintenanceTaskState
 	"PENDING",
 	"RUNNING",
 	"DONE",
-	V1beta1MaintenanceTaskState_UNKNOWN, // Include unknown
 }
 
 func (v *V1beta1MaintenanceTaskState) UnmarshalJSON(src []byte) error {

@@ -25,7 +25,7 @@ const (
 	EXPORTPARQUETCOMPRESSIONTYPEENUM_NONE   ExportParquetCompressionTypeEnum = "NONE"
 
 	// Unknown value for handling new enum values gracefully
-	ExportParquetCompressionTypeEnum_UNKNOWN ExportParquetCompressionTypeEnum = "unknown"
+	ExportParquetCompressionTypeEnum_UNKNOWN ExportParquetCompressionTypeEnum = "UNKNOWN"
 )
 
 // All allowed values of ExportParquetCompressionTypeEnum enum
@@ -34,7 +34,6 @@ var AllowedExportParquetCompressionTypeEnumEnumValues = []ExportParquetCompressi
 	"SNAPPY",
 	"ZSTD",
 	"NONE",
-	ExportParquetCompressionTypeEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ExportParquetCompressionTypeEnum) UnmarshalJSON(src []byte) error {

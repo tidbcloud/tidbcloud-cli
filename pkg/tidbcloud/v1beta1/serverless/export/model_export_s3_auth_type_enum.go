@@ -23,14 +23,13 @@ const (
 	EXPORTS3AUTHTYPEENUM_ACCESS_KEY ExportS3AuthTypeEnum = "ACCESS_KEY"
 
 	// Unknown value for handling new enum values gracefully
-	ExportS3AuthTypeEnum_UNKNOWN ExportS3AuthTypeEnum = "unknown"
+	ExportS3AuthTypeEnum_UNKNOWN ExportS3AuthTypeEnum = "UNKNOWN"
 )
 
 // All allowed values of ExportS3AuthTypeEnum enum
 var AllowedExportS3AuthTypeEnumEnumValues = []ExportS3AuthTypeEnum{
 	"ROLE_ARN",
 	"ACCESS_KEY",
-	ExportS3AuthTypeEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ExportS3AuthTypeEnum) UnmarshalJSON(src []byte) error {

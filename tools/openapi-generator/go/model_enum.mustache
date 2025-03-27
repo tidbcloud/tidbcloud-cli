@@ -12,7 +12,7 @@ const (
 	{{/allowableValues}}
 
 	// Unknown value for handling new enum values gracefully
-	{{{classname}}}_UNKNOWN {{{classname}}} = "unknown"
+	{{{classname}}}_UNKNOWN {{{classname}}} = "UNKNOWN"
 )
 
 // All allowed values of {{{classname}}} enum
@@ -22,7 +22,6 @@ var Allowed{{{classname}}}EnumValues = []{{{classname}}}{
 	{{{value}}},
 	{{/enumVars}}
 	{{/allowableValues}}
-	{{{classname}}}_UNKNOWN, // Include unknown
 }
 
 func (v *{{{classname}}}) UnmarshalJSON(src []byte) error {

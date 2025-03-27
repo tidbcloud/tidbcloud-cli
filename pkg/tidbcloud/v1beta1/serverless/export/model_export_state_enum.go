@@ -27,7 +27,7 @@ const (
 	EXPORTSTATEENUM_EXPIRED   ExportStateEnum = "EXPIRED"
 
 	// Unknown value for handling new enum values gracefully
-	ExportStateEnum_UNKNOWN ExportStateEnum = "unknown"
+	ExportStateEnum_UNKNOWN ExportStateEnum = "UNKNOWN"
 )
 
 // All allowed values of ExportStateEnum enum
@@ -38,7 +38,6 @@ var AllowedExportStateEnumEnumValues = []ExportStateEnum{
 	"CANCELED",
 	"DELETED",
 	"EXPIRED",
-	ExportStateEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ExportStateEnum) UnmarshalJSON(src []byte) error {

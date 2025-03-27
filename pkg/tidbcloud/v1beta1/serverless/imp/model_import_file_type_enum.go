@@ -25,7 +25,7 @@ const (
 	IMPORTFILETYPEENUM_PARQUET         ImportFileTypeEnum = "PARQUET"
 
 	// Unknown value for handling new enum values gracefully
-	ImportFileTypeEnum_UNKNOWN ImportFileTypeEnum = "unknown"
+	ImportFileTypeEnum_UNKNOWN ImportFileTypeEnum = "UNKNOWN"
 )
 
 // All allowed values of ImportFileTypeEnum enum
@@ -34,7 +34,6 @@ var AllowedImportFileTypeEnumEnumValues = []ImportFileTypeEnum{
 	"SQL",
 	"AURORA_SNAPSHOT",
 	"PARQUET",
-	ImportFileTypeEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ImportFileTypeEnum) UnmarshalJSON(src []byte) error {

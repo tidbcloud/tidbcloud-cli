@@ -23,14 +23,13 @@ const (
 	DEDICATEDV1BETA1CLUSTERPAUSEPLANTYPE_DEPRECATE Dedicatedv1beta1ClusterPausePlanType = "DEPRECATE"
 
 	// Unknown value for handling new enum values gracefully
-	Dedicatedv1beta1ClusterPausePlanType_UNKNOWN Dedicatedv1beta1ClusterPausePlanType = "unknown"
+	Dedicatedv1beta1ClusterPausePlanType_UNKNOWN Dedicatedv1beta1ClusterPausePlanType = "UNKNOWN"
 )
 
 // All allowed values of Dedicatedv1beta1ClusterPausePlanType enum
 var AllowedDedicatedv1beta1ClusterPausePlanTypeEnumValues = []Dedicatedv1beta1ClusterPausePlanType{
 	"NORMAL",
 	"DEPRECATE",
-	Dedicatedv1beta1ClusterPausePlanType_UNKNOWN, // Include unknown
 }
 
 func (v *Dedicatedv1beta1ClusterPausePlanType) UnmarshalJSON(src []byte) error {

@@ -25,7 +25,7 @@ const (
 	EXPORTTARGETTYPEENUM_AZURE_BLOB ExportTargetTypeEnum = "AZURE_BLOB"
 
 	// Unknown value for handling new enum values gracefully
-	ExportTargetTypeEnum_UNKNOWN ExportTargetTypeEnum = "unknown"
+	ExportTargetTypeEnum_UNKNOWN ExportTargetTypeEnum = "UNKNOWN"
 )
 
 // All allowed values of ExportTargetTypeEnum enum
@@ -34,7 +34,6 @@ var AllowedExportTargetTypeEnumEnumValues = []ExportTargetTypeEnum{
 	"S3",
 	"GCS",
 	"AZURE_BLOB",
-	ExportTargetTypeEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ExportTargetTypeEnum) UnmarshalJSON(src []byte) error {

@@ -25,7 +25,7 @@ const (
 	EXPORTCOMPRESSIONTYPEENUM_NONE   ExportCompressionTypeEnum = "NONE"
 
 	// Unknown value for handling new enum values gracefully
-	ExportCompressionTypeEnum_UNKNOWN ExportCompressionTypeEnum = "unknown"
+	ExportCompressionTypeEnum_UNKNOWN ExportCompressionTypeEnum = "UNKNOWN"
 )
 
 // All allowed values of ExportCompressionTypeEnum enum
@@ -34,7 +34,6 @@ var AllowedExportCompressionTypeEnumEnumValues = []ExportCompressionTypeEnum{
 	"SNAPPY",
 	"ZSTD",
 	"NONE",
-	ExportCompressionTypeEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ExportCompressionTypeEnum) UnmarshalJSON(src []byte) error {

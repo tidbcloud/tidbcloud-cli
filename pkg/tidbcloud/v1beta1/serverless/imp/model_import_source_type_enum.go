@@ -25,7 +25,7 @@ const (
 	IMPORTSOURCETYPEENUM_AZURE_BLOB ImportSourceTypeEnum = "AZURE_BLOB"
 
 	// Unknown value for handling new enum values gracefully
-	ImportSourceTypeEnum_UNKNOWN ImportSourceTypeEnum = "unknown"
+	ImportSourceTypeEnum_UNKNOWN ImportSourceTypeEnum = "UNKNOWN"
 )
 
 // All allowed values of ImportSourceTypeEnum enum
@@ -34,7 +34,6 @@ var AllowedImportSourceTypeEnumEnumValues = []ImportSourceTypeEnum{
 	"S3",
 	"GCS",
 	"AZURE_BLOB",
-	ImportSourceTypeEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ImportSourceTypeEnum) UnmarshalJSON(src []byte) error {

@@ -24,7 +24,7 @@ const (
 	PRIVATEENDPOINTCONNECTIONSERVICELISTPRIVATEENDPOINTCONNECTIONSCLOUDPROVIDERPARAMETER_AZURE PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter = "azure"
 
 	// Unknown value for handling new enum values gracefully
-	PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter_UNKNOWN PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter = "unknown"
+	PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter_UNKNOWN PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter = "UNKNOWN"
 )
 
 // All allowed values of PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter enum
@@ -32,7 +32,6 @@ var AllowedPrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudPr
 	"aws",
 	"gcp",
 	"azure",
-	PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter_UNKNOWN, // Include unknown
 }
 
 func (v *PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter) UnmarshalJSON(src []byte) error {

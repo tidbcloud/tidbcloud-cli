@@ -25,7 +25,7 @@ const (
 	V1BETA1NODEINSTANCESTATE_UNAVAILABLE V1beta1NodeInstanceState = "UNAVAILABLE"
 
 	// Unknown value for handling new enum values gracefully
-	V1beta1NodeInstanceState_UNKNOWN V1beta1NodeInstanceState = "unknown"
+	V1beta1NodeInstanceState_UNKNOWN V1beta1NodeInstanceState = "UNKNOWN"
 )
 
 // All allowed values of V1beta1NodeInstanceState enum
@@ -34,7 +34,6 @@ var AllowedV1beta1NodeInstanceStateEnumValues = []V1beta1NodeInstanceState{
 	"AVAILABLE",
 	"DELETING",
 	"UNAVAILABLE",
-	V1beta1NodeInstanceState_UNKNOWN, // Include unknown
 }
 
 func (v *V1beta1NodeInstanceState) UnmarshalJSON(src []byte) error {

@@ -23,14 +23,13 @@ const (
 	BRANCHVIEW_FULL  BranchView = "FULL"
 
 	// Unknown value for handling new enum values gracefully
-	BranchView_UNKNOWN BranchView = "unknown"
+	BranchView_UNKNOWN BranchView = "UNKNOWN"
 )
 
 // All allowed values of BranchView enum
 var AllowedBranchViewEnumValues = []BranchView{
 	"BASIC",
 	"FULL",
-	BranchView_UNKNOWN, // Include unknown
 }
 
 func (v *BranchView) UnmarshalJSON(src []byte) error {

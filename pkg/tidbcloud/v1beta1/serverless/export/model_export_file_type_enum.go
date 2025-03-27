@@ -24,7 +24,7 @@ const (
 	EXPORTFILETYPEENUM_PARQUET ExportFileTypeEnum = "PARQUET"
 
 	// Unknown value for handling new enum values gracefully
-	ExportFileTypeEnum_UNKNOWN ExportFileTypeEnum = "unknown"
+	ExportFileTypeEnum_UNKNOWN ExportFileTypeEnum = "UNKNOWN"
 )
 
 // All allowed values of ExportFileTypeEnum enum
@@ -32,7 +32,6 @@ var AllowedExportFileTypeEnumEnumValues = []ExportFileTypeEnum{
 	"SQL",
 	"CSV",
 	"PARQUET",
-	ExportFileTypeEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ExportFileTypeEnum) UnmarshalJSON(src []byte) error {

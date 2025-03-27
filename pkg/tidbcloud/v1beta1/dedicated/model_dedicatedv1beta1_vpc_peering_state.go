@@ -24,7 +24,7 @@ const (
 	DEDICATEDV1BETA1VPCPEERINGSTATE_ACTIVE  Dedicatedv1beta1VpcPeeringState = "ACTIVE"
 
 	// Unknown value for handling new enum values gracefully
-	Dedicatedv1beta1VpcPeeringState_UNKNOWN Dedicatedv1beta1VpcPeeringState = "unknown"
+	Dedicatedv1beta1VpcPeeringState_UNKNOWN Dedicatedv1beta1VpcPeeringState = "UNKNOWN"
 )
 
 // All allowed values of Dedicatedv1beta1VpcPeeringState enum
@@ -32,7 +32,6 @@ var AllowedDedicatedv1beta1VpcPeeringStateEnumValues = []Dedicatedv1beta1VpcPeer
 	"PENDING",
 	"FAILED",
 	"ACTIVE",
-	Dedicatedv1beta1VpcPeeringState_UNKNOWN, // Include unknown
 }
 
 func (v *Dedicatedv1beta1VpcPeeringState) UnmarshalJSON(src []byte) error {

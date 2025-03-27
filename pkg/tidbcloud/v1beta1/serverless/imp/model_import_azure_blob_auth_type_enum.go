@@ -22,13 +22,12 @@ const (
 	IMPORTAZUREBLOBAUTHTYPEENUM_SAS_TOKEN ImportAzureBlobAuthTypeEnum = "SAS_TOKEN"
 
 	// Unknown value for handling new enum values gracefully
-	ImportAzureBlobAuthTypeEnum_UNKNOWN ImportAzureBlobAuthTypeEnum = "unknown"
+	ImportAzureBlobAuthTypeEnum_UNKNOWN ImportAzureBlobAuthTypeEnum = "UNKNOWN"
 )
 
 // All allowed values of ImportAzureBlobAuthTypeEnum enum
 var AllowedImportAzureBlobAuthTypeEnumEnumValues = []ImportAzureBlobAuthTypeEnum{
 	"SAS_TOKEN",
-	ImportAzureBlobAuthTypeEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ImportAzureBlobAuthTypeEnum) UnmarshalJSON(src []byte) error {

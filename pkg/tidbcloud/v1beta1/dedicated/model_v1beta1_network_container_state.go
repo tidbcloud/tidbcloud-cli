@@ -23,14 +23,13 @@ const (
 	V1BETA1NETWORKCONTAINERSTATE_INACTIVE V1beta1NetworkContainerState = "INACTIVE"
 
 	// Unknown value for handling new enum values gracefully
-	V1beta1NetworkContainerState_UNKNOWN V1beta1NetworkContainerState = "unknown"
+	V1beta1NetworkContainerState_UNKNOWN V1beta1NetworkContainerState = "UNKNOWN"
 )
 
 // All allowed values of V1beta1NetworkContainerState enum
 var AllowedV1beta1NetworkContainerStateEnumValues = []V1beta1NetworkContainerState{
 	"ACTIVE",
 	"INACTIVE",
-	V1beta1NetworkContainerState_UNKNOWN, // Include unknown
 }
 
 func (v *V1beta1NetworkContainerState) UnmarshalJSON(src []byte) error {

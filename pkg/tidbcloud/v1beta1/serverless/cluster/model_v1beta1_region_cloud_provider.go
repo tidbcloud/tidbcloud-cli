@@ -25,7 +25,7 @@ const (
 	V1BETA1REGIONCLOUDPROVIDER_ALICLOUD V1beta1RegionCloudProvider = "alicloud"
 
 	// Unknown value for handling new enum values gracefully
-	V1beta1RegionCloudProvider_UNKNOWN V1beta1RegionCloudProvider = "unknown"
+	V1beta1RegionCloudProvider_UNKNOWN V1beta1RegionCloudProvider = "UNKNOWN"
 )
 
 // All allowed values of V1beta1RegionCloudProvider enum
@@ -34,7 +34,6 @@ var AllowedV1beta1RegionCloudProviderEnumValues = []V1beta1RegionCloudProvider{
 	"gcp",
 	"azure",
 	"alicloud",
-	V1beta1RegionCloudProvider_UNKNOWN, // Include unknown
 }
 
 func (v *V1beta1RegionCloudProvider) UnmarshalJSON(src []byte) error {

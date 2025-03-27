@@ -27,7 +27,7 @@ const (
 	IMPORTSTATEENUM_CANCELED  ImportStateEnum = "CANCELED"
 
 	// Unknown value for handling new enum values gracefully
-	ImportStateEnum_UNKNOWN ImportStateEnum = "unknown"
+	ImportStateEnum_UNKNOWN ImportStateEnum = "UNKNOWN"
 )
 
 // All allowed values of ImportStateEnum enum
@@ -38,7 +38,6 @@ var AllowedImportStateEnumEnumValues = []ImportStateEnum{
 	"FAILED",
 	"CANCELING",
 	"CANCELED",
-	ImportStateEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ImportStateEnum) UnmarshalJSON(src []byte) error {

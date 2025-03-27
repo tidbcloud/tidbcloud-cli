@@ -26,7 +26,7 @@ const (
 	DEDICATEDV1BETA1COMPONENTTYPE_TIPROXY Dedicatedv1beta1ComponentType = "TIPROXY"
 
 	// Unknown value for handling new enum values gracefully
-	Dedicatedv1beta1ComponentType_UNKNOWN Dedicatedv1beta1ComponentType = "unknown"
+	Dedicatedv1beta1ComponentType_UNKNOWN Dedicatedv1beta1ComponentType = "UNKNOWN"
 )
 
 // All allowed values of Dedicatedv1beta1ComponentType enum
@@ -36,7 +36,6 @@ var AllowedDedicatedv1beta1ComponentTypeEnumValues = []Dedicatedv1beta1Component
 	"TIFLASH",
 	"PD",
 	"TIPROXY",
-	Dedicatedv1beta1ComponentType_UNKNOWN, // Include unknown
 }
 
 func (v *Dedicatedv1beta1ComponentType) UnmarshalJSON(src []byte) error {

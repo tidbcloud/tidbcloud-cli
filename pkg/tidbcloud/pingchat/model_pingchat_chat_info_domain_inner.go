@@ -28,7 +28,7 @@ const (
 	PINGCHATCHATINFODOMAININNER_KB                PingchatChatInfoDomainInner = "kb"
 
 	// Unknown value for handling new enum values gracefully
-	PingchatChatInfoDomainInner_UNKNOWN PingchatChatInfoDomainInner = "unknown"
+	PingchatChatInfoDomainInner_UNKNOWN PingchatChatInfoDomainInner = "UNKNOWN"
 )
 
 // All allowed values of PingchatChatInfoDomainInner enum
@@ -40,7 +40,6 @@ var AllowedPingchatChatInfoDomainInnerEnumValues = []PingchatChatInfoDomainInner
 	"community",
 	"knowledge-base-cn",
 	"kb",
-	PingchatChatInfoDomainInner_UNKNOWN, // Include unknown
 }
 
 func (v *PingchatChatInfoDomainInner) UnmarshalJSON(src []byte) error {

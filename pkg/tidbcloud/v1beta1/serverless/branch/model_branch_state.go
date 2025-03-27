@@ -26,7 +26,7 @@ const (
 	BRANCHSTATE_RESTORING   BranchState = "RESTORING"
 
 	// Unknown value for handling new enum values gracefully
-	BranchState_UNKNOWN BranchState = "unknown"
+	BranchState_UNKNOWN BranchState = "UNKNOWN"
 )
 
 // All allowed values of BranchState enum
@@ -36,7 +36,6 @@ var AllowedBranchStateEnumValues = []BranchState{
 	"DELETED",
 	"MAINTENANCE",
 	"RESTORING",
-	BranchState_UNKNOWN, // Include unknown
 }
 
 func (v *BranchState) UnmarshalJSON(src []byte) error {

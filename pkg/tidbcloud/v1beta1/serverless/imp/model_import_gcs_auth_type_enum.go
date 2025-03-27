@@ -22,13 +22,12 @@ const (
 	IMPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY ImportGcsAuthTypeEnum = "SERVICE_ACCOUNT_KEY"
 
 	// Unknown value for handling new enum values gracefully
-	ImportGcsAuthTypeEnum_UNKNOWN ImportGcsAuthTypeEnum = "unknown"
+	ImportGcsAuthTypeEnum_UNKNOWN ImportGcsAuthTypeEnum = "UNKNOWN"
 )
 
 // All allowed values of ImportGcsAuthTypeEnum enum
 var AllowedImportGcsAuthTypeEnumEnumValues = []ImportGcsAuthTypeEnum{
 	"SERVICE_ACCOUNT_KEY",
-	ImportGcsAuthTypeEnum_UNKNOWN, // Include unknown
 }
 
 func (v *ImportGcsAuthTypeEnum) UnmarshalJSON(src []byte) error {

@@ -24,7 +24,7 @@ const (
 	V1BETA1PRIVATELINKSERVICESTATE_DELETING V1beta1PrivateLinkServiceState = "DELETING"
 
 	// Unknown value for handling new enum values gracefully
-	V1beta1PrivateLinkServiceState_UNKNOWN V1beta1PrivateLinkServiceState = "unknown"
+	V1beta1PrivateLinkServiceState_UNKNOWN V1beta1PrivateLinkServiceState = "UNKNOWN"
 )
 
 // All allowed values of V1beta1PrivateLinkServiceState enum
@@ -32,7 +32,6 @@ var AllowedV1beta1PrivateLinkServiceStateEnumValues = []V1beta1PrivateLinkServic
 	"CREATING",
 	"ACTIVE",
 	"DELETING",
-	V1beta1PrivateLinkServiceState_UNKNOWN, // Include unknown
 }
 
 func (v *V1beta1PrivateLinkServiceState) UnmarshalJSON(src []byte) error {

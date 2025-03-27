@@ -23,14 +23,13 @@ const (
 	SERVERLESSV1BETA1CLUSTERVIEW_FULL  Serverlessv1beta1ClusterView = "FULL"
 
 	// Unknown value for handling new enum values gracefully
-	Serverlessv1beta1ClusterView_UNKNOWN Serverlessv1beta1ClusterView = "unknown"
+	Serverlessv1beta1ClusterView_UNKNOWN Serverlessv1beta1ClusterView = "UNKNOWN"
 )
 
 // All allowed values of Serverlessv1beta1ClusterView enum
 var AllowedServerlessv1beta1ClusterViewEnumValues = []Serverlessv1beta1ClusterView{
 	"BASIC",
 	"FULL",
-	Serverlessv1beta1ClusterView_UNKNOWN, // Include unknown
 }
 
 func (v *Serverlessv1beta1ClusterView) UnmarshalJSON(src []byte) error {

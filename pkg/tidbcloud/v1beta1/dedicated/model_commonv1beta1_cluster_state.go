@@ -34,7 +34,7 @@ const (
 	COMMONV1BETA1CLUSTERSTATE_RESUMING    Commonv1beta1ClusterState = "RESUMING"
 
 	// Unknown value for handling new enum values gracefully
-	Commonv1beta1ClusterState_UNKNOWN Commonv1beta1ClusterState = "unknown"
+	Commonv1beta1ClusterState_UNKNOWN Commonv1beta1ClusterState = "UNKNOWN"
 )
 
 // All allowed values of Commonv1beta1ClusterState enum
@@ -52,7 +52,6 @@ var AllowedCommonv1beta1ClusterStateEnumValues = []Commonv1beta1ClusterState{
 	"PAUSING",
 	"PAUSED",
 	"RESUMING",
-	Commonv1beta1ClusterState_UNKNOWN, // Include unknown
 }
 
 func (v *Commonv1beta1ClusterState) UnmarshalJSON(src []byte) error {

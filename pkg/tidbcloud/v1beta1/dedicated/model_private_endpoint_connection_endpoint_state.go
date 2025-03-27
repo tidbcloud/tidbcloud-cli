@@ -26,7 +26,7 @@ const (
 	PRIVATEENDPOINTCONNECTIONENDPOINTSTATE_DISCOVERED PrivateEndpointConnectionEndpointState = "DISCOVERED"
 
 	// Unknown value for handling new enum values gracefully
-	PrivateEndpointConnectionEndpointState_UNKNOWN PrivateEndpointConnectionEndpointState = "unknown"
+	PrivateEndpointConnectionEndpointState_UNKNOWN PrivateEndpointConnectionEndpointState = "UNKNOWN"
 )
 
 // All allowed values of PrivateEndpointConnectionEndpointState enum
@@ -36,7 +36,6 @@ var AllowedPrivateEndpointConnectionEndpointStateEnumValues = []PrivateEndpointC
 	"DELETING",
 	"FAILED",
 	"DISCOVERED",
-	PrivateEndpointConnectionEndpointState_UNKNOWN, // Include unknown
 }
 
 func (v *PrivateEndpointConnectionEndpointState) UnmarshalJSON(src []byte) error {

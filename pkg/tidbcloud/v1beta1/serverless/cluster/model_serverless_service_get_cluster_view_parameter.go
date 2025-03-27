@@ -23,14 +23,13 @@ const (
 	SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_FULL  ServerlessServiceGetClusterViewParameter = "FULL"
 
 	// Unknown value for handling new enum values gracefully
-	ServerlessServiceGetClusterViewParameter_UNKNOWN ServerlessServiceGetClusterViewParameter = "unknown"
+	ServerlessServiceGetClusterViewParameter_UNKNOWN ServerlessServiceGetClusterViewParameter = "UNKNOWN"
 )
 
 // All allowed values of ServerlessServiceGetClusterViewParameter enum
 var AllowedServerlessServiceGetClusterViewParameterEnumValues = []ServerlessServiceGetClusterViewParameter{
 	"BASIC",
 	"FULL",
-	ServerlessServiceGetClusterViewParameter_UNKNOWN, // Include unknown
 }
 
 func (v *ServerlessServiceGetClusterViewParameter) UnmarshalJSON(src []byte) error {

@@ -34,7 +34,7 @@ const (
 	CLUSTERSERVICELISTCLUSTERSCLUSTERSTATESPARAMETERINNER_RESUMING    ClusterServiceListClustersClusterStatesParameterInner = "RESUMING"
 
 	// Unknown value for handling new enum values gracefully
-	ClusterServiceListClustersClusterStatesParameterInner_UNKNOWN ClusterServiceListClustersClusterStatesParameterInner = "unknown"
+	ClusterServiceListClustersClusterStatesParameterInner_UNKNOWN ClusterServiceListClustersClusterStatesParameterInner = "UNKNOWN"
 )
 
 // All allowed values of ClusterServiceListClustersClusterStatesParameterInner enum
@@ -52,7 +52,6 @@ var AllowedClusterServiceListClustersClusterStatesParameterInnerEnumValues = []C
 	"PAUSING",
 	"PAUSED",
 	"RESUMING",
-	ClusterServiceListClustersClusterStatesParameterInner_UNKNOWN, // Include unknown
 }
 
 func (v *ClusterServiceListClustersClusterStatesParameterInner) UnmarshalJSON(src []byte) error {

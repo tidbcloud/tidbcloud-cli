@@ -23,14 +23,13 @@ const (
 	CLUSTERHIGHAVAILABILITYTYPE_REGIONAL ClusterHighAvailabilityType = "REGIONAL"
 
 	// Unknown value for handling new enum values gracefully
-	ClusterHighAvailabilityType_UNKNOWN ClusterHighAvailabilityType = "unknown"
+	ClusterHighAvailabilityType_UNKNOWN ClusterHighAvailabilityType = "UNKNOWN"
 )
 
 // All allowed values of ClusterHighAvailabilityType enum
 var AllowedClusterHighAvailabilityTypeEnumValues = []ClusterHighAvailabilityType{
 	"ZONAL",
 	"REGIONAL",
-	ClusterHighAvailabilityType_UNKNOWN, // Include unknown
 }
 
 func (v *ClusterHighAvailabilityType) UnmarshalJSON(src []byte) error {

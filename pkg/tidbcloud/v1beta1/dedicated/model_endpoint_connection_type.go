@@ -24,7 +24,7 @@ const (
 	ENDPOINTCONNECTIONTYPE_PRIVATE_ENDPOINT EndpointConnectionType = "PRIVATE_ENDPOINT"
 
 	// Unknown value for handling new enum values gracefully
-	EndpointConnectionType_UNKNOWN EndpointConnectionType = "unknown"
+	EndpointConnectionType_UNKNOWN EndpointConnectionType = "UNKNOWN"
 )
 
 // All allowed values of EndpointConnectionType enum
@@ -32,7 +32,6 @@ var AllowedEndpointConnectionTypeEnumValues = []EndpointConnectionType{
 	"PUBLIC",
 	"VPC_PEERING",
 	"PRIVATE_ENDPOINT",
-	EndpointConnectionType_UNKNOWN, // Include unknown
 }
 
 func (v *EndpointConnectionType) UnmarshalJSON(src []byte) error {

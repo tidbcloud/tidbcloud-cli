@@ -24,7 +24,7 @@ const (
 	DEDICATEDV1BETA1TIDBNODEGROUPSTATE_PAUSED    Dedicatedv1beta1TidbNodeGroupState = "PAUSED"
 
 	// Unknown value for handling new enum values gracefully
-	Dedicatedv1beta1TidbNodeGroupState_UNKNOWN Dedicatedv1beta1TidbNodeGroupState = "unknown"
+	Dedicatedv1beta1TidbNodeGroupState_UNKNOWN Dedicatedv1beta1TidbNodeGroupState = "UNKNOWN"
 )
 
 // All allowed values of Dedicatedv1beta1TidbNodeGroupState enum
@@ -32,7 +32,6 @@ var AllowedDedicatedv1beta1TidbNodeGroupStateEnumValues = []Dedicatedv1beta1Tidb
 	"ACTIVE",
 	"MODIFYING",
 	"PAUSED",
-	Dedicatedv1beta1TidbNodeGroupState_UNKNOWN, // Include unknown
 }
 
 func (v *Dedicatedv1beta1TidbNodeGroupState) UnmarshalJSON(src []byte) error {

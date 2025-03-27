@@ -27,7 +27,7 @@ const (
 	CLUSTERSTORAGENODESETTINGSTORAGETYPE_PERFORMANCE_PREMIUM   ClusterStorageNodeSettingStorageType = "Performance_Premium"
 
 	// Unknown value for handling new enum values gracefully
-	ClusterStorageNodeSettingStorageType_UNKNOWN ClusterStorageNodeSettingStorageType = "unknown"
+	ClusterStorageNodeSettingStorageType_UNKNOWN ClusterStorageNodeSettingStorageType = "UNKNOWN"
 )
 
 // All allowed values of ClusterStorageNodeSettingStorageType enum
@@ -38,7 +38,6 @@ var AllowedClusterStorageNodeSettingStorageTypeEnumValues = []ClusterStorageNode
 	"Performance",
 	"Standard_Premium",
 	"Performance_Premium",
-	ClusterStorageNodeSettingStorageType_UNKNOWN, // Include unknown
 }
 
 func (v *ClusterStorageNodeSettingStorageType) UnmarshalJSON(src []byte) error {

@@ -23,14 +23,13 @@ const (
 	PINGCHATCHATMESSAGEROLE_ASSISTANT PingchatChatMessageRole = "assistant"
 
 	// Unknown value for handling new enum values gracefully
-	PingchatChatMessageRole_UNKNOWN PingchatChatMessageRole = "unknown"
+	PingchatChatMessageRole_UNKNOWN PingchatChatMessageRole = "UNKNOWN"
 )
 
 // All allowed values of PingchatChatMessageRole enum
 var AllowedPingchatChatMessageRoleEnumValues = []PingchatChatMessageRole{
 	"user",
 	"assistant",
-	PingchatChatMessageRole_UNKNOWN, // Include unknown
 }
 
 func (v *PingchatChatMessageRole) UnmarshalJSON(src []byte) error {

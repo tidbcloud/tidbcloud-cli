@@ -23,14 +23,13 @@ const (
 	BRANCHSERVICEGETBRANCHVIEWPARAMETER_FULL  BranchServiceGetBranchViewParameter = "FULL"
 
 	// Unknown value for handling new enum values gracefully
-	BranchServiceGetBranchViewParameter_UNKNOWN BranchServiceGetBranchViewParameter = "unknown"
+	BranchServiceGetBranchViewParameter_UNKNOWN BranchServiceGetBranchViewParameter = "UNKNOWN"
 )
 
 // All allowed values of BranchServiceGetBranchViewParameter enum
 var AllowedBranchServiceGetBranchViewParameterEnumValues = []BranchServiceGetBranchViewParameter{
 	"BASIC",
 	"FULL",
-	BranchServiceGetBranchViewParameter_UNKNOWN, // Include unknown
 }
 
 func (v *BranchServiceGetBranchViewParameter) UnmarshalJSON(src []byte) error {
