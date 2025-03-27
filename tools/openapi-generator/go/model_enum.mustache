@@ -10,6 +10,9 @@ const (
 	{{#enumClassPrefix}}{{{classname.toUpperCase}}}_{{/enumClassPrefix}}{{name}} {{{classname}}} = {{{value}}}
 	{{/enumVars}}
 	{{/allowableValues}}
+
+	// Unknown value for handling new enum values gracefully
+	{{{classname}}}_UNKNOWN {{{classname}}} = "unknown"
 )
 
 // All allowed values of {{{classname}}} enum
@@ -19,6 +22,7 @@ var Allowed{{{classname}}}EnumValues = []{{{classname}}}{
 	{{{value}}},
 	{{/enumVars}}
 	{{/allowableValues}}
+	{{{classname}}}_UNKNOWN, // Include unknown
 }
 
 func (v *{{{classname}}}) UnmarshalJSON(src []byte) error {
@@ -35,18 +39,20 @@ func (v *{{{classname}}}) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid {{classname}}", value)
+	// Instead of returning an error, assign UNKNOWN value
+	*v = {{{classname}}}_UNKNOWN
+	return nil
 }
 
 // New{{{classname}}}FromValue returns a pointer to a valid {{{classname}}}
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func New{{{classname}}}FromValue(v {{{format}}}{{^format}}{{dataType}}{{/format}}) (*{{{classname}}}, error) {
+// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+func New{{{classname}}}FromValue(v {{{format}}}{{^format}}{{dataType}}{{/format}}) *{{{classname}}} {
 	ev := {{{classname}}}(v)
 	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for {{{classname}}}: valid values are %v", v, Allowed{{{classname}}}EnumValues)
+		return &ev
 	}
+	unknown := {{{classname}}}_UNKNOWN
+	return &unknown
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise
