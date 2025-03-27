@@ -1,3 +1,4 @@
+
 {
   "swagger": "2.0",
   "info": {
@@ -947,12 +948,10 @@
     "v1beta1ClusterClusterPlan": {
       "type": "string",
       "enum": [
-        "FREE",
-        "SCALABLE",
         "STARTER",
-        "STANDARD"
+        "ESSENTIAL"
       ],
-      "title": "- FREE: aws free plan\n - SCALABLE: aws scalable plan\n - STARTER: alicloud free plan\n - STANDARD: alicloud scalable plan"
+      "title": "- STARTER: alicloud starter plan\n - ESSENTIAL: alicloud essential plan"
     },
     "v1beta1ClusterEncryptionConfig": {
       "type": "object",

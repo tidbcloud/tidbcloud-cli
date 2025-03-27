@@ -192,7 +192,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// advanced options: spending limit/capacity and enhanced encryption
-				if cloudProvider == "aws" {
+				if cloudProvider == string(cluster.V1BETA1REGIONCLOUDPROVIDER_AWS) {
 					var spendingLimitString string
 					spendingLimitPrompt := &survey.Input{
 						Message: "Set spending limit monthly in USD cents (Example: 10, default is 0)?",
@@ -212,43 +212,68 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 				}
 
-				if cloudProvider == "alicloud" {
-					var minRcuString, maxRcuString string
-					minRcuPrompt := &survey.Input{
-						Message: "Set minimum RCU (default is 2000)?",
-						Default: "2000",
-					}
-					err = survey.AskOne(minRcuPrompt, &minRcuString)
+				if cloudProvider == string(cluster.V1BETA1REGIONCLOUDPROVIDER_ALICLOUD) {
+					clusterPlan, err := GetClusterPlan()
 					if err != nil {
-						if err == terminal.InterruptErr {
-							return util.InterruptError
-						} else {
-							return err
+						return err
+					}
+					if clusterPlan == cluster.V1BETA1CLUSTERCLUSTERPLAN_ESSENTIAL {
+						var minRcuString, maxRcuString string
+						minRcuPrompt := &survey.Input{
+							Message: "Set minimum RCU (default is 2000)?",
+							Default: "2000",
+						}
+						err = survey.AskOne(minRcuPrompt, &minRcuString)
+						if err != nil {
+							if err == terminal.InterruptErr {
+								return util.InterruptError
+							} else {
+								return err
+							}
+						}
+						minRcu, err = getAndCheckNumber(minRcuString, "minimum RCU")
+						if err != nil {
+							return errors.Trace(err)
+						}
+						maxRcuPrompt := &survey.Input{
+							Message: "Set maximum RCU (default is 4000)?",
+							Default: "4000",
+						}
+						err = survey.AskOne(maxRcuPrompt, &maxRcuString)
+						if err != nil {
+							if err == terminal.InterruptErr {
+								return util.InterruptError
+							} else {
+								return err
+							}
+						}
+						maxRcu, err = getAndCheckNumber(maxRcuString, "maximum RCU")
+						if err != nil {
+							return errors.Trace(err)
+						}
+						err = checkCapacity(minRcu, maxRcu)
+						if err != nil {
+							return errors.Trace(err)
 						}
 					}
-					minRcu, err = getAndCheckNumber(minRcuString, "minimum RCU")
-					if err != nil {
-						return errors.Trace(err)
-					}
-					maxRcuPrompt := &survey.Input{
-						Message: "Set maximum RCU (default is 100000)?",
-						Default: "100000",
-					}
-					err = survey.AskOne(maxRcuPrompt, &maxRcuString)
-					if err != nil {
-						if err == terminal.InterruptErr {
-							return util.InterruptError
-						} else {
-							return err
+					if clusterPlan == cluster.V1BETA1CLUSTERCLUSTERPLAN_STARTER {
+						var spendingLimitString string
+						spendingLimitPrompt := &survey.Input{
+							Message: "Set spending limit monthly in USD cents (Example: 10, default is 0)?",
+							Default: "0",
 						}
-					}
-					maxRcu, err = getAndCheckNumber(maxRcuString, "maximum RCU")
-					if err != nil {
-						return errors.Trace(err)
-					}
-					err = checkCapacity(minRcu, maxRcu)
-					if err != nil {
-						return errors.Trace(err)
+						err = survey.AskOne(spendingLimitPrompt, &spendingLimitString)
+						if err != nil {
+							if err == terminal.InterruptErr {
+								return util.InterruptError
+							} else {
+								return err
+							}
+						}
+						spendingLimitMonthly, err = getAndCheckNumber(spendingLimitString, "monthly spending limit")
+						if err != nil {
+							return errors.Trace(err)
+						}
 					}
 				}
 
@@ -561,6 +586,27 @@ func GetProvider(providers *hashset.Set) (string, error) {
 	}
 	cloudProvider = providerModel.(ui.SelectModel).Choices[providerModel.(ui.SelectModel).Selected].(string)
 	return cloudProvider, nil
+}
+
+func GetClusterPlan() (cluster.V1beta1ClusterClusterPlan, error) {
+	choices := make([]interface{}, len(cluster.AllowedV1beta1ClusterClusterPlanEnumValues))
+	for i, v := range cluster.AllowedV1beta1ClusterClusterPlanEnumValues {
+		choices[i] = v
+	}
+	model, err := ui.InitialSelectModel(choices, "Choose the cluster plan:")
+	if err != nil {
+		return "", err
+	}
+	p := tea.NewProgram(model)
+	planModel, err := p.Run()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := planModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	clusterPlan := planModel.(ui.SelectModel).Choices[planModel.(ui.SelectModel).Selected].(cluster.V1beta1ClusterClusterPlan)
+	return clusterPlan, nil
 }
 
 func GetRegion(regionSet *hashset.Set) (string, error) {

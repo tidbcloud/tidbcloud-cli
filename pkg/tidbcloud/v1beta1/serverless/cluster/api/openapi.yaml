@@ -1093,15 +1093,11 @@ components:
       type: object
     v1beta1ClusterClusterPlan:
       enum:
-      - FREE
-      - SCALABLE
       - STARTER
-      - STANDARD
+      - ESSENTIAL
       title: |-
-        - FREE: aws free plan
-         - SCALABLE: aws scalable plan
-         - STARTER: alicloud free plan
-         - STANDARD: alicloud scalable plan
+        - STARTER: alicloud starter plan
+         - ESSENTIAL: alicloud essential plan
       type: string
     v1beta1ClusterEncryptionConfig:
       description: Message for encryption settings for a cluster.

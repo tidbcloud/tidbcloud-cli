@@ -20,18 +20,14 @@ type V1beta1ClusterClusterPlan string
 
 // List of v1beta1ClusterClusterPlan
 const (
-	V1BETA1CLUSTERCLUSTERPLAN_FREE     V1beta1ClusterClusterPlan = "FREE"
-	V1BETA1CLUSTERCLUSTERPLAN_SCALABLE V1beta1ClusterClusterPlan = "SCALABLE"
-	V1BETA1CLUSTERCLUSTERPLAN_STARTER  V1beta1ClusterClusterPlan = "STARTER"
-	V1BETA1CLUSTERCLUSTERPLAN_STANDARD V1beta1ClusterClusterPlan = "STANDARD"
+	V1BETA1CLUSTERCLUSTERPLAN_STARTER   V1beta1ClusterClusterPlan = "STARTER"
+	V1BETA1CLUSTERCLUSTERPLAN_ESSENTIAL V1beta1ClusterClusterPlan = "ESSENTIAL"
 )
 
 // All allowed values of V1beta1ClusterClusterPlan enum
 var AllowedV1beta1ClusterClusterPlanEnumValues = []V1beta1ClusterClusterPlan{
-	"FREE",
-	"SCALABLE",
 	"STARTER",
-	"STANDARD",
+	"ESSENTIAL",
 }
 
 func (v *V1beta1ClusterClusterPlan) UnmarshalJSON(src []byte) error {
