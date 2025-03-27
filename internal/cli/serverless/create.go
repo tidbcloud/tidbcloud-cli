@@ -532,7 +532,7 @@ func checkCapacity(minRcu, maxRcu int32) error {
 		return errors.New("Maximum RCU should be at most 100000")
 	}
 	if minRcu > maxRcu {
-		return errors.New("Minimum RCU should be less than maximum RCU")
+		return errors.New("Minimum RCU should be not greater than maximum RCU")
 	}
 	return nil
 }
