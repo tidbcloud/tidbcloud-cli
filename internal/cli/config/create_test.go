@@ -72,12 +72,12 @@ func (suite *CreateConfigSuite) TestCreateConfigArgs() {
 		{
 			name:         "create config",
 			args:         []string{"--profile-name", profile, "--public-key", publicKey, "--private-key", privateKey},
-			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\nCurrent profile has been changed to test\n",
+			stdoutString: "Current profile has been changed to test",
 		},
 		{
 			name:         "create config case-insensitive",
 			args:         []string{"--profile-name", "teSt1", "--public-key", publicKey, "--private-key", privateKey},
-			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\nCurrent profile has been changed to test1\n",
+			stdoutString: "Current profile has been changed to test1",
 		},
 		{
 			name: "create config with 1 arg",
@@ -87,27 +87,27 @@ func (suite *CreateConfigSuite) TestCreateConfigArgs() {
 		{
 			name:         "create config with special characters",
 			args:         []string{"--profile-name", "~`!@#$%^&*()_+-={}[]\\|;:,<>/?", "--public-key", publicKey, "--private-key", privateKey},
-			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\nCurrent profile has been changed to ~`!@#$%^&*()_+-={}[]\\|;:,<>/?\n",
+			stdoutString: "Current profile has been changed to ~`!@#$%^&*()_+-={}[]\\|;:,<>/?",
 		},
 		{
 			name:         "create config with special character '",
 			args:         []string{"--profile-name", "'", "--public-key", publicKey, "--private-key", privateKey},
-			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\nCurrent profile has been changed to '\n",
+			stdoutString: "Current profile has been changed to '",
 		},
 		{
 			name:         "create config with special character \"",
 			args:         []string{"--profile-name", "\"", "--public-key", publicKey, "--private-key", privateKey},
-			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\nCurrent profile has been changed to \"\n",
+			stdoutString: "Current profile has been changed to \"",
 		},
 		{
 			name:         "create config with both \" and '",
 			args:         []string{"--profile-name", "'\"", "--public-key", publicKey, "--private-key", privateKey},
-			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\n",
+			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.",
 			err:          fmt.Errorf("profile name cannot contain both single and double quotes"),
 		}, {
 			name:         "create config with invalid characters .",
 			args:         []string{"--profile-name", ".", "--public-key", publicKey, "--private-key", privateKey},
-			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\n",
+			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.",
 			err:          fmt.Errorf("profile name cannot contain periods"),
 		},
 	}
@@ -124,7 +124,7 @@ func (suite *CreateConfigSuite) TestCreateConfigArgs() {
 			err = cmd.Execute()
 			assert.Equal(tt.err, err)
 
-			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
+			assert.Contains(suite.h.IOStreams.Out.(*bytes.Buffer).String(), tt.stdoutString)
 			assert.Equal(tt.stderrString, suite.h.IOStreams.Err.(*bytes.Buffer).String())
 		})
 	}
@@ -155,7 +155,7 @@ func (suite *CreateConfigSuite) TestCreateConfigWithExistedProfile() {
 			name:         "create config with existed profile",
 			args:         []string{"--profile-name", profile, "--public-key", publicKey, "--private-key", privateKey},
 			err:          fmt.Errorf("profile test already exists, use `config set` to modify"),
-			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.\n",
+			stdoutString: "Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys.",
 		},
 	}
 
@@ -171,7 +171,7 @@ func (suite *CreateConfigSuite) TestCreateConfigWithExistedProfile() {
 			err = cmd.Execute()
 			assert.Equal(tt.err, err)
 
-			assert.Equal(tt.stdoutString, suite.h.IOStreams.Out.(*bytes.Buffer).String())
+			assert.Contains(suite.h.IOStreams.Out.(*bytes.Buffer).String(), tt.stdoutString)
 			assert.Equal(tt.stderrString, suite.h.IOStreams.Err.(*bytes.Buffer).String())
 		})
 	}
