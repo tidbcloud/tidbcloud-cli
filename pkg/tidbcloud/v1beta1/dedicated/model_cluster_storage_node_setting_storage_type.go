@@ -25,9 +25,6 @@ const (
 	CLUSTERSTORAGENODESETTINGSTORAGETYPE_PERFORMANCE           ClusterStorageNodeSettingStorageType = "Performance"
 	CLUSTERSTORAGENODESETTINGSTORAGETYPE_STANDARD_PREMIUM      ClusterStorageNodeSettingStorageType = "Standard_Premium"
 	CLUSTERSTORAGENODESETTINGSTORAGETYPE_PERFORMANCE_PREMIUM   ClusterStorageNodeSettingStorageType = "Performance_Premium"
-
-	// Unknown value for handling new enum values gracefully
-	ClusterStorageNodeSettingStorageType_UNKNOWN ClusterStorageNodeSettingStorageType = "UNKNOWN"
 )
 
 // All allowed values of ClusterStorageNodeSettingStorageType enum
@@ -54,20 +51,14 @@ func (v *ClusterStorageNodeSettingStorageType) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = ClusterStorageNodeSettingStorageType_UNKNOWN
+	*v = ClusterStorageNodeSettingStorageType(value)
 	return nil
 }
 
-// NewClusterStorageNodeSettingStorageTypeFromValue returns a pointer to a valid ClusterStorageNodeSettingStorageType
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewClusterStorageNodeSettingStorageTypeFromValue returns a pointer to a valid ClusterStorageNodeSettingStorageType for the value passed as argument
 func NewClusterStorageNodeSettingStorageTypeFromValue(v string) *ClusterStorageNodeSettingStorageType {
 	ev := ClusterStorageNodeSettingStorageType(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := ClusterStorageNodeSettingStorageType_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

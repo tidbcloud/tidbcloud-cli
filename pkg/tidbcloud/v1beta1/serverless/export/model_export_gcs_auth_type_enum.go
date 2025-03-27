@@ -20,9 +20,6 @@ type ExportGcsAuthTypeEnum string
 // List of ExportGcsAuthType.Enum
 const (
 	EXPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY ExportGcsAuthTypeEnum = "SERVICE_ACCOUNT_KEY"
-
-	// Unknown value for handling new enum values gracefully
-	ExportGcsAuthTypeEnum_UNKNOWN ExportGcsAuthTypeEnum = "UNKNOWN"
 )
 
 // All allowed values of ExportGcsAuthTypeEnum enum
@@ -44,20 +41,14 @@ func (v *ExportGcsAuthTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = ExportGcsAuthTypeEnum_UNKNOWN
+	*v = ExportGcsAuthTypeEnum(value)
 	return nil
 }
 
-// NewExportGcsAuthTypeEnumFromValue returns a pointer to a valid ExportGcsAuthTypeEnum
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewExportGcsAuthTypeEnumFromValue returns a pointer to a valid ExportGcsAuthTypeEnum for the value passed as argument
 func NewExportGcsAuthTypeEnumFromValue(v string) *ExportGcsAuthTypeEnum {
 	ev := ExportGcsAuthTypeEnum(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := ExportGcsAuthTypeEnum_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

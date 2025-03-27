@@ -24,9 +24,6 @@ const (
 	PRIVATEENDPOINTCONNECTIONENDPOINTSTATE_DELETING   PrivateEndpointConnectionEndpointState = "DELETING"
 	PRIVATEENDPOINTCONNECTIONENDPOINTSTATE_FAILED     PrivateEndpointConnectionEndpointState = "FAILED"
 	PRIVATEENDPOINTCONNECTIONENDPOINTSTATE_DISCOVERED PrivateEndpointConnectionEndpointState = "DISCOVERED"
-
-	// Unknown value for handling new enum values gracefully
-	PrivateEndpointConnectionEndpointState_UNKNOWN PrivateEndpointConnectionEndpointState = "UNKNOWN"
 )
 
 // All allowed values of PrivateEndpointConnectionEndpointState enum
@@ -52,20 +49,14 @@ func (v *PrivateEndpointConnectionEndpointState) UnmarshalJSON(src []byte) error
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = PrivateEndpointConnectionEndpointState_UNKNOWN
+	*v = PrivateEndpointConnectionEndpointState(value)
 	return nil
 }
 
-// NewPrivateEndpointConnectionEndpointStateFromValue returns a pointer to a valid PrivateEndpointConnectionEndpointState
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewPrivateEndpointConnectionEndpointStateFromValue returns a pointer to a valid PrivateEndpointConnectionEndpointState for the value passed as argument
 func NewPrivateEndpointConnectionEndpointStateFromValue(v string) *PrivateEndpointConnectionEndpointState {
 	ev := PrivateEndpointConnectionEndpointState(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := PrivateEndpointConnectionEndpointState_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

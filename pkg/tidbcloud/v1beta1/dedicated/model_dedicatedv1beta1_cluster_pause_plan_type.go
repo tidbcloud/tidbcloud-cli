@@ -21,9 +21,6 @@ type Dedicatedv1beta1ClusterPausePlanType string
 const (
 	DEDICATEDV1BETA1CLUSTERPAUSEPLANTYPE_NORMAL    Dedicatedv1beta1ClusterPausePlanType = "NORMAL"
 	DEDICATEDV1BETA1CLUSTERPAUSEPLANTYPE_DEPRECATE Dedicatedv1beta1ClusterPausePlanType = "DEPRECATE"
-
-	// Unknown value for handling new enum values gracefully
-	Dedicatedv1beta1ClusterPausePlanType_UNKNOWN Dedicatedv1beta1ClusterPausePlanType = "UNKNOWN"
 )
 
 // All allowed values of Dedicatedv1beta1ClusterPausePlanType enum
@@ -46,20 +43,14 @@ func (v *Dedicatedv1beta1ClusterPausePlanType) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = Dedicatedv1beta1ClusterPausePlanType_UNKNOWN
+	*v = Dedicatedv1beta1ClusterPausePlanType(value)
 	return nil
 }
 
-// NewDedicatedv1beta1ClusterPausePlanTypeFromValue returns a pointer to a valid Dedicatedv1beta1ClusterPausePlanType
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewDedicatedv1beta1ClusterPausePlanTypeFromValue returns a pointer to a valid Dedicatedv1beta1ClusterPausePlanType for the value passed as argument
 func NewDedicatedv1beta1ClusterPausePlanTypeFromValue(v string) *Dedicatedv1beta1ClusterPausePlanType {
 	ev := Dedicatedv1beta1ClusterPausePlanType(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := Dedicatedv1beta1ClusterPausePlanType_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

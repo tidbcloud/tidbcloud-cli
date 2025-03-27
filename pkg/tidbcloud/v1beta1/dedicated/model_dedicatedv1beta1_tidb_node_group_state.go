@@ -22,9 +22,6 @@ const (
 	DEDICATEDV1BETA1TIDBNODEGROUPSTATE_ACTIVE    Dedicatedv1beta1TidbNodeGroupState = "ACTIVE"
 	DEDICATEDV1BETA1TIDBNODEGROUPSTATE_MODIFYING Dedicatedv1beta1TidbNodeGroupState = "MODIFYING"
 	DEDICATEDV1BETA1TIDBNODEGROUPSTATE_PAUSED    Dedicatedv1beta1TidbNodeGroupState = "PAUSED"
-
-	// Unknown value for handling new enum values gracefully
-	Dedicatedv1beta1TidbNodeGroupState_UNKNOWN Dedicatedv1beta1TidbNodeGroupState = "UNKNOWN"
 )
 
 // All allowed values of Dedicatedv1beta1TidbNodeGroupState enum
@@ -48,20 +45,14 @@ func (v *Dedicatedv1beta1TidbNodeGroupState) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = Dedicatedv1beta1TidbNodeGroupState_UNKNOWN
+	*v = Dedicatedv1beta1TidbNodeGroupState(value)
 	return nil
 }
 
-// NewDedicatedv1beta1TidbNodeGroupStateFromValue returns a pointer to a valid Dedicatedv1beta1TidbNodeGroupState
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewDedicatedv1beta1TidbNodeGroupStateFromValue returns a pointer to a valid Dedicatedv1beta1TidbNodeGroupState for the value passed as argument
 func NewDedicatedv1beta1TidbNodeGroupStateFromValue(v string) *Dedicatedv1beta1TidbNodeGroupState {
 	ev := Dedicatedv1beta1TidbNodeGroupState(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := Dedicatedv1beta1TidbNodeGroupState_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

@@ -22,9 +22,6 @@ const (
 	ENDPOINTCONNECTIONTYPE_PUBLIC           EndpointConnectionType = "PUBLIC"
 	ENDPOINTCONNECTIONTYPE_VPC_PEERING      EndpointConnectionType = "VPC_PEERING"
 	ENDPOINTCONNECTIONTYPE_PRIVATE_ENDPOINT EndpointConnectionType = "PRIVATE_ENDPOINT"
-
-	// Unknown value for handling new enum values gracefully
-	EndpointConnectionType_UNKNOWN EndpointConnectionType = "UNKNOWN"
 )
 
 // All allowed values of EndpointConnectionType enum
@@ -48,20 +45,14 @@ func (v *EndpointConnectionType) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = EndpointConnectionType_UNKNOWN
+	*v = EndpointConnectionType(value)
 	return nil
 }
 
-// NewEndpointConnectionTypeFromValue returns a pointer to a valid EndpointConnectionType
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewEndpointConnectionTypeFromValue returns a pointer to a valid EndpointConnectionType for the value passed as argument
 func NewEndpointConnectionTypeFromValue(v string) *EndpointConnectionType {
 	ev := EndpointConnectionType(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := EndpointConnectionType_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

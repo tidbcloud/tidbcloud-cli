@@ -10,9 +10,6 @@ const (
 	{{#enumClassPrefix}}{{{classname.toUpperCase}}}_{{/enumClassPrefix}}{{name}} {{{classname}}} = {{{value}}}
 	{{/enumVars}}
 	{{/allowableValues}}
-
-	// Unknown value for handling new enum values gracefully
-	{{{classname}}}_UNKNOWN {{{classname}}} = "UNKNOWN"
 )
 
 // All allowed values of {{{classname}}} enum
@@ -38,20 +35,14 @@ func (v *{{{classname}}}) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = {{{classname}}}_UNKNOWN
+	*v = {{{classname}}}(value)
 	return nil
 }
 
-// New{{{classname}}}FromValue returns a pointer to a valid {{{classname}}}
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// New{{{classname}}}FromValue returns a pointer to a valid {{{classname}}} for the value passed as argument
 func New{{{classname}}}FromValue(v {{{format}}}{{^format}}{{dataType}}{{/format}}) *{{{classname}}} {
 	ev := {{{classname}}}(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := {{{classname}}}_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

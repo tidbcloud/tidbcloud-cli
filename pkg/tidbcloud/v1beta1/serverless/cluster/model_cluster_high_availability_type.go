@@ -21,9 +21,6 @@ type ClusterHighAvailabilityType string
 const (
 	CLUSTERHIGHAVAILABILITYTYPE_ZONAL    ClusterHighAvailabilityType = "ZONAL"
 	CLUSTERHIGHAVAILABILITYTYPE_REGIONAL ClusterHighAvailabilityType = "REGIONAL"
-
-	// Unknown value for handling new enum values gracefully
-	ClusterHighAvailabilityType_UNKNOWN ClusterHighAvailabilityType = "UNKNOWN"
 )
 
 // All allowed values of ClusterHighAvailabilityType enum
@@ -46,20 +43,14 @@ func (v *ClusterHighAvailabilityType) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = ClusterHighAvailabilityType_UNKNOWN
+	*v = ClusterHighAvailabilityType(value)
 	return nil
 }
 
-// NewClusterHighAvailabilityTypeFromValue returns a pointer to a valid ClusterHighAvailabilityType
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewClusterHighAvailabilityTypeFromValue returns a pointer to a valid ClusterHighAvailabilityType for the value passed as argument
 func NewClusterHighAvailabilityTypeFromValue(v string) *ClusterHighAvailabilityType {
 	ev := ClusterHighAvailabilityType(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := ClusterHighAvailabilityType_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

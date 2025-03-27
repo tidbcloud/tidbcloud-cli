@@ -23,9 +23,6 @@ const (
 	IMPORTSOURCETYPEENUM_S3         ImportSourceTypeEnum = "S3"
 	IMPORTSOURCETYPEENUM_GCS        ImportSourceTypeEnum = "GCS"
 	IMPORTSOURCETYPEENUM_AZURE_BLOB ImportSourceTypeEnum = "AZURE_BLOB"
-
-	// Unknown value for handling new enum values gracefully
-	ImportSourceTypeEnum_UNKNOWN ImportSourceTypeEnum = "UNKNOWN"
 )
 
 // All allowed values of ImportSourceTypeEnum enum
@@ -50,20 +47,14 @@ func (v *ImportSourceTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = ImportSourceTypeEnum_UNKNOWN
+	*v = ImportSourceTypeEnum(value)
 	return nil
 }
 
-// NewImportSourceTypeEnumFromValue returns a pointer to a valid ImportSourceTypeEnum
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewImportSourceTypeEnumFromValue returns a pointer to a valid ImportSourceTypeEnum for the value passed as argument
 func NewImportSourceTypeEnumFromValue(v string) *ImportSourceTypeEnum {
 	ev := ImportSourceTypeEnum(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := ImportSourceTypeEnum_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

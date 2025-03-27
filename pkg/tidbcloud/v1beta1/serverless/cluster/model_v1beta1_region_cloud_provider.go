@@ -23,9 +23,6 @@ const (
 	V1BETA1REGIONCLOUDPROVIDER_GCP      V1beta1RegionCloudProvider = "gcp"
 	V1BETA1REGIONCLOUDPROVIDER_AZURE    V1beta1RegionCloudProvider = "azure"
 	V1BETA1REGIONCLOUDPROVIDER_ALICLOUD V1beta1RegionCloudProvider = "alicloud"
-
-	// Unknown value for handling new enum values gracefully
-	V1beta1RegionCloudProvider_UNKNOWN V1beta1RegionCloudProvider = "UNKNOWN"
 )
 
 // All allowed values of V1beta1RegionCloudProvider enum
@@ -50,20 +47,14 @@ func (v *V1beta1RegionCloudProvider) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = V1beta1RegionCloudProvider_UNKNOWN
+	*v = V1beta1RegionCloudProvider(value)
 	return nil
 }
 
-// NewV1beta1RegionCloudProviderFromValue returns a pointer to a valid V1beta1RegionCloudProvider
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewV1beta1RegionCloudProviderFromValue returns a pointer to a valid V1beta1RegionCloudProvider for the value passed as argument
 func NewV1beta1RegionCloudProviderFromValue(v string) *V1beta1RegionCloudProvider {
 	ev := V1beta1RegionCloudProvider(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := V1beta1RegionCloudProvider_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

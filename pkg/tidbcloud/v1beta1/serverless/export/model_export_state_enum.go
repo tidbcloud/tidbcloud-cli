@@ -25,9 +25,6 @@ const (
 	EXPORTSTATEENUM_CANCELED  ExportStateEnum = "CANCELED"
 	EXPORTSTATEENUM_DELETED   ExportStateEnum = "DELETED"
 	EXPORTSTATEENUM_EXPIRED   ExportStateEnum = "EXPIRED"
-
-	// Unknown value for handling new enum values gracefully
-	ExportStateEnum_UNKNOWN ExportStateEnum = "UNKNOWN"
 )
 
 // All allowed values of ExportStateEnum enum
@@ -54,20 +51,14 @@ func (v *ExportStateEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = ExportStateEnum_UNKNOWN
+	*v = ExportStateEnum(value)
 	return nil
 }
 
-// NewExportStateEnumFromValue returns a pointer to a valid ExportStateEnum
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewExportStateEnumFromValue returns a pointer to a valid ExportStateEnum for the value passed as argument
 func NewExportStateEnumFromValue(v string) *ExportStateEnum {
 	ev := ExportStateEnum(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := ExportStateEnum_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

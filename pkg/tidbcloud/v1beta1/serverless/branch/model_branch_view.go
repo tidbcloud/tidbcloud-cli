@@ -21,9 +21,6 @@ type BranchView string
 const (
 	BRANCHVIEW_BASIC BranchView = "BASIC"
 	BRANCHVIEW_FULL  BranchView = "FULL"
-
-	// Unknown value for handling new enum values gracefully
-	BranchView_UNKNOWN BranchView = "UNKNOWN"
 )
 
 // All allowed values of BranchView enum
@@ -46,20 +43,14 @@ func (v *BranchView) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = BranchView_UNKNOWN
+	*v = BranchView(value)
 	return nil
 }
 
-// NewBranchViewFromValue returns a pointer to a valid BranchView
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewBranchViewFromValue returns a pointer to a valid BranchView for the value passed as argument
 func NewBranchViewFromValue(v string) *BranchView {
 	ev := BranchView(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := BranchView_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

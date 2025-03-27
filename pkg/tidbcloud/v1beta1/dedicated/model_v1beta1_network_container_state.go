@@ -21,9 +21,6 @@ type V1beta1NetworkContainerState string
 const (
 	V1BETA1NETWORKCONTAINERSTATE_ACTIVE   V1beta1NetworkContainerState = "ACTIVE"
 	V1BETA1NETWORKCONTAINERSTATE_INACTIVE V1beta1NetworkContainerState = "INACTIVE"
-
-	// Unknown value for handling new enum values gracefully
-	V1beta1NetworkContainerState_UNKNOWN V1beta1NetworkContainerState = "UNKNOWN"
 )
 
 // All allowed values of V1beta1NetworkContainerState enum
@@ -46,20 +43,14 @@ func (v *V1beta1NetworkContainerState) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = V1beta1NetworkContainerState_UNKNOWN
+	*v = V1beta1NetworkContainerState(value)
 	return nil
 }
 
-// NewV1beta1NetworkContainerStateFromValue returns a pointer to a valid V1beta1NetworkContainerState
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewV1beta1NetworkContainerStateFromValue returns a pointer to a valid V1beta1NetworkContainerState for the value passed as argument
 func NewV1beta1NetworkContainerStateFromValue(v string) *V1beta1NetworkContainerState {
 	ev := V1beta1NetworkContainerState(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := V1beta1NetworkContainerState_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

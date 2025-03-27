@@ -24,9 +24,6 @@ const (
 	CLUSTERSERVICELISTNODEINSTANCESCOMPONENTTYPEPARAMETER_TIFLASH ClusterServiceListNodeInstancesComponentTypeParameter = "TIFLASH"
 	CLUSTERSERVICELISTNODEINSTANCESCOMPONENTTYPEPARAMETER_PD      ClusterServiceListNodeInstancesComponentTypeParameter = "PD"
 	CLUSTERSERVICELISTNODEINSTANCESCOMPONENTTYPEPARAMETER_TIPROXY ClusterServiceListNodeInstancesComponentTypeParameter = "TIPROXY"
-
-	// Unknown value for handling new enum values gracefully
-	ClusterServiceListNodeInstancesComponentTypeParameter_UNKNOWN ClusterServiceListNodeInstancesComponentTypeParameter = "UNKNOWN"
 )
 
 // All allowed values of ClusterServiceListNodeInstancesComponentTypeParameter enum
@@ -52,20 +49,14 @@ func (v *ClusterServiceListNodeInstancesComponentTypeParameter) UnmarshalJSON(sr
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = ClusterServiceListNodeInstancesComponentTypeParameter_UNKNOWN
+	*v = ClusterServiceListNodeInstancesComponentTypeParameter(value)
 	return nil
 }
 
-// NewClusterServiceListNodeInstancesComponentTypeParameterFromValue returns a pointer to a valid ClusterServiceListNodeInstancesComponentTypeParameter
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewClusterServiceListNodeInstancesComponentTypeParameterFromValue returns a pointer to a valid ClusterServiceListNodeInstancesComponentTypeParameter for the value passed as argument
 func NewClusterServiceListNodeInstancesComponentTypeParameterFromValue(v string) *ClusterServiceListNodeInstancesComponentTypeParameter {
 	ev := ClusterServiceListNodeInstancesComponentTypeParameter(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := ClusterServiceListNodeInstancesComponentTypeParameter_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

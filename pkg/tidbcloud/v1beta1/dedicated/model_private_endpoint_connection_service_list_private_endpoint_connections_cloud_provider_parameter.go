@@ -22,9 +22,6 @@ const (
 	PRIVATEENDPOINTCONNECTIONSERVICELISTPRIVATEENDPOINTCONNECTIONSCLOUDPROVIDERPARAMETER_AWS   PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter = "aws"
 	PRIVATEENDPOINTCONNECTIONSERVICELISTPRIVATEENDPOINTCONNECTIONSCLOUDPROVIDERPARAMETER_GCP   PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter = "gcp"
 	PRIVATEENDPOINTCONNECTIONSERVICELISTPRIVATEENDPOINTCONNECTIONSCLOUDPROVIDERPARAMETER_AZURE PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter = "azure"
-
-	// Unknown value for handling new enum values gracefully
-	PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter_UNKNOWN PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter = "UNKNOWN"
 )
 
 // All allowed values of PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter enum
@@ -48,20 +45,14 @@ func (v *PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProv
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter_UNKNOWN
+	*v = PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter(value)
 	return nil
 }
 
-// NewPrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameterFromValue returns a pointer to a valid PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewPrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameterFromValue returns a pointer to a valid PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter for the value passed as argument
 func NewPrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameterFromValue(v string) *PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter {
 	ev := PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

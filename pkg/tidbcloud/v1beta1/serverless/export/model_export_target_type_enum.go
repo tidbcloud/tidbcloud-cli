@@ -23,9 +23,6 @@ const (
 	EXPORTTARGETTYPEENUM_S3         ExportTargetTypeEnum = "S3"
 	EXPORTTARGETTYPEENUM_GCS        ExportTargetTypeEnum = "GCS"
 	EXPORTTARGETTYPEENUM_AZURE_BLOB ExportTargetTypeEnum = "AZURE_BLOB"
-
-	// Unknown value for handling new enum values gracefully
-	ExportTargetTypeEnum_UNKNOWN ExportTargetTypeEnum = "UNKNOWN"
 )
 
 // All allowed values of ExportTargetTypeEnum enum
@@ -50,20 +47,14 @@ func (v *ExportTargetTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = ExportTargetTypeEnum_UNKNOWN
+	*v = ExportTargetTypeEnum(value)
 	return nil
 }
 
-// NewExportTargetTypeEnumFromValue returns a pointer to a valid ExportTargetTypeEnum
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewExportTargetTypeEnumFromValue returns a pointer to a valid ExportTargetTypeEnum for the value passed as argument
 func NewExportTargetTypeEnumFromValue(v string) *ExportTargetTypeEnum {
 	ev := ExportTargetTypeEnum(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := ExportTargetTypeEnum_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

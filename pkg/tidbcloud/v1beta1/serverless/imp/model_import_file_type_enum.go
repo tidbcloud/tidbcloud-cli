@@ -23,9 +23,6 @@ const (
 	IMPORTFILETYPEENUM_SQL             ImportFileTypeEnum = "SQL"
 	IMPORTFILETYPEENUM_AURORA_SNAPSHOT ImportFileTypeEnum = "AURORA_SNAPSHOT"
 	IMPORTFILETYPEENUM_PARQUET         ImportFileTypeEnum = "PARQUET"
-
-	// Unknown value for handling new enum values gracefully
-	ImportFileTypeEnum_UNKNOWN ImportFileTypeEnum = "UNKNOWN"
 )
 
 // All allowed values of ImportFileTypeEnum enum
@@ -50,20 +47,14 @@ func (v *ImportFileTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = ImportFileTypeEnum_UNKNOWN
+	*v = ImportFileTypeEnum(value)
 	return nil
 }
 
-// NewImportFileTypeEnumFromValue returns a pointer to a valid ImportFileTypeEnum
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewImportFileTypeEnumFromValue returns a pointer to a valid ImportFileTypeEnum for the value passed as argument
 func NewImportFileTypeEnumFromValue(v string) *ImportFileTypeEnum {
 	ev := ImportFileTypeEnum(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := ImportFileTypeEnum_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

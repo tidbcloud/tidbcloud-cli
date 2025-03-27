@@ -20,9 +20,6 @@ type ExportAzureBlobAuthTypeEnum string
 // List of ExportAzureBlobAuthType.Enum
 const (
 	EXPORTAZUREBLOBAUTHTYPEENUM_SAS_TOKEN ExportAzureBlobAuthTypeEnum = "SAS_TOKEN"
-
-	// Unknown value for handling new enum values gracefully
-	ExportAzureBlobAuthTypeEnum_UNKNOWN ExportAzureBlobAuthTypeEnum = "UNKNOWN"
 )
 
 // All allowed values of ExportAzureBlobAuthTypeEnum enum
@@ -44,20 +41,14 @@ func (v *ExportAzureBlobAuthTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = ExportAzureBlobAuthTypeEnum_UNKNOWN
+	*v = ExportAzureBlobAuthTypeEnum(value)
 	return nil
 }
 
-// NewExportAzureBlobAuthTypeEnumFromValue returns a pointer to a valid ExportAzureBlobAuthTypeEnum
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewExportAzureBlobAuthTypeEnumFromValue returns a pointer to a valid ExportAzureBlobAuthTypeEnum for the value passed as argument
 func NewExportAzureBlobAuthTypeEnumFromValue(v string) *ExportAzureBlobAuthTypeEnum {
 	ev := ExportAzureBlobAuthTypeEnum(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := ExportAzureBlobAuthTypeEnum_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

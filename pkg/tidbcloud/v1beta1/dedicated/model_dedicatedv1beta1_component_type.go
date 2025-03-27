@@ -24,9 +24,6 @@ const (
 	DEDICATEDV1BETA1COMPONENTTYPE_TIFLASH Dedicatedv1beta1ComponentType = "TIFLASH"
 	DEDICATEDV1BETA1COMPONENTTYPE_PD      Dedicatedv1beta1ComponentType = "PD"
 	DEDICATEDV1BETA1COMPONENTTYPE_TIPROXY Dedicatedv1beta1ComponentType = "TIPROXY"
-
-	// Unknown value for handling new enum values gracefully
-	Dedicatedv1beta1ComponentType_UNKNOWN Dedicatedv1beta1ComponentType = "UNKNOWN"
 )
 
 // All allowed values of Dedicatedv1beta1ComponentType enum
@@ -52,20 +49,14 @@ func (v *Dedicatedv1beta1ComponentType) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = Dedicatedv1beta1ComponentType_UNKNOWN
+	*v = Dedicatedv1beta1ComponentType(value)
 	return nil
 }
 
-// NewDedicatedv1beta1ComponentTypeFromValue returns a pointer to a valid Dedicatedv1beta1ComponentType
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewDedicatedv1beta1ComponentTypeFromValue returns a pointer to a valid Dedicatedv1beta1ComponentType for the value passed as argument
 func NewDedicatedv1beta1ComponentTypeFromValue(v string) *Dedicatedv1beta1ComponentType {
 	ev := Dedicatedv1beta1ComponentType(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := Dedicatedv1beta1ComponentType_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

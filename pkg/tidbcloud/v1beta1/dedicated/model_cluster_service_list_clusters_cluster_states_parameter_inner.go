@@ -32,9 +32,6 @@ const (
 	CLUSTERSERVICELISTCLUSTERSCLUSTERSTATESPARAMETERINNER_PAUSING     ClusterServiceListClustersClusterStatesParameterInner = "PAUSING"
 	CLUSTERSERVICELISTCLUSTERSCLUSTERSTATESPARAMETERINNER_PAUSED      ClusterServiceListClustersClusterStatesParameterInner = "PAUSED"
 	CLUSTERSERVICELISTCLUSTERSCLUSTERSTATESPARAMETERINNER_RESUMING    ClusterServiceListClustersClusterStatesParameterInner = "RESUMING"
-
-	// Unknown value for handling new enum values gracefully
-	ClusterServiceListClustersClusterStatesParameterInner_UNKNOWN ClusterServiceListClustersClusterStatesParameterInner = "UNKNOWN"
 )
 
 // All allowed values of ClusterServiceListClustersClusterStatesParameterInner enum
@@ -68,20 +65,14 @@ func (v *ClusterServiceListClustersClusterStatesParameterInner) UnmarshalJSON(sr
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = ClusterServiceListClustersClusterStatesParameterInner_UNKNOWN
+	*v = ClusterServiceListClustersClusterStatesParameterInner(value)
 	return nil
 }
 
-// NewClusterServiceListClustersClusterStatesParameterInnerFromValue returns a pointer to a valid ClusterServiceListClustersClusterStatesParameterInner
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewClusterServiceListClustersClusterStatesParameterInnerFromValue returns a pointer to a valid ClusterServiceListClustersClusterStatesParameterInner for the value passed as argument
 func NewClusterServiceListClustersClusterStatesParameterInnerFromValue(v string) *ClusterServiceListClustersClusterStatesParameterInner {
 	ev := ClusterServiceListClustersClusterStatesParameterInner(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := ClusterServiceListClustersClusterStatesParameterInner_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

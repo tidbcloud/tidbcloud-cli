@@ -21,9 +21,6 @@ type PingchatChatMessageRole string
 const (
 	PINGCHATCHATMESSAGEROLE_USER      PingchatChatMessageRole = "user"
 	PINGCHATCHATMESSAGEROLE_ASSISTANT PingchatChatMessageRole = "assistant"
-
-	// Unknown value for handling new enum values gracefully
-	PingchatChatMessageRole_UNKNOWN PingchatChatMessageRole = "UNKNOWN"
 )
 
 // All allowed values of PingchatChatMessageRole enum
@@ -46,20 +43,14 @@ func (v *PingchatChatMessageRole) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = PingchatChatMessageRole_UNKNOWN
+	*v = PingchatChatMessageRole(value)
 	return nil
 }
 
-// NewPingchatChatMessageRoleFromValue returns a pointer to a valid PingchatChatMessageRole
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewPingchatChatMessageRoleFromValue returns a pointer to a valid PingchatChatMessageRole for the value passed as argument
 func NewPingchatChatMessageRoleFromValue(v string) *PingchatChatMessageRole {
 	ev := PingchatChatMessageRole(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := PingchatChatMessageRole_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

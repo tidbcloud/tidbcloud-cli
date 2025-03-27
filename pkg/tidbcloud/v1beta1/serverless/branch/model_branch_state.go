@@ -24,9 +24,6 @@ const (
 	BRANCHSTATE_DELETED     BranchState = "DELETED"
 	BRANCHSTATE_MAINTENANCE BranchState = "MAINTENANCE"
 	BRANCHSTATE_RESTORING   BranchState = "RESTORING"
-
-	// Unknown value for handling new enum values gracefully
-	BranchState_UNKNOWN BranchState = "UNKNOWN"
 )
 
 // All allowed values of BranchState enum
@@ -52,20 +49,14 @@ func (v *BranchState) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = BranchState_UNKNOWN
+	*v = BranchState(value)
 	return nil
 }
 
-// NewBranchStateFromValue returns a pointer to a valid BranchState
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewBranchStateFromValue returns a pointer to a valid BranchState for the value passed as argument
 func NewBranchStateFromValue(v string) *BranchState {
 	ev := BranchState(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := BranchState_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

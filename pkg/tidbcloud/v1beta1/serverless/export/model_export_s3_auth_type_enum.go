@@ -21,9 +21,6 @@ type ExportS3AuthTypeEnum string
 const (
 	EXPORTS3AUTHTYPEENUM_ROLE_ARN   ExportS3AuthTypeEnum = "ROLE_ARN"
 	EXPORTS3AUTHTYPEENUM_ACCESS_KEY ExportS3AuthTypeEnum = "ACCESS_KEY"
-
-	// Unknown value for handling new enum values gracefully
-	ExportS3AuthTypeEnum_UNKNOWN ExportS3AuthTypeEnum = "UNKNOWN"
 )
 
 // All allowed values of ExportS3AuthTypeEnum enum
@@ -46,20 +43,14 @@ func (v *ExportS3AuthTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = ExportS3AuthTypeEnum_UNKNOWN
+	*v = ExportS3AuthTypeEnum(value)
 	return nil
 }
 
-// NewExportS3AuthTypeEnumFromValue returns a pointer to a valid ExportS3AuthTypeEnum
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewExportS3AuthTypeEnumFromValue returns a pointer to a valid ExportS3AuthTypeEnum for the value passed as argument
 func NewExportS3AuthTypeEnumFromValue(v string) *ExportS3AuthTypeEnum {
 	ev := ExportS3AuthTypeEnum(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := ExportS3AuthTypeEnum_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

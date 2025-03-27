@@ -23,9 +23,6 @@ const (
 	EXPORTCOMPRESSIONTYPEENUM_SNAPPY ExportCompressionTypeEnum = "SNAPPY"
 	EXPORTCOMPRESSIONTYPEENUM_ZSTD   ExportCompressionTypeEnum = "ZSTD"
 	EXPORTCOMPRESSIONTYPEENUM_NONE   ExportCompressionTypeEnum = "NONE"
-
-	// Unknown value for handling new enum values gracefully
-	ExportCompressionTypeEnum_UNKNOWN ExportCompressionTypeEnum = "UNKNOWN"
 )
 
 // All allowed values of ExportCompressionTypeEnum enum
@@ -50,20 +47,14 @@ func (v *ExportCompressionTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	// Instead of returning an error, assign UNKNOWN value
-	*v = ExportCompressionTypeEnum_UNKNOWN
+	*v = ExportCompressionTypeEnum(value)
 	return nil
 }
 
-// NewExportCompressionTypeEnumFromValue returns a pointer to a valid ExportCompressionTypeEnum
-// for the value passed as argument, or UNKNOWN if the value is not in the enum list
+// NewExportCompressionTypeEnumFromValue returns a pointer to a valid ExportCompressionTypeEnum for the value passed as argument
 func NewExportCompressionTypeEnumFromValue(v string) *ExportCompressionTypeEnum {
 	ev := ExportCompressionTypeEnum(v)
-	if ev.IsValid() {
-		return &ev
-	}
-	unknown := ExportCompressionTypeEnum_UNKNOWN
-	return &unknown
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise
