@@ -64,6 +64,27 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
+			if config.GetPublicKey() != "" && config.GetPrivateKey() != "" {
+				color.HiYellow("\nDetect an API key already set in %s profile! Note it will take precedence over auth token\n\n", config.ActiveProfileName())
+				prompt := &survey.Confirm{
+					Message: color.BlueString("The login will not take effect, continue to login?"),
+					Default: true,
+				}
+				login := true
+				err := survey.AskOne(prompt, &login)
+				if err != nil {
+					if err == terminal.InterruptErr {
+						return util.InterruptError
+					} else {
+						return err
+					}
+				}
+				if !login {
+					color.HiRed("\nExit the login process, use `%s config create --profile-name <profile-name>` to create a new profile and login again", config.CliName)
+					return nil
+				}
+			}
+
 			// fail fast if keyring is not supported
 			if !opts.insecureStorage {
 				if err := store.AssertKeyringSupported(); err != nil {
@@ -112,27 +133,6 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 			token, err := opts.requestForToken(ctx, result)
 			if err != nil {
 				return err
-			}
-
-			if config.GetPublicKey() != "" && config.GetPrivateKey() != "" {
-				color.HiYellow("\nDetect an API key already set in %s profile! Note it will take precedence over auth token\n\n", config.ActiveProfileName())
-				prompt := &survey.Confirm{
-					Message: color.BlueString("The login will not take effect, continue to login?"),
-					Default: true,
-				}
-				login := true
-				err = survey.AskOne(prompt, &login)
-				if err != nil {
-					if err == terminal.InterruptErr {
-						return util.InterruptError
-					} else {
-						return err
-					}
-				}
-				if !login {
-					color.HiRed("\nExit the login process, use `ticloud config create --profile-name <profile-name>` to create a new profile and login again")
-					return nil
-				}
 			}
 			err = config.SaveAccessToken(now.Add(time.Duration(token.ExpireIn)*time.Second), token.TokenType, token.AccessToken, opts.insecureStorage)
 			if err != nil {
