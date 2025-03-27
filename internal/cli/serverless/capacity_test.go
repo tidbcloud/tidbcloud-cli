@@ -31,13 +31,13 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type SpendingLimitSuite struct {
+type CapacitySuite struct {
 	suite.Suite
 	h          *internal.Helper
 	mockClient *mock.TiDBCloudClient
 }
 
-func (suite *SpendingLimitSuite) SetupTest() {
+func (suite *CapacitySuite) SetupTest() {
 	if err := os.Setenv("NO_COLOR", "true"); err != nil {
 		suite.T().Error(err)
 	}
@@ -53,19 +53,21 @@ func (suite *SpendingLimitSuite) SetupTest() {
 	}
 }
 
-func (suite *SpendingLimitSuite) TestSetSpendingLimit() {
+func (suite *CapacitySuite) TestSetCapacity() {
 	assert := require.New(suite.T())
 	ctx := context.Background()
 
 	clusterID := "0"
-	var monthly int32 = 10
+	var minRcu int64 = 10000
+	var maxRcu int64 = 20000
 	body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
 		Cluster: &cluster.RequiredTheClusterToBeUpdated{
-			SpendingLimit: &cluster.ClusterSpendingLimit{},
+			AutoScaling: &cluster.V1beta1ClusterAutoScaling{},
 		},
 	}
-	body.UpdateMask = SpendingLimitMonthlyMask
-	body.Cluster.SpendingLimit.Monthly = &monthly
+	body.UpdateMask = CapacityMask
+	body.Cluster.AutoScaling.MaxRcu = &maxRcu
+	body.Cluster.AutoScaling.MinRcu = &minRcu
 	suite.mockClient.On("PartialUpdateCluster", ctx, clusterID, body).Return(&cluster.TidbCloudOpenApiserverlessv1beta1Cluster{}, nil)
 
 	tests := []struct {
@@ -76,15 +78,15 @@ func (suite *SpendingLimitSuite) TestSetSpendingLimit() {
 		stderrString string
 	}{
 		{
-			name:         "update spending limit success",
-			args:         []string{"--cluster-id", clusterID, "--monthly", fmt.Sprintf("%d", monthly)},
-			stdoutString: fmt.Sprintf("set spending limit to %d cents success\n", monthly),
+			name:         "update capacity success",
+			args:         []string{"--cluster-id", clusterID, "--min-rcu", fmt.Sprintf("%d", minRcu), "--max-rcu", fmt.Sprintf("%d", maxRcu)},
+			stdoutString: fmt.Sprintf("set capacity to [%d, %d] success\n", minRcu, maxRcu),
 		},
 	}
 
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
-			cmd := SpendingLimitCmd(suite.h)
+			cmd := CapacityCmd(suite.h)
 			cmd.SetContext(ctx)
 			suite.h.IOStreams.Out.(*bytes.Buffer).Reset()
 			suite.h.IOStreams.Err.(*bytes.Buffer).Reset()
@@ -101,6 +103,6 @@ func (suite *SpendingLimitSuite) TestSetSpendingLimit() {
 	}
 }
 
-func TestSpendingLimitSuite(t *testing.T) {
-	suite.Run(t, new(SpendingLimitSuite))
+func TestCapacitySuite(t *testing.T) {
+	suite.Run(t, new(CapacitySuite))
 }
