@@ -108,6 +108,7 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 
 			if config.GetPublicKey() != "" && config.GetPrivateKey() != "" {
 				color.HiYellow("\nDetect an API key already set in %s profile! Note it will take precedence over auth token", config.ActiveProfileName())
+				color.HiYellow("\nUse `ticloud config create --profile-name <profile-name>` to create a new profile and login again")
 			}
 			return nil
 		},

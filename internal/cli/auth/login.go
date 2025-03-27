@@ -115,9 +115,9 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if config.GetPublicKey() != "" && config.GetPrivateKey() != "" {
-				color.HiYellow("\nDetect an API key already set in %s profile! Note it will take precedence over auth token", config.ActiveProfileName())
+				color.HiYellow("\nDetect an API key already set in %s profile! Note it will take precedence over auth token\n\n", config.ActiveProfileName())
 				prompt := &survey.Confirm{
-					Message: color.BlueString("Your login will not take affect, continue to login?"),
+					Message: color.BlueString("The login will not take effect, continue to login?"),
 					Default: true,
 				}
 				login := true
@@ -130,7 +130,7 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 					}
 				}
 				if !login {
-					color.HiGreen("\nExit the login process, use `ticloud config create --profile-name <profile-name>` to create a new profile and login again.")
+					color.HiRed("\nExit the login process, use `ticloud config create --profile-name <profile-name>` to create a new profile and login again")
 					return nil
 				}
 			}
