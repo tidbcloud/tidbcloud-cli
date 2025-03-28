@@ -26,11 +26,12 @@ type ApiTidbNodeGroupServiceCreateTidbNodeGroupRequest struct {
 	ctx                    context.Context
 	ApiService             *TidbNodeGroupServiceAPIService
 	tidbNodeGroupClusterId string
-	tidbNodeGroup          *TidbNodeGroupServiceCreateTidbNodeGroupRequest
+	tidbNodeGroup          *Required
 	validateOnly           *bool
 }
 
-func (r ApiTidbNodeGroupServiceCreateTidbNodeGroupRequest) TidbNodeGroup(tidbNodeGroup TidbNodeGroupServiceCreateTidbNodeGroupRequest) ApiTidbNodeGroupServiceCreateTidbNodeGroupRequest {
+// Required.
+func (r ApiTidbNodeGroupServiceCreateTidbNodeGroupRequest) TidbNodeGroup(tidbNodeGroup Required) ApiTidbNodeGroupServiceCreateTidbNodeGroupRequest {
 	r.tidbNodeGroup = &tidbNodeGroup
 	return r
 }

@@ -92,16 +92,18 @@ Class | Method | HTTP request | Description
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceCreateAuditLogConfig**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogservicecreateauditlogconfig) | **Post** /clusters/{auditLogConfig.clusterId}/auditLogConfig | Create the audit log config for a cluster
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceCreateAuditLogFilterRule**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogservicecreateauditlogfilterrule) | **Post** /clusters/{auditLogFilterRule.clusterId}/auditLogFilterRules | Create an audit log filter rule
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceDeleteAuditLogFilterRule**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogservicedeleteauditlogfilterrule) | **Delete** /clusters/{clusterId}/auditLogFilterRules/{auditLogFilterRuleId} | Delete an audit log filter rule
+*DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceGenerateAuditLogFileDownloadAddress**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogservicegenerateauditlogfiledownloadaddress) | **Post** /clusters/{clusterId}/auditLogConfig:generateAuditLogFileDownloadAddress | Generate the download address for an audit log file, the address have an 15 minutes expiration time
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceGetAuditLogConfig**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogservicegetauditlogconfig) | **Get** /clusters/{clusterId}/auditLogConfig | Get the audit log config of a cluster
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceGetAuditLogFilterRule**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogservicegetauditlogfilterrule) | **Get** /clusters/{clusterId}/auditLogFilterRules/{auditLogFilterRuleId} | Get an audit log filter rule
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceListAuditLogFilterRules**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogservicelistauditlogfilterrules) | **Get** /clusters/{clusterId}/auditLogFilterRules | List audit log filter rules
+*DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceQueryAuditLogFiles**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogservicequeryauditlogfiles) | **Get** /clusters/{clusterId}/auditLogConfig:queryAuditLogFiles | Query audit log files
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceShowObjectStorageAccessIamPrincipal**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogserviceshowobjectstorageaccessiamprincipal) | **Get** /clusters/{clusterId}/auditLogConfig:showObjectStorageAccessIamPrincipal | Show IAM principal of TiDB Cloud for accessing customer&#39;s object storage
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceUpdateAuditLogConfig**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogserviceupdateauditlogconfig) | **Patch** /clusters/{auditLogConfig.clusterId}/auditLogConfig | Update the audit log config of a cluster
-*MaintenanceServiceAPI* | [**MaintenanceServiceDeferMaintenanceTask**](docs/MaintenanceServiceAPI.md#maintenanceservicedefermaintenancetask) | **Post** /maintenanceTasks/{maintenanceTaskId}:deferMaintenanceTask | Defer a maintenance task
 *MaintenanceServiceAPI* | [**MaintenanceServiceGetMaintenanceTask**](docs/MaintenanceServiceAPI.md#maintenanceservicegetmaintenancetask) | **Get** /maintenanceTasks/{maintenanceTaskId} | Get a maintenance task
 *MaintenanceServiceAPI* | [**MaintenanceServiceGetMaintenanceWindow**](docs/MaintenanceServiceAPI.md#maintenanceservicegetmaintenancewindow) | **Get** /maintenanceWindows/{maintenanceWindowId} | Get a maintenance window
 *MaintenanceServiceAPI* | [**MaintenanceServiceListMaintenanceTasks**](docs/MaintenanceServiceAPI.md#maintenanceservicelistmaintenancetasks) | **Get** /maintenanceTasks | List maintenance tasks
 *MaintenanceServiceAPI* | [**MaintenanceServiceListMaintenanceWindows**](docs/MaintenanceServiceAPI.md#maintenanceservicelistmaintenancewindows) | **Get** /maintenanceWindows | List maintenance windows
+*MaintenanceServiceAPI* | [**MaintenanceServiceUpdateMaintenanceTask**](docs/MaintenanceServiceAPI.md#maintenanceserviceupdatemaintenancetask) | **Patch** /maintenanceTasks/{maintenanceTask.maintenanceTaskId} | Update a maintenance task
 *MaintenanceServiceAPI* | [**MaintenanceServiceUpdateMaintenanceWindow**](docs/MaintenanceServiceAPI.md#maintenanceserviceupdatemaintenancewindow) | **Patch** /maintenanceWindows/{maintenanceWindow.maintenanceWindowId} | Update a maintenance window
 *NetworkContainerServiceAPI* | [**NetworkContainerServiceCreateNetworkContainer**](docs/NetworkContainerServiceAPI.md#networkcontainerservicecreatenetworkcontainer) | **Post** /networkContainers | Create a network container
 *NetworkContainerServiceAPI* | [**NetworkContainerServiceCreateVpcPeering**](docs/NetworkContainerServiceAPI.md#networkcontainerservicecreatevpcpeering) | **Post** /vpcPeerings | Create a VPC peering
@@ -138,64 +140,71 @@ Class | Method | HTTP request | Description
  - [ClusterServiceListNodeInstancesComponentTypeParameter](docs/ClusterServiceListNodeInstancesComponentTypeParameter.md)
  - [ClusterServiceResetRootPasswordBody](docs/ClusterServiceResetRootPasswordBody.md)
  - [ClusterServiceUpdateClusterRequest](docs/ClusterServiceUpdateClusterRequest.md)
- - [ClusterStorageNodeSettingStorageType](docs/ClusterStorageNodeSettingStorageType.md)
  - [Commonv1beta1ClusterState](docs/Commonv1beta1ClusterState.md)
  - [Commonv1beta1Region](docs/Commonv1beta1Region.md)
- - [DatabaseAuditLogServiceCreateAuditLogConfigRequest](docs/DatabaseAuditLogServiceCreateAuditLogConfigRequest.md)
- - [DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest](docs/DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest.md)
  - [DatabaseAuditLogServiceUpdateAuditLogConfigRequest](docs/DatabaseAuditLogServiceUpdateAuditLogConfigRequest.md)
  - [Dedicatedv1beta1AuditLogConfig](docs/Dedicatedv1beta1AuditLogConfig.md)
+ - [Dedicatedv1beta1AuditLogFile](docs/Dedicatedv1beta1AuditLogFile.md)
+ - [Dedicatedv1beta1BucketManager](docs/Dedicatedv1beta1BucketManager.md)
  - [Dedicatedv1beta1ClusterPausePlan](docs/Dedicatedv1beta1ClusterPausePlan.md)
  - [Dedicatedv1beta1ClusterPausePlanType](docs/Dedicatedv1beta1ClusterPausePlanType.md)
  - [Dedicatedv1beta1ComponentType](docs/Dedicatedv1beta1ComponentType.md)
+ - [Dedicatedv1beta1GenerateAuditLogFileDownloadAddressResponse](docs/Dedicatedv1beta1GenerateAuditLogFileDownloadAddressResponse.md)
+ - [Dedicatedv1beta1ListMaintenanceTasksResponse](docs/Dedicatedv1beta1ListMaintenanceTasksResponse.md)
+ - [Dedicatedv1beta1ListMaintenanceWindowsResponse](docs/Dedicatedv1beta1ListMaintenanceWindowsResponse.md)
  - [Dedicatedv1beta1ListTidbNodeGroupsResponse](docs/Dedicatedv1beta1ListTidbNodeGroupsResponse.md)
  - [Dedicatedv1beta1ListVpcPeeringsResponse](docs/Dedicatedv1beta1ListVpcPeeringsResponse.md)
+ - [Dedicatedv1beta1MaintenanceTask](docs/Dedicatedv1beta1MaintenanceTask.md)
+ - [Dedicatedv1beta1MaintenanceTaskState](docs/Dedicatedv1beta1MaintenanceTaskState.md)
  - [Dedicatedv1beta1MaintenanceWindow](docs/Dedicatedv1beta1MaintenanceWindow.md)
- - [Dedicatedv1beta1NodeSpec](docs/Dedicatedv1beta1NodeSpec.md)
- - [Dedicatedv1beta1PauseClusterResponse](docs/Dedicatedv1beta1PauseClusterResponse.md)
  - [Dedicatedv1beta1PrivateLinkService](docs/Dedicatedv1beta1PrivateLinkService.md)
- - [Dedicatedv1beta1ResumeClusterResponse](docs/Dedicatedv1beta1ResumeClusterResponse.md)
+ - [Dedicatedv1beta1QueryAuditLogFilesResponse](docs/Dedicatedv1beta1QueryAuditLogFilesResponse.md)
  - [Dedicatedv1beta1TidbNodeGroup](docs/Dedicatedv1beta1TidbNodeGroup.md)
  - [Dedicatedv1beta1TidbNodeGroupEndpoint](docs/Dedicatedv1beta1TidbNodeGroupEndpoint.md)
  - [Dedicatedv1beta1TidbNodeGroupState](docs/Dedicatedv1beta1TidbNodeGroupState.md)
+ - [Dedicatedv1beta1TidbNodeGroupTiProxySetting](docs/Dedicatedv1beta1TidbNodeGroupTiProxySetting.md)
  - [Dedicatedv1beta1VpcPeering](docs/Dedicatedv1beta1VpcPeering.md)
  - [Dedicatedv1beta1VpcPeeringState](docs/Dedicatedv1beta1VpcPeeringState.md)
  - [EndpointConnectionType](docs/EndpointConnectionType.md)
  - [GooglerpcStatus](docs/GooglerpcStatus.md)
+ - [MaintenanceServiceUpdateMaintenanceTaskRequest](docs/MaintenanceServiceUpdateMaintenanceTaskRequest.md)
  - [MaintenanceServiceUpdateMaintenanceWindowRequest](docs/MaintenanceServiceUpdateMaintenanceWindowRequest.md)
  - [PrivateEndpointConnectionEndpointState](docs/PrivateEndpointConnectionEndpointState.md)
  - [PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest](docs/PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest.md)
  - [PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter](docs/PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter.md)
  - [ProtobufAny](docs/ProtobufAny.md)
  - [PublicEndpointSettingIpAccessList](docs/PublicEndpointSettingIpAccessList.md)
+ - [Required](docs/Required.md)
+ - [Required1](docs/Required1.md)
+ - [Required2](docs/Required2.md)
  - [ShowNodeQuotaResponseComponentQuota](docs/ShowNodeQuotaResponseComponentQuota.md)
+ - [StorageNodeSettingStorageType](docs/StorageNodeSettingStorageType.md)
  - [TidbCloudOpenApidedicatedv1beta1Cluster](docs/TidbCloudOpenApidedicatedv1beta1Cluster.md)
  - [TidbCloudOpenApidedicatedv1beta1ListClustersResponse](docs/TidbCloudOpenApidedicatedv1beta1ListClustersResponse.md)
  - [TidbCloudOpenApidedicatedv1beta1ListRegionsResponse](docs/TidbCloudOpenApidedicatedv1beta1ListRegionsResponse.md)
- - [TidbNodeGroupServiceCreateTidbNodeGroupRequest](docs/TidbNodeGroupServiceCreateTidbNodeGroupRequest.md)
  - [TidbNodeGroupServiceUpdatePublicEndpointSettingRequest](docs/TidbNodeGroupServiceUpdatePublicEndpointSettingRequest.md)
  - [TidbNodeGroupServiceUpdateTidbNodeGroupRequest](docs/TidbNodeGroupServiceUpdateTidbNodeGroupRequest.md)
+ - [TidbNodeGroupTiProxyType](docs/TidbNodeGroupTiProxyType.md)
  - [UpdateClusterRequestTidbNodeSettingTidbNodeGroup](docs/UpdateClusterRequestTidbNodeSettingTidbNodeGroup.md)
  - [V1beta1AuditLogFilterRule](docs/V1beta1AuditLogFilterRule.md)
  - [V1beta1ClusterStorageNodeSetting](docs/V1beta1ClusterStorageNodeSetting.md)
  - [V1beta1ClusterTidbNodeSetting](docs/V1beta1ClusterTidbNodeSetting.md)
  - [V1beta1ListAuditLogFilterRulesResponse](docs/V1beta1ListAuditLogFilterRulesResponse.md)
- - [V1beta1ListMaintenanceTasksResponse](docs/V1beta1ListMaintenanceTasksResponse.md)
- - [V1beta1ListMaintenanceWindowsResponse](docs/V1beta1ListMaintenanceWindowsResponse.md)
  - [V1beta1ListNetworkContainersResponse](docs/V1beta1ListNetworkContainersResponse.md)
  - [V1beta1ListNodeInstancesResponse](docs/V1beta1ListNodeInstancesResponse.md)
  - [V1beta1ListNodeSpecsResponse](docs/V1beta1ListNodeSpecsResponse.md)
  - [V1beta1ListPrivateEndpointConnectionsResponse](docs/V1beta1ListPrivateEndpointConnectionsResponse.md)
- - [V1beta1MaintenanceTask](docs/V1beta1MaintenanceTask.md)
- - [V1beta1MaintenanceTaskState](docs/V1beta1MaintenanceTaskState.md)
  - [V1beta1NetworkContainer](docs/V1beta1NetworkContainer.md)
  - [V1beta1NetworkContainerState](docs/V1beta1NetworkContainerState.md)
  - [V1beta1NodeInstance](docs/V1beta1NodeInstance.md)
  - [V1beta1NodeInstanceState](docs/V1beta1NodeInstanceState.md)
+ - [V1beta1NodeSpec](docs/V1beta1NodeSpec.md)
+ - [V1beta1PauseClusterResponse](docs/V1beta1PauseClusterResponse.md)
  - [V1beta1PrivateEndpointConnection](docs/V1beta1PrivateEndpointConnection.md)
  - [V1beta1PrivateLinkServiceState](docs/V1beta1PrivateLinkServiceState.md)
  - [V1beta1PublicEndpointSetting](docs/V1beta1PublicEndpointSetting.md)
  - [V1beta1RegionCloudProvider](docs/V1beta1RegionCloudProvider.md)
+ - [V1beta1ResumeClusterResponse](docs/V1beta1ResumeClusterResponse.md)
  - [V1beta1ShowCloudProvidersResponse](docs/V1beta1ShowCloudProvidersResponse.md)
  - [V1beta1ShowNodeQuotaResponse](docs/V1beta1ShowNodeQuotaResponse.md)
  - [V1beta1ShowObjectStorageAccessIamPrincipalResponse](docs/V1beta1ShowObjectStorageAccessIamPrincipalResponse.md)
@@ -203,6 +212,7 @@ Class | Method | HTTP request | Description
  - [V1beta1UpdateClusterRequestCluster](docs/V1beta1UpdateClusterRequestCluster.md)
  - [V1beta1UpdateClusterRequestStorageNodeSetting](docs/V1beta1UpdateClusterRequestStorageNodeSetting.md)
  - [V1beta1UpdateClusterRequestTidbNodeSetting](docs/V1beta1UpdateClusterRequestTidbNodeSetting.md)
+ - [V1beta1UpdateMaintenanceTaskRequestMaintenanceTask](docs/V1beta1UpdateMaintenanceTaskRequestMaintenanceTask.md)
  - [V1beta1UpdateMaintenanceWindowRequestMaintenanceWindow](docs/V1beta1UpdateMaintenanceWindowRequestMaintenanceWindow.md)
  - [V1beta1UpdateTidbNodeGroupRequestTidbNodeGroup](docs/V1beta1UpdateTidbNodeGroupRequestTidbNodeGroup.md)
 

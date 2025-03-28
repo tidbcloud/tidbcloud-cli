@@ -14,11 +14,11 @@ import (
 	"encoding/json"
 )
 
-// checks if the DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest{}
+// checks if the Required2 type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Required2{}
 
-// DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest struct for DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest
-type DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest struct {
+// Required2 struct for Required2
+type Required2 struct {
 	Name                 *string  `json:"name,omitempty"`
 	AuditLogFilterRuleId *string  `json:"auditLogFilterRuleId,omitempty"`
 	UserExpr             *string  `json:"userExpr,omitempty"`
@@ -28,27 +28,27 @@ type DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest struct {
 	AdditionalProperties map[string]interface{}
 }
 
-type _DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest
+type _Required2 Required2
 
-// NewDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest instantiates a new DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest object
+// NewRequired2 instantiates a new Required2 object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest() *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest {
-	this := DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest{}
+func NewRequired2() *Required2 {
+	this := Required2{}
 	return &this
 }
 
-// NewDatabaseAuditLogServiceCreateAuditLogFilterRuleRequestWithDefaults instantiates a new DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest object
+// NewRequired2WithDefaults instantiates a new Required2 object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewDatabaseAuditLogServiceCreateAuditLogFilterRuleRequestWithDefaults() *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest {
-	this := DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest{}
+func NewRequired2WithDefaults() *Required2 {
+	this := Required2{}
 	return &this
 }
 
 // GetName returns the Name field value if set, zero value otherwise.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetName() string {
+func (o *Required2) GetName() string {
 	if o == nil || IsNil(o.Name) {
 		var ret string
 		return ret
@@ -58,7 +58,7 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetName() strin
 
 // GetNameOk returns a tuple with the Name field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetNameOk() (*string, bool) {
+func (o *Required2) GetNameOk() (*string, bool) {
 	if o == nil || IsNil(o.Name) {
 		return nil, false
 	}
@@ -66,7 +66,7 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetNameOk() (*s
 }
 
 // HasName returns a boolean if a field has been set.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) HasName() bool {
+func (o *Required2) HasName() bool {
 	if o != nil && !IsNil(o.Name) {
 		return true
 	}
@@ -75,12 +75,12 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) HasName() bool 
 }
 
 // SetName gets a reference to the given string and assigns it to the Name field.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) SetName(v string) {
+func (o *Required2) SetName(v string) {
 	o.Name = &v
 }
 
 // GetAuditLogFilterRuleId returns the AuditLogFilterRuleId field value if set, zero value otherwise.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetAuditLogFilterRuleId() string {
+func (o *Required2) GetAuditLogFilterRuleId() string {
 	if o == nil || IsNil(o.AuditLogFilterRuleId) {
 		var ret string
 		return ret
@@ -90,7 +90,7 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetAuditLogFilt
 
 // GetAuditLogFilterRuleIdOk returns a tuple with the AuditLogFilterRuleId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetAuditLogFilterRuleIdOk() (*string, bool) {
+func (o *Required2) GetAuditLogFilterRuleIdOk() (*string, bool) {
 	if o == nil || IsNil(o.AuditLogFilterRuleId) {
 		return nil, false
 	}
@@ -98,7 +98,7 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetAuditLogFilt
 }
 
 // HasAuditLogFilterRuleId returns a boolean if a field has been set.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) HasAuditLogFilterRuleId() bool {
+func (o *Required2) HasAuditLogFilterRuleId() bool {
 	if o != nil && !IsNil(o.AuditLogFilterRuleId) {
 		return true
 	}
@@ -107,12 +107,12 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) HasAuditLogFilt
 }
 
 // SetAuditLogFilterRuleId gets a reference to the given string and assigns it to the AuditLogFilterRuleId field.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) SetAuditLogFilterRuleId(v string) {
+func (o *Required2) SetAuditLogFilterRuleId(v string) {
 	o.AuditLogFilterRuleId = &v
 }
 
 // GetUserExpr returns the UserExpr field value if set, zero value otherwise.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetUserExpr() string {
+func (o *Required2) GetUserExpr() string {
 	if o == nil || IsNil(o.UserExpr) {
 		var ret string
 		return ret
@@ -122,7 +122,7 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetUserExpr() s
 
 // GetUserExprOk returns a tuple with the UserExpr field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetUserExprOk() (*string, bool) {
+func (o *Required2) GetUserExprOk() (*string, bool) {
 	if o == nil || IsNil(o.UserExpr) {
 		return nil, false
 	}
@@ -130,7 +130,7 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetUserExprOk()
 }
 
 // HasUserExpr returns a boolean if a field has been set.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) HasUserExpr() bool {
+func (o *Required2) HasUserExpr() bool {
 	if o != nil && !IsNil(o.UserExpr) {
 		return true
 	}
@@ -139,12 +139,12 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) HasUserExpr() b
 }
 
 // SetUserExpr gets a reference to the given string and assigns it to the UserExpr field.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) SetUserExpr(v string) {
+func (o *Required2) SetUserExpr(v string) {
 	o.UserExpr = &v
 }
 
 // GetDbExpr returns the DbExpr field value if set, zero value otherwise.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetDbExpr() string {
+func (o *Required2) GetDbExpr() string {
 	if o == nil || IsNil(o.DbExpr) {
 		var ret string
 		return ret
@@ -154,7 +154,7 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetDbExpr() str
 
 // GetDbExprOk returns a tuple with the DbExpr field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetDbExprOk() (*string, bool) {
+func (o *Required2) GetDbExprOk() (*string, bool) {
 	if o == nil || IsNil(o.DbExpr) {
 		return nil, false
 	}
@@ -162,7 +162,7 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetDbExprOk() (
 }
 
 // HasDbExpr returns a boolean if a field has been set.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) HasDbExpr() bool {
+func (o *Required2) HasDbExpr() bool {
 	if o != nil && !IsNil(o.DbExpr) {
 		return true
 	}
@@ -171,12 +171,12 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) HasDbExpr() boo
 }
 
 // SetDbExpr gets a reference to the given string and assigns it to the DbExpr field.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) SetDbExpr(v string) {
+func (o *Required2) SetDbExpr(v string) {
 	o.DbExpr = &v
 }
 
 // GetTableExpr returns the TableExpr field value if set, zero value otherwise.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetTableExpr() string {
+func (o *Required2) GetTableExpr() string {
 	if o == nil || IsNil(o.TableExpr) {
 		var ret string
 		return ret
@@ -186,7 +186,7 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetTableExpr() 
 
 // GetTableExprOk returns a tuple with the TableExpr field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetTableExprOk() (*string, bool) {
+func (o *Required2) GetTableExprOk() (*string, bool) {
 	if o == nil || IsNil(o.TableExpr) {
 		return nil, false
 	}
@@ -194,7 +194,7 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetTableExprOk(
 }
 
 // HasTableExpr returns a boolean if a field has been set.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) HasTableExpr() bool {
+func (o *Required2) HasTableExpr() bool {
 	if o != nil && !IsNil(o.TableExpr) {
 		return true
 	}
@@ -203,12 +203,12 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) HasTableExpr() 
 }
 
 // SetTableExpr gets a reference to the given string and assigns it to the TableExpr field.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) SetTableExpr(v string) {
+func (o *Required2) SetTableExpr(v string) {
 	o.TableExpr = &v
 }
 
 // GetAccessTypeList returns the AccessTypeList field value if set, zero value otherwise.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetAccessTypeList() []string {
+func (o *Required2) GetAccessTypeList() []string {
 	if o == nil || IsNil(o.AccessTypeList) {
 		var ret []string
 		return ret
@@ -218,7 +218,7 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetAccessTypeLi
 
 // GetAccessTypeListOk returns a tuple with the AccessTypeList field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetAccessTypeListOk() ([]string, bool) {
+func (o *Required2) GetAccessTypeListOk() ([]string, bool) {
 	if o == nil || IsNil(o.AccessTypeList) {
 		return nil, false
 	}
@@ -226,7 +226,7 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) GetAccessTypeLi
 }
 
 // HasAccessTypeList returns a boolean if a field has been set.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) HasAccessTypeList() bool {
+func (o *Required2) HasAccessTypeList() bool {
 	if o != nil && !IsNil(o.AccessTypeList) {
 		return true
 	}
@@ -235,11 +235,11 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) HasAccessTypeLi
 }
 
 // SetAccessTypeList gets a reference to the given []string and assigns it to the AccessTypeList field.
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) SetAccessTypeList(v []string) {
+func (o *Required2) SetAccessTypeList(v []string) {
 	o.AccessTypeList = v
 }
 
-func (o DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) MarshalJSON() ([]byte, error) {
+func (o Required2) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -247,7 +247,7 @@ func (o DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) MarshalJSON() ([
 	return json.Marshal(toSerialize)
 }
 
-func (o DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) ToMap() (map[string]interface{}, error) {
+func (o Required2) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
@@ -275,16 +275,16 @@ func (o DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) ToMap() (map[str
 	return toSerialize, nil
 }
 
-func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) UnmarshalJSON(data []byte) (err error) {
-	varDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest := _DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest{}
+func (o *Required2) UnmarshalJSON(data []byte) (err error) {
+	varRequired2 := _Required2{}
 
-	err = json.Unmarshal(data, &varDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest)
+	err = json.Unmarshal(data, &varRequired2)
 
 	if err != nil {
 		return err
 	}
 
-	*o = DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest(varDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest)
+	*o = Required2(varRequired2)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -301,38 +301,38 @@ func (o *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) UnmarshalJSON(d
 	return err
 }
 
-type NullableDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest struct {
-	value *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest
+type NullableRequired2 struct {
+	value *Required2
 	isSet bool
 }
 
-func (v NullableDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) Get() *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest {
+func (v NullableRequired2) Get() *Required2 {
 	return v.value
 }
 
-func (v *NullableDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) Set(val *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) {
+func (v *NullableRequired2) Set(val *Required2) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) IsSet() bool {
+func (v NullableRequired2) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) Unset() {
+func (v *NullableRequired2) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest(val *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) *NullableDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest {
-	return &NullableDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest{value: val, isSet: true}
+func NewNullableRequired2(val *Required2) *NullableRequired2 {
+	return &NullableRequired2{value: val, isSet: true}
 }
 
-func (v NullableDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) MarshalJSON() ([]byte, error) {
+func (v NullableRequired2) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) UnmarshalJSON(src []byte) error {
+func (v *NullableRequired2) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

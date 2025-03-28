@@ -50,7 +50,7 @@ func (r ApiPrivateEndpointConnectionServiceCreatePrivateEndpointConnectionReques
 PrivateEndpointConnectionServiceCreatePrivateEndpointConnection Create a private endpoint connection
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId
+	@param clusterId Required.
 	@param privateEndpointConnectionTidbNodeGroupId
 	@return ApiPrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest
 */
@@ -801,7 +801,7 @@ func (r ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest
 	return r
 }
 
-// If specified, only private link connections of the specified cloud provider will be returned.   - aws: Amazon Web Services.  - gcp: Google Cloud Platform.  - azure: Microsoft Azure.
+// If specified, only private link connections of the specified cloud provider will be returned.   - aws: Amazon Web Services.  - gcp: Google Cloud Platform.  - azure: Microsoft Azure.  - alicloud: Alibaba Cloud
 func (r ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest) CloudProvider(cloudProvider PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter) ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest {
 	r.cloudProvider = &cloudProvider
 	return r

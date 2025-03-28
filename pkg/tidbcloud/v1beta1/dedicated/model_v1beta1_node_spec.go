@@ -14,48 +14,51 @@ import (
 	"encoding/json"
 )
 
-// checks if the Dedicatedv1beta1NodeSpec type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &Dedicatedv1beta1NodeSpec{}
+// checks if the V1beta1NodeSpec type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &V1beta1NodeSpec{}
 
-// Dedicatedv1beta1NodeSpec struct for Dedicatedv1beta1NodeSpec
-type Dedicatedv1beta1NodeSpec struct {
-	Name                 *string                                `json:"name,omitempty"`
-	RegionId             *string                                `json:"regionId,omitempty"`
-	ComponentType        *Dedicatedv1beta1ComponentType         `json:"componentType,omitempty"`
-	NodeSpecKey          *string                                `json:"nodeSpecKey,omitempty"`
-	DisplayName          *string                                `json:"displayName,omitempty"`
-	VCpu                 *int32                                 `json:"vCpu,omitempty"`
-	MemorySizeGi         *int32                                 `json:"memorySizeGi,omitempty"`
-	DefaultStorageSizeGi *int32                                 `json:"defaultStorageSizeGi,omitempty"`
-	MaxStorageSizeGi     *int32                                 `json:"maxStorageSizeGi,omitempty"`
-	MinStorageSizeGi     *int32                                 `json:"minStorageSizeGi,omitempty"`
-	DefaultNodeCount     *int32                                 `json:"defaultNodeCount,omitempty"`
-	StorageTypes         []ClusterStorageNodeSettingStorageType `json:"storageTypes,omitempty"`
-	Default              *bool                                  `json:"default,omitempty"`
+// V1beta1NodeSpec All fields are output only.
+type V1beta1NodeSpec struct {
+	Name                 *string                         `json:"name,omitempty"`
+	RegionId             *string                         `json:"regionId,omitempty"`
+	ComponentType        *Dedicatedv1beta1ComponentType  `json:"componentType,omitempty"`
+	NodeSpecKey          *string                         `json:"nodeSpecKey,omitempty"`
+	DisplayName          *string                         `json:"displayName,omitempty"`
+	VCpu                 *int32                          `json:"vCpu,omitempty"`
+	MemorySizeGi         *int32                          `json:"memorySizeGi,omitempty"`
+	DefaultStorageSizeGi *int32                          `json:"defaultStorageSizeGi,omitempty"`
+	MaxStorageSizeGi     *int32                          `json:"maxStorageSizeGi,omitempty"`
+	MinStorageSizeGi     *int32                          `json:"minStorageSizeGi,omitempty"`
+	DefaultNodeCount     *int32                          `json:"defaultNodeCount,omitempty"`
+	StorageTypes         []StorageNodeSettingStorageType `json:"storageTypes,omitempty"`
+	// Currently only useful when overriding iops for raftlog storage.
+	MaxRaftStoreIops     NullableInt32 `json:"maxRaftStoreIops,omitempty"`
+	MinRaftStoreIops     NullableInt32 `json:"minRaftStoreIops,omitempty"`
+	Default              *bool         `json:"default,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _Dedicatedv1beta1NodeSpec Dedicatedv1beta1NodeSpec
+type _V1beta1NodeSpec V1beta1NodeSpec
 
-// NewDedicatedv1beta1NodeSpec instantiates a new Dedicatedv1beta1NodeSpec object
+// NewV1beta1NodeSpec instantiates a new V1beta1NodeSpec object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewDedicatedv1beta1NodeSpec() *Dedicatedv1beta1NodeSpec {
-	this := Dedicatedv1beta1NodeSpec{}
+func NewV1beta1NodeSpec() *V1beta1NodeSpec {
+	this := V1beta1NodeSpec{}
 	return &this
 }
 
-// NewDedicatedv1beta1NodeSpecWithDefaults instantiates a new Dedicatedv1beta1NodeSpec object
+// NewV1beta1NodeSpecWithDefaults instantiates a new V1beta1NodeSpec object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewDedicatedv1beta1NodeSpecWithDefaults() *Dedicatedv1beta1NodeSpec {
-	this := Dedicatedv1beta1NodeSpec{}
+func NewV1beta1NodeSpecWithDefaults() *V1beta1NodeSpec {
+	this := V1beta1NodeSpec{}
 	return &this
 }
 
 // GetName returns the Name field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1NodeSpec) GetName() string {
+func (o *V1beta1NodeSpec) GetName() string {
 	if o == nil || IsNil(o.Name) {
 		var ret string
 		return ret
@@ -65,7 +68,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetName() string {
 
 // GetNameOk returns a tuple with the Name field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1NodeSpec) GetNameOk() (*string, bool) {
+func (o *V1beta1NodeSpec) GetNameOk() (*string, bool) {
 	if o == nil || IsNil(o.Name) {
 		return nil, false
 	}
@@ -73,7 +76,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetNameOk() (*string, bool) {
 }
 
 // HasName returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1NodeSpec) HasName() bool {
+func (o *V1beta1NodeSpec) HasName() bool {
 	if o != nil && !IsNil(o.Name) {
 		return true
 	}
@@ -82,12 +85,12 @@ func (o *Dedicatedv1beta1NodeSpec) HasName() bool {
 }
 
 // SetName gets a reference to the given string and assigns it to the Name field.
-func (o *Dedicatedv1beta1NodeSpec) SetName(v string) {
+func (o *V1beta1NodeSpec) SetName(v string) {
 	o.Name = &v
 }
 
 // GetRegionId returns the RegionId field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1NodeSpec) GetRegionId() string {
+func (o *V1beta1NodeSpec) GetRegionId() string {
 	if o == nil || IsNil(o.RegionId) {
 		var ret string
 		return ret
@@ -97,7 +100,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetRegionId() string {
 
 // GetRegionIdOk returns a tuple with the RegionId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1NodeSpec) GetRegionIdOk() (*string, bool) {
+func (o *V1beta1NodeSpec) GetRegionIdOk() (*string, bool) {
 	if o == nil || IsNil(o.RegionId) {
 		return nil, false
 	}
@@ -105,7 +108,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetRegionIdOk() (*string, bool) {
 }
 
 // HasRegionId returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1NodeSpec) HasRegionId() bool {
+func (o *V1beta1NodeSpec) HasRegionId() bool {
 	if o != nil && !IsNil(o.RegionId) {
 		return true
 	}
@@ -114,12 +117,12 @@ func (o *Dedicatedv1beta1NodeSpec) HasRegionId() bool {
 }
 
 // SetRegionId gets a reference to the given string and assigns it to the RegionId field.
-func (o *Dedicatedv1beta1NodeSpec) SetRegionId(v string) {
+func (o *V1beta1NodeSpec) SetRegionId(v string) {
 	o.RegionId = &v
 }
 
 // GetComponentType returns the ComponentType field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1NodeSpec) GetComponentType() Dedicatedv1beta1ComponentType {
+func (o *V1beta1NodeSpec) GetComponentType() Dedicatedv1beta1ComponentType {
 	if o == nil || IsNil(o.ComponentType) {
 		var ret Dedicatedv1beta1ComponentType
 		return ret
@@ -129,7 +132,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetComponentType() Dedicatedv1beta1ComponentT
 
 // GetComponentTypeOk returns a tuple with the ComponentType field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1NodeSpec) GetComponentTypeOk() (*Dedicatedv1beta1ComponentType, bool) {
+func (o *V1beta1NodeSpec) GetComponentTypeOk() (*Dedicatedv1beta1ComponentType, bool) {
 	if o == nil || IsNil(o.ComponentType) {
 		return nil, false
 	}
@@ -137,7 +140,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetComponentTypeOk() (*Dedicatedv1beta1Compon
 }
 
 // HasComponentType returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1NodeSpec) HasComponentType() bool {
+func (o *V1beta1NodeSpec) HasComponentType() bool {
 	if o != nil && !IsNil(o.ComponentType) {
 		return true
 	}
@@ -146,12 +149,12 @@ func (o *Dedicatedv1beta1NodeSpec) HasComponentType() bool {
 }
 
 // SetComponentType gets a reference to the given Dedicatedv1beta1ComponentType and assigns it to the ComponentType field.
-func (o *Dedicatedv1beta1NodeSpec) SetComponentType(v Dedicatedv1beta1ComponentType) {
+func (o *V1beta1NodeSpec) SetComponentType(v Dedicatedv1beta1ComponentType) {
 	o.ComponentType = &v
 }
 
 // GetNodeSpecKey returns the NodeSpecKey field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1NodeSpec) GetNodeSpecKey() string {
+func (o *V1beta1NodeSpec) GetNodeSpecKey() string {
 	if o == nil || IsNil(o.NodeSpecKey) {
 		var ret string
 		return ret
@@ -161,7 +164,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetNodeSpecKey() string {
 
 // GetNodeSpecKeyOk returns a tuple with the NodeSpecKey field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1NodeSpec) GetNodeSpecKeyOk() (*string, bool) {
+func (o *V1beta1NodeSpec) GetNodeSpecKeyOk() (*string, bool) {
 	if o == nil || IsNil(o.NodeSpecKey) {
 		return nil, false
 	}
@@ -169,7 +172,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetNodeSpecKeyOk() (*string, bool) {
 }
 
 // HasNodeSpecKey returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1NodeSpec) HasNodeSpecKey() bool {
+func (o *V1beta1NodeSpec) HasNodeSpecKey() bool {
 	if o != nil && !IsNil(o.NodeSpecKey) {
 		return true
 	}
@@ -178,12 +181,12 @@ func (o *Dedicatedv1beta1NodeSpec) HasNodeSpecKey() bool {
 }
 
 // SetNodeSpecKey gets a reference to the given string and assigns it to the NodeSpecKey field.
-func (o *Dedicatedv1beta1NodeSpec) SetNodeSpecKey(v string) {
+func (o *V1beta1NodeSpec) SetNodeSpecKey(v string) {
 	o.NodeSpecKey = &v
 }
 
 // GetDisplayName returns the DisplayName field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1NodeSpec) GetDisplayName() string {
+func (o *V1beta1NodeSpec) GetDisplayName() string {
 	if o == nil || IsNil(o.DisplayName) {
 		var ret string
 		return ret
@@ -193,7 +196,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetDisplayName() string {
 
 // GetDisplayNameOk returns a tuple with the DisplayName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1NodeSpec) GetDisplayNameOk() (*string, bool) {
+func (o *V1beta1NodeSpec) GetDisplayNameOk() (*string, bool) {
 	if o == nil || IsNil(o.DisplayName) {
 		return nil, false
 	}
@@ -201,7 +204,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetDisplayNameOk() (*string, bool) {
 }
 
 // HasDisplayName returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1NodeSpec) HasDisplayName() bool {
+func (o *V1beta1NodeSpec) HasDisplayName() bool {
 	if o != nil && !IsNil(o.DisplayName) {
 		return true
 	}
@@ -210,12 +213,12 @@ func (o *Dedicatedv1beta1NodeSpec) HasDisplayName() bool {
 }
 
 // SetDisplayName gets a reference to the given string and assigns it to the DisplayName field.
-func (o *Dedicatedv1beta1NodeSpec) SetDisplayName(v string) {
+func (o *V1beta1NodeSpec) SetDisplayName(v string) {
 	o.DisplayName = &v
 }
 
 // GetVCpu returns the VCpu field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1NodeSpec) GetVCpu() int32 {
+func (o *V1beta1NodeSpec) GetVCpu() int32 {
 	if o == nil || IsNil(o.VCpu) {
 		var ret int32
 		return ret
@@ -225,7 +228,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetVCpu() int32 {
 
 // GetVCpuOk returns a tuple with the VCpu field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1NodeSpec) GetVCpuOk() (*int32, bool) {
+func (o *V1beta1NodeSpec) GetVCpuOk() (*int32, bool) {
 	if o == nil || IsNil(o.VCpu) {
 		return nil, false
 	}
@@ -233,7 +236,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetVCpuOk() (*int32, bool) {
 }
 
 // HasVCpu returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1NodeSpec) HasVCpu() bool {
+func (o *V1beta1NodeSpec) HasVCpu() bool {
 	if o != nil && !IsNil(o.VCpu) {
 		return true
 	}
@@ -242,12 +245,12 @@ func (o *Dedicatedv1beta1NodeSpec) HasVCpu() bool {
 }
 
 // SetVCpu gets a reference to the given int32 and assigns it to the VCpu field.
-func (o *Dedicatedv1beta1NodeSpec) SetVCpu(v int32) {
+func (o *V1beta1NodeSpec) SetVCpu(v int32) {
 	o.VCpu = &v
 }
 
 // GetMemorySizeGi returns the MemorySizeGi field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1NodeSpec) GetMemorySizeGi() int32 {
+func (o *V1beta1NodeSpec) GetMemorySizeGi() int32 {
 	if o == nil || IsNil(o.MemorySizeGi) {
 		var ret int32
 		return ret
@@ -257,7 +260,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetMemorySizeGi() int32 {
 
 // GetMemorySizeGiOk returns a tuple with the MemorySizeGi field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1NodeSpec) GetMemorySizeGiOk() (*int32, bool) {
+func (o *V1beta1NodeSpec) GetMemorySizeGiOk() (*int32, bool) {
 	if o == nil || IsNil(o.MemorySizeGi) {
 		return nil, false
 	}
@@ -265,7 +268,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetMemorySizeGiOk() (*int32, bool) {
 }
 
 // HasMemorySizeGi returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1NodeSpec) HasMemorySizeGi() bool {
+func (o *V1beta1NodeSpec) HasMemorySizeGi() bool {
 	if o != nil && !IsNil(o.MemorySizeGi) {
 		return true
 	}
@@ -274,12 +277,12 @@ func (o *Dedicatedv1beta1NodeSpec) HasMemorySizeGi() bool {
 }
 
 // SetMemorySizeGi gets a reference to the given int32 and assigns it to the MemorySizeGi field.
-func (o *Dedicatedv1beta1NodeSpec) SetMemorySizeGi(v int32) {
+func (o *V1beta1NodeSpec) SetMemorySizeGi(v int32) {
 	o.MemorySizeGi = &v
 }
 
 // GetDefaultStorageSizeGi returns the DefaultStorageSizeGi field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1NodeSpec) GetDefaultStorageSizeGi() int32 {
+func (o *V1beta1NodeSpec) GetDefaultStorageSizeGi() int32 {
 	if o == nil || IsNil(o.DefaultStorageSizeGi) {
 		var ret int32
 		return ret
@@ -289,7 +292,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetDefaultStorageSizeGi() int32 {
 
 // GetDefaultStorageSizeGiOk returns a tuple with the DefaultStorageSizeGi field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1NodeSpec) GetDefaultStorageSizeGiOk() (*int32, bool) {
+func (o *V1beta1NodeSpec) GetDefaultStorageSizeGiOk() (*int32, bool) {
 	if o == nil || IsNil(o.DefaultStorageSizeGi) {
 		return nil, false
 	}
@@ -297,7 +300,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetDefaultStorageSizeGiOk() (*int32, bool) {
 }
 
 // HasDefaultStorageSizeGi returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1NodeSpec) HasDefaultStorageSizeGi() bool {
+func (o *V1beta1NodeSpec) HasDefaultStorageSizeGi() bool {
 	if o != nil && !IsNil(o.DefaultStorageSizeGi) {
 		return true
 	}
@@ -306,12 +309,12 @@ func (o *Dedicatedv1beta1NodeSpec) HasDefaultStorageSizeGi() bool {
 }
 
 // SetDefaultStorageSizeGi gets a reference to the given int32 and assigns it to the DefaultStorageSizeGi field.
-func (o *Dedicatedv1beta1NodeSpec) SetDefaultStorageSizeGi(v int32) {
+func (o *V1beta1NodeSpec) SetDefaultStorageSizeGi(v int32) {
 	o.DefaultStorageSizeGi = &v
 }
 
 // GetMaxStorageSizeGi returns the MaxStorageSizeGi field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1NodeSpec) GetMaxStorageSizeGi() int32 {
+func (o *V1beta1NodeSpec) GetMaxStorageSizeGi() int32 {
 	if o == nil || IsNil(o.MaxStorageSizeGi) {
 		var ret int32
 		return ret
@@ -321,7 +324,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetMaxStorageSizeGi() int32 {
 
 // GetMaxStorageSizeGiOk returns a tuple with the MaxStorageSizeGi field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1NodeSpec) GetMaxStorageSizeGiOk() (*int32, bool) {
+func (o *V1beta1NodeSpec) GetMaxStorageSizeGiOk() (*int32, bool) {
 	if o == nil || IsNil(o.MaxStorageSizeGi) {
 		return nil, false
 	}
@@ -329,7 +332,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetMaxStorageSizeGiOk() (*int32, bool) {
 }
 
 // HasMaxStorageSizeGi returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1NodeSpec) HasMaxStorageSizeGi() bool {
+func (o *V1beta1NodeSpec) HasMaxStorageSizeGi() bool {
 	if o != nil && !IsNil(o.MaxStorageSizeGi) {
 		return true
 	}
@@ -338,12 +341,12 @@ func (o *Dedicatedv1beta1NodeSpec) HasMaxStorageSizeGi() bool {
 }
 
 // SetMaxStorageSizeGi gets a reference to the given int32 and assigns it to the MaxStorageSizeGi field.
-func (o *Dedicatedv1beta1NodeSpec) SetMaxStorageSizeGi(v int32) {
+func (o *V1beta1NodeSpec) SetMaxStorageSizeGi(v int32) {
 	o.MaxStorageSizeGi = &v
 }
 
 // GetMinStorageSizeGi returns the MinStorageSizeGi field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1NodeSpec) GetMinStorageSizeGi() int32 {
+func (o *V1beta1NodeSpec) GetMinStorageSizeGi() int32 {
 	if o == nil || IsNil(o.MinStorageSizeGi) {
 		var ret int32
 		return ret
@@ -353,7 +356,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetMinStorageSizeGi() int32 {
 
 // GetMinStorageSizeGiOk returns a tuple with the MinStorageSizeGi field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1NodeSpec) GetMinStorageSizeGiOk() (*int32, bool) {
+func (o *V1beta1NodeSpec) GetMinStorageSizeGiOk() (*int32, bool) {
 	if o == nil || IsNil(o.MinStorageSizeGi) {
 		return nil, false
 	}
@@ -361,7 +364,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetMinStorageSizeGiOk() (*int32, bool) {
 }
 
 // HasMinStorageSizeGi returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1NodeSpec) HasMinStorageSizeGi() bool {
+func (o *V1beta1NodeSpec) HasMinStorageSizeGi() bool {
 	if o != nil && !IsNil(o.MinStorageSizeGi) {
 		return true
 	}
@@ -370,12 +373,12 @@ func (o *Dedicatedv1beta1NodeSpec) HasMinStorageSizeGi() bool {
 }
 
 // SetMinStorageSizeGi gets a reference to the given int32 and assigns it to the MinStorageSizeGi field.
-func (o *Dedicatedv1beta1NodeSpec) SetMinStorageSizeGi(v int32) {
+func (o *V1beta1NodeSpec) SetMinStorageSizeGi(v int32) {
 	o.MinStorageSizeGi = &v
 }
 
 // GetDefaultNodeCount returns the DefaultNodeCount field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1NodeSpec) GetDefaultNodeCount() int32 {
+func (o *V1beta1NodeSpec) GetDefaultNodeCount() int32 {
 	if o == nil || IsNil(o.DefaultNodeCount) {
 		var ret int32
 		return ret
@@ -385,7 +388,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetDefaultNodeCount() int32 {
 
 // GetDefaultNodeCountOk returns a tuple with the DefaultNodeCount field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1NodeSpec) GetDefaultNodeCountOk() (*int32, bool) {
+func (o *V1beta1NodeSpec) GetDefaultNodeCountOk() (*int32, bool) {
 	if o == nil || IsNil(o.DefaultNodeCount) {
 		return nil, false
 	}
@@ -393,7 +396,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetDefaultNodeCountOk() (*int32, bool) {
 }
 
 // HasDefaultNodeCount returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1NodeSpec) HasDefaultNodeCount() bool {
+func (o *V1beta1NodeSpec) HasDefaultNodeCount() bool {
 	if o != nil && !IsNil(o.DefaultNodeCount) {
 		return true
 	}
@@ -402,14 +405,14 @@ func (o *Dedicatedv1beta1NodeSpec) HasDefaultNodeCount() bool {
 }
 
 // SetDefaultNodeCount gets a reference to the given int32 and assigns it to the DefaultNodeCount field.
-func (o *Dedicatedv1beta1NodeSpec) SetDefaultNodeCount(v int32) {
+func (o *V1beta1NodeSpec) SetDefaultNodeCount(v int32) {
 	o.DefaultNodeCount = &v
 }
 
 // GetStorageTypes returns the StorageTypes field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1NodeSpec) GetStorageTypes() []ClusterStorageNodeSettingStorageType {
+func (o *V1beta1NodeSpec) GetStorageTypes() []StorageNodeSettingStorageType {
 	if o == nil || IsNil(o.StorageTypes) {
-		var ret []ClusterStorageNodeSettingStorageType
+		var ret []StorageNodeSettingStorageType
 		return ret
 	}
 	return o.StorageTypes
@@ -417,7 +420,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetStorageTypes() []ClusterStorageNodeSetting
 
 // GetStorageTypesOk returns a tuple with the StorageTypes field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1NodeSpec) GetStorageTypesOk() ([]ClusterStorageNodeSettingStorageType, bool) {
+func (o *V1beta1NodeSpec) GetStorageTypesOk() ([]StorageNodeSettingStorageType, bool) {
 	if o == nil || IsNil(o.StorageTypes) {
 		return nil, false
 	}
@@ -425,7 +428,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetStorageTypesOk() ([]ClusterStorageNodeSett
 }
 
 // HasStorageTypes returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1NodeSpec) HasStorageTypes() bool {
+func (o *V1beta1NodeSpec) HasStorageTypes() bool {
 	if o != nil && !IsNil(o.StorageTypes) {
 		return true
 	}
@@ -433,13 +436,99 @@ func (o *Dedicatedv1beta1NodeSpec) HasStorageTypes() bool {
 	return false
 }
 
-// SetStorageTypes gets a reference to the given []ClusterStorageNodeSettingStorageType and assigns it to the StorageTypes field.
-func (o *Dedicatedv1beta1NodeSpec) SetStorageTypes(v []ClusterStorageNodeSettingStorageType) {
+// SetStorageTypes gets a reference to the given []StorageNodeSettingStorageType and assigns it to the StorageTypes field.
+func (o *V1beta1NodeSpec) SetStorageTypes(v []StorageNodeSettingStorageType) {
 	o.StorageTypes = v
 }
 
+// GetMaxRaftStoreIops returns the MaxRaftStoreIops field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *V1beta1NodeSpec) GetMaxRaftStoreIops() int32 {
+	if o == nil || IsNil(o.MaxRaftStoreIops.Get()) {
+		var ret int32
+		return ret
+	}
+	return *o.MaxRaftStoreIops.Get()
+}
+
+// GetMaxRaftStoreIopsOk returns a tuple with the MaxRaftStoreIops field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *V1beta1NodeSpec) GetMaxRaftStoreIopsOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.MaxRaftStoreIops.Get(), o.MaxRaftStoreIops.IsSet()
+}
+
+// HasMaxRaftStoreIops returns a boolean if a field has been set.
+func (o *V1beta1NodeSpec) HasMaxRaftStoreIops() bool {
+	if o != nil && o.MaxRaftStoreIops.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetMaxRaftStoreIops gets a reference to the given NullableInt32 and assigns it to the MaxRaftStoreIops field.
+func (o *V1beta1NodeSpec) SetMaxRaftStoreIops(v int32) {
+	o.MaxRaftStoreIops.Set(&v)
+}
+
+// SetMaxRaftStoreIopsNil sets the value for MaxRaftStoreIops to be an explicit nil
+func (o *V1beta1NodeSpec) SetMaxRaftStoreIopsNil() {
+	o.MaxRaftStoreIops.Set(nil)
+}
+
+// UnsetMaxRaftStoreIops ensures that no value is present for MaxRaftStoreIops, not even an explicit nil
+func (o *V1beta1NodeSpec) UnsetMaxRaftStoreIops() {
+	o.MaxRaftStoreIops.Unset()
+}
+
+// GetMinRaftStoreIops returns the MinRaftStoreIops field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *V1beta1NodeSpec) GetMinRaftStoreIops() int32 {
+	if o == nil || IsNil(o.MinRaftStoreIops.Get()) {
+		var ret int32
+		return ret
+	}
+	return *o.MinRaftStoreIops.Get()
+}
+
+// GetMinRaftStoreIopsOk returns a tuple with the MinRaftStoreIops field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *V1beta1NodeSpec) GetMinRaftStoreIopsOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.MinRaftStoreIops.Get(), o.MinRaftStoreIops.IsSet()
+}
+
+// HasMinRaftStoreIops returns a boolean if a field has been set.
+func (o *V1beta1NodeSpec) HasMinRaftStoreIops() bool {
+	if o != nil && o.MinRaftStoreIops.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetMinRaftStoreIops gets a reference to the given NullableInt32 and assigns it to the MinRaftStoreIops field.
+func (o *V1beta1NodeSpec) SetMinRaftStoreIops(v int32) {
+	o.MinRaftStoreIops.Set(&v)
+}
+
+// SetMinRaftStoreIopsNil sets the value for MinRaftStoreIops to be an explicit nil
+func (o *V1beta1NodeSpec) SetMinRaftStoreIopsNil() {
+	o.MinRaftStoreIops.Set(nil)
+}
+
+// UnsetMinRaftStoreIops ensures that no value is present for MinRaftStoreIops, not even an explicit nil
+func (o *V1beta1NodeSpec) UnsetMinRaftStoreIops() {
+	o.MinRaftStoreIops.Unset()
+}
+
 // GetDefault returns the Default field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1NodeSpec) GetDefault() bool {
+func (o *V1beta1NodeSpec) GetDefault() bool {
 	if o == nil || IsNil(o.Default) {
 		var ret bool
 		return ret
@@ -449,7 +538,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetDefault() bool {
 
 // GetDefaultOk returns a tuple with the Default field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1NodeSpec) GetDefaultOk() (*bool, bool) {
+func (o *V1beta1NodeSpec) GetDefaultOk() (*bool, bool) {
 	if o == nil || IsNil(o.Default) {
 		return nil, false
 	}
@@ -457,7 +546,7 @@ func (o *Dedicatedv1beta1NodeSpec) GetDefaultOk() (*bool, bool) {
 }
 
 // HasDefault returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1NodeSpec) HasDefault() bool {
+func (o *V1beta1NodeSpec) HasDefault() bool {
 	if o != nil && !IsNil(o.Default) {
 		return true
 	}
@@ -466,11 +555,11 @@ func (o *Dedicatedv1beta1NodeSpec) HasDefault() bool {
 }
 
 // SetDefault gets a reference to the given bool and assigns it to the Default field.
-func (o *Dedicatedv1beta1NodeSpec) SetDefault(v bool) {
+func (o *V1beta1NodeSpec) SetDefault(v bool) {
 	o.Default = &v
 }
 
-func (o Dedicatedv1beta1NodeSpec) MarshalJSON() ([]byte, error) {
+func (o V1beta1NodeSpec) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -478,7 +567,7 @@ func (o Dedicatedv1beta1NodeSpec) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o Dedicatedv1beta1NodeSpec) ToMap() (map[string]interface{}, error) {
+func (o V1beta1NodeSpec) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
@@ -516,6 +605,12 @@ func (o Dedicatedv1beta1NodeSpec) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.StorageTypes) {
 		toSerialize["storageTypes"] = o.StorageTypes
 	}
+	if o.MaxRaftStoreIops.IsSet() {
+		toSerialize["maxRaftStoreIops"] = o.MaxRaftStoreIops.Get()
+	}
+	if o.MinRaftStoreIops.IsSet() {
+		toSerialize["minRaftStoreIops"] = o.MinRaftStoreIops.Get()
+	}
 	if !IsNil(o.Default) {
 		toSerialize["default"] = o.Default
 	}
@@ -527,16 +622,16 @@ func (o Dedicatedv1beta1NodeSpec) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *Dedicatedv1beta1NodeSpec) UnmarshalJSON(data []byte) (err error) {
-	varDedicatedv1beta1NodeSpec := _Dedicatedv1beta1NodeSpec{}
+func (o *V1beta1NodeSpec) UnmarshalJSON(data []byte) (err error) {
+	varV1beta1NodeSpec := _V1beta1NodeSpec{}
 
-	err = json.Unmarshal(data, &varDedicatedv1beta1NodeSpec)
+	err = json.Unmarshal(data, &varV1beta1NodeSpec)
 
 	if err != nil {
 		return err
 	}
 
-	*o = Dedicatedv1beta1NodeSpec(varDedicatedv1beta1NodeSpec)
+	*o = V1beta1NodeSpec(varV1beta1NodeSpec)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -553,6 +648,8 @@ func (o *Dedicatedv1beta1NodeSpec) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "minStorageSizeGi")
 		delete(additionalProperties, "defaultNodeCount")
 		delete(additionalProperties, "storageTypes")
+		delete(additionalProperties, "maxRaftStoreIops")
+		delete(additionalProperties, "minRaftStoreIops")
 		delete(additionalProperties, "default")
 		o.AdditionalProperties = additionalProperties
 	}
@@ -560,38 +657,38 @@ func (o *Dedicatedv1beta1NodeSpec) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
-type NullableDedicatedv1beta1NodeSpec struct {
-	value *Dedicatedv1beta1NodeSpec
+type NullableV1beta1NodeSpec struct {
+	value *V1beta1NodeSpec
 	isSet bool
 }
 
-func (v NullableDedicatedv1beta1NodeSpec) Get() *Dedicatedv1beta1NodeSpec {
+func (v NullableV1beta1NodeSpec) Get() *V1beta1NodeSpec {
 	return v.value
 }
 
-func (v *NullableDedicatedv1beta1NodeSpec) Set(val *Dedicatedv1beta1NodeSpec) {
+func (v *NullableV1beta1NodeSpec) Set(val *V1beta1NodeSpec) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableDedicatedv1beta1NodeSpec) IsSet() bool {
+func (v NullableV1beta1NodeSpec) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableDedicatedv1beta1NodeSpec) Unset() {
+func (v *NullableV1beta1NodeSpec) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableDedicatedv1beta1NodeSpec(val *Dedicatedv1beta1NodeSpec) *NullableDedicatedv1beta1NodeSpec {
-	return &NullableDedicatedv1beta1NodeSpec{value: val, isSet: true}
+func NewNullableV1beta1NodeSpec(val *V1beta1NodeSpec) *NullableV1beta1NodeSpec {
+	return &NullableV1beta1NodeSpec{value: val, isSet: true}
 }
 
-func (v NullableDedicatedv1beta1NodeSpec) MarshalJSON() ([]byte, error) {
+func (v NullableV1beta1NodeSpec) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableDedicatedv1beta1NodeSpec) UnmarshalJSON(src []byte) error {
+func (v *NullableV1beta1NodeSpec) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

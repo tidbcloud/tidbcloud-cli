@@ -19,11 +19,12 @@ var _ MappedNullable = &DatabaseAuditLogServiceUpdateAuditLogConfigRequest{}
 
 // DatabaseAuditLogServiceUpdateAuditLogConfigRequest struct for DatabaseAuditLogServiceUpdateAuditLogConfigRequest
 type DatabaseAuditLogServiceUpdateAuditLogConfigRequest struct {
-	Enabled              NullableBool `json:"enabled,omitempty"`
-	BucketUri            *string      `json:"bucketUri,omitempty"`
-	BucketRegionId       *string      `json:"bucketRegionId,omitempty"`
-	AwsRoleArn           *string      `json:"awsRoleArn,omitempty"`
-	AzureSasToken        *string      `json:"azureSasToken,omitempty"`
+	Enabled              NullableBool                   `json:"enabled,omitempty"`
+	BucketUri            *string                        `json:"bucketUri,omitempty"`
+	BucketRegionId       *string                        `json:"bucketRegionId,omitempty"`
+	AwsRoleArn           *string                        `json:"awsRoleArn,omitempty"`
+	AzureSasToken        *string                        `json:"azureSasToken,omitempty"`
+	BucketManager        *Dedicatedv1beta1BucketManager `json:"bucketManager,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -217,6 +218,38 @@ func (o *DatabaseAuditLogServiceUpdateAuditLogConfigRequest) SetAzureSasToken(v 
 	o.AzureSasToken = &v
 }
 
+// GetBucketManager returns the BucketManager field value if set, zero value otherwise.
+func (o *DatabaseAuditLogServiceUpdateAuditLogConfigRequest) GetBucketManager() Dedicatedv1beta1BucketManager {
+	if o == nil || IsNil(o.BucketManager) {
+		var ret Dedicatedv1beta1BucketManager
+		return ret
+	}
+	return *o.BucketManager
+}
+
+// GetBucketManagerOk returns a tuple with the BucketManager field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *DatabaseAuditLogServiceUpdateAuditLogConfigRequest) GetBucketManagerOk() (*Dedicatedv1beta1BucketManager, bool) {
+	if o == nil || IsNil(o.BucketManager) {
+		return nil, false
+	}
+	return o.BucketManager, true
+}
+
+// HasBucketManager returns a boolean if a field has been set.
+func (o *DatabaseAuditLogServiceUpdateAuditLogConfigRequest) HasBucketManager() bool {
+	if o != nil && !IsNil(o.BucketManager) {
+		return true
+	}
+
+	return false
+}
+
+// SetBucketManager gets a reference to the given Dedicatedv1beta1BucketManager and assigns it to the BucketManager field.
+func (o *DatabaseAuditLogServiceUpdateAuditLogConfigRequest) SetBucketManager(v Dedicatedv1beta1BucketManager) {
+	o.BucketManager = &v
+}
+
 func (o DatabaseAuditLogServiceUpdateAuditLogConfigRequest) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -241,6 +274,9 @@ func (o DatabaseAuditLogServiceUpdateAuditLogConfigRequest) ToMap() (map[string]
 	}
 	if !IsNil(o.AzureSasToken) {
 		toSerialize["azureSasToken"] = o.AzureSasToken
+	}
+	if !IsNil(o.BucketManager) {
+		toSerialize["bucketManager"] = o.BucketManager
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -269,6 +305,7 @@ func (o *DatabaseAuditLogServiceUpdateAuditLogConfigRequest) UnmarshalJSON(data 
 		delete(additionalProperties, "bucketRegionId")
 		delete(additionalProperties, "awsRoleArn")
 		delete(additionalProperties, "azureSasToken")
+		delete(additionalProperties, "bucketManager")
 		o.AdditionalProperties = additionalProperties
 	}
 

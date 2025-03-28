@@ -14,11 +14,11 @@ import (
 	"encoding/json"
 )
 
-// checks if the V1beta1ListMaintenanceWindowsResponse type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &V1beta1ListMaintenanceWindowsResponse{}
+// checks if the Dedicatedv1beta1ListMaintenanceWindowsResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Dedicatedv1beta1ListMaintenanceWindowsResponse{}
 
-// V1beta1ListMaintenanceWindowsResponse struct for V1beta1ListMaintenanceWindowsResponse
-type V1beta1ListMaintenanceWindowsResponse struct {
+// Dedicatedv1beta1ListMaintenanceWindowsResponse struct for Dedicatedv1beta1ListMaintenanceWindowsResponse
+type Dedicatedv1beta1ListMaintenanceWindowsResponse struct {
 	MaintenanceWindows []Dedicatedv1beta1MaintenanceWindow `json:"maintenanceWindows,omitempty"`
 	// The total number of maintenance windows that matched the query.
 	TotalSize *int32 `json:"totalSize,omitempty"`
@@ -27,27 +27,27 @@ type V1beta1ListMaintenanceWindowsResponse struct {
 	AdditionalProperties map[string]interface{}
 }
 
-type _V1beta1ListMaintenanceWindowsResponse V1beta1ListMaintenanceWindowsResponse
+type _Dedicatedv1beta1ListMaintenanceWindowsResponse Dedicatedv1beta1ListMaintenanceWindowsResponse
 
-// NewV1beta1ListMaintenanceWindowsResponse instantiates a new V1beta1ListMaintenanceWindowsResponse object
+// NewDedicatedv1beta1ListMaintenanceWindowsResponse instantiates a new Dedicatedv1beta1ListMaintenanceWindowsResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewV1beta1ListMaintenanceWindowsResponse() *V1beta1ListMaintenanceWindowsResponse {
-	this := V1beta1ListMaintenanceWindowsResponse{}
+func NewDedicatedv1beta1ListMaintenanceWindowsResponse() *Dedicatedv1beta1ListMaintenanceWindowsResponse {
+	this := Dedicatedv1beta1ListMaintenanceWindowsResponse{}
 	return &this
 }
 
-// NewV1beta1ListMaintenanceWindowsResponseWithDefaults instantiates a new V1beta1ListMaintenanceWindowsResponse object
+// NewDedicatedv1beta1ListMaintenanceWindowsResponseWithDefaults instantiates a new Dedicatedv1beta1ListMaintenanceWindowsResponse object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewV1beta1ListMaintenanceWindowsResponseWithDefaults() *V1beta1ListMaintenanceWindowsResponse {
-	this := V1beta1ListMaintenanceWindowsResponse{}
+func NewDedicatedv1beta1ListMaintenanceWindowsResponseWithDefaults() *Dedicatedv1beta1ListMaintenanceWindowsResponse {
+	this := Dedicatedv1beta1ListMaintenanceWindowsResponse{}
 	return &this
 }
 
 // GetMaintenanceWindows returns the MaintenanceWindows field value if set, zero value otherwise.
-func (o *V1beta1ListMaintenanceWindowsResponse) GetMaintenanceWindows() []Dedicatedv1beta1MaintenanceWindow {
+func (o *Dedicatedv1beta1ListMaintenanceWindowsResponse) GetMaintenanceWindows() []Dedicatedv1beta1MaintenanceWindow {
 	if o == nil || IsNil(o.MaintenanceWindows) {
 		var ret []Dedicatedv1beta1MaintenanceWindow
 		return ret
@@ -57,7 +57,7 @@ func (o *V1beta1ListMaintenanceWindowsResponse) GetMaintenanceWindows() []Dedica
 
 // GetMaintenanceWindowsOk returns a tuple with the MaintenanceWindows field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1ListMaintenanceWindowsResponse) GetMaintenanceWindowsOk() ([]Dedicatedv1beta1MaintenanceWindow, bool) {
+func (o *Dedicatedv1beta1ListMaintenanceWindowsResponse) GetMaintenanceWindowsOk() ([]Dedicatedv1beta1MaintenanceWindow, bool) {
 	if o == nil || IsNil(o.MaintenanceWindows) {
 		return nil, false
 	}
@@ -65,7 +65,7 @@ func (o *V1beta1ListMaintenanceWindowsResponse) GetMaintenanceWindowsOk() ([]Ded
 }
 
 // HasMaintenanceWindows returns a boolean if a field has been set.
-func (o *V1beta1ListMaintenanceWindowsResponse) HasMaintenanceWindows() bool {
+func (o *Dedicatedv1beta1ListMaintenanceWindowsResponse) HasMaintenanceWindows() bool {
 	if o != nil && !IsNil(o.MaintenanceWindows) {
 		return true
 	}
@@ -74,12 +74,12 @@ func (o *V1beta1ListMaintenanceWindowsResponse) HasMaintenanceWindows() bool {
 }
 
 // SetMaintenanceWindows gets a reference to the given []Dedicatedv1beta1MaintenanceWindow and assigns it to the MaintenanceWindows field.
-func (o *V1beta1ListMaintenanceWindowsResponse) SetMaintenanceWindows(v []Dedicatedv1beta1MaintenanceWindow) {
+func (o *Dedicatedv1beta1ListMaintenanceWindowsResponse) SetMaintenanceWindows(v []Dedicatedv1beta1MaintenanceWindow) {
 	o.MaintenanceWindows = v
 }
 
 // GetTotalSize returns the TotalSize field value if set, zero value otherwise.
-func (o *V1beta1ListMaintenanceWindowsResponse) GetTotalSize() int32 {
+func (o *Dedicatedv1beta1ListMaintenanceWindowsResponse) GetTotalSize() int32 {
 	if o == nil || IsNil(o.TotalSize) {
 		var ret int32
 		return ret
@@ -89,7 +89,7 @@ func (o *V1beta1ListMaintenanceWindowsResponse) GetTotalSize() int32 {
 
 // GetTotalSizeOk returns a tuple with the TotalSize field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1ListMaintenanceWindowsResponse) GetTotalSizeOk() (*int32, bool) {
+func (o *Dedicatedv1beta1ListMaintenanceWindowsResponse) GetTotalSizeOk() (*int32, bool) {
 	if o == nil || IsNil(o.TotalSize) {
 		return nil, false
 	}
@@ -97,7 +97,7 @@ func (o *V1beta1ListMaintenanceWindowsResponse) GetTotalSizeOk() (*int32, bool) 
 }
 
 // HasTotalSize returns a boolean if a field has been set.
-func (o *V1beta1ListMaintenanceWindowsResponse) HasTotalSize() bool {
+func (o *Dedicatedv1beta1ListMaintenanceWindowsResponse) HasTotalSize() bool {
 	if o != nil && !IsNil(o.TotalSize) {
 		return true
 	}
@@ -106,12 +106,12 @@ func (o *V1beta1ListMaintenanceWindowsResponse) HasTotalSize() bool {
 }
 
 // SetTotalSize gets a reference to the given int32 and assigns it to the TotalSize field.
-func (o *V1beta1ListMaintenanceWindowsResponse) SetTotalSize(v int32) {
+func (o *Dedicatedv1beta1ListMaintenanceWindowsResponse) SetTotalSize(v int32) {
 	o.TotalSize = &v
 }
 
 // GetNextPageToken returns the NextPageToken field value if set, zero value otherwise.
-func (o *V1beta1ListMaintenanceWindowsResponse) GetNextPageToken() string {
+func (o *Dedicatedv1beta1ListMaintenanceWindowsResponse) GetNextPageToken() string {
 	if o == nil || IsNil(o.NextPageToken) {
 		var ret string
 		return ret
@@ -121,7 +121,7 @@ func (o *V1beta1ListMaintenanceWindowsResponse) GetNextPageToken() string {
 
 // GetNextPageTokenOk returns a tuple with the NextPageToken field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1ListMaintenanceWindowsResponse) GetNextPageTokenOk() (*string, bool) {
+func (o *Dedicatedv1beta1ListMaintenanceWindowsResponse) GetNextPageTokenOk() (*string, bool) {
 	if o == nil || IsNil(o.NextPageToken) {
 		return nil, false
 	}
@@ -129,7 +129,7 @@ func (o *V1beta1ListMaintenanceWindowsResponse) GetNextPageTokenOk() (*string, b
 }
 
 // HasNextPageToken returns a boolean if a field has been set.
-func (o *V1beta1ListMaintenanceWindowsResponse) HasNextPageToken() bool {
+func (o *Dedicatedv1beta1ListMaintenanceWindowsResponse) HasNextPageToken() bool {
 	if o != nil && !IsNil(o.NextPageToken) {
 		return true
 	}
@@ -138,11 +138,11 @@ func (o *V1beta1ListMaintenanceWindowsResponse) HasNextPageToken() bool {
 }
 
 // SetNextPageToken gets a reference to the given string and assigns it to the NextPageToken field.
-func (o *V1beta1ListMaintenanceWindowsResponse) SetNextPageToken(v string) {
+func (o *Dedicatedv1beta1ListMaintenanceWindowsResponse) SetNextPageToken(v string) {
 	o.NextPageToken = &v
 }
 
-func (o V1beta1ListMaintenanceWindowsResponse) MarshalJSON() ([]byte, error) {
+func (o Dedicatedv1beta1ListMaintenanceWindowsResponse) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -150,7 +150,7 @@ func (o V1beta1ListMaintenanceWindowsResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o V1beta1ListMaintenanceWindowsResponse) ToMap() (map[string]interface{}, error) {
+func (o Dedicatedv1beta1ListMaintenanceWindowsResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.MaintenanceWindows) {
 		toSerialize["maintenanceWindows"] = o.MaintenanceWindows
@@ -169,16 +169,16 @@ func (o V1beta1ListMaintenanceWindowsResponse) ToMap() (map[string]interface{}, 
 	return toSerialize, nil
 }
 
-func (o *V1beta1ListMaintenanceWindowsResponse) UnmarshalJSON(data []byte) (err error) {
-	varV1beta1ListMaintenanceWindowsResponse := _V1beta1ListMaintenanceWindowsResponse{}
+func (o *Dedicatedv1beta1ListMaintenanceWindowsResponse) UnmarshalJSON(data []byte) (err error) {
+	varDedicatedv1beta1ListMaintenanceWindowsResponse := _Dedicatedv1beta1ListMaintenanceWindowsResponse{}
 
-	err = json.Unmarshal(data, &varV1beta1ListMaintenanceWindowsResponse)
+	err = json.Unmarshal(data, &varDedicatedv1beta1ListMaintenanceWindowsResponse)
 
 	if err != nil {
 		return err
 	}
 
-	*o = V1beta1ListMaintenanceWindowsResponse(varV1beta1ListMaintenanceWindowsResponse)
+	*o = Dedicatedv1beta1ListMaintenanceWindowsResponse(varDedicatedv1beta1ListMaintenanceWindowsResponse)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -192,38 +192,38 @@ func (o *V1beta1ListMaintenanceWindowsResponse) UnmarshalJSON(data []byte) (err 
 	return err
 }
 
-type NullableV1beta1ListMaintenanceWindowsResponse struct {
-	value *V1beta1ListMaintenanceWindowsResponse
+type NullableDedicatedv1beta1ListMaintenanceWindowsResponse struct {
+	value *Dedicatedv1beta1ListMaintenanceWindowsResponse
 	isSet bool
 }
 
-func (v NullableV1beta1ListMaintenanceWindowsResponse) Get() *V1beta1ListMaintenanceWindowsResponse {
+func (v NullableDedicatedv1beta1ListMaintenanceWindowsResponse) Get() *Dedicatedv1beta1ListMaintenanceWindowsResponse {
 	return v.value
 }
 
-func (v *NullableV1beta1ListMaintenanceWindowsResponse) Set(val *V1beta1ListMaintenanceWindowsResponse) {
+func (v *NullableDedicatedv1beta1ListMaintenanceWindowsResponse) Set(val *Dedicatedv1beta1ListMaintenanceWindowsResponse) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableV1beta1ListMaintenanceWindowsResponse) IsSet() bool {
+func (v NullableDedicatedv1beta1ListMaintenanceWindowsResponse) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableV1beta1ListMaintenanceWindowsResponse) Unset() {
+func (v *NullableDedicatedv1beta1ListMaintenanceWindowsResponse) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableV1beta1ListMaintenanceWindowsResponse(val *V1beta1ListMaintenanceWindowsResponse) *NullableV1beta1ListMaintenanceWindowsResponse {
-	return &NullableV1beta1ListMaintenanceWindowsResponse{value: val, isSet: true}
+func NewNullableDedicatedv1beta1ListMaintenanceWindowsResponse(val *Dedicatedv1beta1ListMaintenanceWindowsResponse) *NullableDedicatedv1beta1ListMaintenanceWindowsResponse {
+	return &NullableDedicatedv1beta1ListMaintenanceWindowsResponse{value: val, isSet: true}
 }
 
-func (v NullableV1beta1ListMaintenanceWindowsResponse) MarshalJSON() ([]byte, error) {
+func (v NullableDedicatedv1beta1ListMaintenanceWindowsResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableV1beta1ListMaintenanceWindowsResponse) UnmarshalJSON(src []byte) error {
+func (v *NullableDedicatedv1beta1ListMaintenanceWindowsResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
