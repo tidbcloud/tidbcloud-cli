@@ -58,7 +58,11 @@ type TidbCloudOpenApiserverlessv1beta1Cluster struct {
 	// Output_only. Timestamp when the cluster was last updated.
 	UpdateTime *time.Time `json:"updateTime,omitempty"`
 	// Optional. The audit log configuration for the cluster.
-	AuditLogConfig       *V1beta1ClusterAuditLogConfig `json:"auditLogConfig,omitempty"`
+	AuditLogConfig *V1beta1ClusterAuditLogConfig `json:"auditLogConfig,omitempty"`
+	// Output_only. The plan of the cluster.
+	ClusterPlan *V1beta1ClusterClusterPlan `json:"clusterPlan,omitempty"`
+	// Optional. The auto scaling config for the cluster.
+	AutoScaling          *V1beta1ClusterAutoScaling `json:"autoScaling,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -707,6 +711,70 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetAuditLogConfig(v V1beta1Cl
 	o.AuditLogConfig = &v
 }
 
+// GetClusterPlan returns the ClusterPlan field value if set, zero value otherwise.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetClusterPlan() V1beta1ClusterClusterPlan {
+	if o == nil || IsNil(o.ClusterPlan) {
+		var ret V1beta1ClusterClusterPlan
+		return ret
+	}
+	return *o.ClusterPlan
+}
+
+// GetClusterPlanOk returns a tuple with the ClusterPlan field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetClusterPlanOk() (*V1beta1ClusterClusterPlan, bool) {
+	if o == nil || IsNil(o.ClusterPlan) {
+		return nil, false
+	}
+	return o.ClusterPlan, true
+}
+
+// HasClusterPlan returns a boolean if a field has been set.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasClusterPlan() bool {
+	if o != nil && !IsNil(o.ClusterPlan) {
+		return true
+	}
+
+	return false
+}
+
+// SetClusterPlan gets a reference to the given V1beta1ClusterClusterPlan and assigns it to the ClusterPlan field.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetClusterPlan(v V1beta1ClusterClusterPlan) {
+	o.ClusterPlan = &v
+}
+
+// GetAutoScaling returns the AutoScaling field value if set, zero value otherwise.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetAutoScaling() V1beta1ClusterAutoScaling {
+	if o == nil || IsNil(o.AutoScaling) {
+		var ret V1beta1ClusterAutoScaling
+		return ret
+	}
+	return *o.AutoScaling
+}
+
+// GetAutoScalingOk returns a tuple with the AutoScaling field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetAutoScalingOk() (*V1beta1ClusterAutoScaling, bool) {
+	if o == nil || IsNil(o.AutoScaling) {
+		return nil, false
+	}
+	return o.AutoScaling, true
+}
+
+// HasAutoScaling returns a boolean if a field has been set.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasAutoScaling() bool {
+	if o != nil && !IsNil(o.AutoScaling) {
+		return true
+	}
+
+	return false
+}
+
+// SetAutoScaling gets a reference to the given V1beta1ClusterAutoScaling and assigns it to the AutoScaling field.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetAutoScaling(v V1beta1ClusterAutoScaling) {
+	o.AutoScaling = &v
+}
+
 func (o TidbCloudOpenApiserverlessv1beta1Cluster) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -773,6 +841,12 @@ func (o TidbCloudOpenApiserverlessv1beta1Cluster) ToMap() (map[string]interface{
 	if !IsNil(o.AuditLogConfig) {
 		toSerialize["auditLogConfig"] = o.AuditLogConfig
 	}
+	if !IsNil(o.ClusterPlan) {
+		toSerialize["clusterPlan"] = o.ClusterPlan
+	}
+	if !IsNil(o.AutoScaling) {
+		toSerialize["autoScaling"] = o.AutoScaling
+	}
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -837,6 +911,8 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) UnmarshalJSON(data []byte) (e
 		delete(additionalProperties, "createTime")
 		delete(additionalProperties, "updateTime")
 		delete(additionalProperties, "auditLogConfig")
+		delete(additionalProperties, "clusterPlan")
+		delete(additionalProperties, "autoScaling")
 		o.AdditionalProperties = additionalProperties
 	}
 
