@@ -29,9 +29,9 @@ type Dedicatedv1beta1MaintenanceWindow struct {
 	// 0-23 in UTC.
 	DayHour int32 `json:"dayHour"`
 	// 0-59 in UTC.
-	HourMinute                int32                    `json:"hourMinute"`
-	NextMaintenanceDate       *time.Time               `json:"nextMaintenanceDate,omitempty"`
-	UnchangedMaintenanceTasks []V1beta1MaintenanceTask `json:"unchangedMaintenanceTasks,omitempty"`
+	HourMinute                int32                             `json:"hourMinute"`
+	NextMaintenanceDate       *time.Time                        `json:"nextMaintenanceDate,omitempty"`
+	UnchangedMaintenanceTasks []Dedicatedv1beta1MaintenanceTask `json:"unchangedMaintenanceTasks,omitempty"`
 	AdditionalProperties      map[string]interface{}
 }
 
@@ -251,9 +251,9 @@ func (o *Dedicatedv1beta1MaintenanceWindow) SetNextMaintenanceDate(v time.Time) 
 }
 
 // GetUnchangedMaintenanceTasks returns the UnchangedMaintenanceTasks field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1MaintenanceWindow) GetUnchangedMaintenanceTasks() []V1beta1MaintenanceTask {
+func (o *Dedicatedv1beta1MaintenanceWindow) GetUnchangedMaintenanceTasks() []Dedicatedv1beta1MaintenanceTask {
 	if o == nil || IsNil(o.UnchangedMaintenanceTasks) {
-		var ret []V1beta1MaintenanceTask
+		var ret []Dedicatedv1beta1MaintenanceTask
 		return ret
 	}
 	return o.UnchangedMaintenanceTasks
@@ -261,7 +261,7 @@ func (o *Dedicatedv1beta1MaintenanceWindow) GetUnchangedMaintenanceTasks() []V1b
 
 // GetUnchangedMaintenanceTasksOk returns a tuple with the UnchangedMaintenanceTasks field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1MaintenanceWindow) GetUnchangedMaintenanceTasksOk() ([]V1beta1MaintenanceTask, bool) {
+func (o *Dedicatedv1beta1MaintenanceWindow) GetUnchangedMaintenanceTasksOk() ([]Dedicatedv1beta1MaintenanceTask, bool) {
 	if o == nil || IsNil(o.UnchangedMaintenanceTasks) {
 		return nil, false
 	}
@@ -277,8 +277,8 @@ func (o *Dedicatedv1beta1MaintenanceWindow) HasUnchangedMaintenanceTasks() bool 
 	return false
 }
 
-// SetUnchangedMaintenanceTasks gets a reference to the given []V1beta1MaintenanceTask and assigns it to the UnchangedMaintenanceTasks field.
-func (o *Dedicatedv1beta1MaintenanceWindow) SetUnchangedMaintenanceTasks(v []V1beta1MaintenanceTask) {
+// SetUnchangedMaintenanceTasks gets a reference to the given []Dedicatedv1beta1MaintenanceTask and assigns it to the UnchangedMaintenanceTasks field.
+func (o *Dedicatedv1beta1MaintenanceWindow) SetUnchangedMaintenanceTasks(v []Dedicatedv1beta1MaintenanceTask) {
 	o.UnchangedMaintenanceTasks = v
 }
 

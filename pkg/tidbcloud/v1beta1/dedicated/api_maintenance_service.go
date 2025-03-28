@@ -22,192 +22,13 @@ import (
 // MaintenanceServiceAPIService MaintenanceServiceAPI service
 type MaintenanceServiceAPIService service
 
-type ApiMaintenanceServiceDeferMaintenanceTaskRequest struct {
-	ctx               context.Context
-	ApiService        *MaintenanceServiceAPIService
-	maintenanceTaskId string
-}
-
-func (r ApiMaintenanceServiceDeferMaintenanceTaskRequest) Execute() (map[string]interface{}, *http.Response, error) {
-	return r.ApiService.MaintenanceServiceDeferMaintenanceTaskExecute(r)
-}
-
-/*
-MaintenanceServiceDeferMaintenanceTask Defer a maintenance task
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param maintenanceTaskId
-	@return ApiMaintenanceServiceDeferMaintenanceTaskRequest
-*/
-func (a *MaintenanceServiceAPIService) MaintenanceServiceDeferMaintenanceTask(ctx context.Context, maintenanceTaskId string) ApiMaintenanceServiceDeferMaintenanceTaskRequest {
-	return ApiMaintenanceServiceDeferMaintenanceTaskRequest{
-		ApiService:        a,
-		ctx:               ctx,
-		maintenanceTaskId: maintenanceTaskId,
-	}
-}
-
-// Execute executes the request
-//
-//	@return map[string]interface{}
-func (a *MaintenanceServiceAPIService) MaintenanceServiceDeferMaintenanceTaskExecute(r ApiMaintenanceServiceDeferMaintenanceTaskRequest) (map[string]interface{}, *http.Response, error) {
-	var (
-		localVarHTTPMethod  = http.MethodPost
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue map[string]interface{}
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MaintenanceServiceAPIService.MaintenanceServiceDeferMaintenanceTask")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/maintenanceTasks/{maintenanceTaskId}:deferMaintenanceTask"
-	localVarPath = strings.Replace(localVarPath, "{"+"maintenanceTaskId"+"}", url.PathEscape(parameterValueToString(r.maintenanceTaskId, "maintenanceTaskId")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	if r.ctx != nil {
-		// API Key Authentication
-		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
-			if apiKey, ok := auth["Bearer"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["Authorization"] = key
-			}
-		}
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		if localVarHTTPResponse.StatusCode == 400 {
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 401 {
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 403 {
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 429 {
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		if localVarHTTPResponse.StatusCode == 500 {
-			var v GooglerpcStatus
-			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-			if err != nil {
-				newErr.error = err.Error()
-				return localVarReturnValue, localVarHTTPResponse, newErr
-			}
-			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-			newErr.model = v
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		var v GooglerpcStatus
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
 type ApiMaintenanceServiceGetMaintenanceTaskRequest struct {
 	ctx               context.Context
 	ApiService        *MaintenanceServiceAPIService
 	maintenanceTaskId string
 }
 
-func (r ApiMaintenanceServiceGetMaintenanceTaskRequest) Execute() (*V1beta1MaintenanceTask, *http.Response, error) {
+func (r ApiMaintenanceServiceGetMaintenanceTaskRequest) Execute() (*Dedicatedv1beta1MaintenanceTask, *http.Response, error) {
 	return r.ApiService.MaintenanceServiceGetMaintenanceTaskExecute(r)
 }
 
@@ -228,13 +49,13 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceTask(ctx 
 
 // Execute executes the request
 //
-//	@return V1beta1MaintenanceTask
-func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceTaskExecute(r ApiMaintenanceServiceGetMaintenanceTaskRequest) (*V1beta1MaintenanceTask, *http.Response, error) {
+//	@return Dedicatedv1beta1MaintenanceTask
+func (a *MaintenanceServiceAPIService) MaintenanceServiceGetMaintenanceTaskExecute(r ApiMaintenanceServiceGetMaintenanceTaskRequest) (*Dedicatedv1beta1MaintenanceTask, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *V1beta1MaintenanceTask
+		localVarReturnValue *Dedicatedv1beta1MaintenanceTask
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MaintenanceServiceAPIService.MaintenanceServiceGetMaintenanceTask")
@@ -592,7 +413,7 @@ func (r ApiMaintenanceServiceListMaintenanceTasksRequest) Skip(skip int32) ApiMa
 	return r
 }
 
-func (r ApiMaintenanceServiceListMaintenanceTasksRequest) Execute() (*V1beta1ListMaintenanceTasksResponse, *http.Response, error) {
+func (r ApiMaintenanceServiceListMaintenanceTasksRequest) Execute() (*Dedicatedv1beta1ListMaintenanceTasksResponse, *http.Response, error) {
 	return r.ApiService.MaintenanceServiceListMaintenanceTasksExecute(r)
 }
 
@@ -611,13 +432,13 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceTasks(ct
 
 // Execute executes the request
 //
-//	@return V1beta1ListMaintenanceTasksResponse
-func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceTasksExecute(r ApiMaintenanceServiceListMaintenanceTasksRequest) (*V1beta1ListMaintenanceTasksResponse, *http.Response, error) {
+//	@return Dedicatedv1beta1ListMaintenanceTasksResponse
+func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceTasksExecute(r ApiMaintenanceServiceListMaintenanceTasksRequest) (*Dedicatedv1beta1ListMaintenanceTasksResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *V1beta1ListMaintenanceTasksResponse
+		localVarReturnValue *Dedicatedv1beta1ListMaintenanceTasksResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MaintenanceServiceAPIService.MaintenanceServiceListMaintenanceTasks")
@@ -807,7 +628,7 @@ func (r ApiMaintenanceServiceListMaintenanceWindowsRequest) Skip(skip int32) Api
 	return r
 }
 
-func (r ApiMaintenanceServiceListMaintenanceWindowsRequest) Execute() (*V1beta1ListMaintenanceWindowsResponse, *http.Response, error) {
+func (r ApiMaintenanceServiceListMaintenanceWindowsRequest) Execute() (*Dedicatedv1beta1ListMaintenanceWindowsResponse, *http.Response, error) {
 	return r.ApiService.MaintenanceServiceListMaintenanceWindowsExecute(r)
 }
 
@@ -826,13 +647,13 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceWindows(
 
 // Execute executes the request
 //
-//	@return V1beta1ListMaintenanceWindowsResponse
-func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceWindowsExecute(r ApiMaintenanceServiceListMaintenanceWindowsRequest) (*V1beta1ListMaintenanceWindowsResponse, *http.Response, error) {
+//	@return Dedicatedv1beta1ListMaintenanceWindowsResponse
+func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceWindowsExecute(r ApiMaintenanceServiceListMaintenanceWindowsRequest) (*Dedicatedv1beta1ListMaintenanceWindowsResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *V1beta1ListMaintenanceWindowsResponse
+		localVarReturnValue *Dedicatedv1beta1ListMaintenanceWindowsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MaintenanceServiceAPIService.MaintenanceServiceListMaintenanceWindows")
@@ -875,6 +696,196 @@ func (a *MaintenanceServiceAPIService) MaintenanceServiceListMaintenanceWindowsE
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["Bearer"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["Authorization"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v GooglerpcStatus
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v GooglerpcStatus
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v GooglerpcStatus
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v GooglerpcStatus
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v GooglerpcStatus
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiMaintenanceServiceUpdateMaintenanceTaskRequest struct {
+	ctx                              context.Context
+	ApiService                       *MaintenanceServiceAPIService
+	maintenanceTaskMaintenanceTaskId string
+	maintenanceTask                  *MaintenanceServiceUpdateMaintenanceTaskRequest
+}
+
+func (r ApiMaintenanceServiceUpdateMaintenanceTaskRequest) MaintenanceTask(maintenanceTask MaintenanceServiceUpdateMaintenanceTaskRequest) ApiMaintenanceServiceUpdateMaintenanceTaskRequest {
+	r.maintenanceTask = &maintenanceTask
+	return r
+}
+
+func (r ApiMaintenanceServiceUpdateMaintenanceTaskRequest) Execute() (*Dedicatedv1beta1MaintenanceTask, *http.Response, error) {
+	return r.ApiService.MaintenanceServiceUpdateMaintenanceTaskExecute(r)
+}
+
+/*
+MaintenanceServiceUpdateMaintenanceTask Update a maintenance task
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param maintenanceTaskMaintenanceTaskId
+	@return ApiMaintenanceServiceUpdateMaintenanceTaskRequest
+*/
+func (a *MaintenanceServiceAPIService) MaintenanceServiceUpdateMaintenanceTask(ctx context.Context, maintenanceTaskMaintenanceTaskId string) ApiMaintenanceServiceUpdateMaintenanceTaskRequest {
+	return ApiMaintenanceServiceUpdateMaintenanceTaskRequest{
+		ApiService:                       a,
+		ctx:                              ctx,
+		maintenanceTaskMaintenanceTaskId: maintenanceTaskMaintenanceTaskId,
+	}
+}
+
+// Execute executes the request
+//
+//	@return Dedicatedv1beta1MaintenanceTask
+func (a *MaintenanceServiceAPIService) MaintenanceServiceUpdateMaintenanceTaskExecute(r ApiMaintenanceServiceUpdateMaintenanceTaskRequest) (*Dedicatedv1beta1MaintenanceTask, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodPatch
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1MaintenanceTask
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MaintenanceServiceAPIService.MaintenanceServiceUpdateMaintenanceTask")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/maintenanceTasks/{maintenanceTask.maintenanceTaskId}"
+	localVarPath = strings.Replace(localVarPath, "{"+"maintenanceTask.maintenanceTaskId"+"}", url.PathEscape(parameterValueToString(r.maintenanceTaskMaintenanceTaskId, "maintenanceTaskMaintenanceTaskId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.maintenanceTask == nil {
+		return localVarReturnValue, nil, reportError("maintenanceTask is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.maintenanceTask
 	if r.ctx != nil {
 		// API Key Authentication
 		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {

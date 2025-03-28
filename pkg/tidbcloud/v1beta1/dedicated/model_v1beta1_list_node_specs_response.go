@@ -19,7 +19,7 @@ var _ MappedNullable = &V1beta1ListNodeSpecsResponse{}
 
 // V1beta1ListNodeSpecsResponse struct for V1beta1ListNodeSpecsResponse
 type V1beta1ListNodeSpecsResponse struct {
-	NodeSpecs []Dedicatedv1beta1NodeSpec `json:"nodeSpecs,omitempty"`
+	NodeSpecs []V1beta1NodeSpec `json:"nodeSpecs,omitempty"`
 	// The total number of node specs that matched the query.
 	TotalSize *int32 `json:"totalSize,omitempty"`
 	// A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.
@@ -47,9 +47,9 @@ func NewV1beta1ListNodeSpecsResponseWithDefaults() *V1beta1ListNodeSpecsResponse
 }
 
 // GetNodeSpecs returns the NodeSpecs field value if set, zero value otherwise.
-func (o *V1beta1ListNodeSpecsResponse) GetNodeSpecs() []Dedicatedv1beta1NodeSpec {
+func (o *V1beta1ListNodeSpecsResponse) GetNodeSpecs() []V1beta1NodeSpec {
 	if o == nil || IsNil(o.NodeSpecs) {
-		var ret []Dedicatedv1beta1NodeSpec
+		var ret []V1beta1NodeSpec
 		return ret
 	}
 	return o.NodeSpecs
@@ -57,7 +57,7 @@ func (o *V1beta1ListNodeSpecsResponse) GetNodeSpecs() []Dedicatedv1beta1NodeSpec
 
 // GetNodeSpecsOk returns a tuple with the NodeSpecs field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1ListNodeSpecsResponse) GetNodeSpecsOk() ([]Dedicatedv1beta1NodeSpec, bool) {
+func (o *V1beta1ListNodeSpecsResponse) GetNodeSpecsOk() ([]V1beta1NodeSpec, bool) {
 	if o == nil || IsNil(o.NodeSpecs) {
 		return nil, false
 	}
@@ -73,8 +73,8 @@ func (o *V1beta1ListNodeSpecsResponse) HasNodeSpecs() bool {
 	return false
 }
 
-// SetNodeSpecs gets a reference to the given []Dedicatedv1beta1NodeSpec and assigns it to the NodeSpecs field.
-func (o *V1beta1ListNodeSpecsResponse) SetNodeSpecs(v []Dedicatedv1beta1NodeSpec) {
+// SetNodeSpecs gets a reference to the given []V1beta1NodeSpec and assigns it to the NodeSpecs field.
+func (o *V1beta1ListNodeSpecsResponse) SetNodeSpecs(v []V1beta1NodeSpec) {
 	o.NodeSpecs = v
 }
 

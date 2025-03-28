@@ -21,8 +21,12 @@ var _ MappedNullable = &V1beta1UpdateClusterRequestStorageNodeSetting{}
 type V1beta1UpdateClusterRequestStorageNodeSetting struct {
 	NodeSpecKey *string `json:"nodeSpecKey,omitempty"`
 	// When update TiFlash node setting:   - If the node count is set to 0, the TiFlash node will be removed.   - If the node count is null, the TiFlash node count won't change. For other components, if the node count is set to 0, server will ignore the node count.
-	NodeCount            NullableInt32 `json:"nodeCount,omitempty"`
-	StorageSizeGi        *int32        `json:"storageSizeGi,omitempty"`
+	NodeCount     NullableInt32 `json:"nodeCount,omitempty"`
+	StorageSizeGi *int32        `json:"storageSizeGi,omitempty"`
+	// Allow change storage type.
+	StorageType *StorageNodeSettingStorageType `json:"storageType,omitempty"`
+	// If raft_store_iops is not set, the default IOPS of raft store will be used.
+	RaftStoreIops        NullableInt32 `json:"raftStoreIops,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -152,6 +156,81 @@ func (o *V1beta1UpdateClusterRequestStorageNodeSetting) SetStorageSizeGi(v int32
 	o.StorageSizeGi = &v
 }
 
+// GetStorageType returns the StorageType field value if set, zero value otherwise.
+func (o *V1beta1UpdateClusterRequestStorageNodeSetting) GetStorageType() StorageNodeSettingStorageType {
+	if o == nil || IsNil(o.StorageType) {
+		var ret StorageNodeSettingStorageType
+		return ret
+	}
+	return *o.StorageType
+}
+
+// GetStorageTypeOk returns a tuple with the StorageType field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V1beta1UpdateClusterRequestStorageNodeSetting) GetStorageTypeOk() (*StorageNodeSettingStorageType, bool) {
+	if o == nil || IsNil(o.StorageType) {
+		return nil, false
+	}
+	return o.StorageType, true
+}
+
+// HasStorageType returns a boolean if a field has been set.
+func (o *V1beta1UpdateClusterRequestStorageNodeSetting) HasStorageType() bool {
+	if o != nil && !IsNil(o.StorageType) {
+		return true
+	}
+
+	return false
+}
+
+// SetStorageType gets a reference to the given StorageNodeSettingStorageType and assigns it to the StorageType field.
+func (o *V1beta1UpdateClusterRequestStorageNodeSetting) SetStorageType(v StorageNodeSettingStorageType) {
+	o.StorageType = &v
+}
+
+// GetRaftStoreIops returns the RaftStoreIops field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *V1beta1UpdateClusterRequestStorageNodeSetting) GetRaftStoreIops() int32 {
+	if o == nil || IsNil(o.RaftStoreIops.Get()) {
+		var ret int32
+		return ret
+	}
+	return *o.RaftStoreIops.Get()
+}
+
+// GetRaftStoreIopsOk returns a tuple with the RaftStoreIops field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *V1beta1UpdateClusterRequestStorageNodeSetting) GetRaftStoreIopsOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.RaftStoreIops.Get(), o.RaftStoreIops.IsSet()
+}
+
+// HasRaftStoreIops returns a boolean if a field has been set.
+func (o *V1beta1UpdateClusterRequestStorageNodeSetting) HasRaftStoreIops() bool {
+	if o != nil && o.RaftStoreIops.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetRaftStoreIops gets a reference to the given NullableInt32 and assigns it to the RaftStoreIops field.
+func (o *V1beta1UpdateClusterRequestStorageNodeSetting) SetRaftStoreIops(v int32) {
+	o.RaftStoreIops.Set(&v)
+}
+
+// SetRaftStoreIopsNil sets the value for RaftStoreIops to be an explicit nil
+func (o *V1beta1UpdateClusterRequestStorageNodeSetting) SetRaftStoreIopsNil() {
+	o.RaftStoreIops.Set(nil)
+}
+
+// UnsetRaftStoreIops ensures that no value is present for RaftStoreIops, not even an explicit nil
+func (o *V1beta1UpdateClusterRequestStorageNodeSetting) UnsetRaftStoreIops() {
+	o.RaftStoreIops.Unset()
+}
+
 func (o V1beta1UpdateClusterRequestStorageNodeSetting) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -170,6 +249,12 @@ func (o V1beta1UpdateClusterRequestStorageNodeSetting) ToMap() (map[string]inter
 	}
 	if !IsNil(o.StorageSizeGi) {
 		toSerialize["storageSizeGi"] = o.StorageSizeGi
+	}
+	if !IsNil(o.StorageType) {
+		toSerialize["storageType"] = o.StorageType
+	}
+	if o.RaftStoreIops.IsSet() {
+		toSerialize["raftStoreIops"] = o.RaftStoreIops.Get()
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -196,6 +281,8 @@ func (o *V1beta1UpdateClusterRequestStorageNodeSetting) UnmarshalJSON(data []byt
 		delete(additionalProperties, "nodeSpecKey")
 		delete(additionalProperties, "nodeCount")
 		delete(additionalProperties, "storageSizeGi")
+		delete(additionalProperties, "storageType")
+		delete(additionalProperties, "raftStoreIops")
 		o.AdditionalProperties = additionalProperties
 	}
 

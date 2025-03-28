@@ -17,7 +17,7 @@ import (
 // checks if the V1beta1NodeInstance type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &V1beta1NodeInstance{}
 
-// V1beta1NodeInstance struct for V1beta1NodeInstance
+// V1beta1NodeInstance All fields are output only.
 type V1beta1NodeInstance struct {
 	Name          *string                        `json:"name,omitempty"`
 	ClusterId     *string                        `json:"clusterId,omitempty"`
@@ -36,7 +36,11 @@ type V1beta1NodeInstance struct {
 	TidbNodeGroupId          NullableString `json:"tidbNodeGroupId,omitempty"`
 	TidbNodeGroupDisplayName NullableString `json:"tidbNodeGroupDisplayName,omitempty"`
 	IsDefaultTidbNodeGroup   NullableBool   `json:"isDefaultTidbNodeGroup,omitempty"`
-	AdditionalProperties     map[string]interface{}
+	// Only available for instances which have storage. If raft_store_iops is not set, the default IOPS of raft store will be used.
+	RaftStoreIops NullableInt32 `json:"raftStoreIops,omitempty"`
+	// Only available for instances which have storage.
+	StorageType          *StorageNodeSettingStorageType `json:"storageType,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _V1beta1NodeInstance V1beta1NodeInstance
@@ -475,6 +479,81 @@ func (o *V1beta1NodeInstance) UnsetIsDefaultTidbNodeGroup() {
 	o.IsDefaultTidbNodeGroup.Unset()
 }
 
+// GetRaftStoreIops returns the RaftStoreIops field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *V1beta1NodeInstance) GetRaftStoreIops() int32 {
+	if o == nil || IsNil(o.RaftStoreIops.Get()) {
+		var ret int32
+		return ret
+	}
+	return *o.RaftStoreIops.Get()
+}
+
+// GetRaftStoreIopsOk returns a tuple with the RaftStoreIops field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *V1beta1NodeInstance) GetRaftStoreIopsOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.RaftStoreIops.Get(), o.RaftStoreIops.IsSet()
+}
+
+// HasRaftStoreIops returns a boolean if a field has been set.
+func (o *V1beta1NodeInstance) HasRaftStoreIops() bool {
+	if o != nil && o.RaftStoreIops.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetRaftStoreIops gets a reference to the given NullableInt32 and assigns it to the RaftStoreIops field.
+func (o *V1beta1NodeInstance) SetRaftStoreIops(v int32) {
+	o.RaftStoreIops.Set(&v)
+}
+
+// SetRaftStoreIopsNil sets the value for RaftStoreIops to be an explicit nil
+func (o *V1beta1NodeInstance) SetRaftStoreIopsNil() {
+	o.RaftStoreIops.Set(nil)
+}
+
+// UnsetRaftStoreIops ensures that no value is present for RaftStoreIops, not even an explicit nil
+func (o *V1beta1NodeInstance) UnsetRaftStoreIops() {
+	o.RaftStoreIops.Unset()
+}
+
+// GetStorageType returns the StorageType field value if set, zero value otherwise.
+func (o *V1beta1NodeInstance) GetStorageType() StorageNodeSettingStorageType {
+	if o == nil || IsNil(o.StorageType) {
+		var ret StorageNodeSettingStorageType
+		return ret
+	}
+	return *o.StorageType
+}
+
+// GetStorageTypeOk returns a tuple with the StorageType field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V1beta1NodeInstance) GetStorageTypeOk() (*StorageNodeSettingStorageType, bool) {
+	if o == nil || IsNil(o.StorageType) {
+		return nil, false
+	}
+	return o.StorageType, true
+}
+
+// HasStorageType returns a boolean if a field has been set.
+func (o *V1beta1NodeInstance) HasStorageType() bool {
+	if o != nil && !IsNil(o.StorageType) {
+		return true
+	}
+
+	return false
+}
+
+// SetStorageType gets a reference to the given StorageNodeSettingStorageType and assigns it to the StorageType field.
+func (o *V1beta1NodeInstance) SetStorageType(v StorageNodeSettingStorageType) {
+	o.StorageType = &v
+}
+
 func (o V1beta1NodeInstance) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -521,6 +600,12 @@ func (o V1beta1NodeInstance) ToMap() (map[string]interface{}, error) {
 	if o.IsDefaultTidbNodeGroup.IsSet() {
 		toSerialize["isDefaultTidbNodeGroup"] = o.IsDefaultTidbNodeGroup.Get()
 	}
+	if o.RaftStoreIops.IsSet() {
+		toSerialize["raftStoreIops"] = o.RaftStoreIops.Get()
+	}
+	if !IsNil(o.StorageType) {
+		toSerialize["storageType"] = o.StorageType
+	}
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -555,6 +640,8 @@ func (o *V1beta1NodeInstance) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "tidbNodeGroupId")
 		delete(additionalProperties, "tidbNodeGroupDisplayName")
 		delete(additionalProperties, "isDefaultTidbNodeGroup")
+		delete(additionalProperties, "raftStoreIops")
+		delete(additionalProperties, "storageType")
 		o.AdditionalProperties = additionalProperties
 	}
 
