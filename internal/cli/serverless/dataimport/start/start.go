@@ -62,9 +62,9 @@ var inputDescription = map[string]string{
 	flag.S3AccessKeyID:        "Input your S3 access key id",
 	flag.S3SecretAccessKey:    "Input your S3 secret access key",
 	flag.S3RoleArn:            "Input your S3 role arn",
-	flag.OSSURI:               "Input your OSS URI in oss://<bucket>/<path> format",
-	flag.OSSAccessKeyID:       "Input your OSS access key id",
-	flag.OSSAccessKeySecret:   "Input your OSS secret access key",
+	flag.OSSURI:               "Input your Alibaba Cloud OSS URI in oss://<bucket>/<path> format",
+	flag.OSSAccessKeyID:       "Input your Alibaba Cloud OSS AccessKey ID",
+	flag.OSSAccessKeySecret:   "Input your Alibaba Cloud OSS AccessKey Secret",
 	flag.AzureBlobURI:         "Input your Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format",
 	flag.AzureBlobSASToken:    "Input your Azure Blob SAS token",
 	flag.GCSURI:               "Input your GCS URI in gs://<bucket>/<path> format",
@@ -271,9 +271,9 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	startCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3SecretAccessKey)
 	startCmd.MarkFlagsRequiredTogether(flag.S3AccessKeyID, flag.S3SecretAccessKey)
 
-	startCmd.Flags().String(flag.OSSAccessKeyID, "", "The AccessKey ID of the OSS.")
-	startCmd.Flags().String(flag.OSSAccessKeySecret, "", "The AccessKey Secret  of the OSS.")
-	startCmd.Flags().String(flag.OSSURI, "", "The OSS URI in oss://<bucket>/<path> format. Required when source type is OSS.")
+	startCmd.Flags().String(flag.OSSAccessKeyID, "", "The AccessKey ID of the Alibaba Cloud OSS.")
+	startCmd.Flags().String(flag.OSSAccessKeySecret, "", "The AccessKey Secret of the Alibaba Cloud OSS.")
+	startCmd.Flags().String(flag.OSSURI, "", "The OSS URI in oss://<bucket>/<path> format. Required when source type is Alibaba Cloud OSS.")
 	startCmd.MarkFlagsRequiredTogether(flag.OSSAccessKeyID, flag.OSSAccessKeySecret)
 
 	startCmd.Flags().String(flag.GCSURI, "", "The GCS URI in gs://<bucket>/<path> format. Required when source type is GCS.")
