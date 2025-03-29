@@ -29,6 +29,7 @@ type ApiNetworkContainerServiceCreateNetworkContainerRequest struct {
 	validateOnly     *bool
 }
 
+// Required.
 func (r ApiNetworkContainerServiceCreateNetworkContainerRequest) NetworkContainer(networkContainer V1beta1NetworkContainer) ApiNetworkContainerServiceCreateNetworkContainerRequest {
 	r.networkContainer = &networkContainer
 	return r
@@ -223,6 +224,7 @@ type ApiNetworkContainerServiceCreateVpcPeeringRequest struct {
 	vpcPeering *Dedicatedv1beta1VpcPeering
 }
 
+// Required.
 func (r ApiNetworkContainerServiceCreateVpcPeeringRequest) VpcPeering(vpcPeering Dedicatedv1beta1VpcPeering) ApiNetworkContainerServiceCreateVpcPeeringRequest {
 	r.vpcPeering = &vpcPeering
 	return r
@@ -1135,7 +1137,7 @@ func (r ApiNetworkContainerServiceListNetworkContainersRequest) ProjectId(projec
 	return r
 }
 
-// - aws: Amazon Web Services.  - gcp: Google Cloud Platform.  - azure: Microsoft Azure.
+// - aws: Amazon Web Services.  - gcp: Google Cloud Platform.  - azure: Microsoft Azure.  - alicloud: Alibaba Cloud
 func (r ApiNetworkContainerServiceListNetworkContainersRequest) CloudProvider(cloudProvider PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter) ApiNetworkContainerServiceListNetworkContainersRequest {
 	r.cloudProvider = &cloudProvider
 	return r
@@ -1359,7 +1361,7 @@ func (r ApiNetworkContainerServiceListVpcPeeringsRequest) ProjectId(projectId st
 	return r
 }
 
-// If specified, only VPC peerings of the specified cloud provider will be returned.   - aws: Amazon Web Services.  - gcp: Google Cloud Platform.  - azure: Microsoft Azure.
+// If specified, only VPC peerings of the specified cloud provider will be returned.   - aws: Amazon Web Services.  - gcp: Google Cloud Platform.  - azure: Microsoft Azure.  - alicloud: Alibaba Cloud
 func (r ApiNetworkContainerServiceListVpcPeeringsRequest) CloudProvider(cloudProvider PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter) ApiNetworkContainerServiceListVpcPeeringsRequest {
 	r.cloudProvider = &cloudProvider
 	return r

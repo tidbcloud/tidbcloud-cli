@@ -15,14 +15,15 @@ import (
 	"fmt"
 )
 
-// V1beta1RegionCloudProvider Enum of cloud provider names.   - aws: Amazon Web Services.  - gcp: Google Cloud Platform.  - azure: Microsoft Azure.
+// V1beta1RegionCloudProvider Enum of cloud provider names.   - aws: Amazon Web Services.  - gcp: Google Cloud Platform.  - azure: Microsoft Azure.  - alicloud: Alibaba Cloud
 type V1beta1RegionCloudProvider string
 
 // List of v1beta1RegionCloudProvider
 const (
-	V1BETA1REGIONCLOUDPROVIDER_AWS   V1beta1RegionCloudProvider = "aws"
-	V1BETA1REGIONCLOUDPROVIDER_GCP   V1beta1RegionCloudProvider = "gcp"
-	V1BETA1REGIONCLOUDPROVIDER_AZURE V1beta1RegionCloudProvider = "azure"
+	V1BETA1REGIONCLOUDPROVIDER_AWS      V1beta1RegionCloudProvider = "aws"
+	V1BETA1REGIONCLOUDPROVIDER_GCP      V1beta1RegionCloudProvider = "gcp"
+	V1BETA1REGIONCLOUDPROVIDER_AZURE    V1beta1RegionCloudProvider = "azure"
+	V1BETA1REGIONCLOUDPROVIDER_ALICLOUD V1beta1RegionCloudProvider = "alicloud"
 )
 
 // All allowed values of V1beta1RegionCloudProvider enum
@@ -30,6 +31,7 @@ var AllowedV1beta1RegionCloudProviderEnumValues = []V1beta1RegionCloudProvider{
 	"aws",
 	"gcp",
 	"azure",
+	"alicloud",
 }
 
 func (v *V1beta1RegionCloudProvider) UnmarshalJSON(src []byte) error {

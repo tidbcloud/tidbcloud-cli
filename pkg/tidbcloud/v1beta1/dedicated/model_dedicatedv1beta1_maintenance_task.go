@@ -15,16 +15,16 @@ import (
 	"time"
 )
 
-// checks if the V1beta1MaintenanceTask type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &V1beta1MaintenanceTask{}
+// checks if the Dedicatedv1beta1MaintenanceTask type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Dedicatedv1beta1MaintenanceTask{}
 
-// V1beta1MaintenanceTask struct for V1beta1MaintenanceTask
-type V1beta1MaintenanceTask struct {
-	Name              *string                      `json:"name,omitempty"`
-	MaintenanceTaskId *string                      `json:"maintenanceTaskId,omitempty"`
-	ProjectId         *string                      `json:"projectId,omitempty"`
-	Description       *string                      `json:"description,omitempty"`
-	State             *V1beta1MaintenanceTaskState `json:"state,omitempty"`
+// Dedicatedv1beta1MaintenanceTask All fields are output only.
+type Dedicatedv1beta1MaintenanceTask struct {
+	Name              *string                               `json:"name,omitempty"`
+	MaintenanceTaskId *string                               `json:"maintenanceTaskId,omitempty"`
+	ProjectId         *string                               `json:"projectId,omitempty"`
+	Description       *string                               `json:"description,omitempty"`
+	State             *Dedicatedv1beta1MaintenanceTaskState `json:"state,omitempty"`
 	// Timestamp when the task was created.
 	CreateTime *time.Time `json:"createTime,omitempty"`
 	// Timestamp when the task run.
@@ -34,27 +34,27 @@ type V1beta1MaintenanceTask struct {
 	AdditionalProperties map[string]interface{}
 }
 
-type _V1beta1MaintenanceTask V1beta1MaintenanceTask
+type _Dedicatedv1beta1MaintenanceTask Dedicatedv1beta1MaintenanceTask
 
-// NewV1beta1MaintenanceTask instantiates a new V1beta1MaintenanceTask object
+// NewDedicatedv1beta1MaintenanceTask instantiates a new Dedicatedv1beta1MaintenanceTask object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewV1beta1MaintenanceTask() *V1beta1MaintenanceTask {
-	this := V1beta1MaintenanceTask{}
+func NewDedicatedv1beta1MaintenanceTask() *Dedicatedv1beta1MaintenanceTask {
+	this := Dedicatedv1beta1MaintenanceTask{}
 	return &this
 }
 
-// NewV1beta1MaintenanceTaskWithDefaults instantiates a new V1beta1MaintenanceTask object
+// NewDedicatedv1beta1MaintenanceTaskWithDefaults instantiates a new Dedicatedv1beta1MaintenanceTask object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewV1beta1MaintenanceTaskWithDefaults() *V1beta1MaintenanceTask {
-	this := V1beta1MaintenanceTask{}
+func NewDedicatedv1beta1MaintenanceTaskWithDefaults() *Dedicatedv1beta1MaintenanceTask {
+	this := Dedicatedv1beta1MaintenanceTask{}
 	return &this
 }
 
 // GetName returns the Name field value if set, zero value otherwise.
-func (o *V1beta1MaintenanceTask) GetName() string {
+func (o *Dedicatedv1beta1MaintenanceTask) GetName() string {
 	if o == nil || IsNil(o.Name) {
 		var ret string
 		return ret
@@ -64,7 +64,7 @@ func (o *V1beta1MaintenanceTask) GetName() string {
 
 // GetNameOk returns a tuple with the Name field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1MaintenanceTask) GetNameOk() (*string, bool) {
+func (o *Dedicatedv1beta1MaintenanceTask) GetNameOk() (*string, bool) {
 	if o == nil || IsNil(o.Name) {
 		return nil, false
 	}
@@ -72,7 +72,7 @@ func (o *V1beta1MaintenanceTask) GetNameOk() (*string, bool) {
 }
 
 // HasName returns a boolean if a field has been set.
-func (o *V1beta1MaintenanceTask) HasName() bool {
+func (o *Dedicatedv1beta1MaintenanceTask) HasName() bool {
 	if o != nil && !IsNil(o.Name) {
 		return true
 	}
@@ -81,12 +81,12 @@ func (o *V1beta1MaintenanceTask) HasName() bool {
 }
 
 // SetName gets a reference to the given string and assigns it to the Name field.
-func (o *V1beta1MaintenanceTask) SetName(v string) {
+func (o *Dedicatedv1beta1MaintenanceTask) SetName(v string) {
 	o.Name = &v
 }
 
 // GetMaintenanceTaskId returns the MaintenanceTaskId field value if set, zero value otherwise.
-func (o *V1beta1MaintenanceTask) GetMaintenanceTaskId() string {
+func (o *Dedicatedv1beta1MaintenanceTask) GetMaintenanceTaskId() string {
 	if o == nil || IsNil(o.MaintenanceTaskId) {
 		var ret string
 		return ret
@@ -96,7 +96,7 @@ func (o *V1beta1MaintenanceTask) GetMaintenanceTaskId() string {
 
 // GetMaintenanceTaskIdOk returns a tuple with the MaintenanceTaskId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1MaintenanceTask) GetMaintenanceTaskIdOk() (*string, bool) {
+func (o *Dedicatedv1beta1MaintenanceTask) GetMaintenanceTaskIdOk() (*string, bool) {
 	if o == nil || IsNil(o.MaintenanceTaskId) {
 		return nil, false
 	}
@@ -104,7 +104,7 @@ func (o *V1beta1MaintenanceTask) GetMaintenanceTaskIdOk() (*string, bool) {
 }
 
 // HasMaintenanceTaskId returns a boolean if a field has been set.
-func (o *V1beta1MaintenanceTask) HasMaintenanceTaskId() bool {
+func (o *Dedicatedv1beta1MaintenanceTask) HasMaintenanceTaskId() bool {
 	if o != nil && !IsNil(o.MaintenanceTaskId) {
 		return true
 	}
@@ -113,12 +113,12 @@ func (o *V1beta1MaintenanceTask) HasMaintenanceTaskId() bool {
 }
 
 // SetMaintenanceTaskId gets a reference to the given string and assigns it to the MaintenanceTaskId field.
-func (o *V1beta1MaintenanceTask) SetMaintenanceTaskId(v string) {
+func (o *Dedicatedv1beta1MaintenanceTask) SetMaintenanceTaskId(v string) {
 	o.MaintenanceTaskId = &v
 }
 
 // GetProjectId returns the ProjectId field value if set, zero value otherwise.
-func (o *V1beta1MaintenanceTask) GetProjectId() string {
+func (o *Dedicatedv1beta1MaintenanceTask) GetProjectId() string {
 	if o == nil || IsNil(o.ProjectId) {
 		var ret string
 		return ret
@@ -128,7 +128,7 @@ func (o *V1beta1MaintenanceTask) GetProjectId() string {
 
 // GetProjectIdOk returns a tuple with the ProjectId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1MaintenanceTask) GetProjectIdOk() (*string, bool) {
+func (o *Dedicatedv1beta1MaintenanceTask) GetProjectIdOk() (*string, bool) {
 	if o == nil || IsNil(o.ProjectId) {
 		return nil, false
 	}
@@ -136,7 +136,7 @@ func (o *V1beta1MaintenanceTask) GetProjectIdOk() (*string, bool) {
 }
 
 // HasProjectId returns a boolean if a field has been set.
-func (o *V1beta1MaintenanceTask) HasProjectId() bool {
+func (o *Dedicatedv1beta1MaintenanceTask) HasProjectId() bool {
 	if o != nil && !IsNil(o.ProjectId) {
 		return true
 	}
@@ -145,12 +145,12 @@ func (o *V1beta1MaintenanceTask) HasProjectId() bool {
 }
 
 // SetProjectId gets a reference to the given string and assigns it to the ProjectId field.
-func (o *V1beta1MaintenanceTask) SetProjectId(v string) {
+func (o *Dedicatedv1beta1MaintenanceTask) SetProjectId(v string) {
 	o.ProjectId = &v
 }
 
 // GetDescription returns the Description field value if set, zero value otherwise.
-func (o *V1beta1MaintenanceTask) GetDescription() string {
+func (o *Dedicatedv1beta1MaintenanceTask) GetDescription() string {
 	if o == nil || IsNil(o.Description) {
 		var ret string
 		return ret
@@ -160,7 +160,7 @@ func (o *V1beta1MaintenanceTask) GetDescription() string {
 
 // GetDescriptionOk returns a tuple with the Description field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1MaintenanceTask) GetDescriptionOk() (*string, bool) {
+func (o *Dedicatedv1beta1MaintenanceTask) GetDescriptionOk() (*string, bool) {
 	if o == nil || IsNil(o.Description) {
 		return nil, false
 	}
@@ -168,7 +168,7 @@ func (o *V1beta1MaintenanceTask) GetDescriptionOk() (*string, bool) {
 }
 
 // HasDescription returns a boolean if a field has been set.
-func (o *V1beta1MaintenanceTask) HasDescription() bool {
+func (o *Dedicatedv1beta1MaintenanceTask) HasDescription() bool {
 	if o != nil && !IsNil(o.Description) {
 		return true
 	}
@@ -177,14 +177,14 @@ func (o *V1beta1MaintenanceTask) HasDescription() bool {
 }
 
 // SetDescription gets a reference to the given string and assigns it to the Description field.
-func (o *V1beta1MaintenanceTask) SetDescription(v string) {
+func (o *Dedicatedv1beta1MaintenanceTask) SetDescription(v string) {
 	o.Description = &v
 }
 
 // GetState returns the State field value if set, zero value otherwise.
-func (o *V1beta1MaintenanceTask) GetState() V1beta1MaintenanceTaskState {
+func (o *Dedicatedv1beta1MaintenanceTask) GetState() Dedicatedv1beta1MaintenanceTaskState {
 	if o == nil || IsNil(o.State) {
-		var ret V1beta1MaintenanceTaskState
+		var ret Dedicatedv1beta1MaintenanceTaskState
 		return ret
 	}
 	return *o.State
@@ -192,7 +192,7 @@ func (o *V1beta1MaintenanceTask) GetState() V1beta1MaintenanceTaskState {
 
 // GetStateOk returns a tuple with the State field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1MaintenanceTask) GetStateOk() (*V1beta1MaintenanceTaskState, bool) {
+func (o *Dedicatedv1beta1MaintenanceTask) GetStateOk() (*Dedicatedv1beta1MaintenanceTaskState, bool) {
 	if o == nil || IsNil(o.State) {
 		return nil, false
 	}
@@ -200,7 +200,7 @@ func (o *V1beta1MaintenanceTask) GetStateOk() (*V1beta1MaintenanceTaskState, boo
 }
 
 // HasState returns a boolean if a field has been set.
-func (o *V1beta1MaintenanceTask) HasState() bool {
+func (o *Dedicatedv1beta1MaintenanceTask) HasState() bool {
 	if o != nil && !IsNil(o.State) {
 		return true
 	}
@@ -208,13 +208,13 @@ func (o *V1beta1MaintenanceTask) HasState() bool {
 	return false
 }
 
-// SetState gets a reference to the given V1beta1MaintenanceTaskState and assigns it to the State field.
-func (o *V1beta1MaintenanceTask) SetState(v V1beta1MaintenanceTaskState) {
+// SetState gets a reference to the given Dedicatedv1beta1MaintenanceTaskState and assigns it to the State field.
+func (o *Dedicatedv1beta1MaintenanceTask) SetState(v Dedicatedv1beta1MaintenanceTaskState) {
 	o.State = &v
 }
 
 // GetCreateTime returns the CreateTime field value if set, zero value otherwise.
-func (o *V1beta1MaintenanceTask) GetCreateTime() time.Time {
+func (o *Dedicatedv1beta1MaintenanceTask) GetCreateTime() time.Time {
 	if o == nil || IsNil(o.CreateTime) {
 		var ret time.Time
 		return ret
@@ -224,7 +224,7 @@ func (o *V1beta1MaintenanceTask) GetCreateTime() time.Time {
 
 // GetCreateTimeOk returns a tuple with the CreateTime field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1MaintenanceTask) GetCreateTimeOk() (*time.Time, bool) {
+func (o *Dedicatedv1beta1MaintenanceTask) GetCreateTimeOk() (*time.Time, bool) {
 	if o == nil || IsNil(o.CreateTime) {
 		return nil, false
 	}
@@ -232,7 +232,7 @@ func (o *V1beta1MaintenanceTask) GetCreateTimeOk() (*time.Time, bool) {
 }
 
 // HasCreateTime returns a boolean if a field has been set.
-func (o *V1beta1MaintenanceTask) HasCreateTime() bool {
+func (o *Dedicatedv1beta1MaintenanceTask) HasCreateTime() bool {
 	if o != nil && !IsNil(o.CreateTime) {
 		return true
 	}
@@ -241,12 +241,12 @@ func (o *V1beta1MaintenanceTask) HasCreateTime() bool {
 }
 
 // SetCreateTime gets a reference to the given time.Time and assigns it to the CreateTime field.
-func (o *V1beta1MaintenanceTask) SetCreateTime(v time.Time) {
+func (o *Dedicatedv1beta1MaintenanceTask) SetCreateTime(v time.Time) {
 	o.CreateTime = &v
 }
 
 // GetScheduledApplyTime returns the ScheduledApplyTime field value if set, zero value otherwise.
-func (o *V1beta1MaintenanceTask) GetScheduledApplyTime() time.Time {
+func (o *Dedicatedv1beta1MaintenanceTask) GetScheduledApplyTime() time.Time {
 	if o == nil || IsNil(o.ScheduledApplyTime) {
 		var ret time.Time
 		return ret
@@ -256,7 +256,7 @@ func (o *V1beta1MaintenanceTask) GetScheduledApplyTime() time.Time {
 
 // GetScheduledApplyTimeOk returns a tuple with the ScheduledApplyTime field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1MaintenanceTask) GetScheduledApplyTimeOk() (*time.Time, bool) {
+func (o *Dedicatedv1beta1MaintenanceTask) GetScheduledApplyTimeOk() (*time.Time, bool) {
 	if o == nil || IsNil(o.ScheduledApplyTime) {
 		return nil, false
 	}
@@ -264,7 +264,7 @@ func (o *V1beta1MaintenanceTask) GetScheduledApplyTimeOk() (*time.Time, bool) {
 }
 
 // HasScheduledApplyTime returns a boolean if a field has been set.
-func (o *V1beta1MaintenanceTask) HasScheduledApplyTime() bool {
+func (o *Dedicatedv1beta1MaintenanceTask) HasScheduledApplyTime() bool {
 	if o != nil && !IsNil(o.ScheduledApplyTime) {
 		return true
 	}
@@ -273,12 +273,12 @@ func (o *V1beta1MaintenanceTask) HasScheduledApplyTime() bool {
 }
 
 // SetScheduledApplyTime gets a reference to the given time.Time and assigns it to the ScheduledApplyTime field.
-func (o *V1beta1MaintenanceTask) SetScheduledApplyTime(v time.Time) {
+func (o *Dedicatedv1beta1MaintenanceTask) SetScheduledApplyTime(v time.Time) {
 	o.ScheduledApplyTime = &v
 }
 
 // GetDeadline returns the Deadline field value if set, zero value otherwise.
-func (o *V1beta1MaintenanceTask) GetDeadline() time.Time {
+func (o *Dedicatedv1beta1MaintenanceTask) GetDeadline() time.Time {
 	if o == nil || IsNil(o.Deadline) {
 		var ret time.Time
 		return ret
@@ -288,7 +288,7 @@ func (o *V1beta1MaintenanceTask) GetDeadline() time.Time {
 
 // GetDeadlineOk returns a tuple with the Deadline field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1MaintenanceTask) GetDeadlineOk() (*time.Time, bool) {
+func (o *Dedicatedv1beta1MaintenanceTask) GetDeadlineOk() (*time.Time, bool) {
 	if o == nil || IsNil(o.Deadline) {
 		return nil, false
 	}
@@ -296,7 +296,7 @@ func (o *V1beta1MaintenanceTask) GetDeadlineOk() (*time.Time, bool) {
 }
 
 // HasDeadline returns a boolean if a field has been set.
-func (o *V1beta1MaintenanceTask) HasDeadline() bool {
+func (o *Dedicatedv1beta1MaintenanceTask) HasDeadline() bool {
 	if o != nil && !IsNil(o.Deadline) {
 		return true
 	}
@@ -305,11 +305,11 @@ func (o *V1beta1MaintenanceTask) HasDeadline() bool {
 }
 
 // SetDeadline gets a reference to the given time.Time and assigns it to the Deadline field.
-func (o *V1beta1MaintenanceTask) SetDeadline(v time.Time) {
+func (o *Dedicatedv1beta1MaintenanceTask) SetDeadline(v time.Time) {
 	o.Deadline = &v
 }
 
-func (o V1beta1MaintenanceTask) MarshalJSON() ([]byte, error) {
+func (o Dedicatedv1beta1MaintenanceTask) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -317,7 +317,7 @@ func (o V1beta1MaintenanceTask) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o V1beta1MaintenanceTask) ToMap() (map[string]interface{}, error) {
+func (o Dedicatedv1beta1MaintenanceTask) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
@@ -351,16 +351,16 @@ func (o V1beta1MaintenanceTask) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *V1beta1MaintenanceTask) UnmarshalJSON(data []byte) (err error) {
-	varV1beta1MaintenanceTask := _V1beta1MaintenanceTask{}
+func (o *Dedicatedv1beta1MaintenanceTask) UnmarshalJSON(data []byte) (err error) {
+	varDedicatedv1beta1MaintenanceTask := _Dedicatedv1beta1MaintenanceTask{}
 
-	err = json.Unmarshal(data, &varV1beta1MaintenanceTask)
+	err = json.Unmarshal(data, &varDedicatedv1beta1MaintenanceTask)
 
 	if err != nil {
 		return err
 	}
 
-	*o = V1beta1MaintenanceTask(varV1beta1MaintenanceTask)
+	*o = Dedicatedv1beta1MaintenanceTask(varDedicatedv1beta1MaintenanceTask)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -379,38 +379,38 @@ func (o *V1beta1MaintenanceTask) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
-type NullableV1beta1MaintenanceTask struct {
-	value *V1beta1MaintenanceTask
+type NullableDedicatedv1beta1MaintenanceTask struct {
+	value *Dedicatedv1beta1MaintenanceTask
 	isSet bool
 }
 
-func (v NullableV1beta1MaintenanceTask) Get() *V1beta1MaintenanceTask {
+func (v NullableDedicatedv1beta1MaintenanceTask) Get() *Dedicatedv1beta1MaintenanceTask {
 	return v.value
 }
 
-func (v *NullableV1beta1MaintenanceTask) Set(val *V1beta1MaintenanceTask) {
+func (v *NullableDedicatedv1beta1MaintenanceTask) Set(val *Dedicatedv1beta1MaintenanceTask) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableV1beta1MaintenanceTask) IsSet() bool {
+func (v NullableDedicatedv1beta1MaintenanceTask) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableV1beta1MaintenanceTask) Unset() {
+func (v *NullableDedicatedv1beta1MaintenanceTask) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableV1beta1MaintenanceTask(val *V1beta1MaintenanceTask) *NullableV1beta1MaintenanceTask {
-	return &NullableV1beta1MaintenanceTask{value: val, isSet: true}
+func NewNullableDedicatedv1beta1MaintenanceTask(val *Dedicatedv1beta1MaintenanceTask) *NullableDedicatedv1beta1MaintenanceTask {
+	return &NullableDedicatedv1beta1MaintenanceTask{value: val, isSet: true}
 }
 
-func (v NullableV1beta1MaintenanceTask) MarshalJSON() ([]byte, error) {
+func (v NullableDedicatedv1beta1MaintenanceTask) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableV1beta1MaintenanceTask) UnmarshalJSON(src []byte) error {
+func (v *NullableDedicatedv1beta1MaintenanceTask) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

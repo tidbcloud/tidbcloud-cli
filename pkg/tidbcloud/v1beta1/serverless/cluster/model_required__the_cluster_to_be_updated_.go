@@ -30,7 +30,9 @@ type RequiredTheClusterToBeUpdated struct {
 	// Optional. The labels for the cluster. tidb.cloud/organization. The label for the cluster organization id. tidb.cloud/project. The label for the cluster project id.
 	Labels *map[string]string `json:"labels,omitempty"`
 	// Optional. The audit log configuration for the cluster.
-	AuditLogConfig       *V1beta1ClusterAuditLogConfig `json:"auditLogConfig,omitempty"`
+	AuditLogConfig *V1beta1ClusterAuditLogConfig `json:"auditLogConfig,omitempty"`
+	// Optional. The auto scaling config for the cluster.
+	AutoScaling          *V1beta1ClusterAutoScaling `json:"autoScaling,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -245,6 +247,38 @@ func (o *RequiredTheClusterToBeUpdated) SetAuditLogConfig(v V1beta1ClusterAuditL
 	o.AuditLogConfig = &v
 }
 
+// GetAutoScaling returns the AutoScaling field value if set, zero value otherwise.
+func (o *RequiredTheClusterToBeUpdated) GetAutoScaling() V1beta1ClusterAutoScaling {
+	if o == nil || IsNil(o.AutoScaling) {
+		var ret V1beta1ClusterAutoScaling
+		return ret
+	}
+	return *o.AutoScaling
+}
+
+// GetAutoScalingOk returns a tuple with the AutoScaling field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *RequiredTheClusterToBeUpdated) GetAutoScalingOk() (*V1beta1ClusterAutoScaling, bool) {
+	if o == nil || IsNil(o.AutoScaling) {
+		return nil, false
+	}
+	return o.AutoScaling, true
+}
+
+// HasAutoScaling returns a boolean if a field has been set.
+func (o *RequiredTheClusterToBeUpdated) HasAutoScaling() bool {
+	if o != nil && !IsNil(o.AutoScaling) {
+		return true
+	}
+
+	return false
+}
+
+// SetAutoScaling gets a reference to the given V1beta1ClusterAutoScaling and assigns it to the AutoScaling field.
+func (o *RequiredTheClusterToBeUpdated) SetAutoScaling(v V1beta1ClusterAutoScaling) {
+	o.AutoScaling = &v
+}
+
 func (o RequiredTheClusterToBeUpdated) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -272,6 +306,9 @@ func (o RequiredTheClusterToBeUpdated) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.AuditLogConfig) {
 		toSerialize["auditLogConfig"] = o.AuditLogConfig
+	}
+	if !IsNil(o.AutoScaling) {
+		toSerialize["autoScaling"] = o.AutoScaling
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -301,6 +338,7 @@ func (o *RequiredTheClusterToBeUpdated) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "endpoints")
 		delete(additionalProperties, "labels")
 		delete(additionalProperties, "auditLogConfig")
+		delete(additionalProperties, "autoScaling")
 		o.AdditionalProperties = additionalProperties
 	}
 

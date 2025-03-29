@@ -30,6 +30,7 @@ type ApiClusterServiceCreateClusterRequest struct {
 	validateOnly *bool
 }
 
+// Required.
 func (r ApiClusterServiceCreateClusterRequest) Cluster(cluster TidbCloudOpenApidedicatedv1beta1Cluster) ApiClusterServiceCreateClusterRequest {
 	r.cluster = &cluster
 	return r
@@ -1264,7 +1265,7 @@ type ApiClusterServicePauseClusterRequest struct {
 	clusterId  string
 }
 
-func (r ApiClusterServicePauseClusterRequest) Execute() (*Dedicatedv1beta1PauseClusterResponse, *http.Response, error) {
+func (r ApiClusterServicePauseClusterRequest) Execute() (*V1beta1PauseClusterResponse, *http.Response, error) {
 	return r.ApiService.ClusterServicePauseClusterExecute(r)
 }
 
@@ -1285,13 +1286,13 @@ func (a *ClusterServiceAPIService) ClusterServicePauseCluster(ctx context.Contex
 
 // Execute executes the request
 //
-//	@return Dedicatedv1beta1PauseClusterResponse
-func (a *ClusterServiceAPIService) ClusterServicePauseClusterExecute(r ApiClusterServicePauseClusterRequest) (*Dedicatedv1beta1PauseClusterResponse, *http.Response, error) {
+//	@return V1beta1PauseClusterResponse
+func (a *ClusterServiceAPIService) ClusterServicePauseClusterExecute(r ApiClusterServicePauseClusterRequest) (*V1beta1PauseClusterResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPost
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *Dedicatedv1beta1PauseClusterResponse
+		localVarReturnValue *V1beta1PauseClusterResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClusterServiceAPIService.ClusterServicePauseCluster")
@@ -1633,7 +1634,7 @@ type ApiClusterServiceResumeClusterRequest struct {
 	clusterId  string
 }
 
-func (r ApiClusterServiceResumeClusterRequest) Execute() (*Dedicatedv1beta1ResumeClusterResponse, *http.Response, error) {
+func (r ApiClusterServiceResumeClusterRequest) Execute() (*V1beta1ResumeClusterResponse, *http.Response, error) {
 	return r.ApiService.ClusterServiceResumeClusterExecute(r)
 }
 
@@ -1654,13 +1655,13 @@ func (a *ClusterServiceAPIService) ClusterServiceResumeCluster(ctx context.Conte
 
 // Execute executes the request
 //
-//	@return Dedicatedv1beta1ResumeClusterResponse
-func (a *ClusterServiceAPIService) ClusterServiceResumeClusterExecute(r ApiClusterServiceResumeClusterRequest) (*Dedicatedv1beta1ResumeClusterResponse, *http.Response, error) {
+//	@return V1beta1ResumeClusterResponse
+func (a *ClusterServiceAPIService) ClusterServiceResumeClusterExecute(r ApiClusterServiceResumeClusterRequest) (*V1beta1ResumeClusterResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPost
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *Dedicatedv1beta1ResumeClusterResponse
+		localVarReturnValue *V1beta1ResumeClusterResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ClusterServiceAPIService.ClusterServiceResumeCluster")

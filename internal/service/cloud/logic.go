@@ -245,7 +245,6 @@ func GetSpendingLimitField(mutableFields []string) (string, error) {
 	}
 	itemsPerPage := 6
 	model.EnablePagination(itemsPerPage)
-	model.EnableFilter()
 
 	p := tea.NewProgram(model)
 	fieldModel, err := p.Run()
