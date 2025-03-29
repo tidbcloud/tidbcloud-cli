@@ -36,7 +36,7 @@ type S3Opts struct {
 
 func (o S3Opts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
-	var s3Uri, s3Arn, accessKeyID, secretAccessKey string
+	var s3Uri, s3Arn, accessKeyID, secretAccessKey, s3Endpoint string
 	var fileType imp.ImportFileTypeEnum
 	var authType imp.ImportS3AuthTypeEnum
 	var format *imp.CSVFormat
@@ -77,7 +77,7 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 				return errors.New("empty S3 role arn")
 			}
 		} else if authType == imp.IMPORTS3AUTHTYPEENUM_ACCESS_KEY {
-			inputs := []string{flag.S3URI, flag.S3AccessKeyID, flag.S3SecretAccessKey}
+			inputs := []string{flag.S3URI, flag.S3AccessKeyID, flag.S3SecretAccessKey, flag.S3Endpoint}
 			textInput, err := ui.InitialInputModel(inputs, inputDescription)
 			if err != nil {
 				return err
@@ -94,6 +94,7 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 			if secretAccessKey == "" {
 				return errors.New("empty S3 secret access key")
 			}
+			s3Endpoint = textInput.Inputs[3].Value()
 		} else {
 			return fmt.Errorf("invalid auth type :%s", authType)
 		}
@@ -159,6 +160,10 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		if err != nil {
 			return errors.Trace(err)
 		}
+		s3Endpoint, err = cmd.Flags().GetString(flag.S3Endpoint)
+		if err != nil {
+			return errors.Trace(err)
+		}
 		if s3Arn != "" {
 			authType = imp.IMPORTS3AUTHTYPEENUM_ROLE_ARN
 		} else if accessKeyID != "" && secretAccessKey != "" {
@@ -173,14 +178,20 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 	if authType == imp.IMPORTS3AUTHTYPEENUM_ROLE_ARN {
 		source.S3.AuthType = authType
 		source.S3.RoleArn = &s3Arn
+		if s3Endpoint != "" {
+			return errors.New("Currently endpoint is not supported for role arn")
+		}
 	} else {
 		source.S3.AuthType = authType
 		source.S3.AccessKey = &imp.S3SourceAccessKey{
 			Id:     accessKeyID,
 			Secret: secretAccessKey,
 		}
+		if s3Endpoint != "" {
+			source.S3.Endpoint = *imp.NewNullableString(&s3Endpoint)
+		}
 	}
-	options := imp.NewImportOptions(imp.ImportFileTypeEnum(fileType))
+	options := imp.NewImportOptions(fileType)
 	if fileType == imp.IMPORTFILETYPEENUM_CSV {
 		options.CsvFormat = format
 	}

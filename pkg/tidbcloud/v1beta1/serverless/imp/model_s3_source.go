@@ -26,7 +26,9 @@ type S3Source struct {
 	AuthType ImportS3AuthTypeEnum `json:"authType"`
 	RoleArn  *string              `json:"roleArn,omitempty"`
 	// The access key.
-	AccessKey            *S3SourceAccessKey `json:"accessKey,omitempty"`
+	AccessKey *S3SourceAccessKey `json:"accessKey,omitempty"`
+	// The custom S3 endpoint (HTTPS only). Used for connecting to non-AWS S3-compatible storage, such as Cloudflare or other cloud providers. Ensure the endpoint is a valid HTTPS URL (e.g., \"https://custom-s3.example.com\").
+	Endpoint             NullableString `json:"endpoint,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -163,6 +165,49 @@ func (o *S3Source) SetAccessKey(v S3SourceAccessKey) {
 	o.AccessKey = &v
 }
 
+// GetEndpoint returns the Endpoint field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *S3Source) GetEndpoint() string {
+	if o == nil || IsNil(o.Endpoint.Get()) {
+		var ret string
+		return ret
+	}
+	return *o.Endpoint.Get()
+}
+
+// GetEndpointOk returns a tuple with the Endpoint field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *S3Source) GetEndpointOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.Endpoint.Get(), o.Endpoint.IsSet()
+}
+
+// HasEndpoint returns a boolean if a field has been set.
+func (o *S3Source) HasEndpoint() bool {
+	if o != nil && o.Endpoint.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetEndpoint gets a reference to the given NullableString and assigns it to the Endpoint field.
+func (o *S3Source) SetEndpoint(v string) {
+	o.Endpoint.Set(&v)
+}
+
+// SetEndpointNil sets the value for Endpoint to be an explicit nil
+func (o *S3Source) SetEndpointNil() {
+	o.Endpoint.Set(nil)
+}
+
+// UnsetEndpoint ensures that no value is present for Endpoint, not even an explicit nil
+func (o *S3Source) UnsetEndpoint() {
+	o.Endpoint.Unset()
+}
+
 func (o S3Source) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -180,6 +225,9 @@ func (o S3Source) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.AccessKey) {
 		toSerialize["accessKey"] = o.AccessKey
+	}
+	if o.Endpoint.IsSet() {
+		toSerialize["endpoint"] = o.Endpoint.Get()
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -229,6 +277,7 @@ func (o *S3Source) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "authType")
 		delete(additionalProperties, "roleArn")
 		delete(additionalProperties, "accessKey")
+		delete(additionalProperties, "endpoint")
 		o.AdditionalProperties = additionalProperties
 	}
 
