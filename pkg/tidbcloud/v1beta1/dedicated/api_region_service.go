@@ -29,6 +29,7 @@ type ApiRegionServiceGetNodeSpecRequest struct {
 	componentType ClusterServiceListNodeInstancesComponentTypeParameter
 	nodeSpecKey   string
 	projectId     *string
+	clusterId     *string
 }
 
 // If unspecified, the project ID of default project is used.
@@ -37,7 +38,13 @@ func (r ApiRegionServiceGetNodeSpecRequest) ProjectId(projectId string) ApiRegio
 	return r
 }
 
-func (r ApiRegionServiceGetNodeSpecRequest) Execute() (*Dedicatedv1beta1NodeSpec, *http.Response, error) {
+// If specified, only node specs that are available to the specified cluster will be returned. If not specified, all available node specs will be returned.
+func (r ApiRegionServiceGetNodeSpecRequest) ClusterId(clusterId string) ApiRegionServiceGetNodeSpecRequest {
+	r.clusterId = &clusterId
+	return r
+}
+
+func (r ApiRegionServiceGetNodeSpecRequest) Execute() (*V1beta1NodeSpec, *http.Response, error) {
 	return r.ApiService.RegionServiceGetNodeSpecExecute(r)
 }
 
@@ -62,13 +69,13 @@ func (a *RegionServiceAPIService) RegionServiceGetNodeSpec(ctx context.Context, 
 
 // Execute executes the request
 //
-//	@return Dedicatedv1beta1NodeSpec
-func (a *RegionServiceAPIService) RegionServiceGetNodeSpecExecute(r ApiRegionServiceGetNodeSpecRequest) (*Dedicatedv1beta1NodeSpec, *http.Response, error) {
+//	@return V1beta1NodeSpec
+func (a *RegionServiceAPIService) RegionServiceGetNodeSpecExecute(r ApiRegionServiceGetNodeSpecRequest) (*V1beta1NodeSpec, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *Dedicatedv1beta1NodeSpec
+		localVarReturnValue *V1beta1NodeSpec
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "RegionServiceAPIService.RegionServiceGetNodeSpec")
@@ -87,6 +94,9 @@ func (a *RegionServiceAPIService) RegionServiceGetNodeSpecExecute(r ApiRegionSer
 
 	if r.projectId != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "projectId", r.projectId, "", "")
+	}
+	if r.clusterId != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "clusterId", r.clusterId, "", "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -414,6 +424,7 @@ type ApiRegionServiceListNodeSpecsRequest struct {
 	regionId      string
 	componentType *ClusterServiceListNodeInstancesComponentTypeParameter
 	projectId     *string
+	clusterId     *string
 	pageSize      *int32
 	pageToken     *string
 	skip          *int32
@@ -428,6 +439,12 @@ func (r ApiRegionServiceListNodeSpecsRequest) ComponentType(componentType Cluste
 // If unspecified, the project ID of default project is used.
 func (r ApiRegionServiceListNodeSpecsRequest) ProjectId(projectId string) ApiRegionServiceListNodeSpecsRequest {
 	r.projectId = &projectId
+	return r
+}
+
+// If specified, only node specs that are available to the specified cluster will be returned. If not specified, all available node specs will be returned.
+func (r ApiRegionServiceListNodeSpecsRequest) ClusterId(clusterId string) ApiRegionServiceListNodeSpecsRequest {
+	r.clusterId = &clusterId
 	return r
 }
 
@@ -496,6 +513,9 @@ func (a *RegionServiceAPIService) RegionServiceListNodeSpecsExecute(r ApiRegionS
 	}
 	if r.projectId != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "projectId", r.projectId, "", "")
+	}
+	if r.clusterId != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "clusterId", r.clusterId, "", "")
 	}
 	if r.pageSize != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "pageSize", r.pageSize, "", "")

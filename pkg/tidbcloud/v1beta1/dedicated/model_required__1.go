@@ -12,16 +12,14 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
-// checks if the Dedicatedv1beta1AuditLogConfig type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &Dedicatedv1beta1AuditLogConfig{}
+// checks if the Required1 type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Required1{}
 
-// Dedicatedv1beta1AuditLogConfig struct for Dedicatedv1beta1AuditLogConfig
-type Dedicatedv1beta1AuditLogConfig struct {
-	Name      *string `json:"name,omitempty"`
-	ClusterId string  `json:"clusterId"`
+// Required1 struct for Required1
+type Required1 struct {
+	Name *string `json:"name,omitempty"`
 	// Default is false.
 	Enabled          *bool                           `json:"enabled,omitempty"`
 	BucketUri        *string                         `json:"bucketUri,omitempty"`
@@ -34,28 +32,27 @@ type Dedicatedv1beta1AuditLogConfig struct {
 	AdditionalProperties map[string]interface{}
 }
 
-type _Dedicatedv1beta1AuditLogConfig Dedicatedv1beta1AuditLogConfig
+type _Required1 Required1
 
-// NewDedicatedv1beta1AuditLogConfig instantiates a new Dedicatedv1beta1AuditLogConfig object
+// NewRequired1 instantiates a new Required1 object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewDedicatedv1beta1AuditLogConfig(clusterId string) *Dedicatedv1beta1AuditLogConfig {
-	this := Dedicatedv1beta1AuditLogConfig{}
-	this.ClusterId = clusterId
+func NewRequired1() *Required1 {
+	this := Required1{}
 	return &this
 }
 
-// NewDedicatedv1beta1AuditLogConfigWithDefaults instantiates a new Dedicatedv1beta1AuditLogConfig object
+// NewRequired1WithDefaults instantiates a new Required1 object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewDedicatedv1beta1AuditLogConfigWithDefaults() *Dedicatedv1beta1AuditLogConfig {
-	this := Dedicatedv1beta1AuditLogConfig{}
+func NewRequired1WithDefaults() *Required1 {
+	this := Required1{}
 	return &this
 }
 
 // GetName returns the Name field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1AuditLogConfig) GetName() string {
+func (o *Required1) GetName() string {
 	if o == nil || IsNil(o.Name) {
 		var ret string
 		return ret
@@ -65,7 +62,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) GetName() string {
 
 // GetNameOk returns a tuple with the Name field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1AuditLogConfig) GetNameOk() (*string, bool) {
+func (o *Required1) GetNameOk() (*string, bool) {
 	if o == nil || IsNil(o.Name) {
 		return nil, false
 	}
@@ -73,7 +70,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) GetNameOk() (*string, bool) {
 }
 
 // HasName returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1AuditLogConfig) HasName() bool {
+func (o *Required1) HasName() bool {
 	if o != nil && !IsNil(o.Name) {
 		return true
 	}
@@ -82,36 +79,12 @@ func (o *Dedicatedv1beta1AuditLogConfig) HasName() bool {
 }
 
 // SetName gets a reference to the given string and assigns it to the Name field.
-func (o *Dedicatedv1beta1AuditLogConfig) SetName(v string) {
+func (o *Required1) SetName(v string) {
 	o.Name = &v
 }
 
-// GetClusterId returns the ClusterId field value
-func (o *Dedicatedv1beta1AuditLogConfig) GetClusterId() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.ClusterId
-}
-
-// GetClusterIdOk returns a tuple with the ClusterId field value
-// and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1AuditLogConfig) GetClusterIdOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.ClusterId, true
-}
-
-// SetClusterId sets field value
-func (o *Dedicatedv1beta1AuditLogConfig) SetClusterId(v string) {
-	o.ClusterId = v
-}
-
 // GetEnabled returns the Enabled field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1AuditLogConfig) GetEnabled() bool {
+func (o *Required1) GetEnabled() bool {
 	if o == nil || IsNil(o.Enabled) {
 		var ret bool
 		return ret
@@ -121,7 +94,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) GetEnabled() bool {
 
 // GetEnabledOk returns a tuple with the Enabled field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1AuditLogConfig) GetEnabledOk() (*bool, bool) {
+func (o *Required1) GetEnabledOk() (*bool, bool) {
 	if o == nil || IsNil(o.Enabled) {
 		return nil, false
 	}
@@ -129,7 +102,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) GetEnabledOk() (*bool, bool) {
 }
 
 // HasEnabled returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1AuditLogConfig) HasEnabled() bool {
+func (o *Required1) HasEnabled() bool {
 	if o != nil && !IsNil(o.Enabled) {
 		return true
 	}
@@ -138,12 +111,12 @@ func (o *Dedicatedv1beta1AuditLogConfig) HasEnabled() bool {
 }
 
 // SetEnabled gets a reference to the given bool and assigns it to the Enabled field.
-func (o *Dedicatedv1beta1AuditLogConfig) SetEnabled(v bool) {
+func (o *Required1) SetEnabled(v bool) {
 	o.Enabled = &v
 }
 
 // GetBucketUri returns the BucketUri field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1AuditLogConfig) GetBucketUri() string {
+func (o *Required1) GetBucketUri() string {
 	if o == nil || IsNil(o.BucketUri) {
 		var ret string
 		return ret
@@ -153,7 +126,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) GetBucketUri() string {
 
 // GetBucketUriOk returns a tuple with the BucketUri field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1AuditLogConfig) GetBucketUriOk() (*string, bool) {
+func (o *Required1) GetBucketUriOk() (*string, bool) {
 	if o == nil || IsNil(o.BucketUri) {
 		return nil, false
 	}
@@ -161,7 +134,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) GetBucketUriOk() (*string, bool) {
 }
 
 // HasBucketUri returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1AuditLogConfig) HasBucketUri() bool {
+func (o *Required1) HasBucketUri() bool {
 	if o != nil && !IsNil(o.BucketUri) {
 		return true
 	}
@@ -170,12 +143,12 @@ func (o *Dedicatedv1beta1AuditLogConfig) HasBucketUri() bool {
 }
 
 // SetBucketUri gets a reference to the given string and assigns it to the BucketUri field.
-func (o *Dedicatedv1beta1AuditLogConfig) SetBucketUri(v string) {
+func (o *Required1) SetBucketUri(v string) {
 	o.BucketUri = &v
 }
 
 // GetBucketRegionId returns the BucketRegionId field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1AuditLogConfig) GetBucketRegionId() string {
+func (o *Required1) GetBucketRegionId() string {
 	if o == nil || IsNil(o.BucketRegionId) {
 		var ret string
 		return ret
@@ -185,7 +158,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) GetBucketRegionId() string {
 
 // GetBucketRegionIdOk returns a tuple with the BucketRegionId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1AuditLogConfig) GetBucketRegionIdOk() (*string, bool) {
+func (o *Required1) GetBucketRegionIdOk() (*string, bool) {
 	if o == nil || IsNil(o.BucketRegionId) {
 		return nil, false
 	}
@@ -193,7 +166,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) GetBucketRegionIdOk() (*string, bool) {
 }
 
 // HasBucketRegionId returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1AuditLogConfig) HasBucketRegionId() bool {
+func (o *Required1) HasBucketRegionId() bool {
 	if o != nil && !IsNil(o.BucketRegionId) {
 		return true
 	}
@@ -202,12 +175,12 @@ func (o *Dedicatedv1beta1AuditLogConfig) HasBucketRegionId() bool {
 }
 
 // SetBucketRegionId gets a reference to the given string and assigns it to the BucketRegionId field.
-func (o *Dedicatedv1beta1AuditLogConfig) SetBucketRegionId(v string) {
+func (o *Required1) SetBucketRegionId(v string) {
 	o.BucketRegionId = &v
 }
 
 // GetAwsRoleArn returns the AwsRoleArn field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1AuditLogConfig) GetAwsRoleArn() string {
+func (o *Required1) GetAwsRoleArn() string {
 	if o == nil || IsNil(o.AwsRoleArn) {
 		var ret string
 		return ret
@@ -217,7 +190,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) GetAwsRoleArn() string {
 
 // GetAwsRoleArnOk returns a tuple with the AwsRoleArn field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1AuditLogConfig) GetAwsRoleArnOk() (*string, bool) {
+func (o *Required1) GetAwsRoleArnOk() (*string, bool) {
 	if o == nil || IsNil(o.AwsRoleArn) {
 		return nil, false
 	}
@@ -225,7 +198,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) GetAwsRoleArnOk() (*string, bool) {
 }
 
 // HasAwsRoleArn returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1AuditLogConfig) HasAwsRoleArn() bool {
+func (o *Required1) HasAwsRoleArn() bool {
 	if o != nil && !IsNil(o.AwsRoleArn) {
 		return true
 	}
@@ -234,12 +207,12 @@ func (o *Dedicatedv1beta1AuditLogConfig) HasAwsRoleArn() bool {
 }
 
 // SetAwsRoleArn gets a reference to the given string and assigns it to the AwsRoleArn field.
-func (o *Dedicatedv1beta1AuditLogConfig) SetAwsRoleArn(v string) {
+func (o *Required1) SetAwsRoleArn(v string) {
 	o.AwsRoleArn = &v
 }
 
 // GetAzureSasToken returns the AzureSasToken field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1AuditLogConfig) GetAzureSasToken() string {
+func (o *Required1) GetAzureSasToken() string {
 	if o == nil || IsNil(o.AzureSasToken) {
 		var ret string
 		return ret
@@ -249,7 +222,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) GetAzureSasToken() string {
 
 // GetAzureSasTokenOk returns a tuple with the AzureSasToken field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1AuditLogConfig) GetAzureSasTokenOk() (*string, bool) {
+func (o *Required1) GetAzureSasTokenOk() (*string, bool) {
 	if o == nil || IsNil(o.AzureSasToken) {
 		return nil, false
 	}
@@ -257,7 +230,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) GetAzureSasTokenOk() (*string, bool) {
 }
 
 // HasAzureSasToken returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1AuditLogConfig) HasAzureSasToken() bool {
+func (o *Required1) HasAzureSasToken() bool {
 	if o != nil && !IsNil(o.AzureSasToken) {
 		return true
 	}
@@ -266,12 +239,12 @@ func (o *Dedicatedv1beta1AuditLogConfig) HasAzureSasToken() bool {
 }
 
 // SetAzureSasToken gets a reference to the given string and assigns it to the AzureSasToken field.
-func (o *Dedicatedv1beta1AuditLogConfig) SetAzureSasToken(v string) {
+func (o *Required1) SetAzureSasToken(v string) {
 	o.AzureSasToken = &v
 }
 
 // GetBucketWriteCheck returns the BucketWriteCheck field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1AuditLogConfig) GetBucketWriteCheck() AuditLogConfigBucketWriteCheck {
+func (o *Required1) GetBucketWriteCheck() AuditLogConfigBucketWriteCheck {
 	if o == nil || IsNil(o.BucketWriteCheck) {
 		var ret AuditLogConfigBucketWriteCheck
 		return ret
@@ -281,7 +254,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) GetBucketWriteCheck() AuditLogConfigBuc
 
 // GetBucketWriteCheckOk returns a tuple with the BucketWriteCheck field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1AuditLogConfig) GetBucketWriteCheckOk() (*AuditLogConfigBucketWriteCheck, bool) {
+func (o *Required1) GetBucketWriteCheckOk() (*AuditLogConfigBucketWriteCheck, bool) {
 	if o == nil || IsNil(o.BucketWriteCheck) {
 		return nil, false
 	}
@@ -289,7 +262,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) GetBucketWriteCheckOk() (*AuditLogConfi
 }
 
 // HasBucketWriteCheck returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1AuditLogConfig) HasBucketWriteCheck() bool {
+func (o *Required1) HasBucketWriteCheck() bool {
 	if o != nil && !IsNil(o.BucketWriteCheck) {
 		return true
 	}
@@ -298,12 +271,12 @@ func (o *Dedicatedv1beta1AuditLogConfig) HasBucketWriteCheck() bool {
 }
 
 // SetBucketWriteCheck gets a reference to the given AuditLogConfigBucketWriteCheck and assigns it to the BucketWriteCheck field.
-func (o *Dedicatedv1beta1AuditLogConfig) SetBucketWriteCheck(v AuditLogConfigBucketWriteCheck) {
+func (o *Required1) SetBucketWriteCheck(v AuditLogConfigBucketWriteCheck) {
 	o.BucketWriteCheck = &v
 }
 
 // GetBucketManager returns the BucketManager field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1AuditLogConfig) GetBucketManager() Dedicatedv1beta1BucketManager {
+func (o *Required1) GetBucketManager() Dedicatedv1beta1BucketManager {
 	if o == nil || IsNil(o.BucketManager) {
 		var ret Dedicatedv1beta1BucketManager
 		return ret
@@ -313,7 +286,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) GetBucketManager() Dedicatedv1beta1Buck
 
 // GetBucketManagerOk returns a tuple with the BucketManager field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1AuditLogConfig) GetBucketManagerOk() (*Dedicatedv1beta1BucketManager, bool) {
+func (o *Required1) GetBucketManagerOk() (*Dedicatedv1beta1BucketManager, bool) {
 	if o == nil || IsNil(o.BucketManager) {
 		return nil, false
 	}
@@ -321,7 +294,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) GetBucketManagerOk() (*Dedicatedv1beta1
 }
 
 // HasBucketManager returns a boolean if a field has been set.
-func (o *Dedicatedv1beta1AuditLogConfig) HasBucketManager() bool {
+func (o *Required1) HasBucketManager() bool {
 	if o != nil && !IsNil(o.BucketManager) {
 		return true
 	}
@@ -330,11 +303,11 @@ func (o *Dedicatedv1beta1AuditLogConfig) HasBucketManager() bool {
 }
 
 // SetBucketManager gets a reference to the given Dedicatedv1beta1BucketManager and assigns it to the BucketManager field.
-func (o *Dedicatedv1beta1AuditLogConfig) SetBucketManager(v Dedicatedv1beta1BucketManager) {
+func (o *Required1) SetBucketManager(v Dedicatedv1beta1BucketManager) {
 	o.BucketManager = &v
 }
 
-func (o Dedicatedv1beta1AuditLogConfig) MarshalJSON() ([]byte, error) {
+func (o Required1) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -342,12 +315,11 @@ func (o Dedicatedv1beta1AuditLogConfig) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o Dedicatedv1beta1AuditLogConfig) ToMap() (map[string]interface{}, error) {
+func (o Required1) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
-	toSerialize["clusterId"] = o.ClusterId
 	if !IsNil(o.Enabled) {
 		toSerialize["enabled"] = o.Enabled
 	}
@@ -377,43 +349,21 @@ func (o Dedicatedv1beta1AuditLogConfig) ToMap() (map[string]interface{}, error) 
 	return toSerialize, nil
 }
 
-func (o *Dedicatedv1beta1AuditLogConfig) UnmarshalJSON(data []byte) (err error) {
-	// This validates that all required properties are included in the JSON object
-	// by unmarshalling the object into a generic map with string keys and checking
-	// that every required field exists as a key in the generic map.
-	requiredProperties := []string{
-		"clusterId",
-	}
+func (o *Required1) UnmarshalJSON(data []byte) (err error) {
+	varRequired1 := _Required1{}
 
-	allProperties := make(map[string]interface{})
-
-	err = json.Unmarshal(data, &allProperties)
+	err = json.Unmarshal(data, &varRequired1)
 
 	if err != nil {
 		return err
 	}
 
-	for _, requiredProperty := range requiredProperties {
-		if _, exists := allProperties[requiredProperty]; !exists {
-			return fmt.Errorf("no value given for required property %v", requiredProperty)
-		}
-	}
-
-	varDedicatedv1beta1AuditLogConfig := _Dedicatedv1beta1AuditLogConfig{}
-
-	err = json.Unmarshal(data, &varDedicatedv1beta1AuditLogConfig)
-
-	if err != nil {
-		return err
-	}
-
-	*o = Dedicatedv1beta1AuditLogConfig(varDedicatedv1beta1AuditLogConfig)
+	*o = Required1(varRequired1)
 
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "name")
-		delete(additionalProperties, "clusterId")
 		delete(additionalProperties, "enabled")
 		delete(additionalProperties, "bucketUri")
 		delete(additionalProperties, "bucketRegionId")
@@ -427,38 +377,38 @@ func (o *Dedicatedv1beta1AuditLogConfig) UnmarshalJSON(data []byte) (err error) 
 	return err
 }
 
-type NullableDedicatedv1beta1AuditLogConfig struct {
-	value *Dedicatedv1beta1AuditLogConfig
+type NullableRequired1 struct {
+	value *Required1
 	isSet bool
 }
 
-func (v NullableDedicatedv1beta1AuditLogConfig) Get() *Dedicatedv1beta1AuditLogConfig {
+func (v NullableRequired1) Get() *Required1 {
 	return v.value
 }
 
-func (v *NullableDedicatedv1beta1AuditLogConfig) Set(val *Dedicatedv1beta1AuditLogConfig) {
+func (v *NullableRequired1) Set(val *Required1) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableDedicatedv1beta1AuditLogConfig) IsSet() bool {
+func (v NullableRequired1) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableDedicatedv1beta1AuditLogConfig) Unset() {
+func (v *NullableRequired1) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableDedicatedv1beta1AuditLogConfig(val *Dedicatedv1beta1AuditLogConfig) *NullableDedicatedv1beta1AuditLogConfig {
-	return &NullableDedicatedv1beta1AuditLogConfig{value: val, isSet: true}
+func NewNullableRequired1(val *Required1) *NullableRequired1 {
+	return &NullableRequired1{value: val, isSet: true}
 }
 
-func (v NullableDedicatedv1beta1AuditLogConfig) MarshalJSON() ([]byte, error) {
+func (v NullableRequired1) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableDedicatedv1beta1AuditLogConfig) UnmarshalJSON(src []byte) error {
+func (v *NullableRequired1) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

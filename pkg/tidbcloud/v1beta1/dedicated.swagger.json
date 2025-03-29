@@ -222,13 +222,11 @@
         "parameters": [
           {
             "name": "cluster",
+            "description": "Required.",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/tidb_cloud_open_apidedicatedv1beta1Cluster",
-              "required": [
-                "cluster"
-              ]
+              "$ref": "#/definitions/tidb_cloud_open_apidedicatedv1beta1Cluster"
             }
           },
           {
@@ -476,7 +474,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/dedicatedv1beta1PauseClusterResponse"
+              "$ref": "#/definitions/v1beta1PauseClusterResponse"
             }
           },
           "400": {
@@ -537,7 +535,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/dedicatedv1beta1ResumeClusterResponse"
+              "$ref": "#/definitions/v1beta1ResumeClusterResponse"
             }
           },
           "400": {
@@ -1178,6 +1176,13 @@
             "type": "string"
           },
           {
+            "name": "clusterId",
+            "description": "If specified, only node specs that are available to the specified cluster will be returned.\nIf not specified, all available node specs will be returned.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
             "name": "pageSize",
             "description": "The maximum number of node specs to return. The service may return fewer than this value.\nIf unspecified, at most X node specs will be returned.\nThe maximum value is X; values above X will be coerced to X.",
             "in": "query",
@@ -1214,7 +1219,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/dedicatedv1beta1NodeSpec"
+              "$ref": "#/definitions/v1beta1NodeSpec"
             }
           },
           "400": {
@@ -1287,6 +1292,13 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "clusterId",
+            "description": "If specified, only node specs that are available to the specified cluster will be returned.\nIf not specified, all available node specs will be returned.",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -1352,6 +1364,7 @@
           },
           {
             "name": "tidbNodeGroup",
+            "description": "Required.",
             "in": "body",
             "required": true,
             "schema": {
@@ -1411,8 +1424,17 @@
                       "$ref": "#/definitions/ClusterNodeChangingProgress"
                     }
                   ]
+                },
+                "tiproxySetting": {
+                  "readOnly": true,
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroupTiProxySetting"
+                    }
+                  ]
                 }
               },
+              "title": "Required.",
               "required": [
                 "nodeCount"
               ]
@@ -1730,6 +1752,9 @@
                   "type": "integer",
                   "format": "int32",
                   "x-nullable": true
+                },
+                "tiproxySetting": {
+                  "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroupTiProxySetting"
                 }
               }
             }
@@ -2033,6 +2058,7 @@
         "parameters": [
           {
             "name": "clusterId",
+            "description": "Required.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -2237,14 +2263,15 @@
           },
           {
             "name": "cloudProvider",
-            "description": "If specified, only private link connections of the specified cloud provider will be returned.\n\n - aws: Amazon Web Services.\n - gcp: Google Cloud Platform.\n - azure: Microsoft Azure.",
+            "description": "If specified, only private link connections of the specified cloud provider will be returned.\n\n - aws: Amazon Web Services.\n - gcp: Google Cloud Platform.\n - azure: Microsoft Azure.\n - alicloud: Alibaba Cloud",
             "in": "query",
             "required": false,
             "type": "string",
             "enum": [
               "aws",
               "gcp",
-              "azure"
+              "azure",
+              "alicloud"
             ]
           },
           {
@@ -2479,14 +2506,15 @@
           },
           {
             "name": "cloudProvider",
-            "description": " - aws: Amazon Web Services.\n - gcp: Google Cloud Platform.\n - azure: Microsoft Azure.",
+            "description": " - aws: Amazon Web Services.\n - gcp: Google Cloud Platform.\n - azure: Microsoft Azure.\n - alicloud: Alibaba Cloud",
             "in": "query",
             "required": false,
             "type": "string",
             "enum": [
               "aws",
               "gcp",
-              "azure"
+              "azure",
+              "alicloud"
             ]
           },
           {
@@ -2567,13 +2595,11 @@
         "parameters": [
           {
             "name": "networkContainer",
+            "description": "Required.",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/v1beta1NetworkContainer",
-              "required": [
-                "networkContainer"
-              ]
+              "$ref": "#/definitions/v1beta1NetworkContainer"
             }
           },
           {
@@ -2767,14 +2793,15 @@
           },
           {
             "name": "cloudProvider",
-            "description": "If specified, only VPC peerings of the specified cloud provider will be returned.\n\n - aws: Amazon Web Services.\n - gcp: Google Cloud Platform.\n - azure: Microsoft Azure.",
+            "description": "If specified, only VPC peerings of the specified cloud provider will be returned.\n\n - aws: Amazon Web Services.\n - gcp: Google Cloud Platform.\n - azure: Microsoft Azure.\n - alicloud: Alibaba Cloud",
             "in": "query",
             "required": false,
             "type": "string",
             "enum": [
               "aws",
               "gcp",
-              "azure"
+              "azure",
+              "alicloud"
             ]
           },
           {
@@ -2847,13 +2874,11 @@
         "parameters": [
           {
             "name": "vpcPeering",
+            "description": "Required.",
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/dedicatedv1beta1VpcPeering",
-              "required": [
-                "vpcPeering"
-              ]
+              "$ref": "#/definitions/dedicatedv1beta1VpcPeering"
             }
           }
         ],
@@ -3055,7 +3080,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1beta1ListMaintenanceWindowsResponse"
+              "$ref": "#/definitions/dedicatedv1beta1ListMaintenanceWindowsResponse"
             }
           },
           "400": {
@@ -3224,7 +3249,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1beta1ListMaintenanceTasksResponse"
+              "$ref": "#/definitions/dedicatedv1beta1ListMaintenanceTasksResponse"
             }
           },
           "400": {
@@ -3309,7 +3334,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1beta1MaintenanceTask"
+              "$ref": "#/definitions/dedicatedv1beta1MaintenanceTask"
             }
           },
           "400": {
@@ -3362,15 +3387,15 @@
         ]
       }
     },
-    "/maintenanceTasks/{maintenanceTaskId}:deferMaintenanceTask": {
-      "post": {
-        "summary": "Defer a maintenance task",
-        "operationId": "MaintenanceService_DeferMaintenanceTask",
+    "/maintenanceTasks/{maintenanceTask.maintenanceTaskId}": {
+      "patch": {
+        "summary": "Update a maintenance task",
+        "operationId": "MaintenanceService_UpdateMaintenanceTask",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1beta1DeferMaintenanceTaskResponse"
+              "$ref": "#/definitions/dedicatedv1beta1MaintenanceTask"
             }
           },
           "400": {
@@ -3412,10 +3437,28 @@
         },
         "parameters": [
           {
-            "name": "maintenanceTaskId",
+            "name": "maintenanceTask.maintenanceTaskId",
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "maintenanceTask",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "scheduledApplyTime": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Timestamp when the task run."
+                }
+              },
+              "required": [
+                "scheduledApplyTime"
+              ]
+            }
           }
         ],
         "tags": [
@@ -3480,6 +3523,7 @@
           },
           {
             "name": "auditLogConfig",
+            "description": "Required.",
             "in": "body",
             "required": true,
             "schema": {
@@ -3514,11 +3558,17 @@
                       "$ref": "#/definitions/AuditLogConfigBucketWriteCheck"
                     }
                   ]
+                },
+                "bucketManager": {
+                  "description": "The bucket_manager field is used to indicate who manages the bucket.\nIf this field is not set, the bucket is managed by the customer by default.",
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/dedicatedv1beta1BucketManager"
+                    }
+                  ]
                 }
               },
-              "required": [
-                "bucketUri"
-              ]
+              "title": "Required."
             }
           },
           {
@@ -3609,6 +3659,9 @@
                 },
                 "azureSasToken": {
                   "type": "string"
+                },
+                "bucketManager": {
+                  "$ref": "#/definitions/dedicatedv1beta1BucketManager"
                 }
               }
             }
@@ -3743,6 +3796,7 @@
           },
           {
             "name": "auditLogFilterRule",
+            "description": "Required.",
             "in": "body",
             "required": true,
             "schema": {
@@ -3772,7 +3826,8 @@
                     "type": "string"
                   }
                 }
-              }
+              },
+              "title": "Required."
             }
           }
         ],
@@ -4056,6 +4111,171 @@
           "DatabaseAuditLogService"
         ]
       }
+    },
+    "/clusters/{clusterId}/auditLogConfig:queryAuditLogFiles": {
+      "get": {
+        "summary": "Query audit log files",
+        "operationId": "DatabaseAuditLogService_QueryAuditLogFiles",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1QueryAuditLogFilesResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "startTime",
+            "description": "the start time of the audit logs created time range.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "endTime",
+            "description": "the end time of the audit logs created time range.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "description": "The number of individual resources to skip before starting to return results.\nIf the skip value causes the cursor to move past the end of the collection,\nthe response will be 200 OK with an empty result set and no next_page_token.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "DatabaseAuditLogService"
+        ]
+      }
+    },
+    "/clusters/{clusterId}/auditLogConfig:generateAuditLogFileDownloadAddress": {
+      "post": {
+        "summary": "Generate the download address for an audit log file, the address have an 15 minutes expiration time",
+        "operationId": "DatabaseAuditLogService_GenerateAuditLogFileDownloadAddress",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1GenerateAuditLogFileDownloadAddressResponse"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "auditLogFileUri",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DatabaseAuditLogService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -4099,18 +4319,6 @@
       "required": [
         "rootPassword"
       ]
-    },
-    "ClusterStorageNodeSettingStorageType": {
-      "type": "string",
-      "enum": [
-        "Standard",
-        "Standard_Optimized",
-        "Performance_Optimized",
-        "Performance",
-        "Standard_Premium",
-        "Performance_Premium"
-      ],
-      "description": "Spec https://pingcap.feishu.cn/wiki/R6dcwK0Q3i9XSgkgG1Scoc82nbf.\n\n - Standard: A cost-effective storage type suitable for most workloads, offering balanced performance and affordability.\n  - Single gp3 disk for TiKV storage\nIdeal for general-purpose clusters where affordability and reliability are priorities.\n - Standard_Optimized: An enhanced version of Standard storage that delivers approximately 10% better overall cluster performance, balancing cost and performance.\n  - Separate gp3 disk for TiKV raft-log storage\n  - gp3 disk for TiKV data storage\nRecommended as the default choice for most clusters, offering an improved balance of cost and performance.\n - Performance_Optimized: High-performance storage designed for workloads requiring low latency and greater stability. Provides superior performance for performance-sensitive clusters.\n  - Separate io2 disk for TiKV raft-log storage\n  - gp3 disk for TiKV data storage\nSuitable for clusters where consistent I/O performance and reduced latency are critical.\n - Performance: Premium storage option offering the highest levels of performance and stability. Uses a single high-performance disk to minimize jitter and maximize IOPS.\n  - Single io2 disk for storage\nDesigned for I/O jitter-sensitive clusters with extreme performance demands. Available via allowlist only for select customers.\n - Standard_Premium: Reserved.\n - Performance_Premium: Reserved."
     },
     "EndpointConnectionType": {
       "type": "string",
@@ -4158,6 +4366,24 @@
         }
       }
     },
+    "StorageNodeSettingStorageType": {
+      "type": "string",
+      "enum": [
+        "Basic",
+        "Standard",
+        "Performance",
+        "Plus"
+      ],
+      "description": "Spec https://pingcap.feishu.cn/wiki/R6dcwK0Q3i9XSgkgG1Scoc82nbf.\n\n - Basic: Data disk: gp3; Raft log disk: none.\n - Standard: Data disk: gp3; Raft log disk: gp3.\n - Performance: Data disk: gp3; Raft log disk: io2.\n - Plus: Data disk: io2; Raft log disk: none."
+    },
+    "TidbNodeGroupTiProxyType": {
+      "type": "string",
+      "enum": [
+        "MEDIUM",
+        "LARGE"
+      ],
+      "title": "- MEDIUM: Medium is the default value.\nInstance 4vCPU, Max QPS: 30k, Max Data Traffic: 90 MiB/s\n - LARGE: Large is the high performance value.\nInstance 8vCPU, Max QPS: 60k, Max Data Traffic: 150 MiB/s"
+    },
     "UpdateClusterRequestTidbNodeSettingTidbNodeGroup": {
       "type": "object",
       "properties": {
@@ -4169,6 +4395,9 @@
           "type": "integer",
           "format": "int32",
           "x-nullable": true
+        },
+        "tiproxySetting": {
+          "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroupTiProxySetting"
         }
       }
     },
@@ -4263,11 +4492,52 @@
               "$ref": "#/definitions/AuditLogConfigBucketWriteCheck"
             }
           ]
+        },
+        "bucketManager": {
+          "description": "The bucket_manager field is used to indicate who manages the bucket.\nIf this field is not set, the bucket is managed by the customer by default.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/dedicatedv1beta1BucketManager"
+            }
+          ]
         }
       },
       "required": [
-        "clusterId",
-        "bucketUri"
+        "clusterId"
+      ]
+    },
+    "dedicatedv1beta1AuditLogFile": {
+      "type": "object",
+      "properties": {
+        "filename": {
+          "type": "string",
+          "readOnly": true
+        },
+        "uri": {
+          "type": "string",
+          "readOnly": true
+        },
+        "bucket": {
+          "type": "string",
+          "readOnly": true
+        },
+        "sizeByte": {
+          "type": "integer",
+          "format": "int32",
+          "readOnly": true
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "readOnly": true
+        }
+      }
+    },
+    "dedicatedv1beta1BucketManager": {
+      "type": "string",
+      "enum": [
+        "CUSTOMER",
+        "PINGCAP"
       ]
     },
     "dedicatedv1beta1ClusterPausePlan": {
@@ -4303,6 +4573,57 @@
         "PD",
         "TIPROXY"
       ]
+    },
+    "dedicatedv1beta1GenerateAuditLogFileDownloadAddressResponse": {
+      "type": "object",
+      "properties": {
+        "downloadAddress": {
+          "type": "string",
+          "readOnly": true
+        }
+      }
+    },
+    "dedicatedv1beta1ListMaintenanceTasksResponse": {
+      "type": "object",
+      "properties": {
+        "maintenanceTasks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/dedicatedv1beta1MaintenanceTask"
+          }
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The total number of maintenance tasks that matched the query."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
+        }
+      }
+    },
+    "dedicatedv1beta1ListMaintenanceWindowsResponse": {
+      "type": "object",
+      "properties": {
+        "maintenanceWindows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/dedicatedv1beta1MaintenanceWindow"
+          }
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The total number of maintenance windows that matched the query."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
+        }
+      }
     },
     "dedicatedv1beta1ListTidbNodeGroupsResponse": {
       "type": "object",
@@ -4346,6 +4667,51 @@
         }
       }
     },
+    "dedicatedv1beta1MaintenanceTask": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Format: maintenanceTasks/{maintenance_task_id}"
+        },
+        "maintenanceTaskId": {
+          "type": "string"
+        },
+        "projectId": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/definitions/dedicatedv1beta1MaintenanceTaskState"
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the task was created."
+        },
+        "scheduledApplyTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the task run."
+        },
+        "deadline": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the task will be expired."
+        }
+      },
+      "description": "All fields are output only."
+    },
+    "dedicatedv1beta1MaintenanceTaskState": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "RUNNING",
+        "DONE"
+      ]
+    },
     "dedicatedv1beta1MaintenanceWindow": {
       "type": "object",
       "properties": {
@@ -4386,7 +4752,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/v1beta1MaintenanceTask"
+            "$ref": "#/definitions/dedicatedv1beta1MaintenanceTask"
           },
           "readOnly": true
         }
@@ -4399,155 +4765,65 @@
         "hourMinute"
       ]
     },
-    "dedicatedv1beta1NodeSpec": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "title": "Format: regions/{region_id}/componentTypes/{component_type}/nodeSpecs/{node_spec_key}",
-          "readOnly": true
-        },
-        "regionId": {
-          "type": "string",
-          "title": "Format: {cloud_provider}-{region_code}",
-          "readOnly": true
-        },
-        "componentType": {
-          "readOnly": true,
-          "allOf": [
-            {
-              "$ref": "#/definitions/dedicatedv1beta1ComponentType"
-            }
-          ]
-        },
-        "nodeSpecKey": {
-          "type": "string",
-          "readOnly": true
-        },
-        "displayName": {
-          "type": "string",
-          "readOnly": true
-        },
-        "vCpu": {
-          "type": "integer",
-          "format": "int32",
-          "readOnly": true
-        },
-        "memorySizeGi": {
-          "type": "integer",
-          "format": "int32",
-          "readOnly": true
-        },
-        "defaultStorageSizeGi": {
-          "type": "integer",
-          "format": "int32",
-          "readOnly": true
-        },
-        "maxStorageSizeGi": {
-          "type": "integer",
-          "format": "int32",
-          "readOnly": true
-        },
-        "minStorageSizeGi": {
-          "type": "integer",
-          "format": "int32",
-          "readOnly": true
-        },
-        "defaultNodeCount": {
-          "type": "integer",
-          "format": "int32",
-          "readOnly": true
-        },
-        "storageTypes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ClusterStorageNodeSettingStorageType"
-          },
-          "readOnly": true
-        },
-        "default": {
-          "type": "boolean"
-        }
-      }
-    },
-    "dedicatedv1beta1PauseClusterResponse": {
-      "type": "object",
-      "properties": {
-        "cluster": {
-          "$ref": "#/definitions/tidb_cloud_open_apidedicatedv1beta1Cluster"
-        }
-      },
-      "required": [
-        "cluster"
-      ]
-    },
     "dedicatedv1beta1PrivateLinkService": {
       "type": "object",
       "properties": {
         "name": {
           "type": "string",
-          "title": "Format: tidbNodeGroups/{tidb_node_group_id}/privateLinkService",
-          "readOnly": true
+          "title": "Format: tidbNodeGroups/{tidb_node_group_id}/privateLinkService"
         },
         "tidbNodeGroupId": {
-          "type": "string",
-          "readOnly": true
+          "type": "string"
         },
         "serviceName": {
           "type": "string",
-          "description": "For AWS, it's the service name of the Private Link Service.\nFor GCP, it's the resource name of the service attachment.\nFor Azure, it's service resource ID of the Private Link Service.",
-          "readOnly": true
+          "description": "For AWS, it's the service name of the Private Link Service.\nFor GCP, it's the resource name of the service attachment.\nFor Azure, it's service resource ID of the Private Link Service."
         },
         "serviceDnsName": {
           "type": "string",
-          "description": "For AWS, it's the fully qualified domain name (FQDN) shared for all private endpoints, despite which VPC the endpoint located in.\nFor GCP, it's the zone name (suffix of FQDN) shared for all private endpoints located in a single VPC network. The format of FQDN is `\u003cendpoint_name\u003e.\u003cservice_dns_name\u003e`.\nFor Azure, it's the zone name shared across public internet. The format of FQDN is `\u003cendpoint_name\u003e-\u003crandom_hash\u003e.\u003cservice_dns_name\u003e`.",
-          "readOnly": true
+          "description": "For AWS, it's the fully qualified domain name (FQDN) shared for all private endpoints, despite which VPC the endpoint located in.\nFor GCP, it's the zone name (suffix of FQDN) shared for all private endpoints located in a single VPC network. The format of FQDN is `\u003cendpoint_name\u003e.\u003cservice_dns_name\u003e`.\nFor Azure, it's the zone name shared across public internet. The format of FQDN is `\u003cendpoint_name\u003e-\u003crandom_hash\u003e.\u003cservice_dns_name\u003e`."
         },
         "availableZones": {
           "type": "array",
           "items": {
             "type": "string"
           },
-          "description": "Only available for AWS.\nSame as the `AvailabilityZones` field in response body of\n`github.com/aws/aws-sdk-go-v2/service/ec2.DescribeVpcEndpointServices` method.",
-          "readOnly": true
+          "description": "Only available for AWS.\nSame as the `AvailabilityZones` field in response body of\n`github.com/aws/aws-sdk-go-v2/service/ec2.DescribeVpcEndpointServices` method."
         },
         "state": {
-          "readOnly": true,
-          "allOf": [
-            {
-              "$ref": "#/definitions/v1beta1PrivateLinkServiceState"
-            }
-          ]
+          "$ref": "#/definitions/v1beta1PrivateLinkServiceState"
         },
         "regionId": {
           "type": "string",
-          "title": "Format: {cloud_provider}-{region_code}",
-          "readOnly": true
+          "title": "Format: {cloud_provider}-{region_code}"
         },
         "regionDisplayName": {
-          "type": "string",
-          "readOnly": true
+          "type": "string"
         },
         "cloudProvider": {
-          "readOnly": true,
-          "allOf": [
-            {
-              "$ref": "#/definitions/v1beta1RegionCloudProvider"
-            }
-          ]
-        }
-      }
-    },
-    "dedicatedv1beta1ResumeClusterResponse": {
-      "type": "object",
-      "properties": {
-        "cluster": {
-          "$ref": "#/definitions/tidb_cloud_open_apidedicatedv1beta1Cluster"
+          "$ref": "#/definitions/v1beta1RegionCloudProvider"
         }
       },
-      "required": [
-        "cluster"
-      ]
+      "description": "All fields are output only."
+    },
+    "dedicatedv1beta1QueryAuditLogFilesResponse": {
+      "type": "object",
+      "properties": {
+        "auditLogFiles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/dedicatedv1beta1AuditLogFile"
+          }
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "nextPageToken": {
+          "type": "string"
+        }
+      }
     },
     "dedicatedv1beta1TidbNodeGroup": {
       "type": "object",
@@ -4610,6 +4886,14 @@
               "$ref": "#/definitions/ClusterNodeChangingProgress"
             }
           ]
+        },
+        "tiproxySetting": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroupTiProxySetting"
+            }
+          ]
         }
       },
       "required": [
@@ -4647,6 +4931,25 @@
         "PAUSED"
       ],
       "description": " - ACTIVE: All nodes are ready.\n - MODIFYING: When TiDB group is modifying.\n - PAUSED: When cluster is paused."
+    },
+    "dedicatedv1beta1TidbNodeGroupTiProxySetting": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of TiProxy.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/TidbNodeGroupTiProxyType"
+            }
+          ]
+        },
+        "nodeCount": {
+          "type": "integer",
+          "format": "int32",
+          "x-nullable": true,
+          "description": "The number of TiProxy nodes in the TiDB group.\nIf not set or set to 0, represents the TiProxy is disabled."
+        }
+      }
     },
     "dedicatedv1beta1VpcPeering": {
       "type": "object",
@@ -4989,7 +5292,18 @@
           "format": "int32"
         },
         "storageType": {
-          "$ref": "#/definitions/ClusterStorageNodeSettingStorageType"
+          "description": "Default to Basic.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/StorageNodeSettingStorageType"
+            }
+          ]
+        },
+        "raftStoreIops": {
+          "type": "integer",
+          "format": "int32",
+          "x-nullable": true,
+          "description": "If raft_store_iops is not set, the default IOPS of raft store will be used."
         },
         "nodeSpecDisplayName": {
           "type": "string",
@@ -5008,8 +5322,7 @@
       "required": [
         "nodeCount",
         "nodeSpecKey",
-        "storageSizeGi",
-        "storageType"
+        "storageSizeGi"
       ]
     },
     "v1beta1ClusterTidbNodeSetting": {
@@ -5036,9 +5349,6 @@
         "tidbNodeGroups"
       ]
     },
-    "v1beta1DeferMaintenanceTaskResponse": {
-      "type": "object"
-    },
     "v1beta1ListAuditLogFilterRulesResponse": {
       "type": "object",
       "properties": {
@@ -5055,48 +5365,6 @@
         },
         "nextPageToken": {
           "type": "string"
-        }
-      }
-    },
-    "v1beta1ListMaintenanceTasksResponse": {
-      "type": "object",
-      "properties": {
-        "maintenanceTasks": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1beta1MaintenanceTask"
-          }
-        },
-        "totalSize": {
-          "type": "integer",
-          "format": "int32",
-          "description": "The total number of maintenance tasks that matched the query."
-        },
-        "nextPageToken": {
-          "type": "string",
-          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
-        }
-      }
-    },
-    "v1beta1ListMaintenanceWindowsResponse": {
-      "type": "object",
-      "properties": {
-        "maintenanceWindows": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/dedicatedv1beta1MaintenanceWindow"
-          }
-        },
-        "totalSize": {
-          "type": "integer",
-          "format": "int32",
-          "description": "The total number of maintenance windows that matched the query."
-        },
-        "nextPageToken": {
-          "type": "string",
-          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
         }
       }
     },
@@ -5149,7 +5417,7 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/dedicatedv1beta1NodeSpec"
+            "$ref": "#/definitions/v1beta1NodeSpec"
           }
         },
         "totalSize": {
@@ -5183,62 +5451,6 @@
           "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
         }
       }
-    },
-    "v1beta1MaintenanceTask": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "title": "Format: maintenanceTasks/{maintenance_task_id}",
-          "readOnly": true
-        },
-        "maintenanceTaskId": {
-          "type": "string",
-          "readOnly": true
-        },
-        "projectId": {
-          "type": "string",
-          "readOnly": true
-        },
-        "description": {
-          "type": "string",
-          "readOnly": true
-        },
-        "state": {
-          "readOnly": true,
-          "allOf": [
-            {
-              "$ref": "#/definitions/v1beta1MaintenanceTaskState"
-            }
-          ]
-        },
-        "createTime": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Timestamp when the task was created.",
-          "readOnly": true
-        },
-        "scheduledApplyTime": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Timestamp when the task run.",
-          "readOnly": true
-        },
-        "deadline": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Timestamp when the task will be expired.",
-          "readOnly": true
-        }
-      }
-    },
-    "v1beta1MaintenanceTaskState": {
-      "type": "string",
-      "enum": [
-        "PENDING",
-        "RUNNING",
-        "DONE"
-      ]
     },
     "v1beta1NetworkContainer": {
       "type": "object",
@@ -5309,29 +5521,20 @@
       "properties": {
         "name": {
           "type": "string",
-          "title": "Format: clusters/{cluster_id}/nodeInstances/{instance_id}",
-          "readOnly": true
+          "title": "Format: clusters/{cluster_id}/nodeInstances/{instance_id}"
         },
         "clusterId": {
-          "type": "string",
-          "readOnly": true
+          "type": "string"
         },
         "instanceId": {
           "type": "string",
-          "title": "Format for TiDB instances in the default TiDB group: tidb-{index}\nFormat for TiDB instances in non-default TiDB groups: {tidb_group_name}-tidb-{index}\nFormat for other instances: {component_type}-{index}",
-          "readOnly": true
+          "title": "Format for TiDB instances in the default TiDB group: tidb-{index}\nFormat for TiDB instances in non-default TiDB groups: {tidb_group_name}-tidb-{index}\nFormat for other instances: {component_type}-{index}"
         },
         "componentType": {
-          "readOnly": true,
-          "allOf": [
-            {
-              "$ref": "#/definitions/dedicatedv1beta1ComponentType"
-            }
-          ]
+          "$ref": "#/definitions/dedicatedv1beta1ComponentType"
         },
         "state": {
           "description": "the state of the instance, e.g. \"Available\".",
-          "readOnly": true,
           "allOf": [
             {
               "$ref": "#/definitions/v1beta1NodeInstanceState"
@@ -5341,42 +5544,50 @@
         "vCpu": {
           "type": "integer",
           "format": "int32",
-          "description": "the cpu size of the instance, e.g. 2.",
-          "readOnly": true
+          "description": "the cpu size of the instance, e.g. 2."
         },
         "memorySizeGi": {
           "type": "integer",
           "format": "int32",
-          "description": "the memory size of the instance, e.g. 8.",
-          "readOnly": true
+          "description": "the memory size of the instance, e.g. 8."
         },
         "availabilityZone": {
           "type": "string",
-          "description": "the availability zone of the instance, e.g. \"us-west1-a\".",
-          "readOnly": true
+          "description": "the availability zone of the instance, e.g. \"us-west1-a\"."
         },
         "storageSizeGi": {
           "type": "integer",
           "format": "int32",
-          "description": "the storage size of the instance, e.g. 100.",
-          "readOnly": true
+          "description": "the storage size of the instance, e.g. 100."
         },
         "tidbNodeGroupId": {
           "type": "string",
-          "x-nullable": true,
-          "readOnly": true
+          "x-nullable": true
         },
         "tidbNodeGroupDisplayName": {
           "type": "string",
-          "x-nullable": true,
-          "readOnly": true
+          "x-nullable": true
         },
         "isDefaultTidbNodeGroup": {
           "type": "boolean",
+          "x-nullable": true
+        },
+        "raftStoreIops": {
+          "type": "integer",
+          "format": "int32",
           "x-nullable": true,
-          "readOnly": true
+          "description": "Only available for instances which have storage. If raft_store_iops is not set, the default IOPS of raft store will be used."
+        },
+        "storageType": {
+          "description": "Only available for instances which have storage.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/StorageNodeSettingStorageType"
+            }
+          ]
         }
-      }
+      },
+      "description": "All fields are output only."
     },
     "v1beta1NodeInstanceState": {
       "type": "string",
@@ -5385,6 +5596,84 @@
         "AVAILABLE",
         "DELETING",
         "UNAVAILABLE"
+      ]
+    },
+    "v1beta1NodeSpec": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Format: regions/{region_id}/componentTypes/{component_type}/nodeSpecs/{node_spec_key}"
+        },
+        "regionId": {
+          "type": "string",
+          "title": "Format: {cloud_provider}-{region_code}"
+        },
+        "componentType": {
+          "$ref": "#/definitions/dedicatedv1beta1ComponentType"
+        },
+        "nodeSpecKey": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "vCpu": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "memorySizeGi": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "defaultStorageSizeGi": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxStorageSizeGi": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "minStorageSizeGi": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "defaultNodeCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "storageTypes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StorageNodeSettingStorageType"
+          }
+        },
+        "maxRaftStoreIops": {
+          "type": "integer",
+          "format": "int32",
+          "x-nullable": true,
+          "description": "Currently only useful when overriding iops for raftlog storage."
+        },
+        "minRaftStoreIops": {
+          "type": "integer",
+          "format": "int32",
+          "x-nullable": true
+        },
+        "default": {
+          "type": "boolean"
+        }
+      },
+      "description": "All fields are output only."
+    },
+    "v1beta1PauseClusterResponse": {
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "$ref": "#/definitions/tidb_cloud_open_apidedicatedv1beta1Cluster"
+        }
+      },
+      "required": [
+        "cluster"
       ]
     },
     "v1beta1PrivateEndpointConnection": {
@@ -5534,12 +5823,24 @@
       "enum": [
         "aws",
         "gcp",
-        "azure"
+        "azure",
+        "alicloud"
       ],
-      "description": "Enum of cloud provider names.\n\n - aws: Amazon Web Services.\n - gcp: Google Cloud Platform.\n - azure: Microsoft Azure."
+      "description": "Enum of cloud provider names.\n\n - aws: Amazon Web Services.\n - gcp: Google Cloud Platform.\n - azure: Microsoft Azure.\n - alicloud: Alibaba Cloud"
     },
     "v1beta1ResetRootPasswordResponse": {
       "type": "object"
+    },
+    "v1beta1ResumeClusterResponse": {
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "$ref": "#/definitions/tidb_cloud_open_apidedicatedv1beta1Cluster"
+        }
+      },
+      "required": [
+        "cluster"
+      ]
     },
     "v1beta1ShowCloudProvidersResponse": {
       "type": "object",
@@ -5594,6 +5895,9 @@
         },
         "azureSasToken": {
           "type": "string"
+        },
+        "bucketManager": {
+          "$ref": "#/definitions/dedicatedv1beta1BucketManager"
         }
       },
       "required": [
@@ -5645,6 +5949,20 @@
         "storageSizeGi": {
           "type": "integer",
           "format": "int32"
+        },
+        "storageType": {
+          "description": "Allow change storage type.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/StorageNodeSettingStorageType"
+            }
+          ]
+        },
+        "raftStoreIops": {
+          "type": "integer",
+          "format": "int32",
+          "x-nullable": true,
+          "description": "If raft_store_iops is not set, the default IOPS of raft store will be used."
         }
       }
     },
@@ -5662,6 +5980,23 @@
           }
         }
       }
+    },
+    "v1beta1UpdateMaintenanceTaskRequestMaintenanceTask": {
+      "type": "object",
+      "properties": {
+        "maintenanceTaskId": {
+          "type": "string"
+        },
+        "scheduledApplyTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the task run."
+        }
+      },
+      "required": [
+        "maintenanceTaskId",
+        "scheduledApplyTime"
+      ]
     },
     "v1beta1UpdateMaintenanceWindowRequestMaintenanceWindow": {
       "type": "object",
@@ -5703,6 +6038,9 @@
           "type": "integer",
           "format": "int32",
           "x-nullable": true
+        },
+        "tiproxySetting": {
+          "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroupTiProxySetting"
         }
       },
       "required": [

@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 // DatabaseAuditLogServiceAPIService DatabaseAuditLogServiceAPI service
@@ -26,11 +27,12 @@ type ApiDatabaseAuditLogServiceCreateAuditLogConfigRequest struct {
 	ctx                     context.Context
 	ApiService              *DatabaseAuditLogServiceAPIService
 	auditLogConfigClusterId string
-	auditLogConfig          *DatabaseAuditLogServiceCreateAuditLogConfigRequest
+	auditLogConfig          *Required1
 	validateOnly            *bool
 }
 
-func (r ApiDatabaseAuditLogServiceCreateAuditLogConfigRequest) AuditLogConfig(auditLogConfig DatabaseAuditLogServiceCreateAuditLogConfigRequest) ApiDatabaseAuditLogServiceCreateAuditLogConfigRequest {
+// Required.
+func (r ApiDatabaseAuditLogServiceCreateAuditLogConfigRequest) AuditLogConfig(auditLogConfig Required1) ApiDatabaseAuditLogServiceCreateAuditLogConfigRequest {
 	r.auditLogConfig = &auditLogConfig
 	return r
 }
@@ -225,10 +227,11 @@ type ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest struct {
 	ctx                         context.Context
 	ApiService                  *DatabaseAuditLogServiceAPIService
 	auditLogFilterRuleClusterId string
-	auditLogFilterRule          *DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest
+	auditLogFilterRule          *Required2
 }
 
-func (r ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) AuditLogFilterRule(auditLogFilterRule DatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest {
+// Required.
+func (r ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) AuditLogFilterRule(auditLogFilterRule Required2) ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest {
 	r.auditLogFilterRule = &auditLogFilterRule
 	return r
 }
@@ -463,6 +466,195 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceDeleteAuditLo
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["Bearer"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["Authorization"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v GooglerpcStatus
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v GooglerpcStatus
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v GooglerpcStatus
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v GooglerpcStatus
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v GooglerpcStatus
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiDatabaseAuditLogServiceGenerateAuditLogFileDownloadAddressRequest struct {
+	ctx             context.Context
+	ApiService      *DatabaseAuditLogServiceAPIService
+	clusterId       string
+	auditLogFileUri *string
+}
+
+func (r ApiDatabaseAuditLogServiceGenerateAuditLogFileDownloadAddressRequest) AuditLogFileUri(auditLogFileUri string) ApiDatabaseAuditLogServiceGenerateAuditLogFileDownloadAddressRequest {
+	r.auditLogFileUri = &auditLogFileUri
+	return r
+}
+
+func (r ApiDatabaseAuditLogServiceGenerateAuditLogFileDownloadAddressRequest) Execute() (*Dedicatedv1beta1GenerateAuditLogFileDownloadAddressResponse, *http.Response, error) {
+	return r.ApiService.DatabaseAuditLogServiceGenerateAuditLogFileDownloadAddressExecute(r)
+}
+
+/*
+DatabaseAuditLogServiceGenerateAuditLogFileDownloadAddress Generate the download address for an audit log file, the address have an 15 minutes expiration time
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@return ApiDatabaseAuditLogServiceGenerateAuditLogFileDownloadAddressRequest
+*/
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGenerateAuditLogFileDownloadAddress(ctx context.Context, clusterId string) ApiDatabaseAuditLogServiceGenerateAuditLogFileDownloadAddressRequest {
+	return ApiDatabaseAuditLogServiceGenerateAuditLogFileDownloadAddressRequest{
+		ApiService: a,
+		ctx:        ctx,
+		clusterId:  clusterId,
+	}
+}
+
+// Execute executes the request
+//
+//	@return Dedicatedv1beta1GenerateAuditLogFileDownloadAddressResponse
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGenerateAuditLogFileDownloadAddressExecute(r ApiDatabaseAuditLogServiceGenerateAuditLogFileDownloadAddressRequest) (*Dedicatedv1beta1GenerateAuditLogFileDownloadAddressResponse, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1GenerateAuditLogFileDownloadAddressResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceGenerateAuditLogFileDownloadAddress")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/clusters/{clusterId}/auditLogConfig:generateAuditLogFileDownloadAddress"
+	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.auditLogFileUri == nil {
+		return localVarReturnValue, nil, reportError("auditLogFileUri is required and must be specified")
+	}
+
+	parameterAddToHeaderOrQuery(localVarQueryParams, "auditLogFileUri", r.auditLogFileUri, "", "")
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -1023,6 +1215,233 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceListAuditLogF
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
+	if r.pageSize != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "pageSize", r.pageSize, "", "")
+	}
+	if r.pageToken != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "pageToken", r.pageToken, "", "")
+	}
+	if r.skip != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "skip", r.skip, "", "")
+	}
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	if r.ctx != nil {
+		// API Key Authentication
+		if auth, ok := r.ctx.Value(ContextAPIKeys).(map[string]APIKey); ok {
+			if apiKey, ok := auth["Bearer"]; ok {
+				var key string
+				if apiKey.Prefix != "" {
+					key = apiKey.Prefix + " " + apiKey.Key
+				} else {
+					key = apiKey.Key
+				}
+				localVarHeaderParams["Authorization"] = key
+			}
+		}
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		if localVarHTTPResponse.StatusCode == 400 {
+			var v GooglerpcStatus
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 401 {
+			var v GooglerpcStatus
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 403 {
+			var v GooglerpcStatus
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 429 {
+			var v GooglerpcStatus
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		if localVarHTTPResponse.StatusCode == 500 {
+			var v GooglerpcStatus
+			err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+			if err != nil {
+				newErr.error = err.Error()
+				return localVarReturnValue, localVarHTTPResponse, newErr
+			}
+			newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+			newErr.model = v
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		var v GooglerpcStatus
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiDatabaseAuditLogServiceQueryAuditLogFilesRequest struct {
+	ctx        context.Context
+	ApiService *DatabaseAuditLogServiceAPIService
+	clusterId  string
+	startTime  *time.Time
+	endTime    *time.Time
+	pageSize   *int32
+	pageToken  *string
+	skip       *int32
+}
+
+// the start time of the audit logs created time range.
+func (r ApiDatabaseAuditLogServiceQueryAuditLogFilesRequest) StartTime(startTime time.Time) ApiDatabaseAuditLogServiceQueryAuditLogFilesRequest {
+	r.startTime = &startTime
+	return r
+}
+
+// the end time of the audit logs created time range.
+func (r ApiDatabaseAuditLogServiceQueryAuditLogFilesRequest) EndTime(endTime time.Time) ApiDatabaseAuditLogServiceQueryAuditLogFilesRequest {
+	r.endTime = &endTime
+	return r
+}
+
+func (r ApiDatabaseAuditLogServiceQueryAuditLogFilesRequest) PageSize(pageSize int32) ApiDatabaseAuditLogServiceQueryAuditLogFilesRequest {
+	r.pageSize = &pageSize
+	return r
+}
+
+func (r ApiDatabaseAuditLogServiceQueryAuditLogFilesRequest) PageToken(pageToken string) ApiDatabaseAuditLogServiceQueryAuditLogFilesRequest {
+	r.pageToken = &pageToken
+	return r
+}
+
+// The number of individual resources to skip before starting to return results. If the skip value causes the cursor to move past the end of the collection, the response will be 200 OK with an empty result set and no next_page_token.
+func (r ApiDatabaseAuditLogServiceQueryAuditLogFilesRequest) Skip(skip int32) ApiDatabaseAuditLogServiceQueryAuditLogFilesRequest {
+	r.skip = &skip
+	return r
+}
+
+func (r ApiDatabaseAuditLogServiceQueryAuditLogFilesRequest) Execute() (*Dedicatedv1beta1QueryAuditLogFilesResponse, *http.Response, error) {
+	return r.ApiService.DatabaseAuditLogServiceQueryAuditLogFilesExecute(r)
+}
+
+/*
+DatabaseAuditLogServiceQueryAuditLogFiles Query audit log files
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId
+	@return ApiDatabaseAuditLogServiceQueryAuditLogFilesRequest
+*/
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceQueryAuditLogFiles(ctx context.Context, clusterId string) ApiDatabaseAuditLogServiceQueryAuditLogFilesRequest {
+	return ApiDatabaseAuditLogServiceQueryAuditLogFilesRequest{
+		ApiService: a,
+		ctx:        ctx,
+		clusterId:  clusterId,
+	}
+}
+
+// Execute executes the request
+//
+//	@return Dedicatedv1beta1QueryAuditLogFilesResponse
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceQueryAuditLogFilesExecute(r ApiDatabaseAuditLogServiceQueryAuditLogFilesRequest) (*Dedicatedv1beta1QueryAuditLogFilesResponse, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Dedicatedv1beta1QueryAuditLogFilesResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceQueryAuditLogFiles")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/clusters/{clusterId}/auditLogConfig:queryAuditLogFiles"
+	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	if r.startTime != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "startTime", r.startTime, "", "")
+	}
+	if r.endTime != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "endTime", r.endTime, "", "")
+	}
 	if r.pageSize != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "pageSize", r.pageSize, "", "")
 	}

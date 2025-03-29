@@ -12,7 +12,6 @@ package cluster
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // V1beta1ClusterClusterPlan the model 'V1beta1ClusterClusterPlan'
@@ -44,18 +43,14 @@ func (v *V1beta1ClusterClusterPlan) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid V1beta1ClusterClusterPlan", value)
+	*v = V1beta1ClusterClusterPlan(value)
+	return nil
 }
 
-// NewV1beta1ClusterClusterPlanFromValue returns a pointer to a valid V1beta1ClusterClusterPlan
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewV1beta1ClusterClusterPlanFromValue(v string) (*V1beta1ClusterClusterPlan, error) {
+// NewV1beta1ClusterClusterPlanFromValue returns a pointer to a valid V1beta1ClusterClusterPlan for the value passed as argument
+func NewV1beta1ClusterClusterPlanFromValue(v string) *V1beta1ClusterClusterPlan {
 	ev := V1beta1ClusterClusterPlan(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for V1beta1ClusterClusterPlan: valid values are %v", v, AllowedV1beta1ClusterClusterPlanEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise
