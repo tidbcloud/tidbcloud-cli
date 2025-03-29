@@ -12,7 +12,6 @@ package branch
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // BranchView View on branch. Pass this enum to control which subsets of fields to get.   - BASIC: Basic response contains basic information for a branch.  - FULL: FULL response contains all detailed information for a branch.
@@ -44,18 +43,14 @@ func (v *BranchView) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid BranchView", value)
+	*v = BranchView(value)
+	return nil
 }
 
-// NewBranchViewFromValue returns a pointer to a valid BranchView
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewBranchViewFromValue(v string) (*BranchView, error) {
+// NewBranchViewFromValue returns a pointer to a valid BranchView for the value passed as argument
+func NewBranchViewFromValue(v string) *BranchView {
 	ev := BranchView(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for BranchView: valid values are %v", v, AllowedBranchViewEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

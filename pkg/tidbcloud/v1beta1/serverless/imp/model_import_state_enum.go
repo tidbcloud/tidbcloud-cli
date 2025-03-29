@@ -12,7 +12,6 @@ package imp
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ImportStateEnum  - PREPARING: The import is preparing.  - IMPORTING: The import is importing.  - COMPLETED: The import is completed.  - FAILED: The import is failed.  - CANCELING: The import is canceling.  - CANCELED: The import is canceled.
@@ -52,18 +51,14 @@ func (v *ImportStateEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ImportStateEnum", value)
+	*v = ImportStateEnum(value)
+	return nil
 }
 
-// NewImportStateEnumFromValue returns a pointer to a valid ImportStateEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewImportStateEnumFromValue(v string) (*ImportStateEnum, error) {
+// NewImportStateEnumFromValue returns a pointer to a valid ImportStateEnum for the value passed as argument
+func NewImportStateEnumFromValue(v string) *ImportStateEnum {
 	ev := ImportStateEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ImportStateEnum: valid values are %v", v, AllowedImportStateEnumEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

@@ -12,7 +12,6 @@ package export
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ExportCompressionTypeEnum  - GZIP: Gzip compression.  - SNAPPY: Snappy compression.  - ZSTD: Zstd compression.  - NONE: No compression.
@@ -48,18 +47,14 @@ func (v *ExportCompressionTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ExportCompressionTypeEnum", value)
+	*v = ExportCompressionTypeEnum(value)
+	return nil
 }
 
-// NewExportCompressionTypeEnumFromValue returns a pointer to a valid ExportCompressionTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewExportCompressionTypeEnumFromValue(v string) (*ExportCompressionTypeEnum, error) {
+// NewExportCompressionTypeEnumFromValue returns a pointer to a valid ExportCompressionTypeEnum for the value passed as argument
+func NewExportCompressionTypeEnumFromValue(v string) *ExportCompressionTypeEnum {
 	ev := ExportCompressionTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ExportCompressionTypeEnum: valid values are %v", v, AllowedExportCompressionTypeEnumEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

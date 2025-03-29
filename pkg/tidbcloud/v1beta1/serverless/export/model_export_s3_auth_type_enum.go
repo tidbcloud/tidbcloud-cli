@@ -12,7 +12,6 @@ package export
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ExportS3AuthTypeEnum  - ROLE_ARN: The access method is role arn.  - ACCESS_KEY: The access method is access key.
@@ -44,18 +43,14 @@ func (v *ExportS3AuthTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ExportS3AuthTypeEnum", value)
+	*v = ExportS3AuthTypeEnum(value)
+	return nil
 }
 
-// NewExportS3AuthTypeEnumFromValue returns a pointer to a valid ExportS3AuthTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewExportS3AuthTypeEnumFromValue(v string) (*ExportS3AuthTypeEnum, error) {
+// NewExportS3AuthTypeEnumFromValue returns a pointer to a valid ExportS3AuthTypeEnum for the value passed as argument
+func NewExportS3AuthTypeEnumFromValue(v string) *ExportS3AuthTypeEnum {
 	ev := ExportS3AuthTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ExportS3AuthTypeEnum: valid values are %v", v, AllowedExportS3AuthTypeEnumEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

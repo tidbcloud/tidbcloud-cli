@@ -12,7 +12,6 @@ package pingchat
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // PingchatChatMessageRole User's input as \"user\", AI assistant's reply as \"assistant\", see https://github.com/gin-gonic/gin/issues/3234.
@@ -44,18 +43,14 @@ func (v *PingchatChatMessageRole) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid PingchatChatMessageRole", value)
+	*v = PingchatChatMessageRole(value)
+	return nil
 }
 
-// NewPingchatChatMessageRoleFromValue returns a pointer to a valid PingchatChatMessageRole
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewPingchatChatMessageRoleFromValue(v string) (*PingchatChatMessageRole, error) {
+// NewPingchatChatMessageRoleFromValue returns a pointer to a valid PingchatChatMessageRole for the value passed as argument
+func NewPingchatChatMessageRoleFromValue(v string) *PingchatChatMessageRole {
 	ev := PingchatChatMessageRole(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for PingchatChatMessageRole: valid values are %v", v, AllowedPingchatChatMessageRoleEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

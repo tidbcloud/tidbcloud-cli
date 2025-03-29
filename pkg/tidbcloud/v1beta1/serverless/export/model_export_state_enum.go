@@ -12,7 +12,6 @@ package export
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ExportStateEnum Output Only. Export State.   - RUNNING: The export job is being created.  - SUCCEEDED: The export job is success.  - FAILED: The export job is failed.  - CANCELED: The export job is canceled.  - DELETED: The export job is deleted.  - EXPIRED: The export is expired, only local export will be expired.
@@ -52,18 +51,14 @@ func (v *ExportStateEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ExportStateEnum", value)
+	*v = ExportStateEnum(value)
+	return nil
 }
 
-// NewExportStateEnumFromValue returns a pointer to a valid ExportStateEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewExportStateEnumFromValue(v string) (*ExportStateEnum, error) {
+// NewExportStateEnumFromValue returns a pointer to a valid ExportStateEnum for the value passed as argument
+func NewExportStateEnumFromValue(v string) *ExportStateEnum {
 	ev := ExportStateEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ExportStateEnum: valid values are %v", v, AllowedExportStateEnumEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

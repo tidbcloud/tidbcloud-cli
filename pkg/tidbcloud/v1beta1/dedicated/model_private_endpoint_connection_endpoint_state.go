@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // PrivateEndpointConnectionEndpointState  - PENDING: Customer has posted to TiDB cloud API, but endpoint connection has not been accepted **asynchronously** by TiDB Cloud.  - DISCOVERED: Customer has created the endpoint in their vpc, but has not posted to TiDB Cloud API.
@@ -50,18 +49,14 @@ func (v *PrivateEndpointConnectionEndpointState) UnmarshalJSON(src []byte) error
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid PrivateEndpointConnectionEndpointState", value)
+	*v = PrivateEndpointConnectionEndpointState(value)
+	return nil
 }
 
-// NewPrivateEndpointConnectionEndpointStateFromValue returns a pointer to a valid PrivateEndpointConnectionEndpointState
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewPrivateEndpointConnectionEndpointStateFromValue(v string) (*PrivateEndpointConnectionEndpointState, error) {
+// NewPrivateEndpointConnectionEndpointStateFromValue returns a pointer to a valid PrivateEndpointConnectionEndpointState for the value passed as argument
+func NewPrivateEndpointConnectionEndpointStateFromValue(v string) *PrivateEndpointConnectionEndpointState {
 	ev := PrivateEndpointConnectionEndpointState(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for PrivateEndpointConnectionEndpointState: valid values are %v", v, AllowedPrivateEndpointConnectionEndpointStateEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

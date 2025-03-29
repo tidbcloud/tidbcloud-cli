@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ClusterServiceListClustersClusterStatesParameterInner the model 'ClusterServiceListClustersClusterStatesParameterInner'
@@ -66,18 +65,14 @@ func (v *ClusterServiceListClustersClusterStatesParameterInner) UnmarshalJSON(sr
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ClusterServiceListClustersClusterStatesParameterInner", value)
+	*v = ClusterServiceListClustersClusterStatesParameterInner(value)
+	return nil
 }
 
-// NewClusterServiceListClustersClusterStatesParameterInnerFromValue returns a pointer to a valid ClusterServiceListClustersClusterStatesParameterInner
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewClusterServiceListClustersClusterStatesParameterInnerFromValue(v string) (*ClusterServiceListClustersClusterStatesParameterInner, error) {
+// NewClusterServiceListClustersClusterStatesParameterInnerFromValue returns a pointer to a valid ClusterServiceListClustersClusterStatesParameterInner for the value passed as argument
+func NewClusterServiceListClustersClusterStatesParameterInnerFromValue(v string) *ClusterServiceListClustersClusterStatesParameterInner {
 	ev := ClusterServiceListClustersClusterStatesParameterInner(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ClusterServiceListClustersClusterStatesParameterInner: valid values are %v", v, AllowedClusterServiceListClustersClusterStatesParameterInnerEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

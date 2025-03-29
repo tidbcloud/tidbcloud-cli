@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Dedicatedv1beta1MaintenanceTaskState the model 'Dedicatedv1beta1MaintenanceTaskState'
@@ -46,18 +45,14 @@ func (v *Dedicatedv1beta1MaintenanceTaskState) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid Dedicatedv1beta1MaintenanceTaskState", value)
+	*v = Dedicatedv1beta1MaintenanceTaskState(value)
+	return nil
 }
 
-// NewDedicatedv1beta1MaintenanceTaskStateFromValue returns a pointer to a valid Dedicatedv1beta1MaintenanceTaskState
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewDedicatedv1beta1MaintenanceTaskStateFromValue(v string) (*Dedicatedv1beta1MaintenanceTaskState, error) {
+// NewDedicatedv1beta1MaintenanceTaskStateFromValue returns a pointer to a valid Dedicatedv1beta1MaintenanceTaskState for the value passed as argument
+func NewDedicatedv1beta1MaintenanceTaskStateFromValue(v string) *Dedicatedv1beta1MaintenanceTaskState {
 	ev := Dedicatedv1beta1MaintenanceTaskState(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for Dedicatedv1beta1MaintenanceTaskState: valid values are %v", v, AllowedDedicatedv1beta1MaintenanceTaskStateEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

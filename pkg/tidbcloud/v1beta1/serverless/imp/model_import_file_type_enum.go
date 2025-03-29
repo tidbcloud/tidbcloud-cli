@@ -12,7 +12,6 @@ package imp
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ImportFileTypeEnum  - CSV: CSV type.  - SQL: SQL type.  - AURORA_SNAPSHOT: Aurora snapshot type.  - PARQUET: Parquet type.
@@ -48,18 +47,14 @@ func (v *ImportFileTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ImportFileTypeEnum", value)
+	*v = ImportFileTypeEnum(value)
+	return nil
 }
 
-// NewImportFileTypeEnumFromValue returns a pointer to a valid ImportFileTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewImportFileTypeEnumFromValue(v string) (*ImportFileTypeEnum, error) {
+// NewImportFileTypeEnumFromValue returns a pointer to a valid ImportFileTypeEnum for the value passed as argument
+func NewImportFileTypeEnumFromValue(v string) *ImportFileTypeEnum {
 	ev := ImportFileTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ImportFileTypeEnum: valid values are %v", v, AllowedImportFileTypeEnumEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

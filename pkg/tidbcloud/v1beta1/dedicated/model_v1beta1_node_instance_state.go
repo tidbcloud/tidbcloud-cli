@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // V1beta1NodeInstanceState the model 'V1beta1NodeInstanceState'
@@ -48,18 +47,14 @@ func (v *V1beta1NodeInstanceState) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid V1beta1NodeInstanceState", value)
+	*v = V1beta1NodeInstanceState(value)
+	return nil
 }
 
-// NewV1beta1NodeInstanceStateFromValue returns a pointer to a valid V1beta1NodeInstanceState
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewV1beta1NodeInstanceStateFromValue(v string) (*V1beta1NodeInstanceState, error) {
+// NewV1beta1NodeInstanceStateFromValue returns a pointer to a valid V1beta1NodeInstanceState for the value passed as argument
+func NewV1beta1NodeInstanceStateFromValue(v string) *V1beta1NodeInstanceState {
 	ev := V1beta1NodeInstanceState(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for V1beta1NodeInstanceState: valid values are %v", v, AllowedV1beta1NodeInstanceStateEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

@@ -12,7 +12,6 @@ package branch
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // BranchState Output Only. Branch State.   - CREATING: The branch is being created.  - ACTIVE: The branch is active and running.  - DELETED: The branch is being deleted.  - MAINTENANCE: The branch is under maintenance.  - RESTORING: The branch is restoring.
@@ -50,18 +49,14 @@ func (v *BranchState) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid BranchState", value)
+	*v = BranchState(value)
+	return nil
 }
 
-// NewBranchStateFromValue returns a pointer to a valid BranchState
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewBranchStateFromValue(v string) (*BranchState, error) {
+// NewBranchStateFromValue returns a pointer to a valid BranchState for the value passed as argument
+func NewBranchStateFromValue(v string) *BranchState {
 	ev := BranchState(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for BranchState: valid values are %v", v, AllowedBranchStateEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

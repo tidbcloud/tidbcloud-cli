@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Commonv1beta1ClusterState Enum of possible states of a cluster.   - CREATING: Cluster is being created.  - DELETING: Cluster is being deleted.  - ACTIVE: Cluster is active for use.  - RESTORING: Cluster data is being restored.  - MAINTENANCE: Cluster is under maintenance.  - DELETED: Cluster has been deleted.  - INACTIVE: Cluster is not active, but not being deleted.  - UPGRADING: Cluster is being updated. Only for Dedicated Cluster.  - IMPORTING: Cluster is being imported. Only for Dedicated Cluster.  - MODIFYING: Cluster is being modified. Only for Dedicated Cluster.  - PAUSING: Cluster is being paused. Only for Dedicated Cluster.  - PAUSED: Cluster is paused. Only for Dedicated Cluster.  - RESUMING: Cluster is resuming. Only for Dedicated Cluster.
@@ -66,18 +65,14 @@ func (v *Commonv1beta1ClusterState) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid Commonv1beta1ClusterState", value)
+	*v = Commonv1beta1ClusterState(value)
+	return nil
 }
 
-// NewCommonv1beta1ClusterStateFromValue returns a pointer to a valid Commonv1beta1ClusterState
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewCommonv1beta1ClusterStateFromValue(v string) (*Commonv1beta1ClusterState, error) {
+// NewCommonv1beta1ClusterStateFromValue returns a pointer to a valid Commonv1beta1ClusterState for the value passed as argument
+func NewCommonv1beta1ClusterStateFromValue(v string) *Commonv1beta1ClusterState {
 	ev := Commonv1beta1ClusterState(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for Commonv1beta1ClusterState: valid values are %v", v, AllowedCommonv1beta1ClusterStateEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

@@ -12,7 +12,6 @@ package cluster
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ServerlessServiceGetClusterViewParameter the model 'ServerlessServiceGetClusterViewParameter'
@@ -44,18 +43,14 @@ func (v *ServerlessServiceGetClusterViewParameter) UnmarshalJSON(src []byte) err
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ServerlessServiceGetClusterViewParameter", value)
+	*v = ServerlessServiceGetClusterViewParameter(value)
+	return nil
 }
 
-// NewServerlessServiceGetClusterViewParameterFromValue returns a pointer to a valid ServerlessServiceGetClusterViewParameter
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewServerlessServiceGetClusterViewParameterFromValue(v string) (*ServerlessServiceGetClusterViewParameter, error) {
+// NewServerlessServiceGetClusterViewParameterFromValue returns a pointer to a valid ServerlessServiceGetClusterViewParameter for the value passed as argument
+func NewServerlessServiceGetClusterViewParameterFromValue(v string) *ServerlessServiceGetClusterViewParameter {
 	ev := ServerlessServiceGetClusterViewParameter(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ServerlessServiceGetClusterViewParameter: valid values are %v", v, AllowedServerlessServiceGetClusterViewParameterEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

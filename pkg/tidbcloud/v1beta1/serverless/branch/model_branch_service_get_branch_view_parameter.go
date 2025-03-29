@@ -12,7 +12,6 @@ package branch
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // BranchServiceGetBranchViewParameter the model 'BranchServiceGetBranchViewParameter'
@@ -44,18 +43,14 @@ func (v *BranchServiceGetBranchViewParameter) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid BranchServiceGetBranchViewParameter", value)
+	*v = BranchServiceGetBranchViewParameter(value)
+	return nil
 }
 
-// NewBranchServiceGetBranchViewParameterFromValue returns a pointer to a valid BranchServiceGetBranchViewParameter
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewBranchServiceGetBranchViewParameterFromValue(v string) (*BranchServiceGetBranchViewParameter, error) {
+// NewBranchServiceGetBranchViewParameterFromValue returns a pointer to a valid BranchServiceGetBranchViewParameter for the value passed as argument
+func NewBranchServiceGetBranchViewParameterFromValue(v string) *BranchServiceGetBranchViewParameter {
 	ev := BranchServiceGetBranchViewParameter(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for BranchServiceGetBranchViewParameter: valid values are %v", v, AllowedBranchServiceGetBranchViewParameterEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise
