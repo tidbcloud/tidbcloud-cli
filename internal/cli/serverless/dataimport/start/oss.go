@@ -21,7 +21,6 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
-	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -29,18 +28,17 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type S3Opts struct {
-	h             *internal.Helper
-	interactive   bool
-	clusterId     string
-	cloudProvider *cluster.V1beta1RegionCloudProvider
+type OSSOpts struct {
+	h           *internal.Helper
+	interactive bool
+	clusterId   string
 }
 
-func (o S3Opts) Run(cmd *cobra.Command) error {
+func (o OSSOpts) Run(cmd *cobra.Command) error {
 	ctx := cmd.Context()
-	var s3Uri, s3Arn, accessKeyID, secretAccessKey string
+	var ossUri, accessKeyID, accessKeySecret string
 	var fileType imp.ImportFileTypeEnum
-	var authType imp.ImportS3AuthTypeEnum
+	var authType imp.ImportOSSAuthTypeEnum
 	var format *imp.CSVFormat
 	d, err := o.h.Client()
 	if err != nil {
@@ -49,10 +47,7 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 
 	if o.interactive {
 		// interactive mode
-		authTypes := []interface{}{imp.IMPORTS3AUTHTYPEENUM_ROLE_ARN, imp.IMPORTS3AUTHTYPEENUM_ACCESS_KEY}
-		if o.cloudProvider != nil && *o.cloudProvider != cluster.V1BETA1REGIONCLOUDPROVIDER_AWS {
-			authTypes = []interface{}{imp.IMPORTS3AUTHTYPEENUM_ACCESS_KEY}
-		}
+		authTypes := []interface{}{imp.IMPORTOSSAUTHTYPEENUM_ACCESS_KEY}
 		model, err := ui.InitialSelectModel(authTypes, "Choose the auth type:")
 		if err != nil {
 			return err
@@ -65,39 +60,25 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		if m, _ := authTypeModel.(ui.SelectModel); m.Interrupted {
 			return util.InterruptError
 		}
-		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(imp.ImportS3AuthTypeEnum)
+		authType = authTypeModel.(ui.SelectModel).Choices[authTypeModel.(ui.SelectModel).Selected].(imp.ImportOSSAuthTypeEnum)
 
-		if authType == imp.IMPORTS3AUTHTYPEENUM_ROLE_ARN {
-			inputs := []string{flag.S3URI, flag.S3RoleArn}
+		if authType == imp.IMPORTOSSAUTHTYPEENUM_ACCESS_KEY {
+			inputs := []string{flag.OSSURI, flag.OSSAccessKeyID, flag.OSSAccessKeySecret}
 			textInput, err := ui.InitialInputModel(inputs, inputDescription)
 			if err != nil {
 				return err
 			}
-			s3Uri = textInput.Inputs[0].Value()
-			if s3Uri == "" {
-				return errors.New("empty S3 URI")
-			}
-			s3Arn = textInput.Inputs[1].Value()
-			if s3Arn == "" {
-				return errors.New("empty S3 role arn")
-			}
-		} else if authType == imp.IMPORTS3AUTHTYPEENUM_ACCESS_KEY {
-			inputs := []string{flag.S3URI, flag.S3AccessKeyID, flag.S3SecretAccessKey}
-			textInput, err := ui.InitialInputModel(inputs, inputDescription)
-			if err != nil {
-				return err
-			}
-			s3Uri = textInput.Inputs[0].Value()
-			if s3Uri == "" {
-				return errors.New("empty S3 URI")
+			ossUri = textInput.Inputs[0].Value()
+			if ossUri == "" {
+				return errors.New("empty OSS URI")
 			}
 			accessKeyID = textInput.Inputs[1].Value()
 			if accessKeyID == "" {
-				return errors.New("empty S3 access key Id")
+				return errors.New("empty OSS AccessKey Id")
 			}
-			secretAccessKey = textInput.Inputs[2].Value()
-			if secretAccessKey == "" {
-				return errors.New("empty S3 secret access key")
+			accessKeySecret = textInput.Inputs[2].Value()
+			if accessKeySecret == "" {
+				return errors.New("empty OSS AccessKey Secret")
 			}
 		} else {
 			return fmt.Errorf("invalid auth type :%s", authType)
@@ -137,12 +118,12 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 		if !fileType.IsValid() {
 			return fmt.Errorf("file type \"%s\" is not supported, please use one of %q", fileTypeStr, imp.AllowedImportFileTypeEnumEnumValues)
 		}
-		s3Uri, err = cmd.Flags().GetString(flag.S3URI)
+		ossUri, err = cmd.Flags().GetString(flag.OSSURI)
 		if err != nil {
 			return errors.Trace(err)
 		}
-		if s3Uri == "" {
-			return errors.New("empty S3 URI")
+		if ossUri == "" {
+			return errors.New("empty OSS URI")
 		}
 
 		// optional flags
@@ -152,40 +133,30 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 				return errors.Trace(err)
 			}
 		}
-		s3Arn, err = cmd.Flags().GetString(flag.S3RoleArn)
+		accessKeyID, err = cmd.Flags().GetString(flag.OSSAccessKeyID)
 		if err != nil {
 			return errors.Trace(err)
 		}
-		accessKeyID, err = cmd.Flags().GetString(flag.S3AccessKeyID)
+		accessKeySecret, err = cmd.Flags().GetString(flag.OSSAccessKeySecret)
 		if err != nil {
 			return errors.Trace(err)
 		}
-		secretAccessKey, err = cmd.Flags().GetString(flag.S3SecretAccessKey)
-		if err != nil {
-			return errors.Trace(err)
-		}
-		if s3Arn != "" {
-			authType = imp.IMPORTS3AUTHTYPEENUM_ROLE_ARN
-		} else if accessKeyID != "" && secretAccessKey != "" {
-			authType = imp.IMPORTS3AUTHTYPEENUM_ACCESS_KEY
+		if accessKeyID != "" && accessKeySecret != "" {
+			authType = imp.IMPORTOSSAUTHTYPEENUM_ACCESS_KEY
 		} else {
-			return fmt.Errorf("either role arn or access key id and secret access key must be provided")
+			return fmt.Errorf("AccessKey ID and AccessKey Secret must be provided")
 		}
 	}
 
-	source := imp.NewImportSource(imp.IMPORTSOURCETYPEENUM_S3)
-	source.S3 = imp.NewS3Source(s3Uri, authType)
-	if authType == imp.IMPORTS3AUTHTYPEENUM_ROLE_ARN {
-		source.S3.AuthType = authType
-		source.S3.RoleArn = &s3Arn
-	} else {
-		source.S3.AuthType = authType
-		source.S3.AccessKey = &imp.S3SourceAccessKey{
-			Id:     accessKeyID,
-			Secret: secretAccessKey,
-		}
+	source := imp.NewImportSource(imp.IMPORTSOURCETYPEENUM_OSS)
+	source.Oss = imp.NewOSSSource(ossUri, authType)
+	source.Oss.AuthType = authType
+	source.Oss.AccessKey = &imp.OSSSourceAccessKey{
+		Id:     accessKeyID,
+		Secret: accessKeySecret,
 	}
-	options := imp.NewImportOptions(imp.ImportFileTypeEnum(fileType))
+
+	options := imp.NewImportOptions(fileType)
 	if fileType == imp.IMPORTFILETYPEENUM_CSV {
 		options.CsvFormat = format
 	}

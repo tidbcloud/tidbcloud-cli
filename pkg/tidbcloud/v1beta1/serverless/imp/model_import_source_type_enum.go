@@ -19,10 +19,12 @@ type ImportSourceTypeEnum string
 
 // List of ImportSourceType.Enum
 const (
-	IMPORTSOURCETYPEENUM_LOCAL      ImportSourceTypeEnum = "LOCAL"
-	IMPORTSOURCETYPEENUM_S3         ImportSourceTypeEnum = "S3"
-	IMPORTSOURCETYPEENUM_GCS        ImportSourceTypeEnum = "GCS"
-	IMPORTSOURCETYPEENUM_AZURE_BLOB ImportSourceTypeEnum = "AZURE_BLOB"
+	IMPORTSOURCETYPEENUM_LOCAL         ImportSourceTypeEnum = "LOCAL"
+	IMPORTSOURCETYPEENUM_S3            ImportSourceTypeEnum = "S3"
+	IMPORTSOURCETYPEENUM_GCS           ImportSourceTypeEnum = "GCS"
+	IMPORTSOURCETYPEENUM_AZURE_BLOB    ImportSourceTypeEnum = "AZURE_BLOB"
+	IMPORTSOURCETYPEENUM_S3_COMPATIBLE ImportSourceTypeEnum = "S3_COMPATIBLE"
+	IMPORTSOURCETYPEENUM_OSS           ImportSourceTypeEnum = "OSS"
 )
 
 // All allowed values of ImportSourceTypeEnum enum
@@ -31,6 +33,8 @@ var AllowedImportSourceTypeEnumEnumValues = []ImportSourceTypeEnum{
 	"S3",
 	"GCS",
 	"AZURE_BLOB",
+	"S3_COMPATIBLE",
+	"OSS",
 }
 
 func (v *ImportSourceTypeEnum) UnmarshalJSON(src []byte) error {

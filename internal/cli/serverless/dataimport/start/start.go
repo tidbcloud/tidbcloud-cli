@@ -27,6 +27,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/telemetry"
 	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 
 	"github.com/AlecAivazis/survey/v2"
@@ -37,6 +38,14 @@ import (
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 )
+
+var allowedImportSourceTypeEnumEnumValues = []imp.ImportSourceTypeEnum{
+	"LOCAL",
+	"S3",
+	"GCS",
+	"AZURE_BLOB",
+	"OSS",
+}
 
 const (
 	defaultCsvSeparator         = ","
@@ -53,6 +62,9 @@ var inputDescription = map[string]string{
 	flag.S3AccessKeyID:        "Input your S3 access key id",
 	flag.S3SecretAccessKey:    "Input your S3 secret access key",
 	flag.S3RoleArn:            "Input your S3 role arn",
+	flag.OSSURI:               "Input your Alibaba Cloud OSS URI in oss://<bucket>/<path> format",
+	flag.OSSAccessKeyID:       "Input your Alibaba Cloud OSS AccessKey ID",
+	flag.OSSAccessKeySecret:   "Input your Alibaba Cloud OSS AccessKey Secret",
 	flag.AzureBlobURI:         "Input your Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format",
 	flag.AzureBlobSASToken:    "Input your Azure Blob SAS token",
 	flag.GCSURI:               "Input your GCS URI in gs://<bucket>/<path> format",
@@ -160,6 +172,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var sourceType imp.ImportSourceTypeEnum
 			var clusterId string
+			var cloudProvider *cluster.V1beta1RegionCloudProvider
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
@@ -176,11 +189,12 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 
-				cluster, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
+				c, err := cloud.GetSelectedCluster(ctx, project.ID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				clusterId = cluster.ID
+				clusterId = c.ID
+				cloudProvider = c.CloudProvider
 
 				sourceType, err = getSelectedSourceType()
 				if err != nil {
@@ -207,9 +221,10 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 				return localOpts.Run(cmd)
 			} else if sourceType == imp.IMPORTSOURCETYPEENUM_S3 {
 				s3Opts := S3Opts{
-					h:           h,
-					interactive: opts.interactive,
-					clusterId:   clusterId,
+					h:             h,
+					interactive:   opts.interactive,
+					clusterId:     clusterId,
+					cloudProvider: cloudProvider,
 				}
 				return s3Opts.Run(cmd)
 			} else if sourceType == imp.IMPORTSOURCETYPEENUM_GCS {
@@ -226,6 +241,13 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 					clusterId:   clusterId,
 				}
 				return azBlobOpts.Run(cmd)
+			} else if sourceType == imp.IMPORTSOURCETYPEENUM_OSS {
+				ossOpts := OSSOpts{
+					h:           h,
+					interactive: opts.interactive,
+					clusterId:   clusterId,
+				}
+				return ossOpts.Run(cmd)
 			} else {
 				return errors.New("unsupported import source type")
 			}
@@ -233,7 +255,7 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	startCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID.")
-	startCmd.Flags().String(flag.SourceType, "LOCAL", fmt.Sprintf("The import source type, one of %q.", imp.AllowedImportSourceTypeEnumEnumValues))
+	startCmd.Flags().String(flag.SourceType, "LOCAL", fmt.Sprintf("The import source type, one of %q.", allowedImportSourceTypeEnumEnumValues))
 	startCmd.Flags().String(flag.FileType, "", fmt.Sprintf("The import file type, one of %q.", imp.AllowedImportFileTypeEnumEnumValues))
 
 	startCmd.Flags().String(flag.LocalFilePath, "", "The local file path to import.")
@@ -248,6 +270,11 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 	startCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3AccessKeyID)
 	startCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3SecretAccessKey)
 	startCmd.MarkFlagsRequiredTogether(flag.S3AccessKeyID, flag.S3SecretAccessKey)
+
+	startCmd.Flags().String(flag.OSSAccessKeyID, "", "The AccessKey ID of the Alibaba Cloud OSS.")
+	startCmd.Flags().String(flag.OSSAccessKeySecret, "", "The AccessKey Secret of the Alibaba Cloud OSS.")
+	startCmd.Flags().String(flag.OSSURI, "", "The OSS URI in oss://<bucket>/<path> format. Required when source type is Alibaba Cloud OSS.")
+	startCmd.MarkFlagsRequiredTogether(flag.OSSAccessKeyID, flag.OSSAccessKeySecret)
 
 	startCmd.Flags().String(flag.GCSURI, "", "The GCS URI in gs://<bucket>/<path> format. Required when source type is GCS.")
 	startCmd.Flags().String(flag.GCSServiceAccountKey, "", "The base64 encoded service account key of GCS.")
@@ -266,8 +293,8 @@ func StartCmd(h *internal.Helper) *cobra.Command {
 }
 
 func getSelectedSourceType() (imp.ImportSourceTypeEnum, error) {
-	SourceTypes := make([]interface{}, 0, len(imp.AllowedImportSourceTypeEnumEnumValues))
-	for _, sourceType := range imp.AllowedImportSourceTypeEnumEnumValues {
+	SourceTypes := make([]interface{}, 0, len(allowedImportSourceTypeEnumEnumValues))
+	for _, sourceType := range allowedImportSourceTypeEnumEnumValues {
 		SourceTypes = append(SourceTypes, sourceType)
 	}
 	model, err := ui.InitialSelectModel(SourceTypes, "Choose import source type:")

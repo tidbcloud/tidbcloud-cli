@@ -27,7 +27,6 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/aws/s3"
 	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
-
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
