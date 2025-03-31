@@ -26,9 +26,11 @@ ticloud serverless create [flags]
   -n, --display-name string            Display name of the cluster to de created.
       --encryption                     Whether Enhanced Encryption at Rest is enabled.
   -h, --help                           help for create
+      --max-rcu int32                  Maximum RCU for the cluster, at most 100000.
+      --min-rcu int32                  Minimum RCU for the cluster, at least 2000.
   -p, --project-id string              The ID of the project, in which the cluster will be created. (default "default project")
   -r, --region string                  The name of cloud region. You can use "ticloud serverless region" to see all regions.
-      --spending-limit-monthly int32   Maximum monthly spending limit in USD cents. (optional)
+      --spending-limit-monthly int32   Maximum monthly spending limit in USD cents.
 ```
 
 ### Options inherited from parent commands

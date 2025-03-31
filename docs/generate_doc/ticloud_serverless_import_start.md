@@ -53,11 +53,14 @@ ticloud serverless import start [flags]
       --local.file-path string           The local file path to import.
       --local.target-database string     Target database to which import data.
       --local.target-table string        Target table to which import data.
+      --oss.access-key-id string         The AccessKey ID of the Alibaba Cloud OSS.
+      --oss.access-key-secret string     The AccessKey Secret of the Alibaba Cloud OSS.
+      --oss.uri string                   The OSS URI in oss://<bucket>/<path> format. Required when source type is Alibaba Cloud OSS.
       --s3.access-key-id string          The access key ID of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].
       --s3.role-arn string               The role arn of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].
       --s3.secret-access-key string      The secret access key of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].
       --s3.uri string                    The S3 URI in s3://<bucket>/<path> format. Required when source type is S3.
-      --source-type string               The import source type, one of ["LOCAL" "S3" "GCS" "AZURE_BLOB"]. (default "LOCAL")
+      --source-type string               The import source type, one of ["LOCAL" "S3" "GCS" "AZURE_BLOB" "OSS"]. (default "LOCAL")
 ```
 
 ### Options inherited from parent commands
