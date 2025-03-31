@@ -20,6 +20,7 @@ Manage TiDB Cloud Serverless clusters
 
 * [ticloud](ticloud.md)	 - CLI tool to manage TiDB Cloud
 * [ticloud serverless branch](ticloud_serverless_branch.md)	 - Manage TiDB Cloud Serverless branches
+* [ticloud serverless capacity](ticloud_serverless_capacity.md)	 - Set capacity for a TiDB Cloud Serverless cluster
 * [ticloud serverless create](ticloud_serverless_create.md)	 - Create a TiDB Cloud Serverless cluster
 * [ticloud serverless delete](ticloud_serverless_delete.md)	 - Delete a TiDB Cloud Serverless cluster
 * [ticloud serverless describe](ticloud_serverless_describe.md)	 - Describe a TiDB Cloud Serverless cluster
