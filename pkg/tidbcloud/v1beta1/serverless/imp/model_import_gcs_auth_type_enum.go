@@ -12,7 +12,6 @@ package imp
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ImportGcsAuthTypeEnum  - SERVICE_ACCOUNT_KEY: The access method is service account key.
@@ -42,18 +41,14 @@ func (v *ImportGcsAuthTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ImportGcsAuthTypeEnum", value)
+	*v = ImportGcsAuthTypeEnum(value)
+	return nil
 }
 
-// NewImportGcsAuthTypeEnumFromValue returns a pointer to a valid ImportGcsAuthTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewImportGcsAuthTypeEnumFromValue(v string) (*ImportGcsAuthTypeEnum, error) {
+// NewImportGcsAuthTypeEnumFromValue returns a pointer to a valid ImportGcsAuthTypeEnum for the value passed as argument
+func NewImportGcsAuthTypeEnumFromValue(v string) *ImportGcsAuthTypeEnum {
 	ev := ImportGcsAuthTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ImportGcsAuthTypeEnum: valid values are %v", v, AllowedImportGcsAuthTypeEnumEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

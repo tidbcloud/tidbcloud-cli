@@ -12,7 +12,6 @@ package export
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ExportGcsAuthTypeEnum  - SERVICE_ACCOUNT_KEY: The access method is service account key.
@@ -42,18 +41,14 @@ func (v *ExportGcsAuthTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ExportGcsAuthTypeEnum", value)
+	*v = ExportGcsAuthTypeEnum(value)
+	return nil
 }
 
-// NewExportGcsAuthTypeEnumFromValue returns a pointer to a valid ExportGcsAuthTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewExportGcsAuthTypeEnumFromValue(v string) (*ExportGcsAuthTypeEnum, error) {
+// NewExportGcsAuthTypeEnumFromValue returns a pointer to a valid ExportGcsAuthTypeEnum for the value passed as argument
+func NewExportGcsAuthTypeEnumFromValue(v string) *ExportGcsAuthTypeEnum {
 	ev := ExportGcsAuthTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ExportGcsAuthTypeEnum: valid values are %v", v, AllowedExportGcsAuthTypeEnumEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

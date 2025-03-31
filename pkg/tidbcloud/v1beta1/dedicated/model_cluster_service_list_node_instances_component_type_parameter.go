@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ClusterServiceListNodeInstancesComponentTypeParameter the model 'ClusterServiceListNodeInstancesComponentTypeParameter'
@@ -50,18 +49,14 @@ func (v *ClusterServiceListNodeInstancesComponentTypeParameter) UnmarshalJSON(sr
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ClusterServiceListNodeInstancesComponentTypeParameter", value)
+	*v = ClusterServiceListNodeInstancesComponentTypeParameter(value)
+	return nil
 }
 
-// NewClusterServiceListNodeInstancesComponentTypeParameterFromValue returns a pointer to a valid ClusterServiceListNodeInstancesComponentTypeParameter
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewClusterServiceListNodeInstancesComponentTypeParameterFromValue(v string) (*ClusterServiceListNodeInstancesComponentTypeParameter, error) {
+// NewClusterServiceListNodeInstancesComponentTypeParameterFromValue returns a pointer to a valid ClusterServiceListNodeInstancesComponentTypeParameter for the value passed as argument
+func NewClusterServiceListNodeInstancesComponentTypeParameterFromValue(v string) *ClusterServiceListNodeInstancesComponentTypeParameter {
 	ev := ClusterServiceListNodeInstancesComponentTypeParameter(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ClusterServiceListNodeInstancesComponentTypeParameter: valid values are %v", v, AllowedClusterServiceListNodeInstancesComponentTypeParameterEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

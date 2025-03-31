@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Dedicatedv1beta1ClusterPausePlanType the model 'Dedicatedv1beta1ClusterPausePlanType'
@@ -44,18 +43,14 @@ func (v *Dedicatedv1beta1ClusterPausePlanType) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid Dedicatedv1beta1ClusterPausePlanType", value)
+	*v = Dedicatedv1beta1ClusterPausePlanType(value)
+	return nil
 }
 
-// NewDedicatedv1beta1ClusterPausePlanTypeFromValue returns a pointer to a valid Dedicatedv1beta1ClusterPausePlanType
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewDedicatedv1beta1ClusterPausePlanTypeFromValue(v string) (*Dedicatedv1beta1ClusterPausePlanType, error) {
+// NewDedicatedv1beta1ClusterPausePlanTypeFromValue returns a pointer to a valid Dedicatedv1beta1ClusterPausePlanType for the value passed as argument
+func NewDedicatedv1beta1ClusterPausePlanTypeFromValue(v string) *Dedicatedv1beta1ClusterPausePlanType {
 	ev := Dedicatedv1beta1ClusterPausePlanType(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for Dedicatedv1beta1ClusterPausePlanType: valid values are %v", v, AllowedDedicatedv1beta1ClusterPausePlanTypeEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

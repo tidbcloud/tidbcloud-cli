@@ -12,7 +12,6 @@ package cluster
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ClusterHighAvailabilityType the model 'ClusterHighAvailabilityType'
@@ -44,18 +43,14 @@ func (v *ClusterHighAvailabilityType) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ClusterHighAvailabilityType", value)
+	*v = ClusterHighAvailabilityType(value)
+	return nil
 }
 
-// NewClusterHighAvailabilityTypeFromValue returns a pointer to a valid ClusterHighAvailabilityType
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewClusterHighAvailabilityTypeFromValue(v string) (*ClusterHighAvailabilityType, error) {
+// NewClusterHighAvailabilityTypeFromValue returns a pointer to a valid ClusterHighAvailabilityType for the value passed as argument
+func NewClusterHighAvailabilityTypeFromValue(v string) *ClusterHighAvailabilityType {
 	ev := ClusterHighAvailabilityType(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ClusterHighAvailabilityType: valid values are %v", v, AllowedClusterHighAvailabilityTypeEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

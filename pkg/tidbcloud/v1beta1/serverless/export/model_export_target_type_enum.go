@@ -12,7 +12,6 @@ package export
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ExportTargetTypeEnum the model 'ExportTargetTypeEnum'
@@ -48,18 +47,14 @@ func (v *ExportTargetTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ExportTargetTypeEnum", value)
+	*v = ExportTargetTypeEnum(value)
+	return nil
 }
 
-// NewExportTargetTypeEnumFromValue returns a pointer to a valid ExportTargetTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewExportTargetTypeEnumFromValue(v string) (*ExportTargetTypeEnum, error) {
+// NewExportTargetTypeEnumFromValue returns a pointer to a valid ExportTargetTypeEnum for the value passed as argument
+func NewExportTargetTypeEnumFromValue(v string) *ExportTargetTypeEnum {
 	ev := ExportTargetTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ExportTargetTypeEnum: valid values are %v", v, AllowedExportTargetTypeEnumEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

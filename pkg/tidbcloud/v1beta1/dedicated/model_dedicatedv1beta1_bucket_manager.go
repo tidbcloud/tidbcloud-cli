@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Dedicatedv1beta1BucketManager the model 'Dedicatedv1beta1BucketManager'
@@ -44,18 +43,14 @@ func (v *Dedicatedv1beta1BucketManager) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid Dedicatedv1beta1BucketManager", value)
+	*v = Dedicatedv1beta1BucketManager(value)
+	return nil
 }
 
-// NewDedicatedv1beta1BucketManagerFromValue returns a pointer to a valid Dedicatedv1beta1BucketManager
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewDedicatedv1beta1BucketManagerFromValue(v string) (*Dedicatedv1beta1BucketManager, error) {
+// NewDedicatedv1beta1BucketManagerFromValue returns a pointer to a valid Dedicatedv1beta1BucketManager for the value passed as argument
+func NewDedicatedv1beta1BucketManagerFromValue(v string) *Dedicatedv1beta1BucketManager {
 	ev := Dedicatedv1beta1BucketManager(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for Dedicatedv1beta1BucketManager: valid values are %v", v, AllowedDedicatedv1beta1BucketManagerEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

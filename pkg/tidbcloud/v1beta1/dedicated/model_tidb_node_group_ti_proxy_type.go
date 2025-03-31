@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // TidbNodeGroupTiProxyType the model 'TidbNodeGroupTiProxyType'
@@ -44,18 +43,14 @@ func (v *TidbNodeGroupTiProxyType) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid TidbNodeGroupTiProxyType", value)
+	*v = TidbNodeGroupTiProxyType(value)
+	return nil
 }
 
-// NewTidbNodeGroupTiProxyTypeFromValue returns a pointer to a valid TidbNodeGroupTiProxyType
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewTidbNodeGroupTiProxyTypeFromValue(v string) (*TidbNodeGroupTiProxyType, error) {
+// NewTidbNodeGroupTiProxyTypeFromValue returns a pointer to a valid TidbNodeGroupTiProxyType for the value passed as argument
+func NewTidbNodeGroupTiProxyTypeFromValue(v string) *TidbNodeGroupTiProxyType {
 	ev := TidbNodeGroupTiProxyType(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for TidbNodeGroupTiProxyType: valid values are %v", v, AllowedTidbNodeGroupTiProxyTypeEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

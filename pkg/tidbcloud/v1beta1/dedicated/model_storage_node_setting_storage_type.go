@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // StorageNodeSettingStorageType Spec https://pingcap.feishu.cn/wiki/R6dcwK0Q3i9XSgkgG1Scoc82nbf.   - Basic: Data disk: gp3; Raft log disk: none.  - Standard: Data disk: gp3; Raft log disk: gp3.  - Performance: Data disk: gp3; Raft log disk: io2.  - Plus: Data disk: io2; Raft log disk: none.
@@ -48,18 +47,14 @@ func (v *StorageNodeSettingStorageType) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid StorageNodeSettingStorageType", value)
+	*v = StorageNodeSettingStorageType(value)
+	return nil
 }
 
-// NewStorageNodeSettingStorageTypeFromValue returns a pointer to a valid StorageNodeSettingStorageType
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewStorageNodeSettingStorageTypeFromValue(v string) (*StorageNodeSettingStorageType, error) {
+// NewStorageNodeSettingStorageTypeFromValue returns a pointer to a valid StorageNodeSettingStorageType for the value passed as argument
+func NewStorageNodeSettingStorageTypeFromValue(v string) *StorageNodeSettingStorageType {
 	ev := StorageNodeSettingStorageType(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for StorageNodeSettingStorageType: valid values are %v", v, AllowedStorageNodeSettingStorageTypeEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

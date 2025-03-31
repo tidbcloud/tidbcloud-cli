@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // V1beta1PrivateLinkServiceState the model 'V1beta1PrivateLinkServiceState'
@@ -46,18 +45,14 @@ func (v *V1beta1PrivateLinkServiceState) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid V1beta1PrivateLinkServiceState", value)
+	*v = V1beta1PrivateLinkServiceState(value)
+	return nil
 }
 
-// NewV1beta1PrivateLinkServiceStateFromValue returns a pointer to a valid V1beta1PrivateLinkServiceState
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewV1beta1PrivateLinkServiceStateFromValue(v string) (*V1beta1PrivateLinkServiceState, error) {
+// NewV1beta1PrivateLinkServiceStateFromValue returns a pointer to a valid V1beta1PrivateLinkServiceState for the value passed as argument
+func NewV1beta1PrivateLinkServiceStateFromValue(v string) *V1beta1PrivateLinkServiceState {
 	ev := V1beta1PrivateLinkServiceState(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for V1beta1PrivateLinkServiceState: valid values are %v", v, AllowedV1beta1PrivateLinkServiceStateEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

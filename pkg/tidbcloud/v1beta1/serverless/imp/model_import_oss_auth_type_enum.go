@@ -12,7 +12,6 @@ package imp
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ImportOSSAuthTypeEnum  - ACCESS_KEY: The access method is access key.
@@ -42,18 +41,14 @@ func (v *ImportOSSAuthTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ImportOSSAuthTypeEnum", value)
+	*v = ImportOSSAuthTypeEnum(value)
+	return nil
 }
 
-// NewImportOSSAuthTypeEnumFromValue returns a pointer to a valid ImportOSSAuthTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewImportOSSAuthTypeEnumFromValue(v string) (*ImportOSSAuthTypeEnum, error) {
+// NewImportOSSAuthTypeEnumFromValue returns a pointer to a valid ImportOSSAuthTypeEnum for the value passed as argument
+func NewImportOSSAuthTypeEnumFromValue(v string) *ImportOSSAuthTypeEnum {
 	ev := ImportOSSAuthTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ImportOSSAuthTypeEnum: valid values are %v", v, AllowedImportOSSAuthTypeEnumEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

@@ -12,7 +12,6 @@ package imp
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ImportSourceTypeEnum the model 'ImportSourceTypeEnum'
@@ -52,18 +51,14 @@ func (v *ImportSourceTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ImportSourceTypeEnum", value)
+	*v = ImportSourceTypeEnum(value)
+	return nil
 }
 
-// NewImportSourceTypeEnumFromValue returns a pointer to a valid ImportSourceTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewImportSourceTypeEnumFromValue(v string) (*ImportSourceTypeEnum, error) {
+// NewImportSourceTypeEnumFromValue returns a pointer to a valid ImportSourceTypeEnum for the value passed as argument
+func NewImportSourceTypeEnumFromValue(v string) *ImportSourceTypeEnum {
 	ev := ImportSourceTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ImportSourceTypeEnum: valid values are %v", v, AllowedImportSourceTypeEnumEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise
