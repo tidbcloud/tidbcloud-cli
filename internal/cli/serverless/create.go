@@ -210,6 +210,20 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if err != nil {
 						return errors.Trace(err)
 					}
+					if spendingLimitMonthly > 0 {
+						encryptionPrompt := &survey.Confirm{
+							Message: "Enable Enhanced Encryption at Rest?",
+							Default: false,
+						}
+						err = survey.AskOne(encryptionPrompt, &encryption)
+						if err != nil {
+							if err == terminal.InterruptErr {
+								return util.InterruptError
+							} else {
+								return err
+							}
+						}
+					}
 				}
 
 				if cloudProvider == string(cluster.V1BETA1REGIONCLOUDPROVIDER_ALICLOUD) {
@@ -255,6 +269,18 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						if err != nil {
 							return errors.Trace(err)
 						}
+						encryptionPrompt := &survey.Confirm{
+							Message: "Enable Enhanced Encryption at Rest?",
+							Default: false,
+						}
+						err = survey.AskOne(encryptionPrompt, &encryption)
+						if err != nil {
+							if err == terminal.InterruptErr {
+								return util.InterruptError
+							} else {
+								return err
+							}
+						}
 					}
 					if clusterPlan == cluster.V1BETA1CLUSTERCLUSTERPLAN_STARTER {
 						var spendingLimitString string
@@ -273,22 +299,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						spendingLimitMonthly, err = getAndCheckNumber(spendingLimitString, "monthly spending limit")
 						if err != nil {
 							return errors.Trace(err)
-						}
-					}
-				}
-
-				// Ask enhanced encryption when paid
-				if spendingLimitMonthly > 0 || maxRcu > 0 {
-					prompt := &survey.Confirm{
-						Message: "Enable Enhanced Encryption at Rest?",
-						Default: false,
-					}
-					err = survey.AskOne(prompt, &encryption)
-					if err != nil {
-						if err == terminal.InterruptErr {
-							return util.InterruptError
-						} else {
-							return err
 						}
 					}
 				}
