@@ -88,7 +88,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		Example: fmt.Sprintf(`  Create a TiDB Cloud Serverless cluster in interactive mode:
   $ %[1]s serverless create
 
-  Create a TiDB Cloud Serverless cluster of the default ptoject in non-interactive mode:
+  Create a TiDB Cloud Serverless cluster of the default project in non-interactive mode:
   $ %[1]s serverless create --display-name <cluster-name> --region <region>
 
   Create a TiDB Cloud Serverless cluster in non-interactive mode:
@@ -129,6 +129,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			var minRcu, maxRcu int32
 			var encryption bool
 			var publicEndpointDisabled bool
+			var authorizedNetworksStrList []string
+			var authorizedNetworks []cluster.EndpointsPublicAuthorizedNetwork
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
@@ -351,6 +353,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.Trace(err)
 					}
 				}
+				authorizedNetworksStrList, err = cmd.Flags().GetStringSlice(flag.AuthorizedNetworks)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				authorizedNetworks, err = util.ConvertToAuthorizedNetworks(authorizedNetworksStrList)
+				if err != nil {
+					return errors.Trace(err)
+				}
 			}
 
 			cmd.Annotations[telemetry.ProjectID] = projectID
@@ -382,12 +392,17 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
+			publicEndpoint := &cluster.EndpointsPublic{}
 			if publicEndpointDisabled {
-				v1Cluster.Endpoints = &cluster.V1beta1ClusterEndpoints{
-					Public: &cluster.EndpointsPublic{
-						Disabled: &publicEndpointDisabled,
-					},
-				}
+				publicEndpoint.Disabled = &publicEndpointDisabled
+			}
+
+			if len(authorizedNetworks) > 0 {
+				publicEndpoint.AuthorizedNetworks = authorizedNetworks
+			}
+
+			v1Cluster.Endpoints = &cluster.V1beta1ClusterEndpoints{
+				Public: publicEndpoint,
 			}
 
 			if h.IOStreams.CanPrompt {
@@ -414,6 +429,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().Bool(flag.PublicEndpointDisabled, false, "Whether the public endpoint is disabled.")
 	createCmd.Flags().Int32(flag.MinRCU, 0, "Minimum RCU for the cluster, at least 2000.")
 	createCmd.Flags().Int32(flag.MaxRCU, 0, "Maximum RCU for the cluster, at most 100000.")
+	createCmd.Flags().StringSliceP(flag.AuthorizedNetworks, "", nil, "The authorized networks of the public endpoint.")
 	createCmd.MarkFlagsMutuallyExclusive(flag.SpendingLimitMonthly, flag.MinRCU)
 	createCmd.MarkFlagsMutuallyExclusive(flag.SpendingLimitMonthly, flag.MaxRCU)
 	createCmd.MarkFlagsRequiredTogether(flag.MinRCU, flag.MaxRCU)

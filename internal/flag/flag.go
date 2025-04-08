@@ -60,6 +60,9 @@ const (
 	BackupTime           string = "backup-time"
 	MinRCU               string = "min-rcu"
 	MaxRCU               string = "max-rcu"
+	AuthorizedNetworks   string = "authorized-networks"
+	IPRange              string = "ip-range"
+	TargetIPRange        string = "target-ip-range"
 	// External storage
 	S3URI                  string = "s3.uri"
 	S3AccessKeyID          string = "s3.access-key-id"
