@@ -20,8 +20,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type mutableField string
-
 func AuthorizedNetworkCmd(h *internal.Helper) *cobra.Command {
 	var authorizedNetworkCmd = &cobra.Command{
 		Use:     "authorized-network",

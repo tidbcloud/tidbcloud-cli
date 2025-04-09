@@ -76,7 +76,7 @@ type Export struct {
 
 type AuthorizedNetwork struct {
 	DisplayName string
-	IPRange string
+	IPRange     string
 }
 
 func (a AuthorizedNetwork) String() string {
@@ -859,7 +859,6 @@ func GetAllExportFiles(ctx context.Context, cID string, eID string, d TiDBCloudC
 	return items, nil
 }
 
-
 func RetrieveAuthorizedNetworks(ctx context.Context, clusterID string, d TiDBCloudClient) ([]cluster.EndpointsPublicAuthorizedNetwork, error) {
 	cluster, err := d.GetCluster(ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
 	if err != nil {
@@ -877,8 +876,8 @@ func GetSelectedAuthorizedNetwork(ctx context.Context, clusterID string, client 
 	var items = make([]interface{}, 0, len(authorizedNetworkItems))
 	for _, item := range authorizedNetworkItems {
 		items = append(items, &AuthorizedNetwork{
-			DisplayName:   item.DisplayName,
-			IPRange: fmt.Sprintf("%s-%s", item.StartIpAddress, item.EndIpAddress),
+			DisplayName: item.DisplayName,
+			IPRange:     fmt.Sprintf("%s-%s", item.StartIpAddress, item.EndIpAddress),
 		})
 	}
 	if len(items) == 0 {

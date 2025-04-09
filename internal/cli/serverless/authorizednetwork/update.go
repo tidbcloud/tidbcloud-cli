@@ -125,7 +125,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				// variables for input
 				fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following options"))
 
-				p := tea.NewProgram(initialCreateInputModel())
+				p := tea.NewProgram(initialUpdateInputModel())
 				inputModel, err := p.Run()
 				if err != nil {
 					return errors.Trace(err)

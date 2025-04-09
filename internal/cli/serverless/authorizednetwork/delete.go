@@ -25,12 +25,10 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 	"github.com/tidbcloud/tidbcloud-cli/internal/telemetry"
-	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
-	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -40,10 +38,6 @@ const confirmed = "yes"
 
 type DeleteOpts struct {
 	interactive bool
-}
-
-var deleteAuthorizedNetworkField = map[string]int{
-	flag.IPRange: 0,
 }
 
 func (c DeleteOpts) NonInteractiveFlags() []string {
@@ -218,24 +212,4 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 	DeleteCmd.Flags().StringP(flag.IPRange, "", "", "The IP range of the authorized network.")
 
 	return DeleteCmd
-}
-
-func initialDeleteInputModel() ui.TextInputModel {
-	m := ui.TextInputModel{
-		Inputs: make([]textinput.Model, len(deleteAuthorizedNetworkField)),
-	}
-
-	for k, v := range deleteAuthorizedNetworkField {
-		t := textinput.New()
-		t.Cursor.Style = config.CursorStyle
-		t.CharLimit = 32
-
-		switch k {
-		case flag.IPRange:
-			ipRangeExample := "0.0.0.0-255.255.255.255"
-			t.Placeholder = fmt.Sprintf("IP Range (e.g., %s)", ipRangeExample)
-		}
-		m.Inputs[v] = t
-	}
-	return m
 }
