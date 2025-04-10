@@ -16,6 +16,7 @@ package serverless
 
 import (
 	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/authorizednetwork"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/branch"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/dataimport"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/export"
@@ -46,6 +47,7 @@ func Cmd(h *internal.Helper) *cobra.Command {
 	serverlessCmd.AddCommand(SpendingLimitCmd(h))
 	serverlessCmd.AddCommand(RegionCmd(h))
 	serverlessCmd.AddCommand(CapacityCmd(h))
+	serverlessCmd.AddCommand(authorizednetwork.AuthorizedNetworkCmd(h))
 
 	return serverlessCmd
 }

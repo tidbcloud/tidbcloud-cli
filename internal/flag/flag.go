@@ -60,6 +60,11 @@ const (
 	BackupTime           string = "backup-time"
 	MinRCU               string = "min-rcu"
 	MaxRCU               string = "max-rcu"
+	StartIPAddress       string = "start-ip-address"
+	EndIPAddress         string = "end-ip-address"
+	NewStartIPAddress    string = "new-start-ip-address"
+	NewEndIPAddress      string = "new-end-ip-address"
+	NewDisplayName       string = "new-display-name"
 	// External storage
 	S3URI                  string = "s3.uri"
 	S3AccessKeyID          string = "s3.access-key-id"

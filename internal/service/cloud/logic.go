@@ -74,6 +74,16 @@ type Export struct {
 	ID          string
 }
 
+type AuthorizedNetwork struct {
+	DisplayName    string
+	StartIPAddress string
+	EndIPAddress   string
+}
+
+func (a AuthorizedNetwork) String() string {
+	return fmt.Sprintf("%s-%s(%s)", a.StartIPAddress, a.EndIPAddress, a.DisplayName)
+}
+
 func (c ServerlessBackup) String() string {
 	return fmt.Sprintf("%s(%s)", c.CreateTime, c.ID)
 }
@@ -848,4 +858,52 @@ func GetAllExportFiles(ctx context.Context, cID string, eID string, d TiDBCloudC
 		items = append(items, exportFilesResp.Files...)
 	}
 	return items, nil
+}
+
+func RetrieveAuthorizedNetworks(ctx context.Context, clusterID string, d TiDBCloudClient) ([]cluster.EndpointsPublicAuthorizedNetwork, error) {
+	cluster, err := d.GetCluster(ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	return cluster.Endpoints.Public.AuthorizedNetworks, nil
+}
+
+func GetSelectedAuthorizedNetwork(ctx context.Context, clusterID string, client TiDBCloudClient) (string, string, error) {
+	authorizedNetworkItems, err := RetrieveAuthorizedNetworks(ctx, clusterID, client)
+	if err != nil {
+		return "", "", err
+	}
+
+	var items = make([]interface{}, 0, len(authorizedNetworkItems))
+	for _, item := range authorizedNetworkItems {
+		items = append(items, &AuthorizedNetwork{
+			DisplayName:    item.DisplayName,
+			StartIPAddress: item.StartIpAddress,
+			EndIPAddress:   item.EndIpAddress,
+		})
+	}
+	if len(items) == 0 {
+		return "", "", fmt.Errorf("no available authorized networks found")
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the authorized network:")
+	if err != nil {
+		return "", "", errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+
+	p := tea.NewProgram(model)
+	authorizedNetworkModel, err := p.Run()
+	if err != nil {
+		return "", "", errors.Trace(err)
+	}
+	if m, _ := authorizedNetworkModel.(ui.SelectModel); m.Interrupted {
+		return "", "", util.InterruptError
+	}
+	authorizedNetwork := authorizedNetworkModel.(ui.SelectModel).GetSelectedItem()
+	if authorizedNetwork == nil {
+		return "", "", errors.New("no authorized network selected")
+	}
+	return authorizedNetwork.(*AuthorizedNetwork).StartIPAddress, authorizedNetwork.(*AuthorizedNetwork).EndIPAddress, nil
 }

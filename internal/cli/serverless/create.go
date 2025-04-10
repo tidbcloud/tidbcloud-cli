@@ -88,7 +88,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		Example: fmt.Sprintf(`  Create a TiDB Cloud Serverless cluster in interactive mode:
   $ %[1]s serverless create
 
-  Create a TiDB Cloud Serverless cluster of the default ptoject in non-interactive mode:
+  Create a TiDB Cloud Serverless cluster of the default project in non-interactive mode:
   $ %[1]s serverless create --display-name <cluster-name> --region <region>
 
   Create a TiDB Cloud Serverless cluster in non-interactive mode:
