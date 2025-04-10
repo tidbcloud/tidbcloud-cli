@@ -23,6 +23,7 @@ const (
 	EXPORTTARGETTYPEENUM_S3         ExportTargetTypeEnum = "S3"
 	EXPORTTARGETTYPEENUM_GCS        ExportTargetTypeEnum = "GCS"
 	EXPORTTARGETTYPEENUM_AZURE_BLOB ExportTargetTypeEnum = "AZURE_BLOB"
+	EXPORTTARGETTYPEENUM_OSS        ExportTargetTypeEnum = "OSS"
 )
 
 // All allowed values of ExportTargetTypeEnum enum
@@ -31,6 +32,7 @@ var AllowedExportTargetTypeEnumEnumValues = []ExportTargetTypeEnum{
 	"S3",
 	"GCS",
 	"AZURE_BLOB",
+	"OSS",
 }
 
 func (v *ExportTargetTypeEnum) UnmarshalJSON(src []byte) error {

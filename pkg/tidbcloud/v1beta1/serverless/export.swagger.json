@@ -412,7 +412,7 @@
         },
         "uri": {
           "type": "string",
-          "description": "The Azure Blob URI of the export target. For example: azure://<account>.blob.core.windows.net/<container>/<path>."
+          "description": "The Azure Blob URI of the export target. For example: azure://<account>.blob.core.windows.net/<container>/<path> or https://<account>.blob.core.windows.net/<container>/<path>."
         }
       },
       "required": [
@@ -611,6 +611,13 @@
         "SERVICE_ACCOUNT_KEY"
       ],
       "description": " - SERVICE_ACCOUNT_KEY: The access method is service account key."
+    },
+    "ExportOSSAuthType.Enum": {
+      "type": "string",
+      "enum": [
+        "ACCESS_KEY"
+      ],
+      "description": " - ACCESS_KEY: The access method is access key."
     },
     "ExportOptions": {
       "type": "object",
@@ -826,6 +833,9 @@
         },
         "azureBlob": {
           "$ref": "#/definitions/AzureBlobTarget"
+        },
+        "oss": {
+          "$ref": "#/definitions/OSSTarget"
         }
       }
     },
@@ -835,9 +845,10 @@
         "LOCAL",
         "S3",
         "GCS",
-        "AZURE_BLOB"
+        "AZURE_BLOB",
+        "OSS"
       ],
-      "title": "- LOCAL: Local target.\n - S3: S3 target.\n - GCS: gcs source\n - AZURE_BLOB: azure blob source"
+      "title": "- LOCAL: Local target.\n - S3: S3 target.\n - GCS: gcs target\n - AZURE_BLOB: azure blob target\n - OSS: OSS target"
     },
     "GCSTarget": {
       "type": "object",
@@ -902,6 +913,52 @@
           "description": "Total number of exports."
         }
       }
+    },
+    "OSSTarget": {
+      "type": "object",
+      "properties": {
+        "uri": {
+          "type": "string",
+          "description": "Required. The OSS URI."
+        },
+        "authType": {
+          "description": "Required. The auth method of the export target.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ExportOSSAuthType.Enum"
+            }
+          ]
+        },
+        "accessKey": {
+          "description": "The access key.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/OSSTarget.AccessKey"
+            }
+          ]
+        }
+      },
+      "required": [
+        "uri",
+        "authType"
+      ]
+    },
+    "OSSTarget.AccessKey": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The access key id."
+        },
+        "secret": {
+          "type": "string",
+          "description": "The access key secret. This field is input-only."
+        }
+      },
+      "required": [
+        "id",
+        "secret"
+      ]
     },
     "S3Target": {
       "type": "object",
