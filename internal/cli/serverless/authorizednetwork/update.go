@@ -38,16 +38,19 @@ type UpdateOpts struct {
 }
 
 var updateAuthorizedNetworkField = map[string]int{
-	flag.DisplayName: 0,
-	flag.IPRange:     1,
+	flag.NewDisplayName:    0,
+	flag.NewStartIPAddress: 1,
+	flag.NewEndIPAddress:   2,
 }
 
 func (c UpdateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.TargetIPRange,
-		flag.IPRange,
-		flag.DisplayName,
+		flag.NewDisplayName,
+		flag.NewStartIPAddress,
+		flag.NewEndIPAddress,
+		flag.StartIPAddress,
+		flag.EndIPAddress,
 	}
 }
 
@@ -56,7 +59,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 		interactive: true,
 	}
 
-	var updateCmd = &cobra.Command{
+	var UpdateCmd = &cobra.Command{
 		Use:   "update",
 		Short: "Update an authorized network",
 		Args:  cobra.NoArgs,
@@ -80,11 +83,16 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				err = cmd.MarkFlagRequired(flag.TargetIPRange)
+				err = cmd.MarkFlagRequired(flag.StartIPAddress)
 				if err != nil {
 					return err
 				}
-				cmd.MarkFlagsOneRequired(flag.IPRange, flag.DisplayName)
+				err = cmd.MarkFlagRequired(flag.EndIPAddress)
+				if err != nil {
+					return err
+				}
+				cmd.MarkFlagsOneRequired(flag.NewStartIPAddress, flag.NewDisplayName)
+				cmd.MarkFlagsRequiredTogether(flag.NewStartIPAddress, flag.NewEndIPAddress)
 			}
 			return nil
 		},
@@ -96,9 +104,11 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			var clusterID string
-			var displayName string
-			var ipRange string
-			var targetIPRange string
+			var startIPAddress string
+			var endIPAddress string
+			var newStartIPAddress string
+			var newEndIPAddress string
+			var newDisplayName string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -117,7 +127,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				targetIPRange, err = cloud.GetSelectedAuthorizedNetwork(ctx, clusterID, d)
+				startIPAddress, endIPAddress, err = cloud.GetSelectedAuthorizedNetwork(ctx, clusterID, d)
 				if err != nil {
 					return err
 				}
@@ -134,8 +144,16 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					return util.InterruptError
 				}
 
-				displayName = inputModel.(ui.TextInputModel).Inputs[createAuthorizedNetworkField[flag.DisplayName]].Value()
-				ipRange = inputModel.(ui.TextInputModel).Inputs[createAuthorizedNetworkField[flag.IPRange]].Value()
+				newDisplayName = inputModel.(ui.TextInputModel).Inputs[updateAuthorizedNetworkField[flag.NewDisplayName]].Value()
+				newStartIPAddress = inputModel.(ui.TextInputModel).Inputs[updateAuthorizedNetworkField[flag.NewStartIPAddress]].Value()
+				newEndIPAddress = inputModel.(ui.TextInputModel).Inputs[updateAuthorizedNetworkField[flag.NewEndIPAddress]].Value()
+
+				if (newStartIPAddress == "" && newEndIPAddress != "") || (newStartIPAddress != "" && newEndIPAddress == "") {
+					return errors.New("both new start IP address and new end IP address must be provided")
+				}
+				if newStartIPAddress == "" && newDisplayName == "" {
+					return errors.New("at least one of new display name, new start IP address and new end IP address must be provided")
+				}
 			} else {
 				// non-interactive mode doesn't need projectID
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
@@ -143,30 +161,30 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 
-				displayName, err = cmd.Flags().GetString(flag.DisplayName)
+				newDisplayName, err = cmd.Flags().GetString(flag.NewDisplayName)
 				if err != nil {
 					return errors.Trace(err)
 				}
 
-				ipRange, err = cmd.Flags().GetString(flag.IPRange)
+				startIPAddress, err = cmd.Flags().GetString(flag.StartIPAddress)
 				if err != nil {
 					return errors.Trace(err)
 				}
 
-				targetIPRange, err = cmd.Flags().GetString(flag.TargetIPRange)
+				endIPAddress, err = cmd.Flags().GetString(flag.EndIPAddress)
 				if err != nil {
 					return errors.Trace(err)
 				}
-			}
 
-			authorizedNetwork, err := util.ConvertToAuthorizedNetwork(ipRange, displayName)
-			if err != nil {
-				return errors.Trace(err)
-			}
+				newStartIPAddress, err = cmd.Flags().GetString(flag.NewStartIPAddress)
+				if err != nil {
+					return errors.Trace(err)
+				}
 
-			targetAuthorizedNetwork, err := util.ConvertToAuthorizedNetwork(targetIPRange, "")
-			if err != nil {
-				return errors.Trace(err)
+				newEndIPAddress, err = cmd.Flags().GetString(flag.NewEndIPAddress)
+				if err != nil {
+					return errors.Trace(err)
+				}
 			}
 
 			existedAuthorizedNetworks, err := cloud.RetrieveAuthorizedNetworks(ctx, clusterID, d)
@@ -174,14 +192,32 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
+			findTarget := false
 			for i, v := range existedAuthorizedNetworks {
-				if v.StartIpAddress == targetAuthorizedNetwork.StartIpAddress && v.EndIpAddress == targetAuthorizedNetwork.EndIpAddress {
+				if v.StartIpAddress == startIPAddress && v.EndIpAddress == endIPAddress {
+					findTarget = true
 					existedAuthorizedNetworks = slices.Delete(existedAuthorizedNetworks, i, i+1)
+					if newDisplayName == "" {
+						newDisplayName = v.DisplayName
+					}
+					if newStartIPAddress == "" {
+						newStartIPAddress = v.StartIpAddress
+						newEndIPAddress = v.EndIpAddress
+					}
 					break
 				}
 			}
 
-			authorizedNetworks := append(existedAuthorizedNetworks, authorizedNetwork)
+			if !findTarget {
+				return errors.New(fmt.Sprintf("authorized network %s-%s not found", startIPAddress, endIPAddress))
+			}
+
+			newAuthorizedNetwork, err := util.ConvertToAuthorizedNetwork(newStartIPAddress, newEndIPAddress, newDisplayName)
+			if err != nil {
+				return errors.Trace(err)
+			}
+
+			authorizedNetworks := append(existedAuthorizedNetworks, newAuthorizedNetwork)
 
 			body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
 				Cluster: &cluster.RequiredTheClusterToBeUpdated{
@@ -199,7 +235,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("authorized network %s is updated", displayName))
+			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("authorized network is updated"))
 			if err != nil {
 				return err
 			}
@@ -207,12 +243,14 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	updateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
-	updateCmd.Flags().StringP(flag.IPRange, "", "", "The new IP range of the authorized network.")
-	updateCmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "The name of the authorized network.")
-	updateCmd.Flags().StringP(flag.TargetIPRange, "", "", "The IP range of the authorized network to be updated.")
+	UpdateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
+	UpdateCmd.Flags().StringP(flag.StartIPAddress, "", "", "The start IP address of the authorized network.")
+	UpdateCmd.Flags().StringP(flag.EndIPAddress, "", "", "The end IP address of the authorized network.")
+	UpdateCmd.Flags().StringP(flag.NewDisplayName, "", "", "The new display name of the authorized network.")
+	UpdateCmd.Flags().StringP(flag.NewStartIPAddress, "", "", "The new start IP address of the authorized network.")
+	UpdateCmd.Flags().StringP(flag.NewEndIPAddress, "", "", "The new end IP address of the authorized network.")
 
-	return updateCmd
+	return UpdateCmd
 }
 
 func initialUpdateInputModel() ui.TextInputModel {
@@ -226,14 +264,15 @@ func initialUpdateInputModel() ui.TextInputModel {
 		t.CharLimit = 32
 
 		switch k {
-		case flag.DisplayName:
-			t.Placeholder = "Display Name"
+		case flag.NewDisplayName:
+			t.Placeholder = "New Display Name (optional)"
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
-		case flag.IPRange:
-			ipRangeExample := "0.0.0.0-255.255.255.255"
-			t.Placeholder = fmt.Sprintf("IP Range (e.g., %s)", ipRangeExample)
+		case flag.NewStartIPAddress:
+			t.Placeholder = "New Start IP Address(optional, e.g. 0.0.0.0)"
+		case flag.NewEndIPAddress:
+			t.Placeholder = "New End IP Address(optional, e.g. 255.255.255.255)"
 		}
 		m.Inputs[v] = t
 	}

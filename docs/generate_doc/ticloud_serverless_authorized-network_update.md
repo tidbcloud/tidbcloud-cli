@@ -19,11 +19,13 @@ ticloud serverless authorized-network update [flags]
 ### Options
 
 ```
-  -c, --cluster-id string        The ID of the cluster.
-  -n, --display-name string      The name of the authorized network.
-  -h, --help                     help for update
-      --ip-range string          The new IP range of the authorized network.
-      --target-ip-range string   The IP range of the authorized network to be updated.
+  -c, --cluster-id string             The ID of the cluster.
+      --end-ip-address string         The end IP address of the authorized network.
+  -h, --help                          help for update
+      --new-display-name string       The new display name of the authorized network.
+      --new-end-ip-address string     The new end IP address of the authorized network.
+      --new-start-ip-address string   The new start IP address of the authorized network.
+      --start-ip-address string       The start IP address of the authorized network.
 ```
 
 ### Options inherited from parent commands

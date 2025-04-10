@@ -22,7 +22,6 @@ ticloud serverless create [flags]
 ### Options
 
 ```
-      --authorized-networks strings    The authorized networks of the public endpoint.
       --disable-public-endpoint        Whether the public endpoint is disabled.
   -n, --display-name string            Display name of the cluster to de created.
       --encryption                     Whether Enhanced Encryption at Rest is enabled.

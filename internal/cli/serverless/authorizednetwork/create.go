@@ -43,14 +43,16 @@ type CreateOpts struct {
 }
 
 var createAuthorizedNetworkField = map[string]int{
-	flag.DisplayName: 0,
-	flag.IPRange:     1,
+	flag.DisplayName:    0,
+	flag.StartIPAddress: 1,
+	flag.EndIPAddress:   2,
 }
 
 func (c CreateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.IPRange,
+		flag.StartIPAddress,
+		flag.EndIPAddress,
 		flag.DisplayName,
 	}
 }
@@ -58,7 +60,8 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 func (c CreateOpts) RequiredFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.IPRange,
+		flag.StartIPAddress,
+		flag.EndIPAddress,
 	}
 }
 
@@ -76,7 +79,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless authorized-network create
 
   Create an authorized network in non-interactive mode:
-  $ %[1]s serverless authorized-network create -c <cluster-id> --display-name <display-name> --ip-range <ip-range>`,
+  $ %[1]s serverless authorized-network create -c <cluster-id> --display-name <display-name> --start-ip-address <start-ip-address> --end-ip-address <end-ip-address>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -107,7 +110,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 			var clusterID string
 			var displayName string
-			var ipRange string
+			var startIPAddress string
+			var endIPAddress string
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
@@ -140,7 +144,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				displayName = inputModel.(ui.TextInputModel).Inputs[createAuthorizedNetworkField[flag.DisplayName]].Value()
-				ipRange = inputModel.(ui.TextInputModel).Inputs[createAuthorizedNetworkField[flag.IPRange]].Value()
+				startIPAddress = inputModel.(ui.TextInputModel).Inputs[createAuthorizedNetworkField[flag.StartIPAddress]].Value()
+				endIPAddress = inputModel.(ui.TextInputModel).Inputs[createAuthorizedNetworkField[flag.EndIPAddress]].Value()
 
 			} else {
 				// non-interactive mode doesn't need projectID
@@ -154,17 +159,18 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 
-				ipRange, err = cmd.Flags().GetString(flag.IPRange)
+				startIPAddress, err = cmd.Flags().GetString(flag.StartIPAddress)
+				if err != nil {
+					return errors.Trace(err)
+				}
+
+				endIPAddress, err = cmd.Flags().GetString(flag.EndIPAddress)
 				if err != nil {
 					return errors.Trace(err)
 				}
 			}
 
-			if displayName == "" {
-				displayName = util.GenerateIDAuthorizedNetworkDisplayName()
-			}
-
-			authorizedNetwork, err := util.ConvertToAuthorizedNetwork(ipRange, displayName)
+			authorizedNetwork, err := util.ConvertToAuthorizedNetwork(startIPAddress, endIPAddress, displayName)
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -192,7 +198,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("authorized network %s is created", displayName))
+			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("authorized network %s-%s is created", startIPAddress, endIPAddress))
 			if err != nil {
 				return err
 			}
@@ -201,7 +207,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	CreateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
-	CreateCmd.Flags().StringP(flag.IPRange, "", "", "The IP range of the authorized network.")
+	CreateCmd.Flags().StringP(flag.StartIPAddress, "", "", "The start IP address of the authorized network.")
+	CreateCmd.Flags().StringP(flag.EndIPAddress, "", "", "The end IP address of the authorized network.")
 	CreateCmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "The name of the authorized network.")
 
 	return CreateCmd
@@ -223,9 +230,10 @@ func initialCreateInputModel() ui.TextInputModel {
 			t.Focus()
 			t.PromptStyle = config.FocusedStyle
 			t.TextStyle = config.FocusedStyle
-		case flag.IPRange:
-			ipRangeExample := "0.0.0.0-255.255.255.255"
-			t.Placeholder = fmt.Sprintf("IP Range (e.g., %s)", ipRangeExample)
+		case flag.StartIPAddress:
+			t.Placeholder = "Start IP Address (e.g. 0.0.0.0)"
+		case flag.EndIPAddress:
+			t.Placeholder = "End IP Address (e.g. 255.255.255.255)"
 		}
 		m.Inputs[v] = t
 	}

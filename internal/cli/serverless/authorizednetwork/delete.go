@@ -43,14 +43,16 @@ type DeleteOpts struct {
 func (c DeleteOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.IPRange,
+		flag.StartIPAddress,
+		flag.EndIPAddress,
 	}
 }
 
 func (c DeleteOpts) RequiredFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.IPRange,
+		flag.StartIPAddress,
+		flag.EndIPAddress,
 	}
 }
 
@@ -69,7 +71,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless authorized-network delete
 
   Delete an authorized network in non-interactive mode:
-  $ %[1]s serverless authorized-network delete -c <cluster-id> --ip-range <ip-range>`,
+  $ %[1]s serverless authorized-network delete -c <cluster-id> --start-ip-address <start-ip-address> --end-ip-address <end-ip-address>`,
 			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
@@ -99,8 +101,8 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			var clusterID string
-			var displayName string
-			var ipRange string
+			var startIPAddress string
+			var endIPAddress string
 			if opts.interactive {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
@@ -123,7 +125,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				// variables for input
 				fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following options"))
 
-				ipRange, err = cloud.GetSelectedAuthorizedNetwork(ctx, clusterID, d)
+				startIPAddress, endIPAddress, err = cloud.GetSelectedAuthorizedNetwork(ctx, clusterID, d)
 				if err != nil {
 					return err
 				}
@@ -134,7 +136,12 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 
-				ipRange, err = cmd.Flags().GetString(flag.IPRange)
+				startIPAddress, err = cmd.Flags().GetString(flag.StartIPAddress)
+				if err != nil {
+					return errors.Trace(err)
+				}
+
+				endIPAddress, err = cmd.Flags().GetString(flag.EndIPAddress)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -166,9 +173,9 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			authorizedNetwork, err := util.ConvertToAuthorizedNetwork(ipRange, displayName)
-			if err != nil {
-				return errors.Trace(err)
+			authorizedNetwork := cluster.EndpointsPublicAuthorizedNetwork{
+				StartIpAddress: startIPAddress,
+				EndIpAddress:   endIPAddress,
 			}
 
 			existedAuthorizedNetworks, err := cloud.RetrieveAuthorizedNetworks(ctx, clusterID, d)
@@ -176,12 +183,19 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
+			findTarget := false
 			for i, v := range existedAuthorizedNetworks {
 				if v.StartIpAddress == authorizedNetwork.StartIpAddress && v.EndIpAddress == authorizedNetwork.EndIpAddress {
+					findTarget = true
 					existedAuthorizedNetworks = slices.Delete(existedAuthorizedNetworks, i, i+1)
 					break
 				}
 			}
+
+			if !findTarget {
+				return errors.New(fmt.Sprintf("authorized network %s-%s not found", startIPAddress, endIPAddress))
+			}
+
 			body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
 				Cluster: &cluster.RequiredTheClusterToBeUpdated{
 					Endpoints: &cluster.V1beta1ClusterEndpoints{
@@ -198,7 +212,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("authorized network %s is deleted", ipRange))
+			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("authorized network %s-%s is deleted", startIPAddress, endIPAddress))
 			if err != nil {
 				return err
 			}
@@ -209,7 +223,8 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 
 	DeleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete an authorized network without confirmation.")
 	DeleteCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
-	DeleteCmd.Flags().StringP(flag.IPRange, "", "", "The IP range of the authorized network.")
+	DeleteCmd.Flags().StringP(flag.StartIPAddress, "", "", "The start IP address of the authorized network.")
+	DeleteCmd.Flags().StringP(flag.EndIPAddress, "", "", "The end IP address of the authorized network.")
 
 	return DeleteCmd
 }
