@@ -892,7 +892,6 @@ func GetSelectedAuthorizedNetwork(ctx context.Context, clusterID string, client 
 	}
 	itemsPerPage := 6
 	model.EnablePagination(itemsPerPage)
-	model.EnableFilter()
 
 	p := tea.NewProgram(model)
 	authorizedNetworkModel, err := p.Run()
@@ -904,7 +903,7 @@ func GetSelectedAuthorizedNetwork(ctx context.Context, clusterID string, client 
 	}
 	authorizedNetwork := authorizedNetworkModel.(ui.SelectModel).GetSelectedItem()
 	if authorizedNetwork == nil {
-		return "", "", errors.New("no cluster selected")
+		return "", "", errors.New("no authorized network selected")
 	}
 	return authorizedNetwork.(*AuthorizedNetwork).StartIPAddress, authorizedNetwork.(*AuthorizedNetwork).EndIPAddress, nil
 }

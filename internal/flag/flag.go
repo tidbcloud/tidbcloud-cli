@@ -60,7 +60,6 @@ const (
 	BackupTime           string = "backup-time"
 	MinRCU               string = "min-rcu"
 	MaxRCU               string = "max-rcu"
-	AuthorizedNetworks   string = "authorized-networks"
 	StartIPAddress       string = "start-ip-address"
 	EndIPAddress         string = "end-ip-address"
 	NewStartIPAddress    string = "new-start-ip-address"

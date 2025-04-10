@@ -23,18 +23,6 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 )
 
-// func ConvertToAuthorizedNetworks(authorizedNetworksStrList []string) ([]cluster.EndpointsPublicAuthorizedNetwork, error) {
-// 	authorizedNetworks := make([]cluster.EndpointsPublicAuthorizedNetwork, 0, len(authorizedNetworksStrList))
-// 	for _, str := range authorizedNetworksStrList {
-// 		authorizedNetwork, err := ConvertToAuthorizedNetwork(str, "")
-// 		if err != nil {
-// 			return nil, fmt.Errorf("failed to convert authorized network %s: %w", str, err)
-// 		}
-// 		authorizedNetworks = append(authorizedNetworks, authorizedNetwork)
-// 	}
-// 	return authorizedNetworks, nil
-// }
-
 func ConvertToAuthorizedNetwork(startIP string, endIP string, displayName string) (cluster.EndpointsPublicAuthorizedNetwork, error) {
 	s, err := parseIPv4(startIP)
 	if err != nil {

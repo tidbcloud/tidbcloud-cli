@@ -67,7 +67,8 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless authorized-network update
 
   Update an authorized network in non-interactive mode:
-  $ %[1]s serverless authorized-network update -c <cluster-id> --ip-range <ip-range> --display-name <display-name>`, config.CliName),
+  $ %[1]s serverless authorized-network update -c <cluster-id> --start-ip-address <start-ip-address> --end-ip-address <end-ip-address> --new-start-ip-address <new-start-ip-address> --new-end-ip-address <new-end-ip-address>`,
+			config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {
@@ -91,7 +92,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				cmd.MarkFlagsOneRequired(flag.NewStartIPAddress, flag.NewDisplayName)
+				cmd.MarkFlagsOneRequired(flag.NewStartIPAddress, flag.NewEndIPAddress, flag.NewDisplayName)
 				cmd.MarkFlagsRequiredTogether(flag.NewStartIPAddress, flag.NewEndIPAddress)
 			}
 			return nil
@@ -133,8 +134,6 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// variables for input
-				fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following options"))
-
 				p := tea.NewProgram(initialUpdateInputModel())
 				inputModel, err := p.Run()
 				if err != nil {
