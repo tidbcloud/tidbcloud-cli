@@ -507,7 +507,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.Trace(err)
 					}
 					if ossAccessKeyID == "" || ossAccessKeySecret == "" {
-						return errors.New("missing OSS auth information, require access key id and access key secret")
+						return errors.New("OSS access key id and access key secret are required when target type is OSS")
 					}
 				}
 
