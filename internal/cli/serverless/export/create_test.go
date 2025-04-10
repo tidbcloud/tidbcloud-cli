@@ -373,6 +373,86 @@ func (suite *CreateExportSuite) TestCreateExportWithTableFilter() {
 	suite.AssertTest(ctx, tests)
 }
 
+func (suite *CreateExportSuite) TestCreateExportToOSS() {
+	ctx := context.Background()
+
+	clusterId := "fake-cluster-id"
+	exportId := "fake-export-id"
+	targetType := export.EXPORTTARGETTYPEENUM_OSS
+	uri := "s3://fake-bucket/fake-prefix"
+	accessKeyId := "fake-id"
+	secretAccess := "fake-secret"
+
+	body := getDefaultCreateExportBody()
+	body.Target = &export.ExportTarget{
+		Type: &targetType,
+		Oss: &export.OSSTarget{
+			Uri:      uri,
+			AuthType: export.EXPORTOSSAUTHTYPEENUM_ACCESS_KEY,
+			AccessKey: &export.OSSTargetAccessKey{
+				Id:     accessKeyId,
+				Secret: secretAccess,
+			},
+		},
+	}
+	suite.mockClient.On("CreateExport", ctx, clusterId, body).
+		Return(&export.Export{
+			ExportId: &exportId,
+		}, nil)
+
+	tests := []Test{
+		{
+			name: "export data to oss without uri",
+			args: []string{"-c", clusterId, "--target-type", "OSS", "--oss.access-key-id", accessKeyId, "--oss.access-key-secret", secretAccess, "--force"},
+			err:  errors.New("OSS URI is required when target type is OSS"),
+		},
+		{
+			name: "export data to oss without auth",
+			args: []string{"-c", clusterId, "--target-type", "OSS", "--oss.uri", uri, "--oss.access-key-id", accessKeyId, "--force"},
+			err:  errors.New("OSS access key id and access key secret are required when target type is OSS"),
+		},
+		{
+			name:         "export all data to oss using access key",
+			args:         []string{"-c", clusterId, "--target-type", "OSS", "--oss.uri", uri, "--oss.access-key-id", accessKeyId, "--oss.access-key-secret", secretAccess, "--force"},
+			stdoutString: fmt.Sprintf("export %s is running now\n", exportId),
+		},
+	}
+	suite.AssertTest(ctx, tests)
+}
+
+func (suite *CreateExportSuite) TestAliClusterExportToS3WithRoleArn() {
+	ctx := context.Background()
+
+	clusterId := "fake-cluster-id"
+	targetType := export.EXPORTTARGETTYPEENUM_S3
+	uri := "s3://fake-bucket/fake-prefix"
+	roleArn := "fake-role-arn"
+
+	body := getDefaultCreateExportBody()
+	body.Target = &export.ExportTarget{
+		Type: &targetType,
+		S3: &export.S3Target{
+			Uri:      &uri,
+			AuthType: export.EXPORTS3AUTHTYPEENUM_ROLE_ARN,
+			RoleArn:  &roleArn,
+		},
+	}
+
+	errMsg := "export to s3 with role arn is not supported in alicloud"
+
+	suite.mockClient.On("CreateExport", ctx, clusterId, body).
+		Return(nil, errors.New(errMsg))
+
+	tests := []Test{
+		{
+			name: "export ali cluster with S3 role arn",
+			args: []string{"-c", clusterId, "--target-type", "S3", "--s3.uri", uri, "--s3.role-arn", roleArn, "--force"},
+			err:  errors.New(errMsg),
+		},
+	}
+	suite.AssertTest(ctx, tests)
+}
+
 func getDefaultCreateExportBody() *export.ExportServiceCreateExportBody {
 	defaultFileType := export.EXPORTFILETYPEENUM_CSV
 	defaultTargetType := export.EXPORTTARGETTYPEENUM_LOCAL
