@@ -15,15 +15,15 @@
 package export
 
 import (
+	"github.com/charmbracelet/bubbles/textinput"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/juju/errors"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
-
-	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/juju/errors"
 )
 
 var inputDescription = map[string]string{
@@ -96,16 +96,20 @@ func GetSelectedTargetType() (export.ExportTargetTypeEnum, error) {
 	return targetType.(export.ExportTargetTypeEnum), nil
 }
 
-func GetSelectedAuthType(target export.ExportTargetTypeEnum) (_ string, err error) {
+func GetSelectedAuthType(target export.ExportTargetTypeEnum, provider cluster.V1beta1RegionCloudProvider) (_ string, err error) {
 	var model *ui.SelectModel
 	switch target {
 	case export.EXPORTTARGETTYPEENUM_S3:
+		if provider != cluster.V1BETA1REGIONCLOUDPROVIDER_AWS {
+			return string(export.EXPORTS3AUTHTYPEENUM_ACCESS_KEY), nil
+		}
 		authTypes := make([]interface{}, 0, 2)
 		authTypes = append(authTypes, string(export.EXPORTS3AUTHTYPEENUM_ROLE_ARN), string(export.EXPORTS3AUTHTYPEENUM_ACCESS_KEY))
 		model, err = ui.InitialSelectModel(authTypes, "Choose and input the S3 auth:")
 		if err != nil {
 			return "", errors.Trace(err)
 		}
+
 	case export.EXPORTTARGETTYPEENUM_GCS:
 		return string(export.EXPORTGCSAUTHTYPEENUM_SERVICE_ACCOUNT_KEY), nil
 	case export.EXPORTTARGETTYPEENUM_AZURE_BLOB:

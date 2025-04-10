@@ -192,7 +192,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return err
 				}
-				selectedAuthType, err := GetSelectedAuthType(targetType)
+				selectedAuthType, err := GetSelectedAuthType(targetType, *cluster.CloudProvider)
 				if err != nil {
 					return err
 				}
