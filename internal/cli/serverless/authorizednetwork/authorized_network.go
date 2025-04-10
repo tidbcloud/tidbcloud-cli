@@ -22,8 +22,8 @@ import (
 
 func AuthorizedNetworkCmd(h *internal.Helper) *cobra.Command {
 	var authorizedNetworkCmd = &cobra.Command{
-		Use:     "authorized-network",
-		Short:   "Manage TiDB Cloud Serverless cluster authorized networks",
+		Use:   "authorized-network",
+		Short: "Manage TiDB Cloud Serverless cluster authorized networks",
 	}
 
 	authorizedNetworkCmd.AddCommand(CreateCmd(h))
