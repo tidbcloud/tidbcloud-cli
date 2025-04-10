@@ -43,6 +43,9 @@ var inputDescription = map[string]string{
 	flag.CSVNullValue:         "Input the CSV null value: representation of null values in CSV files, skip to use default value (\\N). If you want to set empty string, please use non-interactive mode",
 	flag.CSVSkipHeader:        "Input the CSV skip header: export CSV files of the tables without header. Type `true` to skip header, others will not skip header",
 	flag.DisplayName:          "Input the name of export. You can skip and use the default name SNAPSHOT_<snapshot_time> by pressing Enter",
+	flag.OSSURI:               "Input your OSS URI in oss://<bucket>/<path> format",
+	flag.OSSAccessKeyID:       "Input your OSS access key id",
+	flag.OSSAccessKeySecret:   "Input your OSS access key secret",
 }
 
 func GetSelectedParquetCompression() (export.ExportParquetCompressionTypeEnum, error) {
@@ -70,7 +73,9 @@ func GetSelectedParquetCompression() (export.ExportParquetCompressionTypeEnum, e
 
 func GetSelectedTargetType() (export.ExportTargetTypeEnum, error) {
 	targetTypes := make([]interface{}, 0, 4)
-	targetTypes = append(targetTypes, export.EXPORTTARGETTYPEENUM_LOCAL, export.EXPORTTARGETTYPEENUM_S3, export.EXPORTTARGETTYPEENUM_GCS, export.EXPORTTARGETTYPEENUM_AZURE_BLOB)
+	for _, v := range export.AllowedExportTargetTypeEnumEnumValues {
+		targetTypes = append(targetTypes, v)
+	}
 	model, err := ui.InitialSelectModel(targetTypes, "Choose the export target:")
 	if err != nil {
 		return "", errors.Trace(err)
@@ -107,6 +112,8 @@ func GetSelectedAuthType(target export.ExportTargetTypeEnum) (_ string, err erro
 		return string(export.EXPORTAZUREBLOBAUTHTYPEENUM_SAS_TOKEN), nil
 	case export.EXPORTTARGETTYPEENUM_LOCAL:
 		return "", nil
+	case export.EXPORTTARGETTYPEENUM_OSS:
+		return string(export.EXPORTOSSAUTHTYPEENUM_ACCESS_KEY), nil
 	}
 	if model == nil {
 		return "", errors.New("unknown auth type")

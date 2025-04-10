@@ -329,7 +329,8 @@ components:
           description: The sas token. This field is input-only.
           type: string
         uri:
-          description: "The Azure Blob URI of the export target. For example: azure://<account>.blob.core.windows.net/<container>/<path>."
+          description: "The Azure Blob URI of the export target. For example: azure://<account>.blob.core.windows.net/<container>/<path>\
+            \ or https://<account>.blob.core.windows.net/<container>/<path>."
           type: string
       required:
       - authType
@@ -521,6 +522,11 @@ components:
       enum:
       - SERVICE_ACCOUNT_KEY
       type: string
+    ExportOSSAuthType.Enum:
+      description: " - ACCESS_KEY: The access method is access key."
+      enum:
+      - ACCESS_KEY
+      type: string
     ExportOptions:
       properties:
         fileType:
@@ -685,6 +691,8 @@ components:
           $ref: '#/components/schemas/GCSTarget'
         azureBlob:
           $ref: '#/components/schemas/AzureBlobTarget'
+        oss:
+          $ref: '#/components/schemas/OSSTarget'
       type: object
     ExportTargetType.Enum:
       enum:
@@ -692,11 +700,13 @@ components:
       - S3
       - GCS
       - AZURE_BLOB
+      - OSS
       title: |-
         - LOCAL: Local target.
          - S3: S3 target.
-         - GCS: gcs source
-         - AZURE_BLOB: azure blob source
+         - GCS: gcs target
+         - AZURE_BLOB: azure blob target
+         - OSS: OSS target
       type: string
     GCSTarget:
       properties:
@@ -781,6 +791,37 @@ components:
           description: Total number of exports.
           format: int64
           type: integer
+      type: object
+    OSSTarget:
+      properties:
+        uri:
+          description: Required. The OSS URI.
+          type: string
+        authType:
+          allOf:
+          - $ref: '#/components/schemas/ExportOSSAuthType.Enum'
+          description: Required. The auth method of the export target.
+          type: object
+        accessKey:
+          allOf:
+          - $ref: '#/components/schemas/OSSTarget.AccessKey'
+          description: The access key.
+          type: object
+      required:
+      - authType
+      - uri
+      type: object
+    OSSTarget.AccessKey:
+      properties:
+        id:
+          description: The access key id.
+          type: string
+        secret:
+          description: The access key secret. This field is input-only.
+          type: string
+      required:
+      - id
+      - secret
       type: object
     S3Target:
       properties:

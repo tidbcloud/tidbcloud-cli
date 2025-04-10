@@ -24,7 +24,7 @@ type AzureBlobTarget struct {
 	AuthType ExportAzureBlobAuthTypeEnum `json:"authType"`
 	// The sas token. This field is input-only.
 	SasToken *string `json:"sasToken,omitempty"`
-	// The Azure Blob URI of the export target. For example: azure://<account>.blob.core.windows.net/<container>/<path>.
+	// The Azure Blob URI of the export target. For example: azure://<account>.blob.core.windows.net/<container>/<path> or https://<account>.blob.core.windows.net/<container>/<path>.
 	Uri                  string `json:"uri"`
 	AdditionalProperties map[string]interface{}
 }

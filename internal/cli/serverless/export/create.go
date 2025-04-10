@@ -70,6 +70,9 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 		flag.AzureBlobSASToken,
 		flag.ParquetCompression,
 		flag.DisplayName,
+		flag.OSSURI,
+		flag.OSSAccessKeyID,
+		flag.OSSAccessKeySecret,
 	}
 }
 
@@ -155,6 +158,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			var gcsURI, gcsServiceAccountKey string
 			// azure
 			var azBlobURI, azBlobSasToken string
+			// oss
+			var ossURI, ossAccessKeyID, ossAccessKeySecret string
 			var displayName string
 
 			if opts.interactive {
@@ -192,23 +197,45 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				switch selectedAuthType {
+				// Both S3 and OSS supports ACCESS_KEY
 				case string(export.EXPORTS3AUTHTYPEENUM_ACCESS_KEY):
-					inputs := []string{flag.S3URI, flag.S3AccessKeyID, flag.S3SecretAccessKey}
-					textInput, err := ui.InitialInputModel(inputs, inputDescription)
-					if err != nil {
-						return err
+					if targetType == export.EXPORTTARGETTYPEENUM_S3 {
+						inputs := []string{flag.S3URI, flag.S3AccessKeyID, flag.S3SecretAccessKey}
+						textInput, err := ui.InitialInputModel(inputs, inputDescription)
+						if err != nil {
+							return err
+						}
+						s3URI = textInput.Inputs[0].Value()
+						if s3URI == "" {
+							return errors.New("empty S3 URI")
+						}
+						accessKeyID = textInput.Inputs[1].Value()
+						if accessKeyID == "" {
+							return errors.New("empty S3 access key Id")
+						}
+						secretAccessKey = textInput.Inputs[2].Value()
+						if secretAccessKey == "" {
+							return errors.New("empty S3 secret access key")
+						}
 					}
-					s3URI = textInput.Inputs[0].Value()
-					if s3URI == "" {
-						return errors.New("empty S3 URI")
-					}
-					accessKeyID = textInput.Inputs[1].Value()
-					if accessKeyID == "" {
-						return errors.New("empty S3 access key Id")
-					}
-					secretAccessKey = textInput.Inputs[2].Value()
-					if secretAccessKey == "" {
-						return errors.New("empty S3 secret access key")
+					if targetType == export.EXPORTTARGETTYPEENUM_OSS {
+						inputs := []string{flag.OSSURI, flag.OSSAccessKeyID, flag.OSSAccessKeySecret}
+						textInput, err := ui.InitialInputModel(inputs, inputDescription)
+						if err != nil {
+							return err
+						}
+						ossURI = textInput.Inputs[0].Value()
+						if ossURI == "" {
+							return errors.New("empty OSS URI")
+						}
+						ossAccessKeyID = textInput.Inputs[1].Value()
+						if ossAccessKeyID == "" {
+							return errors.New("empty OSS access key Id")
+						}
+						ossAccessKeySecret = textInput.Inputs[2].Value()
+						if ossAccessKeySecret == "" {
+							return errors.New("empty OSS access key secret")
+						}
 					}
 				case string(export.EXPORTS3AUTHTYPEENUM_ROLE_ARN):
 					inputs := []string{flag.S3URI, flag.S3RoleArn}
@@ -463,6 +490,25 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if azBlobSasToken == "" {
 						return errors.New("Azure Blob SAS token is required when target type is AZURE_BLOB")
 					}
+				case export.EXPORTTARGETTYPEENUM_OSS:
+					ossURI, err = cmd.Flags().GetString(flag.OSSURI)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					if ossURI == "" {
+						return errors.New("OSS URI is required when target type is OSS")
+					}
+					ossAccessKeyID, err = cmd.Flags().GetString(flag.OSSAccessKeyID)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					ossAccessKeySecret, err = cmd.Flags().GetString(flag.OSSAccessKeySecret)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					if ossAccessKeyID == "" || ossAccessKeySecret == "" {
+						return errors.New("missing OSS auth information, require access key id and access key secret")
+					}
 				}
 
 				compressionStr, err := cmd.Flags().GetString(flag.Compression)
@@ -603,6 +649,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					AuthType: export.EXPORTAZUREBLOBAUTHTYPEENUM_SAS_TOKEN,
 					SasToken: &azBlobSasToken,
 				}
+			case export.EXPORTTARGETTYPEENUM_OSS:
+				params.Target.Oss = &export.OSSTarget{
+					Uri:      ossURI,
+					AuthType: export.EXPORTOSSAUTHTYPEENUM_ACCESS_KEY,
+					AccessKey: &export.OSSTargetAccessKey{
+						Id:     ossAccessKeyID,
+						Secret: ossAccessKeySecret,
+					},
+				}
 			}
 			// add compression
 			if compression != "" {
@@ -669,6 +724,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.GCSServiceAccountKey, "", "The base64 encoded service account key of GCS.")
 	createCmd.Flags().String(flag.AzureBlobURI, "", "The Azure Blob URI in azure://<account>.blob.core.windows.net/<container>/<path> format. Required when target type is AZURE_BLOB.")
 	createCmd.Flags().String(flag.AzureBlobSASToken, "", "The SAS token of Azure Blob.")
+	createCmd.Flags().String(flag.OSSURI, "", "The OSS URI in oss://<bucket>/<path> format. Required when target type is OSS.")
+	createCmd.Flags().String(flag.OSSAccessKeyID, "", "The access key ID of the OSS.")
+	createCmd.Flags().String(flag.OSSAccessKeySecret, "", "The access key secret of the OSS.")
 	createCmd.Flags().String(flag.ParquetCompression, "ZSTD", fmt.Sprintf("The parquet compression algorithm. One of %q.", export.AllowedExportParquetCompressionTypeEnumEnumValues))
 	createCmd.Flags().String(flag.DisplayName, "", "The display name of the export. (default \"SNAPSHOT_<snapshot_time>\")")
 
