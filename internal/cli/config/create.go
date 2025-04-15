@@ -95,7 +95,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys."))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString(
+				"Check the https://docs.pingcap.com/tidbcloud/api/v1beta#section/Authentication/API-Key-Management for more information about how to create API keys. "+
+					"Or use `"+config.CliName+" auth login` to authenticate with your TiDB Cloud account.",
+			))
 
 			var profileName string
 			var publicKey string

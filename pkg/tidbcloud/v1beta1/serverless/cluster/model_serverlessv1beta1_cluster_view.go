@@ -12,7 +12,6 @@ package cluster
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Serverlessv1beta1ClusterView Enum for the different types of detail view to be returned for a TiDB Cloud Serverless cluster.   - BASIC: Only basic information about the cluster is returned.  - FULL: All details about the cluster are returned.
@@ -44,18 +43,14 @@ func (v *Serverlessv1beta1ClusterView) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid Serverlessv1beta1ClusterView", value)
+	*v = Serverlessv1beta1ClusterView(value)
+	return nil
 }
 
-// NewServerlessv1beta1ClusterViewFromValue returns a pointer to a valid Serverlessv1beta1ClusterView
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewServerlessv1beta1ClusterViewFromValue(v string) (*Serverlessv1beta1ClusterView, error) {
+// NewServerlessv1beta1ClusterViewFromValue returns a pointer to a valid Serverlessv1beta1ClusterView for the value passed as argument
+func NewServerlessv1beta1ClusterViewFromValue(v string) *Serverlessv1beta1ClusterView {
 	ev := Serverlessv1beta1ClusterView(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for Serverlessv1beta1ClusterView: valid values are %v", v, AllowedServerlessv1beta1ClusterViewEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

@@ -19,8 +19,9 @@ var _ MappedNullable = &UpdateClusterRequestTidbNodeSettingTidbNodeGroup{}
 
 // UpdateClusterRequestTidbNodeSettingTidbNodeGroup struct for UpdateClusterRequestTidbNodeSettingTidbNodeGroup
 type UpdateClusterRequestTidbNodeSettingTidbNodeGroup struct {
-	TidbNodeGroupId      *string       `json:"tidbNodeGroupId,omitempty"`
-	NodeCount            NullableInt32 `json:"nodeCount,omitempty"`
+	TidbNodeGroupId      *string                                      `json:"tidbNodeGroupId,omitempty"`
+	NodeCount            NullableInt32                                `json:"nodeCount,omitempty"`
+	TiproxySetting       *Dedicatedv1beta1TidbNodeGroupTiProxySetting `json:"tiproxySetting,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -118,6 +119,38 @@ func (o *UpdateClusterRequestTidbNodeSettingTidbNodeGroup) UnsetNodeCount() {
 	o.NodeCount.Unset()
 }
 
+// GetTiproxySetting returns the TiproxySetting field value if set, zero value otherwise.
+func (o *UpdateClusterRequestTidbNodeSettingTidbNodeGroup) GetTiproxySetting() Dedicatedv1beta1TidbNodeGroupTiProxySetting {
+	if o == nil || IsNil(o.TiproxySetting) {
+		var ret Dedicatedv1beta1TidbNodeGroupTiProxySetting
+		return ret
+	}
+	return *o.TiproxySetting
+}
+
+// GetTiproxySettingOk returns a tuple with the TiproxySetting field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *UpdateClusterRequestTidbNodeSettingTidbNodeGroup) GetTiproxySettingOk() (*Dedicatedv1beta1TidbNodeGroupTiProxySetting, bool) {
+	if o == nil || IsNil(o.TiproxySetting) {
+		return nil, false
+	}
+	return o.TiproxySetting, true
+}
+
+// HasTiproxySetting returns a boolean if a field has been set.
+func (o *UpdateClusterRequestTidbNodeSettingTidbNodeGroup) HasTiproxySetting() bool {
+	if o != nil && !IsNil(o.TiproxySetting) {
+		return true
+	}
+
+	return false
+}
+
+// SetTiproxySetting gets a reference to the given Dedicatedv1beta1TidbNodeGroupTiProxySetting and assigns it to the TiproxySetting field.
+func (o *UpdateClusterRequestTidbNodeSettingTidbNodeGroup) SetTiproxySetting(v Dedicatedv1beta1TidbNodeGroupTiProxySetting) {
+	o.TiproxySetting = &v
+}
+
 func (o UpdateClusterRequestTidbNodeSettingTidbNodeGroup) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -133,6 +166,9 @@ func (o UpdateClusterRequestTidbNodeSettingTidbNodeGroup) ToMap() (map[string]in
 	}
 	if o.NodeCount.IsSet() {
 		toSerialize["nodeCount"] = o.NodeCount.Get()
+	}
+	if !IsNil(o.TiproxySetting) {
+		toSerialize["tiproxySetting"] = o.TiproxySetting
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -158,6 +194,7 @@ func (o *UpdateClusterRequestTidbNodeSettingTidbNodeGroup) UnmarshalJSON(data []
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "tidbNodeGroupId")
 		delete(additionalProperties, "nodeCount")
+		delete(additionalProperties, "tiproxySetting")
 		o.AdditionalProperties = additionalProperties
 	}
 

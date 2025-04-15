@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter the model 'PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter'
@@ -20,9 +19,10 @@ type PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProvider
 
 // List of PrivateEndpointConnectionService_ListPrivateEndpointConnections_cloudProvider_parameter
 const (
-	PRIVATEENDPOINTCONNECTIONSERVICELISTPRIVATEENDPOINTCONNECTIONSCLOUDPROVIDERPARAMETER_AWS   PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter = "aws"
-	PRIVATEENDPOINTCONNECTIONSERVICELISTPRIVATEENDPOINTCONNECTIONSCLOUDPROVIDERPARAMETER_GCP   PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter = "gcp"
-	PRIVATEENDPOINTCONNECTIONSERVICELISTPRIVATEENDPOINTCONNECTIONSCLOUDPROVIDERPARAMETER_AZURE PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter = "azure"
+	PRIVATEENDPOINTCONNECTIONSERVICELISTPRIVATEENDPOINTCONNECTIONSCLOUDPROVIDERPARAMETER_AWS      PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter = "aws"
+	PRIVATEENDPOINTCONNECTIONSERVICELISTPRIVATEENDPOINTCONNECTIONSCLOUDPROVIDERPARAMETER_GCP      PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter = "gcp"
+	PRIVATEENDPOINTCONNECTIONSERVICELISTPRIVATEENDPOINTCONNECTIONSCLOUDPROVIDERPARAMETER_AZURE    PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter = "azure"
+	PRIVATEENDPOINTCONNECTIONSERVICELISTPRIVATEENDPOINTCONNECTIONSCLOUDPROVIDERPARAMETER_ALICLOUD PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter = "alicloud"
 )
 
 // All allowed values of PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter enum
@@ -30,6 +30,7 @@ var AllowedPrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudPr
 	"aws",
 	"gcp",
 	"azure",
+	"alicloud",
 }
 
 func (v *PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter) UnmarshalJSON(src []byte) error {
@@ -46,18 +47,14 @@ func (v *PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProv
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter", value)
+	*v = PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter(value)
+	return nil
 }
 
-// NewPrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameterFromValue returns a pointer to a valid PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewPrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameterFromValue(v string) (*PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter, error) {
+// NewPrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameterFromValue returns a pointer to a valid PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter for the value passed as argument
+func NewPrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameterFromValue(v string) *PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter {
 	ev := PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter: valid values are %v", v, AllowedPrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameterEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

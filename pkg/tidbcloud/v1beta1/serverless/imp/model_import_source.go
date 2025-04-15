@@ -26,6 +26,8 @@ type ImportSource struct {
 	S3                   *S3Source            `json:"s3,omitempty"`
 	Gcs                  *GCSSource           `json:"gcs,omitempty"`
 	AzureBlob            *AzureBlobSource     `json:"azureBlob,omitempty"`
+	S3Compatible         *S3CompatibleSource  `json:"s3Compatible,omitempty"`
+	Oss                  *OSSSource           `json:"oss,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -201,6 +203,70 @@ func (o *ImportSource) SetAzureBlob(v AzureBlobSource) {
 	o.AzureBlob = &v
 }
 
+// GetS3Compatible returns the S3Compatible field value if set, zero value otherwise.
+func (o *ImportSource) GetS3Compatible() S3CompatibleSource {
+	if o == nil || IsNil(o.S3Compatible) {
+		var ret S3CompatibleSource
+		return ret
+	}
+	return *o.S3Compatible
+}
+
+// GetS3CompatibleOk returns a tuple with the S3Compatible field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ImportSource) GetS3CompatibleOk() (*S3CompatibleSource, bool) {
+	if o == nil || IsNil(o.S3Compatible) {
+		return nil, false
+	}
+	return o.S3Compatible, true
+}
+
+// HasS3Compatible returns a boolean if a field has been set.
+func (o *ImportSource) HasS3Compatible() bool {
+	if o != nil && !IsNil(o.S3Compatible) {
+		return true
+	}
+
+	return false
+}
+
+// SetS3Compatible gets a reference to the given S3CompatibleSource and assigns it to the S3Compatible field.
+func (o *ImportSource) SetS3Compatible(v S3CompatibleSource) {
+	o.S3Compatible = &v
+}
+
+// GetOss returns the Oss field value if set, zero value otherwise.
+func (o *ImportSource) GetOss() OSSSource {
+	if o == nil || IsNil(o.Oss) {
+		var ret OSSSource
+		return ret
+	}
+	return *o.Oss
+}
+
+// GetOssOk returns a tuple with the Oss field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ImportSource) GetOssOk() (*OSSSource, bool) {
+	if o == nil || IsNil(o.Oss) {
+		return nil, false
+	}
+	return o.Oss, true
+}
+
+// HasOss returns a boolean if a field has been set.
+func (o *ImportSource) HasOss() bool {
+	if o != nil && !IsNil(o.Oss) {
+		return true
+	}
+
+	return false
+}
+
+// SetOss gets a reference to the given OSSSource and assigns it to the Oss field.
+func (o *ImportSource) SetOss(v OSSSource) {
+	o.Oss = &v
+}
+
 func (o ImportSource) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -223,6 +289,12 @@ func (o ImportSource) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.AzureBlob) {
 		toSerialize["azureBlob"] = o.AzureBlob
+	}
+	if !IsNil(o.S3Compatible) {
+		toSerialize["s3Compatible"] = o.S3Compatible
+	}
+	if !IsNil(o.Oss) {
+		toSerialize["oss"] = o.Oss
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -272,6 +344,8 @@ func (o *ImportSource) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "s3")
 		delete(additionalProperties, "gcs")
 		delete(additionalProperties, "azureBlob")
+		delete(additionalProperties, "s3Compatible")
+		delete(additionalProperties, "oss")
 		o.AdditionalProperties = additionalProperties
 	}
 

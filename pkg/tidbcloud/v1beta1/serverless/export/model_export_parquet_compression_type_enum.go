@@ -12,7 +12,6 @@ package export
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ExportParquetCompressionTypeEnum  - GZIP: The parquet compression type is GZIP.  - SNAPPY: The parquet compression type is SNAPPY.  - ZSTD: The parquet compression type is ZSTD.  - NONE: No compression.
@@ -48,18 +47,14 @@ func (v *ExportParquetCompressionTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ExportParquetCompressionTypeEnum", value)
+	*v = ExportParquetCompressionTypeEnum(value)
+	return nil
 }
 
-// NewExportParquetCompressionTypeEnumFromValue returns a pointer to a valid ExportParquetCompressionTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewExportParquetCompressionTypeEnumFromValue(v string) (*ExportParquetCompressionTypeEnum, error) {
+// NewExportParquetCompressionTypeEnumFromValue returns a pointer to a valid ExportParquetCompressionTypeEnum for the value passed as argument
+func NewExportParquetCompressionTypeEnumFromValue(v string) *ExportParquetCompressionTypeEnum {
 	ev := ExportParquetCompressionTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ExportParquetCompressionTypeEnum: valid values are %v", v, AllowedExportParquetCompressionTypeEnumEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

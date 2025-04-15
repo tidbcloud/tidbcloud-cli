@@ -21,6 +21,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -29,9 +30,10 @@ import (
 )
 
 type S3Opts struct {
-	h           *internal.Helper
-	interactive bool
-	clusterId   string
+	h             *internal.Helper
+	interactive   bool
+	clusterId     string
+	cloudProvider *cluster.V1beta1RegionCloudProvider
 }
 
 func (o S3Opts) Run(cmd *cobra.Command) error {
@@ -48,6 +50,9 @@ func (o S3Opts) Run(cmd *cobra.Command) error {
 	if o.interactive {
 		// interactive mode
 		authTypes := []interface{}{imp.IMPORTS3AUTHTYPEENUM_ROLE_ARN, imp.IMPORTS3AUTHTYPEENUM_ACCESS_KEY}
+		if o.cloudProvider != nil && *o.cloudProvider != cluster.V1BETA1REGIONCLOUDPROVIDER_AWS {
+			authTypes = []interface{}{imp.IMPORTS3AUTHTYPEENUM_ACCESS_KEY}
+		}
 		model, err := ui.InitialSelectModel(authTypes, "Choose the auth type:")
 		if err != nil {
 			return err

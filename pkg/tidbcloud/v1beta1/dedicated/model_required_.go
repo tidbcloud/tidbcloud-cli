@@ -15,49 +15,50 @@ import (
 	"fmt"
 )
 
-// checks if the TidbNodeGroupServiceCreateTidbNodeGroupRequest type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &TidbNodeGroupServiceCreateTidbNodeGroupRequest{}
+// checks if the Required type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Required{}
 
-// TidbNodeGroupServiceCreateTidbNodeGroupRequest struct for TidbNodeGroupServiceCreateTidbNodeGroupRequest
-type TidbNodeGroupServiceCreateTidbNodeGroupRequest struct {
+// Required struct for Required
+type Required struct {
 	Name *string `json:"name,omitempty"`
 	// The unique ID of the TiDB group.
 	TidbNodeGroupId *string `json:"tidbNodeGroupId,omitempty"`
 	// The display name of the TiDB group.
 	DisplayName *string `json:"displayName,omitempty"`
 	// The number of TiDB nodes in the TiDB group.
-	NodeCount            int32                                   `json:"nodeCount"`
-	Endpoints            []Dedicatedv1beta1TidbNodeGroupEndpoint `json:"endpoints,omitempty"`
-	NodeSpecKey          *string                                 `json:"nodeSpecKey,omitempty"`
-	NodeSpecDisplayName  *string                                 `json:"nodeSpecDisplayName,omitempty"`
-	IsDefaultGroup       *bool                                   `json:"isDefaultGroup,omitempty"`
-	State                *Dedicatedv1beta1TidbNodeGroupState     `json:"state,omitempty"`
-	NodeChangingProgress *ClusterNodeChangingProgress            `json:"nodeChangingProgress,omitempty"`
+	NodeCount            int32                                        `json:"nodeCount"`
+	Endpoints            []Dedicatedv1beta1TidbNodeGroupEndpoint      `json:"endpoints,omitempty"`
+	NodeSpecKey          *string                                      `json:"nodeSpecKey,omitempty"`
+	NodeSpecDisplayName  *string                                      `json:"nodeSpecDisplayName,omitempty"`
+	IsDefaultGroup       *bool                                        `json:"isDefaultGroup,omitempty"`
+	State                *Dedicatedv1beta1TidbNodeGroupState          `json:"state,omitempty"`
+	NodeChangingProgress *ClusterNodeChangingProgress                 `json:"nodeChangingProgress,omitempty"`
+	TiproxySetting       *Dedicatedv1beta1TidbNodeGroupTiProxySetting `json:"tiproxySetting,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _TidbNodeGroupServiceCreateTidbNodeGroupRequest TidbNodeGroupServiceCreateTidbNodeGroupRequest
+type _Required Required
 
-// NewTidbNodeGroupServiceCreateTidbNodeGroupRequest instantiates a new TidbNodeGroupServiceCreateTidbNodeGroupRequest object
+// NewRequired instantiates a new Required object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTidbNodeGroupServiceCreateTidbNodeGroupRequest(nodeCount int32) *TidbNodeGroupServiceCreateTidbNodeGroupRequest {
-	this := TidbNodeGroupServiceCreateTidbNodeGroupRequest{}
+func NewRequired(nodeCount int32) *Required {
+	this := Required{}
 	this.NodeCount = nodeCount
 	return &this
 }
 
-// NewTidbNodeGroupServiceCreateTidbNodeGroupRequestWithDefaults instantiates a new TidbNodeGroupServiceCreateTidbNodeGroupRequest object
+// NewRequiredWithDefaults instantiates a new Required object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewTidbNodeGroupServiceCreateTidbNodeGroupRequestWithDefaults() *TidbNodeGroupServiceCreateTidbNodeGroupRequest {
-	this := TidbNodeGroupServiceCreateTidbNodeGroupRequest{}
+func NewRequiredWithDefaults() *Required {
+	this := Required{}
 	return &this
 }
 
 // GetName returns the Name field value if set, zero value otherwise.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetName() string {
+func (o *Required) GetName() string {
 	if o == nil || IsNil(o.Name) {
 		var ret string
 		return ret
@@ -67,7 +68,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetName() string {
 
 // GetNameOk returns a tuple with the Name field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNameOk() (*string, bool) {
+func (o *Required) GetNameOk() (*string, bool) {
 	if o == nil || IsNil(o.Name) {
 		return nil, false
 	}
@@ -75,7 +76,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNameOk() (*string, b
 }
 
 // HasName returns a boolean if a field has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasName() bool {
+func (o *Required) HasName() bool {
 	if o != nil && !IsNil(o.Name) {
 		return true
 	}
@@ -84,12 +85,12 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasName() bool {
 }
 
 // SetName gets a reference to the given string and assigns it to the Name field.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) SetName(v string) {
+func (o *Required) SetName(v string) {
 	o.Name = &v
 }
 
 // GetTidbNodeGroupId returns the TidbNodeGroupId field value if set, zero value otherwise.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetTidbNodeGroupId() string {
+func (o *Required) GetTidbNodeGroupId() string {
 	if o == nil || IsNil(o.TidbNodeGroupId) {
 		var ret string
 		return ret
@@ -99,7 +100,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetTidbNodeGroupId() st
 
 // GetTidbNodeGroupIdOk returns a tuple with the TidbNodeGroupId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetTidbNodeGroupIdOk() (*string, bool) {
+func (o *Required) GetTidbNodeGroupIdOk() (*string, bool) {
 	if o == nil || IsNil(o.TidbNodeGroupId) {
 		return nil, false
 	}
@@ -107,7 +108,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetTidbNodeGroupIdOk() 
 }
 
 // HasTidbNodeGroupId returns a boolean if a field has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasTidbNodeGroupId() bool {
+func (o *Required) HasTidbNodeGroupId() bool {
 	if o != nil && !IsNil(o.TidbNodeGroupId) {
 		return true
 	}
@@ -116,12 +117,12 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasTidbNodeGroupId() bo
 }
 
 // SetTidbNodeGroupId gets a reference to the given string and assigns it to the TidbNodeGroupId field.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) SetTidbNodeGroupId(v string) {
+func (o *Required) SetTidbNodeGroupId(v string) {
 	o.TidbNodeGroupId = &v
 }
 
 // GetDisplayName returns the DisplayName field value if set, zero value otherwise.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetDisplayName() string {
+func (o *Required) GetDisplayName() string {
 	if o == nil || IsNil(o.DisplayName) {
 		var ret string
 		return ret
@@ -131,7 +132,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetDisplayName() string
 
 // GetDisplayNameOk returns a tuple with the DisplayName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetDisplayNameOk() (*string, bool) {
+func (o *Required) GetDisplayNameOk() (*string, bool) {
 	if o == nil || IsNil(o.DisplayName) {
 		return nil, false
 	}
@@ -139,7 +140,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetDisplayNameOk() (*st
 }
 
 // HasDisplayName returns a boolean if a field has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasDisplayName() bool {
+func (o *Required) HasDisplayName() bool {
 	if o != nil && !IsNil(o.DisplayName) {
 		return true
 	}
@@ -148,12 +149,12 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasDisplayName() bool {
 }
 
 // SetDisplayName gets a reference to the given string and assigns it to the DisplayName field.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) SetDisplayName(v string) {
+func (o *Required) SetDisplayName(v string) {
 	o.DisplayName = &v
 }
 
 // GetNodeCount returns the NodeCount field value
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNodeCount() int32 {
+func (o *Required) GetNodeCount() int32 {
 	if o == nil {
 		var ret int32
 		return ret
@@ -164,7 +165,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNodeCount() int32 {
 
 // GetNodeCountOk returns a tuple with the NodeCount field value
 // and a boolean to check if the value has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNodeCountOk() (*int32, bool) {
+func (o *Required) GetNodeCountOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -172,12 +173,12 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNodeCountOk() (*int3
 }
 
 // SetNodeCount sets field value
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) SetNodeCount(v int32) {
+func (o *Required) SetNodeCount(v int32) {
 	o.NodeCount = v
 }
 
 // GetEndpoints returns the Endpoints field value if set, zero value otherwise.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetEndpoints() []Dedicatedv1beta1TidbNodeGroupEndpoint {
+func (o *Required) GetEndpoints() []Dedicatedv1beta1TidbNodeGroupEndpoint {
 	if o == nil || IsNil(o.Endpoints) {
 		var ret []Dedicatedv1beta1TidbNodeGroupEndpoint
 		return ret
@@ -187,7 +188,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetEndpoints() []Dedica
 
 // GetEndpointsOk returns a tuple with the Endpoints field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetEndpointsOk() ([]Dedicatedv1beta1TidbNodeGroupEndpoint, bool) {
+func (o *Required) GetEndpointsOk() ([]Dedicatedv1beta1TidbNodeGroupEndpoint, bool) {
 	if o == nil || IsNil(o.Endpoints) {
 		return nil, false
 	}
@@ -195,7 +196,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetEndpointsOk() ([]Ded
 }
 
 // HasEndpoints returns a boolean if a field has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasEndpoints() bool {
+func (o *Required) HasEndpoints() bool {
 	if o != nil && !IsNil(o.Endpoints) {
 		return true
 	}
@@ -204,12 +205,12 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasEndpoints() bool {
 }
 
 // SetEndpoints gets a reference to the given []Dedicatedv1beta1TidbNodeGroupEndpoint and assigns it to the Endpoints field.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) SetEndpoints(v []Dedicatedv1beta1TidbNodeGroupEndpoint) {
+func (o *Required) SetEndpoints(v []Dedicatedv1beta1TidbNodeGroupEndpoint) {
 	o.Endpoints = v
 }
 
 // GetNodeSpecKey returns the NodeSpecKey field value if set, zero value otherwise.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNodeSpecKey() string {
+func (o *Required) GetNodeSpecKey() string {
 	if o == nil || IsNil(o.NodeSpecKey) {
 		var ret string
 		return ret
@@ -219,7 +220,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNodeSpecKey() string
 
 // GetNodeSpecKeyOk returns a tuple with the NodeSpecKey field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNodeSpecKeyOk() (*string, bool) {
+func (o *Required) GetNodeSpecKeyOk() (*string, bool) {
 	if o == nil || IsNil(o.NodeSpecKey) {
 		return nil, false
 	}
@@ -227,7 +228,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNodeSpecKeyOk() (*st
 }
 
 // HasNodeSpecKey returns a boolean if a field has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasNodeSpecKey() bool {
+func (o *Required) HasNodeSpecKey() bool {
 	if o != nil && !IsNil(o.NodeSpecKey) {
 		return true
 	}
@@ -236,12 +237,12 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasNodeSpecKey() bool {
 }
 
 // SetNodeSpecKey gets a reference to the given string and assigns it to the NodeSpecKey field.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) SetNodeSpecKey(v string) {
+func (o *Required) SetNodeSpecKey(v string) {
 	o.NodeSpecKey = &v
 }
 
 // GetNodeSpecDisplayName returns the NodeSpecDisplayName field value if set, zero value otherwise.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNodeSpecDisplayName() string {
+func (o *Required) GetNodeSpecDisplayName() string {
 	if o == nil || IsNil(o.NodeSpecDisplayName) {
 		var ret string
 		return ret
@@ -251,7 +252,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNodeSpecDisplayName(
 
 // GetNodeSpecDisplayNameOk returns a tuple with the NodeSpecDisplayName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNodeSpecDisplayNameOk() (*string, bool) {
+func (o *Required) GetNodeSpecDisplayNameOk() (*string, bool) {
 	if o == nil || IsNil(o.NodeSpecDisplayName) {
 		return nil, false
 	}
@@ -259,7 +260,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNodeSpecDisplayNameO
 }
 
 // HasNodeSpecDisplayName returns a boolean if a field has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasNodeSpecDisplayName() bool {
+func (o *Required) HasNodeSpecDisplayName() bool {
 	if o != nil && !IsNil(o.NodeSpecDisplayName) {
 		return true
 	}
@@ -268,12 +269,12 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasNodeSpecDisplayName(
 }
 
 // SetNodeSpecDisplayName gets a reference to the given string and assigns it to the NodeSpecDisplayName field.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) SetNodeSpecDisplayName(v string) {
+func (o *Required) SetNodeSpecDisplayName(v string) {
 	o.NodeSpecDisplayName = &v
 }
 
 // GetIsDefaultGroup returns the IsDefaultGroup field value if set, zero value otherwise.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetIsDefaultGroup() bool {
+func (o *Required) GetIsDefaultGroup() bool {
 	if o == nil || IsNil(o.IsDefaultGroup) {
 		var ret bool
 		return ret
@@ -283,7 +284,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetIsDefaultGroup() boo
 
 // GetIsDefaultGroupOk returns a tuple with the IsDefaultGroup field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetIsDefaultGroupOk() (*bool, bool) {
+func (o *Required) GetIsDefaultGroupOk() (*bool, bool) {
 	if o == nil || IsNil(o.IsDefaultGroup) {
 		return nil, false
 	}
@@ -291,7 +292,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetIsDefaultGroupOk() (
 }
 
 // HasIsDefaultGroup returns a boolean if a field has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasIsDefaultGroup() bool {
+func (o *Required) HasIsDefaultGroup() bool {
 	if o != nil && !IsNil(o.IsDefaultGroup) {
 		return true
 	}
@@ -300,12 +301,12 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasIsDefaultGroup() boo
 }
 
 // SetIsDefaultGroup gets a reference to the given bool and assigns it to the IsDefaultGroup field.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) SetIsDefaultGroup(v bool) {
+func (o *Required) SetIsDefaultGroup(v bool) {
 	o.IsDefaultGroup = &v
 }
 
 // GetState returns the State field value if set, zero value otherwise.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetState() Dedicatedv1beta1TidbNodeGroupState {
+func (o *Required) GetState() Dedicatedv1beta1TidbNodeGroupState {
 	if o == nil || IsNil(o.State) {
 		var ret Dedicatedv1beta1TidbNodeGroupState
 		return ret
@@ -315,7 +316,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetState() Dedicatedv1b
 
 // GetStateOk returns a tuple with the State field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetStateOk() (*Dedicatedv1beta1TidbNodeGroupState, bool) {
+func (o *Required) GetStateOk() (*Dedicatedv1beta1TidbNodeGroupState, bool) {
 	if o == nil || IsNil(o.State) {
 		return nil, false
 	}
@@ -323,7 +324,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetStateOk() (*Dedicate
 }
 
 // HasState returns a boolean if a field has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasState() bool {
+func (o *Required) HasState() bool {
 	if o != nil && !IsNil(o.State) {
 		return true
 	}
@@ -332,12 +333,12 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasState() bool {
 }
 
 // SetState gets a reference to the given Dedicatedv1beta1TidbNodeGroupState and assigns it to the State field.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) SetState(v Dedicatedv1beta1TidbNodeGroupState) {
+func (o *Required) SetState(v Dedicatedv1beta1TidbNodeGroupState) {
 	o.State = &v
 }
 
 // GetNodeChangingProgress returns the NodeChangingProgress field value if set, zero value otherwise.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNodeChangingProgress() ClusterNodeChangingProgress {
+func (o *Required) GetNodeChangingProgress() ClusterNodeChangingProgress {
 	if o == nil || IsNil(o.NodeChangingProgress) {
 		var ret ClusterNodeChangingProgress
 		return ret
@@ -347,7 +348,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNodeChangingProgress
 
 // GetNodeChangingProgressOk returns a tuple with the NodeChangingProgress field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNodeChangingProgressOk() (*ClusterNodeChangingProgress, bool) {
+func (o *Required) GetNodeChangingProgressOk() (*ClusterNodeChangingProgress, bool) {
 	if o == nil || IsNil(o.NodeChangingProgress) {
 		return nil, false
 	}
@@ -355,7 +356,7 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) GetNodeChangingProgress
 }
 
 // HasNodeChangingProgress returns a boolean if a field has been set.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasNodeChangingProgress() bool {
+func (o *Required) HasNodeChangingProgress() bool {
 	if o != nil && !IsNil(o.NodeChangingProgress) {
 		return true
 	}
@@ -364,11 +365,43 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) HasNodeChangingProgress
 }
 
 // SetNodeChangingProgress gets a reference to the given ClusterNodeChangingProgress and assigns it to the NodeChangingProgress field.
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) SetNodeChangingProgress(v ClusterNodeChangingProgress) {
+func (o *Required) SetNodeChangingProgress(v ClusterNodeChangingProgress) {
 	o.NodeChangingProgress = &v
 }
 
-func (o TidbNodeGroupServiceCreateTidbNodeGroupRequest) MarshalJSON() ([]byte, error) {
+// GetTiproxySetting returns the TiproxySetting field value if set, zero value otherwise.
+func (o *Required) GetTiproxySetting() Dedicatedv1beta1TidbNodeGroupTiProxySetting {
+	if o == nil || IsNil(o.TiproxySetting) {
+		var ret Dedicatedv1beta1TidbNodeGroupTiProxySetting
+		return ret
+	}
+	return *o.TiproxySetting
+}
+
+// GetTiproxySettingOk returns a tuple with the TiproxySetting field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Required) GetTiproxySettingOk() (*Dedicatedv1beta1TidbNodeGroupTiProxySetting, bool) {
+	if o == nil || IsNil(o.TiproxySetting) {
+		return nil, false
+	}
+	return o.TiproxySetting, true
+}
+
+// HasTiproxySetting returns a boolean if a field has been set.
+func (o *Required) HasTiproxySetting() bool {
+	if o != nil && !IsNil(o.TiproxySetting) {
+		return true
+	}
+
+	return false
+}
+
+// SetTiproxySetting gets a reference to the given Dedicatedv1beta1TidbNodeGroupTiProxySetting and assigns it to the TiproxySetting field.
+func (o *Required) SetTiproxySetting(v Dedicatedv1beta1TidbNodeGroupTiProxySetting) {
+	o.TiproxySetting = &v
+}
+
+func (o Required) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -376,7 +409,7 @@ func (o TidbNodeGroupServiceCreateTidbNodeGroupRequest) MarshalJSON() ([]byte, e
 	return json.Marshal(toSerialize)
 }
 
-func (o TidbNodeGroupServiceCreateTidbNodeGroupRequest) ToMap() (map[string]interface{}, error) {
+func (o Required) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
@@ -406,6 +439,9 @@ func (o TidbNodeGroupServiceCreateTidbNodeGroupRequest) ToMap() (map[string]inte
 	if !IsNil(o.NodeChangingProgress) {
 		toSerialize["nodeChangingProgress"] = o.NodeChangingProgress
 	}
+	if !IsNil(o.TiproxySetting) {
+		toSerialize["tiproxySetting"] = o.TiproxySetting
+	}
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -414,7 +450,7 @@ func (o TidbNodeGroupServiceCreateTidbNodeGroupRequest) ToMap() (map[string]inte
 	return toSerialize, nil
 }
 
-func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) UnmarshalJSON(data []byte) (err error) {
+func (o *Required) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -436,15 +472,15 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) UnmarshalJSON(data []by
 		}
 	}
 
-	varTidbNodeGroupServiceCreateTidbNodeGroupRequest := _TidbNodeGroupServiceCreateTidbNodeGroupRequest{}
+	varRequired := _Required{}
 
-	err = json.Unmarshal(data, &varTidbNodeGroupServiceCreateTidbNodeGroupRequest)
+	err = json.Unmarshal(data, &varRequired)
 
 	if err != nil {
 		return err
 	}
 
-	*o = TidbNodeGroupServiceCreateTidbNodeGroupRequest(varTidbNodeGroupServiceCreateTidbNodeGroupRequest)
+	*o = Required(varRequired)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -459,44 +495,45 @@ func (o *TidbNodeGroupServiceCreateTidbNodeGroupRequest) UnmarshalJSON(data []by
 		delete(additionalProperties, "isDefaultGroup")
 		delete(additionalProperties, "state")
 		delete(additionalProperties, "nodeChangingProgress")
+		delete(additionalProperties, "tiproxySetting")
 		o.AdditionalProperties = additionalProperties
 	}
 
 	return err
 }
 
-type NullableTidbNodeGroupServiceCreateTidbNodeGroupRequest struct {
-	value *TidbNodeGroupServiceCreateTidbNodeGroupRequest
+type NullableRequired struct {
+	value *Required
 	isSet bool
 }
 
-func (v NullableTidbNodeGroupServiceCreateTidbNodeGroupRequest) Get() *TidbNodeGroupServiceCreateTidbNodeGroupRequest {
+func (v NullableRequired) Get() *Required {
 	return v.value
 }
 
-func (v *NullableTidbNodeGroupServiceCreateTidbNodeGroupRequest) Set(val *TidbNodeGroupServiceCreateTidbNodeGroupRequest) {
+func (v *NullableRequired) Set(val *Required) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableTidbNodeGroupServiceCreateTidbNodeGroupRequest) IsSet() bool {
+func (v NullableRequired) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableTidbNodeGroupServiceCreateTidbNodeGroupRequest) Unset() {
+func (v *NullableRequired) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableTidbNodeGroupServiceCreateTidbNodeGroupRequest(val *TidbNodeGroupServiceCreateTidbNodeGroupRequest) *NullableTidbNodeGroupServiceCreateTidbNodeGroupRequest {
-	return &NullableTidbNodeGroupServiceCreateTidbNodeGroupRequest{value: val, isSet: true}
+func NewNullableRequired(val *Required) *NullableRequired {
+	return &NullableRequired{value: val, isSet: true}
 }
 
-func (v NullableTidbNodeGroupServiceCreateTidbNodeGroupRequest) MarshalJSON() ([]byte, error) {
+func (v NullableRequired) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableTidbNodeGroupServiceCreateTidbNodeGroupRequest) UnmarshalJSON(src []byte) error {
+func (v *NullableRequired) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

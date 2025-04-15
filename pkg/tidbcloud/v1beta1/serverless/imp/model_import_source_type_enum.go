@@ -12,7 +12,6 @@ package imp
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ImportSourceTypeEnum the model 'ImportSourceTypeEnum'
@@ -20,10 +19,12 @@ type ImportSourceTypeEnum string
 
 // List of ImportSourceType.Enum
 const (
-	IMPORTSOURCETYPEENUM_LOCAL      ImportSourceTypeEnum = "LOCAL"
-	IMPORTSOURCETYPEENUM_S3         ImportSourceTypeEnum = "S3"
-	IMPORTSOURCETYPEENUM_GCS        ImportSourceTypeEnum = "GCS"
-	IMPORTSOURCETYPEENUM_AZURE_BLOB ImportSourceTypeEnum = "AZURE_BLOB"
+	IMPORTSOURCETYPEENUM_LOCAL         ImportSourceTypeEnum = "LOCAL"
+	IMPORTSOURCETYPEENUM_S3            ImportSourceTypeEnum = "S3"
+	IMPORTSOURCETYPEENUM_GCS           ImportSourceTypeEnum = "GCS"
+	IMPORTSOURCETYPEENUM_AZURE_BLOB    ImportSourceTypeEnum = "AZURE_BLOB"
+	IMPORTSOURCETYPEENUM_S3_COMPATIBLE ImportSourceTypeEnum = "S3_COMPATIBLE"
+	IMPORTSOURCETYPEENUM_OSS           ImportSourceTypeEnum = "OSS"
 )
 
 // All allowed values of ImportSourceTypeEnum enum
@@ -32,6 +33,8 @@ var AllowedImportSourceTypeEnumEnumValues = []ImportSourceTypeEnum{
 	"S3",
 	"GCS",
 	"AZURE_BLOB",
+	"S3_COMPATIBLE",
+	"OSS",
 }
 
 func (v *ImportSourceTypeEnum) UnmarshalJSON(src []byte) error {
@@ -48,18 +51,14 @@ func (v *ImportSourceTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ImportSourceTypeEnum", value)
+	*v = ImportSourceTypeEnum(value)
+	return nil
 }
 
-// NewImportSourceTypeEnumFromValue returns a pointer to a valid ImportSourceTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewImportSourceTypeEnumFromValue(v string) (*ImportSourceTypeEnum, error) {
+// NewImportSourceTypeEnumFromValue returns a pointer to a valid ImportSourceTypeEnum for the value passed as argument
+func NewImportSourceTypeEnumFromValue(v string) *ImportSourceTypeEnum {
 	ev := ImportSourceTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ImportSourceTypeEnum: valid values are %v", v, AllowedImportSourceTypeEnumEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

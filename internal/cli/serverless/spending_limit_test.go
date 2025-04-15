@@ -76,7 +76,7 @@ func (suite *SpendingLimitSuite) TestSetSpendingLimit() {
 		stderrString string
 	}{
 		{
-			name:         "update displayName success",
+			name:         "update spending limit success",
 			args:         []string{"--cluster-id", clusterID, "--monthly", fmt.Sprintf("%d", monthly)},
 			stdoutString: fmt.Sprintf("set spending limit to %d cents success\n", monthly),
 		},

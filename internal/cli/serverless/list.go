@@ -124,7 +124,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					"DisplayName",
 					"State",
 					"Version",
-					"Cloud",
+					"CloudProvider",
 					"Region",
 					"CreateTime",
 				}

@@ -46,13 +46,16 @@ ticloud serverless export create [flags]
       --gcs.service-account-key string   The base64 encoded service account key of GCS.
       --gcs.uri string                   The GCS URI in gs://<bucket>/<path> format. Required when target type is GCS.
   -h, --help                             help for create
+      --oss.access-key-id string         The access key ID of the OSS.
+      --oss.access-key-secret string     The access key secret of the OSS.
+      --oss.uri string                   The OSS URI in oss://<bucket>/<path> format. Required when target type is OSS.
       --parquet.compression string       The parquet compression algorithm. One of ["GZIP" "SNAPPY" "ZSTD" "NONE"]. (default "ZSTD")
       --s3.access-key-id string          The access key ID of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].
       --s3.role-arn string               The role arn of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].
       --s3.secret-access-key string      The secret access key of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].
       --s3.uri string                    The S3 URI in s3://<bucket>/<path> format. Required when target type is S3.
       --sql string                       Filter the exported data with SQL SELECT statement.
-      --target-type string               The export target. One of ["LOCAL" "S3" "GCS" "AZURE_BLOB"]. (default "LOCAL")
+      --target-type string               The export target. One of ["LOCAL" "S3" "GCS" "AZURE_BLOB" "OSS"]. (default "LOCAL")
       --where string                     Filter the exported table(s) with the where condition.
 ```
 

@@ -12,7 +12,6 @@ package export
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ExportAzureBlobAuthTypeEnum  - SAS_TOKEN: The access method is sas token.
@@ -42,18 +41,14 @@ func (v *ExportAzureBlobAuthTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ExportAzureBlobAuthTypeEnum", value)
+	*v = ExportAzureBlobAuthTypeEnum(value)
+	return nil
 }
 
-// NewExportAzureBlobAuthTypeEnumFromValue returns a pointer to a valid ExportAzureBlobAuthTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewExportAzureBlobAuthTypeEnumFromValue(v string) (*ExportAzureBlobAuthTypeEnum, error) {
+// NewExportAzureBlobAuthTypeEnumFromValue returns a pointer to a valid ExportAzureBlobAuthTypeEnum for the value passed as argument
+func NewExportAzureBlobAuthTypeEnumFromValue(v string) *ExportAzureBlobAuthTypeEnum {
 	ev := ExportAzureBlobAuthTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ExportAzureBlobAuthTypeEnum: valid values are %v", v, AllowedExportAzureBlobAuthTypeEnumEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

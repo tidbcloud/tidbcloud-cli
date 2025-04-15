@@ -168,7 +168,6 @@ func SpendingLimitCmd(h *internal.Helper) *cobra.Command {
 }
 
 func GetMonthlyInput() (tea.Model, error) {
-
 	m := ui.TextInputModel{
 		Inputs: make([]textinput.Model, 1),
 	}

@@ -12,17 +12,17 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
-// V1beta1RegionCloudProvider Enum of cloud provider names.   - aws: Amazon Web Services.  - gcp: Google Cloud Platform.  - azure: Microsoft Azure.
+// V1beta1RegionCloudProvider Enum of cloud provider names.   - aws: Amazon Web Services.  - gcp: Google Cloud Platform.  - azure: Microsoft Azure.  - alicloud: Alibaba Cloud
 type V1beta1RegionCloudProvider string
 
 // List of v1beta1RegionCloudProvider
 const (
-	V1BETA1REGIONCLOUDPROVIDER_AWS   V1beta1RegionCloudProvider = "aws"
-	V1BETA1REGIONCLOUDPROVIDER_GCP   V1beta1RegionCloudProvider = "gcp"
-	V1BETA1REGIONCLOUDPROVIDER_AZURE V1beta1RegionCloudProvider = "azure"
+	V1BETA1REGIONCLOUDPROVIDER_AWS      V1beta1RegionCloudProvider = "aws"
+	V1BETA1REGIONCLOUDPROVIDER_GCP      V1beta1RegionCloudProvider = "gcp"
+	V1BETA1REGIONCLOUDPROVIDER_AZURE    V1beta1RegionCloudProvider = "azure"
+	V1BETA1REGIONCLOUDPROVIDER_ALICLOUD V1beta1RegionCloudProvider = "alicloud"
 )
 
 // All allowed values of V1beta1RegionCloudProvider enum
@@ -30,6 +30,7 @@ var AllowedV1beta1RegionCloudProviderEnumValues = []V1beta1RegionCloudProvider{
 	"aws",
 	"gcp",
 	"azure",
+	"alicloud",
 }
 
 func (v *V1beta1RegionCloudProvider) UnmarshalJSON(src []byte) error {
@@ -46,18 +47,14 @@ func (v *V1beta1RegionCloudProvider) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid V1beta1RegionCloudProvider", value)
+	*v = V1beta1RegionCloudProvider(value)
+	return nil
 }
 
-// NewV1beta1RegionCloudProviderFromValue returns a pointer to a valid V1beta1RegionCloudProvider
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewV1beta1RegionCloudProviderFromValue(v string) (*V1beta1RegionCloudProvider, error) {
+// NewV1beta1RegionCloudProviderFromValue returns a pointer to a valid V1beta1RegionCloudProvider for the value passed as argument
+func NewV1beta1RegionCloudProviderFromValue(v string) *V1beta1RegionCloudProvider {
 	ev := V1beta1RegionCloudProvider(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for V1beta1RegionCloudProvider: valid values are %v", v, AllowedV1beta1RegionCloudProviderEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

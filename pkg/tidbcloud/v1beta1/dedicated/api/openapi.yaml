@@ -166,6 +166,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/tidb_cloud_open_apidedicatedv1beta1Cluster'
+        description: Required.
         required: true
       responses:
         "200":
@@ -411,7 +412,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/dedicatedv1beta1PauseClusterResponse'
+                $ref: '#/components/schemas/v1beta1PauseClusterResponse'
           description: A successful response.
         "400":
           content:
@@ -466,7 +467,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/dedicatedv1beta1ResumeClusterResponse'
+                $ref: '#/components/schemas/v1beta1ResumeClusterResponse'
           description: A successful response.
         "400":
           content:
@@ -994,6 +995,13 @@ paths:
         schema:
           type: string
       - description: |-
+          If specified, only node specs that are available to the specified cluster will be returned.
+          If not specified, all available node specs will be returned.
+        in: query
+        name: clusterId
+        schema:
+          type: string
+      - description: |-
           The maximum number of node specs to return. The service may return fewer than this value.
           If unspecified, at most X node specs will be returned.
           The maximum value is X; values above X will be coerced to X.
@@ -1092,12 +1100,19 @@ paths:
         name: projectId
         schema:
           type: string
+      - description: |-
+          If specified, only node specs that are available to the specified cluster will be returned.
+          If not specified, all available node specs will be returned.
+        in: query
+        name: clusterId
+        schema:
+          type: string
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/dedicatedv1beta1NodeSpec'
+                $ref: '#/components/schemas/v1beta1NodeSpec'
           description: A successful response.
         "400":
           content:
@@ -1161,7 +1176,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TidbNodeGroupService_CreateTidbNodeGroup_request'
+              $ref: '#/components/schemas/Required_'
+        description: Required.
         required: true
       responses:
         "200":
@@ -1689,7 +1705,8 @@ paths:
     post:
       operationId: PrivateEndpointConnectionService_CreatePrivateEndpointConnection
       parameters:
-      - in: path
+      - description: Required.
+        in: path
         name: clusterId
         required: true
         schema:
@@ -1793,6 +1810,7 @@ paths:
            - aws: Amazon Web Services.
            - gcp: Google Cloud Platform.
            - azure: Microsoft Azure.
+           - alicloud: Alibaba Cloud
         in: query
         name: cloudProvider
         schema:
@@ -2010,6 +2028,7 @@ paths:
            - aws: Amazon Web Services.
            - gcp: Google Cloud Platform.
            - azure: Microsoft Azure.
+           - alicloud: Alibaba Cloud
         in: query
         name: cloudProvider
         schema:
@@ -2100,6 +2119,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/v1beta1NetworkContainer'
+        description: Required.
         required: true
       responses:
         "200":
@@ -2272,6 +2292,7 @@ paths:
            - aws: Amazon Web Services.
            - gcp: Google Cloud Platform.
            - azure: Microsoft Azure.
+           - alicloud: Alibaba Cloud
         in: query
         name: cloudProvider
         schema:
@@ -2348,6 +2369,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/dedicatedv1beta1VpcPeering'
+        description: Required.
         required: true
       responses:
         "200":
@@ -2605,7 +2627,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/v1beta1ListMaintenanceWindowsResponse'
+                $ref: '#/components/schemas/dedicatedv1beta1ListMaintenanceWindowsResponse'
           description: A successful response.
         "400":
           content:
@@ -2751,7 +2773,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/v1beta1ListMaintenanceTasksResponse'
+                $ref: '#/components/schemas/dedicatedv1beta1ListMaintenanceTasksResponse'
           description: A successful response.
         "400":
           content:
@@ -2806,7 +2828,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/v1beta1MaintenanceTask'
+                $ref: '#/components/schemas/dedicatedv1beta1MaintenanceTask'
           description: A successful response.
         "400":
           content:
@@ -2847,21 +2869,27 @@ paths:
       summary: Get a maintenance task
       tags:
       - MaintenanceService
-  /maintenanceTasks/{maintenanceTaskId}:deferMaintenanceTask:
-    post:
-      operationId: MaintenanceService_DeferMaintenanceTask
+  /maintenanceTasks/{maintenanceTask.maintenanceTaskId}:
+    patch:
+      operationId: MaintenanceService_UpdateMaintenanceTask
       parameters:
       - in: path
-        name: maintenanceTaskId
+        name: maintenanceTask.maintenanceTaskId
         required: true
         schema:
           type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MaintenanceService_UpdateMaintenanceTask_request'
+        required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/v1beta1DeferMaintenanceTaskResponse'
+                $ref: '#/components/schemas/dedicatedv1beta1MaintenanceTask'
           description: A successful response.
         "400":
           content:
@@ -2899,9 +2927,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Defer a maintenance task
+      summary: Update a maintenance task
       tags:
       - MaintenanceService
+      x-codegen-request-body-name: maintenanceTask
   /clusters/{auditLogConfig.clusterId}/auditLogConfig:
     patch:
       operationId: DatabaseAuditLogService_UpdateAuditLogConfig
@@ -2984,7 +3013,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DatabaseAuditLogService_CreateAuditLogConfig_request'
+              $ref: '#/components/schemas/Required__1'
+        description: Required.
         required: true
       responses:
         "200":
@@ -3101,7 +3131,8 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DatabaseAuditLogService_CreateAuditLogFilterRule_request'
+              $ref: '#/components/schemas/Required__2'
+        description: Required.
         required: true
       responses:
         "200":
@@ -3397,6 +3428,152 @@ paths:
       summary: Show IAM principal of TiDB Cloud for accessing customer's object storage
       tags:
       - DatabaseAuditLogService
+  /clusters/{clusterId}/auditLogConfig:queryAuditLogFiles:
+    get:
+      operationId: DatabaseAuditLogService_QueryAuditLogFiles
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: the start time of the audit logs created time range.
+        in: query
+        name: startTime
+        schema:
+          format: date-time
+          type: string
+      - description: the end time of the audit logs created time range.
+        in: query
+        name: endTime
+        schema:
+          format: date-time
+          type: string
+      - in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: |-
+          The number of individual resources to skip before starting to return results.
+          If the skip value causes the cursor to move past the end of the collection,
+          the response will be 200 OK with an empty result set and no next_page_token.
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1QueryAuditLogFilesResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Query audit log files
+      tags:
+      - DatabaseAuditLogService
+  /clusters/{clusterId}/auditLogConfig:generateAuditLogFileDownloadAddress:
+    post:
+      operationId: DatabaseAuditLogService_GenerateAuditLogFileDownloadAddress
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: auditLogFileUri
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1GenerateAuditLogFileDownloadAddressResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: "Generate the download address for an audit log file, the address have\
+        \ an 15 minutes expiration time"
+      tags:
+      - DatabaseAuditLogService
 components:
   schemas:
     AuditLogConfigBucketWriteCheck:
@@ -3431,34 +3608,6 @@ components:
       required:
       - rootPassword
       type: object
-    ClusterStorageNodeSettingStorageType:
-      description: |-
-        Spec https://pingcap.feishu.cn/wiki/R6dcwK0Q3i9XSgkgG1Scoc82nbf.
-
-         - Standard: A cost-effective storage type suitable for most workloads, offering balanced performance and affordability.
-          - Single gp3 disk for TiKV storage
-        Ideal for general-purpose clusters where affordability and reliability are priorities.
-         - Standard_Optimized: An enhanced version of Standard storage that delivers approximately 10% better overall cluster performance, balancing cost and performance.
-          - Separate gp3 disk for TiKV raft-log storage
-          - gp3 disk for TiKV data storage
-        Recommended as the default choice for most clusters, offering an improved balance of cost and performance.
-         - Performance_Optimized: High-performance storage designed for workloads requiring low latency and greater stability. Provides superior performance for performance-sensitive clusters.
-          - Separate io2 disk for TiKV raft-log storage
-          - gp3 disk for TiKV data storage
-        Suitable for clusters where consistent I/O performance and reduced latency are critical.
-         - Performance: Premium storage option offering the highest levels of performance and stability. Uses a single high-performance disk to minimize jitter and maximize IOPS.
-          - Single io2 disk for storage
-        Designed for I/O jitter-sensitive clusters with extreme performance demands. Available via allowlist only for select customers.
-         - Standard_Premium: Reserved.
-         - Performance_Premium: Reserved.
-      enum:
-      - Standard
-      - Standard_Optimized
-      - Performance_Optimized
-      - Performance
-      - Standard_Premium
-      - Performance_Premium
-      type: string
     EndpointConnectionType:
       description: |2-
          - PUBLIC: The endpoint is a public endpoint.
@@ -3504,6 +3653,30 @@ components:
           format: int32
           type: integer
       type: object
+    StorageNodeSettingStorageType:
+      description: |-
+        Spec https://pingcap.feishu.cn/wiki/R6dcwK0Q3i9XSgkgG1Scoc82nbf.
+
+         - Basic: Data disk: gp3; Raft log disk: none.
+         - Standard: Data disk: gp3; Raft log disk: gp3.
+         - Performance: Data disk: gp3; Raft log disk: io2.
+         - Plus: Data disk: io2; Raft log disk: none.
+      enum:
+      - Basic
+      - Standard
+      - Performance
+      - Plus
+      type: string
+    TidbNodeGroupTiProxyType:
+      enum:
+      - MEDIUM
+      - LARGE
+      title: |-
+        - MEDIUM: Medium is the default value.
+        Instance 4vCPU, Max QPS: 30k, Max Data Traffic: 90 MiB/s
+         - LARGE: Large is the high performance value.
+        Instance 8vCPU, Max QPS: 60k, Max Data Traffic: 150 MiB/s
+      type: string
     UpdateClusterRequestTidbNodeSettingTidbNodeGroup:
       properties:
         tidbNodeGroupId:
@@ -3513,6 +3686,8 @@ components:
           format: int32
           nullable: true
           type: integer
+        tiproxySetting:
+          $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroupTiProxySetting'
       type: object
     commonv1beta1ClusterState:
       description: |-
@@ -3596,6 +3771,7 @@ components:
       example:
         bucketUri: bucketUri
         azureSasToken: azureSasToken
+        bucketManager: "{}"
         bucketWriteCheck: "{}"
         name: name
         bucketRegionId: bucketRegionId
@@ -3625,10 +3801,47 @@ components:
           allOf:
           - $ref: '#/components/schemas/AuditLogConfigBucketWriteCheck'
           type: object
+        bucketManager:
+          allOf:
+          - $ref: '#/components/schemas/dedicatedv1beta1BucketManager'
+          description: |-
+            The bucket_manager field is used to indicate who manages the bucket.
+            If this field is not set, the bucket is managed by the customer by default.
+          type: object
       required:
-      - bucketUri
       - clusterId
       type: object
+    dedicatedv1beta1AuditLogFile:
+      example:
+        bucket: bucket
+        filename: filename
+        createTime: 2000-01-23T04:56:07.000+00:00
+        sizeByte: 0
+        uri: uri
+      properties:
+        filename:
+          readOnly: true
+          type: string
+        uri:
+          readOnly: true
+          type: string
+        bucket:
+          readOnly: true
+          type: string
+        sizeByte:
+          format: int32
+          readOnly: true
+          type: integer
+        createTime:
+          format: date-time
+          readOnly: true
+          type: string
+      type: object
+    dedicatedv1beta1BucketManager:
+      enum:
+      - CUSTOMER
+      - PINGCAP
+      type: string
     dedicatedv1beta1ClusterPausePlan:
       properties:
         pauseType:
@@ -3656,6 +3869,118 @@ components:
       - PD
       - TIPROXY
       type: string
+    dedicatedv1beta1GenerateAuditLogFileDownloadAddressResponse:
+      example:
+        downloadAddress: downloadAddress
+      properties:
+        downloadAddress:
+          readOnly: true
+          type: string
+      type: object
+    dedicatedv1beta1ListMaintenanceTasksResponse:
+      example:
+        maintenanceTasks:
+        - maintenanceTaskId: maintenanceTaskId
+          createTime: 2000-01-23T04:56:07.000+00:00
+          name: name
+          description: description
+          scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
+          state: PENDING
+          deadline: 2000-01-23T04:56:07.000+00:00
+          projectId: projectId
+        - maintenanceTaskId: maintenanceTaskId
+          createTime: 2000-01-23T04:56:07.000+00:00
+          name: name
+          description: description
+          scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
+          state: PENDING
+          deadline: 2000-01-23T04:56:07.000+00:00
+          projectId: projectId
+        totalSize: 0
+        nextPageToken: nextPageToken
+      properties:
+        maintenanceTasks:
+          items:
+            $ref: '#/components/schemas/dedicatedv1beta1MaintenanceTask'
+          type: array
+        totalSize:
+          description: The total number of maintenance tasks that matched the query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: |-
+            A token, which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
+    dedicatedv1beta1ListMaintenanceWindowsResponse:
+      example:
+        totalSize: 0
+        nextPageToken: nextPageToken
+        maintenanceWindows:
+        - dayHour: 6
+          maintenanceWindowId: maintenanceWindowId
+          unchangedMaintenanceTasks:
+          - maintenanceTaskId: maintenanceTaskId
+            createTime: 2000-01-23T04:56:07.000+00:00
+            name: name
+            description: description
+            scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
+            state: PENDING
+            deadline: 2000-01-23T04:56:07.000+00:00
+            projectId: projectId
+          - maintenanceTaskId: maintenanceTaskId
+            createTime: 2000-01-23T04:56:07.000+00:00
+            name: name
+            description: description
+            scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
+            state: PENDING
+            deadline: 2000-01-23T04:56:07.000+00:00
+            projectId: projectId
+          weekDay: 0
+          nextMaintenanceDate: 2000-01-23T04:56:07.000+00:00
+          name: name
+          hourMinute: 1
+          projectId: projectId
+        - dayHour: 6
+          maintenanceWindowId: maintenanceWindowId
+          unchangedMaintenanceTasks:
+          - maintenanceTaskId: maintenanceTaskId
+            createTime: 2000-01-23T04:56:07.000+00:00
+            name: name
+            description: description
+            scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
+            state: PENDING
+            deadline: 2000-01-23T04:56:07.000+00:00
+            projectId: projectId
+          - maintenanceTaskId: maintenanceTaskId
+            createTime: 2000-01-23T04:56:07.000+00:00
+            name: name
+            description: description
+            scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
+            state: PENDING
+            deadline: 2000-01-23T04:56:07.000+00:00
+            projectId: projectId
+          weekDay: 0
+          nextMaintenanceDate: 2000-01-23T04:56:07.000+00:00
+          name: name
+          hourMinute: 1
+          projectId: projectId
+      properties:
+        maintenanceWindows:
+          items:
+            $ref: '#/components/schemas/dedicatedv1beta1MaintenanceWindow'
+          type: array
+        totalSize:
+          description: The total number of maintenance windows that matched the query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: |-
+            A token, which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
     dedicatedv1beta1ListTidbNodeGroupsResponse:
       example:
         tidbNodeGroups:
@@ -3673,6 +3998,7 @@ components:
           displayName: displayName
           tidbNodeGroupId: tidbNodeGroupId
           name: name
+          tiproxySetting: "{}"
           nodeCount: 0
           clusterId: clusterId
           state: "{}"
@@ -3690,6 +4016,7 @@ components:
           displayName: displayName
           tidbNodeGroupId: tidbNodeGroupId
           name: name
+          tiproxySetting: "{}"
           nodeCount: 0
           clusterId: clusterId
           state: "{}"
@@ -3760,6 +4087,48 @@ components:
             If this field is omitted, there are no subsequent pages.
           type: string
       type: object
+    dedicatedv1beta1MaintenanceTask:
+      description: All fields are output only.
+      example:
+        maintenanceTaskId: maintenanceTaskId
+        createTime: 2000-01-23T04:56:07.000+00:00
+        name: name
+        description: description
+        scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
+        state: PENDING
+        deadline: 2000-01-23T04:56:07.000+00:00
+        projectId: projectId
+      properties:
+        name:
+          title: "Format: maintenanceTasks/{maintenance_task_id}"
+          type: string
+        maintenanceTaskId:
+          type: string
+        projectId:
+          type: string
+        description:
+          type: string
+        state:
+          $ref: '#/components/schemas/dedicatedv1beta1MaintenanceTaskState'
+        createTime:
+          description: Timestamp when the task was created.
+          format: date-time
+          type: string
+        scheduledApplyTime:
+          description: Timestamp when the task run.
+          format: date-time
+          type: string
+        deadline:
+          description: Timestamp when the task will be expired.
+          format: date-time
+          type: string
+      type: object
+    dedicatedv1beta1MaintenanceTaskState:
+      enum:
+      - PENDING
+      - RUNNING
+      - DONE
+      type: string
     dedicatedv1beta1MaintenanceWindow:
       description: MaintenanceWindow is a singleton resource that represents the maintenance
         window under a project.
@@ -3772,7 +4141,7 @@ components:
           name: name
           description: description
           scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
-          state: "{}"
+          state: PENDING
           deadline: 2000-01-23T04:56:07.000+00:00
           projectId: projectId
         - maintenanceTaskId: maintenanceTaskId
@@ -3780,7 +4149,7 @@ components:
           name: name
           description: description
           scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
-          state: "{}"
+          state: PENDING
           deadline: 2000-01-23T04:56:07.000+00:00
           projectId: projectId
         weekDay: 0
@@ -3817,7 +4186,7 @@ components:
           type: string
         unchangedMaintenanceTasks:
           items:
-            $ref: '#/components/schemas/v1beta1MaintenanceTask'
+            $ref: '#/components/schemas/dedicatedv1beta1MaintenanceTask'
           readOnly: true
           type: array
       required:
@@ -3826,154 +4195,8 @@ components:
       - projectId
       - weekDay
       type: object
-    dedicatedv1beta1NodeSpec:
-      example:
-        componentType: "{}"
-        defaultStorageSizeGi: 1
-        vCpu: 0
-        displayName: displayName
-        defaultNodeCount: 2
-        memorySizeGi: 6
-        minStorageSizeGi: 5
-        nodeSpecKey: nodeSpecKey
-        default: true
-        regionId: regionId
-        maxStorageSizeGi: 5
-        name: name
-        storageTypes:
-        - Standard
-        - Standard
-      properties:
-        name:
-          readOnly: true
-          title: "Format: regions/{region_id}/componentTypes/{component_type}/nodeSpecs/{node_spec_key}"
-          type: string
-        regionId:
-          readOnly: true
-          title: "Format: {cloud_provider}-{region_code}"
-          type: string
-        componentType:
-          allOf:
-          - $ref: '#/components/schemas/dedicatedv1beta1ComponentType'
-          type: object
-        nodeSpecKey:
-          readOnly: true
-          type: string
-        displayName:
-          readOnly: true
-          type: string
-        vCpu:
-          format: int32
-          readOnly: true
-          type: integer
-        memorySizeGi:
-          format: int32
-          readOnly: true
-          type: integer
-        defaultStorageSizeGi:
-          format: int32
-          readOnly: true
-          type: integer
-        maxStorageSizeGi:
-          format: int32
-          readOnly: true
-          type: integer
-        minStorageSizeGi:
-          format: int32
-          readOnly: true
-          type: integer
-        defaultNodeCount:
-          format: int32
-          readOnly: true
-          type: integer
-        storageTypes:
-          items:
-            $ref: '#/components/schemas/ClusterStorageNodeSettingStorageType'
-          readOnly: true
-          type: array
-        default:
-          type: boolean
-      type: object
-    dedicatedv1beta1PauseClusterResponse:
-      example:
-        cluster:
-          tiflashNodeSetting:
-            nodeSpecKey: nodeSpecKey
-            nodeSpecDisplayName: nodeSpecDisplayName
-            nodeChangingProgress: "{}"
-            storageSizeGi: 5
-            storageType: Standard
-            nodeCount: 1
-          displayName: foo-bar
-          annotations:
-            key: annotations
-          updateTime: 2000-01-23T04:56:07.000+00:00
-          clusterId: clusterId
-          version: version
-          labels:
-            key: labels
-          pausePlan: "{}"
-          regionDisplayName: regionDisplayName
-          tikvNodeSetting:
-            nodeSpecKey: nodeSpecKey
-            nodeSpecDisplayName: nodeSpecDisplayName
-            nodeChangingProgress: "{}"
-            storageSizeGi: 5
-            storageType: Standard
-            nodeCount: 1
-          regionId: regionId
-          port: 5
-          createdBy: createdBy
-          createTime: 2000-01-23T04:56:07.000+00:00
-          cloudProvider: "{}"
-          name: name
-          tidbNodeSetting:
-            tidbNodeGroups:
-            - isDefaultGroup: true
-              endpoints:
-              - port: 6
-                host: host
-                connectionType: "{}"
-              - port: 6
-                host: host
-                connectionType: "{}"
-              nodeSpecKey: nodeSpecKey
-              nodeSpecDisplayName: nodeSpecDisplayName
-              nodeChangingProgress: "{}"
-              displayName: displayName
-              tidbNodeGroupId: tidbNodeGroupId
-              name: name
-              nodeCount: 0
-              clusterId: clusterId
-              state: "{}"
-            - isDefaultGroup: true
-              endpoints:
-              - port: 6
-                host: host
-                connectionType: "{}"
-              - port: 6
-                host: host
-                connectionType: "{}"
-              nodeSpecKey: nodeSpecKey
-              nodeSpecDisplayName: nodeSpecDisplayName
-              nodeChangingProgress: "{}"
-              displayName: displayName
-              tidbNodeGroupId: tidbNodeGroupId
-              name: name
-              nodeCount: 0
-              clusterId: clusterId
-              state: "{}"
-            nodeSpecKey: nodeSpecKey
-            nodeSpecDisplayName: nodeSpecDisplayName
-          state: "{}"
-          rootPassword: my-shining-password
-      properties:
-        cluster:
-          $ref: '#/components/schemas/tidb_cloud_open_apidedicatedv1beta1Cluster'
-      required:
-      - cluster
-      type: object
     dedicatedv1beta1PrivateLinkService:
+      description: All fields are output only.
       example:
         regionDisplayName: regionDisplayName
         serviceDnsName: serviceDnsName
@@ -3982,31 +4205,27 @@ components:
         - availableZones
         regionId: regionId
         tidbNodeGroupId: tidbNodeGroupId
-        cloudProvider: "{}"
+        cloudProvider: aws
         name: name
-        state: "{}"
+        state: CREATING
         serviceName: serviceName
       properties:
         name:
-          readOnly: true
           title: "Format: tidbNodeGroups/{tidb_node_group_id}/privateLinkService"
           type: string
         tidbNodeGroupId:
-          readOnly: true
           type: string
         serviceName:
           description: |-
             For AWS, it's the service name of the Private Link Service.
             For GCP, it's the resource name of the service attachment.
             For Azure, it's service resource ID of the Private Link Service.
-          readOnly: true
           type: string
         serviceDnsName:
           description: |-
             For AWS, it's the fully qualified domain name (FQDN) shared for all private endpoints, despite which VPC the endpoint located in.
             For GCP, it's the zone name (suffix of FQDN) shared for all private endpoints located in a single VPC network. The format of FQDN is `<endpoint_name>.<service_dns_name>`.
             For Azure, it's the zone name shared across public internet. The format of FQDN is `<endpoint_name>-<random_hash>.<service_dns_name>`.
-          readOnly: true
           type: string
         availableZones:
           description: |-
@@ -4015,102 +4234,42 @@ components:
             `github.com/aws/aws-sdk-go-v2/service/ec2.DescribeVpcEndpointServices` method.
           items:
             type: string
-          readOnly: true
           type: array
         state:
-          allOf:
-          - $ref: '#/components/schemas/v1beta1PrivateLinkServiceState'
-          type: object
+          $ref: '#/components/schemas/v1beta1PrivateLinkServiceState'
         regionId:
-          readOnly: true
           title: "Format: {cloud_provider}-{region_code}"
           type: string
         regionDisplayName:
-          readOnly: true
           type: string
         cloudProvider:
-          allOf:
-          - $ref: '#/components/schemas/v1beta1RegionCloudProvider'
-          type: object
+          $ref: '#/components/schemas/v1beta1RegionCloudProvider'
       type: object
-    dedicatedv1beta1ResumeClusterResponse:
+    dedicatedv1beta1QueryAuditLogFilesResponse:
       example:
-        cluster:
-          tiflashNodeSetting:
-            nodeSpecKey: nodeSpecKey
-            nodeSpecDisplayName: nodeSpecDisplayName
-            nodeChangingProgress: "{}"
-            storageSizeGi: 5
-            storageType: Standard
-            nodeCount: 1
-          displayName: foo-bar
-          annotations:
-            key: annotations
-          updateTime: 2000-01-23T04:56:07.000+00:00
-          clusterId: clusterId
-          version: version
-          labels:
-            key: labels
-          pausePlan: "{}"
-          regionDisplayName: regionDisplayName
-          tikvNodeSetting:
-            nodeSpecKey: nodeSpecKey
-            nodeSpecDisplayName: nodeSpecDisplayName
-            nodeChangingProgress: "{}"
-            storageSizeGi: 5
-            storageType: Standard
-            nodeCount: 1
-          regionId: regionId
-          port: 5
-          createdBy: createdBy
+        totalSize: 6
+        nextPageToken: nextPageToken
+        auditLogFiles:
+        - bucket: bucket
+          filename: filename
           createTime: 2000-01-23T04:56:07.000+00:00
-          cloudProvider: "{}"
-          name: name
-          tidbNodeSetting:
-            tidbNodeGroups:
-            - isDefaultGroup: true
-              endpoints:
-              - port: 6
-                host: host
-                connectionType: "{}"
-              - port: 6
-                host: host
-                connectionType: "{}"
-              nodeSpecKey: nodeSpecKey
-              nodeSpecDisplayName: nodeSpecDisplayName
-              nodeChangingProgress: "{}"
-              displayName: displayName
-              tidbNodeGroupId: tidbNodeGroupId
-              name: name
-              nodeCount: 0
-              clusterId: clusterId
-              state: "{}"
-            - isDefaultGroup: true
-              endpoints:
-              - port: 6
-                host: host
-                connectionType: "{}"
-              - port: 6
-                host: host
-                connectionType: "{}"
-              nodeSpecKey: nodeSpecKey
-              nodeSpecDisplayName: nodeSpecDisplayName
-              nodeChangingProgress: "{}"
-              displayName: displayName
-              tidbNodeGroupId: tidbNodeGroupId
-              name: name
-              nodeCount: 0
-              clusterId: clusterId
-              state: "{}"
-            nodeSpecKey: nodeSpecKey
-            nodeSpecDisplayName: nodeSpecDisplayName
-          state: "{}"
-          rootPassword: my-shining-password
+          sizeByte: 0
+          uri: uri
+        - bucket: bucket
+          filename: filename
+          createTime: 2000-01-23T04:56:07.000+00:00
+          sizeByte: 0
+          uri: uri
       properties:
-        cluster:
-          $ref: '#/components/schemas/tidb_cloud_open_apidedicatedv1beta1Cluster'
-      required:
-      - cluster
+        auditLogFiles:
+          items:
+            $ref: '#/components/schemas/dedicatedv1beta1AuditLogFile'
+          type: array
+        totalSize:
+          format: int32
+          type: integer
+        nextPageToken:
+          type: string
       type: object
     dedicatedv1beta1TidbNodeGroup:
       example:
@@ -4128,6 +4287,7 @@ components:
         displayName: displayName
         tidbNodeGroupId: tidbNodeGroupId
         name: name
+        tiproxySetting: "{}"
         nodeCount: 0
         clusterId: clusterId
         state: "{}"
@@ -4175,6 +4335,10 @@ components:
           allOf:
           - $ref: '#/components/schemas/ClusterNodeChangingProgress'
           type: object
+        tiproxySetting:
+          allOf:
+          - $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroupTiProxySetting'
+          type: object
       required:
       - nodeCount
       type: object
@@ -4210,6 +4374,21 @@ components:
       - MODIFYING
       - PAUSED
       type: string
+    dedicatedv1beta1TidbNodeGroupTiProxySetting:
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TidbNodeGroupTiProxyType'
+          description: The type of TiProxy.
+          type: object
+        nodeCount:
+          description: |-
+            The number of TiProxy nodes in the TiDB group.
+            If not set or set to 0, represents the TiProxy is disabled.
+          format: int32
+          nullable: true
+          type: integer
+      type: object
     dedicatedv1beta1VpcPeering:
       example:
         tidbCloudVpcCidr: tidbCloudVpcCidr
@@ -4314,7 +4493,7 @@ components:
         You can find out more about this error model and how to work with it in the
         [API Design Guide](https://cloud.google.com/apis/design/errors).
       example:
-        code: 7
+        code: 9
         details:
         - '@type': '@type'
         - '@type': '@type'
@@ -4473,7 +4652,8 @@ components:
           nodeSpecDisplayName: nodeSpecDisplayName
           nodeChangingProgress: "{}"
           storageSizeGi: 5
-          storageType: Standard
+          raftStoreIops: 5
+          storageType: "{}"
           nodeCount: 1
         displayName: foo-bar
         annotations:
@@ -4490,10 +4670,11 @@ components:
           nodeSpecDisplayName: nodeSpecDisplayName
           nodeChangingProgress: "{}"
           storageSizeGi: 5
-          storageType: Standard
+          raftStoreIops: 5
+          storageType: "{}"
           nodeCount: 1
         regionId: regionId
-        port: 5
+        port: 2
         createdBy: createdBy
         createTime: 2000-01-23T04:56:07.000+00:00
         cloudProvider: "{}"
@@ -4514,6 +4695,7 @@ components:
             displayName: displayName
             tidbNodeGroupId: tidbNodeGroupId
             name: name
+            tiproxySetting: "{}"
             nodeCount: 0
             clusterId: clusterId
             state: "{}"
@@ -4531,6 +4713,7 @@ components:
             displayName: displayName
             tidbNodeGroupId: tidbNodeGroupId
             name: name
+            tiproxySetting: "{}"
             nodeCount: 0
             clusterId: clusterId
             state: "{}"
@@ -4638,7 +4821,7 @@ components:
       type: object
     tidb_cloud_open_apidedicatedv1beta1ListClustersResponse:
       example:
-        totalSize: 2
+        totalSize: 7
         nextPageToken: nextPageToken
         clusters:
         - tiflashNodeSetting:
@@ -4646,7 +4829,8 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            storageType: Standard
+            raftStoreIops: 5
+            storageType: "{}"
             nodeCount: 1
           displayName: foo-bar
           annotations:
@@ -4663,10 +4847,11 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            storageType: Standard
+            raftStoreIops: 5
+            storageType: "{}"
             nodeCount: 1
           regionId: regionId
-          port: 5
+          port: 2
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           cloudProvider: "{}"
@@ -4687,6 +4872,7 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
+              tiproxySetting: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -4704,6 +4890,7 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
+              tiproxySetting: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -4716,7 +4903,8 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            storageType: Standard
+            raftStoreIops: 5
+            storageType: "{}"
             nodeCount: 1
           displayName: foo-bar
           annotations:
@@ -4733,10 +4921,11 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            storageType: Standard
+            raftStoreIops: 5
+            storageType: "{}"
             nodeCount: 1
           regionId: regionId
-          port: 5
+          port: 2
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           cloudProvider: "{}"
@@ -4757,6 +4946,7 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
+              tiproxySetting: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -4774,6 +4964,7 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
+              tiproxySetting: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -4866,7 +5057,8 @@ components:
         nodeSpecDisplayName: nodeSpecDisplayName
         nodeChangingProgress: "{}"
         storageSizeGi: 5
-        storageType: Standard
+        raftStoreIops: 5
+        storageType: "{}"
         nodeCount: 1
       properties:
         nodeCount:
@@ -4878,7 +5070,16 @@ components:
           format: int32
           type: integer
         storageType:
-          $ref: '#/components/schemas/ClusterStorageNodeSettingStorageType'
+          allOf:
+          - $ref: '#/components/schemas/StorageNodeSettingStorageType'
+          description: Default to Basic.
+          type: object
+        raftStoreIops:
+          description: "If raft_store_iops is not set, the default IOPS of raft store\
+            \ will be used."
+          format: int32
+          nullable: true
+          type: integer
         nodeSpecDisplayName:
           readOnly: true
           title: output only
@@ -4891,7 +5092,6 @@ components:
       - nodeCount
       - nodeSpecKey
       - storageSizeGi
-      - storageType
       type: object
     v1beta1ClusterTidbNodeSetting:
       example:
@@ -4910,6 +5110,7 @@ components:
           displayName: displayName
           tidbNodeGroupId: tidbNodeGroupId
           name: name
+          tiproxySetting: "{}"
           nodeCount: 0
           clusterId: clusterId
           state: "{}"
@@ -4927,6 +5128,7 @@ components:
           displayName: displayName
           tidbNodeGroupId: tidbNodeGroupId
           name: name
+          tiproxySetting: "{}"
           nodeCount: 0
           clusterId: clusterId
           state: "{}"
@@ -4948,8 +5150,6 @@ components:
       required:
       - nodeSpecKey
       - tidbNodeGroups
-      type: object
-    v1beta1DeferMaintenanceTaskResponse:
       type: object
     v1beta1ListAuditLogFilterRulesResponse:
       example:
@@ -4983,110 +5183,6 @@ components:
           format: int32
           type: integer
         nextPageToken:
-          type: string
-      type: object
-    v1beta1ListMaintenanceTasksResponse:
-      example:
-        maintenanceTasks:
-        - maintenanceTaskId: maintenanceTaskId
-          createTime: 2000-01-23T04:56:07.000+00:00
-          name: name
-          description: description
-          scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
-          state: "{}"
-          deadline: 2000-01-23T04:56:07.000+00:00
-          projectId: projectId
-        - maintenanceTaskId: maintenanceTaskId
-          createTime: 2000-01-23T04:56:07.000+00:00
-          name: name
-          description: description
-          scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
-          state: "{}"
-          deadline: 2000-01-23T04:56:07.000+00:00
-          projectId: projectId
-        totalSize: 0
-        nextPageToken: nextPageToken
-      properties:
-        maintenanceTasks:
-          items:
-            $ref: '#/components/schemas/v1beta1MaintenanceTask'
-          type: array
-        totalSize:
-          description: The total number of maintenance tasks that matched the query.
-          format: int32
-          type: integer
-        nextPageToken:
-          description: |-
-            A token, which can be sent as `page_token` to retrieve the next page.
-            If this field is omitted, there are no subsequent pages.
-          type: string
-      type: object
-    v1beta1ListMaintenanceWindowsResponse:
-      example:
-        totalSize: 0
-        nextPageToken: nextPageToken
-        maintenanceWindows:
-        - dayHour: 6
-          maintenanceWindowId: maintenanceWindowId
-          unchangedMaintenanceTasks:
-          - maintenanceTaskId: maintenanceTaskId
-            createTime: 2000-01-23T04:56:07.000+00:00
-            name: name
-            description: description
-            scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
-            state: "{}"
-            deadline: 2000-01-23T04:56:07.000+00:00
-            projectId: projectId
-          - maintenanceTaskId: maintenanceTaskId
-            createTime: 2000-01-23T04:56:07.000+00:00
-            name: name
-            description: description
-            scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
-            state: "{}"
-            deadline: 2000-01-23T04:56:07.000+00:00
-            projectId: projectId
-          weekDay: 0
-          nextMaintenanceDate: 2000-01-23T04:56:07.000+00:00
-          name: name
-          hourMinute: 1
-          projectId: projectId
-        - dayHour: 6
-          maintenanceWindowId: maintenanceWindowId
-          unchangedMaintenanceTasks:
-          - maintenanceTaskId: maintenanceTaskId
-            createTime: 2000-01-23T04:56:07.000+00:00
-            name: name
-            description: description
-            scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
-            state: "{}"
-            deadline: 2000-01-23T04:56:07.000+00:00
-            projectId: projectId
-          - maintenanceTaskId: maintenanceTaskId
-            createTime: 2000-01-23T04:56:07.000+00:00
-            name: name
-            description: description
-            scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
-            state: "{}"
-            deadline: 2000-01-23T04:56:07.000+00:00
-            projectId: projectId
-          weekDay: 0
-          nextMaintenanceDate: 2000-01-23T04:56:07.000+00:00
-          name: name
-          hourMinute: 1
-          projectId: projectId
-      properties:
-        maintenanceWindows:
-          items:
-            $ref: '#/components/schemas/dedicatedv1beta1MaintenanceWindow'
-          type: array
-        totalSize:
-          description: The total number of maintenance windows that matched the query.
-          format: int32
-          type: integer
-        nextPageToken:
-          description: |-
-            A token, which can be sent as `page_token` to retrieve the next page.
-            If this field is omitted, there are no subsequent pages.
           type: string
       type: object
     v1beta1ListNetworkContainersResponse:
@@ -5134,30 +5230,34 @@ components:
         totalSize: 5
         nextPageToken: nextPageToken
         nodeInstances:
-        - componentType: "{}"
-          instanceId: instanceId
+        - componentType: TIKV
           vCpu: 0
           storageSizeGi: 1
           tidbNodeGroupId: tidbNodeGroupId
-          name: name
           clusterId: clusterId
-          state: "{}"
           availabilityZone: availabilityZone
-          isDefaultTidbNodeGroup: true
           memorySizeGi: 6
           tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
-        - componentType: "{}"
           instanceId: instanceId
+          name: name
+          raftStoreIops: 5
+          storageType: "{}"
+          state: "{}"
+          isDefaultTidbNodeGroup: true
+        - componentType: TIKV
           vCpu: 0
           storageSizeGi: 1
           tidbNodeGroupId: tidbNodeGroupId
-          name: name
           clusterId: clusterId
-          state: "{}"
           availabilityZone: availabilityZone
-          isDefaultTidbNodeGroup: true
           memorySizeGi: 6
           tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
+          instanceId: instanceId
+          name: name
+          raftStoreIops: 5
+          storageType: "{}"
+          state: "{}"
+          isDefaultTidbNodeGroup: true
       properties:
         nodeInstances:
           items:
@@ -5175,11 +5275,13 @@ components:
       type: object
     v1beta1ListNodeSpecsResponse:
       example:
-        totalSize: 7
+        totalSize: 3
         nextPageToken: nextPageToken
         nodeSpecs:
-        - componentType: "{}"
+        - minRaftStoreIops: 9
+          componentType: TIKV
           defaultStorageSizeGi: 1
+          maxRaftStoreIops: 7
           vCpu: 0
           displayName: displayName
           defaultNodeCount: 2
@@ -5191,10 +5293,12 @@ components:
           maxStorageSizeGi: 5
           name: name
           storageTypes:
-          - Standard
-          - Standard
-        - componentType: "{}"
+          - Basic
+          - Basic
+        - minRaftStoreIops: 9
+          componentType: TIKV
           defaultStorageSizeGi: 1
+          maxRaftStoreIops: 7
           vCpu: 0
           displayName: displayName
           defaultNodeCount: 2
@@ -5206,12 +5310,12 @@ components:
           maxStorageSizeGi: 5
           name: name
           storageTypes:
-          - Standard
-          - Standard
+          - Basic
+          - Basic
       properties:
         nodeSpecs:
           items:
-            $ref: '#/components/schemas/dedicatedv1beta1NodeSpec'
+            $ref: '#/components/schemas/v1beta1NodeSpec'
           type: array
         totalSize:
           description: The total number of node specs that matched the query.
@@ -5284,56 +5388,6 @@ components:
             If this field is omitted, there are no subsequent pages.
           type: string
       type: object
-    v1beta1MaintenanceTask:
-      example:
-        maintenanceTaskId: maintenanceTaskId
-        createTime: 2000-01-23T04:56:07.000+00:00
-        name: name
-        description: description
-        scheduledApplyTime: 2000-01-23T04:56:07.000+00:00
-        state: "{}"
-        deadline: 2000-01-23T04:56:07.000+00:00
-        projectId: projectId
-      properties:
-        name:
-          readOnly: true
-          title: "Format: maintenanceTasks/{maintenance_task_id}"
-          type: string
-        maintenanceTaskId:
-          readOnly: true
-          type: string
-        projectId:
-          readOnly: true
-          type: string
-        description:
-          readOnly: true
-          type: string
-        state:
-          allOf:
-          - $ref: '#/components/schemas/v1beta1MaintenanceTaskState'
-          type: object
-        createTime:
-          description: Timestamp when the task was created.
-          format: date-time
-          readOnly: true
-          type: string
-        scheduledApplyTime:
-          description: Timestamp when the task run.
-          format: date-time
-          readOnly: true
-          type: string
-        deadline:
-          description: Timestamp when the task will be expired.
-          format: date-time
-          readOnly: true
-          type: string
-      type: object
-    v1beta1MaintenanceTaskState:
-      enum:
-      - PENDING
-      - RUNNING
-      - DONE
-      type: string
     v1beta1NetworkContainer:
       example:
         regionDisplayName: regionDisplayName
@@ -5394,38 +5448,36 @@ components:
       - INACTIVE
       type: string
     v1beta1NodeInstance:
+      description: All fields are output only.
       example:
-        componentType: "{}"
-        instanceId: instanceId
+        componentType: TIKV
         vCpu: 0
         storageSizeGi: 1
         tidbNodeGroupId: tidbNodeGroupId
-        name: name
         clusterId: clusterId
-        state: "{}"
         availabilityZone: availabilityZone
-        isDefaultTidbNodeGroup: true
         memorySizeGi: 6
         tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
+        instanceId: instanceId
+        name: name
+        raftStoreIops: 5
+        storageType: "{}"
+        state: "{}"
+        isDefaultTidbNodeGroup: true
       properties:
         name:
-          readOnly: true
           title: "Format: clusters/{cluster_id}/nodeInstances/{instance_id}"
           type: string
         clusterId:
-          readOnly: true
           type: string
         instanceId:
-          readOnly: true
           title: |-
             Format for TiDB instances in the default TiDB group: tidb-{index}
             Format for TiDB instances in non-default TiDB groups: {tidb_group_name}-tidb-{index}
             Format for other instances: {component_type}-{index}
           type: string
         componentType:
-          allOf:
-          - $ref: '#/components/schemas/dedicatedv1beta1ComponentType'
-          type: object
+          $ref: '#/components/schemas/dedicatedv1beta1ComponentType'
         state:
           allOf:
           - $ref: '#/components/schemas/v1beta1NodeInstanceState'
@@ -5434,35 +5486,39 @@ components:
         vCpu:
           description: "the cpu size of the instance, e.g. 2."
           format: int32
-          readOnly: true
           type: integer
         memorySizeGi:
           description: "the memory size of the instance, e.g. 8."
           format: int32
-          readOnly: true
           type: integer
         availabilityZone:
           description: "the availability zone of the instance, e.g. \"us-west1-a\"\
             ."
-          readOnly: true
           type: string
         storageSizeGi:
           description: "the storage size of the instance, e.g. 100."
           format: int32
-          readOnly: true
           type: integer
         tidbNodeGroupId:
           nullable: true
-          readOnly: true
           type: string
         tidbNodeGroupDisplayName:
           nullable: true
-          readOnly: true
           type: string
         isDefaultTidbNodeGroup:
           nullable: true
-          readOnly: true
           type: boolean
+        raftStoreIops:
+          description: "Only available for instances which have storage. If raft_store_iops\
+            \ is not set, the default IOPS of raft store will be used."
+          format: int32
+          nullable: true
+          type: integer
+        storageType:
+          allOf:
+          - $ref: '#/components/schemas/StorageNodeSettingStorageType'
+          description: Only available for instances which have storage.
+          type: object
       type: object
     v1beta1NodeInstanceState:
       enum:
@@ -5471,6 +5527,156 @@ components:
       - DELETING
       - UNAVAILABLE
       type: string
+    v1beta1NodeSpec:
+      description: All fields are output only.
+      example:
+        minRaftStoreIops: 9
+        componentType: TIKV
+        defaultStorageSizeGi: 1
+        maxRaftStoreIops: 7
+        vCpu: 0
+        displayName: displayName
+        defaultNodeCount: 2
+        memorySizeGi: 6
+        minStorageSizeGi: 5
+        nodeSpecKey: nodeSpecKey
+        default: true
+        regionId: regionId
+        maxStorageSizeGi: 5
+        name: name
+        storageTypes:
+        - Basic
+        - Basic
+      properties:
+        name:
+          title: "Format: regions/{region_id}/componentTypes/{component_type}/nodeSpecs/{node_spec_key}"
+          type: string
+        regionId:
+          title: "Format: {cloud_provider}-{region_code}"
+          type: string
+        componentType:
+          $ref: '#/components/schemas/dedicatedv1beta1ComponentType'
+        nodeSpecKey:
+          type: string
+        displayName:
+          type: string
+        vCpu:
+          format: int32
+          type: integer
+        memorySizeGi:
+          format: int32
+          type: integer
+        defaultStorageSizeGi:
+          format: int32
+          type: integer
+        maxStorageSizeGi:
+          format: int32
+          type: integer
+        minStorageSizeGi:
+          format: int32
+          type: integer
+        defaultNodeCount:
+          format: int32
+          type: integer
+        storageTypes:
+          items:
+            $ref: '#/components/schemas/StorageNodeSettingStorageType'
+          type: array
+        maxRaftStoreIops:
+          description: Currently only useful when overriding iops for raftlog storage.
+          format: int32
+          nullable: true
+          type: integer
+        minRaftStoreIops:
+          format: int32
+          nullable: true
+          type: integer
+        default:
+          type: boolean
+      type: object
+    v1beta1PauseClusterResponse:
+      example:
+        cluster:
+          tiflashNodeSetting:
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+            nodeChangingProgress: "{}"
+            storageSizeGi: 5
+            raftStoreIops: 5
+            storageType: "{}"
+            nodeCount: 1
+          displayName: foo-bar
+          annotations:
+            key: annotations
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          version: version
+          labels:
+            key: labels
+          pausePlan: "{}"
+          regionDisplayName: regionDisplayName
+          tikvNodeSetting:
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+            nodeChangingProgress: "{}"
+            storageSizeGi: 5
+            raftStoreIops: 5
+            storageType: "{}"
+            nodeCount: 1
+          regionId: regionId
+          port: 2
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          cloudProvider: "{}"
+          name: name
+          tidbNodeSetting:
+            tidbNodeGroups:
+            - isDefaultGroup: true
+              endpoints:
+              - port: 6
+                host: host
+                connectionType: "{}"
+              - port: 6
+                host: host
+                connectionType: "{}"
+              nodeSpecKey: nodeSpecKey
+              nodeSpecDisplayName: nodeSpecDisplayName
+              nodeChangingProgress: "{}"
+              displayName: displayName
+              tidbNodeGroupId: tidbNodeGroupId
+              name: name
+              tiproxySetting: "{}"
+              nodeCount: 0
+              clusterId: clusterId
+              state: "{}"
+            - isDefaultGroup: true
+              endpoints:
+              - port: 6
+                host: host
+                connectionType: "{}"
+              - port: 6
+                host: host
+                connectionType: "{}"
+              nodeSpecKey: nodeSpecKey
+              nodeSpecDisplayName: nodeSpecDisplayName
+              nodeChangingProgress: "{}"
+              displayName: displayName
+              tidbNodeGroupId: tidbNodeGroupId
+              name: name
+              tiproxySetting: "{}"
+              nodeCount: 0
+              clusterId: clusterId
+              state: "{}"
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+          state: "{}"
+          rootPassword: my-shining-password
+      properties:
+        cluster:
+          $ref: '#/components/schemas/tidb_cloud_open_apidedicatedv1beta1Cluster'
+      required:
+      - cluster
+      type: object
     v1beta1PrivateEndpointConnection:
       example:
         privateLinkServiceState: "{}"
@@ -5616,12 +5822,97 @@ components:
          - aws: Amazon Web Services.
          - gcp: Google Cloud Platform.
          - azure: Microsoft Azure.
+         - alicloud: Alibaba Cloud
       enum:
       - aws
       - gcp
       - azure
+      - alicloud
       type: string
     v1beta1ResetRootPasswordResponse:
+      type: object
+    v1beta1ResumeClusterResponse:
+      example:
+        cluster:
+          tiflashNodeSetting:
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+            nodeChangingProgress: "{}"
+            storageSizeGi: 5
+            raftStoreIops: 5
+            storageType: "{}"
+            nodeCount: 1
+          displayName: foo-bar
+          annotations:
+            key: annotations
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          version: version
+          labels:
+            key: labels
+          pausePlan: "{}"
+          regionDisplayName: regionDisplayName
+          tikvNodeSetting:
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+            nodeChangingProgress: "{}"
+            storageSizeGi: 5
+            raftStoreIops: 5
+            storageType: "{}"
+            nodeCount: 1
+          regionId: regionId
+          port: 2
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          cloudProvider: "{}"
+          name: name
+          tidbNodeSetting:
+            tidbNodeGroups:
+            - isDefaultGroup: true
+              endpoints:
+              - port: 6
+                host: host
+                connectionType: "{}"
+              - port: 6
+                host: host
+                connectionType: "{}"
+              nodeSpecKey: nodeSpecKey
+              nodeSpecDisplayName: nodeSpecDisplayName
+              nodeChangingProgress: "{}"
+              displayName: displayName
+              tidbNodeGroupId: tidbNodeGroupId
+              name: name
+              tiproxySetting: "{}"
+              nodeCount: 0
+              clusterId: clusterId
+              state: "{}"
+            - isDefaultGroup: true
+              endpoints:
+              - port: 6
+                host: host
+                connectionType: "{}"
+              - port: 6
+                host: host
+                connectionType: "{}"
+              nodeSpecKey: nodeSpecKey
+              nodeSpecDisplayName: nodeSpecDisplayName
+              nodeChangingProgress: "{}"
+              displayName: displayName
+              tidbNodeGroupId: tidbNodeGroupId
+              name: name
+              tiproxySetting: "{}"
+              nodeCount: 0
+              clusterId: clusterId
+              state: "{}"
+            nodeSpecKey: nodeSpecKey
+            nodeSpecDisplayName: nodeSpecDisplayName
+          state: "{}"
+          rootPassword: my-shining-password
+      properties:
+        cluster:
+          $ref: '#/components/schemas/tidb_cloud_open_apidedicatedv1beta1Cluster'
+      required:
+      - cluster
       type: object
     v1beta1ShowCloudProvidersResponse:
       example:
@@ -5670,6 +5961,8 @@ components:
           type: string
         azureSasToken:
           type: string
+        bucketManager:
+          $ref: '#/components/schemas/dedicatedv1beta1BucketManager'
       required:
       - clusterId
       type: object
@@ -5710,6 +6003,17 @@ components:
         storageSizeGi:
           format: int32
           type: integer
+        storageType:
+          allOf:
+          - $ref: '#/components/schemas/StorageNodeSettingStorageType'
+          description: Allow change storage type.
+          type: object
+        raftStoreIops:
+          description: "If raft_store_iops is not set, the default IOPS of raft store\
+            \ will be used."
+          format: int32
+          nullable: true
+          type: integer
       type: object
     v1beta1UpdateClusterRequestTidbNodeSetting:
       properties:
@@ -5719,6 +6023,18 @@ components:
           items:
             $ref: '#/components/schemas/UpdateClusterRequestTidbNodeSettingTidbNodeGroup'
           type: array
+      type: object
+    v1beta1UpdateMaintenanceTaskRequestMaintenanceTask:
+      properties:
+        maintenanceTaskId:
+          type: string
+        scheduledApplyTime:
+          description: Timestamp when the task run.
+          format: date-time
+          type: string
+      required:
+      - maintenanceTaskId
+      - scheduledApplyTime
       type: object
     v1beta1UpdateMaintenanceWindowRequestMaintenanceWindow:
       properties:
@@ -5749,6 +6065,8 @@ components:
           format: int32
           nullable: true
           type: integer
+        tiproxySetting:
+          $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroupTiProxySetting'
       required:
       - clusterId
       - tidbNodeGroupId
@@ -5794,7 +6112,7 @@ components:
       - PD
       - TIPROXY
       type: string
-    TidbNodeGroupService_CreateTidbNodeGroup_request:
+    Required_:
       properties:
         name:
           readOnly: true
@@ -5833,8 +6151,13 @@ components:
           allOf:
           - $ref: '#/components/schemas/ClusterNodeChangingProgress'
           type: object
+        tiproxySetting:
+          allOf:
+          - $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroupTiProxySetting'
+          type: object
       required:
       - nodeCount
+      title: Required.
       type: object
     TidbNodeGroupService_UpdateTidbNodeGroup_request:
       properties:
@@ -5844,6 +6167,8 @@ components:
           format: int32
           nullable: true
           type: integer
+        tiproxySetting:
+          $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroupTiProxySetting'
       type: object
     TidbNodeGroupService_UpdatePublicEndpointSetting_request:
       properties:
@@ -5944,6 +6269,7 @@ components:
       - aws
       - gcp
       - azure
+      - alicloud
       type: string
     MaintenanceService_UpdateMaintenanceWindow_request:
       properties:
@@ -5957,7 +6283,16 @@ components:
           format: int32
           type: integer
       type: object
-    DatabaseAuditLogService_CreateAuditLogConfig_request:
+    MaintenanceService_UpdateMaintenanceTask_request:
+      properties:
+        scheduledApplyTime:
+          description: Timestamp when the task run.
+          format: date-time
+          type: string
+      required:
+      - scheduledApplyTime
+      type: object
+    Required__1:
       properties:
         name:
           readOnly: true
@@ -5979,8 +6314,14 @@ components:
           allOf:
           - $ref: '#/components/schemas/AuditLogConfigBucketWriteCheck'
           type: object
-      required:
-      - bucketUri
+        bucketManager:
+          allOf:
+          - $ref: '#/components/schemas/dedicatedv1beta1BucketManager'
+          description: |-
+            The bucket_manager field is used to indicate who manages the bucket.
+            If this field is not set, the bucket is managed by the customer by default.
+          type: object
+      title: Required.
       type: object
     DatabaseAuditLogService_UpdateAuditLogConfig_request:
       properties:
@@ -5996,8 +6337,10 @@ components:
           type: string
         azureSasToken:
           type: string
+        bucketManager:
+          $ref: '#/components/schemas/dedicatedv1beta1BucketManager'
       type: object
-    DatabaseAuditLogService_CreateAuditLogFilterRule_request:
+    Required__2:
       properties:
         name:
           readOnly: true
@@ -6016,6 +6359,7 @@ components:
           items:
             type: string
           type: array
+      title: Required.
       type: object
   securitySchemes:
     Bearer:

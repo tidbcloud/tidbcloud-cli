@@ -17,7 +17,7 @@ import (
 // checks if the Dedicatedv1beta1PrivateLinkService type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &Dedicatedv1beta1PrivateLinkService{}
 
-// Dedicatedv1beta1PrivateLinkService struct for Dedicatedv1beta1PrivateLinkService
+// Dedicatedv1beta1PrivateLinkService All fields are output only.
 type Dedicatedv1beta1PrivateLinkService struct {
 	Name            *string `json:"name,omitempty"`
 	TidbNodeGroupId *string `json:"tidbNodeGroupId,omitempty"`

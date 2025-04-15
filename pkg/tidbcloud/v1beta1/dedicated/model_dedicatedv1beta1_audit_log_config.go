@@ -23,12 +23,14 @@ type Dedicatedv1beta1AuditLogConfig struct {
 	Name      *string `json:"name,omitempty"`
 	ClusterId string  `json:"clusterId"`
 	// Default is false.
-	Enabled              *bool                           `json:"enabled,omitempty"`
-	BucketUri            string                          `json:"bucketUri"`
-	BucketRegionId       *string                         `json:"bucketRegionId,omitempty"`
-	AwsRoleArn           *string                         `json:"awsRoleArn,omitempty"`
-	AzureSasToken        *string                         `json:"azureSasToken,omitempty"`
-	BucketWriteCheck     *AuditLogConfigBucketWriteCheck `json:"bucketWriteCheck,omitempty"`
+	Enabled          *bool                           `json:"enabled,omitempty"`
+	BucketUri        *string                         `json:"bucketUri,omitempty"`
+	BucketRegionId   *string                         `json:"bucketRegionId,omitempty"`
+	AwsRoleArn       *string                         `json:"awsRoleArn,omitempty"`
+	AzureSasToken    *string                         `json:"azureSasToken,omitempty"`
+	BucketWriteCheck *AuditLogConfigBucketWriteCheck `json:"bucketWriteCheck,omitempty"`
+	// The bucket_manager field is used to indicate who manages the bucket. If this field is not set, the bucket is managed by the customer by default.
+	BucketManager        *Dedicatedv1beta1BucketManager `json:"bucketManager,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -38,10 +40,9 @@ type _Dedicatedv1beta1AuditLogConfig Dedicatedv1beta1AuditLogConfig
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewDedicatedv1beta1AuditLogConfig(clusterId string, bucketUri string) *Dedicatedv1beta1AuditLogConfig {
+func NewDedicatedv1beta1AuditLogConfig(clusterId string) *Dedicatedv1beta1AuditLogConfig {
 	this := Dedicatedv1beta1AuditLogConfig{}
 	this.ClusterId = clusterId
-	this.BucketUri = bucketUri
 	return &this
 }
 
@@ -141,28 +142,36 @@ func (o *Dedicatedv1beta1AuditLogConfig) SetEnabled(v bool) {
 	o.Enabled = &v
 }
 
-// GetBucketUri returns the BucketUri field value
+// GetBucketUri returns the BucketUri field value if set, zero value otherwise.
 func (o *Dedicatedv1beta1AuditLogConfig) GetBucketUri() string {
-	if o == nil {
+	if o == nil || IsNil(o.BucketUri) {
 		var ret string
 		return ret
 	}
-
-	return o.BucketUri
+	return *o.BucketUri
 }
 
-// GetBucketUriOk returns a tuple with the BucketUri field value
+// GetBucketUriOk returns a tuple with the BucketUri field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *Dedicatedv1beta1AuditLogConfig) GetBucketUriOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.BucketUri) {
 		return nil, false
 	}
-	return &o.BucketUri, true
+	return o.BucketUri, true
 }
 
-// SetBucketUri sets field value
+// HasBucketUri returns a boolean if a field has been set.
+func (o *Dedicatedv1beta1AuditLogConfig) HasBucketUri() bool {
+	if o != nil && !IsNil(o.BucketUri) {
+		return true
+	}
+
+	return false
+}
+
+// SetBucketUri gets a reference to the given string and assigns it to the BucketUri field.
 func (o *Dedicatedv1beta1AuditLogConfig) SetBucketUri(v string) {
-	o.BucketUri = v
+	o.BucketUri = &v
 }
 
 // GetBucketRegionId returns the BucketRegionId field value if set, zero value otherwise.
@@ -293,6 +302,38 @@ func (o *Dedicatedv1beta1AuditLogConfig) SetBucketWriteCheck(v AuditLogConfigBuc
 	o.BucketWriteCheck = &v
 }
 
+// GetBucketManager returns the BucketManager field value if set, zero value otherwise.
+func (o *Dedicatedv1beta1AuditLogConfig) GetBucketManager() Dedicatedv1beta1BucketManager {
+	if o == nil || IsNil(o.BucketManager) {
+		var ret Dedicatedv1beta1BucketManager
+		return ret
+	}
+	return *o.BucketManager
+}
+
+// GetBucketManagerOk returns a tuple with the BucketManager field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Dedicatedv1beta1AuditLogConfig) GetBucketManagerOk() (*Dedicatedv1beta1BucketManager, bool) {
+	if o == nil || IsNil(o.BucketManager) {
+		return nil, false
+	}
+	return o.BucketManager, true
+}
+
+// HasBucketManager returns a boolean if a field has been set.
+func (o *Dedicatedv1beta1AuditLogConfig) HasBucketManager() bool {
+	if o != nil && !IsNil(o.BucketManager) {
+		return true
+	}
+
+	return false
+}
+
+// SetBucketManager gets a reference to the given Dedicatedv1beta1BucketManager and assigns it to the BucketManager field.
+func (o *Dedicatedv1beta1AuditLogConfig) SetBucketManager(v Dedicatedv1beta1BucketManager) {
+	o.BucketManager = &v
+}
+
 func (o Dedicatedv1beta1AuditLogConfig) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -310,7 +351,9 @@ func (o Dedicatedv1beta1AuditLogConfig) ToMap() (map[string]interface{}, error) 
 	if !IsNil(o.Enabled) {
 		toSerialize["enabled"] = o.Enabled
 	}
-	toSerialize["bucketUri"] = o.BucketUri
+	if !IsNil(o.BucketUri) {
+		toSerialize["bucketUri"] = o.BucketUri
+	}
 	if !IsNil(o.BucketRegionId) {
 		toSerialize["bucketRegionId"] = o.BucketRegionId
 	}
@@ -322,6 +365,9 @@ func (o Dedicatedv1beta1AuditLogConfig) ToMap() (map[string]interface{}, error) 
 	}
 	if !IsNil(o.BucketWriteCheck) {
 		toSerialize["bucketWriteCheck"] = o.BucketWriteCheck
+	}
+	if !IsNil(o.BucketManager) {
+		toSerialize["bucketManager"] = o.BucketManager
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -337,7 +383,6 @@ func (o *Dedicatedv1beta1AuditLogConfig) UnmarshalJSON(data []byte) (err error) 
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
 		"clusterId",
-		"bucketUri",
 	}
 
 	allProperties := make(map[string]interface{})
@@ -375,6 +420,7 @@ func (o *Dedicatedv1beta1AuditLogConfig) UnmarshalJSON(data []byte) (err error) 
 		delete(additionalProperties, "awsRoleArn")
 		delete(additionalProperties, "azureSasToken")
 		delete(additionalProperties, "bucketWriteCheck")
+		delete(additionalProperties, "bucketManager")
 		o.AdditionalProperties = additionalProperties
 	}
 

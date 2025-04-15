@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // EndpointConnectionType  - PUBLIC: The endpoint is a public endpoint.  - VPC_PEERING: The endpoint is a VPC peering endpoint.  - PRIVATE_ENDPOINT: The endpoint is a private link endpoint.
@@ -46,18 +45,14 @@ func (v *EndpointConnectionType) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid EndpointConnectionType", value)
+	*v = EndpointConnectionType(value)
+	return nil
 }
 
-// NewEndpointConnectionTypeFromValue returns a pointer to a valid EndpointConnectionType
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewEndpointConnectionTypeFromValue(v string) (*EndpointConnectionType, error) {
+// NewEndpointConnectionTypeFromValue returns a pointer to a valid EndpointConnectionType for the value passed as argument
+func NewEndpointConnectionTypeFromValue(v string) *EndpointConnectionType {
 	ev := EndpointConnectionType(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for EndpointConnectionType: valid values are %v", v, AllowedEndpointConnectionTypeEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

@@ -12,7 +12,6 @@ package pingchat
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // PingchatChatInfoDomainInner the model 'PingchatChatInfoDomainInner'
@@ -54,18 +53,14 @@ func (v *PingchatChatInfoDomainInner) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid PingchatChatInfoDomainInner", value)
+	*v = PingchatChatInfoDomainInner(value)
+	return nil
 }
 
-// NewPingchatChatInfoDomainInnerFromValue returns a pointer to a valid PingchatChatInfoDomainInner
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewPingchatChatInfoDomainInnerFromValue(v string) (*PingchatChatInfoDomainInner, error) {
+// NewPingchatChatInfoDomainInnerFromValue returns a pointer to a valid PingchatChatInfoDomainInner for the value passed as argument
+func NewPingchatChatInfoDomainInnerFromValue(v string) *PingchatChatInfoDomainInner {
 	ev := PingchatChatInfoDomainInner(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for PingchatChatInfoDomainInner: valid values are %v", v, AllowedPingchatChatInfoDomainInnerEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

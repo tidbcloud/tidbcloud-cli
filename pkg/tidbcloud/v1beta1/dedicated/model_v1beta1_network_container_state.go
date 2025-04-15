@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // V1beta1NetworkContainerState the model 'V1beta1NetworkContainerState'
@@ -44,18 +43,14 @@ func (v *V1beta1NetworkContainerState) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid V1beta1NetworkContainerState", value)
+	*v = V1beta1NetworkContainerState(value)
+	return nil
 }
 
-// NewV1beta1NetworkContainerStateFromValue returns a pointer to a valid V1beta1NetworkContainerState
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewV1beta1NetworkContainerStateFromValue(v string) (*V1beta1NetworkContainerState, error) {
+// NewV1beta1NetworkContainerStateFromValue returns a pointer to a valid V1beta1NetworkContainerState for the value passed as argument
+func NewV1beta1NetworkContainerStateFromValue(v string) *V1beta1NetworkContainerState {
 	ev := V1beta1NetworkContainerState(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for V1beta1NetworkContainerState: valid values are %v", v, AllowedV1beta1NetworkContainerStateEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

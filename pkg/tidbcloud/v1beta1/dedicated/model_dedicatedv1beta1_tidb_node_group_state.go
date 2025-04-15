@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Dedicatedv1beta1TidbNodeGroupState  - ACTIVE: All nodes are ready.  - MODIFYING: When TiDB group is modifying.  - PAUSED: When cluster is paused.
@@ -46,18 +45,14 @@ func (v *Dedicatedv1beta1TidbNodeGroupState) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid Dedicatedv1beta1TidbNodeGroupState", value)
+	*v = Dedicatedv1beta1TidbNodeGroupState(value)
+	return nil
 }
 
-// NewDedicatedv1beta1TidbNodeGroupStateFromValue returns a pointer to a valid Dedicatedv1beta1TidbNodeGroupState
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewDedicatedv1beta1TidbNodeGroupStateFromValue(v string) (*Dedicatedv1beta1TidbNodeGroupState, error) {
+// NewDedicatedv1beta1TidbNodeGroupStateFromValue returns a pointer to a valid Dedicatedv1beta1TidbNodeGroupState for the value passed as argument
+func NewDedicatedv1beta1TidbNodeGroupStateFromValue(v string) *Dedicatedv1beta1TidbNodeGroupState {
 	ev := Dedicatedv1beta1TidbNodeGroupState(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for Dedicatedv1beta1TidbNodeGroupState: valid values are %v", v, AllowedDedicatedv1beta1TidbNodeGroupStateEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

@@ -24,6 +24,7 @@ type ExportTarget struct {
 	S3                   *S3Target             `json:"s3,omitempty"`
 	Gcs                  *GCSTarget            `json:"gcs,omitempty"`
 	AzureBlob            *AzureBlobTarget      `json:"azureBlob,omitempty"`
+	Oss                  *OSSTarget            `json:"oss,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -174,6 +175,38 @@ func (o *ExportTarget) SetAzureBlob(v AzureBlobTarget) {
 	o.AzureBlob = &v
 }
 
+// GetOss returns the Oss field value if set, zero value otherwise.
+func (o *ExportTarget) GetOss() OSSTarget {
+	if o == nil || IsNil(o.Oss) {
+		var ret OSSTarget
+		return ret
+	}
+	return *o.Oss
+}
+
+// GetOssOk returns a tuple with the Oss field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ExportTarget) GetOssOk() (*OSSTarget, bool) {
+	if o == nil || IsNil(o.Oss) {
+		return nil, false
+	}
+	return o.Oss, true
+}
+
+// HasOss returns a boolean if a field has been set.
+func (o *ExportTarget) HasOss() bool {
+	if o != nil && !IsNil(o.Oss) {
+		return true
+	}
+
+	return false
+}
+
+// SetOss gets a reference to the given OSSTarget and assigns it to the Oss field.
+func (o *ExportTarget) SetOss(v OSSTarget) {
+	o.Oss = &v
+}
+
 func (o ExportTarget) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -195,6 +228,9 @@ func (o ExportTarget) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.AzureBlob) {
 		toSerialize["azureBlob"] = o.AzureBlob
+	}
+	if !IsNil(o.Oss) {
+		toSerialize["oss"] = o.Oss
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -222,6 +258,7 @@ func (o *ExportTarget) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "s3")
 		delete(additionalProperties, "gcs")
 		delete(additionalProperties, "azureBlob")
+		delete(additionalProperties, "oss")
 		o.AdditionalProperties = additionalProperties
 	}
 

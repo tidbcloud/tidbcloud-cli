@@ -12,7 +12,6 @@ package export
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ExportFileTypeEnum  - SQL: SQL type.  - CSV: CSV type.  - PARQUET: PARQUET type.
@@ -46,18 +45,14 @@ func (v *ExportFileTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ExportFileTypeEnum", value)
+	*v = ExportFileTypeEnum(value)
+	return nil
 }
 
-// NewExportFileTypeEnumFromValue returns a pointer to a valid ExportFileTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewExportFileTypeEnumFromValue(v string) (*ExportFileTypeEnum, error) {
+// NewExportFileTypeEnumFromValue returns a pointer to a valid ExportFileTypeEnum for the value passed as argument
+func NewExportFileTypeEnumFromValue(v string) *ExportFileTypeEnum {
 	ev := ExportFileTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ExportFileTypeEnum: valid values are %v", v, AllowedExportFileTypeEnumEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

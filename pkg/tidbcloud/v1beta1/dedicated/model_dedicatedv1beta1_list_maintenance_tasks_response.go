@@ -14,12 +14,12 @@ import (
 	"encoding/json"
 )
 
-// checks if the V1beta1ListMaintenanceTasksResponse type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &V1beta1ListMaintenanceTasksResponse{}
+// checks if the Dedicatedv1beta1ListMaintenanceTasksResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Dedicatedv1beta1ListMaintenanceTasksResponse{}
 
-// V1beta1ListMaintenanceTasksResponse struct for V1beta1ListMaintenanceTasksResponse
-type V1beta1ListMaintenanceTasksResponse struct {
-	MaintenanceTasks []V1beta1MaintenanceTask `json:"maintenanceTasks,omitempty"`
+// Dedicatedv1beta1ListMaintenanceTasksResponse struct for Dedicatedv1beta1ListMaintenanceTasksResponse
+type Dedicatedv1beta1ListMaintenanceTasksResponse struct {
+	MaintenanceTasks []Dedicatedv1beta1MaintenanceTask `json:"maintenanceTasks,omitempty"`
 	// The total number of maintenance tasks that matched the query.
 	TotalSize *int32 `json:"totalSize,omitempty"`
 	// A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.
@@ -27,29 +27,29 @@ type V1beta1ListMaintenanceTasksResponse struct {
 	AdditionalProperties map[string]interface{}
 }
 
-type _V1beta1ListMaintenanceTasksResponse V1beta1ListMaintenanceTasksResponse
+type _Dedicatedv1beta1ListMaintenanceTasksResponse Dedicatedv1beta1ListMaintenanceTasksResponse
 
-// NewV1beta1ListMaintenanceTasksResponse instantiates a new V1beta1ListMaintenanceTasksResponse object
+// NewDedicatedv1beta1ListMaintenanceTasksResponse instantiates a new Dedicatedv1beta1ListMaintenanceTasksResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewV1beta1ListMaintenanceTasksResponse() *V1beta1ListMaintenanceTasksResponse {
-	this := V1beta1ListMaintenanceTasksResponse{}
+func NewDedicatedv1beta1ListMaintenanceTasksResponse() *Dedicatedv1beta1ListMaintenanceTasksResponse {
+	this := Dedicatedv1beta1ListMaintenanceTasksResponse{}
 	return &this
 }
 
-// NewV1beta1ListMaintenanceTasksResponseWithDefaults instantiates a new V1beta1ListMaintenanceTasksResponse object
+// NewDedicatedv1beta1ListMaintenanceTasksResponseWithDefaults instantiates a new Dedicatedv1beta1ListMaintenanceTasksResponse object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewV1beta1ListMaintenanceTasksResponseWithDefaults() *V1beta1ListMaintenanceTasksResponse {
-	this := V1beta1ListMaintenanceTasksResponse{}
+func NewDedicatedv1beta1ListMaintenanceTasksResponseWithDefaults() *Dedicatedv1beta1ListMaintenanceTasksResponse {
+	this := Dedicatedv1beta1ListMaintenanceTasksResponse{}
 	return &this
 }
 
 // GetMaintenanceTasks returns the MaintenanceTasks field value if set, zero value otherwise.
-func (o *V1beta1ListMaintenanceTasksResponse) GetMaintenanceTasks() []V1beta1MaintenanceTask {
+func (o *Dedicatedv1beta1ListMaintenanceTasksResponse) GetMaintenanceTasks() []Dedicatedv1beta1MaintenanceTask {
 	if o == nil || IsNil(o.MaintenanceTasks) {
-		var ret []V1beta1MaintenanceTask
+		var ret []Dedicatedv1beta1MaintenanceTask
 		return ret
 	}
 	return o.MaintenanceTasks
@@ -57,7 +57,7 @@ func (o *V1beta1ListMaintenanceTasksResponse) GetMaintenanceTasks() []V1beta1Mai
 
 // GetMaintenanceTasksOk returns a tuple with the MaintenanceTasks field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1ListMaintenanceTasksResponse) GetMaintenanceTasksOk() ([]V1beta1MaintenanceTask, bool) {
+func (o *Dedicatedv1beta1ListMaintenanceTasksResponse) GetMaintenanceTasksOk() ([]Dedicatedv1beta1MaintenanceTask, bool) {
 	if o == nil || IsNil(o.MaintenanceTasks) {
 		return nil, false
 	}
@@ -65,7 +65,7 @@ func (o *V1beta1ListMaintenanceTasksResponse) GetMaintenanceTasksOk() ([]V1beta1
 }
 
 // HasMaintenanceTasks returns a boolean if a field has been set.
-func (o *V1beta1ListMaintenanceTasksResponse) HasMaintenanceTasks() bool {
+func (o *Dedicatedv1beta1ListMaintenanceTasksResponse) HasMaintenanceTasks() bool {
 	if o != nil && !IsNil(o.MaintenanceTasks) {
 		return true
 	}
@@ -73,13 +73,13 @@ func (o *V1beta1ListMaintenanceTasksResponse) HasMaintenanceTasks() bool {
 	return false
 }
 
-// SetMaintenanceTasks gets a reference to the given []V1beta1MaintenanceTask and assigns it to the MaintenanceTasks field.
-func (o *V1beta1ListMaintenanceTasksResponse) SetMaintenanceTasks(v []V1beta1MaintenanceTask) {
+// SetMaintenanceTasks gets a reference to the given []Dedicatedv1beta1MaintenanceTask and assigns it to the MaintenanceTasks field.
+func (o *Dedicatedv1beta1ListMaintenanceTasksResponse) SetMaintenanceTasks(v []Dedicatedv1beta1MaintenanceTask) {
 	o.MaintenanceTasks = v
 }
 
 // GetTotalSize returns the TotalSize field value if set, zero value otherwise.
-func (o *V1beta1ListMaintenanceTasksResponse) GetTotalSize() int32 {
+func (o *Dedicatedv1beta1ListMaintenanceTasksResponse) GetTotalSize() int32 {
 	if o == nil || IsNil(o.TotalSize) {
 		var ret int32
 		return ret
@@ -89,7 +89,7 @@ func (o *V1beta1ListMaintenanceTasksResponse) GetTotalSize() int32 {
 
 // GetTotalSizeOk returns a tuple with the TotalSize field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1ListMaintenanceTasksResponse) GetTotalSizeOk() (*int32, bool) {
+func (o *Dedicatedv1beta1ListMaintenanceTasksResponse) GetTotalSizeOk() (*int32, bool) {
 	if o == nil || IsNil(o.TotalSize) {
 		return nil, false
 	}
@@ -97,7 +97,7 @@ func (o *V1beta1ListMaintenanceTasksResponse) GetTotalSizeOk() (*int32, bool) {
 }
 
 // HasTotalSize returns a boolean if a field has been set.
-func (o *V1beta1ListMaintenanceTasksResponse) HasTotalSize() bool {
+func (o *Dedicatedv1beta1ListMaintenanceTasksResponse) HasTotalSize() bool {
 	if o != nil && !IsNil(o.TotalSize) {
 		return true
 	}
@@ -106,12 +106,12 @@ func (o *V1beta1ListMaintenanceTasksResponse) HasTotalSize() bool {
 }
 
 // SetTotalSize gets a reference to the given int32 and assigns it to the TotalSize field.
-func (o *V1beta1ListMaintenanceTasksResponse) SetTotalSize(v int32) {
+func (o *Dedicatedv1beta1ListMaintenanceTasksResponse) SetTotalSize(v int32) {
 	o.TotalSize = &v
 }
 
 // GetNextPageToken returns the NextPageToken field value if set, zero value otherwise.
-func (o *V1beta1ListMaintenanceTasksResponse) GetNextPageToken() string {
+func (o *Dedicatedv1beta1ListMaintenanceTasksResponse) GetNextPageToken() string {
 	if o == nil || IsNil(o.NextPageToken) {
 		var ret string
 		return ret
@@ -121,7 +121,7 @@ func (o *V1beta1ListMaintenanceTasksResponse) GetNextPageToken() string {
 
 // GetNextPageTokenOk returns a tuple with the NextPageToken field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1ListMaintenanceTasksResponse) GetNextPageTokenOk() (*string, bool) {
+func (o *Dedicatedv1beta1ListMaintenanceTasksResponse) GetNextPageTokenOk() (*string, bool) {
 	if o == nil || IsNil(o.NextPageToken) {
 		return nil, false
 	}
@@ -129,7 +129,7 @@ func (o *V1beta1ListMaintenanceTasksResponse) GetNextPageTokenOk() (*string, boo
 }
 
 // HasNextPageToken returns a boolean if a field has been set.
-func (o *V1beta1ListMaintenanceTasksResponse) HasNextPageToken() bool {
+func (o *Dedicatedv1beta1ListMaintenanceTasksResponse) HasNextPageToken() bool {
 	if o != nil && !IsNil(o.NextPageToken) {
 		return true
 	}
@@ -138,11 +138,11 @@ func (o *V1beta1ListMaintenanceTasksResponse) HasNextPageToken() bool {
 }
 
 // SetNextPageToken gets a reference to the given string and assigns it to the NextPageToken field.
-func (o *V1beta1ListMaintenanceTasksResponse) SetNextPageToken(v string) {
+func (o *Dedicatedv1beta1ListMaintenanceTasksResponse) SetNextPageToken(v string) {
 	o.NextPageToken = &v
 }
 
-func (o V1beta1ListMaintenanceTasksResponse) MarshalJSON() ([]byte, error) {
+func (o Dedicatedv1beta1ListMaintenanceTasksResponse) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -150,7 +150,7 @@ func (o V1beta1ListMaintenanceTasksResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o V1beta1ListMaintenanceTasksResponse) ToMap() (map[string]interface{}, error) {
+func (o Dedicatedv1beta1ListMaintenanceTasksResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.MaintenanceTasks) {
 		toSerialize["maintenanceTasks"] = o.MaintenanceTasks
@@ -169,16 +169,16 @@ func (o V1beta1ListMaintenanceTasksResponse) ToMap() (map[string]interface{}, er
 	return toSerialize, nil
 }
 
-func (o *V1beta1ListMaintenanceTasksResponse) UnmarshalJSON(data []byte) (err error) {
-	varV1beta1ListMaintenanceTasksResponse := _V1beta1ListMaintenanceTasksResponse{}
+func (o *Dedicatedv1beta1ListMaintenanceTasksResponse) UnmarshalJSON(data []byte) (err error) {
+	varDedicatedv1beta1ListMaintenanceTasksResponse := _Dedicatedv1beta1ListMaintenanceTasksResponse{}
 
-	err = json.Unmarshal(data, &varV1beta1ListMaintenanceTasksResponse)
+	err = json.Unmarshal(data, &varDedicatedv1beta1ListMaintenanceTasksResponse)
 
 	if err != nil {
 		return err
 	}
 
-	*o = V1beta1ListMaintenanceTasksResponse(varV1beta1ListMaintenanceTasksResponse)
+	*o = Dedicatedv1beta1ListMaintenanceTasksResponse(varDedicatedv1beta1ListMaintenanceTasksResponse)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -192,38 +192,38 @@ func (o *V1beta1ListMaintenanceTasksResponse) UnmarshalJSON(data []byte) (err er
 	return err
 }
 
-type NullableV1beta1ListMaintenanceTasksResponse struct {
-	value *V1beta1ListMaintenanceTasksResponse
+type NullableDedicatedv1beta1ListMaintenanceTasksResponse struct {
+	value *Dedicatedv1beta1ListMaintenanceTasksResponse
 	isSet bool
 }
 
-func (v NullableV1beta1ListMaintenanceTasksResponse) Get() *V1beta1ListMaintenanceTasksResponse {
+func (v NullableDedicatedv1beta1ListMaintenanceTasksResponse) Get() *Dedicatedv1beta1ListMaintenanceTasksResponse {
 	return v.value
 }
 
-func (v *NullableV1beta1ListMaintenanceTasksResponse) Set(val *V1beta1ListMaintenanceTasksResponse) {
+func (v *NullableDedicatedv1beta1ListMaintenanceTasksResponse) Set(val *Dedicatedv1beta1ListMaintenanceTasksResponse) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableV1beta1ListMaintenanceTasksResponse) IsSet() bool {
+func (v NullableDedicatedv1beta1ListMaintenanceTasksResponse) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableV1beta1ListMaintenanceTasksResponse) Unset() {
+func (v *NullableDedicatedv1beta1ListMaintenanceTasksResponse) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableV1beta1ListMaintenanceTasksResponse(val *V1beta1ListMaintenanceTasksResponse) *NullableV1beta1ListMaintenanceTasksResponse {
-	return &NullableV1beta1ListMaintenanceTasksResponse{value: val, isSet: true}
+func NewNullableDedicatedv1beta1ListMaintenanceTasksResponse(val *Dedicatedv1beta1ListMaintenanceTasksResponse) *NullableDedicatedv1beta1ListMaintenanceTasksResponse {
+	return &NullableDedicatedv1beta1ListMaintenanceTasksResponse{value: val, isSet: true}
 }
 
-func (v NullableV1beta1ListMaintenanceTasksResponse) MarshalJSON() ([]byte, error) {
+func (v NullableDedicatedv1beta1ListMaintenanceTasksResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableV1beta1ListMaintenanceTasksResponse) UnmarshalJSON(src []byte) error {
+func (v *NullableDedicatedv1beta1ListMaintenanceTasksResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

@@ -45,10 +45,11 @@ func (p Project) String() string {
 }
 
 type Cluster struct {
-	ID          string
-	Name        string
-	DisplayName string
-	UserPrefix  string
+	ID            string
+	Name          string
+	DisplayName   string
+	UserPrefix    string
+	CloudProvider *cluster.V1beta1RegionCloudProvider
 }
 
 type Branch struct {
@@ -72,6 +73,16 @@ type ServerlessBackup struct {
 type Export struct {
 	DisplayName string
 	ID          string
+}
+
+type AuthorizedNetwork struct {
+	DisplayName    string
+	StartIPAddress string
+	EndIPAddress   string
+}
+
+func (a AuthorizedNetwork) String() string {
+	return fmt.Sprintf("%s-%s(%s)", a.StartIPAddress, a.EndIPAddress, a.DisplayName)
 }
 
 func (c ServerlessBackup) String() string {
@@ -173,9 +184,10 @@ func GetSelectedCluster(ctx context.Context, projectID string, pageSize int64, c
 	var items = make([]interface{}, 0, len(clusterItems))
 	for _, item := range clusterItems {
 		items = append(items, &Cluster{
-			ID:          *item.ClusterId,
-			DisplayName: item.DisplayName,
-			UserPrefix:  *item.UserPrefix,
+			ID:            *item.ClusterId,
+			DisplayName:   item.DisplayName,
+			UserPrefix:    *item.UserPrefix,
+			CloudProvider: item.Region.CloudProvider,
 		})
 	}
 	if len(items) == 0 {
@@ -244,7 +256,6 @@ func GetSpendingLimitField(mutableFields []string) (string, error) {
 	}
 	itemsPerPage := 6
 	model.EnablePagination(itemsPerPage)
-	model.EnableFilter()
 
 	p := tea.NewProgram(model)
 	fieldModel, err := p.Run()
@@ -890,4 +901,51 @@ func GetOneDateAuditLogs(ctx context.Context, cID, date string, d TiDBCloudClien
 		auditLogs = append(auditLogs, resp.AuditLogs...)
 	}
 	return auditLogs, nil
+
+func RetrieveAuthorizedNetworks(ctx context.Context, clusterID string, d TiDBCloudClient) ([]cluster.EndpointsPublicAuthorizedNetwork, error) {
+	cluster, err := d.GetCluster(ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	return cluster.Endpoints.Public.AuthorizedNetworks, nil
+}
+
+func GetSelectedAuthorizedNetwork(ctx context.Context, clusterID string, client TiDBCloudClient) (string, string, error) {
+	authorizedNetworkItems, err := RetrieveAuthorizedNetworks(ctx, clusterID, client)
+	if err != nil {
+		return "", "", err
+	}
+
+	var items = make([]interface{}, 0, len(authorizedNetworkItems))
+	for _, item := range authorizedNetworkItems {
+		items = append(items, &AuthorizedNetwork{
+			DisplayName:    item.DisplayName,
+			StartIPAddress: item.StartIpAddress,
+			EndIPAddress:   item.EndIpAddress,
+		})
+	}
+	if len(items) == 0 {
+		return "", "", fmt.Errorf("no available authorized networks found")
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the authorized network:")
+	if err != nil {
+		return "", "", errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+
+	p := tea.NewProgram(model)
+	authorizedNetworkModel, err := p.Run()
+	if err != nil {
+		return "", "", errors.Trace(err)
+	}
+	if m, _ := authorizedNetworkModel.(ui.SelectModel); m.Interrupted {
+		return "", "", util.InterruptError
+	}
+	authorizedNetwork := authorizedNetworkModel.(ui.SelectModel).GetSelectedItem()
+	if authorizedNetwork == nil {
+		return "", "", errors.New("no authorized network selected")
+	}
+	return authorizedNetwork.(*AuthorizedNetwork).StartIPAddress, authorizedNetwork.(*AuthorizedNetwork).EndIPAddress, nil
 }

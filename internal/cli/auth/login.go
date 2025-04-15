@@ -21,6 +21,8 @@ import (
 	"runtime"
 	"time"
 
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config/store"
@@ -61,6 +63,27 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
+
+			if config.GetPublicKey() != "" && config.GetPrivateKey() != "" {
+				color.HiYellow("\nDetect an API key already set in %s profile! Note it will take precedence over auth token\n\n", config.ActiveProfileName())
+				prompt := &survey.Confirm{
+					Message: color.BlueString("The login will not take effect, continue to login?"),
+					Default: true,
+				}
+				login := true
+				err := survey.AskOne(prompt, &login)
+				if err != nil {
+					if err == terminal.InterruptErr {
+						return util.InterruptError
+					} else {
+						return err
+					}
+				}
+				if !login {
+					color.HiRed("\nExit the login process, use `%s config create --profile-name <profile-name>` to create a new profile and login again", config.CliName)
+					return nil
+				}
+			}
 
 			// fail fast if keyring is not supported
 			if !opts.insecureStorage {
@@ -111,18 +134,12 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
-
 			err = config.SaveAccessToken(now.Add(time.Duration(token.ExpireIn)*time.Second), token.TokenType, token.AccessToken, opts.insecureStorage)
 			if err != nil {
 				return err
 			}
 
 			color.HiGreen("\nSuccessfully logged in.")
-
-			if config.GetPublicKey() != "" && config.GetPrivateKey() != "" {
-				color.HiYellow("\nDetect an API key already set in %s profile! Note it will take precedence over auth token.", config.ActiveProfileName())
-			}
-
 			return nil
 		},
 	}

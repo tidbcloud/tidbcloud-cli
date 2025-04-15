@@ -12,7 +12,6 @@ package imp
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // ImportS3AuthTypeEnum  - ROLE_ARN: The access method is role arn.  - ACCESS_KEY: The access method is access key.
@@ -44,18 +43,14 @@ func (v *ImportS3AuthTypeEnum) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid ImportS3AuthTypeEnum", value)
+	*v = ImportS3AuthTypeEnum(value)
+	return nil
 }
 
-// NewImportS3AuthTypeEnumFromValue returns a pointer to a valid ImportS3AuthTypeEnum
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewImportS3AuthTypeEnumFromValue(v string) (*ImportS3AuthTypeEnum, error) {
+// NewImportS3AuthTypeEnumFromValue returns a pointer to a valid ImportS3AuthTypeEnum for the value passed as argument
+func NewImportS3AuthTypeEnumFromValue(v string) *ImportS3AuthTypeEnum {
 	ev := ImportS3AuthTypeEnum(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for ImportS3AuthTypeEnum: valid values are %v", v, AllowedImportS3AuthTypeEnumEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise

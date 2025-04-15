@@ -12,7 +12,6 @@ package dedicated
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 // Dedicatedv1beta1ComponentType the model 'Dedicatedv1beta1ComponentType'
@@ -50,18 +49,14 @@ func (v *Dedicatedv1beta1ComponentType) UnmarshalJSON(src []byte) error {
 		}
 	}
 
-	return fmt.Errorf("%+v is not a valid Dedicatedv1beta1ComponentType", value)
+	*v = Dedicatedv1beta1ComponentType(value)
+	return nil
 }
 
-// NewDedicatedv1beta1ComponentTypeFromValue returns a pointer to a valid Dedicatedv1beta1ComponentType
-// for the value passed as argument, or an error if the value passed is not allowed by the enum
-func NewDedicatedv1beta1ComponentTypeFromValue(v string) (*Dedicatedv1beta1ComponentType, error) {
+// NewDedicatedv1beta1ComponentTypeFromValue returns a pointer to a valid Dedicatedv1beta1ComponentType for the value passed as argument
+func NewDedicatedv1beta1ComponentTypeFromValue(v string) *Dedicatedv1beta1ComponentType {
 	ev := Dedicatedv1beta1ComponentType(v)
-	if ev.IsValid() {
-		return &ev, nil
-	} else {
-		return nil, fmt.Errorf("invalid value '%v' for Dedicatedv1beta1ComponentType: valid values are %v", v, AllowedDedicatedv1beta1ComponentTypeEnumValues)
-	}
+	return &ev
 }
 
 // IsValid return true if the value is valid for the enum, false otherwise
