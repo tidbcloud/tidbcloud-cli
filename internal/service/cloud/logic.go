@@ -901,6 +901,7 @@ func GetOneDateAuditLogs(ctx context.Context, cID, date string, d TiDBCloudClien
 		auditLogs = append(auditLogs, resp.AuditLogs...)
 	}
 	return auditLogs, nil
+}
 
 func RetrieveAuthorizedNetworks(ctx context.Context, clusterID string, d TiDBCloudClient) ([]cluster.EndpointsPublicAuthorizedNetwork, error) {
 	cluster, err := d.GetCluster(ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
