@@ -60,7 +60,7 @@ type TidbCloudOpenApiserverlessv1beta1Cluster struct {
 	// Optional. The audit log configuration for the cluster.
 	AuditLogConfig *V1beta1ClusterAuditLogConfig `json:"auditLogConfig,omitempty"`
 	// Output_only. The plan of the cluster.
-	ClusterPlan *V1beta1ClusterClusterPlan `json:"clusterPlan,omitempty"`
+	ClusterPlan *ClusterClusterPlan `json:"clusterPlan,omitempty"`
 	// Optional. The auto scaling config for the cluster.
 	AutoScaling          *V1beta1ClusterAutoScaling `json:"autoScaling,omitempty"`
 	AdditionalProperties map[string]interface{}
@@ -712,9 +712,9 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetAuditLogConfig(v V1beta1Cl
 }
 
 // GetClusterPlan returns the ClusterPlan field value if set, zero value otherwise.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetClusterPlan() V1beta1ClusterClusterPlan {
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetClusterPlan() ClusterClusterPlan {
 	if o == nil || IsNil(o.ClusterPlan) {
-		var ret V1beta1ClusterClusterPlan
+		var ret ClusterClusterPlan
 		return ret
 	}
 	return *o.ClusterPlan
@@ -722,7 +722,7 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetClusterPlan() V1beta1Clust
 
 // GetClusterPlanOk returns a tuple with the ClusterPlan field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetClusterPlanOk() (*V1beta1ClusterClusterPlan, bool) {
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetClusterPlanOk() (*ClusterClusterPlan, bool) {
 	if o == nil || IsNil(o.ClusterPlan) {
 		return nil, false
 	}
@@ -738,8 +738,8 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasClusterPlan() bool {
 	return false
 }
 
-// SetClusterPlan gets a reference to the given V1beta1ClusterClusterPlan and assigns it to the ClusterPlan field.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetClusterPlan(v V1beta1ClusterClusterPlan) {
+// SetClusterPlan gets a reference to the given ClusterClusterPlan and assigns it to the ClusterPlan field.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetClusterPlan(v ClusterClusterPlan) {
 	o.ClusterPlan = &v
 }
 

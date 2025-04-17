@@ -91,6 +91,7 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [ClusterClusterPlan](docs/ClusterClusterPlan.md)
  - [ClusterHighAvailabilityType](docs/ClusterHighAvailabilityType.md)
  - [ClusterSpendingLimit](docs/ClusterSpendingLimit.md)
  - [ClusterUsage](docs/ClusterUsage.md)
@@ -117,7 +118,6 @@ Class | Method | HTTP request | Description
  - [V1beta1ClusterAuditLogConfig](docs/V1beta1ClusterAuditLogConfig.md)
  - [V1beta1ClusterAutoScaling](docs/V1beta1ClusterAutoScaling.md)
  - [V1beta1ClusterAutomatedBackupPolicy](docs/V1beta1ClusterAutomatedBackupPolicy.md)
- - [V1beta1ClusterClusterPlan](docs/V1beta1ClusterClusterPlan.md)
  - [V1beta1ClusterEncryptionConfig](docs/V1beta1ClusterEncryptionConfig.md)
  - [V1beta1ClusterEndpoints](docs/V1beta1ClusterEndpoints.md)
  - [V1beta1PartialUpdateClusterRequestPartialUpdateCluster](docs/V1beta1PartialUpdateClusterRequestPartialUpdateCluster.md)

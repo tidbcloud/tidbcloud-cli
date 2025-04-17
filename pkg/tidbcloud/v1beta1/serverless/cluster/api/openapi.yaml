@@ -304,6 +304,14 @@ paths:
       - ServerlessService
 components:
   schemas:
+    ClusterClusterPlan:
+      enum:
+      - STARTER
+      - ESSENTIAL
+      title: |-
+        - STARTER: alicloud starter plan
+         - ESSENTIAL: alicloud essential plan
+      type: string
     ClusterHighAvailabilityType:
       enum:
       - ZONAL
@@ -807,7 +815,7 @@ components:
           type: object
         clusterPlan:
           allOf:
-          - $ref: '#/components/schemas/v1beta1ClusterClusterPlan'
+          - $ref: '#/components/schemas/ClusterClusterPlan'
           description: Output_only. The plan of the cluster.
           type: object
         autoScaling:
@@ -1087,18 +1095,11 @@ components:
             \ UTC."
           type: string
         retentionDays:
-          description: Optional. Number of days to retain automated backups.
+          description: OUTPUT_ONLY. Number of days to retain automated backups.
           format: int32
+          readOnly: true
           type: integer
       type: object
-    v1beta1ClusterClusterPlan:
-      enum:
-      - STARTER
-      - ESSENTIAL
-      title: |-
-        - STARTER: alicloud starter plan
-         - ESSENTIAL: alicloud essential plan
-      type: string
     v1beta1ClusterEncryptionConfig:
       description: Message for encryption settings for a cluster.
       properties:

@@ -25,10 +25,8 @@ import (
 	"time"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
-	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
-	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 
 	"github.com/charmbracelet/bubbles/progress"
 	tea "github.com/charmbracelet/bubbletea"
@@ -106,9 +104,7 @@ type ProcessDownloadModel struct {
 	progressBar *progressBar
 	p           *tea.Program
 
-	exportID  string
-	clusterID string
-	client    cloud.TiDBCloudClient
+	generateFunc func(context.Context, []string) (map[string]*string, error)
 }
 
 func (m *ProcessDownloadModel) SetProgram(p *tea.Program) {
@@ -119,8 +115,8 @@ func (m *ProcessDownloadModel) GetFinishedJobs() []*FileJob {
 	return m.jobInfo.finishedJobs
 }
 
-func NewProcessDownloadModel(concurrency int, path string,
-	exportID, clusterID string, client cloud.TiDBCloudClient, totalSize int, fileNames []string) *ProcessDownloadModel {
+func NewProcessDownloadModel(concurrency int, path string, totalSize int, fileNames []string,
+	generateFunc func(context.Context, []string) (map[string]*string, error)) *ProcessDownloadModel {
 	count := len(fileNames)
 	jobInfo := &JobInfo{
 		idToJob:      make(map[int]*FileJob),
@@ -141,9 +137,7 @@ func NewProcessDownloadModel(concurrency int, path string,
 		progressBar: &progressBar{
 			totalSize: totalSize,
 		},
-		exportID:  exportID,
-		clusterID: clusterID,
-		client:    client,
+		generateFunc: generateFunc,
 	}
 }
 
@@ -247,10 +241,7 @@ func (m *ProcessDownloadModel) produce() {
 		}
 		downloadFileNames := m.jobInfo.fileNames[:batchSize]
 		m.jobInfo.fileNames = m.jobInfo.fileNames[batchSize:]
-		body := &export.ExportServiceDownloadExportFilesBody{
-			FileNames: downloadFileNames,
-		}
-		resp, err := m.client.DownloadExportFiles(ctx, m.clusterID, m.exportID, body)
+		urlMap, err := m.generateFunc(ctx, downloadFileNames)
 		if err != nil {
 			for _, name := range downloadFileNames {
 				jobId++
@@ -260,12 +251,12 @@ func (m *ProcessDownloadModel) produce() {
 			}
 			continue
 		}
-		for _, file := range resp.Files {
+		for name, url := range urlMap {
 			jobId++
 			job := &FileJob{
 				id:   jobId,
-				name: *file.Name,
-				url:  file.Url,
+				name: name,
+				url:  url,
 			}
 			m.jobInfo.idToJob[jobId] = job
 			m.jobsCh <- job

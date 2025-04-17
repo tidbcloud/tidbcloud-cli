@@ -231,7 +231,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if err != nil {
 						return err
 					}
-					if clusterPlan == cluster.V1BETA1CLUSTERCLUSTERPLAN_ESSENTIAL {
+					if clusterPlan == cluster.CLUSTERCLUSTERPLAN_ESSENTIAL {
 						var minRcuString, maxRcuString string
 						minRcuPrompt := &survey.Input{
 							Message: "Set minimum RCU (default is 2000)?",
@@ -282,7 +282,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 							}
 						}
 					}
-					if clusterPlan == cluster.V1BETA1CLUSTERCLUSTERPLAN_STARTER {
+					if clusterPlan == cluster.CLUSTERCLUSTERPLAN_STARTER {
 						var spendingLimitString string
 						spendingLimitPrompt := &survey.Input{
 							Message: "Set spending limit monthly in USD cents (Example: 10, default is 0)?",
@@ -598,9 +598,9 @@ func GetProvider(providers *hashset.Set) (string, error) {
 	return cloudProvider, nil
 }
 
-func GetClusterPlan() (cluster.V1beta1ClusterClusterPlan, error) {
-	choices := make([]interface{}, len(cluster.AllowedV1beta1ClusterClusterPlanEnumValues))
-	for i, v := range cluster.AllowedV1beta1ClusterClusterPlanEnumValues {
+func GetClusterPlan() (cluster.ClusterClusterPlan, error) {
+	choices := make([]interface{}, len(cluster.AllowedClusterClusterPlanEnumValues))
+	for i, v := range cluster.AllowedClusterClusterPlanEnumValues {
 		choices[i] = v
 	}
 	model, err := ui.InitialSelectModel(choices, "Choose the cluster plan:")
@@ -615,7 +615,7 @@ func GetClusterPlan() (cluster.V1beta1ClusterClusterPlan, error) {
 	if m, _ := planModel.(ui.SelectModel); m.Interrupted {
 		return "", util.InterruptError
 	}
-	clusterPlan := planModel.(ui.SelectModel).Choices[planModel.(ui.SelectModel).Selected].(cluster.V1beta1ClusterClusterPlan)
+	clusterPlan := planModel.(ui.SelectModel).Choices[planModel.(ui.SelectModel).Selected].(cluster.ClusterClusterPlan)
 	return clusterPlan, nil
 }
 
