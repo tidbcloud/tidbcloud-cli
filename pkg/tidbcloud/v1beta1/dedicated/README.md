@@ -81,6 +81,7 @@ Class | Method | HTTP request | Description
 *ClusterServiceAPI* | [**ClusterServiceCreateCluster**](docs/ClusterServiceAPI.md#clusterservicecreatecluster) | **Post** /clusters | Create a cluster
 *ClusterServiceAPI* | [**ClusterServiceDeleteCluster**](docs/ClusterServiceAPI.md#clusterservicedeletecluster) | **Delete** /clusters/{clusterId} | Delete a cluster
 *ClusterServiceAPI* | [**ClusterServiceGetCluster**](docs/ClusterServiceAPI.md#clusterservicegetcluster) | **Get** /clusters/{clusterId} | Get a cluster
+*ClusterServiceAPI* | [**ClusterServiceGetLogRedactionPolicy**](docs/ClusterServiceAPI.md#clusterservicegetlogredactionpolicy) | **Get** /clusters/{clusterId}/logRedactionPolicy | Get log redaction policy
 *ClusterServiceAPI* | [**ClusterServiceGetNodeInstance**](docs/ClusterServiceAPI.md#clusterservicegetnodeinstance) | **Get** /clusters/{clusterId}/nodeInstances/{instanceId} | Get a node instance
 *ClusterServiceAPI* | [**ClusterServiceListClusters**](docs/ClusterServiceAPI.md#clusterservicelistclusters) | **Get** /clusters | List clusters
 *ClusterServiceAPI* | [**ClusterServiceListNodeInstances**](docs/ClusterServiceAPI.md#clusterservicelistnodeinstances) | **Get** /clusters/{clusterId}/nodeInstances | List node instances
@@ -89,6 +90,7 @@ Class | Method | HTTP request | Description
 *ClusterServiceAPI* | [**ClusterServiceResumeCluster**](docs/ClusterServiceAPI.md#clusterserviceresumecluster) | **Post** /clusters/{clusterId}:resumeCluster | Resume a cluster
 *ClusterServiceAPI* | [**ClusterServiceShowNodeQuota**](docs/ClusterServiceAPI.md#clusterserviceshownodequota) | **Get** /clusters:showNodeQuota | Show node quota across the caller&#39;s organization
 *ClusterServiceAPI* | [**ClusterServiceUpdateCluster**](docs/ClusterServiceAPI.md#clusterserviceupdatecluster) | **Patch** /clusters/{cluster.clusterId} | Update a cluster
+*ClusterServiceAPI* | [**ClusterServiceUpdateLogRedactionPolicy**](docs/ClusterServiceAPI.md#clusterserviceupdatelogredactionpolicy) | **Patch** /clusters/{logRedactionPolicy.clusterId}/logRedactionPolicy | Update log redaction policy
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceCreateAuditLogConfig**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogservicecreateauditlogconfig) | **Post** /clusters/{auditLogConfig.clusterId}/auditLogConfig | Create the audit log config for a cluster
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceCreateAuditLogFilterRule**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogservicecreateauditlogfilterrule) | **Post** /clusters/{auditLogFilterRule.clusterId}/auditLogFilterRules | Create an audit log filter rule
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceDeleteAuditLogFilterRule**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogservicedeleteauditlogfilterrule) | **Delete** /clusters/{clusterId}/auditLogFilterRules/{auditLogFilterRuleId} | Delete an audit log filter rule
@@ -140,6 +142,7 @@ Class | Method | HTTP request | Description
  - [ClusterServiceListNodeInstancesComponentTypeParameter](docs/ClusterServiceListNodeInstancesComponentTypeParameter.md)
  - [ClusterServiceResetRootPasswordBody](docs/ClusterServiceResetRootPasswordBody.md)
  - [ClusterServiceUpdateClusterRequest](docs/ClusterServiceUpdateClusterRequest.md)
+ - [ClusterServiceUpdateLogRedactionPolicyRequest](docs/ClusterServiceUpdateLogRedactionPolicyRequest.md)
  - [Commonv1beta1ClusterState](docs/Commonv1beta1ClusterState.md)
  - [Commonv1beta1Region](docs/Commonv1beta1Region.md)
  - [DatabaseAuditLogServiceUpdateAuditLogConfigRequest](docs/DatabaseAuditLogServiceUpdateAuditLogConfigRequest.md)
@@ -154,6 +157,7 @@ Class | Method | HTTP request | Description
  - [Dedicatedv1beta1ListMaintenanceWindowsResponse](docs/Dedicatedv1beta1ListMaintenanceWindowsResponse.md)
  - [Dedicatedv1beta1ListTidbNodeGroupsResponse](docs/Dedicatedv1beta1ListTidbNodeGroupsResponse.md)
  - [Dedicatedv1beta1ListVpcPeeringsResponse](docs/Dedicatedv1beta1ListVpcPeeringsResponse.md)
+ - [Dedicatedv1beta1LogRedactionPolicy](docs/Dedicatedv1beta1LogRedactionPolicy.md)
  - [Dedicatedv1beta1MaintenanceTask](docs/Dedicatedv1beta1MaintenanceTask.md)
  - [Dedicatedv1beta1MaintenanceTaskState](docs/Dedicatedv1beta1MaintenanceTaskState.md)
  - [Dedicatedv1beta1MaintenanceWindow](docs/Dedicatedv1beta1MaintenanceWindow.md)
