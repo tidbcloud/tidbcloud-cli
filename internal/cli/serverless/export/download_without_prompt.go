@@ -49,9 +49,6 @@ type downloadPool struct {
 func NewDownloadPool(h *internal.Helper, path string, concurrency int, fileNames []string,
 	generateFunc func(context.Context, []string) (map[string]*string, error)) (*downloadPool, error) {
 	count := len(fileNames)
-	if count <= 0 {
-		return nil, errors.New("no files to download")
-	}
 	if concurrency <= 0 {
 		concurrency = DefaultConcurrency
 	}

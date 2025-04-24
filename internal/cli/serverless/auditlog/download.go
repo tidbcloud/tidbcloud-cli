@@ -177,6 +177,13 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				totalSize += *log.Size
 				auditLogNames = append(auditLogNames, *log.Name)
 			}
+
+			// verify the size
+			if len(auditLogNames) == 0 {
+				fmt.Fprintln(h.IOStreams.Out, color.RedString("No audit logs found in the specified date range, skip the download."))
+				return nil
+			}
+
 			// ask for confirmation
 			fileMessage := fmt.Sprintf("There are %d files to download, total size is %s.", len(auditLogNames), humanize.IBytes(uint64(totalSize)))
 			if !force {
