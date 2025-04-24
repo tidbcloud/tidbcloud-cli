@@ -28,8 +28,15 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 )
+
+var inputDescription = map[string]string{
+	flag.OutputPath: "Input The download path, press Enter to skip and download to the current directory",
+	flag.StartDate:  "Input The start date of the download in the format of 'YYYY-MM-DD'",
+	flag.EndDate:    "Input The end date of the download in the format of 'YYYY-MM-DD'",
+}
 
 const (
 	DefaultConcurrency = 3
@@ -123,39 +130,14 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				qs := []*survey.Question{
-					{
-						Name:   "path",
-						Prompt: &survey.Input{Message: "The download path, default to the current directory."},
-					},
-					{
-						Name:     "startDate",
-						Prompt:   &survey.Input{Message: "The start date of the download in the format of 'YYYY-MM-DD'"},
-						Validate: dateValidate,
-					},
-					{
-						Name:     "endDate",
-						Prompt:   &survey.Input{Message: "The end date of the download in the format of 'YYYY-MM-DD'"},
-						Validate: dateValidate,
-					},
-				}
-				answers := struct {
-					Path      string
-					StartDate string
-					EndDate   string
-				}{}
-				err = survey.Ask(qs, &answers)
+				inputs := []string{flag.OutputPath, flag.StartDate, flag.EndDate}
+				textInput, err := ui.InitialInputModel(inputs, inputDescription)
 				if err != nil {
-					if err == terminal.InterruptErr {
-						return util.InterruptError
-					} else {
-						return errors.Trace(err)
-					}
+					return err
 				}
-
-				path = answers.Path
-				startDate = answers.StartDate
-				endDate = answers.EndDate
+				path = textInput.Inputs[0].Value()
+				startDate = textInput.Inputs[1].Value()
+				endDate = textInput.Inputs[2].Value()
 			} else {
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
@@ -248,17 +230,6 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 	downloadCmd.Flags().String(flag.EndDate, "", "The end date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.")
 
 	return downloadCmd
-}
-
-func dateValidate(ans interface{}) error {
-	if ans == "" {
-		return errors.New("value is required")
-	}
-	_, err := time.Parse(time.DateOnly, ans.(string))
-	if err != nil {
-		return errors.New("invalid date, please input the date in the format of 'YYYY-MM-DD'")
-	}
-	return nil
 }
 
 func checkDate(startDate, endDate string) error {
