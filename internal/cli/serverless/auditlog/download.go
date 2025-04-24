@@ -102,7 +102,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless audit-log download
 
   Download the database audit logs in non-interactive mode:
-  $ %[1]s serverless audit-log download -c <cluster-id> --date <date>`, config.CliName),
+  $ %[1]s serverless audit-log download -c <cluster-id> --start-date <start-date> --end-date <end-date>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
