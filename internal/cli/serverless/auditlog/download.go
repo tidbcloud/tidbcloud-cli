@@ -31,12 +31,6 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 )
 
-// var inputDescription = map[string]string{
-// 	flag.OutputPath: "Input the path where you want to download to. If not specified, download to the current directory.",
-// 	flag.StartDate:  "Input the start date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.",
-// 	flag.EndDate:    "Input the end date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.",
-// }
-
 const (
 	DefaultConcurrency = 3
 	MaxBatchSize       = 100
@@ -137,12 +131,12 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 					{
 						Name:     "startDate",
 						Prompt:   &survey.Input{Message: "The start date of the download in the format of 'YYYY-MM-DD'"},
-						Validate: survey.Required,
+						Validate: dateValidate,
 					},
 					{
 						Name:     "endDate",
 						Prompt:   &survey.Input{Message: "The end date of the download in the format of 'YYYY-MM-DD'"},
-						Validate: survey.Required,
+						Validate: dateValidate,
 					},
 				}
 				answers := struct {
@@ -189,8 +183,6 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			if err := checkDate(startDate, endDate); err != nil {
 				return errors.Trace(err)
 			}
-
-			println(fmt.Sprintf("path: %s, clusterID: %s, startDate: %s, endDate: %s, concurrency: %d", path, clusterID, startDate, endDate, concurrency))
 
 			// list the audit logs
 			auditLogs, err := cloud.GetAllAuditLogs(ctx, clusterID, startDate, endDate, d)
@@ -256,6 +248,17 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 	downloadCmd.Flags().String(flag.EndDate, "", "The end date of the audit log you want to download in the format of 'YYYY-MM-DD', e.g. '2025-01-01'.")
 
 	return downloadCmd
+}
+
+func dateValidate(ans interface{}) error {
+	if ans == "" {
+		return errors.New("value is required")
+	}
+	_, err := time.Parse(time.DateOnly, ans.(string))
+	if err != nil {
+		return errors.New("invalid date, please input the date in the format of 'YYYY-MM-DD'")
+	}
+	return nil
 }
 
 func checkDate(startDate, endDate string) error {

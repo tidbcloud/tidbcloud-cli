@@ -65,7 +65,7 @@ func EnableCmd(h *internal.Helper) *cobra.Command {
 
 	var enableCmd = &cobra.Command{
 		Use:   "enable",
-		Short: "enable the database audit logging",
+		Short: "Enable the database audit logging",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  enable the database audit logging in interactive mode:
   $ %[1]s serverless audit-log enable

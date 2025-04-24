@@ -145,8 +145,6 @@ func ConfigCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			println("clusterID:", clusterID, "unredacted:", unredacted)
-
 			body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
 				Cluster: &cluster.RequiredTheClusterToBeUpdated{
 					AuditLogConfig: &cluster.V1beta1ClusterAuditLogConfig{

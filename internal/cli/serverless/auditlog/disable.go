@@ -65,7 +65,7 @@ func DisableCmd(h *internal.Helper) *cobra.Command {
 
 	var disableCmd = &cobra.Command{
 		Use:   "disable",
-		Short: "disable the database audit logging",
+		Short: "Disable the database audit logging",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  disable the database audit logging in interactive mode:
   $ %[1]s serverless audit-log disable
