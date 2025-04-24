@@ -13,7 +13,7 @@ ticloud serverless authorized-network update [flags]
   $ ticloud serverless authorized-network update
 
   Update an authorized network in non-interactive mode:
-  $ ticloud serverless authorized-network update -c <cluster-id> --ip-range <ip-range> --display-name <display-name>
+  $ ticloud serverless authorized-network update -c <cluster-id> --start-ip-address <start-ip-address> --end-ip-address <end-ip-address> --new-start-ip-address <new-start-ip-address> --new-end-ip-address <new-end-ip-address>
 ```
 
 ### Options
