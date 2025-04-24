@@ -768,6 +768,123 @@ paths:
       summary: Show node quota across the caller's organization
       tags:
       - ClusterService
+  /clusters/{clusterId}/logRedactionPolicy:
+    get:
+      operationId: ClusterService_GetLogRedactionPolicy
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1LogRedactionPolicy'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Get log redaction policy
+      tags:
+      - ClusterService
+  /clusters/{logRedactionPolicy.clusterId}/logRedactionPolicy:
+    patch:
+      operationId: ClusterService_UpdateLogRedactionPolicy
+      parameters:
+      - in: path
+        name: logRedactionPolicy.clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClusterService_UpdateLogRedactionPolicy_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1LogRedactionPolicy'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Update log redaction policy
+      tags:
+      - ClusterService
+      x-codegen-request-body-name: logRedactionPolicy
   /regions:
     get:
       operationId: RegionService_ListRegions
@@ -3668,14 +3785,14 @@ components:
       - Plus
       type: string
     TidbNodeGroupTiProxyType:
+      description: |2-
+         - SMALL: SMALL: Low performance instance with 2 vCPUs and 4 GiB memory.
+        Max QPS: 30, Max Data Traffic: 90 MiB/s.
+         - LARGE: LARGE: High performance instance with 8 vCPUs and 16 GiB memory.
+        Max QPS: 100, Max Data Traffic: 300 MiB/s.
       enum:
-      - MEDIUM
+      - SMALL
       - LARGE
-      title: |-
-        - MEDIUM: Medium is the default value.
-        Instance 4vCPU, Max QPS: 30k, Max Data Traffic: 90 MiB/s
-         - LARGE: Large is the high performance value.
-        Instance 8vCPU, Max QPS: 60k, Max Data Traffic: 150 MiB/s
       type: string
     UpdateClusterRequestTidbNodeSettingTidbNodeGroup:
       properties:
@@ -3998,7 +4115,9 @@ components:
           displayName: displayName
           tidbNodeGroupId: tidbNodeGroupId
           name: name
-          tiproxySetting: "{}"
+          tiproxySetting:
+            nodeCount: 1
+            type: "{}"
           nodeCount: 0
           clusterId: clusterId
           state: "{}"
@@ -4016,7 +4135,9 @@ components:
           displayName: displayName
           tidbNodeGroupId: tidbNodeGroupId
           name: name
-          tiproxySetting: "{}"
+          tiproxySetting:
+            nodeCount: 1
+            type: "{}"
           nodeCount: 0
           clusterId: clusterId
           state: "{}"
@@ -4086,6 +4207,22 @@ components:
             A token, which can be sent as `page_token` to retrieve the next page.
             If this field is omitted, there are no subsequent pages.
           type: string
+      type: object
+    dedicatedv1beta1LogRedactionPolicy:
+      example:
+        clusterId: clusterId
+        redactLog: true
+      properties:
+        clusterId:
+          type: string
+        redactLog:
+          nullable: true
+          title: |-
+            Indicates whether to redact sensitive information in logs.
+            Default policy: true (enable log redaction)
+          type: boolean
+      required:
+      - clusterId
       type: object
     dedicatedv1beta1MaintenanceTask:
       description: All fields are output only.
@@ -4287,7 +4424,9 @@ components:
         displayName: displayName
         tidbNodeGroupId: tidbNodeGroupId
         name: name
-        tiproxySetting: "{}"
+        tiproxySetting:
+          nodeCount: 1
+          type: "{}"
         nodeCount: 0
         clusterId: clusterId
         state: "{}"
@@ -4336,9 +4475,7 @@ components:
           - $ref: '#/components/schemas/ClusterNodeChangingProgress'
           type: object
         tiproxySetting:
-          allOf:
-          - $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroupTiProxySetting'
-          type: object
+          $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroupTiProxySetting'
       required:
       - nodeCount
       type: object
@@ -4375,6 +4512,9 @@ components:
       - PAUSED
       type: string
     dedicatedv1beta1TidbNodeGroupTiProxySetting:
+      example:
+        nodeCount: 1
+        type: "{}"
       properties:
         type:
           allOf:
@@ -4493,7 +4633,7 @@ components:
         You can find out more about this error model and how to work with it in the
         [API Design Guide](https://cloud.google.com/apis/design/errors).
       example:
-        code: 9
+        code: 3
         details:
         - '@type': '@type'
         - '@type': '@type'
@@ -4652,9 +4792,9 @@ components:
           nodeSpecDisplayName: nodeSpecDisplayName
           nodeChangingProgress: "{}"
           storageSizeGi: 5
-          raftStoreIops: 5
+          raftStoreIops: 2
           storageType: "{}"
-          nodeCount: 1
+          nodeCount: 5
         displayName: foo-bar
         annotations:
           key: annotations
@@ -4670,11 +4810,11 @@ components:
           nodeSpecDisplayName: nodeSpecDisplayName
           nodeChangingProgress: "{}"
           storageSizeGi: 5
-          raftStoreIops: 5
+          raftStoreIops: 2
           storageType: "{}"
-          nodeCount: 1
+          nodeCount: 5
         regionId: regionId
-        port: 2
+        port: 7
         createdBy: createdBy
         createTime: 2000-01-23T04:56:07.000+00:00
         cloudProvider: "{}"
@@ -4695,7 +4835,9 @@ components:
             displayName: displayName
             tidbNodeGroupId: tidbNodeGroupId
             name: name
-            tiproxySetting: "{}"
+            tiproxySetting:
+              nodeCount: 1
+              type: "{}"
             nodeCount: 0
             clusterId: clusterId
             state: "{}"
@@ -4713,7 +4855,9 @@ components:
             displayName: displayName
             tidbNodeGroupId: tidbNodeGroupId
             name: name
-            tiproxySetting: "{}"
+            tiproxySetting:
+              nodeCount: 1
+              type: "{}"
             nodeCount: 0
             clusterId: clusterId
             state: "{}"
@@ -4821,7 +4965,7 @@ components:
       type: object
     tidb_cloud_open_apidedicatedv1beta1ListClustersResponse:
       example:
-        totalSize: 7
+        totalSize: 9
         nextPageToken: nextPageToken
         clusters:
         - tiflashNodeSetting:
@@ -4829,9 +4973,9 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            raftStoreIops: 5
+            raftStoreIops: 2
             storageType: "{}"
-            nodeCount: 1
+            nodeCount: 5
           displayName: foo-bar
           annotations:
             key: annotations
@@ -4847,11 +4991,11 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            raftStoreIops: 5
+            raftStoreIops: 2
             storageType: "{}"
-            nodeCount: 1
+            nodeCount: 5
           regionId: regionId
-          port: 2
+          port: 7
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           cloudProvider: "{}"
@@ -4872,7 +5016,9 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
-              tiproxySetting: "{}"
+              tiproxySetting:
+                nodeCount: 1
+                type: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -4890,7 +5036,9 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
-              tiproxySetting: "{}"
+              tiproxySetting:
+                nodeCount: 1
+                type: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -4903,9 +5051,9 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            raftStoreIops: 5
+            raftStoreIops: 2
             storageType: "{}"
-            nodeCount: 1
+            nodeCount: 5
           displayName: foo-bar
           annotations:
             key: annotations
@@ -4921,11 +5069,11 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            raftStoreIops: 5
+            raftStoreIops: 2
             storageType: "{}"
-            nodeCount: 1
+            nodeCount: 5
           regionId: regionId
-          port: 2
+          port: 7
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           cloudProvider: "{}"
@@ -4946,7 +5094,9 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
-              tiproxySetting: "{}"
+              tiproxySetting:
+                nodeCount: 1
+                type: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -4964,7 +5114,9 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
-              tiproxySetting: "{}"
+              tiproxySetting:
+                nodeCount: 1
+                type: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -5057,9 +5209,9 @@ components:
         nodeSpecDisplayName: nodeSpecDisplayName
         nodeChangingProgress: "{}"
         storageSizeGi: 5
-        raftStoreIops: 5
+        raftStoreIops: 2
         storageType: "{}"
-        nodeCount: 1
+        nodeCount: 5
       properties:
         nodeCount:
           format: int32
@@ -5110,7 +5262,9 @@ components:
           displayName: displayName
           tidbNodeGroupId: tidbNodeGroupId
           name: name
-          tiproxySetting: "{}"
+          tiproxySetting:
+            nodeCount: 1
+            type: "{}"
           nodeCount: 0
           clusterId: clusterId
           state: "{}"
@@ -5128,7 +5282,9 @@ components:
           displayName: displayName
           tidbNodeGroupId: tidbNodeGroupId
           name: name
-          tiproxySetting: "{}"
+          tiproxySetting:
+            nodeCount: 1
+            type: "{}"
           nodeCount: 0
           clusterId: clusterId
           state: "{}"
@@ -5602,9 +5758,9 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            raftStoreIops: 5
+            raftStoreIops: 2
             storageType: "{}"
-            nodeCount: 1
+            nodeCount: 5
           displayName: foo-bar
           annotations:
             key: annotations
@@ -5620,11 +5776,11 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            raftStoreIops: 5
+            raftStoreIops: 2
             storageType: "{}"
-            nodeCount: 1
+            nodeCount: 5
           regionId: regionId
-          port: 2
+          port: 7
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           cloudProvider: "{}"
@@ -5645,7 +5801,9 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
-              tiproxySetting: "{}"
+              tiproxySetting:
+                nodeCount: 1
+                type: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -5663,7 +5821,9 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
-              tiproxySetting: "{}"
+              tiproxySetting:
+                nodeCount: 1
+                type: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -5839,9 +5999,9 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            raftStoreIops: 5
+            raftStoreIops: 2
             storageType: "{}"
-            nodeCount: 1
+            nodeCount: 5
           displayName: foo-bar
           annotations:
             key: annotations
@@ -5857,11 +6017,11 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            raftStoreIops: 5
+            raftStoreIops: 2
             storageType: "{}"
-            nodeCount: 1
+            nodeCount: 5
           regionId: regionId
-          port: 2
+          port: 7
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           cloudProvider: "{}"
@@ -5882,7 +6042,9 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
-              tiproxySetting: "{}"
+              tiproxySetting:
+                nodeCount: 1
+                type: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -5900,7 +6062,9 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
-              tiproxySetting: "{}"
+              tiproxySetting:
+                nodeCount: 1
+                type: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -6112,6 +6276,15 @@ components:
       - PD
       - TIPROXY
       type: string
+    ClusterService_UpdateLogRedactionPolicy_request:
+      properties:
+        redactLog:
+          nullable: true
+          title: |-
+            Indicates whether to redact sensitive information in logs.
+            Default policy: true (enable log redaction)
+          type: boolean
+      type: object
     Required_:
       properties:
         name:
@@ -6152,9 +6325,7 @@ components:
           - $ref: '#/components/schemas/ClusterNodeChangingProgress'
           type: object
         tiproxySetting:
-          allOf:
-          - $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroupTiProxySetting'
-          type: object
+          $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroupTiProxySetting'
       required:
       - nodeCount
       title: Required.

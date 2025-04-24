@@ -875,6 +875,143 @@
         ]
       }
     },
+    "/clusters/{clusterId}/logRedactionPolicy": {
+      "get": {
+        "summary": "Get log redaction policy",
+        "operationId": "ClusterService_GetLogRedactionPolicy",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1LogRedactionPolicy"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ]
+      }
+    },
+    "/clusters/{logRedactionPolicy.clusterId}/logRedactionPolicy": {
+      "patch": {
+        "summary": "Update log redaction policy",
+        "operationId": "ClusterService_UpdateLogRedactionPolicy",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/dedicatedv1beta1LogRedactionPolicy"
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "logRedactionPolicy.clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "logRedactionPolicy",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "redactLog": {
+                  "type": "boolean",
+                  "x-nullable": true,
+                  "title": "Indicates whether to redact sensitive information in logs.\nDefault policy: true (enable log redaction)"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ]
+      }
+    },
     "/regions": {
       "get": {
         "summary": "List regions for creating a cluster",
@@ -1426,12 +1563,7 @@
                   ]
                 },
                 "tiproxySetting": {
-                  "readOnly": true,
-                  "allOf": [
-                    {
-                      "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroupTiProxySetting"
-                    }
-                  ]
+                  "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroupTiProxySetting"
                 }
               },
               "title": "Required.",
@@ -4379,10 +4511,10 @@
     "TidbNodeGroupTiProxyType": {
       "type": "string",
       "enum": [
-        "MEDIUM",
+        "SMALL",
         "LARGE"
       ],
-      "title": "- MEDIUM: Medium is the default value.\nInstance 4vCPU, Max QPS: 30k, Max Data Traffic: 90 MiB/s\n - LARGE: Large is the high performance value.\nInstance 8vCPU, Max QPS: 60k, Max Data Traffic: 150 MiB/s"
+      "description": " - SMALL: SMALL: Low performance instance with 2 vCPUs and 4 GiB memory.\nMax QPS: 30, Max Data Traffic: 90 MiB/s.\n - LARGE: LARGE: High performance instance with 8 vCPUs and 16 GiB memory.\nMax QPS: 100, Max Data Traffic: 300 MiB/s."
     },
     "UpdateClusterRequestTidbNodeSettingTidbNodeGroup": {
       "type": "object",
@@ -4667,6 +4799,22 @@
         }
       }
     },
+    "dedicatedv1beta1LogRedactionPolicy": {
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "type": "string"
+        },
+        "redactLog": {
+          "type": "boolean",
+          "x-nullable": true,
+          "title": "Indicates whether to redact sensitive information in logs.\nDefault policy: true (enable log redaction)"
+        }
+      },
+      "required": [
+        "clusterId"
+      ]
+    },
     "dedicatedv1beta1MaintenanceTask": {
       "type": "object",
       "properties": {
@@ -4888,12 +5036,7 @@
           ]
         },
         "tiproxySetting": {
-          "readOnly": true,
-          "allOf": [
-            {
-              "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroupTiProxySetting"
-            }
-          ]
+          "$ref": "#/definitions/dedicatedv1beta1TidbNodeGroupTiProxySetting"
         }
       },
       "required": [

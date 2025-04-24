@@ -14,18 +14,18 @@ import (
 	"encoding/json"
 )
 
-// TidbNodeGroupTiProxyType the model 'TidbNodeGroupTiProxyType'
+// TidbNodeGroupTiProxyType  - SMALL: SMALL: Low performance instance with 2 vCPUs and 4 GiB memory. Max QPS: 30, Max Data Traffic: 90 MiB/s.  - LARGE: LARGE: High performance instance with 8 vCPUs and 16 GiB memory. Max QPS: 100, Max Data Traffic: 300 MiB/s.
 type TidbNodeGroupTiProxyType string
 
 // List of TidbNodeGroupTiProxyType
 const (
-	TIDBNODEGROUPTIPROXYTYPE_MEDIUM TidbNodeGroupTiProxyType = "MEDIUM"
-	TIDBNODEGROUPTIPROXYTYPE_LARGE  TidbNodeGroupTiProxyType = "LARGE"
+	TIDBNODEGROUPTIPROXYTYPE_SMALL TidbNodeGroupTiProxyType = "SMALL"
+	TIDBNODEGROUPTIPROXYTYPE_LARGE TidbNodeGroupTiProxyType = "LARGE"
 )
 
 // All allowed values of TidbNodeGroupTiProxyType enum
 var AllowedTidbNodeGroupTiProxyTypeEnumValues = []TidbNodeGroupTiProxyType{
-	"MEDIUM",
+	"SMALL",
 	"LARGE",
 }
 
