@@ -33,9 +33,9 @@ import (
 )
 
 var inputDescription = map[string]string{
-	flag.OutputPath: "Input The download path, press Enter to skip and download to the current directory",
-	flag.StartDate:  "Input The start date of the download in the format of 'YYYY-MM-DD'",
-	flag.EndDate:    "Input The end date of the download in the format of 'YYYY-MM-DD'",
+	flag.OutputPath: "Input the download path, press Enter to skip and download to the current directory",
+	flag.StartDate:  "Input the start date of the download in the format of 'YYYY-MM-DD'",
+	flag.EndDate:    "Input the end date of the download in the format of 'YYYY-MM-DD'",
 }
 
 const (
