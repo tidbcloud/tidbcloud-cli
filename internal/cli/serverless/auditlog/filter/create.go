@@ -131,8 +131,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err := json.Unmarshal([]byte(usersStr), &users); err != nil {
 					return errors.New(fmt.Sprintf("invalid users format: %s, please use JSON format", usersStr))
 				}
+				if len(users) == 0 {
+					return errors.New("empty users")
+				}
 				if err := json.Unmarshal([]byte(filtersStr), &filters); err != nil {
 					return errors.New(fmt.Sprintf("invalid filters format: %s, please use JSON format", filtersStr))
+				}
+				if len(filters) == 0 {
+					return errors.New("empty filters")
 				}
 			} else {
 				var err error

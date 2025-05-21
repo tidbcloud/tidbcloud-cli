@@ -130,6 +130,9 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					if err := json.Unmarshal([]byte(usersStr), &users); err != nil {
 						return errors.New(fmt.Sprintf("invalid users format: %s, please use JSON format", usersStr))
 					}
+					if len(users) == 0 {
+						return errors.New("empty users")
+					}
 				case "filters":
 					inputs := []string{flag.AuditLogFilterRuleFilters}
 					textInput, err := ui.InitialInputModel(inputs, alutil.InputDescription)
@@ -139,6 +142,9 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					filtersStr := textInput.Inputs[0].Value()
 					if err := json.Unmarshal([]byte(filtersStr), &filters); err != nil {
 						return errors.New(fmt.Sprintf("invalid filters format: %s, please use JSON format", filtersStr))
+					}
+					if len(filters) == 0 {
+						return errors.New("empty filters")
 					}
 				default:
 					return errors.Errorf("invalid field %s", fieldName)
@@ -174,8 +180,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 			if len(users) == 0 && len(filters) == 0 {
-				fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("Audit log filter rule %s no need to update", ruleName)))
-				return nil
+				return errors.New("nothing to update")
 			}
 			body := &auditlog.AuditLogServiceUpdateAuditLogFilterRuleBody{}
 			if len(users) > 0 {
