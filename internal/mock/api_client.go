@@ -142,6 +142,36 @@ func (_m *TiDBCloudClient) CompleteUpload(ctx context.Context, clusterId string,
 	return r0
 }
 
+// CreateAuditLogFilterRule provides a mock function with given fields: ctx, clusterID, body
+func (_m *TiDBCloudClient) CreateAuditLogFilterRule(ctx context.Context, clusterID string, body *auditlog.AuditLogServiceCreateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error) {
+	ret := _m.Called(ctx, clusterID, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateAuditLogFilterRule")
+	}
+
+	var r0 *auditlog.AuditLogFilterRule
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *auditlog.AuditLogServiceCreateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error)); ok {
+		return rf(ctx, clusterID, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *auditlog.AuditLogServiceCreateAuditLogFilterRuleBody) *auditlog.AuditLogFilterRule); ok {
+		r0 = rf(ctx, clusterID, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*auditlog.AuditLogFilterRule)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *auditlog.AuditLogServiceCreateAuditLogFilterRuleBody) error); ok {
+		r1 = rf(ctx, clusterID, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // CreateBranch provides a mock function with given fields: ctx, clusterId, body
 func (_m *TiDBCloudClient) CreateBranch(ctx context.Context, clusterId string, body *branch.Branch) (*branch.Branch, error) {
 	ret := _m.Called(ctx, clusterId, body)
@@ -285,6 +315,36 @@ func (_m *TiDBCloudClient) CreateSQLUser(ctx context.Context, clusterID string, 
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, *iam.ApiCreateSqlUserReq) error); ok {
 		r1 = rf(ctx, clusterID, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// DeleteAuditLogFilterRule provides a mock function with given fields: ctx, clusterID, name
+func (_m *TiDBCloudClient) DeleteAuditLogFilterRule(ctx context.Context, clusterID string, name string) (*auditlog.AuditLogFilterRule, error) {
+	ret := _m.Called(ctx, clusterID, name)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteAuditLogFilterRule")
+	}
+
+	var r0 *auditlog.AuditLogFilterRule
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*auditlog.AuditLogFilterRule, error)); ok {
+		return rf(ctx, clusterID, name)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *auditlog.AuditLogFilterRule); ok {
+		r0 = rf(ctx, clusterID, name)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*auditlog.AuditLogFilterRule)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterID, name)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -502,6 +562,36 @@ func (_m *TiDBCloudClient) DownloadExportFiles(ctx context.Context, clusterId st
 	return r0, r1
 }
 
+// GetAuditLogFilterRule provides a mock function with given fields: ctx, clusterID, name
+func (_m *TiDBCloudClient) GetAuditLogFilterRule(ctx context.Context, clusterID string, name string) (*auditlog.AuditLogFilterRule, error) {
+	ret := _m.Called(ctx, clusterID, name)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetAuditLogFilterRule")
+	}
+
+	var r0 *auditlog.AuditLogFilterRule
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*auditlog.AuditLogFilterRule, error)); ok {
+		return rf(ctx, clusterID, name)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *auditlog.AuditLogFilterRule); ok {
+		r0 = rf(ctx, clusterID, name)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*auditlog.AuditLogFilterRule)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterID, name)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetBackup provides a mock function with given fields: ctx, backupId
 func (_m *TiDBCloudClient) GetBackup(ctx context.Context, backupId string) (*br.V1beta1Backup, error) {
 	ret := _m.Called(ctx, backupId)
@@ -675,6 +765,36 @@ func (_m *TiDBCloudClient) GetSQLUser(ctx context.Context, clusterID string, use
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
 		r1 = rf(ctx, clusterID, userName)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ListAuditLogFilterRules provides a mock function with given fields: ctx, clusterID
+func (_m *TiDBCloudClient) ListAuditLogFilterRules(ctx context.Context, clusterID string) (*auditlog.ListAuditLogFilterRulesResponse, error) {
+	ret := _m.Called(ctx, clusterID)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListAuditLogFilterRules")
+	}
+
+	var r0 *auditlog.ListAuditLogFilterRulesResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*auditlog.ListAuditLogFilterRulesResponse, error)); ok {
+		return rf(ctx, clusterID)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) *auditlog.ListAuditLogFilterRulesResponse); ok {
+		r0 = rf(ctx, clusterID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*auditlog.ListAuditLogFilterRulesResponse)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, clusterID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -1095,6 +1215,36 @@ func (_m *TiDBCloudClient) StartUpload(ctx context.Context, clusterId string, fi
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, *string, *string, *string, *int32) error); ok {
 		r1 = rf(ctx, clusterId, fileName, targetDatabase, targetTable, partNumber)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UpdateAuditLogFilterRule provides a mock function with given fields: ctx, clusterID, name, body
+func (_m *TiDBCloudClient) UpdateAuditLogFilterRule(ctx context.Context, clusterID string, name string, body *auditlog.AuditLogServiceUpdateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error) {
+	ret := _m.Called(ctx, clusterID, name, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateAuditLogFilterRule")
+	}
+
+	var r0 *auditlog.AuditLogFilterRule
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *auditlog.AuditLogServiceUpdateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error)); ok {
+		return rf(ctx, clusterID, name, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *auditlog.AuditLogServiceUpdateAuditLogFilterRuleBody) *auditlog.AuditLogFilterRule); ok {
+		r0 = rf(ctx, clusterID, name, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*auditlog.AuditLogFilterRule)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string, *auditlog.AuditLogServiceUpdateAuditLogFilterRuleBody) error); ok {
+		r1 = rf(ctx, clusterID, name, body)
 	} else {
 		r1 = ret.Error(1)
 	}
