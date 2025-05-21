@@ -114,6 +114,197 @@
           "AuditLogService"
         ]
       }
+    },
+    "/v1beta1/clusters/{clusterId}/auditlogs/filterRules/{name}": {
+      "get": {
+        "summary": "Get audit log filter rule.",
+        "operationId": "AuditLogService_GetAuditLogFilterRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/AuditLogFilterRule"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "description": "Required. The name of the filter rule.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuditLogService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete audit log filter rule.",
+        "operationId": "AuditLogService_DeleteAuditLogFilterRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/AuditLogFilterRule"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "description": "Required. The name of the filter rule.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuditLogService"
+        ]
+      },
+      "patch": {
+        "summary": "Update audit log filter rule.",
+        "operationId": "AuditLogService_UpdateAuditLogFilterRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/AuditLogFilterRule"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "description": "Required. The name of the filter rule.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AuditLogService.UpdateAuditLogFilterRuleBody"
+            }
+          }
+        ],
+        "tags": [
+          "AuditLogService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/auditlogs/filterRules": {
+      "get": {
+        "summary": "List audit log filter rules.",
+        "operationId": "AuditLogService_ListAuditLogFilterRules",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListAuditLogFilterRulesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "AuditLogService"
+        ]
+      },
+      "post": {
+        "summary": "Create audit log filter rule.",
+        "operationId": "AuditLogService_CreateAuditLogFilterRule",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/AuditLogFilterRule"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AuditLogService.CreateAuditLogFilterRuleBody"
+            }
+          }
+        ],
+        "tags": [
+          "AuditLogService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -144,6 +335,84 @@
         }
       }
     },
+    "AuditLogFilter": {
+      "type": "object",
+      "properties": {
+        "classes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "OPTIONAL. Classes to include in the filter combined with an OR relationship."
+        },
+        "tables": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "OPTIONAL. Tables to include in the filter combined with an OR relationship."
+        },
+        "statusCodes": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "description": "OPTIONAL. Status codes to include in the filter combined with an OR relationship."
+        }
+      },
+      "description": "Message for filter, only the entry matching all the conditions will be audit logged."
+    },
+    "AuditLogFilterRule": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Required. Unique name of the filter rule within a cluster."
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Required. Database users in the format <user>@<host> or <user> (host defaults to %), e.g., %@%, 4C3z3cdMX8iXks5.root"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/AuditLogFilter"
+          },
+          "description": "Required. List of filters combined with an OR relationship. Set filters to [{}] will filter all logs."
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "OUTPUT_ONLY. Indicates whether the filter rule is disabled.",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "name",
+        "users",
+        "filters"
+      ]
+    },
+    "AuditLogService.CreateAuditLogFilterRuleBody": {
+      "type": "object",
+      "properties": {
+        "filterRule": {
+          "description": "Required. The filter rule to create.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/AuditLogFilterRule"
+            }
+          ]
+        }
+      },
+      "required": [
+        "filterRule"
+      ]
+    },
     "AuditLogService.DownloadAuditLogsBody": {
       "type": "object",
       "properties": {
@@ -159,6 +428,31 @@
         "auditLogNames"
       ]
     },
+    "AuditLogService.UpdateAuditLogFilterRuleBody": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/AuditLogFilter"
+          },
+          "description": "OPTIONAL. List of filters combined with an OR relationship. Set filters to [{}] will filter all logs."
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Required. Database users in the format <user>@<host> or <user> (host defaults to %), e.g., %@%, 4C3z3cdMX8iXks5.root"
+        },
+        "disabled": {
+          "type": "boolean",
+          "x-nullable": true,
+          "description": "OPTIONAL. Indicates whether the filter rule is disabled."
+        }
+      }
+    },
     "DownloadAuditLogsResponse": {
       "type": "object",
       "properties": {
@@ -169,6 +463,18 @@
             "$ref": "#/definitions/AuditLog"
           },
           "description": "The audit logs with the download url."
+        }
+      }
+    },
+    "ListAuditLogFilterRulesResponse": {
+      "type": "object",
+      "properties": {
+        "filterRules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/AuditLogFilterRule"
+          }
         }
       }
     },
