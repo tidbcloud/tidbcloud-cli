@@ -24,4 +24,5 @@ Manage TiDB Cloud Serverless database audit logging
 * [ticloud serverless audit-log disable](ticloud_serverless_audit-log_disable.md)	 - Disable the database audit logging
 * [ticloud serverless audit-log download](ticloud_serverless_audit-log_download.md)	 - Download the database audit logs
 * [ticloud serverless audit-log enable](ticloud_serverless_audit-log_enable.md)	 - Enable the database audit logging
+* [ticloud serverless audit-log filter-rule](ticloud_serverless_audit-log_filter-rule.md)	 - Manage TiDB Cloud Serverless database audit logging filter rules
 
