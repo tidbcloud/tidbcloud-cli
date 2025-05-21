@@ -78,16 +78,26 @@ All URIs are relative to *https://serverless.tidbapi.com*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*AuditLogServiceAPI* | [**AuditLogServiceCreateAuditLogFilterRule**](docs/AuditLogServiceAPI.md#auditlogservicecreateauditlogfilterrule) | **Post** /v1beta1/clusters/{clusterId}/auditlogs/filterRules | Create audit log filter rule.
+*AuditLogServiceAPI* | [**AuditLogServiceDeleteAuditLogFilterRule**](docs/AuditLogServiceAPI.md#auditlogservicedeleteauditlogfilterrule) | **Delete** /v1beta1/clusters/{clusterId}/auditlogs/filterRules/{name} | Delete audit log filter rule.
 *AuditLogServiceAPI* | [**AuditLogServiceDownloadAuditLogs**](docs/AuditLogServiceAPI.md#auditlogservicedownloadauditlogs) | **Post** /v1beta1/clusters/{clusterId}/auditlogs:download | Generate audit logs download url
+*AuditLogServiceAPI* | [**AuditLogServiceGetAuditLogFilterRule**](docs/AuditLogServiceAPI.md#auditlogservicegetauditlogfilterrule) | **Get** /v1beta1/clusters/{clusterId}/auditlogs/filterRules/{name} | Get audit log filter rule.
+*AuditLogServiceAPI* | [**AuditLogServiceListAuditLogFilterRules**](docs/AuditLogServiceAPI.md#auditlogservicelistauditlogfilterrules) | **Get** /v1beta1/clusters/{clusterId}/auditlogs/filterRules | List audit log filter rules.
 *AuditLogServiceAPI* | [**AuditLogServiceListAuditLogs**](docs/AuditLogServiceAPI.md#auditlogservicelistauditlogs) | **Get** /v1beta1/clusters/{clusterId}/auditlogs | List database audit logs.
+*AuditLogServiceAPI* | [**AuditLogServiceUpdateAuditLogFilterRule**](docs/AuditLogServiceAPI.md#auditlogserviceupdateauditlogfilterrule) | **Patch** /v1beta1/clusters/{clusterId}/auditlogs/filterRules/{name} | Update audit log filter rule.
 
 
 ## Documentation For Models
 
  - [Any](docs/Any.md)
  - [AuditLog](docs/AuditLog.md)
+ - [AuditLogFilter](docs/AuditLogFilter.md)
+ - [AuditLogFilterRule](docs/AuditLogFilterRule.md)
+ - [AuditLogServiceCreateAuditLogFilterRuleBody](docs/AuditLogServiceCreateAuditLogFilterRuleBody.md)
  - [AuditLogServiceDownloadAuditLogsBody](docs/AuditLogServiceDownloadAuditLogsBody.md)
+ - [AuditLogServiceUpdateAuditLogFilterRuleBody](docs/AuditLogServiceUpdateAuditLogFilterRuleBody.md)
  - [DownloadAuditLogsResponse](docs/DownloadAuditLogsResponse.md)
+ - [ListAuditLogFilterRulesResponse](docs/ListAuditLogFilterRulesResponse.md)
  - [ListAuditLogsResponse](docs/ListAuditLogsResponse.md)
  - [Status](docs/Status.md)
 

@@ -950,3 +950,40 @@ func GetSelectedAuthorizedNetwork(ctx context.Context, clusterID string, client 
 	}
 	return authorizedNetwork.(*AuthorizedNetwork).StartIPAddress, authorizedNetwork.(*AuthorizedNetwork).EndIPAddress, nil
 }
+
+func GetSelectedRuleName(ctx context.Context, clusterID string, client TiDBCloudClient) (string, error) {
+	rulesResp, err := client.ListAuditLogFilterRules(ctx, clusterID)
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if len(rulesResp.FilterRules) == 0 {
+		return "", fmt.Errorf("no audit log filter rules found")
+	}
+
+	var items = make([]interface{}, 0, len(rulesResp.FilterRules))
+	for _, rule := range rulesResp.FilterRules {
+		items = append(items, rule.Name)
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the audit log filter rule:")
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	model.EnableFilter()
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+
+	p := tea.NewProgram(model)
+	ruleModel, err := p.Run()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := ruleModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	selected := ruleModel.(ui.SelectModel).GetSelectedItem()
+	if selected == nil {
+		return "", errors.New("no filter rule selected")
+	}
+	return selected.(string), nil
+}

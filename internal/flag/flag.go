@@ -98,7 +98,11 @@ const (
 	ParquetCompression     string = "parquet.compression"
 	StartDate              string = "start-date"
 	EndDate                string = "end-date"
-	AuditLogUnRedacted     string = "unredacted"
+
+	AuditLogUnRedacted        string = "unredacted"
+	AuditLogFilterRuleName    string = "rule-name"
+	AuditLogFilterRuleUsers   string = "users"
+	AuditLogFilterRuleFilters string = "filters"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."
