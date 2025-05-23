@@ -8,7 +8,7 @@ builds:
   - <<: &build_defaults
       main: ./cmd/ticloud/main.go
       ldflags:
-        - -s -w -X tidbcloud-cli/internal/version.Version={{.Version}} -X tidbcloud-cli/internal/version.Commit={{.ShortCommit}} -X tidbcloud-cli/internal/version.Date={{.Date}}
+        - -s -w -X github.com/tidbcloud/tidbcloud-cli/internal/version.Version={{.Version}} -X github.com/tidbcloud/tidbcloud-cli/internal/version.Commit={{.ShortCommit}} -X github.com/tidbcloud/tidbcloud-cli/internal/version.Date={{.Date}}
       flags:
         - -trimpath
       binary: "ticloud"
