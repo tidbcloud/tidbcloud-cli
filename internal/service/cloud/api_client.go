@@ -120,6 +120,16 @@ type TiDBCloudClient interface {
 	DownloadAuditLogs(ctx context.Context, clusterID string, body *auditlog.AuditLogServiceDownloadAuditLogsBody) (*auditlog.DownloadAuditLogsResponse, error)
 
 	ListAuditLogs(ctx context.Context, clusterID string, pageSize *int32, pageToken *string, date *string) (*auditlog.ListAuditLogsResponse, error)
+
+	CreateAuditLogFilterRule(ctx context.Context, clusterID string, body *auditlog.AuditLogServiceCreateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error)
+
+	DeleteAuditLogFilterRule(ctx context.Context, clusterID, name string) (*auditlog.AuditLogFilterRule, error)
+
+	GetAuditLogFilterRule(ctx context.Context, clusterID, name string) (*auditlog.AuditLogFilterRule, error)
+
+	ListAuditLogFilterRules(ctx context.Context, clusterID string) (*auditlog.ListAuditLogFilterRulesResponse, error)
+
+	UpdateAuditLogFilterRule(ctx context.Context, clusterID, name string, body *auditlog.AuditLogServiceUpdateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error)
 }
 type ClientDelegate struct {
 	ic  *iam.APIClient
@@ -513,6 +523,39 @@ func (d *ClientDelegate) ListAuditLogs(ctx context.Context, clusterID string, pa
 
 func (d *ClientDelegate) DownloadAuditLogs(ctx context.Context, clusterID string, body *auditlog.AuditLogServiceDownloadAuditLogsBody) (*auditlog.DownloadAuditLogsResponse, error) {
 	r := d.alc.AuditLogServiceAPI.AuditLogServiceDownloadAuditLogs(ctx, clusterID)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) CreateAuditLogFilterRule(ctx context.Context, clusterID string, body *auditlog.AuditLogServiceCreateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error) {
+	r := d.alc.AuditLogServiceAPI.AuditLogServiceCreateAuditLogFilterRule(ctx, clusterID)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) DeleteAuditLogFilterRule(ctx context.Context, clusterID, name string) (*auditlog.AuditLogFilterRule, error) {
+	res, h, err := d.alc.AuditLogServiceAPI.AuditLogServiceDeleteAuditLogFilterRule(ctx, clusterID, name).Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) GetAuditLogFilterRule(ctx context.Context, clusterID, name string) (*auditlog.AuditLogFilterRule, error) {
+	res, h, err := d.alc.AuditLogServiceAPI.AuditLogServiceGetAuditLogFilterRule(ctx, clusterID, name).Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) ListAuditLogFilterRules(ctx context.Context, clusterID string) (*auditlog.ListAuditLogFilterRulesResponse, error) {
+	res, h, err := d.alc.AuditLogServiceAPI.AuditLogServiceListAuditLogFilterRules(ctx, clusterID).Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) UpdateAuditLogFilterRule(ctx context.Context, clusterID, name string, body *auditlog.AuditLogServiceUpdateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error) {
+	r := d.alc.AuditLogServiceAPI.AuditLogServiceUpdateAuditLogFilterRule(ctx, clusterID, name)
 	if body != nil {
 		r = r.Body(*body)
 	}
