@@ -31,6 +31,11 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/auditlog"
 )
 
+type FilterRuleWithoutName struct {
+	Users   []string                  `json:"users"`
+	Filters []auditlog.AuditLogFilter `json:"filters"`
+}
+
 type FilterRuleOpts struct {
 	interactive bool
 }
@@ -39,7 +44,6 @@ func (o FilterRuleOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.AuditLogFilterRuleName,
-		flag.AuditLogFilterRuleUsers,
 		flag.AuditLogFilterRuleFilters,
 	}
 }
@@ -48,7 +52,6 @@ func (o FilterRuleOpts) RequiredFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.AuditLogFilterRuleName,
-		flag.AuditLogFilterRuleUsers,
 		flag.AuditLogFilterRuleFilters,
 	}
 }
@@ -84,10 +87,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless audit-log filter-rule create
 
   Create a filter rule which filter all audit logs in non-interactive mode:
-  $ %[1]s serverless audit-log filter-rule create --cluster-id <cluster-id> --rule-name <rule-name> --users %%@%% --filters {}
+  $ %[1]s serverless audit-log filter-rule create --cluster-id <cluster-id> --name <rule-name> --rule '{"users":["%%@%%"],"filters":[{}]}'
 
     Create a filter rule which filter QUERY and EXECUTE for test.t1 and filter QUERY for all tables in non-interactive mode:
-  $ %[1]s serverless audit-log filter-rule create --cluster-id <cluster-id> --rule-name <rule-name> --users user1,user2 --filters '{"classes": ["QUERY", "EXECUTE"], "tables": ["test.t1"]}' --filters '{"classes": ["QUERY"]}'
+  $ %[1]s serverless audit-log filter-rule create --cluster-id <cluster-id> --name <rule-name> --rule '{"users":["%%@%%"],"filters":[{"classes":["QUERY"],"tables":["test.t"]}]}'
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
@@ -100,11 +103,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			ctx := cmd.Context()
 
 			var clusterID, name string
-			var users []string
-			var filters []auditlog.AuditLogFilter
+			var filterRule FilterRuleWithoutName
 			if opts.interactive {
-				//return errors.New("This command doesn't support interactive mode, please use non-interactive mode")
-
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
@@ -119,26 +119,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				inputs := []string{flag.AuditLogFilterRuleName, flag.AuditLogFilterRuleUsers, flag.AuditLogFilterRuleFilters}
+				inputs := []string{flag.AuditLogFilterRuleName, flag.AuditLogFilterRuleFilters}
 				textInput, err := ui.InitialInputModel(inputs, alutil.InputDescription)
 				if err != nil {
 					return err
 				}
 				name = textInput.Inputs[0].Value()
-				usersStr := textInput.Inputs[1].Value()
-				filtersStr := textInput.Inputs[2].Value()
-
-				if err := json.Unmarshal([]byte(usersStr), &users); err != nil {
-					return errors.New(fmt.Sprintf("invalid users format: %s, please use JSON format", usersStr))
-				}
-				if len(users) == 0 {
-					return errors.New("empty users")
-				}
-				if err := json.Unmarshal([]byte(filtersStr), &filters); err != nil {
-					return errors.New(fmt.Sprintf("invalid filters format: %s, please use JSON format", filtersStr))
-				}
-				if len(filters) == 0 {
-					return errors.New("empty filters")
+				ruleStr := textInput.Inputs[1].Value()
+				if err := json.Unmarshal([]byte(ruleStr), &filterRule); err != nil {
+					return errors.New("invalid rule format, please use JSON format")
 				}
 			} else {
 				var err error
@@ -150,30 +139,28 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				users, err = cmd.Flags().GetStringSlice(flag.AuditLogFilterRuleUsers)
+				filtersStr, err := cmd.Flags().GetString(flag.AuditLogFilterRuleFilters)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				filtersStr, err := cmd.Flags().GetStringArray(flag.AuditLogFilterRuleFilters)
-				if err != nil {
-					return errors.Trace(err)
+				if err := json.Unmarshal([]byte(filtersStr), &filterRule); err != nil {
+					return errors.New("invalid filter, please use  JSON format")
 				}
-				for _, f := range filtersStr {
-					var filter auditlog.AuditLogFilter
-					if err := json.Unmarshal([]byte(f), &filter); err != nil {
-						return errors.New(fmt.Sprintf("invalid filter format: %s, please use JSON format", f))
-					}
-					filters = append(filters, filter)
-				}
+			}
+			if name == "" {
+				return errors.New("empty filter rule name, please specify a name")
+			}
+			if len(filterRule.Users) == 0 {
+				return errors.New("empty users, please specify at least one user")
+			}
+			if len(filterRule.Filters) == 0 {
+				return errors.New("empty filters, please specify at least one filter")
 			}
 			params := auditlog.AuditLogFilterRule{
 				Name:    name,
-				Users:   users,
-				Filters: filters,
+				Users:   filterRule.Users,
+				Filters: filterRule.Filters,
 			}
-
-			t, _ := json.Marshal(params)
-			println(string(t))
 
 			resp, err := d.CreateAuditLogFilterRule(
 				ctx,
@@ -194,9 +181,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
 	cmd.Flags().String(flag.AuditLogFilterRuleName, "", "The name of the filter rule.")
-	cmd.Flags().StringSlice(flag.AuditLogFilterRuleUsers, nil, "Users to apply the rule to. e,g. %@%.")
-	// use string array for https://github.com/spf13/pflag/issues/370
-	cmd.Flags().StringArray(flag.AuditLogFilterRuleFilters, nil, "Filter expressions. e.g. '{\"classes\": [\"QUERY\"]' or '{}' to filter all audit logs.")
+	cmd.Flags().String(flag.AuditLogFilterRuleFilters, "", "Filter rule expressions, use ticloud serverless audit-log filter template to to see filter templates")
 
 	return cmd
 }

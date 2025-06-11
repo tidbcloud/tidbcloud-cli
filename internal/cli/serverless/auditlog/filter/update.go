@@ -18,7 +18,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/fatih/color"
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 
@@ -28,6 +30,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/auditlog"
 )
 
@@ -39,7 +42,6 @@ func (o UpdateFilterRuleOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.AuditLogFilterRuleName,
-		flag.AuditLogFilterRuleUsers,
 		flag.AuditLogFilterRuleFilters,
 	}
 }
@@ -67,14 +69,21 @@ func (o *UpdateFilterRuleOpts) MarkInteractive(cmd *cobra.Command) error {
 				return err
 			}
 		}
-		cmd.MarkFlagsOneRequired(flag.AuditLogFilterRuleUsers, flag.AuditLogFilterRuleFilters)
+		cmd.MarkFlagsOneRequired(flag.AuditLogFilterRuleFilters, flag.Enabled)
 	}
 	return nil
 }
 
+type mutableField string
+
+const (
+	Rule    mutableField = "rule"
+	Enabled mutableField = "enabled or disabled"
+)
+
 var mutableFilterRuleFields = []string{
-	"users",
-	"filters",
+	string(Rule),
+	string(Enabled),
 }
 
 func UpdateCmd(h *internal.Helper) *cobra.Command {
@@ -87,11 +96,14 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 		Example: fmt.Sprintf(`  Update an audit log filter rule in interactive mode:
   $ %[1]s serverless auditlog filter-rule update
 
-  Update users of an audit log filter rule in non-interactive mode:
-  $ %[1]s serverless auditlog filter-rule update --cluster-id <cluster-id> --rule-name <rule-name> --users user1,user2
+  Enable audit log filter rule in non-interactive mode:
+  $ %[1]s serverless auditlog filter-rule update --cluster-id <cluster-id> --name <rule-name> --enabled
+
+  Disable audit log filter rule in non-interactive mode:
+  $ %[1]s serverless auditlog filter-rule update --cluster-id <cluster-id> --name <rule-name> --enabled=false
 
   Update filters of an audit log filter rule in non-interactive mode:
-  $ %[1]s serverless auditlog filter-rule update --cluster-id <cluster-id> --rule-name <rule-name> --filters '{"classes": ["QUERY", "EXECUTE"], "tables": ["test.t1"]}' --filters '{"classes": ["QUERY"]}'
+  $ %[1]s serverless auditlog filter-rule update --cluster-id <cluster-id> --name <rule-name> --rule '{"users":["%%@%%"],"filters":[{"classes":["QUERY"],"tables":["test.t"]}]}'
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
@@ -104,9 +116,8 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 			ctx := cmd.Context()
 
 			var clusterID, ruleName string
-			var users []string
-			var filters []auditlog.AuditLogFilter
-
+			var filterRule *FilterRuleWithoutName
+			var enabled *bool
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -134,32 +145,39 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				switch fieldName {
-				case "users":
-					inputs := []string{flag.AuditLogFilterRuleUsers}
-					textInput, err := ui.InitialInputModel(inputs, alutil.InputDescription)
+				case string(Enabled):
+					prompt := &survey.Input{
+						Message: "type enabled or disabled to config the filter rule",
+						Default: "enabled",
+					}
+					var userInput string
+					err = survey.AskOne(prompt, &userInput)
 					if err != nil {
-						return err
+						if err == terminal.InterruptErr {
+							return util.InterruptError
+						} else {
+							return err
+						}
 					}
-					usersStr := textInput.Inputs[0].Value()
-					if err := json.Unmarshal([]byte(usersStr), &users); err != nil {
-						return errors.New(fmt.Sprintf("invalid users format: %s, please use JSON format", usersStr))
+					if userInput == "enabled" {
+						enabled = aws.Bool(true)
+					} else if userInput == "disabled" {
+						enabled = aws.Bool(false)
+					} else {
+						return errors.Errorf("invalid input %s, please type enabled or disabled", userInput)
 					}
-					if len(users) == 0 {
-						return errors.New("empty users")
-					}
-				case "filters":
+				case string(Rule):
 					inputs := []string{flag.AuditLogFilterRuleFilters}
 					textInput, err := ui.InitialInputModel(inputs, alutil.InputDescription)
 					if err != nil {
 						return err
 					}
-					filtersStr := textInput.Inputs[0].Value()
-					if err := json.Unmarshal([]byte(filtersStr), &filters); err != nil {
-						return errors.New(fmt.Sprintf("invalid filters format: %s, please use JSON format", filtersStr))
+					ruleStr := textInput.Inputs[0].Value()
+					var f FilterRuleWithoutName
+					if err := json.Unmarshal([]byte(ruleStr), &f); err != nil {
+						return errors.New("invalid filter, please use JSON format")
 					}
-					if len(filters) == 0 {
-						return errors.New("empty filters")
-					}
+					filterRule = &f
 				default:
 					return errors.Errorf("invalid field %s", fieldName)
 				}
@@ -173,35 +191,44 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if cmd.Flags().Changed(flag.AuditLogFilterRuleUsers) {
-					users, err = cmd.Flags().GetStringSlice(flag.AuditLogFilterRuleUsers)
+				if cmd.Flags().Changed(flag.Enabled) {
+					u, err := cmd.Flags().GetBool(flag.Enabled)
 					if err != nil {
 						return errors.Trace(err)
 					}
+					enabled = &u
 				}
 				if cmd.Flags().Changed(flag.AuditLogFilterRuleFilters) {
-					filtersStr, err := cmd.Flags().GetStringArray(flag.AuditLogFilterRuleFilters)
+					ruleStr, err := cmd.Flags().GetString(flag.AuditLogFilterRuleFilters)
 					if err != nil {
 						return errors.Trace(err)
 					}
-					for _, f := range filtersStr {
-						var filter auditlog.AuditLogFilter
-						if err := json.Unmarshal([]byte(f), &filter); err != nil {
-							return errors.New(fmt.Sprintf("invalid filter format: %s, please use JSON format", f))
-						}
-						filters = append(filters, filter)
+					var f FilterRuleWithoutName
+					if err := json.Unmarshal([]byte(ruleStr), &f); err != nil {
+						return errors.New("invalid filter, please use JSON format")
 					}
+					filterRule = &f
 				}
 			}
-			if len(users) == 0 && len(filters) == 0 {
+			if enabled == nil && filterRule == nil {
 				return errors.New("nothing to update")
 			}
-			body := &auditlog.AuditLogServiceUpdateAuditLogFilterRuleBody{}
-			if len(users) > 0 {
-				body.Users = users
+			if filterRule != nil {
+				if len(filterRule.Users) == 0 {
+					return errors.New("empty users, please specify at least one user")
+				}
+				if len(filterRule.Filters) == 0 {
+					return errors.New("empty filters, please specify at least one filter")
+				}
 			}
-			if len(filters) > 0 {
-				body.Filters = filters
+			body := &auditlog.AuditLogServiceUpdateAuditLogFilterRuleBody{}
+			if filterRule != nil {
+				body.Users = filterRule.Users
+				body.Filters = filterRule.Filters
+			}
+			if enabled != nil {
+				disabled := !*enabled
+				body.Disabled = *auditlog.NewNullableBool(&disabled)
 			}
 			_, err = d.UpdateAuditLogFilterRule(ctx, clusterID, ruleName, body)
 			if err != nil {
@@ -214,8 +241,8 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 
 	updateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
 	updateCmd.Flags().String(flag.AuditLogFilterRuleName, "", "The name of the filter rule to update.")
-	updateCmd.Flags().StringSlice(flag.AuditLogFilterRuleUsers, nil, "Users to apply the rule to. e.g. %@%.")
-	updateCmd.Flags().StringArray(flag.AuditLogFilterRuleFilters, nil, "Filter expressions. e.g. '{\"classes\": [\"QUERY\"]' or '{}' to filter all audit logs.")
+	updateCmd.Flags().String(flag.AuditLogFilterRuleFilters, "", "Complete filter rule expressions, use 'ticloud serverless audit-log filter template' to to see filter templates")
+	updateCmd.Flags().Bool(flag.Enabled, false, "Enable or disable the filter rule.")
 
 	return updateCmd
 }

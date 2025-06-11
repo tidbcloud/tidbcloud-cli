@@ -30,8 +30,6 @@ func AuditLoggingCmd(h *internal.Helper) *cobra.Command {
 	auditLoggingCmd.AddCommand(DownloadCmd(h))
 	auditLoggingCmd.AddCommand(DescribeCmd(h))
 	auditLoggingCmd.AddCommand(ConfigCmd(h))
-	auditLoggingCmd.AddCommand(EnableCmd(h))
-	auditLoggingCmd.AddCommand(DisableCmd(h))
 	auditLoggingCmd.AddCommand(filter.FilterRuleCmd(h))
 
 	return auditLoggingCmd
