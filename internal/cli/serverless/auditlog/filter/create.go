@@ -44,7 +44,7 @@ func (o FilterRuleOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.AuditLogFilterRuleName,
-		flag.AuditLogFilterRuleFilters,
+		flag.AuditLogFilterRule,
 	}
 }
 
@@ -52,7 +52,7 @@ func (o FilterRuleOpts) RequiredFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.AuditLogFilterRuleName,
-		flag.AuditLogFilterRuleFilters,
+		flag.AuditLogFilterRule,
 	}
 }
 
@@ -119,7 +119,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				inputs := []string{flag.AuditLogFilterRuleName, flag.AuditLogFilterRuleFilters}
+				inputs := []string{flag.AuditLogFilterRuleName, flag.AuditLogFilterRule}
 				textInput, err := ui.InitialInputModel(inputs, alutil.InputDescription)
 				if err != nil {
 					return err
@@ -127,7 +127,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				name = textInput.Inputs[0].Value()
 				ruleStr := textInput.Inputs[1].Value()
 				if err := json.Unmarshal([]byte(ruleStr), &filterRule); err != nil {
-					return errors.New("invalid rule format, please use JSON format")
+					return errors.New("invalid rule, please use JSON format or use `ticloud serverless audit-log filter " +
+						"template` to see filter templates")
 				}
 			} else {
 				var err error
@@ -139,12 +140,13 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				filtersStr, err := cmd.Flags().GetString(flag.AuditLogFilterRuleFilters)
+				ruleStr, err := cmd.Flags().GetString(flag.AuditLogFilterRule)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if err := json.Unmarshal([]byte(filtersStr), &filterRule); err != nil {
-					return errors.New("invalid filter, please use  JSON format")
+				if err := json.Unmarshal([]byte(ruleStr), &filterRule); err != nil {
+					return errors.New("invalid rule, please use JSON format or use `ticloud serverless audit-log filter " +
+						"template` to see filter templates")
 				}
 			}
 			if name == "" {
@@ -181,7 +183,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
 	cmd.Flags().String(flag.AuditLogFilterRuleName, "", "The name of the filter rule.")
-	cmd.Flags().String(flag.AuditLogFilterRuleFilters, "", "Filter rule expressions, use ticloud serverless audit-log filter template to to see filter templates")
+	cmd.Flags().String(flag.AuditLogFilterRule, "", "Filter rule expressions, use `ticloud serverless audit-log filter template` to see filter templates.")
 
 	return cmd
 }

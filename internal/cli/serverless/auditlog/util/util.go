@@ -17,9 +17,9 @@ package util
 import "github.com/tidbcloud/tidbcloud-cli/internal/flag"
 
 var InputDescription = map[string]string{
-	flag.OutputPath:                "Input the download path, press Enter to skip and download to the current directory",
-	flag.StartDate:                 "Input the start date of the download in the format of 'YYYY-MM-DD'",
-	flag.EndDate:                   "Input the end date of the download in the format of 'YYYY-MM-DD'",
-	flag.AuditLogFilterRuleName:    "Input the filter rule name",
-	flag.AuditLogFilterRuleFilters: "Input the filter rule expression, use `ticloud serverless audit-log filter template` to get the template",
+	flag.OutputPath:             "Input the download path, press Enter to skip and download to the current directory",
+	flag.StartDate:              "Input the start date of the download in the format of 'YYYY-MM-DD'",
+	flag.EndDate:                "Input the end date of the download in the format of 'YYYY-MM-DD'",
+	flag.AuditLogFilterRuleName: "Input the filter rule name",
+	flag.AuditLogFilterRule:     "Input the filter rule expression, use `ticloud serverless audit-log filter template` to get the template",
 }

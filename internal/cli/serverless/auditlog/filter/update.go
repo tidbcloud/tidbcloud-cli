@@ -21,6 +21,7 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 
@@ -42,7 +43,7 @@ func (o UpdateFilterRuleOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.AuditLogFilterRuleName,
-		flag.AuditLogFilterRuleFilters,
+		flag.AuditLogFilterRule,
 	}
 }
 
@@ -69,7 +70,7 @@ func (o *UpdateFilterRuleOpts) MarkInteractive(cmd *cobra.Command) error {
 				return err
 			}
 		}
-		cmd.MarkFlagsOneRequired(flag.AuditLogFilterRuleFilters, flag.Enabled)
+		cmd.MarkFlagsOneRequired(flag.AuditLogFilterRule, flag.Enabled)
 	}
 	return nil
 }
@@ -167,7 +168,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 						return errors.Errorf("invalid input %s, please type enabled or disabled", userInput)
 					}
 				case string(Rule):
-					inputs := []string{flag.AuditLogFilterRuleFilters}
+					inputs := []string{flag.AuditLogFilterRule}
 					textInput, err := ui.InitialInputModel(inputs, alutil.InputDescription)
 					if err != nil {
 						return err
@@ -198,8 +199,8 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					}
 					enabled = &u
 				}
-				if cmd.Flags().Changed(flag.AuditLogFilterRuleFilters) {
-					ruleStr, err := cmd.Flags().GetString(flag.AuditLogFilterRuleFilters)
+				if cmd.Flags().Changed(flag.AuditLogFilterRule) {
+					ruleStr, err := cmd.Flags().GetString(flag.AuditLogFilterRule)
 					if err != nil {
 						return errors.Trace(err)
 					}
@@ -241,7 +242,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 
 	updateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
 	updateCmd.Flags().String(flag.AuditLogFilterRuleName, "", "The name of the filter rule to update.")
-	updateCmd.Flags().String(flag.AuditLogFilterRuleFilters, "", "Complete filter rule expressions, use 'ticloud serverless audit-log filter template' to to see filter templates")
+	updateCmd.Flags().String(flag.AuditLogFilterRule, "", "Complete filter rule expressions, use `ticloud serverless audit-log filter template` to see filter templates")
 	updateCmd.Flags().Bool(flag.Enabled, false, "Enable or disable the filter rule.")
 
 	return updateCmd

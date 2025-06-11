@@ -99,10 +99,10 @@ const (
 	StartDate              string = "start-date"
 	EndDate                string = "end-date"
 
-	AuditLogUnRedacted        string = "unredacted"
-	AuditLogFilterRuleName    string = "name"
-	AuditLogFilterRuleFilters string = "rule"
-	Enabled                   string = "enabled"
+	AuditLogUnRedacted     string = "unredacted"
+	AuditLogFilterRuleName string = "name"
+	AuditLogFilterRule     string = "rule"
+	Enabled                string = "enabled"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."
