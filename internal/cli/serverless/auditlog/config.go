@@ -45,8 +45,8 @@ func (c ConfigOpts) NonInteractiveFlags() []string {
 type mutableField string
 
 const (
-	Unredacted mutableField = "unredacted or redacted"
-	Enabled    mutableField = "enabled or disabled"
+	Unredacted mutableField = "unredacted"
+	Enabled    mutableField = "enabled"
 )
 
 var mutableFields = []string{
@@ -128,12 +128,12 @@ func ConfigCmd(h *internal.Helper) *cobra.Command {
 
 				switch fieldName {
 				case string(Unredacted):
-					prompt := &survey.Input{
-						Message: "type unredacted or redacted to config the database audit logging",
-						Default: "redacted",
+					prompt := &survey.Confirm{
+						Message: "unredacted the database audit logging?",
+						Default: false,
 					}
-					var userInput string
-					err = survey.AskOne(prompt, &userInput)
+					var confirm bool
+					err = survey.AskOne(prompt, &confirm)
 					if err != nil {
 						if err == terminal.InterruptErr {
 							return util.InterruptError
@@ -141,20 +141,18 @@ func ConfigCmd(h *internal.Helper) *cobra.Command {
 							return err
 						}
 					}
-					if userInput == "unredacted" {
+					if confirm {
 						unredacted = aws.Bool(true)
-					} else if userInput == "redacted" {
-						unredacted = aws.Bool(false)
 					} else {
-						return errors.Errorf("invalid input %s, please type unredacted or redacted", userInput)
+						unredacted = aws.Bool(false)
 					}
 				case string(Enabled):
-					prompt := &survey.Input{
-						Message: "type enabled or disabled to config the database audit logging",
-						Default: "enabled",
+					prompt := &survey.Confirm{
+						Message: "enable the database audit logging?",
+						Default: false,
 					}
-					var userInput string
-					err = survey.AskOne(prompt, &userInput)
+					var confirm bool
+					err = survey.AskOne(prompt, &confirm)
 					if err != nil {
 						if err == terminal.InterruptErr {
 							return util.InterruptError
@@ -162,12 +160,10 @@ func ConfigCmd(h *internal.Helper) *cobra.Command {
 							return err
 						}
 					}
-					if userInput == "enabled" {
+					if confirm {
 						enabled = aws.Bool(true)
-					} else if userInput == "disabled" {
-						enabled = aws.Bool(false)
 					} else {
-						return errors.Errorf("invalid input %s, please type enabled or disabled", userInput)
+						enabled = aws.Bool(false)
 					}
 				}
 			} else {

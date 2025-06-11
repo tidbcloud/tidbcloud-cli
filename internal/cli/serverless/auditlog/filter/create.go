@@ -89,8 +89,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   Create a filter rule which filter all audit logs in non-interactive mode:
   $ %[1]s serverless audit-log filter-rule create --cluster-id <cluster-id> --name <rule-name> --rule '{"users":["%%@%%"],"filters":[{}]}'
 
-    Create a filter rule which filter QUERY and EXECUTE for test.t1 and filter QUERY for all tables in non-interactive mode:
-  $ %[1]s serverless audit-log filter-rule create --cluster-id <cluster-id> --name <rule-name> --rule '{"users":["%%@%%"],"filters":[{"classes":["QUERY"],"tables":["test.t"]}]}'
+  Create a filter rule which filter QUERY and EXECUTE for test.t1 and filter QUERY for all tables in non-interactive mode:
+  $ %[1]s serverless audit-log filter-rule create --cluster-id <cluster-id> --name <rule-name> --rule '{"users":["%%@%%"],"filters":[{"classes":["QUERY", "EXECUTE"],"tables":["test.t"]}]}'
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)

@@ -73,7 +73,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless auditlog filter-rule describe
 
   Describe an audit log filter rule in non-interactive mode:
-  $ %[1]s serverless auditlog filter-rule describe --cluster-id <cluster-id> --rule-name <rule-name>
+  $ %[1]s serverless auditlog filter-rule describe --cluster-id <cluster-id> --name <rule-name>
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)

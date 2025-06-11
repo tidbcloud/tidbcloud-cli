@@ -79,7 +79,7 @@ type mutableField string
 
 const (
 	Rule    mutableField = "rule"
-	Enabled mutableField = "enabled or disabled"
+	Enabled mutableField = "enabled"
 )
 
 var mutableFilterRuleFields = []string{
@@ -147,12 +147,12 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 
 				switch fieldName {
 				case string(Enabled):
-					prompt := &survey.Input{
-						Message: "type enabled or disabled to config the filter rule",
-						Default: "enabled",
+					prompt := &survey.Confirm{
+						Message: "enable the database audit logging?",
+						Default: false,
 					}
-					var userInput string
-					err = survey.AskOne(prompt, &userInput)
+					var confirm bool
+					err = survey.AskOne(prompt, &confirm)
 					if err != nil {
 						if err == terminal.InterruptErr {
 							return util.InterruptError
@@ -160,12 +160,10 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 							return err
 						}
 					}
-					if userInput == "enabled" {
+					if confirm {
 						enabled = aws.Bool(true)
-					} else if userInput == "disabled" {
-						enabled = aws.Bool(false)
 					} else {
-						return errors.Errorf("invalid input %s, please type enabled or disabled", userInput)
+						enabled = aws.Bool(false)
 					}
 				case string(Rule):
 					inputs := []string{flag.AuditLogFilterRule}
