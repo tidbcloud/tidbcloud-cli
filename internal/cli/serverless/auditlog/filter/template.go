@@ -61,6 +61,7 @@ func TemplateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
+	cmd.MarkFlagRequired(flag.ClusterID)
 	return cmd
 
 }
