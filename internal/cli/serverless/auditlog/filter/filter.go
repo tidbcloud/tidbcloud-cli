@@ -12,25 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package auditlog
+package filter
 
 import (
 	"github.com/spf13/cobra"
 	"github.com/tidbcloud/tidbcloud-cli/internal"
-	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/auditlog/filter"
 )
 
-func AuditLoggingCmd(h *internal.Helper) *cobra.Command {
-	var auditLoggingCmd = &cobra.Command{
-		Use:     "audit-log",
-		Short:   "Manage TiDB Cloud Serverless database audit logging",
-		Aliases: []string{"al"},
+func FilterRuleCmd(h *internal.Helper) *cobra.Command {
+	var filterRuleCmd = &cobra.Command{
+		Use:     "filter-rule",
+		Short:   "Manage TiDB Cloud Serverless database audit logging filter rules",
+		Aliases: []string{"filter"},
 	}
 
-	auditLoggingCmd.AddCommand(DownloadCmd(h))
-	auditLoggingCmd.AddCommand(DescribeCmd(h))
-	auditLoggingCmd.AddCommand(ConfigCmd(h))
-	auditLoggingCmd.AddCommand(filter.FilterRuleCmd(h))
+	filterRuleCmd.AddCommand(CreateCmd(h))
+	filterRuleCmd.AddCommand(DescribeCmd(h))
+	filterRuleCmd.AddCommand(ListCmd(h))
+	filterRuleCmd.AddCommand(DeleteCmd(h))
+	filterRuleCmd.AddCommand(UpdateCmd(h))
+	filterRuleCmd.AddCommand(TemplateCmd(h))
 
-	return auditLoggingCmd
+	return filterRuleCmd
 }

@@ -13,15 +13,22 @@ ticloud serverless audit-log config [flags]
   $ ticloud serverless audit-log config
 
   Unredacted the database audit logging in non-interactive mode:
-  $ ticloud serverless audit-log config -c <cluster-id> --auditlog.unredacted
+  $ ticloud serverless audit-log config -c <cluster-id> --unredacted
+
+  Enable the database audit logging in non-interactive mode:
+  $ ticloud serverless audit-log config -c <cluster-id> --enabled
+
+  Disable the database audit logging in non-interactive mode:
+  $ ticloud serverless audit-log config -c <cluster-id> --enabled=false
 ```
 
 ### Options
 
 ```
   -c, --cluster-id string   The ID of the cluster to be updated.
+      --enabled             enable or disable the database audit logging.
   -h, --help                help for config
-      --unredacted          Unredacted the database audit logging.
+      --unredacted          unredacted or redacted the database audit logging.
 ```
 
 ### Options inherited from parent commands

@@ -32,12 +32,6 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 )
 
-var inputDescription = map[string]string{
-	flag.OutputPath: "Input the download path, press Enter to skip and download to the current directory",
-	flag.StartDate:  "Input the start date of the download in the format of 'YYYY-MM-DD'",
-	flag.EndDate:    "Input the end date of the download in the format of 'YYYY-MM-DD'",
-}
-
 const (
 	DefaultConcurrency = 3
 	MaxBatchSize       = 100
@@ -46,6 +40,12 @@ const (
 
 var DownloadPathInputFields = map[string]int{
 	flag.OutputPath: 0,
+}
+
+var InputDescription = map[string]string{
+	flag.OutputPath: "Input the download path, press Enter to skip and download to the current directory",
+	flag.StartDate:  "Input the start date of the download in the format of 'YYYY-MM-DD'",
+	flag.EndDate:    "Input the end date of the download in the format of 'YYYY-MM-DD'",
 }
 
 type DownloadAuditLogOpts struct {
@@ -131,7 +131,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cluster.ID
 
 				inputs := []string{flag.OutputPath, flag.StartDate, flag.EndDate}
-				textInput, err := ui.InitialInputModel(inputs, inputDescription)
+				textInput, err := ui.InitialInputModel(inputs, InputDescription)
 				if err != nil {
 					return err
 				}

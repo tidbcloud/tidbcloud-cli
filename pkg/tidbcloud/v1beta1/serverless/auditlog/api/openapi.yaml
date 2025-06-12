@@ -85,6 +85,165 @@ paths:
       tags:
       - AuditLogService
       x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/auditlogs/filterRules/{name}:
+    delete:
+      operationId: AuditLogService_DeleteAuditLogFilterRule
+      parameters:
+      - description: Required.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: Required. The name of the filter rule.
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLogFilterRule'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Delete audit log filter rule.
+      tags:
+      - AuditLogService
+    get:
+      operationId: AuditLogService_GetAuditLogFilterRule
+      parameters:
+      - description: Required.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: Required. The name of the filter rule.
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLogFilterRule'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Get audit log filter rule.
+      tags:
+      - AuditLogService
+    patch:
+      operationId: AuditLogService_UpdateAuditLogFilterRule
+      parameters:
+      - description: Required.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: Required. The name of the filter rule.
+        in: path
+        name: name
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditLogService.UpdateAuditLogFilterRuleBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLogFilterRule'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Update audit log filter rule.
+      tags:
+      - AuditLogService
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/auditlogs/filterRules:
+    get:
+      operationId: AuditLogService_ListAuditLogFilterRules
+      parameters:
+      - description: Required.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListAuditLogFilterRulesResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: List audit log filter rules.
+      tags:
+      - AuditLogService
+    post:
+      operationId: AuditLogService_CreateAuditLogFilterRule
+      parameters:
+      - description: Required.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditLogService.CreateAuditLogFilterRuleBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditLogFilterRule'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Create audit log filter rule.
+      tags:
+      - AuditLogService
+      x-codegen-request-body-name: body
 components:
   schemas:
     Any:
@@ -113,6 +272,101 @@ components:
           description: download url of the audit log.
           type: string
       type: object
+    AuditLogFilter:
+      description: "Message for filter, only the entry matching all the conditions\
+        \ will be audit logged."
+      example:
+        statusCodes:
+        - 0
+        - 0
+        tables:
+        - tables
+        - tables
+        classes:
+        - classes
+        - classes
+      properties:
+        classes:
+          description: OPTIONAL. Classes to include in the filter combined with an
+            OR relationship.
+          items:
+            type: string
+          type: array
+        tables:
+          description: OPTIONAL. Tables to include in the filter combined with an
+            OR relationship.
+          items:
+            type: string
+          type: array
+        statusCodes:
+          description: OPTIONAL. Status codes to include in the filter combined with
+            an OR relationship.
+          items:
+            format: int32
+            type: integer
+          type: array
+      type: object
+    AuditLogFilterRule:
+      example:
+        name: name
+        disabled: true
+        filters:
+        - statusCodes:
+          - 0
+          - 0
+          tables:
+          - tables
+          - tables
+          classes:
+          - classes
+          - classes
+        - statusCodes:
+          - 0
+          - 0
+          tables:
+          - tables
+          - tables
+          classes:
+          - classes
+          - classes
+        users:
+        - users
+        - users
+      properties:
+        name:
+          description: Required. Unique name of the filter rule within a cluster.
+          type: string
+        users:
+          items:
+            type: string
+          title: "Required. Database users in the format <user>@<host> or <user> (host\
+            \ defaults to %), e.g., %@%, 4C3z3cdMX8iXks5.root"
+          type: array
+        filters:
+          description: "Required. List of filters combined with an OR relationship.\
+            \ Set filters to [{}] will filter all logs."
+          items:
+            $ref: '#/components/schemas/AuditLogFilter'
+          type: array
+        disabled:
+          description: OUTPUT_ONLY. Indicates whether the filter rule is disabled.
+          readOnly: true
+          type: boolean
+      required:
+      - filters
+      - name
+      - users
+      type: object
+    AuditLogService.CreateAuditLogFilterRuleBody:
+      properties:
+        filterRule:
+          allOf:
+          - $ref: '#/components/schemas/AuditLogFilterRule'
+          description: Required. The filter rule to create.
+          type: object
+      required:
+      - filterRule
+      type: object
     AuditLogService.DownloadAuditLogsBody:
       properties:
         auditLogNames:
@@ -123,6 +377,25 @@ components:
           type: array
       required:
       - auditLogNames
+      type: object
+    AuditLogService.UpdateAuditLogFilterRuleBody:
+      properties:
+        filters:
+          description: "OPTIONAL. List of filters combined with an OR relationship.\
+            \ Set filters to [{}] will filter all logs."
+          items:
+            $ref: '#/components/schemas/AuditLogFilter'
+          type: array
+        users:
+          items:
+            type: string
+          title: "Required. Database users in the format <user>@<host> or <user> (host\
+            \ defaults to %), e.g., %@%, 4C3z3cdMX8iXks5.root"
+          type: array
+        disabled:
+          description: OPTIONAL. Indicates whether the filter rule is disabled.
+          nullable: true
+          type: boolean
       type: object
     DownloadAuditLogsResponse:
       example:
@@ -138,6 +411,63 @@ components:
           description: The audit logs with the download url.
           items:
             $ref: '#/components/schemas/AuditLog'
+          type: array
+      type: object
+    ListAuditLogFilterRulesResponse:
+      example:
+        filterRules:
+        - name: name
+          disabled: true
+          filters:
+          - statusCodes:
+            - 0
+            - 0
+            tables:
+            - tables
+            - tables
+            classes:
+            - classes
+            - classes
+          - statusCodes:
+            - 0
+            - 0
+            tables:
+            - tables
+            - tables
+            classes:
+            - classes
+            - classes
+          users:
+          - users
+          - users
+        - name: name
+          disabled: true
+          filters:
+          - statusCodes:
+            - 0
+            - 0
+            tables:
+            - tables
+            - tables
+            classes:
+            - classes
+            - classes
+          - statusCodes:
+            - 0
+            - 0
+            tables:
+            - tables
+            - tables
+            classes:
+            - classes
+            - classes
+          users:
+          - users
+          - users
+      properties:
+        filterRules:
+          items:
+            $ref: '#/components/schemas/AuditLogFilterRule'
           type: array
       type: object
     ListAuditLogsResponse:
