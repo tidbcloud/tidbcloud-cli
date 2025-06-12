@@ -99,6 +99,14 @@ const (
 	StartDate              string = "start-date"
 	EndDate                string = "end-date"
 	AuditLogUnRedacted     string = "unredacted"
+
+	ChangefeedType     string = "type"
+	ChangefeedName     string = "name"
+	ChangefeedKafka    string = "kafka"
+	ChangefeedFilter   string = "filter"
+	ChangefeedStartTSO string = "start-tso"
+	ChangefeedID       string = "changefeed-id"
+	ChangefeedIDShort  string = "cf"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."

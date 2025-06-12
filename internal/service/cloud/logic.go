@@ -81,6 +81,12 @@ type AuthorizedNetwork struct {
 	EndIPAddress   string
 }
 
+type Changefeed struct {
+	ID   string
+	Name string
+	Type string
+}
+
 func (a AuthorizedNetwork) String() string {
 	return fmt.Sprintf("%s-%s(%s)", a.StartIPAddress, a.EndIPAddress, a.DisplayName)
 }
@@ -129,6 +135,10 @@ type SQLUser struct {
 
 func (s SQLUser) String() string {
 	return fmt.Sprintf("%s(%s)", s.UserName, s.Role)
+}
+
+func (c Changefeed) String() string {
+	return fmt.Sprintf("%s(%s)", c.Name, c.ID)
 }
 
 func GetSelectedProject(ctx context.Context, pageSize int64, client TiDBCloudClient) (*Project, error) {
@@ -949,4 +959,63 @@ func GetSelectedAuthorizedNetwork(ctx context.Context, clusterID string, client 
 		return "", "", errors.New("no authorized network selected")
 	}
 	return authorizedNetwork.(*AuthorizedNetwork).StartIPAddress, authorizedNetwork.(*AuthorizedNetwork).EndIPAddress, nil
+}
+
+func GetSelectedChangefeed(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*Changefeed, error) {
+	var items []interface{}
+	pageSizeInt32 := int32(pageSize)
+	var pageToken *string
+
+	resp, err := client.ListConnectors(ctx, clusterID, &pageSizeInt32, nil, nil, nil)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	for _, item := range resp.Connectors {
+		items = append(items, &Changefeed{
+			ID:   *item.ConnectorId,
+			Name: *item.Name,
+		})
+	}
+	for {
+		pageToken = resp.NextPageToken
+		if pageToken == nil || *pageToken == "" {
+			break
+		}
+		resp, err = client.ListConnectors(ctx, clusterID, &pageSizeInt32, pageToken, nil, nil)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		for _, item := range resp.Connectors {
+			items = append(items, &Changefeed{
+				ID:   *item.ConnectorId,
+				Name: *item.Name,
+			})
+		}
+	}
+
+	if len(items) == 0 {
+		return nil, fmt.Errorf("no available changefeeds found")
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the changefeed:")
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	changefeedModel, err := p.Run()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if m, _ := changefeedModel.(ui.SelectModel); m.Interrupted {
+		return nil, util.InterruptError
+	}
+	changefeed := changefeedModel.(ui.SelectModel).GetSelectedItem()
+	if changefeed == nil {
+		return nil, errors.New("no changefeed selected")
+	}
+	return changefeed.(*Changefeed), nil
 }

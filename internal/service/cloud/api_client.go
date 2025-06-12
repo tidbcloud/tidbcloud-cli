@@ -31,6 +31,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/auditlog"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cdc"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
@@ -120,6 +121,17 @@ type TiDBCloudClient interface {
 	DownloadAuditLogs(ctx context.Context, clusterID string, body *auditlog.AuditLogServiceDownloadAuditLogsBody) (*auditlog.DownloadAuditLogsResponse, error)
 
 	ListAuditLogs(ctx context.Context, clusterID string, pageSize *int32, pageToken *string, date *string) (*auditlog.ListAuditLogsResponse, error)
+
+	// CDC Connector methods
+	CreateConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceCreateConnectorBody) (*cdc.ConnectorID, error)
+	DeleteConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error)
+	EditConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceEditConnectorBody) (*cdc.ConnectorID, error)
+	GetConnector(ctx context.Context, clusterId, connectorId string) (*cdc.Connector, error)
+	ListConnectors(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, connectorType *cdc.ConnectorServiceListConnectorsConnectorTypeParameter, orderBy *string) (*cdc.Connectors, error)
+	StartConnector(ctx context.Context, clusterId, connectorId string, body *map[string]interface{}) (*cdc.ConnectorID, error)
+	StopConnector(ctx context.Context, clusterId, connectorId string, body *map[string]interface{}) (*cdc.ConnectorID, error)
+	TestConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceTestConnectorBody) (map[string]interface{}, error)
+	DescribeSchemaTable(ctx context.Context, clusterId string, body *cdc.ConnectorServiceDescribeSchemaTableBody) (*cdc.DescribeSchemaTableResp, error)
 }
 type ClientDelegate struct {
 	ic  *iam.APIClient
@@ -130,11 +142,12 @@ type ClientDelegate struct {
 	sic *imp.APIClient
 	ec  *export.APIClient
 	alc *auditlog.APIClient
+	cdc *cdc.APIClient
 }
 
 func NewClientDelegateWithToken(token string, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*ClientDelegate, error) {
 	transport := NewBearTokenTransport(token)
-	bc, sc, pc, brc, sic, ec, ic, alc, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint)
+	bc, sc, pc, brc, sic, ec, ic, alc, cdc, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -147,12 +160,13 @@ func NewClientDelegateWithToken(token string, apiUrl string, serverlessEndpoint 
 		ic:  ic,
 		sic: sic,
 		alc: alc,
+		cdc: cdc,
 	}, nil
 }
 
 func NewClientDelegateWithApiKey(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*ClientDelegate, error) {
 	transport := NewDigestTransport(publicKey, privateKey)
-	bc, sc, pc, brc, sic, ec, ic, alc, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint)
+	bc, sc, pc, brc, sic, ec, ic, alc, cdc, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -165,6 +179,7 @@ func NewClientDelegateWithApiKey(publicKey string, privateKey string, apiUrl str
 		ic:  ic,
 		sic: sic,
 		alc: alc,
+		cdc: cdc,
 	}, nil
 }
 
@@ -520,7 +535,7 @@ func (d *ClientDelegate) DownloadAuditLogs(ctx context.Context, clusterID string
 	return res, parseError(err, h)
 }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *pingchat.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, *auditlog.APIClient, error) {
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *pingchat.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, *auditlog.APIClient, *cdc.APIClient, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}
@@ -528,18 +543,18 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	// v1beta api
 	u, err := prop.ValidateApiUrl(apiUrl)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 
 	// v1beta1 api (serverless)
 	serverlessURL, err := prop.ValidateApiUrl(serverlessEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 
 	iamURL, err := prop.ValidateApiUrl(iamEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 
 	userAgent := fmt.Sprintf("%s/%s", config.CliName, version.Version)
@@ -584,10 +599,15 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	auditLogCfg.Host = serverlessURL.Host
 	auditLogCfg.UserAgent = userAgent
 
+	cdcCfg := cdc.NewConfiguration()
+	cdcCfg.HTTPClient = httpclient
+	cdcCfg.Host = serverlessURL.Host
+	cdcCfg.UserAgent = userAgent
+
 	return branch.NewAPIClient(branchCfg), cluster.NewAPIClient(clusterCfg),
 		pingchat.NewAPIClient(pingchatCfg), br.NewAPIClient(backupRestoreCfg),
 		imp.NewAPIClient(importCfg), export.NewAPIClient(exportCfg),
-		iam.NewAPIClient(iamCfg), auditlog.NewAPIClient(auditLogCfg), nil
+		iam.NewAPIClient(iamCfg), auditlog.NewAPIClient(auditLogCfg), cdc.NewAPIClient(cdcCfg), nil
 }
 
 func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {
@@ -679,4 +699,86 @@ func parseError(err error, resp *http.Response) error {
 		traceId = resp.Header.Get("X-Debug-Trace-Id")
 	}
 	return fmt.Errorf("%s[%s][%s] %s", path, err.Error(), traceId, body)
+}
+
+func (d *ClientDelegate) CreateConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceCreateConnectorBody) (*cdc.ConnectorID, error) {
+	r := d.cdc.ConnectorServiceAPI.ConnectorServiceCreateConnector(ctx, clusterId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	resp, _, err := r.Execute()
+	return resp, err
+}
+
+func (d *ClientDelegate) DeleteConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error) {
+	resp, _, err := d.cdc.ConnectorServiceAPI.ConnectorServiceDeleteConnector(ctx, clusterId, connectorId).Execute()
+	return resp, err
+}
+
+func (d *ClientDelegate) EditConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceEditConnectorBody) (*cdc.ConnectorID, error) {
+	r := d.cdc.ConnectorServiceAPI.ConnectorServiceEditConnector(ctx, clusterId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	resp, _, err := r.Execute()
+	return resp, err
+}
+
+func (d *ClientDelegate) GetConnector(ctx context.Context, clusterId, connectorId string) (*cdc.Connector, error) {
+	resp, _, err := d.cdc.ConnectorServiceAPI.ConnectorServiceGetConnector(ctx, clusterId, connectorId).Execute()
+	return resp, err
+}
+
+func (d *ClientDelegate) ListConnectors(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, connectorType *cdc.ConnectorServiceListConnectorsConnectorTypeParameter, orderBy *string) (*cdc.Connectors, error) {
+	r := d.cdc.ConnectorServiceAPI.ConnectorServiceListConnectors(ctx, clusterId)
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	if connectorType != nil {
+		r = r.ConnectorType(*connectorType)
+	}
+	if orderBy != nil {
+		r = r.OrderBy(*orderBy)
+	}
+	resp, _, err := r.Execute()
+	return resp, err
+}
+
+func (d *ClientDelegate) StartConnector(ctx context.Context, clusterId, connectorId string, body *map[string]interface{}) (*cdc.ConnectorID, error) {
+	r := d.cdc.ConnectorServiceAPI.ConnectorServiceStartConnector(ctx, clusterId, connectorId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	resp, _, err := r.Execute()
+	return resp, err
+}
+
+func (d *ClientDelegate) StopConnector(ctx context.Context, clusterId, connectorId string, body *map[string]interface{}) (*cdc.ConnectorID, error) {
+	r := d.cdc.ConnectorServiceAPI.ConnectorServiceStopConnector(ctx, clusterId, connectorId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	resp, _, err := r.Execute()
+	return resp, err
+}
+
+func (d *ClientDelegate) TestConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceTestConnectorBody) (map[string]interface{}, error) {
+	r := d.cdc.ConnectorServiceAPI.ConnectorServiceTestConnector(ctx, clusterId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	resp, _, err := r.Execute()
+	return resp, err
+}
+
+func (d *ClientDelegate) DescribeSchemaTable(ctx context.Context, clusterId string, body *cdc.ConnectorServiceDescribeSchemaTableBody) (*cdc.DescribeSchemaTableResp, error) {
+	r := d.cdc.ConnectorServiceAPI.ConnectorServiceDescribeSchemaTable(ctx, clusterId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	resp, _, err := r.Execute()
+	return resp, err
 }
