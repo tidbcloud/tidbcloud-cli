@@ -10,10 +10,10 @@ ticloud serverless audit-log filter-rule delete [flags]
 
 ```
   Delete an audit log filter rule in interactive mode:
-  $ ticloud serverless auditlog filter-rule delete
+  $ ticloud serverless audit-log filter delete
 
   Delete an audit log filter rule in non-interactive mode:
-  $ ticloud serverless auditlog filter-rule delete --cluster-id <cluster-id> --rule-name <rule-name>
+  $ ticloud serverless audit-log filter delete --cluster-id <cluster-id> --name <rule-name>
 
 ```
 
@@ -23,7 +23,7 @@ ticloud serverless audit-log filter-rule delete [flags]
   -c, --cluster-id string   The ID of the cluster.
       --force               Delete a cluster without confirmation.
   -h, --help                help for delete
-      --rule-name string    The name of the filter rule.
+      --name string         The name of the filter rule.
 ```
 
 ### Options inherited from parent commands

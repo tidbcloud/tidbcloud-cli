@@ -1,6 +1,6 @@
 ## ticloud serverless audit-log filter-rule create
 
-create an audit log filter rule
+Create an audit log filter rule
 
 ```
 ticloud serverless audit-log filter-rule create [flags]
@@ -10,24 +10,23 @@ ticloud serverless audit-log filter-rule create [flags]
 
 ```
   Create a filter rule in interactive mode:
-  $ ticloud serverless audit-log filter-rule create
+  $ ticloud serverless audit-log filter create
 
-  Create a filter rule which filter all audit logs in non-interactive mode:
-  $ ticloud serverless audit-log filter-rule create --cluster-id <cluster-id> --rule-name <rule-name> --users %@% --filters {}
+  Create a filter rule which filters all audit logs in non-interactive mode:
+  $ ticloud serverless audit-log filter create --cluster-id <cluster-id> --name <rule-name> --rule '{"users":["%@%"],"filters":[{}]}'
 
-    Create a filter rule which filter QUERY and EXECUTE for test.t1 and filter QUERY for all tables in non-interactive mode:
-  $ ticloud serverless audit-log filter-rule create --cluster-id <cluster-id> --rule-name <rule-name> --users user1,user2 --filters '{"classes": ["QUERY", "EXECUTE"], "tables": ["test.t1"]}' --filters '{"classes": ["QUERY"]}'
+  Create a filter rule which filters QUERY and EXECUTE for test.t and filter QUERY for all tables in non-interactive mode:
+  $ ticloud serverless audit-log filter create --cluster-id <cluster-id> --name <rule-name> --rule '{"users":["%@%"],"filters":[{"classes":["QUERY","EXECUTE"],"tables":["test.t"]},{"classes":["QUERY"]}]}'
 
 ```
 
 ### Options
 
 ```
-  -c, --cluster-id string     The ID of the cluster.
-      --filters stringArray   Filter expressions. e.g. '{"classes": ["QUERY"]' or '{}' to filter all audit logs.
-  -h, --help                  help for create
-      --rule-name string      The name of the filter rule.
-      --users strings         Users to apply the rule to. e,g. %@%.
+  -c, --cluster-id string   The ID of the cluster.
+  -h, --help                help for create
+      --name string         The name of the filter rule.
+      --rule string         Filter rule expressions, use "ticloud serverless audit-log filter template" to see filter templates.
 ```
 
 ### Options inherited from parent commands

@@ -55,7 +55,7 @@ func TemplateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless audit-log filter template
 
   Show filter templates in non-interactive mode:
-  $ %[1]s serverless audit-log filter template --cluster-id <cluster_id>`, config.CliName),
+  $ %[1]s serverless audit-log filter template --cluster-id <cluster-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {

@@ -26,7 +26,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
-	alutil "github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/auditlog/util"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
@@ -167,14 +166,15 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					}
 				case string(Rule):
 					inputs := []string{flag.AuditLogFilterRule}
-					textInput, err := ui.InitialInputModel(inputs, alutil.InputDescription)
+					textInput, err := ui.InitialInputModel(inputs, InputDescription)
 					if err != nil {
 						return err
 					}
 					ruleStr := textInput.Inputs[0].Value()
 					var f FilterRuleWithoutName
 					if err := json.Unmarshal([]byte(ruleStr), &f); err != nil {
-						return errors.New("invalid filter, please use JSON format")
+						return errors.New("Invalid rule, please use JSON format. Use \"ticloud serverless audit-log filter template\"" +
+							" to see filter templates.")
 					}
 					filterRule = &f
 				default:
@@ -204,7 +204,8 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					}
 					var f FilterRuleWithoutName
 					if err := json.Unmarshal([]byte(ruleStr), &f); err != nil {
-						return errors.New("invalid filter, please use JSON format")
+						return errors.New("Invalid rule, please use JSON format. Use \"ticloud serverless audit-log filter template\"" +
+							" to see filter templates.")
 					}
 					filterRule = &f
 				}
@@ -240,7 +241,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 
 	updateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
 	updateCmd.Flags().String(flag.AuditLogFilterRuleName, "", "The name of the filter rule to update.")
-	updateCmd.Flags().String(flag.AuditLogFilterRule, "", "Complete filter rule expressions, use `ticloud serverless audit-log filter template` to see filter templates")
+	updateCmd.Flags().String(flag.AuditLogFilterRule, "", "Complete filter rule expressions, use \"ticloud serverless audit-log filter template\" to see filter templates.")
 	updateCmd.Flags().Bool(flag.Enabled, false, "Enable or disable the filter rule.")
 
 	return updateCmd

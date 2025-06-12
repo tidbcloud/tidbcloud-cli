@@ -27,6 +27,7 @@ func FilterRuleCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	filterRuleCmd.AddCommand(CreateCmd(h))
+	filterRuleCmd.AddCommand(DescribeCmd(h))
 	filterRuleCmd.AddCommand(ListCmd(h))
 	filterRuleCmd.AddCommand(DeleteCmd(h))
 	filterRuleCmd.AddCommand(UpdateCmd(h))

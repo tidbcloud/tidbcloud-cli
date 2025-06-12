@@ -10,13 +10,13 @@ ticloud serverless audit-log filter-rule list [flags]
 
 ```
   List all audit log filter rules in interactive mode:
-  $ ticloud serverless auditlog filter list
+  $ ticloud serverless audit-log filter list
 
   List all audit log filter rules in non-interactive mode:
-  $ ticloud serverless auditlog filter list -c <cluster-id>
+  $ ticloud serverless audit-log filter list -c <cluster-id>
 
   List all audit log filter rules with json format in non-interactive mode:
-  $ ticloud serverless auditlog filter list -c <cluster-id> -o json
+  $ ticloud serverless audit-log filter list -c <cluster-id> -o json
 ```
 
 ### Options
