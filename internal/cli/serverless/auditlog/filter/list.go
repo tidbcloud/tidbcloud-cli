@@ -71,13 +71,13 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		Short: "List audit log filter rules",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  List all audit log filter rules in interactive mode:
-  $ %[1]s serverless auditlog filter list
+  $ %[1]s serverless audit-log filter list
 
   List all audit log filter rules in non-interactive mode:
-  $ %[1]s serverless auditlog filter list -c <cluster-id>
+  $ %[1]s serverless audit-log filter list -c <cluster-id>
 
   List all audit log filter rules with json format in non-interactive mode:
-  $ %[1]s serverless auditlog filter list -c <cluster-id> -o json`, config.CliName),
+  $ %[1]s serverless audit-log filter list -c <cluster-id> -o json`, config.CliName),
 		Aliases: []string{"ls"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)

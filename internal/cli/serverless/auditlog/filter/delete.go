@@ -71,10 +71,10 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 		Args:    cobra.NoArgs,
 		Aliases: []string{"rm"},
 		Example: fmt.Sprintf(`  Delete an audit log filter rule in interactive mode:
-  $ %[1]s serverless auditlog filter-rule delete
+  $ %[1]s serverless audit-log filter delete
 
   Delete an audit log filter rule in non-interactive mode:
-  $ %[1]s serverless auditlog filter-rule delete --cluster-id <cluster-id> --name <rule-name>
+  $ %[1]s serverless audit-log filter delete --cluster-id <cluster-id> --name <rule-name>
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)

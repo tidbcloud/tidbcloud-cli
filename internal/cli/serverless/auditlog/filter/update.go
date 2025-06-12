@@ -95,16 +95,16 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 		Short: "Update an audit log filter rule",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Update an audit log filter rule in interactive mode:
-  $ %[1]s serverless auditlog filter-rule update
+  $ %[1]s serverless audit-log filter update
 
   Enable audit log filter rule in non-interactive mode:
-  $ %[1]s serverless auditlog filter-rule update --cluster-id <cluster-id> --name <rule-name> --enabled
+  $ %[1]s serverless audit-log filter update --cluster-id <cluster-id> --name <rule-name> --enabled
 
   Disable audit log filter rule in non-interactive mode:
-  $ %[1]s serverless auditlog filter-rule update --cluster-id <cluster-id> --name <rule-name> --enabled=false
+  $ %[1]s serverless audit-log filter update --cluster-id <cluster-id> --name <rule-name> --enabled=false
 
   Update filters of an audit log filter rule in non-interactive mode:
-  $ %[1]s serverless auditlog filter-rule update --cluster-id <cluster-id> --name <rule-name> --rule '{"users":["%%@%%"],"filters":[{"classes":["QUERY"],"tables":["test.t"]}]}'
+  $ %[1]s serverless audit-log filter update --cluster-id <cluster-id> --name <rule-name> --rule '{"users":["%%@%%"],"filters":[{"classes":["QUERY"],"tables":["test.t"]}]}'
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)

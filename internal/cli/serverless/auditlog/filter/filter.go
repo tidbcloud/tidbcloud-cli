@@ -21,8 +21,9 @@ import (
 
 func FilterRuleCmd(h *internal.Helper) *cobra.Command {
 	var filterRuleCmd = &cobra.Command{
-		Use:   "filter",
-		Short: "Manage TiDB Cloud Serverless database audit logging filter rules",
+		Use:     "filter-rule",
+		Short:   "Manage TiDB Cloud Serverless database audit logging filter rules",
+		Aliases: []string{"filter"},
 	}
 
 	filterRuleCmd.AddCommand(CreateCmd(h))
