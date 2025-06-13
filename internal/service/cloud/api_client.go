@@ -122,7 +122,6 @@ type TiDBCloudClient interface {
 
 	ListAuditLogs(ctx context.Context, clusterID string, pageSize *int32, pageToken *string, date *string) (*auditlog.ListAuditLogsResponse, error)
 
-
 	// CDC Connector methods
 	CreateConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceCreateConnectorBody) (*cdc.ConnectorID, error)
 	DeleteConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error)
@@ -546,7 +545,6 @@ func (d *ClientDelegate) DownloadAuditLogs(ctx context.Context, clusterID string
 	return res, parseError(err, h)
 }
 
-
 func (d *ClientDelegate) CreateAuditLogFilterRule(ctx context.Context, clusterID string, body *auditlog.AuditLogServiceCreateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error) {
 	r := d.alc.AuditLogServiceAPI.AuditLogServiceCreateAuditLogFilterRule(ctx, clusterID)
 	if body != nil {
@@ -580,7 +578,7 @@ func (d *ClientDelegate) UpdateAuditLogFilterRule(ctx context.Context, clusterID
 	return res, parseError(err, h)
 }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *pingchat.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, *auditlog.APIClient, error) {
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *pingchat.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, *auditlog.APIClient, *cdc.APIClient, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}

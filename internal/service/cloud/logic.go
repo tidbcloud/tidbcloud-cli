@@ -961,7 +961,6 @@ func GetSelectedAuthorizedNetwork(ctx context.Context, clusterID string, client 
 	return authorizedNetwork.(*AuthorizedNetwork).StartIPAddress, authorizedNetwork.(*AuthorizedNetwork).EndIPAddress, nil
 }
 
-
 func GetSelectedChangefeed(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*Changefeed, error) {
 	var items []interface{}
 	pageSizeInt32 := int32(pageSize)
@@ -1019,8 +1018,9 @@ func GetSelectedChangefeed(ctx context.Context, clusterID string, pageSize int64
 		return nil, errors.New("no changefeed selected")
 	}
 	return changefeed.(*Changefeed), nil
+}
 
-  func GetSelectedRuleName(ctx context.Context, clusterID string, client TiDBCloudClient) (string, error) {
+func GetSelectedRuleName(ctx context.Context, clusterID string, client TiDBCloudClient) (string, error) {
 	rulesResp, err := client.ListAuditLogFilterRules(ctx, clusterID)
 	if err != nil {
 		return "", errors.Trace(err)
