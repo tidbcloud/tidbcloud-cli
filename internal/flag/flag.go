@@ -100,9 +100,9 @@ const (
 	EndDate                string = "end-date"
 
 	AuditLogUnRedacted     string = "unredacted"
-  AuditLogFilterRuleName string = "name"
+	AuditLogFilterRuleName string = "name"
 	AuditLogFilterRule     string = "rule"
-	Enabled        
+	Enabled                string = "enabled"
 
 	ChangefeedType     string = "type"
 	ChangefeedName     string = "name"
@@ -110,7 +110,7 @@ const (
 	ChangefeedFilter   string = "filter"
 	ChangefeedStartTSO string = "start-tso"
 	ChangefeedID       string = "changefeed-id"
-	ChangefeedIDShort  string = "cf"
+	ChangefeedIDShort  string = "f"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."
