@@ -122,6 +122,7 @@ type TiDBCloudClient interface {
 
 	ListAuditLogs(ctx context.Context, clusterID string, pageSize *int32, pageToken *string, date *string) (*auditlog.ListAuditLogsResponse, error)
 
+
 	// CDC Connector methods
 	CreateConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceCreateConnectorBody) (*cdc.ConnectorID, error)
 	DeleteConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error)
@@ -132,6 +133,16 @@ type TiDBCloudClient interface {
 	StopConnector(ctx context.Context, clusterId, connectorId string, body *map[string]interface{}) (*cdc.ConnectorID, error)
 	TestConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceTestConnectorBody) (map[string]interface{}, error)
 	DescribeSchemaTable(ctx context.Context, clusterId string, body *cdc.ConnectorServiceDescribeSchemaTableBody) (*cdc.DescribeSchemaTableResp, error)
+
+	CreateAuditLogFilterRule(ctx context.Context, clusterID string, body *auditlog.AuditLogServiceCreateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error)
+
+	DeleteAuditLogFilterRule(ctx context.Context, clusterID, name string) (*auditlog.AuditLogFilterRule, error)
+
+	GetAuditLogFilterRule(ctx context.Context, clusterID, name string) (*auditlog.AuditLogFilterRule, error)
+
+	ListAuditLogFilterRules(ctx context.Context, clusterID string) (*auditlog.ListAuditLogFilterRulesResponse, error)
+
+	UpdateAuditLogFilterRule(ctx context.Context, clusterID, name string, body *auditlog.AuditLogServiceUpdateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error)
 }
 type ClientDelegate struct {
 	ic  *iam.APIClient
@@ -535,7 +546,41 @@ func (d *ClientDelegate) DownloadAuditLogs(ctx context.Context, clusterID string
 	return res, parseError(err, h)
 }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *pingchat.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, *auditlog.APIClient, *cdc.APIClient, error) {
+
+func (d *ClientDelegate) CreateAuditLogFilterRule(ctx context.Context, clusterID string, body *auditlog.AuditLogServiceCreateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error) {
+	r := d.alc.AuditLogServiceAPI.AuditLogServiceCreateAuditLogFilterRule(ctx, clusterID)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) DeleteAuditLogFilterRule(ctx context.Context, clusterID, name string) (*auditlog.AuditLogFilterRule, error) {
+	res, h, err := d.alc.AuditLogServiceAPI.AuditLogServiceDeleteAuditLogFilterRule(ctx, clusterID, name).Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) GetAuditLogFilterRule(ctx context.Context, clusterID, name string) (*auditlog.AuditLogFilterRule, error) {
+	res, h, err := d.alc.AuditLogServiceAPI.AuditLogServiceGetAuditLogFilterRule(ctx, clusterID, name).Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) ListAuditLogFilterRules(ctx context.Context, clusterID string) (*auditlog.ListAuditLogFilterRulesResponse, error) {
+	res, h, err := d.alc.AuditLogServiceAPI.AuditLogServiceListAuditLogFilterRules(ctx, clusterID).Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) UpdateAuditLogFilterRule(ctx context.Context, clusterID, name string, body *auditlog.AuditLogServiceUpdateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error) {
+	r := d.alc.AuditLogServiceAPI.AuditLogServiceUpdateAuditLogFilterRule(ctx, clusterID, name)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
+}
+
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *pingchat.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, *auditlog.APIClient, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}

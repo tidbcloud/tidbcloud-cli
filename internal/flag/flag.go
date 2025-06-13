@@ -98,7 +98,11 @@ const (
 	ParquetCompression     string = "parquet.compression"
 	StartDate              string = "start-date"
 	EndDate                string = "end-date"
+
 	AuditLogUnRedacted     string = "unredacted"
+  AuditLogFilterRuleName string = "name"
+	AuditLogFilterRule     string = "rule"
+	Enabled        
 
 	ChangefeedType     string = "type"
 	ChangefeedName     string = "name"

@@ -19,6 +19,7 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -45,10 +46,12 @@ type mutableField string
 
 const (
 	Unredacted mutableField = "unredacted"
+	Enabled    mutableField = "enabled"
 )
 
 var mutableFields = []string{
 	string(Unredacted),
+	string(Enabled),
 }
 
 func (c *ConfigOpts) MarkInteractive(cmd *cobra.Command) error {
@@ -66,7 +69,7 @@ func (c *ConfigOpts) MarkInteractive(cmd *cobra.Command) error {
 		if err != nil {
 			return err
 		}
-		cmd.MarkFlagsOneRequired(flag.AuditLogUnRedacted)
+		cmd.MarkFlagsOneRequired(flag.AuditLogUnRedacted, flag.Enabled)
 	}
 	return nil
 }
@@ -85,7 +88,13 @@ func ConfigCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless audit-log config
 
   Unredacted the database audit logging in non-interactive mode:
-  $ %[1]s serverless audit-log config -c <cluster-id> --auditlog.unredacted`, config.CliName),
+  $ %[1]s serverless audit-log config -c <cluster-id> --unredacted
+
+  Enable the database audit logging in non-interactive mode:
+  $ %[1]s serverless audit-log config -c <cluster-id> --enabled
+
+  Disable the database audit logging in non-interactive mode:
+  $ %[1]s serverless audit-log config -c <cluster-id> --enabled=false`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
@@ -97,7 +106,7 @@ func ConfigCmd(h *internal.Helper) *cobra.Command {
 			ctx := cmd.Context()
 
 			var clusterID string
-			var unredacted bool
+			var unredacted, enabled *bool
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -120,10 +129,11 @@ func ConfigCmd(h *internal.Helper) *cobra.Command {
 				switch fieldName {
 				case string(Unredacted):
 					prompt := &survey.Confirm{
-						Message: "unredacted the database audit logging of the cluster?",
+						Message: "unredacted the database audit logging?",
 						Default: false,
 					}
-					err = survey.AskOne(prompt, &unredacted)
+					var confirm bool
+					err = survey.AskOne(prompt, &confirm)
 					if err != nil {
 						if err == terminal.InterruptErr {
 							return util.InterruptError
@@ -131,7 +141,30 @@ func ConfigCmd(h *internal.Helper) *cobra.Command {
 							return err
 						}
 					}
-
+					if confirm {
+						unredacted = aws.Bool(true)
+					} else {
+						unredacted = aws.Bool(false)
+					}
+				case string(Enabled):
+					prompt := &survey.Confirm{
+						Message: "enable the database audit logging?",
+						Default: false,
+					}
+					var confirm bool
+					err = survey.AskOne(prompt, &confirm)
+					if err != nil {
+						if err == terminal.InterruptErr {
+							return util.InterruptError
+						} else {
+							return err
+						}
+					}
+					if confirm {
+						enabled = aws.Bool(true)
+					} else {
+						enabled = aws.Bool(false)
+					}
 				}
 			} else {
 				cID, err := cmd.Flags().GetString(flag.ClusterID)
@@ -139,19 +172,33 @@ func ConfigCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 				clusterID = cID
-				unredacted, err = cmd.Flags().GetBool(flag.AuditLogUnRedacted)
-				if err != nil {
-					return errors.Trace(err)
+				if cmd.Flags().Changed(flag.AuditLogUnRedacted) {
+					u, err := cmd.Flags().GetBool(flag.AuditLogUnRedacted)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					unredacted = &u
+				}
+				if cmd.Flags().Changed(flag.Enabled) {
+					u, err := cmd.Flags().GetBool(flag.Enabled)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					enabled = &u
 				}
 			}
 
 			body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
 				Cluster: &cluster.RequiredTheClusterToBeUpdated{
-					AuditLogConfig: &cluster.V1beta1ClusterAuditLogConfig{
-						Unredacted: *cluster.NewNullableBool(&unredacted),
-					},
+					AuditLogConfig: &cluster.V1beta1ClusterAuditLogConfig{},
 				},
 				UpdateMask: "auditLogConfig",
+			}
+			if unredacted != nil {
+				body.Cluster.AuditLogConfig.Unredacted = *cluster.NewNullableBool(unredacted)
+			}
+			if enabled != nil {
+				body.Cluster.AuditLogConfig.Enabled = *cluster.NewNullableBool(enabled)
 			}
 			_, err = d.PartialUpdateCluster(ctx, clusterID, body)
 			if err != nil {
@@ -163,6 +210,7 @@ func ConfigCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	configCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster to be updated.")
-	configCmd.Flags().Bool(flag.AuditLogUnRedacted, false, "Unredacted the database audit logging.")
+	configCmd.Flags().Bool(flag.AuditLogUnRedacted, false, "unredacted or redacted the database audit logging.")
+	configCmd.Flags().Bool(flag.Enabled, false, "enable or disable the database audit logging.")
 	return configCmd
 }

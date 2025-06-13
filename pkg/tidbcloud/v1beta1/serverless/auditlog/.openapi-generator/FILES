@@ -9,8 +9,13 @@ configuration.go
 git_push.sh
 model_any.go
 model_audit_log.go
+model_audit_log_filter.go
+model_audit_log_filter_rule.go
+model_audit_log_service_create_audit_log_filter_rule_body.go
 model_audit_log_service_download_audit_logs_body.go
+model_audit_log_service_update_audit_log_filter_rule_body.go
 model_download_audit_logs_response.go
+model_list_audit_log_filter_rules_response.go
 model_list_audit_logs_response.go
 model_status.go
 response.go
