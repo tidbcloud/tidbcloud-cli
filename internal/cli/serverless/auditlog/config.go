@@ -81,19 +81,19 @@ func ConfigCmd(h *internal.Helper) *cobra.Command {
 
 	var configCmd = &cobra.Command{
 		Use:         "config",
-		Short:       "Configure the database audit logging",
+		Short:       "Configure database audit logging",
 		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
-		Example: fmt.Sprintf(`  Conigure the database audit logging in interactive mode:
+		Example: fmt.Sprintf(`  Conigure database audit logging in interactive mode:
   $ %[1]s serverless audit-log config
 
-  Unredacted the database audit logging in non-interactive mode:
+  Unredact the database audit log in non-interactive mode:
   $ %[1]s serverless audit-log config -c <cluster-id> --unredacted
 
-  Enable the database audit logging in non-interactive mode:
+  Enable database audit logging in non-interactive mode:
   $ %[1]s serverless audit-log config -c <cluster-id> --enabled
 
-  Disable the database audit logging in non-interactive mode:
+  Disable database audit logging in non-interactive mode:
   $ %[1]s serverless audit-log config -c <cluster-id> --enabled=false`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
@@ -129,7 +129,7 @@ func ConfigCmd(h *internal.Helper) *cobra.Command {
 				switch fieldName {
 				case string(Unredacted):
 					prompt := &survey.Confirm{
-						Message: "unredacted the database audit logging?",
+						Message: "unredact the database audit log?",
 						Default: false,
 					}
 					var confirm bool
@@ -148,7 +148,7 @@ func ConfigCmd(h *internal.Helper) *cobra.Command {
 					}
 				case string(Enabled):
 					prompt := &survey.Confirm{
-						Message: "enable the database audit logging?",
+						Message: "enable database audit logging?",
 						Default: false,
 					}
 					var confirm bool
@@ -210,7 +210,7 @@ func ConfigCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	configCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster to be updated.")
-	configCmd.Flags().Bool(flag.AuditLogUnRedacted, false, "unredacted or redacted the database audit logging.")
-	configCmd.Flags().Bool(flag.Enabled, false, "enable or disable the database audit logging.")
+	configCmd.Flags().Bool(flag.AuditLogUnRedacted, false, "unredact or redact the database audit log.")
+	configCmd.Flags().Bool(flag.Enabled, false, "enable or disable database audit logging.")
 	return configCmd
 }
