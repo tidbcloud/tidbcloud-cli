@@ -103,6 +103,14 @@ const (
 	AuditLogFilterRuleName string = "name"
 	AuditLogFilterRule     string = "rule"
 	Enabled                string = "enabled"
+
+	ChangefeedType     string = "type"
+	ChangefeedName     string = "name"
+	ChangefeedKafka    string = "kafka"
+	ChangefeedFilter   string = "filter"
+	ChangefeedStartTSO string = "start-tso"
+	ChangefeedID       string = "changefeed-id"
+	ChangefeedIDShort  string = "f"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."

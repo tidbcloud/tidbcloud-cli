@@ -1,0 +1,1129 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "TiDB Cloud Serverless CDC Open API",
+    "description": "TiDB Cloud Serverless CDC Open API",
+    "version": "v1beta1"
+  },
+  "tags": [
+    {
+      "name": "ConnectorService"
+    }
+  ],
+  "host": "serverless.tidbapi.com",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1beta1/clusters/{clusterId}/connectors": {
+      "get": {
+        "summary": "List connectors.",
+        "operationId": "ConnectorService_ListConnectors",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Connectors"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "Optional. The maximum number of connectors to return. Default is 10.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "Optional. The page token from the previous response for pagination.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "connectorType",
+            "description": "Optional. The type of the connector. DEFAULT is all.\n\n - KAFKA: Kafka connector type.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "KAFKA"
+            ]
+          },
+          {
+            "name": "orderBy",
+            "description": "Optional. List connectors order by, separated by comma, default is ascending. Example: \"create_time, bar desc\". Supported field: create_time",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ConnectorService"
+        ]
+      },
+      "post": {
+        "summary": "Create a connector.",
+        "operationId": "ConnectorService_CreateConnector",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ConnectorID"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ConnectorService.CreateConnectorBody"
+            }
+          }
+        ],
+        "tags": [
+          "ConnectorService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/connectors/{connectorId}": {
+      "get": {
+        "summary": "Get a connector.",
+        "operationId": "ConnectorService_GetConnector",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Connector"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "connectorId",
+            "description": "Required. The ID of the connector.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ConnectorService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete a connector.",
+        "operationId": "ConnectorService_DeleteConnector",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ConnectorID"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "connectorId",
+            "description": "Required. The ID of the connector.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ConnectorService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/connectors/{connectorId}:start": {
+      "post": {
+        "summary": "Start a connector.",
+        "operationId": "ConnectorService_StartConnector",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ConnectorID"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "connectorId",
+            "description": "Required. The ID of the connector.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ConnectorService.StartConnectorBody"
+            }
+          }
+        ],
+        "tags": [
+          "ConnectorService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/connectors/{connectorId}:stop": {
+      "post": {
+        "summary": "Stop a connector.",
+        "operationId": "ConnectorService_StopConnector",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ConnectorID"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "connectorId",
+            "description": "Required. The ID of the connector.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ConnectorService.StopConnectorBody"
+            }
+          }
+        ],
+        "tags": [
+          "ConnectorService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/connectors:edit": {
+      "post": {
+        "summary": "Edit a connector.",
+        "operationId": "ConnectorService_EditConnector",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ConnectorID"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ConnectorService.EditConnectorBody"
+            }
+          }
+        ],
+        "tags": [
+          "ConnectorService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/connectors:test": {
+      "post": {
+        "summary": "Test a connector.",
+        "operationId": "ConnectorService_TestConnector",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ConnectorService.TestConnectorBody"
+            }
+          }
+        ],
+        "tags": [
+          "ConnectorService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/connectors:describeSchemaTable": {
+      "post": {
+        "summary": "Describe schema table.",
+        "operationId": "ConnectorService_DescribeSchemaTable",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DescribeSchemaTableResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ConnectorService.DescribeSchemaTableBody"
+            }
+          }
+        ],
+        "tags": [
+          "ConnectorService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "Authentication": {
+      "type": "object",
+      "properties": {
+        "authType": {
+          "$ref": "#/definitions/KafkaAuthType.Enum"
+        },
+        "userName": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "AvroConfig": {
+      "type": "object",
+      "properties": {
+        "decimalHandlingMode": {
+          "$ref": "#/definitions/DecimalHandlingMode.Enum"
+        },
+        "bigintUnsignedHandlingMode": {
+          "$ref": "#/definitions/BigintUnsignedHandlingMode.Enum"
+        },
+        "schemaRegistry": {
+          "$ref": "#/definitions/SchemaRegistry"
+        }
+      }
+    },
+    "BigintUnsignedHandlingMode.Enum": {
+      "type": "string",
+      "enum": [
+        "LONG",
+        "STRING"
+      ],
+      "description": " - LONG: Long handling mode for unsigned bigint.\n - STRING: String handling mode for unsigned bigint."
+    },
+    "Broker": {
+      "type": "object",
+      "properties": {
+        "kafkaVersion": {
+          "$ref": "#/definitions/KafkaVersion.Enum"
+        },
+        "brokerEndpoints": {
+          "type": "string"
+        },
+        "tlsEnable": {
+          "type": "boolean"
+        },
+        "compression": {
+          "$ref": "#/definitions/KafkaCompressionType.Enum"
+        }
+      }
+    },
+    "CDCCheckpoint": {
+      "type": "object",
+      "properties": {
+        "tso": {
+          "type": "string",
+          "format": "uint64",
+          "description": "OUTPUT_ONLY. The checkpoint TSO.",
+          "readOnly": true
+        },
+        "time": {
+          "type": "string",
+          "description": "OUTPUT_ONLY. The checkpoint in utc.",
+          "readOnly": true
+        }
+      }
+    },
+    "CDCFilter": {
+      "type": "object",
+      "properties": {
+        "filterRule": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mode": {
+          "$ref": "#/definitions/TableMode.Enum"
+        },
+        "eventFilterRule": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/EventFilterRule"
+          }
+        }
+      }
+    },
+    "CDCProtocol.Enum": {
+      "type": "string",
+      "enum": [
+        "CANAL_JSON",
+        "OPEN_PROTOCOL",
+        "AVRO"
+      ],
+      "description": " - CANAL_JSON: Canal-JSON protocol.\n - OPEN_PROTOCOL: Open Protocol.\n - AVRO: Avro protocol."
+    },
+    "CDCState.Enum": {
+      "type": "string",
+      "enum": [
+        "RUNNING",
+        "CREATE_FAILED",
+        "RUNNING_FAILED",
+        "CREATING",
+        "PAUSED",
+        "DELETED",
+        "WARNING"
+      ],
+      "description": " - RUNNING: The changefeed is running.\n - CREATE_FAILED: The changefeed has failed during creation.\n - RUNNING_FAILED: The changefeed has failed during running.\n - CREATING: The changefeed is being created.\n - PAUSED: The changefeed is paused.\n - DELETED: The changefeed is deleted.\n - WARNING: The changefeed has a warning."
+    },
+    "ColumnSelector": {
+      "type": "object",
+      "properties": {
+        "matcher": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Connector": {
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "type": "string",
+          "description": "Required. The ID of the cluster."
+        },
+        "connectorId": {
+          "type": "string",
+          "description": "Output_only. The ID of the connector.",
+          "readOnly": true
+        },
+        "state": {
+          "description": "Output_only. The state of the connector.\n\nOptional. The name of the connector.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/CDCState.Enum"
+            }
+          ]
+        },
+        "name": {
+          "type": "string",
+          "description": "Optional. The name of the connector."
+        },
+        "sink": {
+          "description": "Required. The sink of the connector.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/SinkInfo"
+            }
+          ]
+        },
+        "filter": {
+          "description": "Required. The filter of the connector.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/CDCFilter"
+            }
+          ]
+        },
+        "startPosition": {
+          "description": "Required. The start position of the connector.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/StartPosition"
+            }
+          ]
+        },
+        "checkpoint": {
+          "description": "Output_only. The current checkpoint for the connector.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/CDCCheckpoint"
+            }
+          ]
+        },
+        "error": {
+          "type": "string",
+          "description": "Output_only. The error message.",
+          "readOnly": true
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Output_only. Timestamp when the export was created.",
+          "readOnly": true
+        },
+        "updateTime": {
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true,
+          "description": "Output_only. Timestamp when the export was updated.",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "clusterId",
+        "sink",
+        "filter",
+        "startPosition"
+      ]
+    },
+    "ConnectorID": {
+      "type": "object",
+      "properties": {
+        "connectorId": {
+          "type": "string",
+          "description": "Required. The ID of the connector."
+        },
+        "clusterId": {
+          "type": "string",
+          "description": "Required. The ID of the cluster."
+        }
+      },
+      "required": [
+        "connectorId",
+        "clusterId"
+      ]
+    },
+    "ConnectorService.CreateConnectorBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Optional. The name of the connector."
+        },
+        "sink": {
+          "description": "Required. The sink of the connector.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/SinkInfo"
+            }
+          ]
+        },
+        "filter": {
+          "description": "Required. The filter of the connector.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/CDCFilter"
+            }
+          ]
+        },
+        "startPosition": {
+          "description": "Required. The start position of the connector.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/StartPosition"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sink",
+        "filter"
+      ]
+    },
+    "ConnectorService.DescribeSchemaTableBody": {
+      "type": "object",
+      "properties": {
+        "filterRule": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional. The filter rules for schema tables."
+        }
+      }
+    },
+    "ConnectorService.EditConnectorBody": {
+      "type": "object",
+      "properties": {
+        "connectorId": {
+          "type": "string",
+          "description": "Required. The ID of the connector."
+        },
+        "name": {
+          "type": "string",
+          "description": "Optional. The name of the connector."
+        },
+        "sink": {
+          "description": "Required. The sink of the connector.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/SinkInfo"
+            }
+          ]
+        },
+        "filter": {
+          "description": "Required. The filter of the connector.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/CDCFilter"
+            }
+          ]
+        }
+      },
+      "required": [
+        "connectorId",
+        "sink",
+        "filter"
+      ]
+    },
+    "ConnectorService.StartConnectorBody": {
+      "type": "object"
+    },
+    "ConnectorService.StopConnectorBody": {
+      "type": "object"
+    },
+    "ConnectorService.TestConnectorBody": {
+      "type": "object",
+      "properties": {
+        "sink": {
+          "description": "Required. The sink of the connector.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/SinkInfo"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sink"
+      ]
+    },
+    "ConnectorType.Enum": {
+      "type": "string",
+      "enum": [
+        "KAFKA"
+      ],
+      "description": " - KAFKA: Kafka connector type."
+    },
+    "Connectors": {
+      "type": "object",
+      "properties": {
+        "connectors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Connector"
+          },
+          "description": "The list of connectors."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "The token provided to retrieve the next page of results."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The total number of connectors."
+        }
+      }
+    },
+    "DataFormat": {
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "$ref": "#/definitions/CDCProtocol.Enum"
+        },
+        "enableTidbExtension": {
+          "type": "boolean"
+        },
+        "avroConfig": {
+          "$ref": "#/definitions/AvroConfig"
+        }
+      }
+    },
+    "DecimalHandlingMode.Enum": {
+      "type": "string",
+      "enum": [
+        "PRECISE",
+        "STRING"
+      ],
+      "description": " - PRECISE: Precise handling mode for decimals.\n - STRING: String handling mode for decimals."
+    },
+    "DescribeSchemaTableResp": {
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "type": "string",
+          "description": "Required. The ID of the cluster."
+        },
+        "replicateAllowSchemaTable": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional. The allowed schema tables to replicate."
+        },
+        "replicateDenySchemaTable": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional. The denied schema tables to replicate."
+        },
+        "gcSafePoint": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Optional. The GC safe point timestamp."
+        }
+      },
+      "required": [
+        "clusterId"
+      ]
+    },
+    "EventFilterRule": {
+      "type": "object",
+      "properties": {
+        "matcher": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ignoreEvent": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "KafkaAuthType.Enum": {
+      "type": "string",
+      "enum": [
+        "DISABLE",
+        "SASL_PLAIN",
+        "SASL_SCRAM_SHA_256",
+        "SASL_SCRAM_SHA_512"
+      ],
+      "description": " - DISABLE: No authentication.\n - SASL_PLAIN: SASL/PLAIN authentication.\n - SASL_SCRAM_SHA_256: SASL/SCRAM-SHA-256 authentication.\n - SASL_SCRAM_SHA_512: SASL/SCRAM-SHA-512 authentication."
+    },
+    "KafkaCompressionType.Enum": {
+      "type": "string",
+      "enum": [
+        "NONE",
+        "GZIP",
+        "SNAPPY",
+        "LZ4",
+        "ZSTD"
+      ]
+    },
+    "KafkaInfo": {
+      "type": "object",
+      "properties": {
+        "networkInfo": {
+          "$ref": "#/definitions/NetworkInfo"
+        },
+        "broker": {
+          "$ref": "#/definitions/Broker"
+        },
+        "authentication": {
+          "$ref": "#/definitions/Authentication"
+        },
+        "dataFormat": {
+          "$ref": "#/definitions/DataFormat"
+        },
+        "topicPartitionConfig": {
+          "$ref": "#/definitions/TopicPartitionConfig"
+        },
+        "columnSelectors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/ColumnSelector"
+          }
+        },
+        "bizEndpointId": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "KafkaNetworkType.Enum": {
+      "type": "string",
+      "enum": [
+        "PUBLIC",
+        "VPC_PEERING",
+        "PRIVATE_LINK"
+      ],
+      "description": " - PUBLIC: Public network.\n - VPC_PEERING: VPC peering network.\n - PRIVATE_LINK: Private Link network."
+    },
+    "KafkaVersion.Enum": {
+      "type": "string",
+      "enum": [
+        "VERSION_0XX",
+        "VERSION_1XX",
+        "VERSION_2XX",
+        "VERSION_3XX"
+      ],
+      "description": " - VERSION_0XX: Kafka 0.x.x version.\n - VERSION_1XX: Kafka 1.x.x version.\n - VERSION_2XX: Kafka 2.x.x version.\n - VERSION_3XX: Kafka 3.x.x version."
+    },
+    "NetworkInfo": {
+      "type": "object",
+      "properties": {
+        "networkType": {
+          "$ref": "#/definitions/KafkaNetworkType.Enum"
+        },
+        "privateLinkServiceName": {
+          "type": "string"
+        },
+        "kafkaId": {
+          "type": "string"
+        },
+        "ports": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "advertisedPatternGroup": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "PartitionDispatcher.Enum": {
+      "type": "string",
+      "enum": [
+        "TABLE",
+        "INDEX_VALUE",
+        "TS",
+        "COLUMNS"
+      ],
+      "description": " - TABLE: Partition by table.\n - INDEX_VALUE: Partition by index value.\n - TS: Partition by timestamp.\n - COLUMNS: Partition by columns."
+    },
+    "PartitionDispatcherConfig": {
+      "type": "object",
+      "properties": {
+        "partitionType": {
+          "$ref": "#/definitions/PartitionDispatcher.Enum"
+        },
+        "matcher": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "indexName": {
+          "type": "string"
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "SchemaRegistry": {
+      "type": "object",
+      "properties": {
+        "schemaRegistryEndpoints": {
+          "type": "string"
+        },
+        "enableHttpAuth": {
+          "type": "boolean"
+        },
+        "userName": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "SinkInfo": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Required. The type of the sink.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ConnectorType.Enum"
+            }
+          ]
+        },
+        "kafka": {
+          "description": "Optional. The Kafka sink information.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/KafkaInfo"
+            }
+          ]
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "StartMode.Enum": {
+      "type": "string",
+      "enum": [
+        "FROM_NOW",
+        "FROM_TSO",
+        "FROM_UTC"
+      ],
+      "description": " - FROM_NOW: Start from now.\n - FROM_TSO: Start from TSO.\n - FROM_UTC: Start from UTC."
+    },
+    "StartPosition": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "$ref": "#/definitions/StartMode.Enum"
+        },
+        "tso": {
+          "type": "string",
+          "format": "uint64"
+        },
+        "utc": {
+          "type": "string"
+        }
+      }
+    },
+    "Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Any"
+          }
+        }
+      }
+    },
+    "TableMode.Enum": {
+      "type": "string",
+      "enum": [
+        "IGNORE_NOT_SUPPORT_TABLE",
+        "FORCE_SYNC"
+      ],
+      "description": " - IGNORE_NOT_SUPPORT_TABLE: Ignore tables that are not supported.\n - FORCE_SYNC: Force synchronize all tables."
+    },
+    "TopicDispatchType.Enum": {
+      "type": "string",
+      "enum": [
+        "ONE_TOPIC",
+        "BY_TABLE",
+        "BY_DATABASE"
+      ],
+      "description": " - ONE_TOPIC: One topic for all data.\n - BY_TABLE: Dispatch by table.\n - BY_DATABASE: Dispatch by database."
+    },
+    "TopicPartitionConfig": {
+      "type": "object",
+      "properties": {
+        "dispatchType": {
+          "$ref": "#/definitions/TopicDispatchType.Enum"
+        },
+        "defaultTopic": {
+          "type": "string"
+        },
+        "topicPrefix": {
+          "type": "string"
+        },
+        "separator": {
+          "type": "string"
+        },
+        "topicSuffix": {
+          "type": "string"
+        },
+        "replicationFactor": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "partitionNum": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "partitionDispatchers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/PartitionDispatcherConfig"
+          }
+        }
+      }
+    }
+  }
+}
