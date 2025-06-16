@@ -111,6 +111,7 @@ const (
 	ChangefeedStartTSO string = "start-tso"
 	ChangefeedID       string = "changefeed-id"
 	ChangefeedIDShort  string = "f"
+	Explain            string = "explain"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."

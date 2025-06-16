@@ -98,7 +98,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				cf, err := cloud.GetSelectedChangefeed(ctx, project.ID, h.QueryPageSize, d)
+				cf, err := cloud.GetSelectedChangefeed(ctx, clusterID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
