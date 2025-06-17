@@ -42,7 +42,7 @@ func (r ApiPrivateEndpointConnectionServiceCreatePrivateEndpointConnectionReques
 	return r
 }
 
-func (r ApiPrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) Execute() (*V1beta1PrivateEndpointConnection, *http.Response, error) {
+func (r ApiPrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) Execute() (*Dedicatedv1beta1PrivateEndpointConnection, *http.Response, error) {
 	return r.ApiService.PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionExecute(r)
 }
 
@@ -65,13 +65,13 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 
 // Execute executes the request
 //
-//	@return V1beta1PrivateEndpointConnection
-func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionExecute(r ApiPrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) (*V1beta1PrivateEndpointConnection, *http.Response, error) {
+//	@return Dedicatedv1beta1PrivateEndpointConnection
+func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionExecute(r ApiPrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) (*Dedicatedv1beta1PrivateEndpointConnection, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPost
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *V1beta1PrivateEndpointConnection
+		localVarReturnValue *Dedicatedv1beta1PrivateEndpointConnection
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PrivateEndpointConnectionServiceAPIService.PrivateEndpointConnectionServiceCreatePrivateEndpointConnection")
@@ -421,7 +421,7 @@ type ApiPrivateEndpointConnectionServiceGetPrivateEndpointConnectionRequest stru
 	privateEndpointConnectionId string
 }
 
-func (r ApiPrivateEndpointConnectionServiceGetPrivateEndpointConnectionRequest) Execute() (*V1beta1PrivateEndpointConnection, *http.Response, error) {
+func (r ApiPrivateEndpointConnectionServiceGetPrivateEndpointConnectionRequest) Execute() (*Dedicatedv1beta1PrivateEndpointConnection, *http.Response, error) {
 	return r.ApiService.PrivateEndpointConnectionServiceGetPrivateEndpointConnectionExecute(r)
 }
 
@@ -446,13 +446,13 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 
 // Execute executes the request
 //
-//	@return V1beta1PrivateEndpointConnection
-func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionServiceGetPrivateEndpointConnectionExecute(r ApiPrivateEndpointConnectionServiceGetPrivateEndpointConnectionRequest) (*V1beta1PrivateEndpointConnection, *http.Response, error) {
+//	@return Dedicatedv1beta1PrivateEndpointConnection
+func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionServiceGetPrivateEndpointConnectionExecute(r ApiPrivateEndpointConnectionServiceGetPrivateEndpointConnectionRequest) (*Dedicatedv1beta1PrivateEndpointConnection, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *V1beta1PrivateEndpointConnection
+		localVarReturnValue *Dedicatedv1beta1PrivateEndpointConnection
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PrivateEndpointConnectionServiceAPIService.PrivateEndpointConnectionServiceGetPrivateEndpointConnection")
@@ -825,7 +825,7 @@ func (r ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest
 	return r
 }
 
-func (r ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest) Execute() (*V1beta1ListPrivateEndpointConnectionsResponse, *http.Response, error) {
+func (r ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest) Execute() (*Dedicatedv1beta1ListPrivateEndpointConnectionsResponse, *http.Response, error) {
 	return r.ApiService.PrivateEndpointConnectionServiceListPrivateEndpointConnectionsExecute(r)
 }
 
@@ -848,13 +848,13 @@ func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionSe
 
 // Execute executes the request
 //
-//	@return V1beta1ListPrivateEndpointConnectionsResponse
-func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionServiceListPrivateEndpointConnectionsExecute(r ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest) (*V1beta1ListPrivateEndpointConnectionsResponse, *http.Response, error) {
+//	@return Dedicatedv1beta1ListPrivateEndpointConnectionsResponse
+func (a *PrivateEndpointConnectionServiceAPIService) PrivateEndpointConnectionServiceListPrivateEndpointConnectionsExecute(r ApiPrivateEndpointConnectionServiceListPrivateEndpointConnectionsRequest) (*Dedicatedv1beta1ListPrivateEndpointConnectionsResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *V1beta1ListPrivateEndpointConnectionsResponse
+		localVarReturnValue *Dedicatedv1beta1ListPrivateEndpointConnectionsResponse
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "PrivateEndpointConnectionServiceAPIService.PrivateEndpointConnectionServiceListPrivateEndpointConnections")

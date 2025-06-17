@@ -26,11 +26,11 @@ type Dedicatedv1beta1PrivateLinkService struct {
 	// For AWS, it's the fully qualified domain name (FQDN) shared for all private endpoints, despite which VPC the endpoint located in. For GCP, it's the zone name (suffix of FQDN) shared for all private endpoints located in a single VPC network. The format of FQDN is `<endpoint_name>.<service_dns_name>`. For Azure, it's the zone name shared across public internet. The format of FQDN is `<endpoint_name>-<random_hash>.<service_dns_name>`.
 	ServiceDnsName *string `json:"serviceDnsName,omitempty"`
 	// Only available for AWS. Same as the `AvailabilityZones` field in response body of `github.com/aws/aws-sdk-go-v2/service/ec2.DescribeVpcEndpointServices` method.
-	AvailableZones       []string                        `json:"availableZones,omitempty"`
-	State                *V1beta1PrivateLinkServiceState `json:"state,omitempty"`
-	RegionId             *string                         `json:"regionId,omitempty"`
-	RegionDisplayName    *string                         `json:"regionDisplayName,omitempty"`
-	CloudProvider        *V1beta1RegionCloudProvider     `json:"cloudProvider,omitempty"`
+	AvailableZones       []string                                 `json:"availableZones,omitempty"`
+	State                *Dedicatedv1beta1PrivateLinkServiceState `json:"state,omitempty"`
+	RegionId             *string                                  `json:"regionId,omitempty"`
+	RegionDisplayName    *string                                  `json:"regionDisplayName,omitempty"`
+	CloudProvider        *V1beta1RegionCloudProvider              `json:"cloudProvider,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -214,9 +214,9 @@ func (o *Dedicatedv1beta1PrivateLinkService) SetAvailableZones(v []string) {
 }
 
 // GetState returns the State field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1PrivateLinkService) GetState() V1beta1PrivateLinkServiceState {
+func (o *Dedicatedv1beta1PrivateLinkService) GetState() Dedicatedv1beta1PrivateLinkServiceState {
 	if o == nil || IsNil(o.State) {
-		var ret V1beta1PrivateLinkServiceState
+		var ret Dedicatedv1beta1PrivateLinkServiceState
 		return ret
 	}
 	return *o.State
@@ -224,7 +224,7 @@ func (o *Dedicatedv1beta1PrivateLinkService) GetState() V1beta1PrivateLinkServic
 
 // GetStateOk returns a tuple with the State field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1PrivateLinkService) GetStateOk() (*V1beta1PrivateLinkServiceState, bool) {
+func (o *Dedicatedv1beta1PrivateLinkService) GetStateOk() (*Dedicatedv1beta1PrivateLinkServiceState, bool) {
 	if o == nil || IsNil(o.State) {
 		return nil, false
 	}
@@ -240,8 +240,8 @@ func (o *Dedicatedv1beta1PrivateLinkService) HasState() bool {
 	return false
 }
 
-// SetState gets a reference to the given V1beta1PrivateLinkServiceState and assigns it to the State field.
-func (o *Dedicatedv1beta1PrivateLinkService) SetState(v V1beta1PrivateLinkServiceState) {
+// SetState gets a reference to the given Dedicatedv1beta1PrivateLinkServiceState and assigns it to the State field.
+func (o *Dedicatedv1beta1PrivateLinkService) SetState(v Dedicatedv1beta1PrivateLinkServiceState) {
 	o.State = &v
 }
 

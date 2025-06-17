@@ -521,14 +521,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ClusterServiceResetRootPasswordBody'
+              $ref: '#/components/schemas/v1beta1ClusterServiceResetRootPasswordBody'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/v1beta1ResetRootPasswordResponse'
+                $ref: '#/components/schemas/dedicatedv1beta1ResetRootPasswordResponse'
           description: A successful response.
         "400":
           content:
@@ -768,6 +768,123 @@ paths:
       summary: Show node quota across the caller's organization
       tags:
       - ClusterService
+  /clusters/{clusterId}/logRedactionPolicy:
+    get:
+      operationId: ClusterService_GetLogRedactionPolicy
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1LogRedactionPolicy'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Get log redaction policy
+      tags:
+      - ClusterService
+  /clusters/{logRedactionPolicy.clusterId}/logRedactionPolicy:
+    patch:
+      operationId: ClusterService_UpdateLogRedactionPolicy
+      parameters:
+      - in: path
+        name: logRedactionPolicy.clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClusterService_UpdateLogRedactionPolicy_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dedicatedv1beta1LogRedactionPolicy'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Bad Request
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Unauthorized
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Forbidden
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Too Many Requests
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal Server Error
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: Update log redaction policy
+      tags:
+      - ClusterService
+      x-codegen-request-body-name: logRedactionPolicy
   /regions:
     get:
       operationId: RegionService_ListRegions
@@ -1734,7 +1851,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/v1beta1PrivateEndpointConnection'
+                $ref: '#/components/schemas/dedicatedv1beta1PrivateEndpointConnection'
           description: A successful response.
         "400":
           content:
@@ -1845,7 +1962,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/v1beta1ListPrivateEndpointConnectionsResponse'
+                $ref: '#/components/schemas/dedicatedv1beta1ListPrivateEndpointConnectionsResponse'
           description: A successful response.
         "400":
           content:
@@ -1974,7 +2091,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/v1beta1PrivateEndpointConnection'
+                $ref: '#/components/schemas/dedicatedv1beta1PrivateEndpointConnection'
           description: A successful response.
         "400":
           content:
@@ -3599,49 +3716,6 @@ components:
           readOnly: true
           type: integer
       type: object
-    ClusterServiceResetRootPasswordBody:
-      example:
-        rootPassword: rootPassword
-      properties:
-        rootPassword:
-          type: string
-      required:
-      - rootPassword
-      type: object
-    EndpointConnectionType:
-      description: |2-
-         - PUBLIC: The endpoint is a public endpoint.
-         - VPC_PEERING: The endpoint is a VPC peering endpoint.
-         - PRIVATE_ENDPOINT: The endpoint is a private link endpoint.
-      enum:
-      - PUBLIC
-      - VPC_PEERING
-      - PRIVATE_ENDPOINT
-      type: string
-    PrivateEndpointConnectionEndpointState:
-      description: |2-
-         - PENDING: Customer has posted to TiDB cloud API,
-        but endpoint connection has not been accepted **asynchronously** by TiDB Cloud.
-         - DISCOVERED: Customer has created the endpoint in their vpc, but has not posted to TiDB Cloud API.
-      enum:
-      - PENDING
-      - ACTIVE
-      - DELETING
-      - FAILED
-      - DISCOVERED
-      type: string
-    PublicEndpointSettingIpAccessList:
-      example:
-        description: description
-        cidrNotation: cidrNotation
-      properties:
-        cidrNotation:
-          type: string
-        description:
-          type: string
-      required:
-      - cidrNotation
-      type: object
     ShowNodeQuotaResponseComponentQuota:
       example:
         componentType: TIKV
@@ -3668,14 +3742,14 @@ components:
       - Plus
       type: string
     TidbNodeGroupTiProxyType:
+      description: |2-
+         - SMALL: SMALL: Low performance instance with 2 vCPUs and 4 GiB memory.
+        Max QPS: 30, Max Data Traffic: 90 MiB/s.
+         - LARGE: LARGE: High performance instance with 8 vCPUs and 16 GiB memory.
+        Max QPS: 100, Max Data Traffic: 300 MiB/s.
       enum:
-      - MEDIUM
+      - SMALL
       - LARGE
-      title: |-
-        - MEDIUM: Medium is the default value.
-        Instance 4vCPU, Max QPS: 30k, Max Data Traffic: 90 MiB/s
-         - LARGE: Large is the high performance value.
-        Instance 8vCPU, Max QPS: 60k, Max Data Traffic: 150 MiB/s
       type: string
     UpdateClusterRequestTidbNodeSettingTidbNodeGroup:
       properties:
@@ -3735,6 +3809,10 @@ components:
         displayName: displayName
         cloudProvider: "{}"
         name: regions/aws-us-west-2
+        servicePlans:
+        - Starter
+        - Essential
+        - Premium
       properties:
         name:
           example: regions/aws-us-west-2
@@ -3766,7 +3844,26 @@ components:
           nullable: true
           readOnly: true
           type: string
+        servicePlans:
+          description: |-
+            Optional service plan for the region.
+            Only used for nextgen cluster.
+          example:
+          - Starter
+          - Essential
+          - Premium
+          items:
+            $ref: '#/components/schemas/commonv1beta1ServicePlan'
+          readOnly: true
+          type: array
       type: object
+    commonv1beta1ServicePlan:
+      enum:
+      - Starter
+      - Essential
+      - Premium
+      - BYOC
+      type: string
     dedicatedv1beta1AuditLogConfig:
       example:
         bucketUri: bucketUri
@@ -3981,6 +4078,67 @@ components:
             If this field is omitted, there are no subsequent pages.
           type: string
       type: object
+    dedicatedv1beta1ListPrivateEndpointConnectionsResponse:
+      example:
+        privateEndpointConnections:
+        - privateLinkServiceState: "{}"
+          clusterDisplayName: clusterDisplayName
+          endpointId: endpointId
+          tidbNodeGroupId: tidbNodeGroupId
+          privateEndpointConnectionId: privateEndpointConnectionId
+          clusterId: clusterId
+          message: message
+          privateIpAddress: privateIpAddress
+          labels:
+            key: labels
+          tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
+          endpointState: "{}"
+          privateLinkServiceName: privateLinkServiceName
+          accountId: accountId
+          regionDisplayName: regionDisplayName
+          regionId: regionId
+          port: 0
+          cloudProvider: "{}"
+          name: name
+          host: host
+        - privateLinkServiceState: "{}"
+          clusterDisplayName: clusterDisplayName
+          endpointId: endpointId
+          tidbNodeGroupId: tidbNodeGroupId
+          privateEndpointConnectionId: privateEndpointConnectionId
+          clusterId: clusterId
+          message: message
+          privateIpAddress: privateIpAddress
+          labels:
+            key: labels
+          tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
+          endpointState: "{}"
+          privateLinkServiceName: privateLinkServiceName
+          accountId: accountId
+          regionDisplayName: regionDisplayName
+          regionId: regionId
+          port: 0
+          cloudProvider: "{}"
+          name: name
+          host: host
+        totalSize: 0
+        nextPageToken: nextPageToken
+      properties:
+        privateEndpointConnections:
+          items:
+            $ref: '#/components/schemas/dedicatedv1beta1PrivateEndpointConnection'
+          type: array
+        totalSize:
+          description: The total number of private link connections that matched the
+            query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: |-
+            A token, which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
     dedicatedv1beta1ListTidbNodeGroupsResponse:
       example:
         tidbNodeGroups:
@@ -3998,7 +4156,9 @@ components:
           displayName: displayName
           tidbNodeGroupId: tidbNodeGroupId
           name: name
-          tiproxySetting: "{}"
+          tiproxySetting:
+            nodeCount: 1
+            type: "{}"
           nodeCount: 0
           clusterId: clusterId
           state: "{}"
@@ -4016,7 +4176,9 @@ components:
           displayName: displayName
           tidbNodeGroupId: tidbNodeGroupId
           name: name
-          tiproxySetting: "{}"
+          tiproxySetting:
+            nodeCount: 1
+            type: "{}"
           nodeCount: 0
           clusterId: clusterId
           state: "{}"
@@ -4086,6 +4248,22 @@ components:
             A token, which can be sent as `page_token` to retrieve the next page.
             If this field is omitted, there are no subsequent pages.
           type: string
+      type: object
+    dedicatedv1beta1LogRedactionPolicy:
+      example:
+        clusterId: clusterId
+        redactLog: true
+      properties:
+        clusterId:
+          type: string
+        redactLog:
+          nullable: true
+          title: |-
+            Indicates whether to redact sensitive information in logs.
+            Default policy: true (enable log redaction)
+          type: boolean
+      required:
+      - clusterId
       type: object
     dedicatedv1beta1MaintenanceTask:
       description: All fields are output only.
@@ -4195,6 +4373,122 @@ components:
       - projectId
       - weekDay
       type: object
+    dedicatedv1beta1PrivateEndpointConnection:
+      example:
+        privateLinkServiceState: "{}"
+        clusterDisplayName: clusterDisplayName
+        endpointId: endpointId
+        tidbNodeGroupId: tidbNodeGroupId
+        privateEndpointConnectionId: privateEndpointConnectionId
+        clusterId: clusterId
+        message: message
+        privateIpAddress: privateIpAddress
+        labels:
+          key: labels
+        tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
+        endpointState: "{}"
+        privateLinkServiceName: privateLinkServiceName
+        accountId: accountId
+        regionDisplayName: regionDisplayName
+        regionId: regionId
+        port: 0
+        cloudProvider: "{}"
+        name: name
+        host: host
+      properties:
+        name:
+          readOnly: true
+          title: "Format: tidbNodeGroups/{tidb_node_group_id}/privateEndpointConnections/{private_endpoint_connection_id}"
+          type: string
+        tidbNodeGroupId:
+          type: string
+        privateEndpointConnectionId:
+          readOnly: true
+          type: string
+        clusterId:
+          readOnly: true
+          type: string
+        clusterDisplayName:
+          readOnly: true
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: The labels of private link connection. It always contains the
+            `project_id` label.
+          readOnly: true
+          type: object
+        endpointId:
+          description: |-
+            The endpoint ID of the private link connection.
+            For AWS, it's VPC endpoint ID.
+            For GCP, it's private service connect endpoint ID.
+            For Azure, it's private endpoint resource ID.
+          type: string
+        privateIpAddress:
+          description: |-
+            The private IP address of the private endpoint in the user's vNet.
+            TiDB Cloud will setup a public DNS record for this private IP address. So the user can use DNS address to connect to the cluster.
+            Only available for Azure clusters.
+          nullable: true
+          type: string
+        endpointState:
+          allOf:
+          - $ref: '#/components/schemas/dedicatedv1beta1PrivateEndpointConnectionEndpointState'
+          type: object
+        message:
+          readOnly: true
+          type: string
+        regionId:
+          readOnly: true
+          title: "Format: {cloud_provider}-{region_code}"
+          type: string
+        regionDisplayName:
+          readOnly: true
+          type: string
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1RegionCloudProvider'
+          type: object
+        privateLinkServiceName:
+          readOnly: true
+          type: string
+        privateLinkServiceState:
+          allOf:
+          - $ref: '#/components/schemas/dedicatedv1beta1PrivateLinkServiceState'
+          type: object
+        tidbNodeGroupDisplayName:
+          readOnly: true
+          type: string
+        accountId:
+          description: Only for GCP private service connections. It's GCP project
+            name.
+          nullable: true
+          readOnly: true
+          type: string
+        host:
+          readOnly: true
+          type: string
+        port:
+          format: int32
+          readOnly: true
+          type: integer
+      required:
+      - endpointId
+      - tidbNodeGroupId
+      type: object
+    dedicatedv1beta1PrivateEndpointConnectionEndpointState:
+      description: |2-
+         - PENDING: Customer has posted to TiDB cloud API,
+        but endpoint connection has not been accepted **asynchronously** by TiDB Cloud.
+         - DISCOVERED: Customer has created the endpoint in their vpc, but has not posted to TiDB Cloud API.
+      enum:
+      - PENDING
+      - ACTIVE
+      - DELETING
+      - FAILED
+      - DISCOVERED
+      type: string
     dedicatedv1beta1PrivateLinkService:
       description: All fields are output only.
       example:
@@ -4236,7 +4530,7 @@ components:
             type: string
           type: array
         state:
-          $ref: '#/components/schemas/v1beta1PrivateLinkServiceState'
+          $ref: '#/components/schemas/dedicatedv1beta1PrivateLinkServiceState'
         regionId:
           title: "Format: {cloud_provider}-{region_code}"
           type: string
@@ -4245,6 +4539,12 @@ components:
         cloudProvider:
           $ref: '#/components/schemas/v1beta1RegionCloudProvider'
       type: object
+    dedicatedv1beta1PrivateLinkServiceState:
+      enum:
+      - CREATING
+      - ACTIVE
+      - DELETING
+      type: string
     dedicatedv1beta1QueryAuditLogFilesResponse:
       example:
         totalSize: 6
@@ -4271,6 +4571,8 @@ components:
         nextPageToken:
           type: string
       type: object
+    dedicatedv1beta1ResetRootPasswordResponse:
+      type: object
     dedicatedv1beta1TidbNodeGroup:
       example:
         isDefaultGroup: true
@@ -4287,7 +4589,9 @@ components:
         displayName: displayName
         tidbNodeGroupId: tidbNodeGroupId
         name: name
-        tiproxySetting: "{}"
+        tiproxySetting:
+          nodeCount: 1
+          type: "{}"
         nodeCount: 0
         clusterId: clusterId
         state: "{}"
@@ -4336,9 +4640,7 @@ components:
           - $ref: '#/components/schemas/ClusterNodeChangingProgress'
           type: object
         tiproxySetting:
-          allOf:
-          - $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroupTiProxySetting'
-          type: object
+          $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroupTiProxySetting'
       required:
       - nodeCount
       type: object
@@ -4361,7 +4663,7 @@ components:
           type: integer
         connectionType:
           allOf:
-          - $ref: '#/components/schemas/EndpointConnectionType'
+          - $ref: '#/components/schemas/v1beta1TidbNodeGroupEndpointConnectionType'
           type: object
       type: object
     dedicatedv1beta1TidbNodeGroupState:
@@ -4375,6 +4677,9 @@ components:
       - PAUSED
       type: string
     dedicatedv1beta1TidbNodeGroupTiProxySetting:
+      example:
+        nodeCount: 1
+        type: "{}"
       properties:
         type:
           allOf:
@@ -4493,7 +4798,7 @@ components:
         You can find out more about this error model and how to work with it in the
         [API Design Guide](https://cloud.google.com/apis/design/errors).
       example:
-        code: 9
+        code: 3
         details:
         - '@type': '@type'
         - '@type': '@type'
@@ -4652,9 +4957,9 @@ components:
           nodeSpecDisplayName: nodeSpecDisplayName
           nodeChangingProgress: "{}"
           storageSizeGi: 5
-          raftStoreIops: 5
+          raftStoreIops: 2
           storageType: "{}"
-          nodeCount: 1
+          nodeCount: 5
         displayName: foo-bar
         annotations:
           key: annotations
@@ -4670,11 +4975,11 @@ components:
           nodeSpecDisplayName: nodeSpecDisplayName
           nodeChangingProgress: "{}"
           storageSizeGi: 5
-          raftStoreIops: 5
+          raftStoreIops: 2
           storageType: "{}"
-          nodeCount: 1
+          nodeCount: 5
         regionId: regionId
-        port: 2
+        port: 7
         createdBy: createdBy
         createTime: 2000-01-23T04:56:07.000+00:00
         cloudProvider: "{}"
@@ -4695,7 +5000,9 @@ components:
             displayName: displayName
             tidbNodeGroupId: tidbNodeGroupId
             name: name
-            tiproxySetting: "{}"
+            tiproxySetting:
+              nodeCount: 1
+              type: "{}"
             nodeCount: 0
             clusterId: clusterId
             state: "{}"
@@ -4713,7 +5020,9 @@ components:
             displayName: displayName
             tidbNodeGroupId: tidbNodeGroupId
             name: name
-            tiproxySetting: "{}"
+            tiproxySetting:
+              nodeCount: 1
+              type: "{}"
             nodeCount: 0
             clusterId: clusterId
             state: "{}"
@@ -4810,6 +5119,7 @@ components:
             OUTPUT_ONLY. The annotations for the cluster.
             tidb.cloud/has-set-password. The annotation for whether the cluster has set password.
             tidb.cloud/available-features. The annotation for the available features of the cluster.
+            tidb.cloud/insufficient-vm-resource. The annotation for insufficient virtual machine resources during creating or modifying the cluster.
           readOnly: true
           type: object
       required:
@@ -4821,7 +5131,7 @@ components:
       type: object
     tidb_cloud_open_apidedicatedv1beta1ListClustersResponse:
       example:
-        totalSize: 7
+        totalSize: 9
         nextPageToken: nextPageToken
         clusters:
         - tiflashNodeSetting:
@@ -4829,9 +5139,9 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            raftStoreIops: 5
+            raftStoreIops: 2
             storageType: "{}"
-            nodeCount: 1
+            nodeCount: 5
           displayName: foo-bar
           annotations:
             key: annotations
@@ -4847,11 +5157,11 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            raftStoreIops: 5
+            raftStoreIops: 2
             storageType: "{}"
-            nodeCount: 1
+            nodeCount: 5
           regionId: regionId
-          port: 2
+          port: 7
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           cloudProvider: "{}"
@@ -4872,7 +5182,9 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
-              tiproxySetting: "{}"
+              tiproxySetting:
+                nodeCount: 1
+                type: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -4890,7 +5202,9 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
-              tiproxySetting: "{}"
+              tiproxySetting:
+                nodeCount: 1
+                type: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -4903,9 +5217,9 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            raftStoreIops: 5
+            raftStoreIops: 2
             storageType: "{}"
-            nodeCount: 1
+            nodeCount: 5
           displayName: foo-bar
           annotations:
             key: annotations
@@ -4921,11 +5235,11 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            raftStoreIops: 5
+            raftStoreIops: 2
             storageType: "{}"
-            nodeCount: 1
+            nodeCount: 5
           regionId: regionId
-          port: 2
+          port: 7
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           cloudProvider: "{}"
@@ -4946,7 +5260,9 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
-              tiproxySetting: "{}"
+              tiproxySetting:
+                nodeCount: 1
+                type: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -4964,7 +5280,9 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
-              tiproxySetting: "{}"
+              tiproxySetting:
+                nodeCount: 1
+                type: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -4995,11 +5313,19 @@ components:
           displayName: displayName
           cloudProvider: "{}"
           name: regions/aws-us-west-2
+          servicePlans:
+          - Starter
+          - Essential
+          - Premium
         - regionId: regionId
           provider: provider
           displayName: displayName
           cloudProvider: "{}"
           name: regions/aws-us-west-2
+          servicePlans:
+          - Starter
+          - Essential
+          - Premium
         totalSize: 0
         nextPageToken: nextPageToken
       properties:
@@ -5051,15 +5377,22 @@ components:
       required:
       - clusterId
       type: object
+    v1beta1ClusterServiceResetRootPasswordBody:
+      properties:
+        rootPassword:
+          type: string
+      required:
+      - rootPassword
+      type: object
     v1beta1ClusterStorageNodeSetting:
       example:
         nodeSpecKey: nodeSpecKey
         nodeSpecDisplayName: nodeSpecDisplayName
         nodeChangingProgress: "{}"
         storageSizeGi: 5
-        raftStoreIops: 5
+        raftStoreIops: 2
         storageType: "{}"
-        nodeCount: 1
+        nodeCount: 5
       properties:
         nodeCount:
           format: int32
@@ -5110,7 +5443,9 @@ components:
           displayName: displayName
           tidbNodeGroupId: tidbNodeGroupId
           name: name
-          tiproxySetting: "{}"
+          tiproxySetting:
+            nodeCount: 1
+            type: "{}"
           nodeCount: 0
           clusterId: clusterId
           state: "{}"
@@ -5128,7 +5463,9 @@ components:
           displayName: displayName
           tidbNodeGroupId: tidbNodeGroupId
           name: name
-          tiproxySetting: "{}"
+          tiproxySetting:
+            nodeCount: 1
+            type: "{}"
           nodeCount: 0
           clusterId: clusterId
           state: "{}"
@@ -5196,8 +5533,8 @@ components:
           vpcId: vpcId
           name: name
           networkContainerId: networkContainerId
-          cidrNotion: cidrNotion
           state: "{}"
+          cidrNotation: cidrNotation
           labels:
             key: labels
         - regionDisplayName: regionDisplayName
@@ -5206,8 +5543,8 @@ components:
           vpcId: vpcId
           name: name
           networkContainerId: networkContainerId
-          cidrNotion: cidrNotion
           state: "{}"
+          cidrNotation: cidrNotation
           labels:
             key: labels
       properties:
@@ -5327,67 +5664,6 @@ components:
             If this field is omitted, there are no subsequent pages.
           type: string
       type: object
-    v1beta1ListPrivateEndpointConnectionsResponse:
-      example:
-        privateEndpointConnections:
-        - privateLinkServiceState: "{}"
-          clusterDisplayName: clusterDisplayName
-          endpointId: endpointId
-          tidbNodeGroupId: tidbNodeGroupId
-          privateEndpointConnectionId: privateEndpointConnectionId
-          clusterId: clusterId
-          message: message
-          privateIpAddress: privateIpAddress
-          labels:
-            key: labels
-          tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
-          endpointState: "{}"
-          privateLinkServiceName: privateLinkServiceName
-          accountId: accountId
-          regionDisplayName: regionDisplayName
-          regionId: regionId
-          port: 0
-          cloudProvider: "{}"
-          name: name
-          host: host
-        - privateLinkServiceState: "{}"
-          clusterDisplayName: clusterDisplayName
-          endpointId: endpointId
-          tidbNodeGroupId: tidbNodeGroupId
-          privateEndpointConnectionId: privateEndpointConnectionId
-          clusterId: clusterId
-          message: message
-          privateIpAddress: privateIpAddress
-          labels:
-            key: labels
-          tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
-          endpointState: "{}"
-          privateLinkServiceName: privateLinkServiceName
-          accountId: accountId
-          regionDisplayName: regionDisplayName
-          regionId: regionId
-          port: 0
-          cloudProvider: "{}"
-          name: name
-          host: host
-        totalSize: 0
-        nextPageToken: nextPageToken
-      properties:
-        privateEndpointConnections:
-          items:
-            $ref: '#/components/schemas/v1beta1PrivateEndpointConnection'
-          type: array
-        totalSize:
-          description: The total number of private link connections that matched the
-            query.
-          format: int32
-          type: integer
-        nextPageToken:
-          description: |-
-            A token, which can be sent as `page_token` to retrieve the next page.
-            If this field is omitted, there are no subsequent pages.
-          type: string
-      type: object
     v1beta1NetworkContainer:
       example:
         regionDisplayName: regionDisplayName
@@ -5396,8 +5672,8 @@ components:
         vpcId: vpcId
         name: name
         networkContainerId: networkContainerId
-        cidrNotion: cidrNotion
         state: "{}"
+        cidrNotation: cidrNotation
         labels:
           key: labels
       properties:
@@ -5418,7 +5694,7 @@ components:
         regionId:
           title: "Format: {cloud_provider}-{region_code}"
           type: string
-        cidrNotion:
+        cidrNotation:
           description: "If not set, the default cidr of the region will be used."
           type: string
         cloudProvider:
@@ -5602,9 +5878,9 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            raftStoreIops: 5
+            raftStoreIops: 2
             storageType: "{}"
-            nodeCount: 1
+            nodeCount: 5
           displayName: foo-bar
           annotations:
             key: annotations
@@ -5620,11 +5896,11 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            raftStoreIops: 5
+            raftStoreIops: 2
             storageType: "{}"
-            nodeCount: 1
+            nodeCount: 5
           regionId: regionId
-          port: 2
+          port: 7
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           cloudProvider: "{}"
@@ -5645,7 +5921,9 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
-              tiproxySetting: "{}"
+              tiproxySetting:
+                nodeCount: 1
+                type: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -5663,7 +5941,9 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
-              tiproxySetting: "{}"
+              tiproxySetting:
+                nodeCount: 1
+                type: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -5677,116 +5957,6 @@ components:
       required:
       - cluster
       type: object
-    v1beta1PrivateEndpointConnection:
-      example:
-        privateLinkServiceState: "{}"
-        clusterDisplayName: clusterDisplayName
-        endpointId: endpointId
-        tidbNodeGroupId: tidbNodeGroupId
-        privateEndpointConnectionId: privateEndpointConnectionId
-        clusterId: clusterId
-        message: message
-        privateIpAddress: privateIpAddress
-        labels:
-          key: labels
-        tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
-        endpointState: "{}"
-        privateLinkServiceName: privateLinkServiceName
-        accountId: accountId
-        regionDisplayName: regionDisplayName
-        regionId: regionId
-        port: 0
-        cloudProvider: "{}"
-        name: name
-        host: host
-      properties:
-        name:
-          readOnly: true
-          title: "Format: tidbNodeGroups/{tidb_node_group_id}/privateEndpointConnections/{private_endpoint_connection_id}"
-          type: string
-        tidbNodeGroupId:
-          type: string
-        privateEndpointConnectionId:
-          readOnly: true
-          type: string
-        clusterId:
-          readOnly: true
-          type: string
-        clusterDisplayName:
-          readOnly: true
-          type: string
-        labels:
-          additionalProperties:
-            type: string
-          description: The labels of private link connection. It always contains the
-            `project_id` label.
-          readOnly: true
-          type: object
-        endpointId:
-          description: |-
-            The endpoint ID of the private link connection.
-            For AWS, it's VPC endpoint ID.
-            For GCP, it's private service connect endpoint ID.
-            For Azure, it's private endpoint resource ID.
-          type: string
-        privateIpAddress:
-          description: |-
-            The private IP address of the private endpoint in the user's vNet.
-            TiDB Cloud will setup a public DNS record for this private IP address. So the user can use DNS address to connect to the cluster.
-            Only available for Azure clusters.
-          nullable: true
-          type: string
-        endpointState:
-          allOf:
-          - $ref: '#/components/schemas/PrivateEndpointConnectionEndpointState'
-          type: object
-        message:
-          readOnly: true
-          type: string
-        regionId:
-          readOnly: true
-          title: "Format: {cloud_provider}-{region_code}"
-          type: string
-        regionDisplayName:
-          readOnly: true
-          type: string
-        cloudProvider:
-          allOf:
-          - $ref: '#/components/schemas/v1beta1RegionCloudProvider'
-          type: object
-        privateLinkServiceName:
-          readOnly: true
-          type: string
-        privateLinkServiceState:
-          allOf:
-          - $ref: '#/components/schemas/v1beta1PrivateLinkServiceState'
-          type: object
-        tidbNodeGroupDisplayName:
-          readOnly: true
-          type: string
-        accountId:
-          description: Only for GCP private service connections. It's GCP project
-            name.
-          nullable: true
-          readOnly: true
-          type: string
-        host:
-          readOnly: true
-          type: string
-        port:
-          format: int32
-          readOnly: true
-          type: integer
-      required:
-      - endpointId
-      - tidbNodeGroupId
-      type: object
-    v1beta1PrivateLinkServiceState:
-      enum:
-      - CREATING
-      - ACTIVE
-      - DELETING
-      type: string
     v1beta1PublicEndpointSetting:
       example:
         tidbNodeGroupId: tidbNodeGroupId
@@ -5810,10 +5980,22 @@ components:
           type: boolean
         ipAccessList:
           items:
-            $ref: '#/components/schemas/PublicEndpointSettingIpAccessList'
+            $ref: '#/components/schemas/v1beta1PublicEndpointSettingIpAccessList'
           type: array
       required:
       - tidbNodeGroupId
+      type: object
+    v1beta1PublicEndpointSettingIpAccessList:
+      example:
+        description: description
+        cidrNotation: cidrNotation
+      properties:
+        cidrNotation:
+          type: string
+        description:
+          type: string
+      required:
+      - cidrNotation
       type: object
     v1beta1RegionCloudProvider:
       description: |-
@@ -5829,8 +6011,6 @@ components:
       - azure
       - alicloud
       type: string
-    v1beta1ResetRootPasswordResponse:
-      type: object
     v1beta1ResumeClusterResponse:
       example:
         cluster:
@@ -5839,9 +6019,9 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            raftStoreIops: 5
+            raftStoreIops: 2
             storageType: "{}"
-            nodeCount: 1
+            nodeCount: 5
           displayName: foo-bar
           annotations:
             key: annotations
@@ -5857,11 +6037,11 @@ components:
             nodeSpecDisplayName: nodeSpecDisplayName
             nodeChangingProgress: "{}"
             storageSizeGi: 5
-            raftStoreIops: 5
+            raftStoreIops: 2
             storageType: "{}"
-            nodeCount: 1
+            nodeCount: 5
           regionId: regionId
-          port: 2
+          port: 7
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           cloudProvider: "{}"
@@ -5882,7 +6062,9 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
-              tiproxySetting: "{}"
+              tiproxySetting:
+                nodeCount: 1
+                type: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -5900,7 +6082,9 @@ components:
               displayName: displayName
               tidbNodeGroupId: tidbNodeGroupId
               name: name
-              tiproxySetting: "{}"
+              tiproxySetting:
+                nodeCount: 1
+                type: "{}"
               nodeCount: 0
               clusterId: clusterId
               state: "{}"
@@ -5945,6 +6129,16 @@ components:
         iamPrincipal:
           type: string
       type: object
+    v1beta1TidbNodeGroupEndpointConnectionType:
+      description: |2-
+         - PUBLIC: The endpoint is a public endpoint.
+         - VPC_PEERING: The endpoint is a VPC peering endpoint.
+         - PRIVATE_ENDPOINT: The endpoint is a private link endpoint.
+      enum:
+      - PUBLIC
+      - VPC_PEERING
+      - PRIVATE_ENDPOINT
+      type: string
     v1beta1UpdateAuditLogConfigRequestAuditLogConfig:
       properties:
         clusterId:
@@ -6112,6 +6306,15 @@ components:
       - PD
       - TIPROXY
       type: string
+    ClusterService_UpdateLogRedactionPolicy_request:
+      properties:
+        redactLog:
+          nullable: true
+          title: |-
+            Indicates whether to redact sensitive information in logs.
+            Default policy: true (enable log redaction)
+          type: boolean
+      type: object
     Required_:
       properties:
         name:
@@ -6152,9 +6355,7 @@ components:
           - $ref: '#/components/schemas/ClusterNodeChangingProgress'
           type: object
         tiproxySetting:
-          allOf:
-          - $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroupTiProxySetting'
-          type: object
+          $ref: '#/components/schemas/dedicatedv1beta1TidbNodeGroupTiProxySetting'
       required:
       - nodeCount
       title: Required.
@@ -6181,7 +6382,7 @@ components:
           type: boolean
         ipAccessList:
           items:
-            $ref: '#/components/schemas/PublicEndpointSettingIpAccessList'
+            $ref: '#/components/schemas/v1beta1PublicEndpointSettingIpAccessList'
           type: array
       type: object
     PrivateEndpointConnectionService_CreatePrivateEndpointConnection_request:
@@ -6222,7 +6423,7 @@ components:
           type: string
         endpointState:
           allOf:
-          - $ref: '#/components/schemas/PrivateEndpointConnectionEndpointState'
+          - $ref: '#/components/schemas/dedicatedv1beta1PrivateEndpointConnectionEndpointState'
           type: object
         message:
           readOnly: true
@@ -6243,7 +6444,7 @@ components:
           type: string
         privateLinkServiceState:
           allOf:
-          - $ref: '#/components/schemas/v1beta1PrivateLinkServiceState'
+          - $ref: '#/components/schemas/dedicatedv1beta1PrivateLinkServiceState'
           type: object
         tidbNodeGroupDisplayName:
           readOnly: true

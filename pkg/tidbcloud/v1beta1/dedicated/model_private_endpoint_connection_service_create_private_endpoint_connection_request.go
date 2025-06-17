@@ -29,15 +29,15 @@ type PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest stru
 	// The endpoint ID of the private link connection. For AWS, it's VPC endpoint ID. For GCP, it's private service connect endpoint ID. For Azure, it's private endpoint resource ID.
 	EndpointId string `json:"endpointId"`
 	// The private IP address of the private endpoint in the user's vNet. TiDB Cloud will setup a public DNS record for this private IP address. So the user can use DNS address to connect to the cluster. Only available for Azure clusters.
-	PrivateIpAddress         NullableString                          `json:"privateIpAddress,omitempty"`
-	EndpointState            *PrivateEndpointConnectionEndpointState `json:"endpointState,omitempty"`
-	Message                  *string                                 `json:"message,omitempty"`
-	RegionId                 *string                                 `json:"regionId,omitempty"`
-	RegionDisplayName        *string                                 `json:"regionDisplayName,omitempty"`
-	CloudProvider            *V1beta1RegionCloudProvider             `json:"cloudProvider,omitempty"`
-	PrivateLinkServiceName   *string                                 `json:"privateLinkServiceName,omitempty"`
-	PrivateLinkServiceState  *V1beta1PrivateLinkServiceState         `json:"privateLinkServiceState,omitempty"`
-	TidbNodeGroupDisplayName *string                                 `json:"tidbNodeGroupDisplayName,omitempty"`
+	PrivateIpAddress         NullableString                                          `json:"privateIpAddress,omitempty"`
+	EndpointState            *Dedicatedv1beta1PrivateEndpointConnectionEndpointState `json:"endpointState,omitempty"`
+	Message                  *string                                                 `json:"message,omitempty"`
+	RegionId                 *string                                                 `json:"regionId,omitempty"`
+	RegionDisplayName        *string                                                 `json:"regionDisplayName,omitempty"`
+	CloudProvider            *V1beta1RegionCloudProvider                             `json:"cloudProvider,omitempty"`
+	PrivateLinkServiceName   *string                                                 `json:"privateLinkServiceName,omitempty"`
+	PrivateLinkServiceState  *Dedicatedv1beta1PrivateLinkServiceState                `json:"privateLinkServiceState,omitempty"`
+	TidbNodeGroupDisplayName *string                                                 `json:"tidbNodeGroupDisplayName,omitempty"`
 	// Only for GCP private service connections. It's GCP project name.
 	AccountId            NullableString `json:"accountId,omitempty"`
 	Host                 *string        `json:"host,omitempty"`
@@ -293,9 +293,9 @@ func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest)
 }
 
 // GetEndpointState returns the EndpointState field value if set, zero value otherwise.
-func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) GetEndpointState() PrivateEndpointConnectionEndpointState {
+func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) GetEndpointState() Dedicatedv1beta1PrivateEndpointConnectionEndpointState {
 	if o == nil || IsNil(o.EndpointState) {
-		var ret PrivateEndpointConnectionEndpointState
+		var ret Dedicatedv1beta1PrivateEndpointConnectionEndpointState
 		return ret
 	}
 	return *o.EndpointState
@@ -303,7 +303,7 @@ func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest)
 
 // GetEndpointStateOk returns a tuple with the EndpointState field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) GetEndpointStateOk() (*PrivateEndpointConnectionEndpointState, bool) {
+func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) GetEndpointStateOk() (*Dedicatedv1beta1PrivateEndpointConnectionEndpointState, bool) {
 	if o == nil || IsNil(o.EndpointState) {
 		return nil, false
 	}
@@ -319,8 +319,8 @@ func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest)
 	return false
 }
 
-// SetEndpointState gets a reference to the given PrivateEndpointConnectionEndpointState and assigns it to the EndpointState field.
-func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) SetEndpointState(v PrivateEndpointConnectionEndpointState) {
+// SetEndpointState gets a reference to the given Dedicatedv1beta1PrivateEndpointConnectionEndpointState and assigns it to the EndpointState field.
+func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) SetEndpointState(v Dedicatedv1beta1PrivateEndpointConnectionEndpointState) {
 	o.EndpointState = &v
 }
 
@@ -485,9 +485,9 @@ func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest)
 }
 
 // GetPrivateLinkServiceState returns the PrivateLinkServiceState field value if set, zero value otherwise.
-func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) GetPrivateLinkServiceState() V1beta1PrivateLinkServiceState {
+func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) GetPrivateLinkServiceState() Dedicatedv1beta1PrivateLinkServiceState {
 	if o == nil || IsNil(o.PrivateLinkServiceState) {
-		var ret V1beta1PrivateLinkServiceState
+		var ret Dedicatedv1beta1PrivateLinkServiceState
 		return ret
 	}
 	return *o.PrivateLinkServiceState
@@ -495,7 +495,7 @@ func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest)
 
 // GetPrivateLinkServiceStateOk returns a tuple with the PrivateLinkServiceState field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) GetPrivateLinkServiceStateOk() (*V1beta1PrivateLinkServiceState, bool) {
+func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) GetPrivateLinkServiceStateOk() (*Dedicatedv1beta1PrivateLinkServiceState, bool) {
 	if o == nil || IsNil(o.PrivateLinkServiceState) {
 		return nil, false
 	}
@@ -511,8 +511,8 @@ func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest)
 	return false
 }
 
-// SetPrivateLinkServiceState gets a reference to the given V1beta1PrivateLinkServiceState and assigns it to the PrivateLinkServiceState field.
-func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) SetPrivateLinkServiceState(v V1beta1PrivateLinkServiceState) {
+// SetPrivateLinkServiceState gets a reference to the given Dedicatedv1beta1PrivateLinkServiceState and assigns it to the PrivateLinkServiceState field.
+func (o *PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest) SetPrivateLinkServiceState(v Dedicatedv1beta1PrivateLinkServiceState) {
 	o.PrivateLinkServiceState = &v
 }
 

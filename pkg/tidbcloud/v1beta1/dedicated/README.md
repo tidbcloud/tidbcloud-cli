@@ -81,6 +81,7 @@ Class | Method | HTTP request | Description
 *ClusterServiceAPI* | [**ClusterServiceCreateCluster**](docs/ClusterServiceAPI.md#clusterservicecreatecluster) | **Post** /clusters | Create a cluster
 *ClusterServiceAPI* | [**ClusterServiceDeleteCluster**](docs/ClusterServiceAPI.md#clusterservicedeletecluster) | **Delete** /clusters/{clusterId} | Delete a cluster
 *ClusterServiceAPI* | [**ClusterServiceGetCluster**](docs/ClusterServiceAPI.md#clusterservicegetcluster) | **Get** /clusters/{clusterId} | Get a cluster
+*ClusterServiceAPI* | [**ClusterServiceGetLogRedactionPolicy**](docs/ClusterServiceAPI.md#clusterservicegetlogredactionpolicy) | **Get** /clusters/{clusterId}/logRedactionPolicy | Get log redaction policy
 *ClusterServiceAPI* | [**ClusterServiceGetNodeInstance**](docs/ClusterServiceAPI.md#clusterservicegetnodeinstance) | **Get** /clusters/{clusterId}/nodeInstances/{instanceId} | Get a node instance
 *ClusterServiceAPI* | [**ClusterServiceListClusters**](docs/ClusterServiceAPI.md#clusterservicelistclusters) | **Get** /clusters | List clusters
 *ClusterServiceAPI* | [**ClusterServiceListNodeInstances**](docs/ClusterServiceAPI.md#clusterservicelistnodeinstances) | **Get** /clusters/{clusterId}/nodeInstances | List node instances
@@ -89,6 +90,7 @@ Class | Method | HTTP request | Description
 *ClusterServiceAPI* | [**ClusterServiceResumeCluster**](docs/ClusterServiceAPI.md#clusterserviceresumecluster) | **Post** /clusters/{clusterId}:resumeCluster | Resume a cluster
 *ClusterServiceAPI* | [**ClusterServiceShowNodeQuota**](docs/ClusterServiceAPI.md#clusterserviceshownodequota) | **Get** /clusters:showNodeQuota | Show node quota across the caller&#39;s organization
 *ClusterServiceAPI* | [**ClusterServiceUpdateCluster**](docs/ClusterServiceAPI.md#clusterserviceupdatecluster) | **Patch** /clusters/{cluster.clusterId} | Update a cluster
+*ClusterServiceAPI* | [**ClusterServiceUpdateLogRedactionPolicy**](docs/ClusterServiceAPI.md#clusterserviceupdatelogredactionpolicy) | **Patch** /clusters/{logRedactionPolicy.clusterId}/logRedactionPolicy | Update log redaction policy
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceCreateAuditLogConfig**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogservicecreateauditlogconfig) | **Post** /clusters/{auditLogConfig.clusterId}/auditLogConfig | Create the audit log config for a cluster
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceCreateAuditLogFilterRule**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogservicecreateauditlogfilterrule) | **Post** /clusters/{auditLogFilterRule.clusterId}/auditLogFilterRules | Create an audit log filter rule
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceDeleteAuditLogFilterRule**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogservicedeleteauditlogfilterrule) | **Delete** /clusters/{clusterId}/auditLogFilterRules/{auditLogFilterRuleId} | Delete an audit log filter rule
@@ -138,10 +140,11 @@ Class | Method | HTTP request | Description
  - [ClusterNodeChangingProgress](docs/ClusterNodeChangingProgress.md)
  - [ClusterServiceListClustersClusterStatesParameterInner](docs/ClusterServiceListClustersClusterStatesParameterInner.md)
  - [ClusterServiceListNodeInstancesComponentTypeParameter](docs/ClusterServiceListNodeInstancesComponentTypeParameter.md)
- - [ClusterServiceResetRootPasswordBody](docs/ClusterServiceResetRootPasswordBody.md)
  - [ClusterServiceUpdateClusterRequest](docs/ClusterServiceUpdateClusterRequest.md)
+ - [ClusterServiceUpdateLogRedactionPolicyRequest](docs/ClusterServiceUpdateLogRedactionPolicyRequest.md)
  - [Commonv1beta1ClusterState](docs/Commonv1beta1ClusterState.md)
  - [Commonv1beta1Region](docs/Commonv1beta1Region.md)
+ - [Commonv1beta1ServicePlan](docs/Commonv1beta1ServicePlan.md)
  - [DatabaseAuditLogServiceUpdateAuditLogConfigRequest](docs/DatabaseAuditLogServiceUpdateAuditLogConfigRequest.md)
  - [Dedicatedv1beta1AuditLogConfig](docs/Dedicatedv1beta1AuditLogConfig.md)
  - [Dedicatedv1beta1AuditLogFile](docs/Dedicatedv1beta1AuditLogFile.md)
@@ -152,12 +155,17 @@ Class | Method | HTTP request | Description
  - [Dedicatedv1beta1GenerateAuditLogFileDownloadAddressResponse](docs/Dedicatedv1beta1GenerateAuditLogFileDownloadAddressResponse.md)
  - [Dedicatedv1beta1ListMaintenanceTasksResponse](docs/Dedicatedv1beta1ListMaintenanceTasksResponse.md)
  - [Dedicatedv1beta1ListMaintenanceWindowsResponse](docs/Dedicatedv1beta1ListMaintenanceWindowsResponse.md)
+ - [Dedicatedv1beta1ListPrivateEndpointConnectionsResponse](docs/Dedicatedv1beta1ListPrivateEndpointConnectionsResponse.md)
  - [Dedicatedv1beta1ListTidbNodeGroupsResponse](docs/Dedicatedv1beta1ListTidbNodeGroupsResponse.md)
  - [Dedicatedv1beta1ListVpcPeeringsResponse](docs/Dedicatedv1beta1ListVpcPeeringsResponse.md)
+ - [Dedicatedv1beta1LogRedactionPolicy](docs/Dedicatedv1beta1LogRedactionPolicy.md)
  - [Dedicatedv1beta1MaintenanceTask](docs/Dedicatedv1beta1MaintenanceTask.md)
  - [Dedicatedv1beta1MaintenanceTaskState](docs/Dedicatedv1beta1MaintenanceTaskState.md)
  - [Dedicatedv1beta1MaintenanceWindow](docs/Dedicatedv1beta1MaintenanceWindow.md)
+ - [Dedicatedv1beta1PrivateEndpointConnection](docs/Dedicatedv1beta1PrivateEndpointConnection.md)
+ - [Dedicatedv1beta1PrivateEndpointConnectionEndpointState](docs/Dedicatedv1beta1PrivateEndpointConnectionEndpointState.md)
  - [Dedicatedv1beta1PrivateLinkService](docs/Dedicatedv1beta1PrivateLinkService.md)
+ - [Dedicatedv1beta1PrivateLinkServiceState](docs/Dedicatedv1beta1PrivateLinkServiceState.md)
  - [Dedicatedv1beta1QueryAuditLogFilesResponse](docs/Dedicatedv1beta1QueryAuditLogFilesResponse.md)
  - [Dedicatedv1beta1TidbNodeGroup](docs/Dedicatedv1beta1TidbNodeGroup.md)
  - [Dedicatedv1beta1TidbNodeGroupEndpoint](docs/Dedicatedv1beta1TidbNodeGroupEndpoint.md)
@@ -165,15 +173,12 @@ Class | Method | HTTP request | Description
  - [Dedicatedv1beta1TidbNodeGroupTiProxySetting](docs/Dedicatedv1beta1TidbNodeGroupTiProxySetting.md)
  - [Dedicatedv1beta1VpcPeering](docs/Dedicatedv1beta1VpcPeering.md)
  - [Dedicatedv1beta1VpcPeeringState](docs/Dedicatedv1beta1VpcPeeringState.md)
- - [EndpointConnectionType](docs/EndpointConnectionType.md)
  - [GooglerpcStatus](docs/GooglerpcStatus.md)
  - [MaintenanceServiceUpdateMaintenanceTaskRequest](docs/MaintenanceServiceUpdateMaintenanceTaskRequest.md)
  - [MaintenanceServiceUpdateMaintenanceWindowRequest](docs/MaintenanceServiceUpdateMaintenanceWindowRequest.md)
- - [PrivateEndpointConnectionEndpointState](docs/PrivateEndpointConnectionEndpointState.md)
  - [PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest](docs/PrivateEndpointConnectionServiceCreatePrivateEndpointConnectionRequest.md)
  - [PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter](docs/PrivateEndpointConnectionServiceListPrivateEndpointConnectionsCloudProviderParameter.md)
  - [ProtobufAny](docs/ProtobufAny.md)
- - [PublicEndpointSettingIpAccessList](docs/PublicEndpointSettingIpAccessList.md)
  - [Required](docs/Required.md)
  - [Required1](docs/Required1.md)
  - [Required2](docs/Required2.md)
@@ -187,27 +192,27 @@ Class | Method | HTTP request | Description
  - [TidbNodeGroupTiProxyType](docs/TidbNodeGroupTiProxyType.md)
  - [UpdateClusterRequestTidbNodeSettingTidbNodeGroup](docs/UpdateClusterRequestTidbNodeSettingTidbNodeGroup.md)
  - [V1beta1AuditLogFilterRule](docs/V1beta1AuditLogFilterRule.md)
+ - [V1beta1ClusterServiceResetRootPasswordBody](docs/V1beta1ClusterServiceResetRootPasswordBody.md)
  - [V1beta1ClusterStorageNodeSetting](docs/V1beta1ClusterStorageNodeSetting.md)
  - [V1beta1ClusterTidbNodeSetting](docs/V1beta1ClusterTidbNodeSetting.md)
  - [V1beta1ListAuditLogFilterRulesResponse](docs/V1beta1ListAuditLogFilterRulesResponse.md)
  - [V1beta1ListNetworkContainersResponse](docs/V1beta1ListNetworkContainersResponse.md)
  - [V1beta1ListNodeInstancesResponse](docs/V1beta1ListNodeInstancesResponse.md)
  - [V1beta1ListNodeSpecsResponse](docs/V1beta1ListNodeSpecsResponse.md)
- - [V1beta1ListPrivateEndpointConnectionsResponse](docs/V1beta1ListPrivateEndpointConnectionsResponse.md)
  - [V1beta1NetworkContainer](docs/V1beta1NetworkContainer.md)
  - [V1beta1NetworkContainerState](docs/V1beta1NetworkContainerState.md)
  - [V1beta1NodeInstance](docs/V1beta1NodeInstance.md)
  - [V1beta1NodeInstanceState](docs/V1beta1NodeInstanceState.md)
  - [V1beta1NodeSpec](docs/V1beta1NodeSpec.md)
  - [V1beta1PauseClusterResponse](docs/V1beta1PauseClusterResponse.md)
- - [V1beta1PrivateEndpointConnection](docs/V1beta1PrivateEndpointConnection.md)
- - [V1beta1PrivateLinkServiceState](docs/V1beta1PrivateLinkServiceState.md)
  - [V1beta1PublicEndpointSetting](docs/V1beta1PublicEndpointSetting.md)
+ - [V1beta1PublicEndpointSettingIpAccessList](docs/V1beta1PublicEndpointSettingIpAccessList.md)
  - [V1beta1RegionCloudProvider](docs/V1beta1RegionCloudProvider.md)
  - [V1beta1ResumeClusterResponse](docs/V1beta1ResumeClusterResponse.md)
  - [V1beta1ShowCloudProvidersResponse](docs/V1beta1ShowCloudProvidersResponse.md)
  - [V1beta1ShowNodeQuotaResponse](docs/V1beta1ShowNodeQuotaResponse.md)
  - [V1beta1ShowObjectStorageAccessIamPrincipalResponse](docs/V1beta1ShowObjectStorageAccessIamPrincipalResponse.md)
+ - [V1beta1TidbNodeGroupEndpointConnectionType](docs/V1beta1TidbNodeGroupEndpointConnectionType.md)
  - [V1beta1UpdateAuditLogConfigRequestAuditLogConfig](docs/V1beta1UpdateAuditLogConfigRequestAuditLogConfig.md)
  - [V1beta1UpdateClusterRequestCluster](docs/V1beta1UpdateClusterRequestCluster.md)
  - [V1beta1UpdateClusterRequestStorageNodeSetting](docs/V1beta1UpdateClusterRequestStorageNodeSetting.md)
