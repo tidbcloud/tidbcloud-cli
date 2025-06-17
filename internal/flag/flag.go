@@ -96,6 +96,13 @@ const (
 	ParentTimestamp        string = "parent-timestamp"
 	PublicEndpointDisabled string = "disable-public-endpoint"
 	ParquetCompression     string = "parquet.compression"
+	StartDate              string = "start-date"
+	EndDate                string = "end-date"
+
+	AuditLogUnRedacted     string = "unredacted"
+	AuditLogFilterRuleName string = "name"
+	AuditLogFilterRule     string = "rule"
+	Enabled                string = "enabled"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."

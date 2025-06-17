@@ -28,9 +28,7 @@ import (
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
-	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
-	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 )
 
 var wg = sync.WaitGroup{}
@@ -39,23 +37,18 @@ var wg = sync.WaitGroup{}
 type downloadPool struct {
 	path        string
 	concurrency int
-	client      cloud.TiDBCloudClient
-	// The size of the batch to request download url
-	clusterID string
-	exportID  string
-	h         *internal.Helper
+	h           *internal.Helper
 
 	fileNames []string
 	jobs      chan *downloadJob
 	results   chan *downloadResult
+
+	generateFunc func(context.Context, []string) (map[string]*string, error)
 }
 
-func NewDownloadPool(h *internal.Helper, path string,
-	concurrency int, exportID, clusterID string, fileNames []string, client cloud.TiDBCloudClient) (*downloadPool, error) {
+func NewDownloadPool(h *internal.Helper, path string, concurrency int, fileNames []string,
+	generateFunc func(context.Context, []string) (map[string]*string, error)) (*downloadPool, error) {
 	count := len(fileNames)
-	if count <= 0 {
-		return nil, errors.New("no files to download")
-	}
 	if concurrency <= 0 {
 		concurrency = DefaultConcurrency
 	}
@@ -68,15 +61,13 @@ func NewDownloadPool(h *internal.Helper, path string,
 	results := make(chan *downloadResult, count)
 
 	return &downloadPool{
-		h:           h,
-		path:        path,
-		concurrency: concurrency,
-		client:      client,
-		clusterID:   clusterID,
-		exportID:    exportID,
-		jobs:        jobs,
-		results:     results,
-		fileNames:   fileNames,
+		h:            h,
+		path:         path,
+		concurrency:  concurrency,
+		jobs:         jobs,
+		results:      results,
+		fileNames:    fileNames,
+		generateFunc: generateFunc,
 	}, nil
 }
 
@@ -140,7 +131,7 @@ func (d *downloadPool) Start() error {
 		}
 		downloadResults = append(downloadResults, result)
 	}
-	fmt.Fprintf(d.h.IOStreams.Out, generateDownloadSummary(succeededCount, skippedCount, failedCount))
+	fmt.Fprintf(d.h.IOStreams.Out, GenerateDownloadSummary(succeededCount, skippedCount, failedCount))
 	index := 0
 	for _, f := range downloadResults {
 		if f.status != Succeeded {
@@ -164,10 +155,7 @@ func (d *downloadPool) produce() {
 		}
 		downloadFileNames := d.fileNames[:batchSize]
 		d.fileNames = d.fileNames[batchSize:]
-		body := &export.ExportServiceDownloadExportFilesBody{
-			FileNames: downloadFileNames,
-		}
-		resp, err := d.client.DownloadExportFiles(ctx, d.clusterID, d.exportID, body)
+		urlMap, err := d.generateFunc(ctx, downloadFileNames)
 		if err != nil {
 			for _, name := range downloadFileNames {
 				job := &downloadJob{fileName: name, err: err}
@@ -175,10 +163,10 @@ func (d *downloadPool) produce() {
 			}
 			continue
 		}
-		for _, file := range resp.Files {
+		for name, url := range urlMap {
 			job := &downloadJob{
-				fileName:    *file.Name,
-				downloadUrl: file.Url,
+				fileName:    name,
+				downloadUrl: url,
 			}
 			d.jobs <- job
 		}
@@ -233,7 +221,7 @@ func (d *downloadPool) consume() {
 	}
 }
 
-func generateDownloadSummary(succeededCount, skippedCount, failedCount int) string {
+func GenerateDownloadSummary(succeededCount, skippedCount, failedCount int) string {
 	summaryMessage := fmt.Sprintf("%s %s %s", color.BlueString("download summary:"), color.GreenString("succeeded: %d", succeededCount), color.GreenString("skipped: %d", skippedCount))
 	if failedCount > 0 {
 		summaryMessage += color.RedString(" failed: %d", failedCount)

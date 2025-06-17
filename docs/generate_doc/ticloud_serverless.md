@@ -19,6 +19,7 @@ Manage TiDB Cloud Serverless clusters
 ### SEE ALSO
 
 * [ticloud](ticloud.md)	 - CLI tool to manage TiDB Cloud
+* [ticloud serverless audit-log](ticloud_serverless_audit-log.md)	 - Manage TiDB Cloud Serverless database audit logging
 * [ticloud serverless authorized-network](ticloud_serverless_authorized-network.md)	 - Manage TiDB Cloud Serverless cluster authorized networks
 * [ticloud serverless branch](ticloud_serverless_branch.md)	 - Manage TiDB Cloud Serverless branches
 * [ticloud serverless capacity](ticloud_serverless_capacity.md)	 - Set capacity for a TiDB Cloud Serverless cluster

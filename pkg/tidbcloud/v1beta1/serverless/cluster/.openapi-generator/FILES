@@ -7,6 +7,7 @@ api_serverless_service.go
 client.go
 configuration.go
 git_push.sh
+model_cluster_cluster_plan.go
 model_cluster_high_availability_type.go
 model_cluster_spending_limit.go
 model_cluster_usage.go
@@ -33,7 +34,6 @@ model_v1beta1_batch_get_clusters_response.go
 model_v1beta1_cluster_audit_log_config.go
 model_v1beta1_cluster_auto_scaling.go
 model_v1beta1_cluster_automated_backup_policy.go
-model_v1beta1_cluster_cluster_plan.go
 model_v1beta1_cluster_encryption_config.go
 model_v1beta1_cluster_endpoints.go
 model_v1beta1_partial_update_cluster_request_partial_update_cluster.go

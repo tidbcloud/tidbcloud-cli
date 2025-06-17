@@ -28,6 +28,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/version"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/pingchat"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/auditlog"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
@@ -115,6 +116,20 @@ type TiDBCloudClient interface {
 	DeleteSQLUser(ctx context.Context, clusterID string, userName string) (*iam.ApiBasicResp, error)
 
 	UpdateSQLUser(ctx context.Context, clusterID string, userName string, body *iam.ApiUpdateSqlUserReq) (*iam.ApiSqlUser, error)
+
+	DownloadAuditLogs(ctx context.Context, clusterID string, body *auditlog.AuditLogServiceDownloadAuditLogsBody) (*auditlog.DownloadAuditLogsResponse, error)
+
+	ListAuditLogs(ctx context.Context, clusterID string, pageSize *int32, pageToken *string, date *string) (*auditlog.ListAuditLogsResponse, error)
+
+	CreateAuditLogFilterRule(ctx context.Context, clusterID string, body *auditlog.AuditLogServiceCreateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error)
+
+	DeleteAuditLogFilterRule(ctx context.Context, clusterID, name string) (*auditlog.AuditLogFilterRule, error)
+
+	GetAuditLogFilterRule(ctx context.Context, clusterID, name string) (*auditlog.AuditLogFilterRule, error)
+
+	ListAuditLogFilterRules(ctx context.Context, clusterID string) (*auditlog.ListAuditLogFilterRulesResponse, error)
+
+	UpdateAuditLogFilterRule(ctx context.Context, clusterID, name string, body *auditlog.AuditLogServiceUpdateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error)
 }
 type ClientDelegate struct {
 	ic  *iam.APIClient
@@ -124,11 +139,12 @@ type ClientDelegate struct {
 	sc  *cluster.APIClient
 	sic *imp.APIClient
 	ec  *export.APIClient
+	alc *auditlog.APIClient
 }
 
 func NewClientDelegateWithToken(token string, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*ClientDelegate, error) {
 	transport := NewBearTokenTransport(token)
-	bc, sc, pc, brc, sic, ec, ic, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint)
+	bc, sc, pc, brc, sic, ec, ic, alc, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -140,12 +156,13 @@ func NewClientDelegateWithToken(token string, apiUrl string, serverlessEndpoint 
 		ec:  ec,
 		ic:  ic,
 		sic: sic,
+		alc: alc,
 	}, nil
 }
 
 func NewClientDelegateWithApiKey(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*ClientDelegate, error) {
 	transport := NewDigestTransport(publicKey, privateKey)
-	bc, sc, pc, brc, sic, ec, ic, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint)
+	bc, sc, pc, brc, sic, ec, ic, alc, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -157,6 +174,7 @@ func NewClientDelegateWithApiKey(publicKey string, privateKey string, apiUrl str
 		ec:  ec,
 		ic:  ic,
 		sic: sic,
+		alc: alc,
 	}, nil
 }
 
@@ -488,7 +506,64 @@ func (d *ClientDelegate) UpdateSQLUser(ctx context.Context, clusterID string, us
 	return res, parseError(err, h)
 }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *pingchat.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, error) {
+func (d *ClientDelegate) ListAuditLogs(ctx context.Context, clusterID string, pageSize *int32, pageToken *string, date *string) (*auditlog.ListAuditLogsResponse, error) {
+	r := d.alc.AuditLogServiceAPI.AuditLogServiceListAuditLogs(ctx, clusterID)
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	if date != nil {
+		r = r.Date(*date)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) DownloadAuditLogs(ctx context.Context, clusterID string, body *auditlog.AuditLogServiceDownloadAuditLogsBody) (*auditlog.DownloadAuditLogsResponse, error) {
+	r := d.alc.AuditLogServiceAPI.AuditLogServiceDownloadAuditLogs(ctx, clusterID)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) CreateAuditLogFilterRule(ctx context.Context, clusterID string, body *auditlog.AuditLogServiceCreateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error) {
+	r := d.alc.AuditLogServiceAPI.AuditLogServiceCreateAuditLogFilterRule(ctx, clusterID)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) DeleteAuditLogFilterRule(ctx context.Context, clusterID, name string) (*auditlog.AuditLogFilterRule, error) {
+	res, h, err := d.alc.AuditLogServiceAPI.AuditLogServiceDeleteAuditLogFilterRule(ctx, clusterID, name).Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) GetAuditLogFilterRule(ctx context.Context, clusterID, name string) (*auditlog.AuditLogFilterRule, error) {
+	res, h, err := d.alc.AuditLogServiceAPI.AuditLogServiceGetAuditLogFilterRule(ctx, clusterID, name).Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) ListAuditLogFilterRules(ctx context.Context, clusterID string) (*auditlog.ListAuditLogFilterRulesResponse, error) {
+	res, h, err := d.alc.AuditLogServiceAPI.AuditLogServiceListAuditLogFilterRules(ctx, clusterID).Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) UpdateAuditLogFilterRule(ctx context.Context, clusterID, name string, body *auditlog.AuditLogServiceUpdateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error) {
+	r := d.alc.AuditLogServiceAPI.AuditLogServiceUpdateAuditLogFilterRule(ctx, clusterID, name)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
+}
+
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *pingchat.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, *auditlog.APIClient, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}
@@ -496,18 +571,18 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	// v1beta api
 	u, err := prop.ValidateApiUrl(apiUrl)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 
 	// v1beta1 api (serverless)
 	serverlessURL, err := prop.ValidateApiUrl(serverlessEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 
 	iamURL, err := prop.ValidateApiUrl(iamEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 
 	userAgent := fmt.Sprintf("%s/%s", config.CliName, version.Version)
@@ -547,10 +622,15 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	pingchatCfg.Host = u.Host
 	pingchatCfg.UserAgent = userAgent
 
+	auditLogCfg := auditlog.NewConfiguration()
+	auditLogCfg.HTTPClient = httpclient
+	auditLogCfg.Host = serverlessURL.Host
+	auditLogCfg.UserAgent = userAgent
+
 	return branch.NewAPIClient(branchCfg), cluster.NewAPIClient(clusterCfg),
 		pingchat.NewAPIClient(pingchatCfg), br.NewAPIClient(backupRestoreCfg),
 		imp.NewAPIClient(importCfg), export.NewAPIClient(exportCfg),
-		iam.NewAPIClient(iamCfg), nil
+		iam.NewAPIClient(iamCfg), auditlog.NewAPIClient(auditLogCfg), nil
 }
 
 func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {

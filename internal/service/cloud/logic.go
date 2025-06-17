@@ -20,6 +20,7 @@ import (
 	"slices"
 	"time"
 
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/auditlog"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
@@ -216,12 +217,12 @@ func GetSelectedCluster(ctx context.Context, projectID string, pageSize int64, c
 	return cluster.(*Cluster), nil
 }
 
-func GetSelectedField(mutableFields []string) (string, error) {
+func GetSelectedField(mutableFields []string, describe string) (string, error) {
 	var items = make([]interface{}, 0, len(mutableFields))
 	for _, item := range mutableFields {
 		items = append(items, item)
 	}
-	model, err := ui.InitialSelectModel(items, "Choose the field to update:")
+	model, err := ui.InitialSelectModel(items, describe)
 	if err != nil {
 		return "", errors.Trace(err)
 	}
@@ -860,6 +861,48 @@ func GetAllExportFiles(ctx context.Context, cID string, eID string, d TiDBCloudC
 	return items, nil
 }
 
+// GetAllAuditLogs assumes that the start date and end date are valid
+func GetAllAuditLogs(ctx context.Context, cID, sDate, eDate string, d TiDBCloudClient) ([]auditlog.AuditLog, error) {
+	var auditLogs []auditlog.AuditLog
+	for date := sDate; date <= eDate; date = getNextDay(date) {
+		auditLogsOneDay, err := GetOneDateAuditLogs(ctx, cID, date, d)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		auditLogs = append(auditLogs, auditLogsOneDay...)
+	}
+	return auditLogs, nil
+}
+
+func getNextDay(date string) string {
+	t, _ := time.Parse(time.DateOnly, date)
+	t = t.AddDate(0, 0, 1)
+	return t.Format(time.DateOnly)
+}
+
+func GetOneDateAuditLogs(ctx context.Context, cID, date string, d TiDBCloudClient) ([]auditlog.AuditLog, error) {
+	var auditLogs []auditlog.AuditLog
+	var pageSize int32 = 1000
+	var pageToken *string
+	resp, err := d.ListAuditLogs(ctx, cID, &pageSize, nil, &date)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	auditLogs = append(auditLogs, resp.AuditLogs...)
+	for {
+		pageToken = resp.NextPageToken
+		if util.IsNilOrEmpty(pageToken) {
+			break
+		}
+		resp, err = d.ListAuditLogs(ctx, cID, &pageSize, pageToken, &date)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		auditLogs = append(auditLogs, resp.AuditLogs...)
+	}
+	return auditLogs, nil
+}
+
 func RetrieveAuthorizedNetworks(ctx context.Context, clusterID string, d TiDBCloudClient) ([]cluster.EndpointsPublicAuthorizedNetwork, error) {
 	cluster, err := d.GetCluster(ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
 	if err != nil {
@@ -906,4 +949,41 @@ func GetSelectedAuthorizedNetwork(ctx context.Context, clusterID string, client 
 		return "", "", errors.New("no authorized network selected")
 	}
 	return authorizedNetwork.(*AuthorizedNetwork).StartIPAddress, authorizedNetwork.(*AuthorizedNetwork).EndIPAddress, nil
+}
+
+func GetSelectedRuleName(ctx context.Context, clusterID string, client TiDBCloudClient) (string, error) {
+	rulesResp, err := client.ListAuditLogFilterRules(ctx, clusterID)
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if len(rulesResp.FilterRules) == 0 {
+		return "", fmt.Errorf("no audit log filter rules found")
+	}
+
+	var items = make([]interface{}, 0, len(rulesResp.FilterRules))
+	for _, rule := range rulesResp.FilterRules {
+		items = append(items, rule.Name)
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the audit log filter rule:")
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	model.EnableFilter()
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+
+	p := tea.NewProgram(model)
+	ruleModel, err := p.Run()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := ruleModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	selected := ruleModel.(ui.SelectModel).GetSelectedItem()
+	if selected == nil {
+		return "", errors.New("no filter rule selected")
+	}
+	return selected.(string), nil
 }
