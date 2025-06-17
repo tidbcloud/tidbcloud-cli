@@ -26,7 +26,7 @@ type V1beta1NetworkContainer struct {
 	Labels   *map[string]string `json:"labels,omitempty"`
 	RegionId string             `json:"regionId"`
 	// If not set, the default cidr of the region will be used.
-	CidrNotion        *string                       `json:"cidrNotion,omitempty"`
+	CidrNotation      *string                       `json:"cidrNotation,omitempty"`
 	CloudProvider     *V1beta1RegionCloudProvider   `json:"cloudProvider,omitempty"`
 	State             *V1beta1NetworkContainerState `json:"state,omitempty"`
 	RegionDisplayName *string                       `json:"regionDisplayName,omitempty"`
@@ -175,36 +175,36 @@ func (o *V1beta1NetworkContainer) SetRegionId(v string) {
 	o.RegionId = v
 }
 
-// GetCidrNotion returns the CidrNotion field value if set, zero value otherwise.
-func (o *V1beta1NetworkContainer) GetCidrNotion() string {
-	if o == nil || IsNil(o.CidrNotion) {
+// GetCidrNotation returns the CidrNotation field value if set, zero value otherwise.
+func (o *V1beta1NetworkContainer) GetCidrNotation() string {
+	if o == nil || IsNil(o.CidrNotation) {
 		var ret string
 		return ret
 	}
-	return *o.CidrNotion
+	return *o.CidrNotation
 }
 
-// GetCidrNotionOk returns a tuple with the CidrNotion field value if set, nil otherwise
+// GetCidrNotationOk returns a tuple with the CidrNotation field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1NetworkContainer) GetCidrNotionOk() (*string, bool) {
-	if o == nil || IsNil(o.CidrNotion) {
+func (o *V1beta1NetworkContainer) GetCidrNotationOk() (*string, bool) {
+	if o == nil || IsNil(o.CidrNotation) {
 		return nil, false
 	}
-	return o.CidrNotion, true
+	return o.CidrNotation, true
 }
 
-// HasCidrNotion returns a boolean if a field has been set.
-func (o *V1beta1NetworkContainer) HasCidrNotion() bool {
-	if o != nil && !IsNil(o.CidrNotion) {
+// HasCidrNotation returns a boolean if a field has been set.
+func (o *V1beta1NetworkContainer) HasCidrNotation() bool {
+	if o != nil && !IsNil(o.CidrNotation) {
 		return true
 	}
 
 	return false
 }
 
-// SetCidrNotion gets a reference to the given string and assigns it to the CidrNotion field.
-func (o *V1beta1NetworkContainer) SetCidrNotion(v string) {
-	o.CidrNotion = &v
+// SetCidrNotation gets a reference to the given string and assigns it to the CidrNotation field.
+func (o *V1beta1NetworkContainer) SetCidrNotation(v string) {
+	o.CidrNotation = &v
 }
 
 // GetCloudProvider returns the CloudProvider field value if set, zero value otherwise.
@@ -355,8 +355,8 @@ func (o V1beta1NetworkContainer) ToMap() (map[string]interface{}, error) {
 		toSerialize["labels"] = o.Labels
 	}
 	toSerialize["regionId"] = o.RegionId
-	if !IsNil(o.CidrNotion) {
-		toSerialize["cidrNotion"] = o.CidrNotion
+	if !IsNil(o.CidrNotation) {
+		toSerialize["cidrNotation"] = o.CidrNotation
 	}
 	if !IsNil(o.CloudProvider) {
 		toSerialize["cloudProvider"] = o.CloudProvider
@@ -417,7 +417,7 @@ func (o *V1beta1NetworkContainer) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "networkContainerId")
 		delete(additionalProperties, "labels")
 		delete(additionalProperties, "regionId")
-		delete(additionalProperties, "cidrNotion")
+		delete(additionalProperties, "cidrNotation")
 		delete(additionalProperties, "cloudProvider")
 		delete(additionalProperties, "state")
 		delete(additionalProperties, "regionDisplayName")

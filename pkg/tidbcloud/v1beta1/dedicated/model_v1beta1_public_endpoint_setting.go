@@ -22,9 +22,9 @@ var _ MappedNullable = &V1beta1PublicEndpointSetting{}
 type V1beta1PublicEndpointSetting struct {
 	Name *string `json:"name,omitempty"`
 	// If set to \"-\", the default TiDB group will be used.
-	TidbNodeGroupId      string                              `json:"tidbNodeGroupId"`
-	Enabled              NullableBool                        `json:"enabled,omitempty"`
-	IpAccessList         []PublicEndpointSettingIpAccessList `json:"ipAccessList,omitempty"`
+	TidbNodeGroupId      string                                     `json:"tidbNodeGroupId"`
+	Enabled              NullableBool                               `json:"enabled,omitempty"`
+	IpAccessList         []V1beta1PublicEndpointSettingIpAccessList `json:"ipAccessList,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -148,9 +148,9 @@ func (o *V1beta1PublicEndpointSetting) UnsetEnabled() {
 }
 
 // GetIpAccessList returns the IpAccessList field value if set, zero value otherwise.
-func (o *V1beta1PublicEndpointSetting) GetIpAccessList() []PublicEndpointSettingIpAccessList {
+func (o *V1beta1PublicEndpointSetting) GetIpAccessList() []V1beta1PublicEndpointSettingIpAccessList {
 	if o == nil || IsNil(o.IpAccessList) {
-		var ret []PublicEndpointSettingIpAccessList
+		var ret []V1beta1PublicEndpointSettingIpAccessList
 		return ret
 	}
 	return o.IpAccessList
@@ -158,7 +158,7 @@ func (o *V1beta1PublicEndpointSetting) GetIpAccessList() []PublicEndpointSetting
 
 // GetIpAccessListOk returns a tuple with the IpAccessList field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1PublicEndpointSetting) GetIpAccessListOk() ([]PublicEndpointSettingIpAccessList, bool) {
+func (o *V1beta1PublicEndpointSetting) GetIpAccessListOk() ([]V1beta1PublicEndpointSettingIpAccessList, bool) {
 	if o == nil || IsNil(o.IpAccessList) {
 		return nil, false
 	}
@@ -174,8 +174,8 @@ func (o *V1beta1PublicEndpointSetting) HasIpAccessList() bool {
 	return false
 }
 
-// SetIpAccessList gets a reference to the given []PublicEndpointSettingIpAccessList and assigns it to the IpAccessList field.
-func (o *V1beta1PublicEndpointSetting) SetIpAccessList(v []PublicEndpointSettingIpAccessList) {
+// SetIpAccessList gets a reference to the given []V1beta1PublicEndpointSettingIpAccessList and assigns it to the IpAccessList field.
+func (o *V1beta1PublicEndpointSetting) SetIpAccessList(v []V1beta1PublicEndpointSettingIpAccessList) {
 	o.IpAccessList = v
 }
 

@@ -15,38 +15,38 @@ import (
 	"fmt"
 )
 
-// checks if the PublicEndpointSettingIpAccessList type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &PublicEndpointSettingIpAccessList{}
+// checks if the V1beta1PublicEndpointSettingIpAccessList type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &V1beta1PublicEndpointSettingIpAccessList{}
 
-// PublicEndpointSettingIpAccessList struct for PublicEndpointSettingIpAccessList
-type PublicEndpointSettingIpAccessList struct {
+// V1beta1PublicEndpointSettingIpAccessList struct for V1beta1PublicEndpointSettingIpAccessList
+type V1beta1PublicEndpointSettingIpAccessList struct {
 	CidrNotation         string  `json:"cidrNotation"`
 	Description          *string `json:"description,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _PublicEndpointSettingIpAccessList PublicEndpointSettingIpAccessList
+type _V1beta1PublicEndpointSettingIpAccessList V1beta1PublicEndpointSettingIpAccessList
 
-// NewPublicEndpointSettingIpAccessList instantiates a new PublicEndpointSettingIpAccessList object
+// NewV1beta1PublicEndpointSettingIpAccessList instantiates a new V1beta1PublicEndpointSettingIpAccessList object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPublicEndpointSettingIpAccessList(cidrNotation string) *PublicEndpointSettingIpAccessList {
-	this := PublicEndpointSettingIpAccessList{}
+func NewV1beta1PublicEndpointSettingIpAccessList(cidrNotation string) *V1beta1PublicEndpointSettingIpAccessList {
+	this := V1beta1PublicEndpointSettingIpAccessList{}
 	this.CidrNotation = cidrNotation
 	return &this
 }
 
-// NewPublicEndpointSettingIpAccessListWithDefaults instantiates a new PublicEndpointSettingIpAccessList object
+// NewV1beta1PublicEndpointSettingIpAccessListWithDefaults instantiates a new V1beta1PublicEndpointSettingIpAccessList object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewPublicEndpointSettingIpAccessListWithDefaults() *PublicEndpointSettingIpAccessList {
-	this := PublicEndpointSettingIpAccessList{}
+func NewV1beta1PublicEndpointSettingIpAccessListWithDefaults() *V1beta1PublicEndpointSettingIpAccessList {
+	this := V1beta1PublicEndpointSettingIpAccessList{}
 	return &this
 }
 
 // GetCidrNotation returns the CidrNotation field value
-func (o *PublicEndpointSettingIpAccessList) GetCidrNotation() string {
+func (o *V1beta1PublicEndpointSettingIpAccessList) GetCidrNotation() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -57,7 +57,7 @@ func (o *PublicEndpointSettingIpAccessList) GetCidrNotation() string {
 
 // GetCidrNotationOk returns a tuple with the CidrNotation field value
 // and a boolean to check if the value has been set.
-func (o *PublicEndpointSettingIpAccessList) GetCidrNotationOk() (*string, bool) {
+func (o *V1beta1PublicEndpointSettingIpAccessList) GetCidrNotationOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -65,12 +65,12 @@ func (o *PublicEndpointSettingIpAccessList) GetCidrNotationOk() (*string, bool) 
 }
 
 // SetCidrNotation sets field value
-func (o *PublicEndpointSettingIpAccessList) SetCidrNotation(v string) {
+func (o *V1beta1PublicEndpointSettingIpAccessList) SetCidrNotation(v string) {
 	o.CidrNotation = v
 }
 
 // GetDescription returns the Description field value if set, zero value otherwise.
-func (o *PublicEndpointSettingIpAccessList) GetDescription() string {
+func (o *V1beta1PublicEndpointSettingIpAccessList) GetDescription() string {
 	if o == nil || IsNil(o.Description) {
 		var ret string
 		return ret
@@ -80,7 +80,7 @@ func (o *PublicEndpointSettingIpAccessList) GetDescription() string {
 
 // GetDescriptionOk returns a tuple with the Description field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PublicEndpointSettingIpAccessList) GetDescriptionOk() (*string, bool) {
+func (o *V1beta1PublicEndpointSettingIpAccessList) GetDescriptionOk() (*string, bool) {
 	if o == nil || IsNil(o.Description) {
 		return nil, false
 	}
@@ -88,7 +88,7 @@ func (o *PublicEndpointSettingIpAccessList) GetDescriptionOk() (*string, bool) {
 }
 
 // HasDescription returns a boolean if a field has been set.
-func (o *PublicEndpointSettingIpAccessList) HasDescription() bool {
+func (o *V1beta1PublicEndpointSettingIpAccessList) HasDescription() bool {
 	if o != nil && !IsNil(o.Description) {
 		return true
 	}
@@ -97,11 +97,11 @@ func (o *PublicEndpointSettingIpAccessList) HasDescription() bool {
 }
 
 // SetDescription gets a reference to the given string and assigns it to the Description field.
-func (o *PublicEndpointSettingIpAccessList) SetDescription(v string) {
+func (o *V1beta1PublicEndpointSettingIpAccessList) SetDescription(v string) {
 	o.Description = &v
 }
 
-func (o PublicEndpointSettingIpAccessList) MarshalJSON() ([]byte, error) {
+func (o V1beta1PublicEndpointSettingIpAccessList) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -109,7 +109,7 @@ func (o PublicEndpointSettingIpAccessList) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o PublicEndpointSettingIpAccessList) ToMap() (map[string]interface{}, error) {
+func (o V1beta1PublicEndpointSettingIpAccessList) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["cidrNotation"] = o.CidrNotation
 	if !IsNil(o.Description) {
@@ -123,7 +123,7 @@ func (o PublicEndpointSettingIpAccessList) ToMap() (map[string]interface{}, erro
 	return toSerialize, nil
 }
 
-func (o *PublicEndpointSettingIpAccessList) UnmarshalJSON(data []byte) (err error) {
+func (o *V1beta1PublicEndpointSettingIpAccessList) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -145,15 +145,15 @@ func (o *PublicEndpointSettingIpAccessList) UnmarshalJSON(data []byte) (err erro
 		}
 	}
 
-	varPublicEndpointSettingIpAccessList := _PublicEndpointSettingIpAccessList{}
+	varV1beta1PublicEndpointSettingIpAccessList := _V1beta1PublicEndpointSettingIpAccessList{}
 
-	err = json.Unmarshal(data, &varPublicEndpointSettingIpAccessList)
+	err = json.Unmarshal(data, &varV1beta1PublicEndpointSettingIpAccessList)
 
 	if err != nil {
 		return err
 	}
 
-	*o = PublicEndpointSettingIpAccessList(varPublicEndpointSettingIpAccessList)
+	*o = V1beta1PublicEndpointSettingIpAccessList(varV1beta1PublicEndpointSettingIpAccessList)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -166,38 +166,38 @@ func (o *PublicEndpointSettingIpAccessList) UnmarshalJSON(data []byte) (err erro
 	return err
 }
 
-type NullablePublicEndpointSettingIpAccessList struct {
-	value *PublicEndpointSettingIpAccessList
+type NullableV1beta1PublicEndpointSettingIpAccessList struct {
+	value *V1beta1PublicEndpointSettingIpAccessList
 	isSet bool
 }
 
-func (v NullablePublicEndpointSettingIpAccessList) Get() *PublicEndpointSettingIpAccessList {
+func (v NullableV1beta1PublicEndpointSettingIpAccessList) Get() *V1beta1PublicEndpointSettingIpAccessList {
 	return v.value
 }
 
-func (v *NullablePublicEndpointSettingIpAccessList) Set(val *PublicEndpointSettingIpAccessList) {
+func (v *NullableV1beta1PublicEndpointSettingIpAccessList) Set(val *V1beta1PublicEndpointSettingIpAccessList) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullablePublicEndpointSettingIpAccessList) IsSet() bool {
+func (v NullableV1beta1PublicEndpointSettingIpAccessList) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullablePublicEndpointSettingIpAccessList) Unset() {
+func (v *NullableV1beta1PublicEndpointSettingIpAccessList) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullablePublicEndpointSettingIpAccessList(val *PublicEndpointSettingIpAccessList) *NullablePublicEndpointSettingIpAccessList {
-	return &NullablePublicEndpointSettingIpAccessList{value: val, isSet: true}
+func NewNullableV1beta1PublicEndpointSettingIpAccessList(val *V1beta1PublicEndpointSettingIpAccessList) *NullableV1beta1PublicEndpointSettingIpAccessList {
+	return &NullableV1beta1PublicEndpointSettingIpAccessList{value: val, isSet: true}
 }
 
-func (v NullablePublicEndpointSettingIpAccessList) MarshalJSON() ([]byte, error) {
+func (v NullableV1beta1PublicEndpointSettingIpAccessList) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullablePublicEndpointSettingIpAccessList) UnmarshalJSON(src []byte) error {
+func (v *NullableV1beta1PublicEndpointSettingIpAccessList) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

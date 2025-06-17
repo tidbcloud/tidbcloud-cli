@@ -20,9 +20,9 @@ var _ MappedNullable = &Dedicatedv1beta1TidbNodeGroupEndpoint{}
 // Dedicatedv1beta1TidbNodeGroupEndpoint struct for Dedicatedv1beta1TidbNodeGroupEndpoint
 type Dedicatedv1beta1TidbNodeGroupEndpoint struct {
 	// When endpoint's type is `PRIVATE_ENDPOINT`, the `host` field behave differently across cloud providers: For AWS clusters, the `host` field is available right after the private link service is ready. For GCP and Azure clusters, the `host` field is available after the user creates a `PrivateEndpointConnection`.
-	Host                 *string                 `json:"host,omitempty"`
-	Port                 *int32                  `json:"port,omitempty"`
-	ConnectionType       *EndpointConnectionType `json:"connectionType,omitempty"`
+	Host                 *string                                     `json:"host,omitempty"`
+	Port                 *int32                                      `json:"port,omitempty"`
+	ConnectionType       *V1beta1TidbNodeGroupEndpointConnectionType `json:"connectionType,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -110,9 +110,9 @@ func (o *Dedicatedv1beta1TidbNodeGroupEndpoint) SetPort(v int32) {
 }
 
 // GetConnectionType returns the ConnectionType field value if set, zero value otherwise.
-func (o *Dedicatedv1beta1TidbNodeGroupEndpoint) GetConnectionType() EndpointConnectionType {
+func (o *Dedicatedv1beta1TidbNodeGroupEndpoint) GetConnectionType() V1beta1TidbNodeGroupEndpointConnectionType {
 	if o == nil || IsNil(o.ConnectionType) {
-		var ret EndpointConnectionType
+		var ret V1beta1TidbNodeGroupEndpointConnectionType
 		return ret
 	}
 	return *o.ConnectionType
@@ -120,7 +120,7 @@ func (o *Dedicatedv1beta1TidbNodeGroupEndpoint) GetConnectionType() EndpointConn
 
 // GetConnectionTypeOk returns a tuple with the ConnectionType field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Dedicatedv1beta1TidbNodeGroupEndpoint) GetConnectionTypeOk() (*EndpointConnectionType, bool) {
+func (o *Dedicatedv1beta1TidbNodeGroupEndpoint) GetConnectionTypeOk() (*V1beta1TidbNodeGroupEndpointConnectionType, bool) {
 	if o == nil || IsNil(o.ConnectionType) {
 		return nil, false
 	}
@@ -136,8 +136,8 @@ func (o *Dedicatedv1beta1TidbNodeGroupEndpoint) HasConnectionType() bool {
 	return false
 }
 
-// SetConnectionType gets a reference to the given EndpointConnectionType and assigns it to the ConnectionType field.
-func (o *Dedicatedv1beta1TidbNodeGroupEndpoint) SetConnectionType(v EndpointConnectionType) {
+// SetConnectionType gets a reference to the given V1beta1TidbNodeGroupEndpointConnectionType and assigns it to the ConnectionType field.
+func (o *Dedicatedv1beta1TidbNodeGroupEndpoint) SetConnectionType(v V1beta1TidbNodeGroupEndpointConnectionType) {
 	o.ConnectionType = &v
 }
 

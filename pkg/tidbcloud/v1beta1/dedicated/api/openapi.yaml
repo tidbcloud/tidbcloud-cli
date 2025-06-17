@@ -521,14 +521,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ClusterServiceResetRootPasswordBody'
+              $ref: '#/components/schemas/v1beta1ClusterServiceResetRootPasswordBody'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/v1beta1ResetRootPasswordResponse'
+                $ref: '#/components/schemas/dedicatedv1beta1ResetRootPasswordResponse'
           description: A successful response.
         "400":
           content:
@@ -1851,7 +1851,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/v1beta1PrivateEndpointConnection'
+                $ref: '#/components/schemas/dedicatedv1beta1PrivateEndpointConnection'
           description: A successful response.
         "400":
           content:
@@ -1962,7 +1962,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/v1beta1ListPrivateEndpointConnectionsResponse'
+                $ref: '#/components/schemas/dedicatedv1beta1ListPrivateEndpointConnectionsResponse'
           description: A successful response.
         "400":
           content:
@@ -2091,7 +2091,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/v1beta1PrivateEndpointConnection'
+                $ref: '#/components/schemas/dedicatedv1beta1PrivateEndpointConnection'
           description: A successful response.
         "400":
           content:
@@ -3716,49 +3716,6 @@ components:
           readOnly: true
           type: integer
       type: object
-    ClusterServiceResetRootPasswordBody:
-      example:
-        rootPassword: rootPassword
-      properties:
-        rootPassword:
-          type: string
-      required:
-      - rootPassword
-      type: object
-    EndpointConnectionType:
-      description: |2-
-         - PUBLIC: The endpoint is a public endpoint.
-         - VPC_PEERING: The endpoint is a VPC peering endpoint.
-         - PRIVATE_ENDPOINT: The endpoint is a private link endpoint.
-      enum:
-      - PUBLIC
-      - VPC_PEERING
-      - PRIVATE_ENDPOINT
-      type: string
-    PrivateEndpointConnectionEndpointState:
-      description: |2-
-         - PENDING: Customer has posted to TiDB cloud API,
-        but endpoint connection has not been accepted **asynchronously** by TiDB Cloud.
-         - DISCOVERED: Customer has created the endpoint in their vpc, but has not posted to TiDB Cloud API.
-      enum:
-      - PENDING
-      - ACTIVE
-      - DELETING
-      - FAILED
-      - DISCOVERED
-      type: string
-    PublicEndpointSettingIpAccessList:
-      example:
-        description: description
-        cidrNotation: cidrNotation
-      properties:
-        cidrNotation:
-          type: string
-        description:
-          type: string
-      required:
-      - cidrNotation
-      type: object
     ShowNodeQuotaResponseComponentQuota:
       example:
         componentType: TIKV
@@ -3852,6 +3809,10 @@ components:
         displayName: displayName
         cloudProvider: "{}"
         name: regions/aws-us-west-2
+        servicePlans:
+        - Starter
+        - Essential
+        - Premium
       properties:
         name:
           example: regions/aws-us-west-2
@@ -3883,7 +3844,26 @@ components:
           nullable: true
           readOnly: true
           type: string
+        servicePlans:
+          description: |-
+            Optional service plan for the region.
+            Only used for nextgen cluster.
+          example:
+          - Starter
+          - Essential
+          - Premium
+          items:
+            $ref: '#/components/schemas/commonv1beta1ServicePlan'
+          readOnly: true
+          type: array
       type: object
+    commonv1beta1ServicePlan:
+      enum:
+      - Starter
+      - Essential
+      - Premium
+      - BYOC
+      type: string
     dedicatedv1beta1AuditLogConfig:
       example:
         bucketUri: bucketUri
@@ -4090,6 +4070,67 @@ components:
           type: array
         totalSize:
           description: The total number of maintenance windows that matched the query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: |-
+            A token, which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
+    dedicatedv1beta1ListPrivateEndpointConnectionsResponse:
+      example:
+        privateEndpointConnections:
+        - privateLinkServiceState: "{}"
+          clusterDisplayName: clusterDisplayName
+          endpointId: endpointId
+          tidbNodeGroupId: tidbNodeGroupId
+          privateEndpointConnectionId: privateEndpointConnectionId
+          clusterId: clusterId
+          message: message
+          privateIpAddress: privateIpAddress
+          labels:
+            key: labels
+          tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
+          endpointState: "{}"
+          privateLinkServiceName: privateLinkServiceName
+          accountId: accountId
+          regionDisplayName: regionDisplayName
+          regionId: regionId
+          port: 0
+          cloudProvider: "{}"
+          name: name
+          host: host
+        - privateLinkServiceState: "{}"
+          clusterDisplayName: clusterDisplayName
+          endpointId: endpointId
+          tidbNodeGroupId: tidbNodeGroupId
+          privateEndpointConnectionId: privateEndpointConnectionId
+          clusterId: clusterId
+          message: message
+          privateIpAddress: privateIpAddress
+          labels:
+            key: labels
+          tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
+          endpointState: "{}"
+          privateLinkServiceName: privateLinkServiceName
+          accountId: accountId
+          regionDisplayName: regionDisplayName
+          regionId: regionId
+          port: 0
+          cloudProvider: "{}"
+          name: name
+          host: host
+        totalSize: 0
+        nextPageToken: nextPageToken
+      properties:
+        privateEndpointConnections:
+          items:
+            $ref: '#/components/schemas/dedicatedv1beta1PrivateEndpointConnection'
+          type: array
+        totalSize:
+          description: The total number of private link connections that matched the
+            query.
           format: int32
           type: integer
         nextPageToken:
@@ -4332,6 +4373,122 @@ components:
       - projectId
       - weekDay
       type: object
+    dedicatedv1beta1PrivateEndpointConnection:
+      example:
+        privateLinkServiceState: "{}"
+        clusterDisplayName: clusterDisplayName
+        endpointId: endpointId
+        tidbNodeGroupId: tidbNodeGroupId
+        privateEndpointConnectionId: privateEndpointConnectionId
+        clusterId: clusterId
+        message: message
+        privateIpAddress: privateIpAddress
+        labels:
+          key: labels
+        tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
+        endpointState: "{}"
+        privateLinkServiceName: privateLinkServiceName
+        accountId: accountId
+        regionDisplayName: regionDisplayName
+        regionId: regionId
+        port: 0
+        cloudProvider: "{}"
+        name: name
+        host: host
+      properties:
+        name:
+          readOnly: true
+          title: "Format: tidbNodeGroups/{tidb_node_group_id}/privateEndpointConnections/{private_endpoint_connection_id}"
+          type: string
+        tidbNodeGroupId:
+          type: string
+        privateEndpointConnectionId:
+          readOnly: true
+          type: string
+        clusterId:
+          readOnly: true
+          type: string
+        clusterDisplayName:
+          readOnly: true
+          type: string
+        labels:
+          additionalProperties:
+            type: string
+          description: The labels of private link connection. It always contains the
+            `project_id` label.
+          readOnly: true
+          type: object
+        endpointId:
+          description: |-
+            The endpoint ID of the private link connection.
+            For AWS, it's VPC endpoint ID.
+            For GCP, it's private service connect endpoint ID.
+            For Azure, it's private endpoint resource ID.
+          type: string
+        privateIpAddress:
+          description: |-
+            The private IP address of the private endpoint in the user's vNet.
+            TiDB Cloud will setup a public DNS record for this private IP address. So the user can use DNS address to connect to the cluster.
+            Only available for Azure clusters.
+          nullable: true
+          type: string
+        endpointState:
+          allOf:
+          - $ref: '#/components/schemas/dedicatedv1beta1PrivateEndpointConnectionEndpointState'
+          type: object
+        message:
+          readOnly: true
+          type: string
+        regionId:
+          readOnly: true
+          title: "Format: {cloud_provider}-{region_code}"
+          type: string
+        regionDisplayName:
+          readOnly: true
+          type: string
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1RegionCloudProvider'
+          type: object
+        privateLinkServiceName:
+          readOnly: true
+          type: string
+        privateLinkServiceState:
+          allOf:
+          - $ref: '#/components/schemas/dedicatedv1beta1PrivateLinkServiceState'
+          type: object
+        tidbNodeGroupDisplayName:
+          readOnly: true
+          type: string
+        accountId:
+          description: Only for GCP private service connections. It's GCP project
+            name.
+          nullable: true
+          readOnly: true
+          type: string
+        host:
+          readOnly: true
+          type: string
+        port:
+          format: int32
+          readOnly: true
+          type: integer
+      required:
+      - endpointId
+      - tidbNodeGroupId
+      type: object
+    dedicatedv1beta1PrivateEndpointConnectionEndpointState:
+      description: |2-
+         - PENDING: Customer has posted to TiDB cloud API,
+        but endpoint connection has not been accepted **asynchronously** by TiDB Cloud.
+         - DISCOVERED: Customer has created the endpoint in their vpc, but has not posted to TiDB Cloud API.
+      enum:
+      - PENDING
+      - ACTIVE
+      - DELETING
+      - FAILED
+      - DISCOVERED
+      type: string
     dedicatedv1beta1PrivateLinkService:
       description: All fields are output only.
       example:
@@ -4373,7 +4530,7 @@ components:
             type: string
           type: array
         state:
-          $ref: '#/components/schemas/v1beta1PrivateLinkServiceState'
+          $ref: '#/components/schemas/dedicatedv1beta1PrivateLinkServiceState'
         regionId:
           title: "Format: {cloud_provider}-{region_code}"
           type: string
@@ -4382,6 +4539,12 @@ components:
         cloudProvider:
           $ref: '#/components/schemas/v1beta1RegionCloudProvider'
       type: object
+    dedicatedv1beta1PrivateLinkServiceState:
+      enum:
+      - CREATING
+      - ACTIVE
+      - DELETING
+      type: string
     dedicatedv1beta1QueryAuditLogFilesResponse:
       example:
         totalSize: 6
@@ -4407,6 +4570,8 @@ components:
           type: integer
         nextPageToken:
           type: string
+      type: object
+    dedicatedv1beta1ResetRootPasswordResponse:
       type: object
     dedicatedv1beta1TidbNodeGroup:
       example:
@@ -4498,7 +4663,7 @@ components:
           type: integer
         connectionType:
           allOf:
-          - $ref: '#/components/schemas/EndpointConnectionType'
+          - $ref: '#/components/schemas/v1beta1TidbNodeGroupEndpointConnectionType'
           type: object
       type: object
     dedicatedv1beta1TidbNodeGroupState:
@@ -4954,6 +5119,7 @@ components:
             OUTPUT_ONLY. The annotations for the cluster.
             tidb.cloud/has-set-password. The annotation for whether the cluster has set password.
             tidb.cloud/available-features. The annotation for the available features of the cluster.
+            tidb.cloud/insufficient-vm-resource. The annotation for insufficient virtual machine resources during creating or modifying the cluster.
           readOnly: true
           type: object
       required:
@@ -5147,11 +5313,19 @@ components:
           displayName: displayName
           cloudProvider: "{}"
           name: regions/aws-us-west-2
+          servicePlans:
+          - Starter
+          - Essential
+          - Premium
         - regionId: regionId
           provider: provider
           displayName: displayName
           cloudProvider: "{}"
           name: regions/aws-us-west-2
+          servicePlans:
+          - Starter
+          - Essential
+          - Premium
         totalSize: 0
         nextPageToken: nextPageToken
       properties:
@@ -5202,6 +5376,13 @@ components:
           type: array
       required:
       - clusterId
+      type: object
+    v1beta1ClusterServiceResetRootPasswordBody:
+      properties:
+        rootPassword:
+          type: string
+      required:
+      - rootPassword
       type: object
     v1beta1ClusterStorageNodeSetting:
       example:
@@ -5352,8 +5533,8 @@ components:
           vpcId: vpcId
           name: name
           networkContainerId: networkContainerId
-          cidrNotion: cidrNotion
           state: "{}"
+          cidrNotation: cidrNotation
           labels:
             key: labels
         - regionDisplayName: regionDisplayName
@@ -5362,8 +5543,8 @@ components:
           vpcId: vpcId
           name: name
           networkContainerId: networkContainerId
-          cidrNotion: cidrNotion
           state: "{}"
+          cidrNotation: cidrNotation
           labels:
             key: labels
       properties:
@@ -5483,67 +5664,6 @@ components:
             If this field is omitted, there are no subsequent pages.
           type: string
       type: object
-    v1beta1ListPrivateEndpointConnectionsResponse:
-      example:
-        privateEndpointConnections:
-        - privateLinkServiceState: "{}"
-          clusterDisplayName: clusterDisplayName
-          endpointId: endpointId
-          tidbNodeGroupId: tidbNodeGroupId
-          privateEndpointConnectionId: privateEndpointConnectionId
-          clusterId: clusterId
-          message: message
-          privateIpAddress: privateIpAddress
-          labels:
-            key: labels
-          tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
-          endpointState: "{}"
-          privateLinkServiceName: privateLinkServiceName
-          accountId: accountId
-          regionDisplayName: regionDisplayName
-          regionId: regionId
-          port: 0
-          cloudProvider: "{}"
-          name: name
-          host: host
-        - privateLinkServiceState: "{}"
-          clusterDisplayName: clusterDisplayName
-          endpointId: endpointId
-          tidbNodeGroupId: tidbNodeGroupId
-          privateEndpointConnectionId: privateEndpointConnectionId
-          clusterId: clusterId
-          message: message
-          privateIpAddress: privateIpAddress
-          labels:
-            key: labels
-          tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
-          endpointState: "{}"
-          privateLinkServiceName: privateLinkServiceName
-          accountId: accountId
-          regionDisplayName: regionDisplayName
-          regionId: regionId
-          port: 0
-          cloudProvider: "{}"
-          name: name
-          host: host
-        totalSize: 0
-        nextPageToken: nextPageToken
-      properties:
-        privateEndpointConnections:
-          items:
-            $ref: '#/components/schemas/v1beta1PrivateEndpointConnection'
-          type: array
-        totalSize:
-          description: The total number of private link connections that matched the
-            query.
-          format: int32
-          type: integer
-        nextPageToken:
-          description: |-
-            A token, which can be sent as `page_token` to retrieve the next page.
-            If this field is omitted, there are no subsequent pages.
-          type: string
-      type: object
     v1beta1NetworkContainer:
       example:
         regionDisplayName: regionDisplayName
@@ -5552,8 +5672,8 @@ components:
         vpcId: vpcId
         name: name
         networkContainerId: networkContainerId
-        cidrNotion: cidrNotion
         state: "{}"
+        cidrNotation: cidrNotation
         labels:
           key: labels
       properties:
@@ -5574,7 +5694,7 @@ components:
         regionId:
           title: "Format: {cloud_provider}-{region_code}"
           type: string
-        cidrNotion:
+        cidrNotation:
           description: "If not set, the default cidr of the region will be used."
           type: string
         cloudProvider:
@@ -5837,116 +5957,6 @@ components:
       required:
       - cluster
       type: object
-    v1beta1PrivateEndpointConnection:
-      example:
-        privateLinkServiceState: "{}"
-        clusterDisplayName: clusterDisplayName
-        endpointId: endpointId
-        tidbNodeGroupId: tidbNodeGroupId
-        privateEndpointConnectionId: privateEndpointConnectionId
-        clusterId: clusterId
-        message: message
-        privateIpAddress: privateIpAddress
-        labels:
-          key: labels
-        tidbNodeGroupDisplayName: tidbNodeGroupDisplayName
-        endpointState: "{}"
-        privateLinkServiceName: privateLinkServiceName
-        accountId: accountId
-        regionDisplayName: regionDisplayName
-        regionId: regionId
-        port: 0
-        cloudProvider: "{}"
-        name: name
-        host: host
-      properties:
-        name:
-          readOnly: true
-          title: "Format: tidbNodeGroups/{tidb_node_group_id}/privateEndpointConnections/{private_endpoint_connection_id}"
-          type: string
-        tidbNodeGroupId:
-          type: string
-        privateEndpointConnectionId:
-          readOnly: true
-          type: string
-        clusterId:
-          readOnly: true
-          type: string
-        clusterDisplayName:
-          readOnly: true
-          type: string
-        labels:
-          additionalProperties:
-            type: string
-          description: The labels of private link connection. It always contains the
-            `project_id` label.
-          readOnly: true
-          type: object
-        endpointId:
-          description: |-
-            The endpoint ID of the private link connection.
-            For AWS, it's VPC endpoint ID.
-            For GCP, it's private service connect endpoint ID.
-            For Azure, it's private endpoint resource ID.
-          type: string
-        privateIpAddress:
-          description: |-
-            The private IP address of the private endpoint in the user's vNet.
-            TiDB Cloud will setup a public DNS record for this private IP address. So the user can use DNS address to connect to the cluster.
-            Only available for Azure clusters.
-          nullable: true
-          type: string
-        endpointState:
-          allOf:
-          - $ref: '#/components/schemas/PrivateEndpointConnectionEndpointState'
-          type: object
-        message:
-          readOnly: true
-          type: string
-        regionId:
-          readOnly: true
-          title: "Format: {cloud_provider}-{region_code}"
-          type: string
-        regionDisplayName:
-          readOnly: true
-          type: string
-        cloudProvider:
-          allOf:
-          - $ref: '#/components/schemas/v1beta1RegionCloudProvider'
-          type: object
-        privateLinkServiceName:
-          readOnly: true
-          type: string
-        privateLinkServiceState:
-          allOf:
-          - $ref: '#/components/schemas/v1beta1PrivateLinkServiceState'
-          type: object
-        tidbNodeGroupDisplayName:
-          readOnly: true
-          type: string
-        accountId:
-          description: Only for GCP private service connections. It's GCP project
-            name.
-          nullable: true
-          readOnly: true
-          type: string
-        host:
-          readOnly: true
-          type: string
-        port:
-          format: int32
-          readOnly: true
-          type: integer
-      required:
-      - endpointId
-      - tidbNodeGroupId
-      type: object
-    v1beta1PrivateLinkServiceState:
-      enum:
-      - CREATING
-      - ACTIVE
-      - DELETING
-      type: string
     v1beta1PublicEndpointSetting:
       example:
         tidbNodeGroupId: tidbNodeGroupId
@@ -5970,10 +5980,22 @@ components:
           type: boolean
         ipAccessList:
           items:
-            $ref: '#/components/schemas/PublicEndpointSettingIpAccessList'
+            $ref: '#/components/schemas/v1beta1PublicEndpointSettingIpAccessList'
           type: array
       required:
       - tidbNodeGroupId
+      type: object
+    v1beta1PublicEndpointSettingIpAccessList:
+      example:
+        description: description
+        cidrNotation: cidrNotation
+      properties:
+        cidrNotation:
+          type: string
+        description:
+          type: string
+      required:
+      - cidrNotation
       type: object
     v1beta1RegionCloudProvider:
       description: |-
@@ -5989,8 +6011,6 @@ components:
       - azure
       - alicloud
       type: string
-    v1beta1ResetRootPasswordResponse:
-      type: object
     v1beta1ResumeClusterResponse:
       example:
         cluster:
@@ -6109,6 +6129,16 @@ components:
         iamPrincipal:
           type: string
       type: object
+    v1beta1TidbNodeGroupEndpointConnectionType:
+      description: |2-
+         - PUBLIC: The endpoint is a public endpoint.
+         - VPC_PEERING: The endpoint is a VPC peering endpoint.
+         - PRIVATE_ENDPOINT: The endpoint is a private link endpoint.
+      enum:
+      - PUBLIC
+      - VPC_PEERING
+      - PRIVATE_ENDPOINT
+      type: string
     v1beta1UpdateAuditLogConfigRequestAuditLogConfig:
       properties:
         clusterId:
@@ -6352,7 +6382,7 @@ components:
           type: boolean
         ipAccessList:
           items:
-            $ref: '#/components/schemas/PublicEndpointSettingIpAccessList'
+            $ref: '#/components/schemas/v1beta1PublicEndpointSettingIpAccessList'
           type: array
       type: object
     PrivateEndpointConnectionService_CreatePrivateEndpointConnection_request:
@@ -6393,7 +6423,7 @@ components:
           type: string
         endpointState:
           allOf:
-          - $ref: '#/components/schemas/PrivateEndpointConnectionEndpointState'
+          - $ref: '#/components/schemas/dedicatedv1beta1PrivateEndpointConnectionEndpointState'
           type: object
         message:
           readOnly: true
@@ -6414,7 +6444,7 @@ components:
           type: string
         privateLinkServiceState:
           allOf:
-          - $ref: '#/components/schemas/v1beta1PrivateLinkServiceState'
+          - $ref: '#/components/schemas/dedicatedv1beta1PrivateLinkServiceState'
           type: object
         tidbNodeGroupDisplayName:
           readOnly: true
