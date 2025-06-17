@@ -116,7 +116,7 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				cf, err := cloud.GetSelectedChangefeed(ctx, project.ID, h.QueryPageSize, d)
+				cf, err := cloud.GetSelectedChangefeed(ctx, clusterID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -193,7 +193,7 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 				return errors.Errorf("unsupported changefeed sink type: %s", changefeed.Sink.Type)
 			}
 
-			resp, err := d.EditConnector(ctx, clusterID, body)
+			_, err = d.EditConnector(ctx, clusterID, body)
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -201,7 +201,6 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			_ = json.NewEncoder(h.IOStreams.Out).Encode(resp)
 			return nil
 		},
 	}

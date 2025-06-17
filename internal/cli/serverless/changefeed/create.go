@@ -239,7 +239,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
-	createCmd.Flags().String(flag.ChangefeedName, "", "The name of the changefeed.")
+	createCmd.Flags().String(flag.ChangefeedName, "", "The name of the changefeed (optional).")
 	createCmd.Flags().String(flag.ChangefeedType, "", fmt.Sprintf("The type of the changefeed, one of %q", cdc.AllowedConnectorTypeEnumEnumValues))
 	createCmd.Flags().String(flag.ChangefeedKafka, "", "Kafka info in JSON format, see KafkaInfo struct.")
 	createCmd.Flags().String(flag.ChangefeedFilter, "", "Filter in JSON format, see CDCFilter struct.")

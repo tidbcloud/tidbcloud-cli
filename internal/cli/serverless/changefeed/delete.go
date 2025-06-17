@@ -25,9 +25,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
-	"github.com/tidbcloud/tidbcloud-cli/internal/output"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
-	"github.com/tidbcloud/tidbcloud-cli/internal/telemetry"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 )
 
@@ -93,7 +91,6 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 
 			var clusterID, changefeedID string
 			if opts.interactive {
-				cmd.Annotations[telemetry.InteractiveMode] = "true"
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
 				}
@@ -107,7 +104,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				cf, err := cloud.GetSelectedChangefeed(ctx, project.ID, h.QueryPageSize, d)
+				cf, err := cloud.GetSelectedChangefeed(ctx, clusterID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
@@ -153,13 +150,12 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			resp, err := d.DeleteConnector(ctx, clusterID, changefeedID)
+			_, err = d.DeleteConnector(ctx, clusterID, changefeedID)
 			if err != nil {
 				return errors.Trace(err)
 			}
 
 			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("changefeed %s deleted", changefeedID)))
-			_ = output.PrintJson(h.IOStreams.Out, resp)
 			return nil
 		},
 	}
