@@ -14,21 +14,17 @@ import (
 	"encoding/json"
 )
 
-// KafkaVersionEnum  - VERSION_0XX: Kafka 0.x.x version.  - VERSION_1XX: Kafka 1.x.x version.  - VERSION_2XX: Kafka 2.x.x version.  - VERSION_3XX: Kafka 3.x.x version.
+// KafkaVersionEnum  - VERSION_2XX: Kafka 2.x.x version.  - VERSION_3XX: Kafka 3.x.x version.
 type KafkaVersionEnum string
 
 // List of KafkaVersion.Enum
 const (
-	KAFKAVERSIONENUM_VERSION_0_XX KafkaVersionEnum = "VERSION_0XX"
-	KAFKAVERSIONENUM_VERSION_1_XX KafkaVersionEnum = "VERSION_1XX"
 	KAFKAVERSIONENUM_VERSION_2_XX KafkaVersionEnum = "VERSION_2XX"
 	KAFKAVERSIONENUM_VERSION_3_XX KafkaVersionEnum = "VERSION_3XX"
 )
 
 // All allowed values of KafkaVersionEnum enum
 var AllowedKafkaVersionEnumEnumValues = []KafkaVersionEnum{
-	"VERSION_0XX",
-	"VERSION_1XX",
 	"VERSION_2XX",
 	"VERSION_3XX",
 }

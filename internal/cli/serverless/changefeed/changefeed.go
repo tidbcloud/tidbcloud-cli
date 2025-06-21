@@ -33,5 +33,7 @@ func ChangefeedCmd(h *internal.Helper) *cobra.Command {
 	changefeedCmd.AddCommand(EditCmd(h))
 	changefeedCmd.AddCommand(DeleteCmd(h))
 	changefeedCmd.AddCommand(TemplateCmd(h))
+	changefeedCmd.AddCommand(PauseCmd(h))
+	changefeedCmd.AddCommand(ResumeCmd(h))
 	return changefeedCmd
 }

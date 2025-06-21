@@ -293,7 +293,7 @@
         ]
       }
     },
-    "/v1beta1/clusters/{clusterId}/connectors:edit": {
+    "/v1beta1/clusters/{clusterId}/connectors/{connectorId}:edit": {
       "post": {
         "summary": "Edit a connector.",
         "operationId": "ConnectorService_EditConnector",
@@ -315,6 +315,13 @@
           {
             "name": "clusterId",
             "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "connectorId",
+            "description": "Required. The ID of the connector.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -707,10 +714,6 @@
     "ConnectorService.EditConnectorBody": {
       "type": "object",
       "properties": {
-        "connectorId": {
-          "type": "string",
-          "description": "Required. The ID of the connector."
-        },
         "name": {
           "type": "string",
           "description": "Optional. The name of the connector."
@@ -733,7 +736,6 @@
         }
       },
       "required": [
-        "connectorId",
         "sink",
         "filter"
       ]
@@ -796,7 +798,8 @@
           "$ref": "#/definitions/CDCProtocol.Enum"
         },
         "enableTidbExtension": {
-          "type": "boolean"
+          "type": "boolean",
+          "title": "only available when protocol is CANAL_JSON and AVRO"
         },
         "avroConfig": {
           "$ref": "#/definitions/AvroConfig"
@@ -922,12 +925,10 @@
     "KafkaVersion.Enum": {
       "type": "string",
       "enum": [
-        "VERSION_0XX",
-        "VERSION_1XX",
         "VERSION_2XX",
         "VERSION_3XX"
       ],
-      "description": " - VERSION_0XX: Kafka 0.x.x version.\n - VERSION_1XX: Kafka 1.x.x version.\n - VERSION_2XX: Kafka 2.x.x version.\n - VERSION_3XX: Kafka 3.x.x version."
+      "description": " - VERSION_2XX: Kafka 2.x.x version.\n - VERSION_3XX: Kafka 3.x.x version."
     },
     "NetworkInfo": {
       "type": "object",

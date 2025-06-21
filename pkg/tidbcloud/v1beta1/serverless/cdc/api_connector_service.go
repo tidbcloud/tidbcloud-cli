@@ -379,10 +379,11 @@ func (a *ConnectorServiceAPIService) ConnectorServiceDescribeSchemaTableExecute(
 }
 
 type ApiConnectorServiceEditConnectorRequest struct {
-	ctx        context.Context
-	ApiService *ConnectorServiceAPIService
-	clusterId  string
-	body       *ConnectorServiceEditConnectorBody
+	ctx         context.Context
+	ApiService  *ConnectorServiceAPIService
+	clusterId   string
+	connectorId string
+	body        *ConnectorServiceEditConnectorBody
 }
 
 func (r ApiConnectorServiceEditConnectorRequest) Body(body ConnectorServiceEditConnectorBody) ApiConnectorServiceEditConnectorRequest {
@@ -399,13 +400,15 @@ ConnectorServiceEditConnector Edit a connector.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId Required. The ID of the cluster.
+	@param connectorId Required. The ID of the connector.
 	@return ApiConnectorServiceEditConnectorRequest
 */
-func (a *ConnectorServiceAPIService) ConnectorServiceEditConnector(ctx context.Context, clusterId string) ApiConnectorServiceEditConnectorRequest {
+func (a *ConnectorServiceAPIService) ConnectorServiceEditConnector(ctx context.Context, clusterId string, connectorId string) ApiConnectorServiceEditConnectorRequest {
 	return ApiConnectorServiceEditConnectorRequest{
-		ApiService: a,
-		ctx:        ctx,
-		clusterId:  clusterId,
+		ApiService:  a,
+		ctx:         ctx,
+		clusterId:   clusterId,
+		connectorId: connectorId,
 	}
 }
 
@@ -425,8 +428,9 @@ func (a *ConnectorServiceAPIService) ConnectorServiceEditConnectorExecute(r ApiC
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/connectors:edit"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/connectors/{connectorId}:edit"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"connectorId"+"}", url.PathEscape(parameterValueToString(r.connectorId, "connectorId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

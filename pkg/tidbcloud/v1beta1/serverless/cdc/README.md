@@ -81,7 +81,7 @@ Class | Method | HTTP request | Description
 *ConnectorServiceAPI* | [**ConnectorServiceCreateConnector**](docs/ConnectorServiceAPI.md#connectorservicecreateconnector) | **Post** /v1beta1/clusters/{clusterId}/connectors | Create a connector.
 *ConnectorServiceAPI* | [**ConnectorServiceDeleteConnector**](docs/ConnectorServiceAPI.md#connectorservicedeleteconnector) | **Delete** /v1beta1/clusters/{clusterId}/connectors/{connectorId} | Delete a connector.
 *ConnectorServiceAPI* | [**ConnectorServiceDescribeSchemaTable**](docs/ConnectorServiceAPI.md#connectorservicedescribeschematable) | **Post** /v1beta1/clusters/{clusterId}/connectors:describeSchemaTable | Describe schema table.
-*ConnectorServiceAPI* | [**ConnectorServiceEditConnector**](docs/ConnectorServiceAPI.md#connectorserviceeditconnector) | **Post** /v1beta1/clusters/{clusterId}/connectors:edit | Edit a connector.
+*ConnectorServiceAPI* | [**ConnectorServiceEditConnector**](docs/ConnectorServiceAPI.md#connectorserviceeditconnector) | **Post** /v1beta1/clusters/{clusterId}/connectors/{connectorId}:edit | Edit a connector.
 *ConnectorServiceAPI* | [**ConnectorServiceGetConnector**](docs/ConnectorServiceAPI.md#connectorservicegetconnector) | **Get** /v1beta1/clusters/{clusterId}/connectors/{connectorId} | Get a connector.
 *ConnectorServiceAPI* | [**ConnectorServiceListConnectors**](docs/ConnectorServiceAPI.md#connectorservicelistconnectors) | **Get** /v1beta1/clusters/{clusterId}/connectors | List connectors.
 *ConnectorServiceAPI* | [**ConnectorServiceStartConnector**](docs/ConnectorServiceAPI.md#connectorservicestartconnector) | **Post** /v1beta1/clusters/{clusterId}/connectors/{connectorId}:start | Start a connector.

@@ -125,11 +125,11 @@ type TiDBCloudClient interface {
 	// CDC Connector methods
 	CreateConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceCreateConnectorBody) (*cdc.ConnectorID, error)
 	DeleteConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error)
-	EditConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceEditConnectorBody) (*cdc.ConnectorID, error)
+	EditConnector(ctx context.Context, clusterId, connectorId string, body *cdc.ConnectorServiceEditConnectorBody) (*cdc.ConnectorID, error)
 	GetConnector(ctx context.Context, clusterId, connectorId string) (*cdc.Connector, error)
 	ListConnectors(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, connectorType *cdc.ConnectorServiceListConnectorsConnectorTypeParameter, orderBy *string) (*cdc.Connectors, error)
-	StartConnector(ctx context.Context, clusterId, connectorId string, body *map[string]interface{}) (*cdc.ConnectorID, error)
-	StopConnector(ctx context.Context, clusterId, connectorId string, body *map[string]interface{}) (*cdc.ConnectorID, error)
+	StartConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error)
+	StopConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error)
 	TestConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceTestConnectorBody) (map[string]interface{}, error)
 	DescribeSchemaTable(ctx context.Context, clusterId string, body *cdc.ConnectorServiceDescribeSchemaTableBody) (*cdc.DescribeSchemaTableResp, error)
 
@@ -758,8 +758,8 @@ func (d *ClientDelegate) DeleteConnector(ctx context.Context, clusterId, connect
 	return resp, err
 }
 
-func (d *ClientDelegate) EditConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceEditConnectorBody) (*cdc.ConnectorID, error) {
-	r := d.cdc.ConnectorServiceAPI.ConnectorServiceEditConnector(ctx, clusterId)
+func (d *ClientDelegate) EditConnector(ctx context.Context, clusterId, connectorId string, body *cdc.ConnectorServiceEditConnectorBody) (*cdc.ConnectorID, error) {
+	r := d.cdc.ConnectorServiceAPI.ConnectorServiceEditConnector(ctx, clusterId, connectorId)
 	if body != nil {
 		r = r.Body(*body)
 	}
@@ -790,20 +790,16 @@ func (d *ClientDelegate) ListConnectors(ctx context.Context, clusterId string, p
 	return resp, err
 }
 
-func (d *ClientDelegate) StartConnector(ctx context.Context, clusterId, connectorId string, body *map[string]interface{}) (*cdc.ConnectorID, error) {
+func (d *ClientDelegate) StartConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error) {
 	r := d.cdc.ConnectorServiceAPI.ConnectorServiceStartConnector(ctx, clusterId, connectorId)
-	if body != nil {
-		r = r.Body(*body)
-	}
+	r = r.Body(map[string]interface{}{})
 	resp, _, err := r.Execute()
 	return resp, err
 }
 
-func (d *ClientDelegate) StopConnector(ctx context.Context, clusterId, connectorId string, body *map[string]interface{}) (*cdc.ConnectorID, error) {
+func (d *ClientDelegate) StopConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error) {
 	r := d.cdc.ConnectorServiceAPI.ConnectorServiceStopConnector(ctx, clusterId, connectorId)
-	if body != nil {
-		r = r.Body(*body)
-	}
+	r = r.Body(map[string]interface{}{})
 	resp, _, err := r.Execute()
 	return resp, err
 }

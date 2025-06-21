@@ -193,7 +193,7 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 				return errors.Errorf("unsupported changefeed sink type: %s", changefeed.Sink.Type)
 			}
 
-			_, err = d.EditConnector(ctx, clusterID, body)
+			_, err = d.EditConnector(ctx, clusterID, changefeedID, body)
 			if err != nil {
 				return errors.Trace(err)
 			}

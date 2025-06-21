@@ -54,7 +54,6 @@ func (c CreateOpts) RequiredFlags() []string {
 		flag.ChangefeedType,
 		flag.ChangefeedKafka,
 		flag.ChangefeedFilter,
-		flag.ChangefeedStartTSO,
 	}
 }
 
@@ -135,11 +134,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				filterStr = textInput.Inputs[3].Value()
 				startTSOStr := textInput.Inputs[4].Value()
 				if startTSOStr == "" {
-					return errors.New("start-tso is required")
-				}
-				_, err = fmt.Sscanf(startTSOStr, "%d", &startTSO)
-				if err != nil {
-					return errors.New("invalid start-tso, must be uint64")
+					startTSO = 0
+				} else {
+					_, err = fmt.Sscanf(startTSOStr, "%d", &startTSO)
+					if err != nil {
+						return errors.New("invalid start-tso, must be uint64")
+					}
 				}
 			} else {
 				var err error
@@ -204,26 +204,33 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if !slices.Contains(cdc.AllowedConnectorTypeEnumEnumValues, cdc.ConnectorTypeEnum(changefeedType)) {
 				return errors.New("currently only kafka type is supported")
 			}
-			if startTSO == 0 {
-				return errors.New("start-tso is required")
-			}
 
 			// create the changefeed
-			mode := cdc.STARTMODEENUM_FROM_TSO
 			body := &cdc.ConnectorServiceCreateConnectorBody{
 				Name: &name,
 				Sink: cdc.SinkInfo{
 					Type: cdc.ConnectorTypeEnum(changefeedType),
 				},
 				Filter: filter,
-				StartPosition: &cdc.StartPosition{
-					Mode: &mode,
-					Tso:  aws.String(strconv.FormatUint(startTSO, 10)),
-				},
 			}
+
 			switch body.Sink.Type {
 			case cdc.CONNECTORTYPEENUM_KAFKA:
 				body.Sink.Kafka = &kafkaInfo
+			}
+
+			if startTSO == 0 {
+				mode := cdc.STARTMODEENUM_FROM_NOW
+				body.StartPosition = &cdc.StartPosition{
+					Mode: &mode,
+				}
+			} else {
+				mode := cdc.STARTMODEENUM_FROM_TSO
+				body.StartPosition = &cdc.StartPosition{
+					Mode: &mode,
+					Tso:  aws.String(strconv.FormatUint(startTSO, 10)),
+				}
+
 			}
 
 			resp, err := d.CreateConnector(ctx, clusterID, body)
@@ -254,5 +261,5 @@ var inputDescription = map[string]string{
 	flag.ChangefeedType:     fmt.Sprintf("The type of the changefeed, one of %q", cdc.AllowedConnectorTypeEnumEnumValues),
 	flag.ChangefeedKafka:    "Kafka info in JSON format, see KafkaInfo struct",
 	flag.ChangefeedFilter:   "Filter in JSON format, see CDCFilter struct",
-	flag.ChangefeedStartTSO: "Start TSO (uint64) for the changefeed",
+	flag.ChangefeedStartTSO: "Start TSO (uint64) for the changefeed, skip to use the current TSO",
 }

@@ -20,8 +20,6 @@ var _ MappedNullable = &ConnectorServiceEditConnectorBody{}
 
 // ConnectorServiceEditConnectorBody struct for ConnectorServiceEditConnectorBody
 type ConnectorServiceEditConnectorBody struct {
-	// Required. The ID of the connector.
-	ConnectorId string `json:"connectorId"`
 	// Optional. The name of the connector.
 	Name *string `json:"name,omitempty"`
 	// Required. The sink of the connector.
@@ -37,9 +35,8 @@ type _ConnectorServiceEditConnectorBody ConnectorServiceEditConnectorBody
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewConnectorServiceEditConnectorBody(connectorId string, sink SinkInfo, filter CDCFilter) *ConnectorServiceEditConnectorBody {
+func NewConnectorServiceEditConnectorBody(sink SinkInfo, filter CDCFilter) *ConnectorServiceEditConnectorBody {
 	this := ConnectorServiceEditConnectorBody{}
-	this.ConnectorId = connectorId
 	this.Sink = sink
 	this.Filter = filter
 	return &this
@@ -51,30 +48,6 @@ func NewConnectorServiceEditConnectorBody(connectorId string, sink SinkInfo, fil
 func NewConnectorServiceEditConnectorBodyWithDefaults() *ConnectorServiceEditConnectorBody {
 	this := ConnectorServiceEditConnectorBody{}
 	return &this
-}
-
-// GetConnectorId returns the ConnectorId field value
-func (o *ConnectorServiceEditConnectorBody) GetConnectorId() string {
-	if o == nil {
-		var ret string
-		return ret
-	}
-
-	return o.ConnectorId
-}
-
-// GetConnectorIdOk returns a tuple with the ConnectorId field value
-// and a boolean to check if the value has been set.
-func (o *ConnectorServiceEditConnectorBody) GetConnectorIdOk() (*string, bool) {
-	if o == nil {
-		return nil, false
-	}
-	return &o.ConnectorId, true
-}
-
-// SetConnectorId sets field value
-func (o *ConnectorServiceEditConnectorBody) SetConnectorId(v string) {
-	o.ConnectorId = v
 }
 
 // GetName returns the Name field value if set, zero value otherwise.
@@ -167,7 +140,6 @@ func (o ConnectorServiceEditConnectorBody) MarshalJSON() ([]byte, error) {
 
 func (o ConnectorServiceEditConnectorBody) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["connectorId"] = o.ConnectorId
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
 	}
@@ -186,7 +158,6 @@ func (o *ConnectorServiceEditConnectorBody) UnmarshalJSON(data []byte) (err erro
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"connectorId",
 		"sink",
 		"filter",
 	}
@@ -218,7 +189,6 @@ func (o *ConnectorServiceEditConnectorBody) UnmarshalJSON(data []byte) (err erro
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "connectorId")
 		delete(additionalProperties, "name")
 		delete(additionalProperties, "sink")
 		delete(additionalProperties, "filter")

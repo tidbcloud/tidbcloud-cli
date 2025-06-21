@@ -233,13 +233,19 @@ paths:
       tags:
       - ConnectorService
       x-codegen-request-body-name: body
-  /v1beta1/clusters/{clusterId}/connectors:edit:
+  /v1beta1/clusters/{clusterId}/connectors/{connectorId}:edit:
     post:
       operationId: ConnectorService_EditConnector
       parameters:
       - description: Required. The ID of the cluster.
         in: path
         name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: Required. The ID of the connector.
+        in: path
+        name: connectorId
         required: true
         schema:
           type: string
@@ -566,9 +572,6 @@ components:
       type: object
     ConnectorService.EditConnectorBody:
       properties:
-        connectorId:
-          description: Required. The ID of the connector.
-          type: string
         name:
           description: Optional. The name of the connector.
           type: string
@@ -583,7 +586,6 @@ components:
           description: Required. The filter of the connector.
           type: object
       required:
-      - connectorId
       - filter
       - sink
       type: object
@@ -652,6 +654,7 @@ components:
         protocol:
           $ref: '#/components/schemas/CDCProtocol.Enum'
         enableTidbExtension:
+          title: only available when protocol is CANAL_JSON and AVRO
           type: boolean
         avroConfig:
           $ref: '#/components/schemas/AvroConfig'
@@ -758,13 +761,9 @@ components:
       type: string
     KafkaVersion.Enum:
       description: |2-
-         - VERSION_0XX: Kafka 0.x.x version.
-         - VERSION_1XX: Kafka 1.x.x version.
          - VERSION_2XX: Kafka 2.x.x version.
          - VERSION_3XX: Kafka 3.x.x version.
       enum:
-      - VERSION_0XX
-      - VERSION_1XX
       - VERSION_2XX
       - VERSION_3XX
       type: string
