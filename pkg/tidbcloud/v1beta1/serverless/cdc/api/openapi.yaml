@@ -338,6 +338,102 @@ paths:
       tags:
       - ConnectorService
       x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/connectors/private-link-endpoints:
+    post:
+      operationId: ConnectorService_CreatePrivateLinkEndpoint
+      parameters:
+      - description: Required. The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorService.CreatePrivateLinkEndpointBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateLinkEndpoint'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Create a private link
+      tags:
+      - ConnectorService
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/connectors/private-links-endpoints:
+    delete:
+      operationId: ConnectorService_DeletePrivateLinkEndpoint
+      parameters:
+      - description: Required. The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: Required. The private link service name.
+        in: query
+        name: privateLinkServiceName
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateLinkEndpoint'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Delete a private link
+      tags:
+      - ConnectorService
+    get:
+      operationId: ConnectorService_GetPrivateLinkEndpoint
+      parameters:
+      - description: Required. The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: Required. The private link service name.
+        in: query
+        name: privateLinkServiceName
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateLinkEndpoint'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Get a private link
+      tags:
+      - ConnectorService
 components:
   schemas:
     Any:
@@ -507,12 +603,12 @@ components:
           readOnly: true
           type: string
         createTime:
-          description: Output_only. Timestamp when the export was created.
+          description: Output_only. Timestamp when the changefeed was created.
           format: date-time
           readOnly: true
           type: string
         updateTime:
-          description: Output_only. Timestamp when the export was updated.
+          description: Output_only. Timestamp when the changefeed was updated.
           format: date-time
           nullable: true
           readOnly: true
@@ -561,6 +657,53 @@ components:
       required:
       - filter
       - sink
+      type: object
+    ConnectorService.CreatePrivateLinkEndpointBody:
+      properties:
+        endpointId:
+          description: Output_only  The ID of the private link endpoint.
+          readOnly: true
+          type: string
+        privateLinkServiceName:
+          description: Required. The private link service name.
+          type: string
+        connectorType:
+          allOf:
+          - $ref: '#/components/schemas/ConnectorType.Enum'
+          description: Required. The type of the sink.
+          type: object
+        state:
+          allOf:
+          - $ref: '#/components/schemas/PrivateLinkEndpointState.Enum'
+          description: Output_only. The state of the private link.
+          type: object
+        kafka:
+          allOf:
+          - $ref: '#/components/schemas/KafkaEndpoint'
+          description: Optional. Kafka private link endpoint information.
+          type: object
+        message:
+          description: Output_only. The message.
+          readOnly: true
+          type: string
+        endpointUrl:
+          description: Output_only. The message.
+          readOnly: true
+          type: string
+        createTime:
+          description: Output_only. Timestamp when the private link endpoint was created.
+          format: date-time
+          readOnly: true
+          type: string
+        updateTime:
+          description: Output_only. Timestamp when the private link endpoint was updated.
+          format: date-time
+          nullable: true
+          readOnly: true
+          type: string
+      required:
+      - connectorType
+      - privateLinkServiceName
       type: object
     ConnectorService.DescribeSchemaTableBody:
       properties:
@@ -729,6 +872,22 @@ components:
       - LZ4
       - ZSTD
       type: string
+    KafkaEndpoint:
+      properties:
+        kafkaType:
+          allOf:
+          - $ref: '#/components/schemas/KafkaType.Enum'
+          description: Required. The type of the Kafka instance.
+          type: object
+        advertisedListenersPattern:
+          additionalProperties:
+            type: string
+          description: Required. The advertised listeners pattern.
+          type: object
+      required:
+      - advertisedListenersPattern
+      - kafkaType
+      type: object
     KafkaInfo:
       properties:
         networkInfo:
@@ -745,19 +904,24 @@ components:
           items:
             $ref: '#/components/schemas/ColumnSelector'
           type: array
-        bizEndpointId:
-          format: uint64
-          type: string
       type: object
     KafkaNetworkType.Enum:
       description: |2-
          - PUBLIC: Public network.
-         - VPC_PEERING: VPC peering network.
          - PRIVATE_LINK: Private Link network.
       enum:
       - PUBLIC
-      - VPC_PEERING
       - PRIVATE_LINK
+      type: string
+    KafkaType.Enum:
+      description: |2-
+         - SELF_HOSTED: Self-hosted Kafka.
+         - MSK: MSK (Managed Streaming for Kafka).
+         - CONFLUENT: Confluent Kafka.
+      enum:
+      - SELF_HOSTED
+      - MSK
+      - CONFLUENT
       type: string
     KafkaVersion.Enum:
       description: |2-
@@ -773,17 +937,6 @@ components:
           $ref: '#/components/schemas/KafkaNetworkType.Enum'
         privateLinkServiceName:
           type: string
-        kafkaId:
-          type: string
-        ports:
-          items:
-            format: int64
-            type: integer
-          type: array
-        advertisedPatternGroup:
-          additionalProperties:
-            type: string
-          type: object
       type: object
     PartitionDispatcher.Enum:
       description: |2-
@@ -812,6 +965,88 @@ components:
             type: string
           type: array
       type: object
+    PrivateLinkEndpoint:
+      example:
+        privateLinkServiceName: privateLinkServiceName
+        connectorType: "{}"
+        createTime: 2000-01-23T04:56:07.000+00:00
+        endpointId: endpointId
+        endpointUrl: endpointUrl
+        kafka: "{}"
+        updateTime: 2000-01-23T04:56:07.000+00:00
+        clusterId: clusterId
+        state: "{}"
+        message: message
+      properties:
+        endpointId:
+          description: Output_only  The ID of the private link endpoint.
+          readOnly: true
+          type: string
+        clusterId:
+          description: Required. The ID of the cluster.
+          type: string
+        privateLinkServiceName:
+          description: Required. The private link service name.
+          type: string
+        connectorType:
+          allOf:
+          - $ref: '#/components/schemas/ConnectorType.Enum'
+          description: Required. The type of the sink.
+          type: object
+        state:
+          allOf:
+          - $ref: '#/components/schemas/PrivateLinkEndpointState.Enum'
+          description: Output_only. The state of the private link.
+          type: object
+        kafka:
+          allOf:
+          - $ref: '#/components/schemas/KafkaEndpoint'
+          description: Optional. Kafka private link endpoint information.
+          type: object
+        message:
+          description: Output_only. The message.
+          readOnly: true
+          type: string
+        endpointUrl:
+          description: Output_only. The message.
+          readOnly: true
+          type: string
+        createTime:
+          description: Output_only. Timestamp when the private link endpoint was created.
+          format: date-time
+          readOnly: true
+          type: string
+        updateTime:
+          description: Output_only. Timestamp when the private link endpoint was updated.
+          format: date-time
+          nullable: true
+          readOnly: true
+          type: string
+      required:
+      - clusterId
+      - connectorType
+      - privateLinkServiceName
+      type: object
+    PrivateLinkEndpointState.Enum:
+      description: |2-
+         - PENDING_ACCEPTANCE: The private link endpoint is pending acceptance.
+         - PENDING: The private link endpoint is pending.
+         - AVAILABLE: The private link endpoint is available.
+         - REJECTED: The private link endpoint is rejected.
+         - EXPIRED: The private link endpoint is Expired.
+         - FAILED: The private link endpoint is failed.
+         - PARTIAL: The private link endpoint is partial.
+         - DELETING: The private link endpoint is deleting.
+      enum:
+      - PENDING_ACCEPTANCE
+      - PENDING
+      - AVAILABLE
+      - REJECTED
+      - EXPIRED
+      - FAILED
+      - PARTIAL
+      - DELETING
+      type: string
     SchemaRegistry:
       properties:
         schemaRegistryEndpoints:

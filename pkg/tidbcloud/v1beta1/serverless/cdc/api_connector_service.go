@@ -143,6 +143,127 @@ func (a *ConnectorServiceAPIService) ConnectorServiceCreateConnectorExecute(r Ap
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
+type ApiConnectorServiceCreatePrivateLinkEndpointRequest struct {
+	ctx        context.Context
+	ApiService *ConnectorServiceAPIService
+	clusterId  string
+	body       *ConnectorServiceCreatePrivateLinkEndpointBody
+}
+
+func (r ApiConnectorServiceCreatePrivateLinkEndpointRequest) Body(body ConnectorServiceCreatePrivateLinkEndpointBody) ApiConnectorServiceCreatePrivateLinkEndpointRequest {
+	r.body = &body
+	return r
+}
+
+func (r ApiConnectorServiceCreatePrivateLinkEndpointRequest) Execute() (*PrivateLinkEndpoint, *http.Response, error) {
+	return r.ApiService.ConnectorServiceCreatePrivateLinkEndpointExecute(r)
+}
+
+/*
+ConnectorServiceCreatePrivateLinkEndpoint Create a private link
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId Required. The ID of the cluster.
+	@return ApiConnectorServiceCreatePrivateLinkEndpointRequest
+*/
+func (a *ConnectorServiceAPIService) ConnectorServiceCreatePrivateLinkEndpoint(ctx context.Context, clusterId string) ApiConnectorServiceCreatePrivateLinkEndpointRequest {
+	return ApiConnectorServiceCreatePrivateLinkEndpointRequest{
+		ApiService: a,
+		ctx:        ctx,
+		clusterId:  clusterId,
+	}
+}
+
+// Execute executes the request
+//
+//	@return PrivateLinkEndpoint
+func (a *ConnectorServiceAPIService) ConnectorServiceCreatePrivateLinkEndpointExecute(r ApiConnectorServiceCreatePrivateLinkEndpointRequest) (*PrivateLinkEndpoint, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodPost
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *PrivateLinkEndpoint
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ConnectorServiceAPIService.ConnectorServiceCreatePrivateLinkEndpoint")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/connectors/private-link-endpoints"
+	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.body == nil {
+		return localVarReturnValue, nil, reportError("body is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.body
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v Status
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
 type ApiConnectorServiceDeleteConnectorRequest struct {
 	ctx         context.Context
 	ApiService  *ConnectorServiceAPIService
@@ -195,6 +316,127 @@ func (a *ConnectorServiceAPIService) ConnectorServiceDeleteConnectorExecute(r Ap
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v Status
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiConnectorServiceDeletePrivateLinkEndpointRequest struct {
+	ctx                    context.Context
+	ApiService             *ConnectorServiceAPIService
+	clusterId              string
+	privateLinkServiceName *string
+}
+
+// Required. The private link service name.
+func (r ApiConnectorServiceDeletePrivateLinkEndpointRequest) PrivateLinkServiceName(privateLinkServiceName string) ApiConnectorServiceDeletePrivateLinkEndpointRequest {
+	r.privateLinkServiceName = &privateLinkServiceName
+	return r
+}
+
+func (r ApiConnectorServiceDeletePrivateLinkEndpointRequest) Execute() (*PrivateLinkEndpoint, *http.Response, error) {
+	return r.ApiService.ConnectorServiceDeletePrivateLinkEndpointExecute(r)
+}
+
+/*
+ConnectorServiceDeletePrivateLinkEndpoint Delete a private link
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId Required. The ID of the cluster.
+	@return ApiConnectorServiceDeletePrivateLinkEndpointRequest
+*/
+func (a *ConnectorServiceAPIService) ConnectorServiceDeletePrivateLinkEndpoint(ctx context.Context, clusterId string) ApiConnectorServiceDeletePrivateLinkEndpointRequest {
+	return ApiConnectorServiceDeletePrivateLinkEndpointRequest{
+		ApiService: a,
+		ctx:        ctx,
+		clusterId:  clusterId,
+	}
+}
+
+// Execute executes the request
+//
+//	@return PrivateLinkEndpoint
+func (a *ConnectorServiceAPIService) ConnectorServiceDeletePrivateLinkEndpointExecute(r ApiConnectorServiceDeletePrivateLinkEndpointRequest) (*PrivateLinkEndpoint, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *PrivateLinkEndpoint
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ConnectorServiceAPIService.ConnectorServiceDeletePrivateLinkEndpoint")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/connectors/private-links-endpoints"
+	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.privateLinkServiceName == nil {
+		return localVarReturnValue, nil, reportError("privateLinkServiceName is required and must be specified")
+	}
+
+	parameterAddToHeaderOrQuery(localVarQueryParams, "privateLinkServiceName", r.privateLinkServiceName, "", "")
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 
@@ -555,6 +797,127 @@ func (a *ConnectorServiceAPIService) ConnectorServiceGetConnectorExecute(r ApiCo
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
 
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v Status
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiConnectorServiceGetPrivateLinkEndpointRequest struct {
+	ctx                    context.Context
+	ApiService             *ConnectorServiceAPIService
+	clusterId              string
+	privateLinkServiceName *string
+}
+
+// Required. The private link service name.
+func (r ApiConnectorServiceGetPrivateLinkEndpointRequest) PrivateLinkServiceName(privateLinkServiceName string) ApiConnectorServiceGetPrivateLinkEndpointRequest {
+	r.privateLinkServiceName = &privateLinkServiceName
+	return r
+}
+
+func (r ApiConnectorServiceGetPrivateLinkEndpointRequest) Execute() (*PrivateLinkEndpoint, *http.Response, error) {
+	return r.ApiService.ConnectorServiceGetPrivateLinkEndpointExecute(r)
+}
+
+/*
+ConnectorServiceGetPrivateLinkEndpoint Get a private link
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId Required. The ID of the cluster.
+	@return ApiConnectorServiceGetPrivateLinkEndpointRequest
+*/
+func (a *ConnectorServiceAPIService) ConnectorServiceGetPrivateLinkEndpoint(ctx context.Context, clusterId string) ApiConnectorServiceGetPrivateLinkEndpointRequest {
+	return ApiConnectorServiceGetPrivateLinkEndpointRequest{
+		ApiService: a,
+		ctx:        ctx,
+		clusterId:  clusterId,
+	}
+}
+
+// Execute executes the request
+//
+//	@return PrivateLinkEndpoint
+func (a *ConnectorServiceAPIService) ConnectorServiceGetPrivateLinkEndpointExecute(r ApiConnectorServiceGetPrivateLinkEndpointRequest) (*PrivateLinkEndpoint, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *PrivateLinkEndpoint
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ConnectorServiceAPIService.ConnectorServiceGetPrivateLinkEndpoint")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/connectors/private-links-endpoints"
+	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.privateLinkServiceName == nil {
+		return localVarReturnValue, nil, reportError("privateLinkServiceName is required and must be specified")
+	}
+
+	parameterAddToHeaderOrQuery(localVarQueryParams, "privateLinkServiceName", r.privateLinkServiceName, "", "")
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
 

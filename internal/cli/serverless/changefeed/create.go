@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"slices"
 	"strconv"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/fatih/color"
@@ -218,7 +219,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			case cdc.CONNECTORTYPEENUM_KAFKA:
 				body.Sink.Kafka = &kafkaInfo
 			}
-
 			if startTSO == 0 {
 				mode := cdc.STARTMODEENUM_FROM_NOW
 				body.StartPosition = &cdc.StartPosition{
@@ -230,7 +230,16 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					Mode: &mode,
 					Tso:  aws.String(strconv.FormatUint(startTSO, 10)),
 				}
+			}
 
+			now := time.Now().UTC().Format(time.RFC3339)
+
+			println(now)
+
+			mode := cdc.STARTMODEENUM_FROM_UTC
+			body.StartPosition = &cdc.StartPosition{
+				Mode: &mode,
+				Utc:  &now,
 			}
 
 			resp, err := d.CreateConnector(ctx, clusterID, body)

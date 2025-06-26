@@ -39,9 +39,9 @@ type Connector struct {
 	Checkpoint *CDCCheckpoint `json:"checkpoint,omitempty"`
 	// Output_only. The error message.
 	Error *string `json:"error,omitempty"`
-	// Output_only. Timestamp when the export was created.
+	// Output_only. Timestamp when the changefeed was created.
 	CreateTime *time.Time `json:"createTime,omitempty"`
-	// Output_only. Timestamp when the export was updated.
+	// Output_only. Timestamp when the changefeed was updated.
 	UpdateTime           NullableTime `json:"updateTime,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

@@ -21,9 +21,6 @@ var _ MappedNullable = &NetworkInfo{}
 type NetworkInfo struct {
 	NetworkType            *KafkaNetworkTypeEnum `json:"networkType,omitempty"`
 	PrivateLinkServiceName *string               `json:"privateLinkServiceName,omitempty"`
-	KafkaId                *string               `json:"kafkaId,omitempty"`
-	Ports                  []int64               `json:"ports,omitempty"`
-	AdvertisedPatternGroup *map[string]string    `json:"advertisedPatternGroup,omitempty"`
 	AdditionalProperties   map[string]interface{}
 }
 
@@ -110,102 +107,6 @@ func (o *NetworkInfo) SetPrivateLinkServiceName(v string) {
 	o.PrivateLinkServiceName = &v
 }
 
-// GetKafkaId returns the KafkaId field value if set, zero value otherwise.
-func (o *NetworkInfo) GetKafkaId() string {
-	if o == nil || IsNil(o.KafkaId) {
-		var ret string
-		return ret
-	}
-	return *o.KafkaId
-}
-
-// GetKafkaIdOk returns a tuple with the KafkaId field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *NetworkInfo) GetKafkaIdOk() (*string, bool) {
-	if o == nil || IsNil(o.KafkaId) {
-		return nil, false
-	}
-	return o.KafkaId, true
-}
-
-// HasKafkaId returns a boolean if a field has been set.
-func (o *NetworkInfo) HasKafkaId() bool {
-	if o != nil && !IsNil(o.KafkaId) {
-		return true
-	}
-
-	return false
-}
-
-// SetKafkaId gets a reference to the given string and assigns it to the KafkaId field.
-func (o *NetworkInfo) SetKafkaId(v string) {
-	o.KafkaId = &v
-}
-
-// GetPorts returns the Ports field value if set, zero value otherwise.
-func (o *NetworkInfo) GetPorts() []int64 {
-	if o == nil || IsNil(o.Ports) {
-		var ret []int64
-		return ret
-	}
-	return o.Ports
-}
-
-// GetPortsOk returns a tuple with the Ports field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *NetworkInfo) GetPortsOk() ([]int64, bool) {
-	if o == nil || IsNil(o.Ports) {
-		return nil, false
-	}
-	return o.Ports, true
-}
-
-// HasPorts returns a boolean if a field has been set.
-func (o *NetworkInfo) HasPorts() bool {
-	if o != nil && !IsNil(o.Ports) {
-		return true
-	}
-
-	return false
-}
-
-// SetPorts gets a reference to the given []int64 and assigns it to the Ports field.
-func (o *NetworkInfo) SetPorts(v []int64) {
-	o.Ports = v
-}
-
-// GetAdvertisedPatternGroup returns the AdvertisedPatternGroup field value if set, zero value otherwise.
-func (o *NetworkInfo) GetAdvertisedPatternGroup() map[string]string {
-	if o == nil || IsNil(o.AdvertisedPatternGroup) {
-		var ret map[string]string
-		return ret
-	}
-	return *o.AdvertisedPatternGroup
-}
-
-// GetAdvertisedPatternGroupOk returns a tuple with the AdvertisedPatternGroup field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *NetworkInfo) GetAdvertisedPatternGroupOk() (*map[string]string, bool) {
-	if o == nil || IsNil(o.AdvertisedPatternGroup) {
-		return nil, false
-	}
-	return o.AdvertisedPatternGroup, true
-}
-
-// HasAdvertisedPatternGroup returns a boolean if a field has been set.
-func (o *NetworkInfo) HasAdvertisedPatternGroup() bool {
-	if o != nil && !IsNil(o.AdvertisedPatternGroup) {
-		return true
-	}
-
-	return false
-}
-
-// SetAdvertisedPatternGroup gets a reference to the given map[string]string and assigns it to the AdvertisedPatternGroup field.
-func (o *NetworkInfo) SetAdvertisedPatternGroup(v map[string]string) {
-	o.AdvertisedPatternGroup = &v
-}
-
 func (o NetworkInfo) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -221,15 +122,6 @@ func (o NetworkInfo) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.PrivateLinkServiceName) {
 		toSerialize["privateLinkServiceName"] = o.PrivateLinkServiceName
-	}
-	if !IsNil(o.KafkaId) {
-		toSerialize["kafkaId"] = o.KafkaId
-	}
-	if !IsNil(o.Ports) {
-		toSerialize["ports"] = o.Ports
-	}
-	if !IsNil(o.AdvertisedPatternGroup) {
-		toSerialize["advertisedPatternGroup"] = o.AdvertisedPatternGroup
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -255,9 +147,6 @@ func (o *NetworkInfo) UnmarshalJSON(data []byte) (err error) {
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "networkType")
 		delete(additionalProperties, "privateLinkServiceName")
-		delete(additionalProperties, "kafkaId")
-		delete(additionalProperties, "ports")
-		delete(additionalProperties, "advertisedPatternGroup")
 		o.AdditionalProperties = additionalProperties
 	}
 

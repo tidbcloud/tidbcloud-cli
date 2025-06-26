@@ -168,9 +168,8 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			body := &cdc.ConnectorServiceEditConnectorBody{
-				ConnectorId: changefeedID,
-				Name:        name,
-				Filter:      filter,
+				Name:   name,
+				Filter: filter,
 			}
 
 			changefeed, err := d.GetConnector(ctx, clusterID, changefeedID)

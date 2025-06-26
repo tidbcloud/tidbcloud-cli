@@ -20,6 +20,7 @@ model_column_selector.go
 model_connector.go
 model_connector_id.go
 model_connector_service_create_connector_body.go
+model_connector_service_create_private_link_endpoint_body.go
 model_connector_service_describe_schema_table_body.go
 model_connector_service_edit_connector_body.go
 model_connector_service_list_connectors_connector_type_parameter.go
@@ -32,12 +33,16 @@ model_describe_schema_table_resp.go
 model_event_filter_rule.go
 model_kafka_auth_type_enum.go
 model_kafka_compression_type_enum.go
+model_kafka_endpoint.go
 model_kafka_info.go
 model_kafka_network_type_enum.go
+model_kafka_type_enum.go
 model_kafka_version_enum.go
 model_network_info.go
 model_partition_dispatcher_config.go
 model_partition_dispatcher_enum.go
+model_private_link_endpoint.go
+model_private_link_endpoint_state_enum.go
 model_schema_registry.go
 model_sink_info.go
 model_start_mode_enum.go

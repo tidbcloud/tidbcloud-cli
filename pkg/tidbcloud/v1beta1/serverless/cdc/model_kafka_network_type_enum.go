@@ -14,20 +14,18 @@ import (
 	"encoding/json"
 )
 
-// KafkaNetworkTypeEnum  - PUBLIC: Public network.  - VPC_PEERING: VPC peering network.  - PRIVATE_LINK: Private Link network.
+// KafkaNetworkTypeEnum  - PUBLIC: Public network.  - PRIVATE_LINK: Private Link network.
 type KafkaNetworkTypeEnum string
 
 // List of KafkaNetworkType.Enum
 const (
 	KAFKANETWORKTYPEENUM_PUBLIC       KafkaNetworkTypeEnum = "PUBLIC"
-	KAFKANETWORKTYPEENUM_VPC_PEERING  KafkaNetworkTypeEnum = "VPC_PEERING"
 	KAFKANETWORKTYPEENUM_PRIVATE_LINK KafkaNetworkTypeEnum = "PRIVATE_LINK"
 )
 
 // All allowed values of KafkaNetworkTypeEnum enum
 var AllowedKafkaNetworkTypeEnumEnumValues = []KafkaNetworkTypeEnum{
 	"PUBLIC",
-	"VPC_PEERING",
 	"PRIVATE_LINK",
 }
 

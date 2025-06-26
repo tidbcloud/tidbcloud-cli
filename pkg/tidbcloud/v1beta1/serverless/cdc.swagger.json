@@ -420,6 +420,122 @@
           "ConnectorService"
         ]
       }
+    },
+    "/v1beta1/clusters/{clusterId}/connectors/private-link-endpoints": {
+      "post": {
+        "summary": "Create a private link",
+        "operationId": "ConnectorService_CreatePrivateLinkEndpoint",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PrivateLinkEndpoint"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ConnectorService.CreatePrivateLinkEndpointBody"
+            }
+          }
+        ],
+        "tags": [
+          "ConnectorService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/connectors/private-links-endpoints": {
+      "get": {
+        "summary": "Get a private link",
+        "operationId": "ConnectorService_GetPrivateLinkEndpoint",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PrivateLinkEndpoint"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "privateLinkServiceName",
+            "description": "Required. The private link service name.",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ConnectorService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete a private link",
+        "operationId": "ConnectorService_DeletePrivateLinkEndpoint",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PrivateLinkEndpoint"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "privateLinkServiceName",
+            "description": "Required. The private link service name.",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ConnectorService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -627,14 +743,14 @@
         "createTime": {
           "type": "string",
           "format": "date-time",
-          "description": "Output_only. Timestamp when the export was created.",
+          "description": "Output_only. Timestamp when the changefeed was created.",
           "readOnly": true
         },
         "updateTime": {
           "type": "string",
           "format": "date-time",
           "x-nullable": true,
-          "description": "Output_only. Timestamp when the export was updated.",
+          "description": "Output_only. Timestamp when the changefeed was updated.",
           "readOnly": true
         }
       },
@@ -697,6 +813,72 @@
       "required": [
         "sink",
         "filter"
+      ]
+    },
+    "ConnectorService.CreatePrivateLinkEndpointBody": {
+      "type": "object",
+      "properties": {
+        "endpointId": {
+          "type": "string",
+          "description": "Output_only  The ID of the private link endpoint.",
+          "readOnly": true
+        },
+        "privateLinkServiceName": {
+          "type": "string",
+          "description": "Required. The private link service name."
+        },
+        "connectorType": {
+          "description": "Required. The type of the sink.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ConnectorType.Enum"
+            }
+          ]
+        },
+        "state": {
+          "description": "Output_only. The state of the private link.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/PrivateLinkEndpointState.Enum"
+            }
+          ]
+        },
+        "kafka": {
+          "description": "Optional. Kafka private link endpoint information.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/KafkaEndpoint"
+            }
+          ]
+        },
+        "message": {
+          "type": "string",
+          "description": "Output_only. The message.",
+          "readOnly": true
+        },
+        "endpointUrl": {
+          "type": "string",
+          "description": "Output_only. The message.",
+          "readOnly": true
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Output_only. Timestamp when the private link endpoint was created.",
+          "readOnly": true
+        },
+        "updateTime": {
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true,
+          "description": "Output_only. Timestamp when the private link endpoint was updated.",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "privateLinkServiceName",
+        "connectorType"
       ]
     },
     "ConnectorService.DescribeSchemaTableBody": {
@@ -882,6 +1064,30 @@
         "ZSTD"
       ]
     },
+    "KafkaEndpoint": {
+      "type": "object",
+      "properties": {
+        "kafkaType": {
+          "description": "Required. The type of the Kafka instance.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/KafkaType.Enum"
+            }
+          ]
+        },
+        "advertisedListenersPattern": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Required. The advertised listeners pattern."
+        }
+      },
+      "required": [
+        "kafkaType",
+        "advertisedListenersPattern"
+      ]
+    },
     "KafkaInfo": {
       "type": "object",
       "properties": {
@@ -906,10 +1112,6 @@
             "type": "object",
             "$ref": "#/definitions/ColumnSelector"
           }
-        },
-        "bizEndpointId": {
-          "type": "string",
-          "format": "uint64"
         }
       }
     },
@@ -917,10 +1119,18 @@
       "type": "string",
       "enum": [
         "PUBLIC",
-        "VPC_PEERING",
         "PRIVATE_LINK"
       ],
-      "description": " - PUBLIC: Public network.\n - VPC_PEERING: VPC peering network.\n - PRIVATE_LINK: Private Link network."
+      "description": " - PUBLIC: Public network.\n - PRIVATE_LINK: Private Link network."
+    },
+    "KafkaType.Enum": {
+      "type": "string",
+      "enum": [
+        "SELF_HOSTED",
+        "MSK",
+        "CONFLUENT"
+      ],
+      "description": " - SELF_HOSTED: Self-hosted Kafka.\n - MSK: MSK (Managed Streaming for Kafka).\n - CONFLUENT: Confluent Kafka."
     },
     "KafkaVersion.Enum": {
       "type": "string",
@@ -938,22 +1148,6 @@
         },
         "privateLinkServiceName": {
           "type": "string"
-        },
-        "kafkaId": {
-          "type": "string"
-        },
-        "ports": {
-          "type": "array",
-          "items": {
-            "type": "integer",
-            "format": "int64"
-          }
-        },
-        "advertisedPatternGroup": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
         }
       }
     },
@@ -989,6 +1183,91 @@
           }
         }
       }
+    },
+    "PrivateLinkEndpoint": {
+      "type": "object",
+      "properties": {
+        "endpointId": {
+          "type": "string",
+          "description": "Output_only  The ID of the private link endpoint.",
+          "readOnly": true
+        },
+        "clusterId": {
+          "type": "string",
+          "description": "Required. The ID of the cluster."
+        },
+        "privateLinkServiceName": {
+          "type": "string",
+          "description": "Required. The private link service name."
+        },
+        "connectorType": {
+          "description": "Required. The type of the sink.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ConnectorType.Enum"
+            }
+          ]
+        },
+        "state": {
+          "description": "Output_only. The state of the private link.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/PrivateLinkEndpointState.Enum"
+            }
+          ]
+        },
+        "kafka": {
+          "description": "Optional. Kafka private link endpoint information.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/KafkaEndpoint"
+            }
+          ]
+        },
+        "message": {
+          "type": "string",
+          "description": "Output_only. The message.",
+          "readOnly": true
+        },
+        "endpointUrl": {
+          "type": "string",
+          "description": "Output_only. The message.",
+          "readOnly": true
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Output_only. Timestamp when the private link endpoint was created.",
+          "readOnly": true
+        },
+        "updateTime": {
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true,
+          "description": "Output_only. Timestamp when the private link endpoint was updated.",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "clusterId",
+        "privateLinkServiceName",
+        "connectorType"
+      ]
+    },
+    "PrivateLinkEndpointState.Enum": {
+      "type": "string",
+      "enum": [
+        "PENDING_ACCEPTANCE",
+        "PENDING",
+        "AVAILABLE",
+        "REJECTED",
+        "EXPIRED",
+        "FAILED",
+        "PARTIAL",
+        "DELETING"
+      ],
+      "description": " - PENDING_ACCEPTANCE: The private link endpoint is pending acceptance.\n - PENDING: The private link endpoint is pending.\n - AVAILABLE: The private link endpoint is available.\n - REJECTED: The private link endpoint is rejected.\n - EXPIRED: The private link endpoint is Expired.\n - FAILED: The private link endpoint is failed.\n - PARTIAL: The private link endpoint is partial.\n - DELETING: The private link endpoint is deleting."
     },
     "SchemaRegistry": {
       "type": "object",

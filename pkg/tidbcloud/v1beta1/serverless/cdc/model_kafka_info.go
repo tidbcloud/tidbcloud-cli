@@ -25,7 +25,6 @@ type KafkaInfo struct {
 	DataFormat           *DataFormat           `json:"dataFormat,omitempty"`
 	TopicPartitionConfig *TopicPartitionConfig `json:"topicPartitionConfig,omitempty"`
 	ColumnSelectors      []ColumnSelector      `json:"columnSelectors,omitempty"`
-	BizEndpointId        *string               `json:"bizEndpointId,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -240,38 +239,6 @@ func (o *KafkaInfo) SetColumnSelectors(v []ColumnSelector) {
 	o.ColumnSelectors = v
 }
 
-// GetBizEndpointId returns the BizEndpointId field value if set, zero value otherwise.
-func (o *KafkaInfo) GetBizEndpointId() string {
-	if o == nil || IsNil(o.BizEndpointId) {
-		var ret string
-		return ret
-	}
-	return *o.BizEndpointId
-}
-
-// GetBizEndpointIdOk returns a tuple with the BizEndpointId field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *KafkaInfo) GetBizEndpointIdOk() (*string, bool) {
-	if o == nil || IsNil(o.BizEndpointId) {
-		return nil, false
-	}
-	return o.BizEndpointId, true
-}
-
-// HasBizEndpointId returns a boolean if a field has been set.
-func (o *KafkaInfo) HasBizEndpointId() bool {
-	if o != nil && !IsNil(o.BizEndpointId) {
-		return true
-	}
-
-	return false
-}
-
-// SetBizEndpointId gets a reference to the given string and assigns it to the BizEndpointId field.
-func (o *KafkaInfo) SetBizEndpointId(v string) {
-	o.BizEndpointId = &v
-}
-
 func (o KafkaInfo) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -299,9 +266,6 @@ func (o KafkaInfo) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.ColumnSelectors) {
 		toSerialize["columnSelectors"] = o.ColumnSelectors
-	}
-	if !IsNil(o.BizEndpointId) {
-		toSerialize["bizEndpointId"] = o.BizEndpointId
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -331,7 +295,6 @@ func (o *KafkaInfo) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "dataFormat")
 		delete(additionalProperties, "topicPartitionConfig")
 		delete(additionalProperties, "columnSelectors")
-		delete(additionalProperties, "bizEndpointId")
 		o.AdditionalProperties = additionalProperties
 	}
 

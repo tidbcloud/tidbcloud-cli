@@ -79,10 +79,13 @@ All URIs are relative to *https://serverless.tidbapi.com*
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
 *ConnectorServiceAPI* | [**ConnectorServiceCreateConnector**](docs/ConnectorServiceAPI.md#connectorservicecreateconnector) | **Post** /v1beta1/clusters/{clusterId}/connectors | Create a connector.
+*ConnectorServiceAPI* | [**ConnectorServiceCreatePrivateLinkEndpoint**](docs/ConnectorServiceAPI.md#connectorservicecreateprivatelinkendpoint) | **Post** /v1beta1/clusters/{clusterId}/connectors/private-link-endpoints | Create a private link
 *ConnectorServiceAPI* | [**ConnectorServiceDeleteConnector**](docs/ConnectorServiceAPI.md#connectorservicedeleteconnector) | **Delete** /v1beta1/clusters/{clusterId}/connectors/{connectorId} | Delete a connector.
+*ConnectorServiceAPI* | [**ConnectorServiceDeletePrivateLinkEndpoint**](docs/ConnectorServiceAPI.md#connectorservicedeleteprivatelinkendpoint) | **Delete** /v1beta1/clusters/{clusterId}/connectors/private-links-endpoints | Delete a private link
 *ConnectorServiceAPI* | [**ConnectorServiceDescribeSchemaTable**](docs/ConnectorServiceAPI.md#connectorservicedescribeschematable) | **Post** /v1beta1/clusters/{clusterId}/connectors:describeSchemaTable | Describe schema table.
 *ConnectorServiceAPI* | [**ConnectorServiceEditConnector**](docs/ConnectorServiceAPI.md#connectorserviceeditconnector) | **Post** /v1beta1/clusters/{clusterId}/connectors/{connectorId}:edit | Edit a connector.
 *ConnectorServiceAPI* | [**ConnectorServiceGetConnector**](docs/ConnectorServiceAPI.md#connectorservicegetconnector) | **Get** /v1beta1/clusters/{clusterId}/connectors/{connectorId} | Get a connector.
+*ConnectorServiceAPI* | [**ConnectorServiceGetPrivateLinkEndpoint**](docs/ConnectorServiceAPI.md#connectorservicegetprivatelinkendpoint) | **Get** /v1beta1/clusters/{clusterId}/connectors/private-links-endpoints | Get a private link
 *ConnectorServiceAPI* | [**ConnectorServiceListConnectors**](docs/ConnectorServiceAPI.md#connectorservicelistconnectors) | **Get** /v1beta1/clusters/{clusterId}/connectors | List connectors.
 *ConnectorServiceAPI* | [**ConnectorServiceStartConnector**](docs/ConnectorServiceAPI.md#connectorservicestartconnector) | **Post** /v1beta1/clusters/{clusterId}/connectors/{connectorId}:start | Start a connector.
 *ConnectorServiceAPI* | [**ConnectorServiceStopConnector**](docs/ConnectorServiceAPI.md#connectorservicestopconnector) | **Post** /v1beta1/clusters/{clusterId}/connectors/{connectorId}:stop | Stop a connector.
@@ -104,6 +107,7 @@ Class | Method | HTTP request | Description
  - [Connector](docs/Connector.md)
  - [ConnectorID](docs/ConnectorID.md)
  - [ConnectorServiceCreateConnectorBody](docs/ConnectorServiceCreateConnectorBody.md)
+ - [ConnectorServiceCreatePrivateLinkEndpointBody](docs/ConnectorServiceCreatePrivateLinkEndpointBody.md)
  - [ConnectorServiceDescribeSchemaTableBody](docs/ConnectorServiceDescribeSchemaTableBody.md)
  - [ConnectorServiceEditConnectorBody](docs/ConnectorServiceEditConnectorBody.md)
  - [ConnectorServiceListConnectorsConnectorTypeParameter](docs/ConnectorServiceListConnectorsConnectorTypeParameter.md)
@@ -116,12 +120,16 @@ Class | Method | HTTP request | Description
  - [EventFilterRule](docs/EventFilterRule.md)
  - [KafkaAuthTypeEnum](docs/KafkaAuthTypeEnum.md)
  - [KafkaCompressionTypeEnum](docs/KafkaCompressionTypeEnum.md)
+ - [KafkaEndpoint](docs/KafkaEndpoint.md)
  - [KafkaInfo](docs/KafkaInfo.md)
  - [KafkaNetworkTypeEnum](docs/KafkaNetworkTypeEnum.md)
+ - [KafkaTypeEnum](docs/KafkaTypeEnum.md)
  - [KafkaVersionEnum](docs/KafkaVersionEnum.md)
  - [NetworkInfo](docs/NetworkInfo.md)
  - [PartitionDispatcherConfig](docs/PartitionDispatcherConfig.md)
  - [PartitionDispatcherEnum](docs/PartitionDispatcherEnum.md)
+ - [PrivateLinkEndpoint](docs/PrivateLinkEndpoint.md)
+ - [PrivateLinkEndpointStateEnum](docs/PrivateLinkEndpointStateEnum.md)
  - [SchemaRegistry](docs/SchemaRegistry.md)
  - [SinkInfo](docs/SinkInfo.md)
  - [StartModeEnum](docs/StartModeEnum.md)
