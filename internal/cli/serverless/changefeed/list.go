@@ -68,13 +68,13 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 		Short: "List changefeeds",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  List all changefeeds in interactive mode:
-  $ %[1]s serverless cdc list
+  $ %[1]s serverless changefeed list
 
   List all changefeeds in non-interactive mode:
-  $ %[1]s serverless cdc list -c <cluster-id>
+  $ %[1]s serverless changefeed list -c <cluster-id>
 
   List all changefeeds with json format in non-interactive mode:
-  $ %[1]s serverless cdc list -c <cluster-id> -o json`, config.CliName),
+  $ %[1]s serverless changefeed list -c <cluster-id> -o json`, config.CliName),
 		Aliases: []string{"ls"},
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)

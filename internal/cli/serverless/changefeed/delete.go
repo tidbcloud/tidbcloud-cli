@@ -75,10 +75,10 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 		Aliases: []string{"rm"},
 		Args:    cobra.NoArgs,
 		Example: fmt.Sprintf(`  Delete a changefeed in interactive mode:
-  $ %[1]s serverless cdc delete
+  $ %[1]s serverless changefeed delete
 
   Delete a changefeed in non-interactive mode:
-  $ %[1]s serverless cdc delete -c <cluster-id> --changefeed-id <changefeed-id>`, config.CliName),
+  $ %[1]s serverless changefeed delete -c <cluster-id> --changefeed-id <changefeed-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},

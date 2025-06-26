@@ -749,13 +749,13 @@ func (d *ClientDelegate) CreateConnector(ctx context.Context, clusterId string, 
 	if body != nil {
 		r = r.Body(*body)
 	}
-	resp, _, err := r.Execute()
-	return resp, err
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
 }
 
 func (d *ClientDelegate) DeleteConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error) {
-	resp, _, err := d.cdc.ConnectorServiceAPI.ConnectorServiceDeleteConnector(ctx, clusterId, connectorId).Execute()
-	return resp, err
+	resp, h, err := d.cdc.ConnectorServiceAPI.ConnectorServiceDeleteConnector(ctx, clusterId, connectorId).Execute()
+	return resp, parseError(err, h)
 }
 
 func (d *ClientDelegate) EditConnector(ctx context.Context, clusterId, connectorId string, body *cdc.ConnectorServiceEditConnectorBody) (*cdc.ConnectorID, error) {
@@ -763,13 +763,13 @@ func (d *ClientDelegate) EditConnector(ctx context.Context, clusterId, connector
 	if body != nil {
 		r = r.Body(*body)
 	}
-	resp, _, err := r.Execute()
-	return resp, err
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
 }
 
 func (d *ClientDelegate) GetConnector(ctx context.Context, clusterId, connectorId string) (*cdc.Connector, error) {
-	resp, _, err := d.cdc.ConnectorServiceAPI.ConnectorServiceGetConnector(ctx, clusterId, connectorId).Execute()
-	return resp, err
+	resp, h, err := d.cdc.ConnectorServiceAPI.ConnectorServiceGetConnector(ctx, clusterId, connectorId).Execute()
+	return resp, parseError(err, h)
 }
 
 func (d *ClientDelegate) ListConnectors(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, connectorType *cdc.ConnectorServiceListConnectorsConnectorTypeParameter, orderBy *string) (*cdc.Connectors, error) {
@@ -786,22 +786,22 @@ func (d *ClientDelegate) ListConnectors(ctx context.Context, clusterId string, p
 	if orderBy != nil {
 		r = r.OrderBy(*orderBy)
 	}
-	resp, _, err := r.Execute()
-	return resp, err
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
 }
 
 func (d *ClientDelegate) StartConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error) {
 	r := d.cdc.ConnectorServiceAPI.ConnectorServiceStartConnector(ctx, clusterId, connectorId)
 	r = r.Body(map[string]interface{}{})
-	resp, _, err := r.Execute()
-	return resp, err
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
 }
 
 func (d *ClientDelegate) StopConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error) {
 	r := d.cdc.ConnectorServiceAPI.ConnectorServiceStopConnector(ctx, clusterId, connectorId)
 	r = r.Body(map[string]interface{}{})
-	resp, _, err := r.Execute()
-	return resp, err
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
 }
 
 func (d *ClientDelegate) TestConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceTestConnectorBody) (map[string]interface{}, error) {
@@ -809,8 +809,8 @@ func (d *ClientDelegate) TestConnector(ctx context.Context, clusterId string, bo
 	if body != nil {
 		r = r.Body(*body)
 	}
-	resp, _, err := r.Execute()
-	return resp, err
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
 }
 
 func (d *ClientDelegate) DescribeSchemaTable(ctx context.Context, clusterId string, body *cdc.ConnectorServiceDescribeSchemaTableBody) (*cdc.DescribeSchemaTableResp, error) {
@@ -818,6 +818,6 @@ func (d *ClientDelegate) DescribeSchemaTable(ctx context.Context, clusterId stri
 	if body != nil {
 		r = r.Body(*body)
 	}
-	resp, _, err := r.Execute()
-	return resp, err
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
 }

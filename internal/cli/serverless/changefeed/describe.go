@@ -69,10 +69,10 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		Aliases: []string{"get"},
 		Args:    cobra.NoArgs,
 		Example: fmt.Sprintf(`  Get a changefeed in interactive mode:
-  $ %[1]s serverless cdc describe
+  $ %[1]s serverless changefeed describe
 
   Get a changefeed in non-interactive mode:
-  $ %[1]s serverless cdc describe -c <cluster-id> --changefeed-id <changefeed-id>`, config.CliName),
+  $ %[1]s serverless changefeed describe -c <cluster-id> --changefeed-id <changefeed-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},

@@ -90,10 +90,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless changefeed create
 
   Create a changefeed in non-interactive mode:
-  $ %[1]s serverless changefeed create -c <cluster-id> --type kafka --kafka '{"broker":{"address":"localhost:9092"}}' --filter '{"filterRule":["test.t1"]}' --start-tso 123456789
+  $ %[1]s serverless changefeed create -c <cluster-id> --type KAFKA --kafka '{"network_info":{"network_type":"PUBLIC"},"broker":{"kafka_version":"VERSION_2XX","broker_endpoints":"52.34.156.155:9092","compression":"NONE"},"authentication":{"auth_type":"DISABLE"},"topic_partition_config":{"dispatch_type":"ONE_TOPIC","default_topic":"default-topic","replication_factor":1,"partition_num":1,"partition_dispatchers":[{"partition_type":"TABLE","matcher":["*.*"]}]},"data_format":{"protocol":"CANAL_JSON"}}' --filter '{"filterRule":["test.*"], "mode": "IGNORE_NOT_SUPPORT_TABLE"}'
 
-  Create a changefeed with a name in non-interactive mode:
-  $ %[1]s serverless changefeed create -c <cluster-id> --name myfeed --type kafka --kafka '{"broker":{"address":"localhost:9092"}}' --filter '{"filterRule":["test.t1"]}' --start-tso 123456789
+  Create a changefeed named myfeed with specified start tso a in non-interactive mode:
+  $ %[1]s serverless changefeed create -c <cluster-id> --name myfeed --type KAFKA --kafka <kafka-json> --filter <filter-json> --start-tso 458996254096228352
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
@@ -203,7 +203,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if !slices.Contains(cdc.AllowedConnectorTypeEnumEnumValues, cdc.ConnectorTypeEnum(changefeedType)) {
-				return errors.New("currently only kafka type is supported")
+				return errors.New("currently only KAFKA type is supported")
 			}
 
 			// create the changefeed
@@ -233,9 +233,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			now := time.Now().UTC().Format(time.RFC3339)
-
-			println(now)
-
 			mode := cdc.STARTMODEENUM_FROM_UTC
 			body.StartPosition = &cdc.StartPosition{
 				Mode: &mode,
@@ -255,20 +252,20 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
-	createCmd.Flags().String(flag.ChangefeedName, "", "The name of the changefeed (optional).")
+	createCmd.Flags().String(flag.ChangefeedName, "", "The name of the changefeed.")
 	createCmd.Flags().String(flag.ChangefeedType, "", fmt.Sprintf("The type of the changefeed, one of %q", cdc.AllowedConnectorTypeEnumEnumValues))
-	createCmd.Flags().String(flag.ChangefeedKafka, "", "Kafka info in JSON format, see KafkaInfo struct.")
-	createCmd.Flags().String(flag.ChangefeedFilter, "", "Filter in JSON format, see CDCFilter struct.")
-	createCmd.Flags().Uint64(flag.ChangefeedStartTSO, 0, "Start TSO (uint64) for the changefeed.")
+	createCmd.Flags().String(flag.ChangefeedKafka, "", "Kafka information in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
+	createCmd.Flags().String(flag.ChangefeedFilter, "", "Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
+	createCmd.Flags().Uint64(flag.ChangefeedStartTSO, 0, "Start TSO for the changefeed, default to current TSO. See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.")
 
 	return createCmd
 }
 
 // inputDescription 用于交互式输入提示
 var inputDescription = map[string]string{
-	flag.ChangefeedName:     "The name of the changefeed (optional)",
+	flag.ChangefeedName:     "The name of the changefeed, skip to use the default name",
 	flag.ChangefeedType:     fmt.Sprintf("The type of the changefeed, one of %q", cdc.AllowedConnectorTypeEnumEnumValues),
-	flag.ChangefeedKafka:    "Kafka info in JSON format, see KafkaInfo struct",
-	flag.ChangefeedFilter:   "Filter in JSON format, see CDCFilter struct",
-	flag.ChangefeedStartTSO: "Start TSO (uint64) for the changefeed, skip to use the current TSO",
+	flag.ChangefeedKafka:    "Kafka information in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
+	flag.ChangefeedFilter:   "Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
+	flag.ChangefeedStartTSO: "Start TSO (uint64) for the changefeed, skip to use the current TSO. See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.",
 }

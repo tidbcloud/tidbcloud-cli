@@ -67,10 +67,10 @@ func ResumeCmd(h *internal.Helper) *cobra.Command {
 		Short: "Resume a paused changefeed",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Resume a changefeed in interactive mode:
-  $ %[1]s serverless cdc resume
+  $ %[1]s serverless changefeed resume
 
   Resume a changefeed in non-interactive mode:
-  $ %[1]s serverless cdc resume -c <cluster-id> --changefeed-id <changefeed-id>`, config.CliName),
+  $ %[1]s serverless changefeed resume -c <cluster-id> --changefeed-id <changefeed-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},

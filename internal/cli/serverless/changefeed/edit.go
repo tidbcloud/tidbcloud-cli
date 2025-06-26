@@ -83,9 +83,7 @@ func EditCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless changefeed update
 
   Update the name, kafka, and filter of a changefeed in non-interactive mode:
-  $ %[1]s serverless changefeed update -c <cluster-id> --changefeed-id <changefeed-id> --name newname --kafka '{"broker":{"address":"localhost:9092"}}' --filter '{"filterRule":["test.t1"]}'
-
-  Note: --kafka and --filter must be fully specified, partial updates are not supported for these fields.
+  $ %[1]s serverless changefeed update -c <cluster-id> --changefeed-id <changefeed-id> --name newname --kafka <full-specified-kafka> --filter <full-specified-filter>
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
@@ -206,16 +204,16 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 
 	editCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
 	editCmd.Flags().String(flag.ChangefeedID, "", "The ID of the changefeed to be updated.")
-	editCmd.Flags().String(flag.ChangefeedName, "", "The new name of the changefeed (optional).")
-	editCmd.Flags().String(flag.ChangefeedKafka, "", "Kafka info in JSON format, see KafkaInfo struct. (required, must be fully specified)")
-	editCmd.Flags().String(flag.ChangefeedFilter, "", "Filter in JSON format, see CDCFilter struct. (required, must be fully specified)")
+	editCmd.Flags().String(flag.ChangefeedName, "", "The new name of the changefeed.")
+	editCmd.Flags().String(flag.ChangefeedKafka, "", "Complete kafka information in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
+	editCmd.Flags().String(flag.ChangefeedFilter, "", "Complete filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
 
 	return editCmd
 }
 
 // updateInputDescriptionInteractive 用于交互式输入提示（kafka 和 filter 必填）
 var updateInputDescriptionInteractive = map[string]string{
-	flag.ChangefeedName:   "The new name of the changefeed (optional)",
-	flag.ChangefeedKafka:  "Kafka info in JSON format, see KafkaInfo struct (required, must be fully specified)",
-	flag.ChangefeedFilter: "Filter in JSON format, see CDCFilter struct (required, must be fully specified)",
+	flag.ChangefeedName:   "The new name of the changefeed, skip to keep the current name.",
+	flag.ChangefeedKafka:  "Complete Kafka information in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
+	flag.ChangefeedFilter: "Complete Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
 }

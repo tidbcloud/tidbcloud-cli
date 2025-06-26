@@ -67,10 +67,10 @@ func PauseCmd(h *internal.Helper) *cobra.Command {
 		Short: "Pause a changefeed",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Pause a changefeed in interactive mode:
-  $ %[1]s serverless cdc pause
+  $ %[1]s serverless changefeed pause
 
   Pause a changefeed in non-interactive mode:
-  $ %[1]s serverless cdc pause -c <cluster-id> --changefeed-id <changefeed-id>`, config.CliName),
+  $ %[1]s serverless changefeed pause -c <cluster-id> --changefeed-id <changefeed-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},

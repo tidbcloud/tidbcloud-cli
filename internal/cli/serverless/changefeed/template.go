@@ -13,16 +13,12 @@ import (
 const (
 	KafkaInfoTemplateWithExplain = `{
         "network_info": {
-                "network_type": "PUBLIC",
-                "private_link_service_name": "",
-                "kafka_id": "",
-                "ports": [9092],
-                "advertised_pattern_group": {}
+                "network_type": "PUBLIC"
         },
         "broker": {
-                // "kafka_version": "VERSION_0XX", "VERSION_1XX", "VERSION_2XX", "VERSION_3XX"
+                // "kafka_version": "VERSION_2XX", "VERSION_3XX"
                 "kafka_version": "VERSION_2XX",
-                "broker_endpoints": "broker1:9092,broker2:9092",
+                "broker_endpoints": "broker:9092",
                 "tls_enable": false,
                 // "compression": "NONE", "GZIP", "LZ4", "ZSTD", "SNAPPY"
                 "compression": "NONE"
@@ -87,11 +83,7 @@ const (
 
 	KafkaInfoTemplate = `{
 	"network_info": {
-		"network_type": "PUBLIC",
-		"private_link_service_name": "",
-		"kafka_id": "",
-		"ports": [9092],
-		"advertised_pattern_group": {}
+		"network_type": "PUBLIC"
 	},
 	"broker": {
 		"kafka_version": "VERSION_2XX",
