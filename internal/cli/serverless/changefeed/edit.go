@@ -82,7 +82,7 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 		Example: fmt.Sprintf(`  Update a changefeed in interactive mode:
   $ %[1]s serverless changefeed update
 
-  Update the name, kafka, and filter of a changefeed in non-interactive mode:
+  Update the name, kafka, and filter of a changefeed in non-interactive mode:x
   $ %[1]s serverless changefeed update -c <cluster-id> --changefeed-id <changefeed-id> --name newname --kafka <full-specified-kafka> --filter <full-specified-filter>
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
