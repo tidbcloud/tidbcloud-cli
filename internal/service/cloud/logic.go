@@ -962,7 +962,7 @@ func GetSelectedAuthorizedNetwork(ctx context.Context, clusterID string, client 
 }
 
 func GetSelectedChangefeed(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*Changefeed, error) {
-	var items []*Changefeed
+	var items = make([]interface{}, 0)
 	pageSizeInt32 := int32(pageSize)
 	var pageToken *string
 
