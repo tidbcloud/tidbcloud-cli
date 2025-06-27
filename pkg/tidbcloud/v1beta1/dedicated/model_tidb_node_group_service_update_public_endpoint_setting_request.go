@@ -19,9 +19,9 @@ var _ MappedNullable = &TidbNodeGroupServiceUpdatePublicEndpointSettingRequest{}
 
 // TidbNodeGroupServiceUpdatePublicEndpointSettingRequest struct for TidbNodeGroupServiceUpdatePublicEndpointSettingRequest
 type TidbNodeGroupServiceUpdatePublicEndpointSettingRequest struct {
-	Name                 *string                             `json:"name,omitempty"`
-	Enabled              NullableBool                        `json:"enabled,omitempty"`
-	IpAccessList         []PublicEndpointSettingIpAccessList `json:"ipAccessList,omitempty"`
+	Name                 *string                                    `json:"name,omitempty"`
+	Enabled              NullableBool                               `json:"enabled,omitempty"`
+	IpAccessList         []V1beta1PublicEndpointSettingIpAccessList `json:"ipAccessList,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -120,9 +120,9 @@ func (o *TidbNodeGroupServiceUpdatePublicEndpointSettingRequest) UnsetEnabled() 
 }
 
 // GetIpAccessList returns the IpAccessList field value if set, zero value otherwise.
-func (o *TidbNodeGroupServiceUpdatePublicEndpointSettingRequest) GetIpAccessList() []PublicEndpointSettingIpAccessList {
+func (o *TidbNodeGroupServiceUpdatePublicEndpointSettingRequest) GetIpAccessList() []V1beta1PublicEndpointSettingIpAccessList {
 	if o == nil || IsNil(o.IpAccessList) {
-		var ret []PublicEndpointSettingIpAccessList
+		var ret []V1beta1PublicEndpointSettingIpAccessList
 		return ret
 	}
 	return o.IpAccessList
@@ -130,7 +130,7 @@ func (o *TidbNodeGroupServiceUpdatePublicEndpointSettingRequest) GetIpAccessList
 
 // GetIpAccessListOk returns a tuple with the IpAccessList field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TidbNodeGroupServiceUpdatePublicEndpointSettingRequest) GetIpAccessListOk() ([]PublicEndpointSettingIpAccessList, bool) {
+func (o *TidbNodeGroupServiceUpdatePublicEndpointSettingRequest) GetIpAccessListOk() ([]V1beta1PublicEndpointSettingIpAccessList, bool) {
 	if o == nil || IsNil(o.IpAccessList) {
 		return nil, false
 	}
@@ -146,8 +146,8 @@ func (o *TidbNodeGroupServiceUpdatePublicEndpointSettingRequest) HasIpAccessList
 	return false
 }
 
-// SetIpAccessList gets a reference to the given []PublicEndpointSettingIpAccessList and assigns it to the IpAccessList field.
-func (o *TidbNodeGroupServiceUpdatePublicEndpointSettingRequest) SetIpAccessList(v []PublicEndpointSettingIpAccessList) {
+// SetIpAccessList gets a reference to the given []V1beta1PublicEndpointSettingIpAccessList and assigns it to the IpAccessList field.
+func (o *TidbNodeGroupServiceUpdatePublicEndpointSettingRequest) SetIpAccessList(v []V1beta1PublicEndpointSettingIpAccessList) {
 	o.IpAccessList = v
 }
 

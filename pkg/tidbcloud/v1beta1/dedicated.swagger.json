@@ -596,7 +596,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1beta1ResetRootPasswordResponse"
+              "$ref": "#/definitions/dedicatedv1beta1ResetRootPasswordResponse"
             }
           },
           "400": {
@@ -648,7 +648,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ClusterServiceResetRootPasswordBody"
+              "$ref": "#/definitions/v1beta1ClusterServiceResetRootPasswordBody"
             }
           }
         ],
@@ -2053,7 +2053,7 @@
                   "type": "array",
                   "items": {
                     "type": "object",
-                    "$ref": "#/definitions/PublicEndpointSettingIpAccessList"
+                    "$ref": "#/definitions/v1beta1PublicEndpointSettingIpAccessList"
                   }
                 }
               }
@@ -2147,7 +2147,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1beta1PrivateEndpointConnection"
+              "$ref": "#/definitions/dedicatedv1beta1PrivateEndpointConnection"
             }
           },
           "400": {
@@ -2246,7 +2246,7 @@
                   "readOnly": true,
                   "allOf": [
                     {
-                      "$ref": "#/definitions/PrivateEndpointConnectionEndpointState"
+                      "$ref": "#/definitions/dedicatedv1beta1PrivateEndpointConnectionEndpointState"
                     }
                   ]
                 },
@@ -2279,7 +2279,7 @@
                   "readOnly": true,
                   "allOf": [
                     {
-                      "$ref": "#/definitions/v1beta1PrivateLinkServiceState"
+                      "$ref": "#/definitions/dedicatedv1beta1PrivateLinkServiceState"
                     }
                   ]
                 },
@@ -2329,7 +2329,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1beta1ListPrivateEndpointConnectionsResponse"
+              "$ref": "#/definitions/dedicatedv1beta1ListPrivateEndpointConnectionsResponse"
             }
           },
           "400": {
@@ -2443,7 +2443,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1beta1PrivateEndpointConnection"
+              "$ref": "#/definitions/dedicatedv1beta1PrivateEndpointConnection"
             }
           },
           "400": {
@@ -4441,51 +4441,6 @@
         }
       }
     },
-    "ClusterServiceResetRootPasswordBody": {
-      "type": "object",
-      "properties": {
-        "rootPassword": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "rootPassword"
-      ]
-    },
-    "EndpointConnectionType": {
-      "type": "string",
-      "enum": [
-        "PUBLIC",
-        "VPC_PEERING",
-        "PRIVATE_ENDPOINT"
-      ],
-      "description": " - PUBLIC: The endpoint is a public endpoint.\n - VPC_PEERING: The endpoint is a VPC peering endpoint.\n - PRIVATE_ENDPOINT: The endpoint is a private link endpoint."
-    },
-    "PrivateEndpointConnectionEndpointState": {
-      "type": "string",
-      "enum": [
-        "PENDING",
-        "ACTIVE",
-        "DELETING",
-        "FAILED",
-        "DISCOVERED"
-      ],
-      "description": " - PENDING: Customer has posted to TiDB cloud API,\nbut endpoint connection has not been accepted **asynchronously** by TiDB Cloud.\n - DISCOVERED: Customer has created the endpoint in their vpc, but has not posted to TiDB Cloud API."
-    },
-    "PublicEndpointSettingIpAccessList": {
-      "type": "object",
-      "properties": {
-        "cidrNotation": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "cidrNotation"
-      ]
-    },
     "ShowNodeQuotaResponseComponentQuota": {
       "type": "object",
       "properties": {
@@ -4585,9 +4540,31 @@
           "x-nullable": true,
           "description": "Optional provider name for the region.\nOnly used for serverless cluster.\nDeprecated.",
           "readOnly": true
+        },
+        "servicePlans": {
+          "type": "array",
+          "example": [
+            "Starter",
+            "Essential",
+            "Premium"
+          ],
+          "items": {
+            "$ref": "#/definitions/commonv1beta1ServicePlan"
+          },
+          "description": "Optional service plan for the region.\nOnly used for nextgen cluster.",
+          "readOnly": true
         }
       },
       "description": "A representation of a region for deploying TiDB clusters."
+    },
+    "commonv1beta1ServicePlan": {
+      "type": "string",
+      "enum": [
+        "Starter",
+        "Essential",
+        "Premium",
+        "BYOC"
+      ]
     },
     "dedicatedv1beta1AuditLogConfig": {
       "type": "object",
@@ -4757,6 +4734,27 @@
         }
       }
     },
+    "dedicatedv1beta1ListPrivateEndpointConnectionsResponse": {
+      "type": "object",
+      "properties": {
+        "privateEndpointConnections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/dedicatedv1beta1PrivateEndpointConnection"
+          }
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The total number of private link connections that matched the query."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
+        }
+      }
+    },
     "dedicatedv1beta1ListTidbNodeGroupsResponse": {
       "type": "object",
       "properties": {
@@ -4913,6 +4911,123 @@
         "hourMinute"
       ]
     },
+    "dedicatedv1beta1PrivateEndpointConnection": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Format: tidbNodeGroups/{tidb_node_group_id}/privateEndpointConnections/{private_endpoint_connection_id}",
+          "readOnly": true
+        },
+        "tidbNodeGroupId": {
+          "type": "string"
+        },
+        "privateEndpointConnectionId": {
+          "type": "string",
+          "readOnly": true
+        },
+        "clusterId": {
+          "type": "string",
+          "readOnly": true
+        },
+        "clusterDisplayName": {
+          "type": "string",
+          "readOnly": true
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "The labels of private link connection. It always contains the `project_id` label.",
+          "readOnly": true
+        },
+        "endpointId": {
+          "type": "string",
+          "description": "The endpoint ID of the private link connection.\nFor AWS, it's VPC endpoint ID.\nFor GCP, it's private service connect endpoint ID.\nFor Azure, it's private endpoint resource ID."
+        },
+        "privateIpAddress": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "The private IP address of the private endpoint in the user's vNet.\nTiDB Cloud will setup a public DNS record for this private IP address. So the user can use DNS address to connect to the cluster.\nOnly available for Azure clusters."
+        },
+        "endpointState": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/dedicatedv1beta1PrivateEndpointConnectionEndpointState"
+            }
+          ]
+        },
+        "message": {
+          "type": "string",
+          "readOnly": true
+        },
+        "regionId": {
+          "type": "string",
+          "title": "Format: {cloud_provider}-{region_code}",
+          "readOnly": true
+        },
+        "regionDisplayName": {
+          "type": "string",
+          "readOnly": true
+        },
+        "cloudProvider": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1RegionCloudProvider"
+            }
+          ]
+        },
+        "privateLinkServiceName": {
+          "type": "string",
+          "readOnly": true
+        },
+        "privateLinkServiceState": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/dedicatedv1beta1PrivateLinkServiceState"
+            }
+          ]
+        },
+        "tidbNodeGroupDisplayName": {
+          "type": "string",
+          "readOnly": true
+        },
+        "accountId": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "Only for GCP private service connections. It's GCP project name.",
+          "readOnly": true
+        },
+        "host": {
+          "type": "string",
+          "readOnly": true
+        },
+        "port": {
+          "type": "integer",
+          "format": "int32",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "tidbNodeGroupId",
+        "endpointId"
+      ]
+    },
+    "dedicatedv1beta1PrivateEndpointConnectionEndpointState": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "ACTIVE",
+        "DELETING",
+        "FAILED",
+        "DISCOVERED"
+      ],
+      "description": " - PENDING: Customer has posted to TiDB cloud API,\nbut endpoint connection has not been accepted **asynchronously** by TiDB Cloud.\n - DISCOVERED: Customer has created the endpoint in their vpc, but has not posted to TiDB Cloud API."
+    },
     "dedicatedv1beta1PrivateLinkService": {
       "type": "object",
       "properties": {
@@ -4939,7 +5054,7 @@
           "description": "Only available for AWS.\nSame as the `AvailabilityZones` field in response body of\n`github.com/aws/aws-sdk-go-v2/service/ec2.DescribeVpcEndpointServices` method."
         },
         "state": {
-          "$ref": "#/definitions/v1beta1PrivateLinkServiceState"
+          "$ref": "#/definitions/dedicatedv1beta1PrivateLinkServiceState"
         },
         "regionId": {
           "type": "string",
@@ -4953,6 +5068,14 @@
         }
       },
       "description": "All fields are output only."
+    },
+    "dedicatedv1beta1PrivateLinkServiceState": {
+      "type": "string",
+      "enum": [
+        "CREATING",
+        "ACTIVE",
+        "DELETING"
+      ]
     },
     "dedicatedv1beta1QueryAuditLogFilesResponse": {
       "type": "object",
@@ -4972,6 +5095,9 @@
           "type": "string"
         }
       }
+    },
+    "dedicatedv1beta1ResetRootPasswordResponse": {
+      "type": "object"
     },
     "dedicatedv1beta1TidbNodeGroup": {
       "type": "object",
@@ -5060,7 +5186,7 @@
           "readOnly": true,
           "allOf": [
             {
-              "$ref": "#/definitions/EndpointConnectionType"
+              "$ref": "#/definitions/v1beta1TidbNodeGroupEndpointConnectionType"
             }
           ]
         }
@@ -5330,7 +5456,7 @@
           "additionalProperties": {
             "type": "string"
           },
-          "description": "OUTPUT_ONLY. The annotations for the cluster.\ntidb.cloud/has-set-password. The annotation for whether the cluster has set password.\ntidb.cloud/available-features. The annotation for the available features of the cluster.",
+          "description": "OUTPUT_ONLY. The annotations for the cluster.\ntidb.cloud/has-set-password. The annotation for whether the cluster has set password.\ntidb.cloud/available-features. The annotation for the available features of the cluster.\ntidb.cloud/insufficient-vm-resource. The annotation for insufficient virtual machine resources during creating or modifying the cluster.",
           "readOnly": true
         }
       },
@@ -5418,6 +5544,17 @@
       },
       "required": [
         "clusterId"
+      ]
+    },
+    "v1beta1ClusterServiceResetRootPasswordBody": {
+      "type": "object",
+      "properties": {
+        "rootPassword": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "rootPassword"
       ]
     },
     "v1beta1ClusterStorageNodeSetting": {
@@ -5574,27 +5711,6 @@
         }
       }
     },
-    "v1beta1ListPrivateEndpointConnectionsResponse": {
-      "type": "object",
-      "properties": {
-        "privateEndpointConnections": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/v1beta1PrivateEndpointConnection"
-          }
-        },
-        "totalSize": {
-          "type": "integer",
-          "format": "int32",
-          "description": "The total number of private link connections that matched the query."
-        },
-        "nextPageToken": {
-          "type": "string",
-          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
-        }
-      }
-    },
     "v1beta1NetworkContainer": {
       "type": "object",
       "properties": {
@@ -5618,7 +5734,7 @@
           "type": "string",
           "title": "Format: {cloud_provider}-{region_code}"
         },
-        "cidrNotion": {
+        "cidrNotation": {
           "type": "string",
           "description": "If not set, the default cidr of the region will be used."
         },
@@ -5819,120 +5935,6 @@
         "cluster"
       ]
     },
-    "v1beta1PrivateEndpointConnection": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "title": "Format: tidbNodeGroups/{tidb_node_group_id}/privateEndpointConnections/{private_endpoint_connection_id}",
-          "readOnly": true
-        },
-        "tidbNodeGroupId": {
-          "type": "string"
-        },
-        "privateEndpointConnectionId": {
-          "type": "string",
-          "readOnly": true
-        },
-        "clusterId": {
-          "type": "string",
-          "readOnly": true
-        },
-        "clusterDisplayName": {
-          "type": "string",
-          "readOnly": true
-        },
-        "labels": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          },
-          "description": "The labels of private link connection. It always contains the `project_id` label.",
-          "readOnly": true
-        },
-        "endpointId": {
-          "type": "string",
-          "description": "The endpoint ID of the private link connection.\nFor AWS, it's VPC endpoint ID.\nFor GCP, it's private service connect endpoint ID.\nFor Azure, it's private endpoint resource ID."
-        },
-        "privateIpAddress": {
-          "type": "string",
-          "x-nullable": true,
-          "description": "The private IP address of the private endpoint in the user's vNet.\nTiDB Cloud will setup a public DNS record for this private IP address. So the user can use DNS address to connect to the cluster.\nOnly available for Azure clusters."
-        },
-        "endpointState": {
-          "readOnly": true,
-          "allOf": [
-            {
-              "$ref": "#/definitions/PrivateEndpointConnectionEndpointState"
-            }
-          ]
-        },
-        "message": {
-          "type": "string",
-          "readOnly": true
-        },
-        "regionId": {
-          "type": "string",
-          "title": "Format: {cloud_provider}-{region_code}",
-          "readOnly": true
-        },
-        "regionDisplayName": {
-          "type": "string",
-          "readOnly": true
-        },
-        "cloudProvider": {
-          "readOnly": true,
-          "allOf": [
-            {
-              "$ref": "#/definitions/v1beta1RegionCloudProvider"
-            }
-          ]
-        },
-        "privateLinkServiceName": {
-          "type": "string",
-          "readOnly": true
-        },
-        "privateLinkServiceState": {
-          "readOnly": true,
-          "allOf": [
-            {
-              "$ref": "#/definitions/v1beta1PrivateLinkServiceState"
-            }
-          ]
-        },
-        "tidbNodeGroupDisplayName": {
-          "type": "string",
-          "readOnly": true
-        },
-        "accountId": {
-          "type": "string",
-          "x-nullable": true,
-          "description": "Only for GCP private service connections. It's GCP project name.",
-          "readOnly": true
-        },
-        "host": {
-          "type": "string",
-          "readOnly": true
-        },
-        "port": {
-          "type": "integer",
-          "format": "int32",
-          "readOnly": true
-        }
-      },
-      "required": [
-        "tidbNodeGroupId",
-        "endpointId"
-      ]
-    },
-    "v1beta1PrivateLinkServiceState": {
-      "type": "string",
-      "enum": [
-        "CREATING",
-        "ACTIVE",
-        "DELETING"
-      ]
-    },
     "v1beta1PublicEndpointSetting": {
       "type": "object",
       "properties": {
@@ -5953,12 +5955,26 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/PublicEndpointSettingIpAccessList"
+            "$ref": "#/definitions/v1beta1PublicEndpointSettingIpAccessList"
           }
         }
       },
       "required": [
         "tidbNodeGroupId"
+      ]
+    },
+    "v1beta1PublicEndpointSettingIpAccessList": {
+      "type": "object",
+      "properties": {
+        "cidrNotation": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "cidrNotation"
       ]
     },
     "v1beta1RegionCloudProvider": {
@@ -5970,9 +5986,6 @@
         "alicloud"
       ],
       "description": "Enum of cloud provider names.\n\n - aws: Amazon Web Services.\n - gcp: Google Cloud Platform.\n - azure: Microsoft Azure.\n - alicloud: Alibaba Cloud"
-    },
-    "v1beta1ResetRootPasswordResponse": {
-      "type": "object"
     },
     "v1beta1ResumeClusterResponse": {
       "type": "object",
@@ -6015,6 +6028,15 @@
           "type": "string"
         }
       }
+    },
+    "v1beta1TidbNodeGroupEndpointConnectionType": {
+      "type": "string",
+      "enum": [
+        "PUBLIC",
+        "VPC_PEERING",
+        "PRIVATE_ENDPOINT"
+      ],
+      "description": " - PUBLIC: The endpoint is a public endpoint.\n - VPC_PEERING: The endpoint is a VPC peering endpoint.\n - PRIVATE_ENDPOINT: The endpoint is a private link endpoint."
     },
     "v1beta1UpdateAuditLogConfigRequestAuditLogConfig": {
       "type": "object",

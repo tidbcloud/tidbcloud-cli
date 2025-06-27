@@ -15,11 +15,11 @@ import (
 	"fmt"
 )
 
-// checks if the V1beta1PrivateEndpointConnection type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &V1beta1PrivateEndpointConnection{}
+// checks if the Dedicatedv1beta1PrivateEndpointConnection type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Dedicatedv1beta1PrivateEndpointConnection{}
 
-// V1beta1PrivateEndpointConnection struct for V1beta1PrivateEndpointConnection
-type V1beta1PrivateEndpointConnection struct {
+// Dedicatedv1beta1PrivateEndpointConnection struct for Dedicatedv1beta1PrivateEndpointConnection
+type Dedicatedv1beta1PrivateEndpointConnection struct {
 	Name                        *string `json:"name,omitempty"`
 	TidbNodeGroupId             string  `json:"tidbNodeGroupId"`
 	PrivateEndpointConnectionId *string `json:"privateEndpointConnectionId,omitempty"`
@@ -30,15 +30,15 @@ type V1beta1PrivateEndpointConnection struct {
 	// The endpoint ID of the private link connection. For AWS, it's VPC endpoint ID. For GCP, it's private service connect endpoint ID. For Azure, it's private endpoint resource ID.
 	EndpointId string `json:"endpointId"`
 	// The private IP address of the private endpoint in the user's vNet. TiDB Cloud will setup a public DNS record for this private IP address. So the user can use DNS address to connect to the cluster. Only available for Azure clusters.
-	PrivateIpAddress         NullableString                          `json:"privateIpAddress,omitempty"`
-	EndpointState            *PrivateEndpointConnectionEndpointState `json:"endpointState,omitempty"`
-	Message                  *string                                 `json:"message,omitempty"`
-	RegionId                 *string                                 `json:"regionId,omitempty"`
-	RegionDisplayName        *string                                 `json:"regionDisplayName,omitempty"`
-	CloudProvider            *V1beta1RegionCloudProvider             `json:"cloudProvider,omitempty"`
-	PrivateLinkServiceName   *string                                 `json:"privateLinkServiceName,omitempty"`
-	PrivateLinkServiceState  *V1beta1PrivateLinkServiceState         `json:"privateLinkServiceState,omitempty"`
-	TidbNodeGroupDisplayName *string                                 `json:"tidbNodeGroupDisplayName,omitempty"`
+	PrivateIpAddress         NullableString                                          `json:"privateIpAddress,omitempty"`
+	EndpointState            *Dedicatedv1beta1PrivateEndpointConnectionEndpointState `json:"endpointState,omitempty"`
+	Message                  *string                                                 `json:"message,omitempty"`
+	RegionId                 *string                                                 `json:"regionId,omitempty"`
+	RegionDisplayName        *string                                                 `json:"regionDisplayName,omitempty"`
+	CloudProvider            *V1beta1RegionCloudProvider                             `json:"cloudProvider,omitempty"`
+	PrivateLinkServiceName   *string                                                 `json:"privateLinkServiceName,omitempty"`
+	PrivateLinkServiceState  *Dedicatedv1beta1PrivateLinkServiceState                `json:"privateLinkServiceState,omitempty"`
+	TidbNodeGroupDisplayName *string                                                 `json:"tidbNodeGroupDisplayName,omitempty"`
 	// Only for GCP private service connections. It's GCP project name.
 	AccountId            NullableString `json:"accountId,omitempty"`
 	Host                 *string        `json:"host,omitempty"`
@@ -46,29 +46,29 @@ type V1beta1PrivateEndpointConnection struct {
 	AdditionalProperties map[string]interface{}
 }
 
-type _V1beta1PrivateEndpointConnection V1beta1PrivateEndpointConnection
+type _Dedicatedv1beta1PrivateEndpointConnection Dedicatedv1beta1PrivateEndpointConnection
 
-// NewV1beta1PrivateEndpointConnection instantiates a new V1beta1PrivateEndpointConnection object
+// NewDedicatedv1beta1PrivateEndpointConnection instantiates a new Dedicatedv1beta1PrivateEndpointConnection object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewV1beta1PrivateEndpointConnection(tidbNodeGroupId string, endpointId string) *V1beta1PrivateEndpointConnection {
-	this := V1beta1PrivateEndpointConnection{}
+func NewDedicatedv1beta1PrivateEndpointConnection(tidbNodeGroupId string, endpointId string) *Dedicatedv1beta1PrivateEndpointConnection {
+	this := Dedicatedv1beta1PrivateEndpointConnection{}
 	this.TidbNodeGroupId = tidbNodeGroupId
 	this.EndpointId = endpointId
 	return &this
 }
 
-// NewV1beta1PrivateEndpointConnectionWithDefaults instantiates a new V1beta1PrivateEndpointConnection object
+// NewDedicatedv1beta1PrivateEndpointConnectionWithDefaults instantiates a new Dedicatedv1beta1PrivateEndpointConnection object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewV1beta1PrivateEndpointConnectionWithDefaults() *V1beta1PrivateEndpointConnection {
-	this := V1beta1PrivateEndpointConnection{}
+func NewDedicatedv1beta1PrivateEndpointConnectionWithDefaults() *Dedicatedv1beta1PrivateEndpointConnection {
+	this := Dedicatedv1beta1PrivateEndpointConnection{}
 	return &this
 }
 
 // GetName returns the Name field value if set, zero value otherwise.
-func (o *V1beta1PrivateEndpointConnection) GetName() string {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetName() string {
 	if o == nil || IsNil(o.Name) {
 		var ret string
 		return ret
@@ -78,7 +78,7 @@ func (o *V1beta1PrivateEndpointConnection) GetName() string {
 
 // GetNameOk returns a tuple with the Name field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetNameOk() (*string, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetNameOk() (*string, bool) {
 	if o == nil || IsNil(o.Name) {
 		return nil, false
 	}
@@ -86,7 +86,7 @@ func (o *V1beta1PrivateEndpointConnection) GetNameOk() (*string, bool) {
 }
 
 // HasName returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasName() bool {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) HasName() bool {
 	if o != nil && !IsNil(o.Name) {
 		return true
 	}
@@ -95,12 +95,12 @@ func (o *V1beta1PrivateEndpointConnection) HasName() bool {
 }
 
 // SetName gets a reference to the given string and assigns it to the Name field.
-func (o *V1beta1PrivateEndpointConnection) SetName(v string) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetName(v string) {
 	o.Name = &v
 }
 
 // GetTidbNodeGroupId returns the TidbNodeGroupId field value
-func (o *V1beta1PrivateEndpointConnection) GetTidbNodeGroupId() string {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetTidbNodeGroupId() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -111,7 +111,7 @@ func (o *V1beta1PrivateEndpointConnection) GetTidbNodeGroupId() string {
 
 // GetTidbNodeGroupIdOk returns a tuple with the TidbNodeGroupId field value
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetTidbNodeGroupIdOk() (*string, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetTidbNodeGroupIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -119,12 +119,12 @@ func (o *V1beta1PrivateEndpointConnection) GetTidbNodeGroupIdOk() (*string, bool
 }
 
 // SetTidbNodeGroupId sets field value
-func (o *V1beta1PrivateEndpointConnection) SetTidbNodeGroupId(v string) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetTidbNodeGroupId(v string) {
 	o.TidbNodeGroupId = v
 }
 
 // GetPrivateEndpointConnectionId returns the PrivateEndpointConnectionId field value if set, zero value otherwise.
-func (o *V1beta1PrivateEndpointConnection) GetPrivateEndpointConnectionId() string {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetPrivateEndpointConnectionId() string {
 	if o == nil || IsNil(o.PrivateEndpointConnectionId) {
 		var ret string
 		return ret
@@ -134,7 +134,7 @@ func (o *V1beta1PrivateEndpointConnection) GetPrivateEndpointConnectionId() stri
 
 // GetPrivateEndpointConnectionIdOk returns a tuple with the PrivateEndpointConnectionId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetPrivateEndpointConnectionIdOk() (*string, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetPrivateEndpointConnectionIdOk() (*string, bool) {
 	if o == nil || IsNil(o.PrivateEndpointConnectionId) {
 		return nil, false
 	}
@@ -142,7 +142,7 @@ func (o *V1beta1PrivateEndpointConnection) GetPrivateEndpointConnectionIdOk() (*
 }
 
 // HasPrivateEndpointConnectionId returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasPrivateEndpointConnectionId() bool {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) HasPrivateEndpointConnectionId() bool {
 	if o != nil && !IsNil(o.PrivateEndpointConnectionId) {
 		return true
 	}
@@ -151,12 +151,12 @@ func (o *V1beta1PrivateEndpointConnection) HasPrivateEndpointConnectionId() bool
 }
 
 // SetPrivateEndpointConnectionId gets a reference to the given string and assigns it to the PrivateEndpointConnectionId field.
-func (o *V1beta1PrivateEndpointConnection) SetPrivateEndpointConnectionId(v string) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetPrivateEndpointConnectionId(v string) {
 	o.PrivateEndpointConnectionId = &v
 }
 
 // GetClusterId returns the ClusterId field value if set, zero value otherwise.
-func (o *V1beta1PrivateEndpointConnection) GetClusterId() string {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetClusterId() string {
 	if o == nil || IsNil(o.ClusterId) {
 		var ret string
 		return ret
@@ -166,7 +166,7 @@ func (o *V1beta1PrivateEndpointConnection) GetClusterId() string {
 
 // GetClusterIdOk returns a tuple with the ClusterId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetClusterIdOk() (*string, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetClusterIdOk() (*string, bool) {
 	if o == nil || IsNil(o.ClusterId) {
 		return nil, false
 	}
@@ -174,7 +174,7 @@ func (o *V1beta1PrivateEndpointConnection) GetClusterIdOk() (*string, bool) {
 }
 
 // HasClusterId returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasClusterId() bool {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) HasClusterId() bool {
 	if o != nil && !IsNil(o.ClusterId) {
 		return true
 	}
@@ -183,12 +183,12 @@ func (o *V1beta1PrivateEndpointConnection) HasClusterId() bool {
 }
 
 // SetClusterId gets a reference to the given string and assigns it to the ClusterId field.
-func (o *V1beta1PrivateEndpointConnection) SetClusterId(v string) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetClusterId(v string) {
 	o.ClusterId = &v
 }
 
 // GetClusterDisplayName returns the ClusterDisplayName field value if set, zero value otherwise.
-func (o *V1beta1PrivateEndpointConnection) GetClusterDisplayName() string {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetClusterDisplayName() string {
 	if o == nil || IsNil(o.ClusterDisplayName) {
 		var ret string
 		return ret
@@ -198,7 +198,7 @@ func (o *V1beta1PrivateEndpointConnection) GetClusterDisplayName() string {
 
 // GetClusterDisplayNameOk returns a tuple with the ClusterDisplayName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetClusterDisplayNameOk() (*string, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetClusterDisplayNameOk() (*string, bool) {
 	if o == nil || IsNil(o.ClusterDisplayName) {
 		return nil, false
 	}
@@ -206,7 +206,7 @@ func (o *V1beta1PrivateEndpointConnection) GetClusterDisplayNameOk() (*string, b
 }
 
 // HasClusterDisplayName returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasClusterDisplayName() bool {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) HasClusterDisplayName() bool {
 	if o != nil && !IsNil(o.ClusterDisplayName) {
 		return true
 	}
@@ -215,12 +215,12 @@ func (o *V1beta1PrivateEndpointConnection) HasClusterDisplayName() bool {
 }
 
 // SetClusterDisplayName gets a reference to the given string and assigns it to the ClusterDisplayName field.
-func (o *V1beta1PrivateEndpointConnection) SetClusterDisplayName(v string) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetClusterDisplayName(v string) {
 	o.ClusterDisplayName = &v
 }
 
 // GetLabels returns the Labels field value if set, zero value otherwise.
-func (o *V1beta1PrivateEndpointConnection) GetLabels() map[string]string {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetLabels() map[string]string {
 	if o == nil || IsNil(o.Labels) {
 		var ret map[string]string
 		return ret
@@ -230,7 +230,7 @@ func (o *V1beta1PrivateEndpointConnection) GetLabels() map[string]string {
 
 // GetLabelsOk returns a tuple with the Labels field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetLabelsOk() (*map[string]string, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetLabelsOk() (*map[string]string, bool) {
 	if o == nil || IsNil(o.Labels) {
 		return nil, false
 	}
@@ -238,7 +238,7 @@ func (o *V1beta1PrivateEndpointConnection) GetLabelsOk() (*map[string]string, bo
 }
 
 // HasLabels returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasLabels() bool {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) HasLabels() bool {
 	if o != nil && !IsNil(o.Labels) {
 		return true
 	}
@@ -247,12 +247,12 @@ func (o *V1beta1PrivateEndpointConnection) HasLabels() bool {
 }
 
 // SetLabels gets a reference to the given map[string]string and assigns it to the Labels field.
-func (o *V1beta1PrivateEndpointConnection) SetLabels(v map[string]string) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetLabels(v map[string]string) {
 	o.Labels = &v
 }
 
 // GetEndpointId returns the EndpointId field value
-func (o *V1beta1PrivateEndpointConnection) GetEndpointId() string {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetEndpointId() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -263,7 +263,7 @@ func (o *V1beta1PrivateEndpointConnection) GetEndpointId() string {
 
 // GetEndpointIdOk returns a tuple with the EndpointId field value
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetEndpointIdOk() (*string, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetEndpointIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -271,12 +271,12 @@ func (o *V1beta1PrivateEndpointConnection) GetEndpointIdOk() (*string, bool) {
 }
 
 // SetEndpointId sets field value
-func (o *V1beta1PrivateEndpointConnection) SetEndpointId(v string) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetEndpointId(v string) {
 	o.EndpointId = v
 }
 
 // GetPrivateIpAddress returns the PrivateIpAddress field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *V1beta1PrivateEndpointConnection) GetPrivateIpAddress() string {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetPrivateIpAddress() string {
 	if o == nil || IsNil(o.PrivateIpAddress.Get()) {
 		var ret string
 		return ret
@@ -287,7 +287,7 @@ func (o *V1beta1PrivateEndpointConnection) GetPrivateIpAddress() string {
 // GetPrivateIpAddressOk returns a tuple with the PrivateIpAddress field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *V1beta1PrivateEndpointConnection) GetPrivateIpAddressOk() (*string, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetPrivateIpAddressOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -295,7 +295,7 @@ func (o *V1beta1PrivateEndpointConnection) GetPrivateIpAddressOk() (*string, boo
 }
 
 // HasPrivateIpAddress returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasPrivateIpAddress() bool {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) HasPrivateIpAddress() bool {
 	if o != nil && o.PrivateIpAddress.IsSet() {
 		return true
 	}
@@ -304,24 +304,24 @@ func (o *V1beta1PrivateEndpointConnection) HasPrivateIpAddress() bool {
 }
 
 // SetPrivateIpAddress gets a reference to the given NullableString and assigns it to the PrivateIpAddress field.
-func (o *V1beta1PrivateEndpointConnection) SetPrivateIpAddress(v string) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetPrivateIpAddress(v string) {
 	o.PrivateIpAddress.Set(&v)
 }
 
 // SetPrivateIpAddressNil sets the value for PrivateIpAddress to be an explicit nil
-func (o *V1beta1PrivateEndpointConnection) SetPrivateIpAddressNil() {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetPrivateIpAddressNil() {
 	o.PrivateIpAddress.Set(nil)
 }
 
 // UnsetPrivateIpAddress ensures that no value is present for PrivateIpAddress, not even an explicit nil
-func (o *V1beta1PrivateEndpointConnection) UnsetPrivateIpAddress() {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) UnsetPrivateIpAddress() {
 	o.PrivateIpAddress.Unset()
 }
 
 // GetEndpointState returns the EndpointState field value if set, zero value otherwise.
-func (o *V1beta1PrivateEndpointConnection) GetEndpointState() PrivateEndpointConnectionEndpointState {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetEndpointState() Dedicatedv1beta1PrivateEndpointConnectionEndpointState {
 	if o == nil || IsNil(o.EndpointState) {
-		var ret PrivateEndpointConnectionEndpointState
+		var ret Dedicatedv1beta1PrivateEndpointConnectionEndpointState
 		return ret
 	}
 	return *o.EndpointState
@@ -329,7 +329,7 @@ func (o *V1beta1PrivateEndpointConnection) GetEndpointState() PrivateEndpointCon
 
 // GetEndpointStateOk returns a tuple with the EndpointState field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetEndpointStateOk() (*PrivateEndpointConnectionEndpointState, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetEndpointStateOk() (*Dedicatedv1beta1PrivateEndpointConnectionEndpointState, bool) {
 	if o == nil || IsNil(o.EndpointState) {
 		return nil, false
 	}
@@ -337,7 +337,7 @@ func (o *V1beta1PrivateEndpointConnection) GetEndpointStateOk() (*PrivateEndpoin
 }
 
 // HasEndpointState returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasEndpointState() bool {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) HasEndpointState() bool {
 	if o != nil && !IsNil(o.EndpointState) {
 		return true
 	}
@@ -345,13 +345,13 @@ func (o *V1beta1PrivateEndpointConnection) HasEndpointState() bool {
 	return false
 }
 
-// SetEndpointState gets a reference to the given PrivateEndpointConnectionEndpointState and assigns it to the EndpointState field.
-func (o *V1beta1PrivateEndpointConnection) SetEndpointState(v PrivateEndpointConnectionEndpointState) {
+// SetEndpointState gets a reference to the given Dedicatedv1beta1PrivateEndpointConnectionEndpointState and assigns it to the EndpointState field.
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetEndpointState(v Dedicatedv1beta1PrivateEndpointConnectionEndpointState) {
 	o.EndpointState = &v
 }
 
 // GetMessage returns the Message field value if set, zero value otherwise.
-func (o *V1beta1PrivateEndpointConnection) GetMessage() string {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetMessage() string {
 	if o == nil || IsNil(o.Message) {
 		var ret string
 		return ret
@@ -361,7 +361,7 @@ func (o *V1beta1PrivateEndpointConnection) GetMessage() string {
 
 // GetMessageOk returns a tuple with the Message field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetMessageOk() (*string, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetMessageOk() (*string, bool) {
 	if o == nil || IsNil(o.Message) {
 		return nil, false
 	}
@@ -369,7 +369,7 @@ func (o *V1beta1PrivateEndpointConnection) GetMessageOk() (*string, bool) {
 }
 
 // HasMessage returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasMessage() bool {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) HasMessage() bool {
 	if o != nil && !IsNil(o.Message) {
 		return true
 	}
@@ -378,12 +378,12 @@ func (o *V1beta1PrivateEndpointConnection) HasMessage() bool {
 }
 
 // SetMessage gets a reference to the given string and assigns it to the Message field.
-func (o *V1beta1PrivateEndpointConnection) SetMessage(v string) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetMessage(v string) {
 	o.Message = &v
 }
 
 // GetRegionId returns the RegionId field value if set, zero value otherwise.
-func (o *V1beta1PrivateEndpointConnection) GetRegionId() string {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetRegionId() string {
 	if o == nil || IsNil(o.RegionId) {
 		var ret string
 		return ret
@@ -393,7 +393,7 @@ func (o *V1beta1PrivateEndpointConnection) GetRegionId() string {
 
 // GetRegionIdOk returns a tuple with the RegionId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetRegionIdOk() (*string, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetRegionIdOk() (*string, bool) {
 	if o == nil || IsNil(o.RegionId) {
 		return nil, false
 	}
@@ -401,7 +401,7 @@ func (o *V1beta1PrivateEndpointConnection) GetRegionIdOk() (*string, bool) {
 }
 
 // HasRegionId returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasRegionId() bool {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) HasRegionId() bool {
 	if o != nil && !IsNil(o.RegionId) {
 		return true
 	}
@@ -410,12 +410,12 @@ func (o *V1beta1PrivateEndpointConnection) HasRegionId() bool {
 }
 
 // SetRegionId gets a reference to the given string and assigns it to the RegionId field.
-func (o *V1beta1PrivateEndpointConnection) SetRegionId(v string) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetRegionId(v string) {
 	o.RegionId = &v
 }
 
 // GetRegionDisplayName returns the RegionDisplayName field value if set, zero value otherwise.
-func (o *V1beta1PrivateEndpointConnection) GetRegionDisplayName() string {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetRegionDisplayName() string {
 	if o == nil || IsNil(o.RegionDisplayName) {
 		var ret string
 		return ret
@@ -425,7 +425,7 @@ func (o *V1beta1PrivateEndpointConnection) GetRegionDisplayName() string {
 
 // GetRegionDisplayNameOk returns a tuple with the RegionDisplayName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetRegionDisplayNameOk() (*string, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetRegionDisplayNameOk() (*string, bool) {
 	if o == nil || IsNil(o.RegionDisplayName) {
 		return nil, false
 	}
@@ -433,7 +433,7 @@ func (o *V1beta1PrivateEndpointConnection) GetRegionDisplayNameOk() (*string, bo
 }
 
 // HasRegionDisplayName returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasRegionDisplayName() bool {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) HasRegionDisplayName() bool {
 	if o != nil && !IsNil(o.RegionDisplayName) {
 		return true
 	}
@@ -442,12 +442,12 @@ func (o *V1beta1PrivateEndpointConnection) HasRegionDisplayName() bool {
 }
 
 // SetRegionDisplayName gets a reference to the given string and assigns it to the RegionDisplayName field.
-func (o *V1beta1PrivateEndpointConnection) SetRegionDisplayName(v string) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetRegionDisplayName(v string) {
 	o.RegionDisplayName = &v
 }
 
 // GetCloudProvider returns the CloudProvider field value if set, zero value otherwise.
-func (o *V1beta1PrivateEndpointConnection) GetCloudProvider() V1beta1RegionCloudProvider {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetCloudProvider() V1beta1RegionCloudProvider {
 	if o == nil || IsNil(o.CloudProvider) {
 		var ret V1beta1RegionCloudProvider
 		return ret
@@ -457,7 +457,7 @@ func (o *V1beta1PrivateEndpointConnection) GetCloudProvider() V1beta1RegionCloud
 
 // GetCloudProviderOk returns a tuple with the CloudProvider field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetCloudProviderOk() (*V1beta1RegionCloudProvider, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetCloudProviderOk() (*V1beta1RegionCloudProvider, bool) {
 	if o == nil || IsNil(o.CloudProvider) {
 		return nil, false
 	}
@@ -465,7 +465,7 @@ func (o *V1beta1PrivateEndpointConnection) GetCloudProviderOk() (*V1beta1RegionC
 }
 
 // HasCloudProvider returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasCloudProvider() bool {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) HasCloudProvider() bool {
 	if o != nil && !IsNil(o.CloudProvider) {
 		return true
 	}
@@ -474,12 +474,12 @@ func (o *V1beta1PrivateEndpointConnection) HasCloudProvider() bool {
 }
 
 // SetCloudProvider gets a reference to the given V1beta1RegionCloudProvider and assigns it to the CloudProvider field.
-func (o *V1beta1PrivateEndpointConnection) SetCloudProvider(v V1beta1RegionCloudProvider) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetCloudProvider(v V1beta1RegionCloudProvider) {
 	o.CloudProvider = &v
 }
 
 // GetPrivateLinkServiceName returns the PrivateLinkServiceName field value if set, zero value otherwise.
-func (o *V1beta1PrivateEndpointConnection) GetPrivateLinkServiceName() string {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetPrivateLinkServiceName() string {
 	if o == nil || IsNil(o.PrivateLinkServiceName) {
 		var ret string
 		return ret
@@ -489,7 +489,7 @@ func (o *V1beta1PrivateEndpointConnection) GetPrivateLinkServiceName() string {
 
 // GetPrivateLinkServiceNameOk returns a tuple with the PrivateLinkServiceName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetPrivateLinkServiceNameOk() (*string, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetPrivateLinkServiceNameOk() (*string, bool) {
 	if o == nil || IsNil(o.PrivateLinkServiceName) {
 		return nil, false
 	}
@@ -497,7 +497,7 @@ func (o *V1beta1PrivateEndpointConnection) GetPrivateLinkServiceNameOk() (*strin
 }
 
 // HasPrivateLinkServiceName returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasPrivateLinkServiceName() bool {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) HasPrivateLinkServiceName() bool {
 	if o != nil && !IsNil(o.PrivateLinkServiceName) {
 		return true
 	}
@@ -506,14 +506,14 @@ func (o *V1beta1PrivateEndpointConnection) HasPrivateLinkServiceName() bool {
 }
 
 // SetPrivateLinkServiceName gets a reference to the given string and assigns it to the PrivateLinkServiceName field.
-func (o *V1beta1PrivateEndpointConnection) SetPrivateLinkServiceName(v string) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetPrivateLinkServiceName(v string) {
 	o.PrivateLinkServiceName = &v
 }
 
 // GetPrivateLinkServiceState returns the PrivateLinkServiceState field value if set, zero value otherwise.
-func (o *V1beta1PrivateEndpointConnection) GetPrivateLinkServiceState() V1beta1PrivateLinkServiceState {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetPrivateLinkServiceState() Dedicatedv1beta1PrivateLinkServiceState {
 	if o == nil || IsNil(o.PrivateLinkServiceState) {
-		var ret V1beta1PrivateLinkServiceState
+		var ret Dedicatedv1beta1PrivateLinkServiceState
 		return ret
 	}
 	return *o.PrivateLinkServiceState
@@ -521,7 +521,7 @@ func (o *V1beta1PrivateEndpointConnection) GetPrivateLinkServiceState() V1beta1P
 
 // GetPrivateLinkServiceStateOk returns a tuple with the PrivateLinkServiceState field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetPrivateLinkServiceStateOk() (*V1beta1PrivateLinkServiceState, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetPrivateLinkServiceStateOk() (*Dedicatedv1beta1PrivateLinkServiceState, bool) {
 	if o == nil || IsNil(o.PrivateLinkServiceState) {
 		return nil, false
 	}
@@ -529,7 +529,7 @@ func (o *V1beta1PrivateEndpointConnection) GetPrivateLinkServiceStateOk() (*V1be
 }
 
 // HasPrivateLinkServiceState returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasPrivateLinkServiceState() bool {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) HasPrivateLinkServiceState() bool {
 	if o != nil && !IsNil(o.PrivateLinkServiceState) {
 		return true
 	}
@@ -537,13 +537,13 @@ func (o *V1beta1PrivateEndpointConnection) HasPrivateLinkServiceState() bool {
 	return false
 }
 
-// SetPrivateLinkServiceState gets a reference to the given V1beta1PrivateLinkServiceState and assigns it to the PrivateLinkServiceState field.
-func (o *V1beta1PrivateEndpointConnection) SetPrivateLinkServiceState(v V1beta1PrivateLinkServiceState) {
+// SetPrivateLinkServiceState gets a reference to the given Dedicatedv1beta1PrivateLinkServiceState and assigns it to the PrivateLinkServiceState field.
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetPrivateLinkServiceState(v Dedicatedv1beta1PrivateLinkServiceState) {
 	o.PrivateLinkServiceState = &v
 }
 
 // GetTidbNodeGroupDisplayName returns the TidbNodeGroupDisplayName field value if set, zero value otherwise.
-func (o *V1beta1PrivateEndpointConnection) GetTidbNodeGroupDisplayName() string {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetTidbNodeGroupDisplayName() string {
 	if o == nil || IsNil(o.TidbNodeGroupDisplayName) {
 		var ret string
 		return ret
@@ -553,7 +553,7 @@ func (o *V1beta1PrivateEndpointConnection) GetTidbNodeGroupDisplayName() string 
 
 // GetTidbNodeGroupDisplayNameOk returns a tuple with the TidbNodeGroupDisplayName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetTidbNodeGroupDisplayNameOk() (*string, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetTidbNodeGroupDisplayNameOk() (*string, bool) {
 	if o == nil || IsNil(o.TidbNodeGroupDisplayName) {
 		return nil, false
 	}
@@ -561,7 +561,7 @@ func (o *V1beta1PrivateEndpointConnection) GetTidbNodeGroupDisplayNameOk() (*str
 }
 
 // HasTidbNodeGroupDisplayName returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasTidbNodeGroupDisplayName() bool {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) HasTidbNodeGroupDisplayName() bool {
 	if o != nil && !IsNil(o.TidbNodeGroupDisplayName) {
 		return true
 	}
@@ -570,12 +570,12 @@ func (o *V1beta1PrivateEndpointConnection) HasTidbNodeGroupDisplayName() bool {
 }
 
 // SetTidbNodeGroupDisplayName gets a reference to the given string and assigns it to the TidbNodeGroupDisplayName field.
-func (o *V1beta1PrivateEndpointConnection) SetTidbNodeGroupDisplayName(v string) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetTidbNodeGroupDisplayName(v string) {
 	o.TidbNodeGroupDisplayName = &v
 }
 
 // GetAccountId returns the AccountId field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *V1beta1PrivateEndpointConnection) GetAccountId() string {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetAccountId() string {
 	if o == nil || IsNil(o.AccountId.Get()) {
 		var ret string
 		return ret
@@ -586,7 +586,7 @@ func (o *V1beta1PrivateEndpointConnection) GetAccountId() string {
 // GetAccountIdOk returns a tuple with the AccountId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *V1beta1PrivateEndpointConnection) GetAccountIdOk() (*string, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetAccountIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -594,7 +594,7 @@ func (o *V1beta1PrivateEndpointConnection) GetAccountIdOk() (*string, bool) {
 }
 
 // HasAccountId returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasAccountId() bool {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) HasAccountId() bool {
 	if o != nil && o.AccountId.IsSet() {
 		return true
 	}
@@ -603,22 +603,22 @@ func (o *V1beta1PrivateEndpointConnection) HasAccountId() bool {
 }
 
 // SetAccountId gets a reference to the given NullableString and assigns it to the AccountId field.
-func (o *V1beta1PrivateEndpointConnection) SetAccountId(v string) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetAccountId(v string) {
 	o.AccountId.Set(&v)
 }
 
 // SetAccountIdNil sets the value for AccountId to be an explicit nil
-func (o *V1beta1PrivateEndpointConnection) SetAccountIdNil() {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetAccountIdNil() {
 	o.AccountId.Set(nil)
 }
 
 // UnsetAccountId ensures that no value is present for AccountId, not even an explicit nil
-func (o *V1beta1PrivateEndpointConnection) UnsetAccountId() {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) UnsetAccountId() {
 	o.AccountId.Unset()
 }
 
 // GetHost returns the Host field value if set, zero value otherwise.
-func (o *V1beta1PrivateEndpointConnection) GetHost() string {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetHost() string {
 	if o == nil || IsNil(o.Host) {
 		var ret string
 		return ret
@@ -628,7 +628,7 @@ func (o *V1beta1PrivateEndpointConnection) GetHost() string {
 
 // GetHostOk returns a tuple with the Host field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetHostOk() (*string, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetHostOk() (*string, bool) {
 	if o == nil || IsNil(o.Host) {
 		return nil, false
 	}
@@ -636,7 +636,7 @@ func (o *V1beta1PrivateEndpointConnection) GetHostOk() (*string, bool) {
 }
 
 // HasHost returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasHost() bool {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) HasHost() bool {
 	if o != nil && !IsNil(o.Host) {
 		return true
 	}
@@ -645,12 +645,12 @@ func (o *V1beta1PrivateEndpointConnection) HasHost() bool {
 }
 
 // SetHost gets a reference to the given string and assigns it to the Host field.
-func (o *V1beta1PrivateEndpointConnection) SetHost(v string) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetHost(v string) {
 	o.Host = &v
 }
 
 // GetPort returns the Port field value if set, zero value otherwise.
-func (o *V1beta1PrivateEndpointConnection) GetPort() int32 {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetPort() int32 {
 	if o == nil || IsNil(o.Port) {
 		var ret int32
 		return ret
@@ -660,7 +660,7 @@ func (o *V1beta1PrivateEndpointConnection) GetPort() int32 {
 
 // GetPortOk returns a tuple with the Port field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *V1beta1PrivateEndpointConnection) GetPortOk() (*int32, bool) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) GetPortOk() (*int32, bool) {
 	if o == nil || IsNil(o.Port) {
 		return nil, false
 	}
@@ -668,7 +668,7 @@ func (o *V1beta1PrivateEndpointConnection) GetPortOk() (*int32, bool) {
 }
 
 // HasPort returns a boolean if a field has been set.
-func (o *V1beta1PrivateEndpointConnection) HasPort() bool {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) HasPort() bool {
 	if o != nil && !IsNil(o.Port) {
 		return true
 	}
@@ -677,11 +677,11 @@ func (o *V1beta1PrivateEndpointConnection) HasPort() bool {
 }
 
 // SetPort gets a reference to the given int32 and assigns it to the Port field.
-func (o *V1beta1PrivateEndpointConnection) SetPort(v int32) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) SetPort(v int32) {
 	o.Port = &v
 }
 
-func (o V1beta1PrivateEndpointConnection) MarshalJSON() ([]byte, error) {
+func (o Dedicatedv1beta1PrivateEndpointConnection) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -689,7 +689,7 @@ func (o V1beta1PrivateEndpointConnection) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o V1beta1PrivateEndpointConnection) ToMap() (map[string]interface{}, error) {
+func (o Dedicatedv1beta1PrivateEndpointConnection) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Name) {
 		toSerialize["name"] = o.Name
@@ -752,7 +752,7 @@ func (o V1beta1PrivateEndpointConnection) ToMap() (map[string]interface{}, error
 	return toSerialize, nil
 }
 
-func (o *V1beta1PrivateEndpointConnection) UnmarshalJSON(data []byte) (err error) {
+func (o *Dedicatedv1beta1PrivateEndpointConnection) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -775,15 +775,15 @@ func (o *V1beta1PrivateEndpointConnection) UnmarshalJSON(data []byte) (err error
 		}
 	}
 
-	varV1beta1PrivateEndpointConnection := _V1beta1PrivateEndpointConnection{}
+	varDedicatedv1beta1PrivateEndpointConnection := _Dedicatedv1beta1PrivateEndpointConnection{}
 
-	err = json.Unmarshal(data, &varV1beta1PrivateEndpointConnection)
+	err = json.Unmarshal(data, &varDedicatedv1beta1PrivateEndpointConnection)
 
 	if err != nil {
 		return err
 	}
 
-	*o = V1beta1PrivateEndpointConnection(varV1beta1PrivateEndpointConnection)
+	*o = Dedicatedv1beta1PrivateEndpointConnection(varDedicatedv1beta1PrivateEndpointConnection)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -813,38 +813,38 @@ func (o *V1beta1PrivateEndpointConnection) UnmarshalJSON(data []byte) (err error
 	return err
 }
 
-type NullableV1beta1PrivateEndpointConnection struct {
-	value *V1beta1PrivateEndpointConnection
+type NullableDedicatedv1beta1PrivateEndpointConnection struct {
+	value *Dedicatedv1beta1PrivateEndpointConnection
 	isSet bool
 }
 
-func (v NullableV1beta1PrivateEndpointConnection) Get() *V1beta1PrivateEndpointConnection {
+func (v NullableDedicatedv1beta1PrivateEndpointConnection) Get() *Dedicatedv1beta1PrivateEndpointConnection {
 	return v.value
 }
 
-func (v *NullableV1beta1PrivateEndpointConnection) Set(val *V1beta1PrivateEndpointConnection) {
+func (v *NullableDedicatedv1beta1PrivateEndpointConnection) Set(val *Dedicatedv1beta1PrivateEndpointConnection) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableV1beta1PrivateEndpointConnection) IsSet() bool {
+func (v NullableDedicatedv1beta1PrivateEndpointConnection) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableV1beta1PrivateEndpointConnection) Unset() {
+func (v *NullableDedicatedv1beta1PrivateEndpointConnection) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableV1beta1PrivateEndpointConnection(val *V1beta1PrivateEndpointConnection) *NullableV1beta1PrivateEndpointConnection {
-	return &NullableV1beta1PrivateEndpointConnection{value: val, isSet: true}
+func NewNullableDedicatedv1beta1PrivateEndpointConnection(val *Dedicatedv1beta1PrivateEndpointConnection) *NullableDedicatedv1beta1PrivateEndpointConnection {
+	return &NullableDedicatedv1beta1PrivateEndpointConnection{value: val, isSet: true}
 }
 
-func (v NullableV1beta1PrivateEndpointConnection) MarshalJSON() ([]byte, error) {
+func (v NullableDedicatedv1beta1PrivateEndpointConnection) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableV1beta1PrivateEndpointConnection) UnmarshalJSON(src []byte) error {
+func (v *NullableDedicatedv1beta1PrivateEndpointConnection) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

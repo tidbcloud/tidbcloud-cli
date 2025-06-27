@@ -49,7 +49,7 @@ type TidbCloudOpenApidedicatedv1beta1Cluster struct {
 	PausePlan         *Dedicatedv1beta1ClusterPausePlan `json:"pausePlan,omitempty"`
 	RegionDisplayName *string                           `json:"regionDisplayName,omitempty"`
 	CloudProvider     *V1beta1RegionCloudProvider       `json:"cloudProvider,omitempty"`
-	// OUTPUT_ONLY. The annotations for the cluster. tidb.cloud/has-set-password. The annotation for whether the cluster has set password. tidb.cloud/available-features. The annotation for the available features of the cluster.
+	// OUTPUT_ONLY. The annotations for the cluster. tidb.cloud/has-set-password. The annotation for whether the cluster has set password. tidb.cloud/available-features. The annotation for the available features of the cluster. tidb.cloud/insufficient-vm-resource. The annotation for insufficient virtual machine resources during creating or modifying the cluster.
 	Annotations          *map[string]string `json:"annotations,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

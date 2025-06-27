@@ -1621,10 +1621,10 @@ type ApiClusterServiceResetRootPasswordRequest struct {
 	ctx        context.Context
 	ApiService *ClusterServiceAPIService
 	clusterId  string
-	body       *ClusterServiceResetRootPasswordBody
+	body       *V1beta1ClusterServiceResetRootPasswordBody
 }
 
-func (r ApiClusterServiceResetRootPasswordRequest) Body(body ClusterServiceResetRootPasswordBody) ApiClusterServiceResetRootPasswordRequest {
+func (r ApiClusterServiceResetRootPasswordRequest) Body(body V1beta1ClusterServiceResetRootPasswordBody) ApiClusterServiceResetRootPasswordRequest {
 	r.body = &body
 	return r
 }
