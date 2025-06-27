@@ -80,10 +80,10 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 		Short: "Edit a changefeed (kafka and filter must be fully specified)",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Update a changefeed in interactive mode:
-  $ %[1]s serverless changefeed update
+  $ %[1]s serverless changefeed edit
 
   Update the name, kafka, and filter of a changefeed in non-interactive mode:x
-  $ %[1]s serverless changefeed update -c <cluster-id> --changefeed-id <changefeed-id> --name newname --kafka <full-specified-kafka> --filter <full-specified-filter>
+  $ %[1]s serverless changefeed edit -c <cluster-id> --changefeed-id <changefeed-id> --name newname --kafka <full-specified-kafka> --filter <full-specified-filter>
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
