@@ -8,6 +8,8 @@ import (
 
 	branch "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 
+	cdc "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cdc"
+
 	cluster "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	context "context"
@@ -232,6 +234,36 @@ func (_m *TiDBCloudClient) CreateCluster(ctx context.Context, body *cluster.Tidb
 	return r0, r1
 }
 
+// CreateConnector provides a mock function with given fields: ctx, clusterId, body
+func (_m *TiDBCloudClient) CreateConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceCreateConnectorBody) (*cdc.ConnectorID, error) {
+	ret := _m.Called(ctx, clusterId, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateConnector")
+	}
+
+	var r0 *cdc.ConnectorID
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *cdc.ConnectorServiceCreateConnectorBody) (*cdc.ConnectorID, error)); ok {
+		return rf(ctx, clusterId, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *cdc.ConnectorServiceCreateConnectorBody) *cdc.ConnectorID); ok {
+		r0 = rf(ctx, clusterId, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.ConnectorID)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *cdc.ConnectorServiceCreateConnectorBody) error); ok {
+		r1 = rf(ctx, clusterId, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // CreateExport provides a mock function with given fields: ctx, clusterId, body
 func (_m *TiDBCloudClient) CreateExport(ctx context.Context, clusterId string, body *export.ExportServiceCreateExportBody) (*export.Export, error) {
 	ret := _m.Called(ctx, clusterId, body)
@@ -442,6 +474,36 @@ func (_m *TiDBCloudClient) DeleteCluster(ctx context.Context, clusterId string) 
 	return r0, r1
 }
 
+// DeleteConnector provides a mock function with given fields: ctx, clusterId, connectorId
+func (_m *TiDBCloudClient) DeleteConnector(ctx context.Context, clusterId string, connectorId string) (*cdc.ConnectorID, error) {
+	ret := _m.Called(ctx, clusterId, connectorId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteConnector")
+	}
+
+	var r0 *cdc.ConnectorID
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*cdc.ConnectorID, error)); ok {
+		return rf(ctx, clusterId, connectorId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *cdc.ConnectorID); ok {
+		r0 = rf(ctx, clusterId, connectorId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.ConnectorID)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, connectorId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // DeleteExport provides a mock function with given fields: ctx, clusterId, exportId
 func (_m *TiDBCloudClient) DeleteExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error) {
 	ret := _m.Called(ctx, clusterId, exportId)
@@ -502,6 +564,36 @@ func (_m *TiDBCloudClient) DeleteSQLUser(ctx context.Context, clusterID string, 
 	return r0, r1
 }
 
+// DescribeSchemaTable provides a mock function with given fields: ctx, clusterId, body
+func (_m *TiDBCloudClient) DescribeSchemaTable(ctx context.Context, clusterId string, body *cdc.ConnectorServiceDescribeSchemaTableBody) (*cdc.DescribeSchemaTableResp, error) {
+	ret := _m.Called(ctx, clusterId, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DescribeSchemaTable")
+	}
+
+	var r0 *cdc.DescribeSchemaTableResp
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *cdc.ConnectorServiceDescribeSchemaTableBody) (*cdc.DescribeSchemaTableResp, error)); ok {
+		return rf(ctx, clusterId, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *cdc.ConnectorServiceDescribeSchemaTableBody) *cdc.DescribeSchemaTableResp); ok {
+		r0 = rf(ctx, clusterId, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.DescribeSchemaTableResp)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *cdc.ConnectorServiceDescribeSchemaTableBody) error); ok {
+		r1 = rf(ctx, clusterId, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // DownloadAuditLogs provides a mock function with given fields: ctx, clusterID, body
 func (_m *TiDBCloudClient) DownloadAuditLogs(ctx context.Context, clusterID string, body *auditlog.AuditLogServiceDownloadAuditLogsBody) (*auditlog.DownloadAuditLogsResponse, error) {
 	ret := _m.Called(ctx, clusterID, body)
@@ -555,6 +647,36 @@ func (_m *TiDBCloudClient) DownloadExportFiles(ctx context.Context, clusterId st
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, string, *export.ExportServiceDownloadExportFilesBody) error); ok {
 		r1 = rf(ctx, clusterId, exportId, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// EditConnector provides a mock function with given fields: ctx, clusterId, connectorId, body
+func (_m *TiDBCloudClient) EditConnector(ctx context.Context, clusterId string, connectorId string, body *cdc.ConnectorServiceEditConnectorBody) (*cdc.ConnectorID, error) {
+	ret := _m.Called(ctx, clusterId, connectorId, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for EditConnector")
+	}
+
+	var r0 *cdc.ConnectorID
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *cdc.ConnectorServiceEditConnectorBody) (*cdc.ConnectorID, error)); ok {
+		return rf(ctx, clusterId, connectorId, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *cdc.ConnectorServiceEditConnectorBody) *cdc.ConnectorID); ok {
+		r0 = rf(ctx, clusterId, connectorId, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.ConnectorID)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string, *cdc.ConnectorServiceEditConnectorBody) error); ok {
+		r1 = rf(ctx, clusterId, connectorId, body)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -675,6 +797,36 @@ func (_m *TiDBCloudClient) GetCluster(ctx context.Context, clusterId string, vie
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, cluster.ServerlessServiceGetClusterViewParameter) error); ok {
 		r1 = rf(ctx, clusterId, view)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetConnector provides a mock function with given fields: ctx, clusterId, connectorId
+func (_m *TiDBCloudClient) GetConnector(ctx context.Context, clusterId string, connectorId string) (*cdc.Connector, error) {
+	ret := _m.Called(ctx, clusterId, connectorId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetConnector")
+	}
+
+	var r0 *cdc.Connector
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*cdc.Connector, error)); ok {
+		return rf(ctx, clusterId, connectorId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *cdc.Connector); ok {
+		r0 = rf(ctx, clusterId, connectorId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.Connector)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, connectorId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -915,6 +1067,36 @@ func (_m *TiDBCloudClient) ListClusters(ctx context.Context, filter *string, pag
 
 	if rf, ok := ret.Get(1).(func(context.Context, *string, *int32, *string, *string, *int32) error); ok {
 		r1 = rf(ctx, filter, pageSize, pageToken, orderBy, skip)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ListConnectors provides a mock function with given fields: ctx, clusterId, pageSize, pageToken, connectorType, orderBy
+func (_m *TiDBCloudClient) ListConnectors(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, connectorType *cdc.ConnectorServiceListConnectorsConnectorTypeParameter, orderBy *string) (*cdc.Connectors, error) {
+	ret := _m.Called(ctx, clusterId, pageSize, pageToken, connectorType, orderBy)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListConnectors")
+	}
+
+	var r0 *cdc.Connectors
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string, *cdc.ConnectorServiceListConnectorsConnectorTypeParameter, *string) (*cdc.Connectors, error)); ok {
+		return rf(ctx, clusterId, pageSize, pageToken, connectorType, orderBy)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string, *cdc.ConnectorServiceListConnectorsConnectorTypeParameter, *string) *cdc.Connectors); ok {
+		r0 = rf(ctx, clusterId, pageSize, pageToken, connectorType, orderBy)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.Connectors)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *int32, *string, *cdc.ConnectorServiceListConnectorsConnectorTypeParameter, *string) error); ok {
+		r1 = rf(ctx, clusterId, pageSize, pageToken, connectorType, orderBy)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -1192,6 +1374,36 @@ func (_m *TiDBCloudClient) Restore(ctx context.Context, body *br.V1beta1RestoreR
 	return r0, r1
 }
 
+// StartConnector provides a mock function with given fields: ctx, clusterId, connectorId
+func (_m *TiDBCloudClient) StartConnector(ctx context.Context, clusterId string, connectorId string) (*cdc.ConnectorID, error) {
+	ret := _m.Called(ctx, clusterId, connectorId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for StartConnector")
+	}
+
+	var r0 *cdc.ConnectorID
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*cdc.ConnectorID, error)); ok {
+		return rf(ctx, clusterId, connectorId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *cdc.ConnectorID); ok {
+		r0 = rf(ctx, clusterId, connectorId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.ConnectorID)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, connectorId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // StartUpload provides a mock function with given fields: ctx, clusterId, fileName, targetDatabase, targetTable, partNumber
 func (_m *TiDBCloudClient) StartUpload(ctx context.Context, clusterId string, fileName *string, targetDatabase *string, targetTable *string, partNumber *int32) (*imp.StartUploadResponse, error) {
 	ret := _m.Called(ctx, clusterId, fileName, targetDatabase, targetTable, partNumber)
@@ -1215,6 +1427,66 @@ func (_m *TiDBCloudClient) StartUpload(ctx context.Context, clusterId string, fi
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, *string, *string, *string, *int32) error); ok {
 		r1 = rf(ctx, clusterId, fileName, targetDatabase, targetTable, partNumber)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// StopConnector provides a mock function with given fields: ctx, clusterId, connectorId
+func (_m *TiDBCloudClient) StopConnector(ctx context.Context, clusterId string, connectorId string) (*cdc.ConnectorID, error) {
+	ret := _m.Called(ctx, clusterId, connectorId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for StopConnector")
+	}
+
+	var r0 *cdc.ConnectorID
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*cdc.ConnectorID, error)); ok {
+		return rf(ctx, clusterId, connectorId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *cdc.ConnectorID); ok {
+		r0 = rf(ctx, clusterId, connectorId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.ConnectorID)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, connectorId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// TestConnector provides a mock function with given fields: ctx, clusterId, body
+func (_m *TiDBCloudClient) TestConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceTestConnectorBody) (map[string]interface{}, error) {
+	ret := _m.Called(ctx, clusterId, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for TestConnector")
+	}
+
+	var r0 map[string]interface{}
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *cdc.ConnectorServiceTestConnectorBody) (map[string]interface{}, error)); ok {
+		return rf(ctx, clusterId, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *cdc.ConnectorServiceTestConnectorBody) map[string]interface{}); ok {
+		r0 = rf(ctx, clusterId, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(map[string]interface{})
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *cdc.ConnectorServiceTestConnectorBody) error); ok {
+		r1 = rf(ctx, clusterId, body)
 	} else {
 		r1 = ret.Error(1)
 	}
