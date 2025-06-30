@@ -571,8 +571,21 @@
         "bigintUnsignedHandlingMode": {
           "$ref": "#/definitions/BigintUnsignedHandlingMode.Enum"
         },
-        "schemaRegistry": {
-          "$ref": "#/definitions/SchemaRegistry"
+        "confluentSchemaRegistry": {
+          "description": "Confluent Schema Registry.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ConfluentSchemaRegistry"
+            }
+          ]
+        },
+        "awsGlueSchemaRegistry": {
+          "description": "AWS Glue Schema Registry.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/GlueSchemaRegistry"
+            }
+          ]
         }
       }
     },
@@ -676,6 +689,30 @@
           }
         }
       }
+    },
+    "ConfluentSchemaRegistry": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string",
+          "description": "Required. The schema registry endpoint."
+        },
+        "enableHttpAuth": {
+          "type": "boolean",
+          "description": "Optional. Enable HTTP authentication."
+        },
+        "userName": {
+          "type": "string",
+          "description": "Optional. The username for HTTP authentication."
+        },
+        "password": {
+          "type": "string",
+          "description": "Optional. The password for HTTP authentication."
+        }
+      },
+      "required": [
+        "endpoint"
+      ]
     },
     "Connector": {
       "type": "object",
@@ -1044,6 +1081,33 @@
         }
       }
     },
+    "GlueSchemaRegistry": {
+      "type": "object",
+      "properties": {
+        "region": {
+          "type": "string",
+          "description": "Required. The region of schema registry."
+        },
+        "name": {
+          "type": "string",
+          "description": "Required. The name of schema registry."
+        },
+        "accessKeyId": {
+          "type": "string",
+          "description": "Required. The AWS access key ID."
+        },
+        "secretAccessKey": {
+          "type": "string",
+          "description": "Required. The AWS secret access key."
+        }
+      },
+      "required": [
+        "region",
+        "name",
+        "accessKeyId",
+        "secretAccessKey"
+      ]
+    },
     "KafkaAuthType.Enum": {
       "type": "string",
       "enum": [
@@ -1268,23 +1332,6 @@
         "DELETING"
       ],
       "description": " - PENDING_ACCEPTANCE: The private link endpoint is pending acceptance.\n - PENDING: The private link endpoint is pending.\n - AVAILABLE: The private link endpoint is available.\n - REJECTED: The private link endpoint is rejected.\n - EXPIRED: The private link endpoint is Expired.\n - FAILED: The private link endpoint is failed.\n - PARTIAL: The private link endpoint is partial.\n - DELETING: The private link endpoint is deleting."
-    },
-    "SchemaRegistry": {
-      "type": "object",
-      "properties": {
-        "schemaRegistryEndpoints": {
-          "type": "string"
-        },
-        "enableHttpAuth": {
-          "type": "boolean"
-        },
-        "userName": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        }
-      }
     },
     "SinkInfo": {
       "type": "object",

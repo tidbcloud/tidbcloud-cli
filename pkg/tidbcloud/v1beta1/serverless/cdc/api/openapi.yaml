@@ -460,8 +460,16 @@ components:
           $ref: '#/components/schemas/DecimalHandlingMode.Enum'
         bigintUnsignedHandlingMode:
           $ref: '#/components/schemas/BigintUnsignedHandlingMode.Enum'
-        schemaRegistry:
-          $ref: '#/components/schemas/SchemaRegistry'
+        confluentSchemaRegistry:
+          allOf:
+          - $ref: '#/components/schemas/ConfluentSchemaRegistry'
+          description: Confluent Schema Registry.
+          type: object
+        awsGlueSchemaRegistry:
+          allOf:
+          - $ref: '#/components/schemas/GlueSchemaRegistry'
+          description: AWS Glue Schema Registry.
+          type: object
       type: object
     BigintUnsignedHandlingMode.Enum:
       description: |2-
@@ -545,6 +553,23 @@ components:
           items:
             type: string
           type: array
+      type: object
+    ConfluentSchemaRegistry:
+      properties:
+        endpoint:
+          description: Required. The schema registry endpoint.
+          type: string
+        enableHttpAuth:
+          description: Optional. Enable HTTP authentication.
+          type: boolean
+        userName:
+          description: Optional. The username for HTTP authentication.
+          type: string
+        password:
+          description: Optional. The password for HTTP authentication.
+          type: string
+      required:
+      - endpoint
       type: object
     Connector:
       example:
@@ -852,6 +877,26 @@ components:
             type: string
           type: array
       type: object
+    GlueSchemaRegistry:
+      properties:
+        region:
+          description: Required. The region of schema registry.
+          type: string
+        name:
+          description: Required. The name of schema registry.
+          type: string
+        accessKeyId:
+          description: Required. The AWS access key ID.
+          type: string
+        secretAccessKey:
+          description: Required. The AWS secret access key.
+          type: string
+      required:
+      - accessKeyId
+      - name
+      - region
+      - secretAccessKey
+      type: object
     KafkaAuthType.Enum:
       description: |2-
          - DISABLE: No authentication.
@@ -1047,17 +1092,6 @@ components:
       - PARTIAL
       - DELETING
       type: string
-    SchemaRegistry:
-      properties:
-        schemaRegistryEndpoints:
-          type: string
-        enableHttpAuth:
-          type: boolean
-        userName:
-          type: string
-        password:
-          type: string
-      type: object
     SinkInfo:
       properties:
         type:

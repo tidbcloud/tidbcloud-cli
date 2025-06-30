@@ -21,8 +21,11 @@ var _ MappedNullable = &AvroConfig{}
 type AvroConfig struct {
 	DecimalHandlingMode        *DecimalHandlingModeEnum        `json:"decimalHandlingMode,omitempty"`
 	BigintUnsignedHandlingMode *BigintUnsignedHandlingModeEnum `json:"bigintUnsignedHandlingMode,omitempty"`
-	SchemaRegistry             *SchemaRegistry                 `json:"schemaRegistry,omitempty"`
-	AdditionalProperties       map[string]interface{}
+	// Confluent Schema Registry.
+	ConfluentSchemaRegistry *ConfluentSchemaRegistry `json:"confluentSchemaRegistry,omitempty"`
+	// AWS Glue Schema Registry.
+	AwsGlueSchemaRegistry *GlueSchemaRegistry `json:"awsGlueSchemaRegistry,omitempty"`
+	AdditionalProperties  map[string]interface{}
 }
 
 type _AvroConfig AvroConfig
@@ -108,36 +111,68 @@ func (o *AvroConfig) SetBigintUnsignedHandlingMode(v BigintUnsignedHandlingModeE
 	o.BigintUnsignedHandlingMode = &v
 }
 
-// GetSchemaRegistry returns the SchemaRegistry field value if set, zero value otherwise.
-func (o *AvroConfig) GetSchemaRegistry() SchemaRegistry {
-	if o == nil || IsNil(o.SchemaRegistry) {
-		var ret SchemaRegistry
+// GetConfluentSchemaRegistry returns the ConfluentSchemaRegistry field value if set, zero value otherwise.
+func (o *AvroConfig) GetConfluentSchemaRegistry() ConfluentSchemaRegistry {
+	if o == nil || IsNil(o.ConfluentSchemaRegistry) {
+		var ret ConfluentSchemaRegistry
 		return ret
 	}
-	return *o.SchemaRegistry
+	return *o.ConfluentSchemaRegistry
 }
 
-// GetSchemaRegistryOk returns a tuple with the SchemaRegistry field value if set, nil otherwise
+// GetConfluentSchemaRegistryOk returns a tuple with the ConfluentSchemaRegistry field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *AvroConfig) GetSchemaRegistryOk() (*SchemaRegistry, bool) {
-	if o == nil || IsNil(o.SchemaRegistry) {
+func (o *AvroConfig) GetConfluentSchemaRegistryOk() (*ConfluentSchemaRegistry, bool) {
+	if o == nil || IsNil(o.ConfluentSchemaRegistry) {
 		return nil, false
 	}
-	return o.SchemaRegistry, true
+	return o.ConfluentSchemaRegistry, true
 }
 
-// HasSchemaRegistry returns a boolean if a field has been set.
-func (o *AvroConfig) HasSchemaRegistry() bool {
-	if o != nil && !IsNil(o.SchemaRegistry) {
+// HasConfluentSchemaRegistry returns a boolean if a field has been set.
+func (o *AvroConfig) HasConfluentSchemaRegistry() bool {
+	if o != nil && !IsNil(o.ConfluentSchemaRegistry) {
 		return true
 	}
 
 	return false
 }
 
-// SetSchemaRegistry gets a reference to the given SchemaRegistry and assigns it to the SchemaRegistry field.
-func (o *AvroConfig) SetSchemaRegistry(v SchemaRegistry) {
-	o.SchemaRegistry = &v
+// SetConfluentSchemaRegistry gets a reference to the given ConfluentSchemaRegistry and assigns it to the ConfluentSchemaRegistry field.
+func (o *AvroConfig) SetConfluentSchemaRegistry(v ConfluentSchemaRegistry) {
+	o.ConfluentSchemaRegistry = &v
+}
+
+// GetAwsGlueSchemaRegistry returns the AwsGlueSchemaRegistry field value if set, zero value otherwise.
+func (o *AvroConfig) GetAwsGlueSchemaRegistry() GlueSchemaRegistry {
+	if o == nil || IsNil(o.AwsGlueSchemaRegistry) {
+		var ret GlueSchemaRegistry
+		return ret
+	}
+	return *o.AwsGlueSchemaRegistry
+}
+
+// GetAwsGlueSchemaRegistryOk returns a tuple with the AwsGlueSchemaRegistry field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *AvroConfig) GetAwsGlueSchemaRegistryOk() (*GlueSchemaRegistry, bool) {
+	if o == nil || IsNil(o.AwsGlueSchemaRegistry) {
+		return nil, false
+	}
+	return o.AwsGlueSchemaRegistry, true
+}
+
+// HasAwsGlueSchemaRegistry returns a boolean if a field has been set.
+func (o *AvroConfig) HasAwsGlueSchemaRegistry() bool {
+	if o != nil && !IsNil(o.AwsGlueSchemaRegistry) {
+		return true
+	}
+
+	return false
+}
+
+// SetAwsGlueSchemaRegistry gets a reference to the given GlueSchemaRegistry and assigns it to the AwsGlueSchemaRegistry field.
+func (o *AvroConfig) SetAwsGlueSchemaRegistry(v GlueSchemaRegistry) {
+	o.AwsGlueSchemaRegistry = &v
 }
 
 func (o AvroConfig) MarshalJSON() ([]byte, error) {
@@ -156,8 +191,11 @@ func (o AvroConfig) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.BigintUnsignedHandlingMode) {
 		toSerialize["bigintUnsignedHandlingMode"] = o.BigintUnsignedHandlingMode
 	}
-	if !IsNil(o.SchemaRegistry) {
-		toSerialize["schemaRegistry"] = o.SchemaRegistry
+	if !IsNil(o.ConfluentSchemaRegistry) {
+		toSerialize["confluentSchemaRegistry"] = o.ConfluentSchemaRegistry
+	}
+	if !IsNil(o.AwsGlueSchemaRegistry) {
+		toSerialize["awsGlueSchemaRegistry"] = o.AwsGlueSchemaRegistry
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -183,7 +221,8 @@ func (o *AvroConfig) UnmarshalJSON(data []byte) (err error) {
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "decimalHandlingMode")
 		delete(additionalProperties, "bigintUnsignedHandlingMode")
-		delete(additionalProperties, "schemaRegistry")
+		delete(additionalProperties, "confluentSchemaRegistry")
+		delete(additionalProperties, "awsGlueSchemaRegistry")
 		o.AdditionalProperties = additionalProperties
 	}
 

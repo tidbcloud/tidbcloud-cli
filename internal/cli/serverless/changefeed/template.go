@@ -54,11 +54,18 @@ const (
                 "avro_config": {
                         "decimal_handling_mode": "PRECISE",
                         "bigint_unsigned_handling_mode": "LONG",
-                        "schema_registry": {
-                                "schema_registry_endpoints": "",
+                        // one of "confluent_schema_registry", "aws_glue_schema_registry"
+                        "confluent_schema_registry": {
+                                "endpoint": "",
                                 "enable_http_auth": false,
                                 "user_name": "",
                                 "password": ""
+                        },
+                        "aws_glue_schema_registry": {
+                                "region": "",
+                                "name": "",
+                                "access_key_id": "",
+                                "secret_access_key": ""
                         }
                 }
         },
@@ -116,11 +123,17 @@ const (
 		"avro_config": {
 			"decimal_handling_mode": "PRECISE",
 			"bigint_unsigned_handling_mode": "LONG",
-			"schema_registry": {
+			"confluent_schema_registry": {
 				"schema_registry_endpoints": "",
 				"enable_http_auth": false,
 				"user_name": "",
 				"password": ""
+			},
+			"aws_glue_schema_registry": {
+				"region": "",
+				"name": "",
+				"access_key_id": "",
+				"secret_access_key": ""
 			}
 		}
 	},

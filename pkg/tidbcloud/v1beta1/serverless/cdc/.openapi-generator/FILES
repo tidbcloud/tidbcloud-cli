@@ -17,6 +17,7 @@ model_cdc_filter.go
 model_cdc_protocol_enum.go
 model_cdc_state_enum.go
 model_column_selector.go
+model_confluent_schema_registry.go
 model_connector.go
 model_connector_id.go
 model_connector_service_create_connector_body.go
@@ -31,6 +32,7 @@ model_data_format.go
 model_decimal_handling_mode_enum.go
 model_describe_schema_table_resp.go
 model_event_filter_rule.go
+model_glue_schema_registry.go
 model_kafka_auth_type_enum.go
 model_kafka_compression_type_enum.go
 model_kafka_endpoint.go
@@ -43,7 +45,6 @@ model_partition_dispatcher_config.go
 model_partition_dispatcher_enum.go
 model_private_link_endpoint.go
 model_private_link_endpoint_state_enum.go
-model_schema_registry.go
 model_sink_info.go
 model_start_mode_enum.go
 model_start_position.go
