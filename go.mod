@@ -38,7 +38,7 @@ require (
 	github.com/zalando/go-keyring v0.2.3
 	go.einride.tech/aip v0.67.1
 	go.uber.org/zap v1.27.0
-	golang.org/x/oauth2 v0.21.0
+	golang.org/x/oauth2 v0.27.0
 	golang.org/x/sys v0.31.0
 	gopkg.in/yaml.v3 v3.0.1
 )
