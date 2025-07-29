@@ -19,15 +19,18 @@ var _ MappedNullable = &Commonv1beta1Region{}
 
 // Commonv1beta1Region A representation of a region for deploying TiDB clusters.
 type Commonv1beta1Region struct {
+	// The unique name of the region, formatted as `regions/{region_id}`. e.g. `regions/aws-us-west-2`.
 	Name *string `json:"name,omitempty" validate:"regexp=^regions\\/(aws|gcp|azure)-(.+)$"`
-	// Format: {cloud_provider}-{region_code} Region code: us-west-2, asia-east1.
-	RegionId *string `json:"regionId,omitempty"`
-	// The cloud provider for the region.
+	// The unique identifier of the region, formatted as `{cloud_provider}-{region_code}`. e.g. `aws-us-west-2`.
+	RegionId *string `json:"regionId,omitempty" validate:"regexp=^(aws|gcp|azure|alicloud)-[a-z0-9-]+$"`
+	// The cloud provider for the region, e.g. `aws`, `gcp`, `azure`, or `alicloud`.
 	CloudProvider *V1beta1RegionCloudProvider `json:"cloudProvider,omitempty"`
-	// User-friendly display name of the region.
+	// A user-friendly display name for the region, e.g. `Oregon (us-west-2)`.
 	DisplayName *string `json:"displayName,omitempty"`
-	// Optional provider name for the region. Only used for serverless cluster. Deprecated.
-	Provider             NullableString `json:"provider,omitempty"`
+	// The cloud provider name for the region, e.g. `aws`, `gcp`, `azure`, or `alicloud`. Deprecated, use `cloudProvider` instead.
+	Provider NullableString `json:"provider,omitempty"`
+	// Optional service plans available in the region. For Next-Gen clusters only.
+	ServicePlans         []Commonv1beta1ServicePlan `json:"servicePlans,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -221,6 +224,38 @@ func (o *Commonv1beta1Region) UnsetProvider() {
 	o.Provider.Unset()
 }
 
+// GetServicePlans returns the ServicePlans field value if set, zero value otherwise.
+func (o *Commonv1beta1Region) GetServicePlans() []Commonv1beta1ServicePlan {
+	if o == nil || IsNil(o.ServicePlans) {
+		var ret []Commonv1beta1ServicePlan
+		return ret
+	}
+	return o.ServicePlans
+}
+
+// GetServicePlansOk returns a tuple with the ServicePlans field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Commonv1beta1Region) GetServicePlansOk() ([]Commonv1beta1ServicePlan, bool) {
+	if o == nil || IsNil(o.ServicePlans) {
+		return nil, false
+	}
+	return o.ServicePlans, true
+}
+
+// HasServicePlans returns a boolean if a field has been set.
+func (o *Commonv1beta1Region) HasServicePlans() bool {
+	if o != nil && !IsNil(o.ServicePlans) {
+		return true
+	}
+
+	return false
+}
+
+// SetServicePlans gets a reference to the given []Commonv1beta1ServicePlan and assigns it to the ServicePlans field.
+func (o *Commonv1beta1Region) SetServicePlans(v []Commonv1beta1ServicePlan) {
+	o.ServicePlans = v
+}
+
 func (o Commonv1beta1Region) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -245,6 +280,9 @@ func (o Commonv1beta1Region) ToMap() (map[string]interface{}, error) {
 	}
 	if o.Provider.IsSet() {
 		toSerialize["provider"] = o.Provider.Get()
+	}
+	if !IsNil(o.ServicePlans) {
+		toSerialize["servicePlans"] = o.ServicePlans
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -273,6 +311,7 @@ func (o *Commonv1beta1Region) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "cloudProvider")
 		delete(additionalProperties, "displayName")
 		delete(additionalProperties, "provider")
+		delete(additionalProperties, "servicePlans")
 		o.AdditionalProperties = additionalProperties
 	}
 

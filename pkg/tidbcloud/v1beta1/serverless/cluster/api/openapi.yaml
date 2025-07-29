@@ -304,6 +304,30 @@ paths:
       - ServerlessService
 components:
   schemas:
+    AzureBlobCloudStorageAzureBlobAuthType:
+      description: " - SAS_TOKEN: The access method is sas token."
+      enum:
+      - SAS_TOKEN
+      type: string
+    ClusterAuditLogCloudStorage:
+      description: Message for audit log cloud storage.
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterCloudStorage'
+          description: Required. The type of cloud storage for audit logs.
+          type: object
+        s3:
+          $ref: '#/components/schemas/v1beta1ClusterS3CloudStorage'
+        gcs:
+          $ref: '#/components/schemas/v1beta1ClusterGCSCloudStorage'
+        azureBlob:
+          $ref: '#/components/schemas/v1beta1ClusterAzureBlobCloudStorage'
+        oss:
+          $ref: '#/components/schemas/v1beta1ClusterOSSCloudStorage'
+      required:
+      - type
+      type: object
     ClusterClusterPlan:
       enum:
       - STARTER
@@ -312,14 +336,6 @@ components:
         - STARTER: alicloud starter plan
          - ESSENTIAL: alicloud essential plan
       type: string
-    ClusterHighAvailabilityType:
-      enum:
-      - ZONAL
-      - REGIONAL
-      title: |-
-        - ZONAL: High availability within a single zone
-         - REGIONAL: High availability across multiple zones within a region
-      type: string
     ClusterSpendingLimit:
       description: Message for spending limit configuration.
       properties:
@@ -327,25 +343,6 @@ components:
           description: Optional. Maximum monthly spending limit in USD cents.
           format: int32
           type: integer
-      type: object
-    ClusterUsage:
-      description: Message for usage statistics of a cluster.
-      properties:
-        requestUnit:
-          description: Output_only. The Request Units used in this month.
-          format: int64
-          readOnly: true
-          type: string
-        rowBasedStorage:
-          description: Output_only. The storage used on row-based storage in bytes.
-          format: double
-          readOnly: true
-          type: number
-        columnarStorage:
-          description: Output_only. The storage used on column-based storage in bytes.
-          format: double
-          readOnly: true
-          type: number
       type: object
     EndpointsPrivate:
       description: Message for private endpoint to securely connect to the cluster.
@@ -366,6 +363,10 @@ components:
         gcp:
           allOf:
           - $ref: '#/components/schemas/PrivateGCP'
+          type: object
+        alicloud:
+          allOf:
+          - $ref: '#/components/schemas/PrivateALICLOUD'
           type: object
       type: object
     EndpointsPublic:
@@ -402,6 +403,31 @@ components:
       - endIpAddress
       - startIpAddress
       type: object
+    GCSCloudStorageGCSAuthType:
+      description: " - SERVICE_ACCOUNT_KEY: The access method is service account key."
+      enum:
+      - SERVICE_ACCOUNT_KEY
+      type: string
+    OSSCloudStorageOSSAuthType:
+      description: " - ACCESS_KEY: The access method is access key."
+      enum:
+      - ACCESS_KEY
+      type: string
+    PrivateALICLOUD:
+      description: Message for ALICLOUD Private Service information.
+      properties:
+        serviceName:
+          description: Output_only. The ALICLOUD service name for private access.
+          readOnly: true
+          type: string
+        availabilityZone:
+          description: Output_only. The availability zones that the service is available
+            in.
+          items:
+            type: string
+          readOnly: true
+          type: array
+      type: object
     PrivateAWS:
       description: Message for AWS PrivateLink information.
       properties:
@@ -426,6 +452,14 @@ components:
           readOnly: true
           type: string
       type: object
+    S3CloudStorageS3AuthType:
+      description: |2-
+         - ROLE_ARN: The access method is role arn.
+         - ACCESS_KEY: The access method is access key.
+      enum:
+      - ROLE_ARN
+      - ACCESS_KEY
+      type: string
     ServerlessServiceChangeRootPasswordBody:
       description: Message for requesting to change the root password of a TiDB Cloud
         Serverless cluster.
@@ -479,43 +513,70 @@ components:
     commonv1beta1Region:
       description: A representation of a region for deploying TiDB clusters.
       example:
-        regionId: regionId
-        provider: provider
-        displayName: displayName
-        cloudProvider: "{}"
+        regionId: aws-us-west-2
+        provider: aws
+        displayName: Oregon (us-west-2)
+        cloudProvider: aws
         name: regions/aws-us-west-2
+        servicePlans:
+        - Starter
+        - Essential
+        - Premium
       properties:
         name:
+          description: "The unique name of the region, formatted as `regions/{region_id}`.\
+            \ e.g. `regions/aws-us-west-2`."
           example: regions/aws-us-west-2
           pattern: ^regions/(aws|gcp|azure)-(.+)$
-          title: |-
-            The unique name of the region.
-            Format: regions/{region_id}
           type: string
         regionId:
-          description: |-
-            Format: {cloud_provider}-{region_code}
-            Region code: us-west-2, asia-east1.
+          description: "The unique identifier of the region, formatted as `{cloud_provider}-{region_code}`.\
+            \ e.g. `aws-us-west-2`."
+          example: aws-us-west-2
+          pattern: "^(aws|gcp|azure|alicloud)-[a-z0-9-]+$"
           readOnly: true
           type: string
         cloudProvider:
           allOf:
           - $ref: '#/components/schemas/v1beta1RegionCloudProvider'
-          description: The cloud provider for the region.
+          description: "The cloud provider for the region, e.g. `aws`, `gcp`, `azure`,\
+            \ or `alicloud`."
+          example: aws
           type: object
         displayName:
-          description: User-friendly display name of the region.
+          description: "A user-friendly display name for the region, e.g. `Oregon\
+            \ (us-west-2)`."
+          example: Oregon (us-west-2)
           readOnly: true
           type: string
         provider:
-          description: |-
-            Optional provider name for the region.
-            Only used for serverless cluster.
-            Deprecated.
+          description: "The cloud provider name for the region, e.g. `aws`, `gcp`,\
+            \ `azure`, or `alicloud`. Deprecated, use `cloudProvider` instead."
+          example: aws
           nullable: true
           readOnly: true
+          title: Deprecated
           type: string
+        servicePlans:
+          description: Optional service plans available in the region. For Next-Gen
+            clusters only.
+          example:
+          - Starter
+          - Essential
+          - Premium
+          items:
+            $ref: '#/components/schemas/commonv1beta1ServicePlan'
+          readOnly: true
+          title: ServicePlan
+          type: array
       type: object
+    commonv1beta1ServicePlan:
+      enum:
+      - Starter
+      - Essential
+      - Premium
+      - BYOC
+      type: string
     googlerpcStatus:
       description: |-
         The `Status` type defines a logical error model that is suitable for
@@ -677,6 +738,14 @@ components:
             used with implementation specific semantics.
           type: string
       type: object
+    serverlessv1beta1ClusterHighAvailabilityType:
+      enum:
+      - ZONAL
+      - REGIONAL
+      title: |-
+        - ZONAL: High availability within a single zone
+         - REGIONAL: High availability across multiple zones within a region
+      type: string
     serverlessv1beta1ClusterView:
       description: |-
         Enum for the different types of detail view to be returned for a TiDB Cloud Serverless cluster.
@@ -695,7 +764,6 @@ components:
         autoScaling: "{}"
         automatedBackupPolicy: "{}"
         displayName: displayName
-        usage: "{}"
         annotations:
           key: annotations
         updateTime: 2000-01-23T04:56:07.000+00:00
@@ -758,7 +826,7 @@ components:
           description: Optional. Encryption settings for the cluster.
           type: object
         highAvailabilityType:
-          $ref: '#/components/schemas/ClusterHighAvailabilityType'
+          $ref: '#/components/schemas/serverlessv1beta1ClusterHighAvailabilityType'
         version:
           description: Output_only. The TiDB version of the cluster.
           readOnly: true
@@ -775,11 +843,6 @@ components:
           allOf:
           - $ref: '#/components/schemas/commonv1beta1ClusterState'
           description: Output_only. The current state of the cluster.
-          type: object
-        usage:
-          allOf:
-          - $ref: '#/components/schemas/ClusterUsage'
-          description: Output_only. Usage details of the cluster.
           type: object
         labels:
           additionalProperties:
@@ -848,7 +911,6 @@ components:
           autoScaling: "{}"
           automatedBackupPolicy: "{}"
           displayName: displayName
-          usage: "{}"
           annotations:
             key: annotations
           updateTime: 2000-01-23T04:56:07.000+00:00
@@ -872,7 +934,6 @@ components:
           autoScaling: "{}"
           automatedBackupPolicy: "{}"
           displayName: displayName
-          usage: "{}"
           annotations:
             key: annotations
           updateTime: 2000-01-23T04:56:07.000+00:00
@@ -910,16 +971,24 @@ components:
         in TiDB Cloud Serverless.
       example:
         regions:
-        - regionId: regionId
-          provider: provider
-          displayName: displayName
-          cloudProvider: "{}"
+        - regionId: aws-us-west-2
+          provider: aws
+          displayName: Oregon (us-west-2)
+          cloudProvider: aws
           name: regions/aws-us-west-2
-        - regionId: regionId
-          provider: provider
-          displayName: displayName
-          cloudProvider: "{}"
+          servicePlans:
+          - Starter
+          - Essential
+          - Premium
+        - regionId: aws-us-west-2
+          provider: aws
+          displayName: Oregon (us-west-2)
+          cloudProvider: aws
           name: regions/aws-us-west-2
+          servicePlans:
+          - Starter
+          - Essential
+          - Premium
       properties:
         regions:
           description: A list of available regions.
@@ -951,7 +1020,6 @@ components:
           autoScaling: "{}"
           automatedBackupPolicy: "{}"
           displayName: displayName
-          usage: "{}"
           annotations:
             key: annotations
           updateTime: 2000-01-23T04:56:07.000+00:00
@@ -975,7 +1043,6 @@ components:
           autoScaling: "{}"
           automatedBackupPolicy: "{}"
           displayName: displayName
-          usage: "{}"
           annotations:
             key: annotations
           updateTime: 2000-01-23T04:56:07.000+00:00
@@ -1011,7 +1078,6 @@ components:
           autoScaling: "{}"
           automatedBackupPolicy: "{}"
           displayName: displayName
-          usage: "{}"
           annotations:
             key: annotations
           updateTime: 2000-01-23T04:56:07.000+00:00
@@ -1035,7 +1101,6 @@ components:
           autoScaling: "{}"
           automatedBackupPolicy: "{}"
           displayName: displayName
-          usage: "{}"
           annotations:
             key: annotations
           updateTime: 2000-01-23T04:56:07.000+00:00
@@ -1076,6 +1141,21 @@ components:
           description: Optional. Whether unredacted the audit log.
           nullable: true
           type: boolean
+        cloudStorage:
+          allOf:
+          - $ref: '#/components/schemas/ClusterAuditLogCloudStorage'
+          description: Optional. The cloud storage for audit logs.
+          type: object
+        rotationIntervalMinutes:
+          description: Optional. The rotation interval in minutes for audit logs.
+          format: int32
+          nullable: true
+          type: integer
+        rotationSizeMib:
+          description: Optional. The rotation size in MiB for audit logs.
+          format: int32
+          nullable: true
+          type: integer
       type: object
     v1beta1ClusterAutoScaling:
       description: Message for auto scaling configuration.
@@ -1095,11 +1175,42 @@ components:
             \ UTC."
           type: string
         retentionDays:
-          description: OUTPUT_ONLY. Number of days to retain automated backups.
+          description: Optional. Number of days to retain automated backups.
           format: int32
-          readOnly: true
           type: integer
       type: object
+    v1beta1ClusterAzureBlobCloudStorage:
+      properties:
+        uri:
+          description: "Required. The Azure Blob URI. For example: azure://<account>.blob.core.windows.net/<container>/<path>\
+            \ or https://<account>.blob.core.windows.net/<container>/<path>."
+          type: string
+        authType:
+          allOf:
+          - $ref: '#/components/schemas/AzureBlobCloudStorageAzureBlobAuthType'
+          description: Required. The auth method of Azure Blob.
+          type: object
+        sasToken:
+          description: Optional. The sas token.
+          type: string
+      required:
+      - authType
+      - uri
+      type: object
+    v1beta1ClusterCloudStorage:
+      description: |2-
+         - TiDB_CLOUD: TiDB Cloud's own cloud storage.
+         - S3: Amazon S3 cloud storage.
+         - GCS: Google Cloud Storage.
+         - AZURE_BLOB: Azure Blob Storage.
+         - OSS: Alibaba Cloud OSS.
+      enum:
+      - TiDB_CLOUD
+      - S3
+      - GCS
+      - AZURE_BLOB
+      - OSS
+      type: string
     v1beta1ClusterEncryptionConfig:
       description: Message for encryption settings for a cluster.
       properties:
@@ -1120,6 +1231,88 @@ components:
           - $ref: '#/components/schemas/EndpointsPrivate'
           description: Output_only. Private endpoint to securely connect to the cluster.
           type: object
+      type: object
+    v1beta1ClusterGCSCloudStorage:
+      properties:
+        uri:
+          description: "Required. The GCS URI. For example: gs://<bucket>/<path>."
+          type: string
+        authType:
+          allOf:
+          - $ref: '#/components/schemas/GCSCloudStorageGCSAuthType'
+          description: Required. The auth method of GCS.
+          type: object
+        serviceAccountKey:
+          description: Optional. The service account key.
+          type: string
+      required:
+      - authType
+      - uri
+      type: object
+    v1beta1ClusterOSSCloudStorage:
+      properties:
+        uri:
+          description: "Required. The OSS URI. For example: oss://<bucket>/<path>."
+          type: string
+        authType:
+          allOf:
+          - $ref: '#/components/schemas/OSSCloudStorageOSSAuthType'
+          description: Required. The auth method of OSS.
+          type: object
+        accessKey:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterOSSCloudStorageAccessKey'
+          description: Optional. The access key.
+          type: object
+      required:
+      - authType
+      - uri
+      type: object
+    v1beta1ClusterOSSCloudStorageAccessKey:
+      properties:
+        id:
+          description: Required. The access key id.
+          type: string
+        secret:
+          description: Required. The access key secret. This field is input-only.
+          type: string
+      required:
+      - id
+      - secret
+      type: object
+    v1beta1ClusterS3CloudStorage:
+      properties:
+        uri:
+          description: "Required. The URI of the S3 folder. For example: s3://<bucket>/<path>."
+          type: string
+        authType:
+          allOf:
+          - $ref: '#/components/schemas/S3CloudStorageS3AuthType'
+          description: Required. The auth method of S3.
+          type: object
+        accessKey:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterS3CloudStorageAccessKey'
+          description: Optional. The access key of the S3.
+          type: object
+        roleArn:
+          description: Optional. The role arn of the S3.
+          type: string
+      required:
+      - authType
+      - uri
+      type: object
+    v1beta1ClusterS3CloudStorageAccessKey:
+      properties:
+        id:
+          description: Required. The access key id of the S3.
+          type: string
+        secret:
+          description: Required. The secret access key of the S3.
+          type: string
+      required:
+      - id
+      - secret
       type: object
     v1beta1PartialUpdateClusterRequestPartialUpdateCluster:
       properties:

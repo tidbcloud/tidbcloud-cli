@@ -37,8 +37,8 @@ type TidbCloudOpenApiserverlessv1beta1Cluster struct {
 	Endpoints    *V1beta1ClusterEndpoints `json:"endpoints,omitempty"`
 	RootPassword *string                  `json:"rootPassword,omitempty" validate:"regexp=^.{8,64}$"`
 	// Optional. Encryption settings for the cluster.
-	EncryptionConfig     *V1beta1ClusterEncryptionConfig `json:"encryptionConfig,omitempty"`
-	HighAvailabilityType *ClusterHighAvailabilityType    `json:"highAvailabilityType,omitempty"`
+	EncryptionConfig     *V1beta1ClusterEncryptionConfig               `json:"encryptionConfig,omitempty"`
+	HighAvailabilityType *Serverlessv1beta1ClusterHighAvailabilityType `json:"highAvailabilityType,omitempty"`
 	// Output_only. The TiDB version of the cluster.
 	Version *string `json:"version,omitempty"`
 	// Output_only. The email of the creator of the cluster.
@@ -47,8 +47,6 @@ type TidbCloudOpenApiserverlessv1beta1Cluster struct {
 	UserPrefix *string `json:"userPrefix,omitempty"`
 	// Output_only. The current state of the cluster.
 	State *Commonv1beta1ClusterState `json:"state,omitempty"`
-	// Output_only. Usage details of the cluster.
-	Usage *ClusterUsage `json:"usage,omitempty"`
 	// Optional. The labels for the cluster. tidb.cloud/organization. The label for the cluster organization id. tidb.cloud/project. The label for the cluster project id.
 	Labels *map[string]string `json:"labels,omitempty"`
 	// OUTPUT_ONLY. The annotations for the cluster. tidb.cloud/has-set-password. The annotation for whether the cluster has set password. tidb.cloud/available-features. The annotation for the available features of the cluster.
@@ -360,9 +358,9 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetEncryptionConfig(v V1beta1
 }
 
 // GetHighAvailabilityType returns the HighAvailabilityType field value if set, zero value otherwise.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetHighAvailabilityType() ClusterHighAvailabilityType {
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetHighAvailabilityType() Serverlessv1beta1ClusterHighAvailabilityType {
 	if o == nil || IsNil(o.HighAvailabilityType) {
-		var ret ClusterHighAvailabilityType
+		var ret Serverlessv1beta1ClusterHighAvailabilityType
 		return ret
 	}
 	return *o.HighAvailabilityType
@@ -370,7 +368,7 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetHighAvailabilityType() Clu
 
 // GetHighAvailabilityTypeOk returns a tuple with the HighAvailabilityType field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetHighAvailabilityTypeOk() (*ClusterHighAvailabilityType, bool) {
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetHighAvailabilityTypeOk() (*Serverlessv1beta1ClusterHighAvailabilityType, bool) {
 	if o == nil || IsNil(o.HighAvailabilityType) {
 		return nil, false
 	}
@@ -386,8 +384,8 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasHighAvailabilityType() boo
 	return false
 }
 
-// SetHighAvailabilityType gets a reference to the given ClusterHighAvailabilityType and assigns it to the HighAvailabilityType field.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetHighAvailabilityType(v ClusterHighAvailabilityType) {
+// SetHighAvailabilityType gets a reference to the given Serverlessv1beta1ClusterHighAvailabilityType and assigns it to the HighAvailabilityType field.
+func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetHighAvailabilityType(v Serverlessv1beta1ClusterHighAvailabilityType) {
 	o.HighAvailabilityType = &v
 }
 
@@ -517,38 +515,6 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasState() bool {
 // SetState gets a reference to the given Commonv1beta1ClusterState and assigns it to the State field.
 func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetState(v Commonv1beta1ClusterState) {
 	o.State = &v
-}
-
-// GetUsage returns the Usage field value if set, zero value otherwise.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetUsage() ClusterUsage {
-	if o == nil || IsNil(o.Usage) {
-		var ret ClusterUsage
-		return ret
-	}
-	return *o.Usage
-}
-
-// GetUsageOk returns a tuple with the Usage field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) GetUsageOk() (*ClusterUsage, bool) {
-	if o == nil || IsNil(o.Usage) {
-		return nil, false
-	}
-	return o.Usage, true
-}
-
-// HasUsage returns a boolean if a field has been set.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) HasUsage() bool {
-	if o != nil && !IsNil(o.Usage) {
-		return true
-	}
-
-	return false
-}
-
-// SetUsage gets a reference to the given ClusterUsage and assigns it to the Usage field.
-func (o *TidbCloudOpenApiserverlessv1beta1Cluster) SetUsage(v ClusterUsage) {
-	o.Usage = &v
 }
 
 // GetLabels returns the Labels field value if set, zero value otherwise.
@@ -823,9 +789,6 @@ func (o TidbCloudOpenApiserverlessv1beta1Cluster) ToMap() (map[string]interface{
 	if !IsNil(o.State) {
 		toSerialize["state"] = o.State
 	}
-	if !IsNil(o.Usage) {
-		toSerialize["usage"] = o.Usage
-	}
 	if !IsNil(o.Labels) {
 		toSerialize["labels"] = o.Labels
 	}
@@ -905,7 +868,6 @@ func (o *TidbCloudOpenApiserverlessv1beta1Cluster) UnmarshalJSON(data []byte) (e
 		delete(additionalProperties, "createdBy")
 		delete(additionalProperties, "userPrefix")
 		delete(additionalProperties, "state")
-		delete(additionalProperties, "usage")
 		delete(additionalProperties, "labels")
 		delete(additionalProperties, "annotations")
 		delete(additionalProperties, "createTime")

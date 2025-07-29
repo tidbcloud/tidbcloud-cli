@@ -22,7 +22,13 @@ type V1beta1ClusterAuditLogConfig struct {
 	// Optional. Whether audit log is enabled.
 	Enabled NullableBool `json:"enabled,omitempty"`
 	// Optional. Whether unredacted the audit log.
-	Unredacted           NullableBool `json:"unredacted,omitempty"`
+	Unredacted NullableBool `json:"unredacted,omitempty"`
+	// Optional. The cloud storage for audit logs.
+	CloudStorage *ClusterAuditLogCloudStorage `json:"cloudStorage,omitempty"`
+	// Optional. The rotation interval in minutes for audit logs.
+	RotationIntervalMinutes NullableInt32 `json:"rotationIntervalMinutes,omitempty"`
+	// Optional. The rotation size in MiB for audit logs.
+	RotationSizeMib      NullableInt32 `json:"rotationSizeMib,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -131,6 +137,124 @@ func (o *V1beta1ClusterAuditLogConfig) UnsetUnredacted() {
 	o.Unredacted.Unset()
 }
 
+// GetCloudStorage returns the CloudStorage field value if set, zero value otherwise.
+func (o *V1beta1ClusterAuditLogConfig) GetCloudStorage() ClusterAuditLogCloudStorage {
+	if o == nil || IsNil(o.CloudStorage) {
+		var ret ClusterAuditLogCloudStorage
+		return ret
+	}
+	return *o.CloudStorage
+}
+
+// GetCloudStorageOk returns a tuple with the CloudStorage field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V1beta1ClusterAuditLogConfig) GetCloudStorageOk() (*ClusterAuditLogCloudStorage, bool) {
+	if o == nil || IsNil(o.CloudStorage) {
+		return nil, false
+	}
+	return o.CloudStorage, true
+}
+
+// HasCloudStorage returns a boolean if a field has been set.
+func (o *V1beta1ClusterAuditLogConfig) HasCloudStorage() bool {
+	if o != nil && !IsNil(o.CloudStorage) {
+		return true
+	}
+
+	return false
+}
+
+// SetCloudStorage gets a reference to the given ClusterAuditLogCloudStorage and assigns it to the CloudStorage field.
+func (o *V1beta1ClusterAuditLogConfig) SetCloudStorage(v ClusterAuditLogCloudStorage) {
+	o.CloudStorage = &v
+}
+
+// GetRotationIntervalMinutes returns the RotationIntervalMinutes field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *V1beta1ClusterAuditLogConfig) GetRotationIntervalMinutes() int32 {
+	if o == nil || IsNil(o.RotationIntervalMinutes.Get()) {
+		var ret int32
+		return ret
+	}
+	return *o.RotationIntervalMinutes.Get()
+}
+
+// GetRotationIntervalMinutesOk returns a tuple with the RotationIntervalMinutes field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *V1beta1ClusterAuditLogConfig) GetRotationIntervalMinutesOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.RotationIntervalMinutes.Get(), o.RotationIntervalMinutes.IsSet()
+}
+
+// HasRotationIntervalMinutes returns a boolean if a field has been set.
+func (o *V1beta1ClusterAuditLogConfig) HasRotationIntervalMinutes() bool {
+	if o != nil && o.RotationIntervalMinutes.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetRotationIntervalMinutes gets a reference to the given NullableInt32 and assigns it to the RotationIntervalMinutes field.
+func (o *V1beta1ClusterAuditLogConfig) SetRotationIntervalMinutes(v int32) {
+	o.RotationIntervalMinutes.Set(&v)
+}
+
+// SetRotationIntervalMinutesNil sets the value for RotationIntervalMinutes to be an explicit nil
+func (o *V1beta1ClusterAuditLogConfig) SetRotationIntervalMinutesNil() {
+	o.RotationIntervalMinutes.Set(nil)
+}
+
+// UnsetRotationIntervalMinutes ensures that no value is present for RotationIntervalMinutes, not even an explicit nil
+func (o *V1beta1ClusterAuditLogConfig) UnsetRotationIntervalMinutes() {
+	o.RotationIntervalMinutes.Unset()
+}
+
+// GetRotationSizeMib returns the RotationSizeMib field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *V1beta1ClusterAuditLogConfig) GetRotationSizeMib() int32 {
+	if o == nil || IsNil(o.RotationSizeMib.Get()) {
+		var ret int32
+		return ret
+	}
+	return *o.RotationSizeMib.Get()
+}
+
+// GetRotationSizeMibOk returns a tuple with the RotationSizeMib field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *V1beta1ClusterAuditLogConfig) GetRotationSizeMibOk() (*int32, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.RotationSizeMib.Get(), o.RotationSizeMib.IsSet()
+}
+
+// HasRotationSizeMib returns a boolean if a field has been set.
+func (o *V1beta1ClusterAuditLogConfig) HasRotationSizeMib() bool {
+	if o != nil && o.RotationSizeMib.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetRotationSizeMib gets a reference to the given NullableInt32 and assigns it to the RotationSizeMib field.
+func (o *V1beta1ClusterAuditLogConfig) SetRotationSizeMib(v int32) {
+	o.RotationSizeMib.Set(&v)
+}
+
+// SetRotationSizeMibNil sets the value for RotationSizeMib to be an explicit nil
+func (o *V1beta1ClusterAuditLogConfig) SetRotationSizeMibNil() {
+	o.RotationSizeMib.Set(nil)
+}
+
+// UnsetRotationSizeMib ensures that no value is present for RotationSizeMib, not even an explicit nil
+func (o *V1beta1ClusterAuditLogConfig) UnsetRotationSizeMib() {
+	o.RotationSizeMib.Unset()
+}
+
 func (o V1beta1ClusterAuditLogConfig) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -146,6 +270,15 @@ func (o V1beta1ClusterAuditLogConfig) ToMap() (map[string]interface{}, error) {
 	}
 	if o.Unredacted.IsSet() {
 		toSerialize["unredacted"] = o.Unredacted.Get()
+	}
+	if !IsNil(o.CloudStorage) {
+		toSerialize["cloudStorage"] = o.CloudStorage
+	}
+	if o.RotationIntervalMinutes.IsSet() {
+		toSerialize["rotationIntervalMinutes"] = o.RotationIntervalMinutes.Get()
+	}
+	if o.RotationSizeMib.IsSet() {
+		toSerialize["rotationSizeMib"] = o.RotationSizeMib.Get()
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -171,6 +304,9 @@ func (o *V1beta1ClusterAuditLogConfig) UnmarshalJSON(data []byte) (err error) {
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "enabled")
 		delete(additionalProperties, "unredacted")
+		delete(additionalProperties, "cloudStorage")
+		delete(additionalProperties, "rotationIntervalMinutes")
+		delete(additionalProperties, "rotationSizeMib")
 		o.AdditionalProperties = additionalProperties
 	}
 
