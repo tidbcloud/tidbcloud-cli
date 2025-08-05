@@ -16,6 +16,7 @@ package changefeed
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -26,14 +27,13 @@ import (
 
 const (
 	KafkaInfoTemplateWithExplain = `{
-        "network_info": {
+        "network": {
                 "network_type": "PUBLIC"
+                "public_endpoints": "broker:9092",
         },
         "broker": {
                 // "kafka_version": "VERSION_2XX", "VERSION_3XX"
                 "kafka_version": "VERSION_2XX",
-                "broker_endpoints": "broker:9092",
-                "tls_enable": false,
                 // "compression": "NONE", "GZIP", "LZ4", "ZSTD", "SNAPPY"
                 "compression": "NONE"
         },
@@ -44,6 +44,7 @@ const (
                 "user_name": "",
                 // required when auth_type is SASL_PLAIN, SASL_SCRAM_SHA_256, or SASL_SCRAM_SHA_512
                 "password": ""
+                "enable_tls": false,
         },
         "data_format": {
                 // "protocol": "CANAL_JSON", "AVRO", "OPEN_PROTOCOL"
@@ -103,19 +104,19 @@ const (
 }`
 
 	KafkaInfoTemplate = `{
-	"network_info": {
+	"network": {
 		"network_type": "PUBLIC"
+    "public_endpoints": "broker1:9092,broker2:9092"
 	},
 	"broker": {
 		"kafka_version": "VERSION_2XX",
-		"broker_endpoints": "broker1:9092,broker2:9092",
-		"tls_enable": false,
 		"compression": "NONE"
 	},
 	"authentication": {
 		"auth_type": "DISABLE",
 		"user_name": "",
 		"password": ""
+    "enable_tls": false,
 	},
 	"data_format": {
 		"protocol": "CANAL_JSON",
@@ -181,38 +182,103 @@ const (
     }
   ]
 }`
+
+	MySQLTemplateWithExplain = `{
+ "network": {
+    // required "PUBLIC", "PRIVATE"
+		"network_type": "PUBLIC"
+    "public_endpoint": "127.0.0.1:3306"
+	},
+	"authentication": {
+    // required the user name for MySQL
+		"user_name": "",
+    // required the password for MySQL
+		"password": ""
+    // optional, enable TLS for MySQL connection
+    "enable_tls": false,
+	}
+}`
+
+	MySQLTemplate = `{
+ "network": {
+		"network_type": "PUBLIC"
+    "public_endpoint": "127.0.0.1:3306"
+	},
+	"authentication": {
+		"user_name": "",
+		"password": ""
+    "enable_tls": false,
+	}
+}`
 )
 
 func TemplateCmd(h *internal.Helper) *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "template",
 		Short: "Show changefeed KafkaInfo and CDCFilter JSON templates",
-		Example: `  Show changefeed templates:
-  $ tidbcloud serverless changefeed template`,
+		Example: `  Show all changefeed templates:
+  $ tidbcloud serverless changefeed template
+  
+  Show Kafka JSON template:
+  $ tidbcloud serverless changefeed template --type kafka
+  `,
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			explain, err := cmd.Flags().GetBool(flag.Explain)
 			if err != nil {
 				return err
 			}
-
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("KafkaInfo JSON template:"))
-			if explain {
-				fmt.Fprintln(h.IOStreams.Out, KafkaInfoTemplateWithExplain)
-			} else {
-				fmt.Fprintln(h.IOStreams.Out, KafkaInfoTemplate)
+			templateType, err := cmd.Flags().GetString(flag.ChangfeedTemplateType)
+			if err != nil {
+				return err
 			}
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("CDCFilter JSON template:"))
-			if explain {
-				fmt.Fprintln(h.IOStreams.Out, CDCFilterTemplateWithExplain)
-			} else {
-				fmt.Fprintln(h.IOStreams.Out, CDCFilterTemplate)
+
+			switch strings.ToLower(templateType) {
+			case "kafka":
+				if explain {
+					fmt.Fprintln(h.IOStreams.Out, KafkaInfoTemplateWithExplain)
+				} else {
+					fmt.Fprintln(h.IOStreams.Out, KafkaInfoTemplate)
+				}
+			case "filter":
+				if explain {
+					fmt.Fprintln(h.IOStreams.Out, CDCFilterTemplateWithExplain)
+				} else {
+					fmt.Fprintln(h.IOStreams.Out, CDCFilterTemplate)
+				}
+			case "mysql":
+				if explain {
+					fmt.Fprintln(h.IOStreams.Out, MySQLTemplateWithExplain)
+				} else {
+					fmt.Fprintln(h.IOStreams.Out, MySQLTemplate)
+				}
+			default:
+				fmt.Fprintln(h.IOStreams.Out, color.GreenString("KafkaInfo JSON template:"))
+				if explain {
+					fmt.Fprintln(h.IOStreams.Out, KafkaInfoTemplateWithExplain)
+				} else {
+					fmt.Fprintln(h.IOStreams.Out, KafkaInfoTemplate)
+				}
+				fmt.Fprintln(h.IOStreams.Out, color.GreenString("MySQLInfo JSON template:"))
+				if explain {
+					fmt.Fprintln(h.IOStreams.Out, MySQLTemplateWithExplain)
+				} else {
+					fmt.Fprintln(h.IOStreams.Out, MySQLTemplate)
+				}
+				fmt.Fprintln(h.IOStreams.Out, color.GreenString("CDCFilter JSON template:"))
+				if explain {
+					fmt.Fprintln(h.IOStreams.Out, CDCFilterTemplateWithExplain)
+				} else {
+					fmt.Fprintln(h.IOStreams.Out, CDCFilterTemplate)
+				}
+
 			}
 			return nil
 		},
 	}
 
 	cmd.Flags().Bool(flag.Explain, false, "show template with explanations")
+	cmd.Flags().String(flag.ChangfeedTemplateType, "", "the type of changefeed template to show (kafka, mysql, filter)")
 
 	return cmd
 }
