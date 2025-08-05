@@ -21,9 +21,11 @@ var _ MappedNullable = &SinkInfo{}
 // SinkInfo struct for SinkInfo
 type SinkInfo struct {
 	// Required. The type of the sink.
-	Type ConnectorTypeEnum `json:"type"`
+	Type ChangefeedTypeEnum `json:"type"`
 	// Optional. The Kafka sink information.
-	Kafka                *KafkaInfo `json:"kafka,omitempty"`
+	Kafka *Kafka `json:"kafka,omitempty"`
+	// Optional. The MySQL sink information.
+	Mysql                *MySQL `json:"mysql,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -33,7 +35,7 @@ type _SinkInfo SinkInfo
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewSinkInfo(type_ ConnectorTypeEnum) *SinkInfo {
+func NewSinkInfo(type_ ChangefeedTypeEnum) *SinkInfo {
 	this := SinkInfo{}
 	this.Type = type_
 	return &this
@@ -48,9 +50,9 @@ func NewSinkInfoWithDefaults() *SinkInfo {
 }
 
 // GetType returns the Type field value
-func (o *SinkInfo) GetType() ConnectorTypeEnum {
+func (o *SinkInfo) GetType() ChangefeedTypeEnum {
 	if o == nil {
-		var ret ConnectorTypeEnum
+		var ret ChangefeedTypeEnum
 		return ret
 	}
 
@@ -59,7 +61,7 @@ func (o *SinkInfo) GetType() ConnectorTypeEnum {
 
 // GetTypeOk returns a tuple with the Type field value
 // and a boolean to check if the value has been set.
-func (o *SinkInfo) GetTypeOk() (*ConnectorTypeEnum, bool) {
+func (o *SinkInfo) GetTypeOk() (*ChangefeedTypeEnum, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -67,14 +69,14 @@ func (o *SinkInfo) GetTypeOk() (*ConnectorTypeEnum, bool) {
 }
 
 // SetType sets field value
-func (o *SinkInfo) SetType(v ConnectorTypeEnum) {
+func (o *SinkInfo) SetType(v ChangefeedTypeEnum) {
 	o.Type = v
 }
 
 // GetKafka returns the Kafka field value if set, zero value otherwise.
-func (o *SinkInfo) GetKafka() KafkaInfo {
+func (o *SinkInfo) GetKafka() Kafka {
 	if o == nil || IsNil(o.Kafka) {
-		var ret KafkaInfo
+		var ret Kafka
 		return ret
 	}
 	return *o.Kafka
@@ -82,7 +84,7 @@ func (o *SinkInfo) GetKafka() KafkaInfo {
 
 // GetKafkaOk returns a tuple with the Kafka field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SinkInfo) GetKafkaOk() (*KafkaInfo, bool) {
+func (o *SinkInfo) GetKafkaOk() (*Kafka, bool) {
 	if o == nil || IsNil(o.Kafka) {
 		return nil, false
 	}
@@ -98,9 +100,41 @@ func (o *SinkInfo) HasKafka() bool {
 	return false
 }
 
-// SetKafka gets a reference to the given KafkaInfo and assigns it to the Kafka field.
-func (o *SinkInfo) SetKafka(v KafkaInfo) {
+// SetKafka gets a reference to the given Kafka and assigns it to the Kafka field.
+func (o *SinkInfo) SetKafka(v Kafka) {
 	o.Kafka = &v
+}
+
+// GetMysql returns the Mysql field value if set, zero value otherwise.
+func (o *SinkInfo) GetMysql() MySQL {
+	if o == nil || IsNil(o.Mysql) {
+		var ret MySQL
+		return ret
+	}
+	return *o.Mysql
+}
+
+// GetMysqlOk returns a tuple with the Mysql field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *SinkInfo) GetMysqlOk() (*MySQL, bool) {
+	if o == nil || IsNil(o.Mysql) {
+		return nil, false
+	}
+	return o.Mysql, true
+}
+
+// HasMysql returns a boolean if a field has been set.
+func (o *SinkInfo) HasMysql() bool {
+	if o != nil && !IsNil(o.Mysql) {
+		return true
+	}
+
+	return false
+}
+
+// SetMysql gets a reference to the given MySQL and assigns it to the Mysql field.
+func (o *SinkInfo) SetMysql(v MySQL) {
+	o.Mysql = &v
 }
 
 func (o SinkInfo) MarshalJSON() ([]byte, error) {
@@ -116,6 +150,9 @@ func (o SinkInfo) ToMap() (map[string]interface{}, error) {
 	toSerialize["type"] = o.Type
 	if !IsNil(o.Kafka) {
 		toSerialize["kafka"] = o.Kafka
+	}
+	if !IsNil(o.Mysql) {
+		toSerialize["mysql"] = o.Mysql
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -162,6 +199,7 @@ func (o *SinkInfo) UnmarshalJSON(data []byte) (err error) {
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "type")
 		delete(additionalProperties, "kafka")
+		delete(additionalProperties, "mysql")
 		o.AdditionalProperties = additionalProperties
 	}
 

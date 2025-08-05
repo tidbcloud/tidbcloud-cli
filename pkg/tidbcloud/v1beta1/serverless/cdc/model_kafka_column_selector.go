@@ -14,37 +14,37 @@ import (
 	"encoding/json"
 )
 
-// checks if the ColumnSelector type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &ColumnSelector{}
+// checks if the KafkaColumnSelector type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &KafkaColumnSelector{}
 
-// ColumnSelector struct for ColumnSelector
-type ColumnSelector struct {
+// KafkaColumnSelector struct for KafkaColumnSelector
+type KafkaColumnSelector struct {
 	Matcher              []string `json:"matcher,omitempty"`
 	Columns              []string `json:"columns,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _ColumnSelector ColumnSelector
+type _KafkaColumnSelector KafkaColumnSelector
 
-// NewColumnSelector instantiates a new ColumnSelector object
+// NewKafkaColumnSelector instantiates a new KafkaColumnSelector object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewColumnSelector() *ColumnSelector {
-	this := ColumnSelector{}
+func NewKafkaColumnSelector() *KafkaColumnSelector {
+	this := KafkaColumnSelector{}
 	return &this
 }
 
-// NewColumnSelectorWithDefaults instantiates a new ColumnSelector object
+// NewKafkaColumnSelectorWithDefaults instantiates a new KafkaColumnSelector object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewColumnSelectorWithDefaults() *ColumnSelector {
-	this := ColumnSelector{}
+func NewKafkaColumnSelectorWithDefaults() *KafkaColumnSelector {
+	this := KafkaColumnSelector{}
 	return &this
 }
 
 // GetMatcher returns the Matcher field value if set, zero value otherwise.
-func (o *ColumnSelector) GetMatcher() []string {
+func (o *KafkaColumnSelector) GetMatcher() []string {
 	if o == nil || IsNil(o.Matcher) {
 		var ret []string
 		return ret
@@ -54,7 +54,7 @@ func (o *ColumnSelector) GetMatcher() []string {
 
 // GetMatcherOk returns a tuple with the Matcher field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ColumnSelector) GetMatcherOk() ([]string, bool) {
+func (o *KafkaColumnSelector) GetMatcherOk() ([]string, bool) {
 	if o == nil || IsNil(o.Matcher) {
 		return nil, false
 	}
@@ -62,7 +62,7 @@ func (o *ColumnSelector) GetMatcherOk() ([]string, bool) {
 }
 
 // HasMatcher returns a boolean if a field has been set.
-func (o *ColumnSelector) HasMatcher() bool {
+func (o *KafkaColumnSelector) HasMatcher() bool {
 	if o != nil && !IsNil(o.Matcher) {
 		return true
 	}
@@ -71,12 +71,12 @@ func (o *ColumnSelector) HasMatcher() bool {
 }
 
 // SetMatcher gets a reference to the given []string and assigns it to the Matcher field.
-func (o *ColumnSelector) SetMatcher(v []string) {
+func (o *KafkaColumnSelector) SetMatcher(v []string) {
 	o.Matcher = v
 }
 
 // GetColumns returns the Columns field value if set, zero value otherwise.
-func (o *ColumnSelector) GetColumns() []string {
+func (o *KafkaColumnSelector) GetColumns() []string {
 	if o == nil || IsNil(o.Columns) {
 		var ret []string
 		return ret
@@ -86,7 +86,7 @@ func (o *ColumnSelector) GetColumns() []string {
 
 // GetColumnsOk returns a tuple with the Columns field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ColumnSelector) GetColumnsOk() ([]string, bool) {
+func (o *KafkaColumnSelector) GetColumnsOk() ([]string, bool) {
 	if o == nil || IsNil(o.Columns) {
 		return nil, false
 	}
@@ -94,7 +94,7 @@ func (o *ColumnSelector) GetColumnsOk() ([]string, bool) {
 }
 
 // HasColumns returns a boolean if a field has been set.
-func (o *ColumnSelector) HasColumns() bool {
+func (o *KafkaColumnSelector) HasColumns() bool {
 	if o != nil && !IsNil(o.Columns) {
 		return true
 	}
@@ -103,11 +103,11 @@ func (o *ColumnSelector) HasColumns() bool {
 }
 
 // SetColumns gets a reference to the given []string and assigns it to the Columns field.
-func (o *ColumnSelector) SetColumns(v []string) {
+func (o *KafkaColumnSelector) SetColumns(v []string) {
 	o.Columns = v
 }
 
-func (o ColumnSelector) MarshalJSON() ([]byte, error) {
+func (o KafkaColumnSelector) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -115,7 +115,7 @@ func (o ColumnSelector) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o ColumnSelector) ToMap() (map[string]interface{}, error) {
+func (o KafkaColumnSelector) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Matcher) {
 		toSerialize["matcher"] = o.Matcher
@@ -131,16 +131,16 @@ func (o ColumnSelector) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *ColumnSelector) UnmarshalJSON(data []byte) (err error) {
-	varColumnSelector := _ColumnSelector{}
+func (o *KafkaColumnSelector) UnmarshalJSON(data []byte) (err error) {
+	varKafkaColumnSelector := _KafkaColumnSelector{}
 
-	err = json.Unmarshal(data, &varColumnSelector)
+	err = json.Unmarshal(data, &varKafkaColumnSelector)
 
 	if err != nil {
 		return err
 	}
 
-	*o = ColumnSelector(varColumnSelector)
+	*o = KafkaColumnSelector(varKafkaColumnSelector)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -153,38 +153,38 @@ func (o *ColumnSelector) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
-type NullableColumnSelector struct {
-	value *ColumnSelector
+type NullableKafkaColumnSelector struct {
+	value *KafkaColumnSelector
 	isSet bool
 }
 
-func (v NullableColumnSelector) Get() *ColumnSelector {
+func (v NullableKafkaColumnSelector) Get() *KafkaColumnSelector {
 	return v.value
 }
 
-func (v *NullableColumnSelector) Set(val *ColumnSelector) {
+func (v *NullableKafkaColumnSelector) Set(val *KafkaColumnSelector) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableColumnSelector) IsSet() bool {
+func (v NullableKafkaColumnSelector) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableColumnSelector) Unset() {
+func (v *NullableKafkaColumnSelector) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableColumnSelector(val *ColumnSelector) *NullableColumnSelector {
-	return &NullableColumnSelector{value: val, isSet: true}
+func NewNullableKafkaColumnSelector(val *KafkaColumnSelector) *NullableKafkaColumnSelector {
+	return &NullableKafkaColumnSelector{value: val, isSet: true}
 }
 
-func (v NullableColumnSelector) MarshalJSON() ([]byte, error) {
+func (v NullableKafkaColumnSelector) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableColumnSelector) UnmarshalJSON(src []byte) error {
+func (v *NullableKafkaColumnSelector) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

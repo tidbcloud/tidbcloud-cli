@@ -6,11 +6,11 @@ info:
 servers:
 - url: https://serverless.tidbapi.com/
 tags:
-- name: ConnectorService
+- name: ChangefeedService
 paths:
-  /v1beta1/clusters/{clusterId}/connectors:
+  /v1beta1/clusters/{clusterId}/changefeeds:
     get:
-      operationId: ConnectorService_ListConnectors
+      operationId: ChangefeedService_ListChangefeeds
       parameters:
       - description: Required. The ID of the cluster.
         in: path
@@ -18,7 +18,7 @@ paths:
         required: true
         schema:
           type: string
-      - description: Optional. The maximum number of connectors to return. Default
+      - description: Optional. The maximum number of changefeeds to return. Default
           is 10.
         in: query
         name: pageSize
@@ -31,14 +31,15 @@ paths:
         schema:
           type: string
       - description: |-
-          Optional. The type of the connector. DEFAULT is all.
+          Optional. The type of the changefeed. DEFAULT is all.
 
-           - KAFKA: Kafka connector type.
+           - KAFKA: Kafka changefeed type.
+           - MYSQL: MySQL changefeed type.
         in: query
-        name: connectorType
+        name: changefeedType
         schema:
-          $ref: '#/components/schemas/ConnectorService_ListConnectors_connectorType_parameter'
-      - description: "Optional. List connectors order by, separated by comma, default\
+          $ref: '#/components/schemas/ChangefeedService_ListChangefeeds_changefeedType_parameter'
+      - description: "Optional. List changefeeds order by, separated by comma, default\
           \ is ascending. Example: \"create_time, bar desc\". Supported field: create_time"
         in: query
         name: orderBy
@@ -49,7 +50,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Connectors'
+                $ref: '#/components/schemas/Changefeeds'
           description: A successful response.
         default:
           content:
@@ -57,11 +58,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: List connectors.
+      summary: List changefeeds.
       tags:
-      - ConnectorService
+      - ChangefeedService
     post:
-      operationId: ConnectorService_CreateConnector
+      operationId: ChangefeedService_CreateChangefeed
       parameters:
       - description: Required. The ID of the cluster.
         in: path
@@ -73,14 +74,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConnectorService.CreateConnectorBody'
+              $ref: '#/components/schemas/ChangefeedService.CreateChangefeedBody'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConnectorID'
+                $ref: '#/components/schemas/Changefeed'
           description: A successful response.
         default:
           content:
@@ -88,13 +89,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Create a connector.
+      summary: Create a changefeed.
       tags:
-      - ConnectorService
+      - ChangefeedService
       x-codegen-request-body-name: body
-  /v1beta1/clusters/{clusterId}/connectors/{connectorId}:
+  /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:
     delete:
-      operationId: ConnectorService_DeleteConnector
+      operationId: ChangefeedService_DeleteChangefeed
       parameters:
       - description: Required. The ID of the cluster.
         in: path
@@ -102,9 +103,9 @@ paths:
         required: true
         schema:
           type: string
-      - description: Required. The ID of the connector.
+      - description: Required. The ID of the changefeed.
         in: path
-        name: connectorId
+        name: changefeedId
         required: true
         schema:
           type: string
@@ -113,7 +114,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConnectorID'
+                $ref: '#/components/schemas/Changefeed'
           description: A successful response.
         default:
           content:
@@ -121,11 +122,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Delete a connector.
+      summary: Delete a changefeed.
       tags:
-      - ConnectorService
+      - ChangefeedService
     get:
-      operationId: ConnectorService_GetConnector
+      operationId: ChangefeedService_GetChangefeed
       parameters:
       - description: Required. The ID of the cluster.
         in: path
@@ -133,9 +134,9 @@ paths:
         required: true
         schema:
           type: string
-      - description: Required. The ID of the connector.
+      - description: Required. The ID of the changefeed.
         in: path
-        name: connectorId
+        name: changefeedId
         required: true
         schema:
           type: string
@@ -144,7 +145,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Connector'
+                $ref: '#/components/schemas/Changefeed'
           description: A successful response.
         default:
           content:
@@ -152,12 +153,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Get a connector.
+      summary: Get a changefeed.
       tags:
-      - ConnectorService
-  /v1beta1/clusters/{clusterId}/connectors/{connectorId}:start:
-    post:
-      operationId: ConnectorService_StartConnector
+      - ChangefeedService
+    patch:
+      operationId: ChangefeedService_EditChangefeed
       parameters:
       - description: Required. The ID of the cluster.
         in: path
@@ -165,9 +165,9 @@ paths:
         required: true
         schema:
           type: string
-      - description: Required. The ID of the connector.
+      - description: Required. The ID of the changefeed.
         in: path
-        name: connectorId
+        name: changefeedId
         required: true
         schema:
           type: string
@@ -175,14 +175,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConnectorService.StartConnectorBody'
+              $ref: '#/components/schemas/ChangefeedService.EditChangefeedBody'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConnectorID'
+                $ref: '#/components/schemas/Changefeed'
           description: A successful response.
         default:
           content:
@@ -190,13 +190,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Start a connector.
+      summary: Edit a changefeed.
       tags:
-      - ConnectorService
+      - ChangefeedService
       x-codegen-request-body-name: body
-  /v1beta1/clusters/{clusterId}/connectors/{connectorId}:stop:
+  /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:start:
     post:
-      operationId: ConnectorService_StopConnector
+      operationId: ChangefeedService_StartChangefeed
       parameters:
       - description: Required. The ID of the cluster.
         in: path
@@ -204,9 +204,9 @@ paths:
         required: true
         schema:
           type: string
-      - description: Required. The ID of the connector.
+      - description: Required. The ID of the changefeed.
         in: path
-        name: connectorId
+        name: changefeedId
         required: true
         schema:
           type: string
@@ -214,14 +214,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConnectorService.StopConnectorBody'
+              $ref: '#/components/schemas/ChangefeedService.StartChangefeedBody'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConnectorID'
+                $ref: '#/components/schemas/Changefeed'
           description: A successful response.
         default:
           content:
@@ -229,13 +229,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Stop a connector.
+      summary: Start a changefeed.
       tags:
-      - ConnectorService
+      - ChangefeedService
       x-codegen-request-body-name: body
-  /v1beta1/clusters/{clusterId}/connectors/{connectorId}:edit:
+  /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:stop:
     post:
-      operationId: ConnectorService_EditConnector
+      operationId: ChangefeedService_StopChangefeed
       parameters:
       - description: Required. The ID of the cluster.
         in: path
@@ -243,9 +243,9 @@ paths:
         required: true
         schema:
           type: string
-      - description: Required. The ID of the connector.
+      - description: Required. The ID of the changefeed.
         in: path
-        name: connectorId
+        name: changefeedId
         required: true
         schema:
           type: string
@@ -253,14 +253,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConnectorService.EditConnectorBody'
+              $ref: '#/components/schemas/ChangefeedService.StopChangefeedBody'
         required: true
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConnectorID'
+                $ref: '#/components/schemas/Changefeed'
           description: A successful response.
         default:
           content:
@@ -268,13 +268,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Edit a connector.
+      summary: Stop a changefeed.
       tags:
-      - ConnectorService
+      - ChangefeedService
       x-codegen-request-body-name: body
-  /v1beta1/clusters/{clusterId}/connectors:test:
+  /v1beta1/clusters/{clusterId}/changefeeds:test:
     post:
-      operationId: ConnectorService_TestConnector
+      operationId: ChangefeedService_TestChangefeed
       parameters:
       - description: Required. The ID of the cluster.
         in: path
@@ -286,7 +286,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConnectorService.TestConnectorBody'
+              $ref: '#/components/schemas/ChangefeedService.TestChangefeedBody'
         required: true
       responses:
         "200":
@@ -301,13 +301,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Test a connector.
+      summary: Test a changefeed.
       tags:
-      - ConnectorService
+      - ChangefeedService
       x-codegen-request-body-name: body
-  /v1beta1/clusters/{clusterId}/connectors:describeSchemaTable:
+  /v1beta1/clusters/{clusterId}/changefeeds:describeSchemaTable:
     post:
-      operationId: ConnectorService_DescribeSchemaTable
+      operationId: ChangefeedService_DescribeSchemaTable
       parameters:
       - description: Required. The ID of the cluster.
         in: path
@@ -319,7 +319,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConnectorService.DescribeSchemaTableBody'
+              $ref: '#/components/schemas/ChangefeedService.DescribeSchemaTableBody'
         required: true
       responses:
         "200":
@@ -336,11 +336,11 @@ paths:
           description: An unexpected error response.
       summary: Describe schema table.
       tags:
-      - ConnectorService
+      - ChangefeedService
       x-codegen-request-body-name: body
-  /v1beta1/clusters/{clusterId}/connectors/private-link-endpoints:
+  /v1beta1/clusters/{clusterId}/changefeeds/private-link-endpoints:
     post:
-      operationId: ConnectorService_CreatePrivateLinkEndpoint
+      operationId: ChangefeedService_CreatePrivateLinkEndpoint
       parameters:
       - description: Required. The ID of the cluster.
         in: path
@@ -352,7 +352,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConnectorService.CreatePrivateLinkEndpointBody'
+              $ref: '#/components/schemas/ChangefeedService.CreatePrivateLinkEndpointBody'
         required: true
       responses:
         "200":
@@ -369,11 +369,11 @@ paths:
           description: An unexpected error response.
       summary: Create a private link
       tags:
-      - ConnectorService
+      - ChangefeedService
       x-codegen-request-body-name: body
-  /v1beta1/clusters/{clusterId}/connectors/private-links-endpoints:
+  /v1beta1/clusters/{clusterId}/changefeeds/private-links-endpoints:
     delete:
-      operationId: ConnectorService_DeletePrivateLinkEndpoint
+      operationId: ChangefeedService_DeletePrivateLinkEndpoint
       parameters:
       - description: Required. The ID of the cluster.
         in: path
@@ -402,9 +402,9 @@ paths:
           description: An unexpected error response.
       summary: Delete a private link
       tags:
-      - ConnectorService
+      - ChangefeedService
     get:
-      operationId: ConnectorService_GetPrivateLinkEndpoint
+      operationId: ChangefeedService_GetPrivateLinkEndpoint
       parameters:
       - description: Required. The ID of the cluster.
         in: path
@@ -433,7 +433,7 @@ paths:
           description: An unexpected error response.
       summary: Get a private link
       tags:
-      - ConnectorService
+      - ChangefeedService
 components:
   schemas:
     Any:
@@ -443,15 +443,6 @@ components:
         '@type': '@type'
       properties:
         '@type':
-          type: string
-      type: object
-    Authentication:
-      properties:
-        authType:
-          $ref: '#/components/schemas/KafkaAuthType.Enum'
-        userName:
-          type: string
-        password:
           type: string
       type: object
     AvroConfig:
@@ -479,17 +470,6 @@ components:
       - LONG
       - STRING
       type: string
-    Broker:
-      properties:
-        kafkaVersion:
-          $ref: '#/components/schemas/KafkaVersion.Enum'
-        brokerEndpoints:
-          type: string
-        tlsEnable:
-          type: boolean
-        compression:
-          $ref: '#/components/schemas/KafkaCompressionType.Enum'
-      type: object
     CDCCheckpoint:
       properties:
         tso:
@@ -515,16 +495,6 @@ components:
             $ref: '#/components/schemas/EventFilterRule'
           type: array
       type: object
-    CDCProtocol.Enum:
-      description: |2-
-         - CANAL_JSON: Canal-JSON protocol.
-         - OPEN_PROTOCOL: Open Protocol.
-         - AVRO: Avro protocol.
-      enum:
-      - CANAL_JSON
-      - OPEN_PROTOCOL
-      - AVRO
-      type: string
     CDCState.Enum:
       description: |2-
          - RUNNING: The changefeed is running.
@@ -543,44 +513,16 @@ components:
       - DELETED
       - WARNING
       type: string
-    ColumnSelector:
-      properties:
-        matcher:
-          items:
-            type: string
-          type: array
-        columns:
-          items:
-            type: string
-          type: array
-      type: object
-    ConfluentSchemaRegistry:
-      properties:
-        endpoint:
-          description: Required. The schema registry endpoint.
-          type: string
-        enableHttpAuth:
-          description: Optional. Enable HTTP authentication.
-          type: boolean
-        userName:
-          description: Optional. The username for HTTP authentication.
-          type: string
-        password:
-          description: Optional. The password for HTTP authentication.
-          type: string
-      required:
-      - endpoint
-      type: object
-    Connector:
+    Changefeed:
       example:
         filter: "{}"
         checkpoint: "{}"
         createTime: 2000-01-23T04:56:07.000+00:00
-        connectorId: connectorId
+        displayName: displayName
         sink: "{}"
-        name: name
         updateTime: 2000-01-23T04:56:07.000+00:00
         clusterId: clusterId
+        changefeedId: changefeedId
         state: "{}"
         error: error
         startPosition: "{}"
@@ -588,40 +530,40 @@ components:
         clusterId:
           description: Required. The ID of the cluster.
           type: string
-        connectorId:
-          description: Output_only. The ID of the connector.
+        changefeedId:
+          description: Output_only. The ID of the changefeed.
           readOnly: true
           type: string
         state:
           allOf:
           - $ref: '#/components/schemas/CDCState.Enum'
           description: |-
-            Output_only. The state of the connector.
+            Output_only. The state of the changefeed.
 
-            Optional. The name of the connector.
+            Optional. The name of the changefeed.
           type: object
-        name:
-          description: Optional. The name of the connector.
+        displayName:
+          description: Optional. The name of the changefeed.
           type: string
         sink:
           allOf:
           - $ref: '#/components/schemas/SinkInfo'
-          description: Required. The sink of the connector.
+          description: Required. The sink of the changefeed.
           type: object
         filter:
           allOf:
           - $ref: '#/components/schemas/CDCFilter'
-          description: Required. The filter of the connector.
+          description: Required. The filter of the changefeed.
           type: object
         startPosition:
           allOf:
           - $ref: '#/components/schemas/StartPosition'
-          description: Required. The start position of the connector.
+          description: Required. The start position of the changefeed.
           type: object
         checkpoint:
           allOf:
           - $ref: '#/components/schemas/CDCCheckpoint'
-          description: Output_only. The current checkpoint for the connector.
+          description: Output_only. The current checkpoint for the changefeed.
           type: object
         error:
           description: Output_only. The error message.
@@ -644,46 +586,31 @@ components:
       - sink
       - startPosition
       type: object
-    ConnectorID:
-      example:
-        connectorId: connectorId
-        clusterId: clusterId
+    ChangefeedService.CreateChangefeedBody:
       properties:
-        connectorId:
-          description: Required. The ID of the connector.
-          type: string
-        clusterId:
-          description: Required. The ID of the cluster.
-          type: string
-      required:
-      - clusterId
-      - connectorId
-      type: object
-    ConnectorService.CreateConnectorBody:
-      properties:
-        name:
-          description: Optional. The name of the connector.
+        displayName:
+          description: Optional. The name of the changefeed.
           type: string
         sink:
           allOf:
           - $ref: '#/components/schemas/SinkInfo'
-          description: Required. The sink of the connector.
+          description: Required. The sink of the changefeed.
           type: object
         filter:
           allOf:
           - $ref: '#/components/schemas/CDCFilter'
-          description: Required. The filter of the connector.
+          description: Required. The filter of the changefeed.
           type: object
         startPosition:
           allOf:
           - $ref: '#/components/schemas/StartPosition'
-          description: Required. The start position of the connector.
+          description: Required. The start position of the changefeed.
           type: object
       required:
       - filter
       - sink
       type: object
-    ConnectorService.CreatePrivateLinkEndpointBody:
+    ChangefeedService.CreatePrivateLinkEndpointBody:
       properties:
         endpointId:
           description: Output_only  The ID of the private link endpoint.
@@ -692,9 +619,9 @@ components:
         privateLinkServiceName:
           description: Required. The private link service name.
           type: string
-        connectorType:
+        changefeedType:
           allOf:
-          - $ref: '#/components/schemas/ConnectorType.Enum'
+          - $ref: '#/components/schemas/ChangefeedType.Enum'
           description: Required. The type of the sink.
           type: object
         state:
@@ -727,10 +654,10 @@ components:
           readOnly: true
           type: string
       required:
-      - connectorType
+      - changefeedType
       - privateLinkServiceName
       type: object
-    ConnectorService.DescribeSchemaTableBody:
+    ChangefeedService.DescribeSchemaTableBody:
       properties:
         filterRule:
           description: Optional. The filter rules for schema tables.
@@ -738,94 +665,104 @@ components:
             type: string
           type: array
       type: object
-    ConnectorService.EditConnectorBody:
+    ChangefeedService.EditChangefeedBody:
       properties:
-        name:
-          description: Optional. The name of the connector.
+        displayName:
+          description: Optional. The name of the changefeed.
           type: string
         sink:
           allOf:
           - $ref: '#/components/schemas/SinkInfo'
-          description: Required. The sink of the connector.
+          description: Required. The sink of the changefeed.
           type: object
         filter:
           allOf:
           - $ref: '#/components/schemas/CDCFilter'
-          description: Required. The filter of the connector.
+          description: Required. The filter of the changefeed.
           type: object
       required:
       - filter
       - sink
       type: object
-    ConnectorService.StartConnectorBody:
+    ChangefeedService.StartChangefeedBody:
       type: object
-    ConnectorService.StopConnectorBody:
+    ChangefeedService.StopChangefeedBody:
       type: object
-    ConnectorService.TestConnectorBody:
+    ChangefeedService.TestChangefeedBody:
       properties:
         sink:
           allOf:
           - $ref: '#/components/schemas/SinkInfo'
-          description: Required. The sink of the connector.
+          description: Required. The sink of the changefeed.
           type: object
       required:
       - sink
       type: object
-    ConnectorType.Enum:
-      description: " - KAFKA: Kafka connector type."
+    ChangefeedType.Enum:
+      description: |2-
+         - KAFKA: Kafka changefeed type.
+         - MYSQL: MySQL changefeed type.
       enum:
       - KAFKA
+      - MYSQL
       type: string
-    Connectors:
+    Changefeeds:
       example:
-        connectors:
-        - filter: "{}"
-          checkpoint: "{}"
-          createTime: 2000-01-23T04:56:07.000+00:00
-          connectorId: connectorId
-          sink: "{}"
-          name: name
-          updateTime: 2000-01-23T04:56:07.000+00:00
-          clusterId: clusterId
-          state: "{}"
-          error: error
-          startPosition: "{}"
-        - filter: "{}"
-          checkpoint: "{}"
-          createTime: 2000-01-23T04:56:07.000+00:00
-          connectorId: connectorId
-          sink: "{}"
-          name: name
-          updateTime: 2000-01-23T04:56:07.000+00:00
-          clusterId: clusterId
-          state: "{}"
-          error: error
-          startPosition: "{}"
         totalSize: 0
         nextPageToken: nextPageToken
+        changefeeds:
+        - filter: "{}"
+          checkpoint: "{}"
+          createTime: 2000-01-23T04:56:07.000+00:00
+          displayName: displayName
+          sink: "{}"
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          changefeedId: changefeedId
+          state: "{}"
+          error: error
+          startPosition: "{}"
+        - filter: "{}"
+          checkpoint: "{}"
+          createTime: 2000-01-23T04:56:07.000+00:00
+          displayName: displayName
+          sink: "{}"
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          changefeedId: changefeedId
+          state: "{}"
+          error: error
+          startPosition: "{}"
       properties:
-        connectors:
-          description: The list of connectors.
+        changefeeds:
+          description: The list of changefeeds.
           items:
-            $ref: '#/components/schemas/Connector'
+            $ref: '#/components/schemas/Changefeed'
           type: array
         nextPageToken:
           description: The token provided to retrieve the next page of results.
           type: string
         totalSize:
-          description: The total number of connectors.
+          description: The total number of changefeeds.
           format: int64
           type: integer
       type: object
-    DataFormat:
+    ConfluentSchemaRegistry:
       properties:
-        protocol:
-          $ref: '#/components/schemas/CDCProtocol.Enum'
-        enableTidbExtension:
-          title: only available when protocol is CANAL_JSON and AVRO
+        endpoint:
+          description: Required. The schema registry endpoint.
+          type: string
+        enableHttpAuth:
+          description: Optional. Enable HTTP authentication.
           type: boolean
-        avroConfig:
-          $ref: '#/components/schemas/AvroConfig'
+        userName:
+          description: Optional. The username for HTTP authentication.
+          type: string
+        password:
+          description: Optional. The password for HTTP authentication.
+          type: string
+      required:
+      - endpoint
       type: object
     DecimalHandlingMode.Enum:
       description: |2-
@@ -897,6 +834,109 @@ components:
       - region
       - secretAccessKey
       type: object
+    Kafka:
+      properties:
+        network:
+          $ref: '#/components/schemas/Kafka.Network'
+        broker:
+          $ref: '#/components/schemas/Kafka.Broker'
+        authentication:
+          $ref: '#/components/schemas/Kafka.Authentication'
+        dataFormat:
+          $ref: '#/components/schemas/Kafka.DataFormat'
+        topicPartitionConfig:
+          $ref: '#/components/schemas/Kafka.TopicPartitionConfig'
+        columnSelectors:
+          items:
+            $ref: '#/components/schemas/Kafka.ColumnSelector'
+          type: array
+      type: object
+    Kafka.Authentication:
+      properties:
+        authType:
+          $ref: '#/components/schemas/KafkaAuthType.Enum'
+        userName:
+          type: string
+        password:
+          type: string
+        enableTls:
+          type: boolean
+      type: object
+    Kafka.Broker:
+      properties:
+        kafkaVersion:
+          $ref: '#/components/schemas/KafkaVersion.Enum'
+        compression:
+          $ref: '#/components/schemas/KafkaCompressionType.Enum'
+      type: object
+    Kafka.ColumnSelector:
+      properties:
+        matcher:
+          items:
+            type: string
+          type: array
+        columns:
+          items:
+            type: string
+          type: array
+      type: object
+    Kafka.DataFormat:
+      properties:
+        protocol:
+          $ref: '#/components/schemas/KafkaProtocol.Enum'
+        enableTidbExtension:
+          title: only available when protocol is CANAL_JSON and AVRO
+          type: boolean
+        avroConfig:
+          $ref: '#/components/schemas/AvroConfig'
+      type: object
+    Kafka.Network:
+      properties:
+        networkType:
+          $ref: '#/components/schemas/KafkaNetworkType.Enum'
+        privateLinkServiceName:
+          type: string
+        publicEndpoints:
+          type: string
+      type: object
+    Kafka.PartitionDispatcherConfig:
+      properties:
+        partitionType:
+          $ref: '#/components/schemas/PartitionDispatcher.Enum'
+        matcher:
+          items:
+            type: string
+          type: array
+        indexName:
+          type: string
+        columns:
+          items:
+            type: string
+          type: array
+      type: object
+    Kafka.TopicPartitionConfig:
+      properties:
+        dispatchType:
+          $ref: '#/components/schemas/TopicDispatchType.Enum'
+        defaultTopic:
+          type: string
+        topicPrefix:
+          type: string
+        separator:
+          type: string
+        topicSuffix:
+          type: string
+        replicationFactor:
+          format: int64
+          type: integer
+        partitionNum:
+          format: int64
+          type: integer
+        partitionDispatchers:
+          items:
+            $ref: '#/components/schemas/Kafka.PartitionDispatcherConfig'
+          type: array
+      type: object
     KafkaAuthType.Enum:
       description: |2-
          - DISABLE: No authentication.
@@ -933,23 +973,6 @@ components:
       - advertisedListenersPattern
       - kafkaType
       type: object
-    KafkaInfo:
-      properties:
-        networkInfo:
-          $ref: '#/components/schemas/NetworkInfo'
-        broker:
-          $ref: '#/components/schemas/Broker'
-        authentication:
-          $ref: '#/components/schemas/Authentication'
-        dataFormat:
-          $ref: '#/components/schemas/DataFormat'
-        topicPartitionConfig:
-          $ref: '#/components/schemas/TopicPartitionConfig'
-        columnSelectors:
-          items:
-            $ref: '#/components/schemas/ColumnSelector'
-          type: array
-      type: object
     KafkaNetworkType.Enum:
       description: |2-
          - PUBLIC: Public network.
@@ -957,6 +980,16 @@ components:
       enum:
       - PUBLIC
       - PRIVATE_LINK
+      type: string
+    KafkaProtocol.Enum:
+      description: |2-
+         - CANAL_JSON: Canal-JSON protocol.
+         - OPEN_PROTOCOL: Open Protocol.
+         - AVRO: Avro protocol.
+      enum:
+      - CANAL_JSON
+      - OPEN_PROTOCOL
+      - AVRO
       type: string
     KafkaType.Enum:
       description: |2-
@@ -976,13 +1009,55 @@ components:
       - VERSION_2XX
       - VERSION_3XX
       type: string
-    NetworkInfo:
+    MySQL:
+      properties:
+        network:
+          allOf:
+          - $ref: '#/components/schemas/MySQL.Network'
+          description: Required. The network configuration for the MySQL instance.
+          type: object
+        authentication:
+          allOf:
+          - $ref: '#/components/schemas/MySQL.Authentication'
+          description: Required. The authentication information for the MySQL instance.
+          type: object
+      required:
+      - authentication
+      - network
+      type: object
+    MySQL.Authentication:
+      properties:
+        userName:
+          description: Required. The username for the MySQL instance.
+          type: string
+        password:
+          description: Required. The password for the MySQL instance.
+          type: string
+        enableTls:
+          description: Optional. Enable TLS for the MySQL connection.
+          type: boolean
+      required:
+      - password
+      - userName
+      type: object
+    MySQL.Network:
       properties:
         networkType:
-          $ref: '#/components/schemas/KafkaNetworkType.Enum'
-        privateLinkServiceName:
+          $ref: '#/components/schemas/MySQLNetworkType.Enum'
+        publicEndpoint:
           type: string
+      required:
+      - networkType
+      - publicEndpoint
       type: object
+    MySQLNetworkType.Enum:
+      description: |2-
+         - PUBLIC: Public network.
+         - PRIVATE_LINK: Private network.
+      enum:
+      - PUBLIC
+      - PRIVATE_LINK
+      type: string
     PartitionDispatcher.Enum:
       description: |2-
          - TABLE: Partition by table.
@@ -995,29 +1070,14 @@ components:
       - TS
       - COLUMNS
       type: string
-    PartitionDispatcherConfig:
-      properties:
-        partitionType:
-          $ref: '#/components/schemas/PartitionDispatcher.Enum'
-        matcher:
-          items:
-            type: string
-          type: array
-        indexName:
-          type: string
-        columns:
-          items:
-            type: string
-          type: array
-      type: object
     PrivateLinkEndpoint:
       example:
         privateLinkServiceName: privateLinkServiceName
-        connectorType: "{}"
         createTime: 2000-01-23T04:56:07.000+00:00
         endpointId: endpointId
         endpointUrl: endpointUrl
         kafka: "{}"
+        changefeedType: "{}"
         updateTime: 2000-01-23T04:56:07.000+00:00
         clusterId: clusterId
         state: "{}"
@@ -1033,9 +1093,9 @@ components:
         privateLinkServiceName:
           description: Required. The private link service name.
           type: string
-        connectorType:
+        changefeedType:
           allOf:
-          - $ref: '#/components/schemas/ConnectorType.Enum'
+          - $ref: '#/components/schemas/ChangefeedType.Enum'
           description: Required. The type of the sink.
           type: object
         state:
@@ -1068,8 +1128,8 @@ components:
           readOnly: true
           type: string
       required:
+      - changefeedType
       - clusterId
-      - connectorType
       - privateLinkServiceName
       type: object
     PrivateLinkEndpointState.Enum:
@@ -1096,13 +1156,18 @@ components:
       properties:
         type:
           allOf:
-          - $ref: '#/components/schemas/ConnectorType.Enum'
+          - $ref: '#/components/schemas/ChangefeedType.Enum'
           description: Required. The type of the sink.
           type: object
         kafka:
           allOf:
-          - $ref: '#/components/schemas/KafkaInfo'
+          - $ref: '#/components/schemas/Kafka'
           description: Optional. The Kafka sink information.
+          type: object
+        mysql:
+          allOf:
+          - $ref: '#/components/schemas/MySQL'
+          description: Optional. The MySQL sink information.
           type: object
       required:
       - type
@@ -1163,31 +1228,9 @@ components:
       - BY_TABLE
       - BY_DATABASE
       type: string
-    TopicPartitionConfig:
-      properties:
-        dispatchType:
-          $ref: '#/components/schemas/TopicDispatchType.Enum'
-        defaultTopic:
-          type: string
-        topicPrefix:
-          type: string
-        separator:
-          type: string
-        topicSuffix:
-          type: string
-        replicationFactor:
-          format: int64
-          type: integer
-        partitionNum:
-          format: int64
-          type: integer
-        partitionDispatchers:
-          items:
-            $ref: '#/components/schemas/PartitionDispatcherConfig'
-          type: array
-      type: object
-    ConnectorService_ListConnectors_connectorType_parameter:
+    ChangefeedService_ListChangefeeds_changefeedType_parameter:
       enum:
       - KAFKA
+      - MYSQL
       type: string
 x-original-swagger-version: "2.0"

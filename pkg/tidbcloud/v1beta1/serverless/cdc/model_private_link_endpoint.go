@@ -28,7 +28,7 @@ type PrivateLinkEndpoint struct {
 	// Required. The private link service name.
 	PrivateLinkServiceName string `json:"privateLinkServiceName"`
 	// Required. The type of the sink.
-	ConnectorType ConnectorTypeEnum `json:"connectorType"`
+	ChangefeedType ChangefeedTypeEnum `json:"changefeedType"`
 	// Output_only. The state of the private link.
 	State *PrivateLinkEndpointStateEnum `json:"state,omitempty"`
 	// Optional. Kafka private link endpoint information.
@@ -50,11 +50,11 @@ type _PrivateLinkEndpoint PrivateLinkEndpoint
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPrivateLinkEndpoint(clusterId string, privateLinkServiceName string, connectorType ConnectorTypeEnum) *PrivateLinkEndpoint {
+func NewPrivateLinkEndpoint(clusterId string, privateLinkServiceName string, changefeedType ChangefeedTypeEnum) *PrivateLinkEndpoint {
 	this := PrivateLinkEndpoint{}
 	this.ClusterId = clusterId
 	this.PrivateLinkServiceName = privateLinkServiceName
-	this.ConnectorType = connectorType
+	this.ChangefeedType = changefeedType
 	return &this
 }
 
@@ -146,28 +146,28 @@ func (o *PrivateLinkEndpoint) SetPrivateLinkServiceName(v string) {
 	o.PrivateLinkServiceName = v
 }
 
-// GetConnectorType returns the ConnectorType field value
-func (o *PrivateLinkEndpoint) GetConnectorType() ConnectorTypeEnum {
+// GetChangefeedType returns the ChangefeedType field value
+func (o *PrivateLinkEndpoint) GetChangefeedType() ChangefeedTypeEnum {
 	if o == nil {
-		var ret ConnectorTypeEnum
+		var ret ChangefeedTypeEnum
 		return ret
 	}
 
-	return o.ConnectorType
+	return o.ChangefeedType
 }
 
-// GetConnectorTypeOk returns a tuple with the ConnectorType field value
+// GetChangefeedTypeOk returns a tuple with the ChangefeedType field value
 // and a boolean to check if the value has been set.
-func (o *PrivateLinkEndpoint) GetConnectorTypeOk() (*ConnectorTypeEnum, bool) {
+func (o *PrivateLinkEndpoint) GetChangefeedTypeOk() (*ChangefeedTypeEnum, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.ConnectorType, true
+	return &o.ChangefeedType, true
 }
 
-// SetConnectorType sets field value
-func (o *PrivateLinkEndpoint) SetConnectorType(v ConnectorTypeEnum) {
-	o.ConnectorType = v
+// SetChangefeedType sets field value
+func (o *PrivateLinkEndpoint) SetChangefeedType(v ChangefeedTypeEnum) {
+	o.ChangefeedType = v
 }
 
 // GetState returns the State field value if set, zero value otherwise.
@@ -388,7 +388,7 @@ func (o PrivateLinkEndpoint) ToMap() (map[string]interface{}, error) {
 	}
 	toSerialize["clusterId"] = o.ClusterId
 	toSerialize["privateLinkServiceName"] = o.PrivateLinkServiceName
-	toSerialize["connectorType"] = o.ConnectorType
+	toSerialize["changefeedType"] = o.ChangefeedType
 	if !IsNil(o.State) {
 		toSerialize["state"] = o.State
 	}
@@ -422,7 +422,7 @@ func (o *PrivateLinkEndpoint) UnmarshalJSON(data []byte) (err error) {
 	requiredProperties := []string{
 		"clusterId",
 		"privateLinkServiceName",
-		"connectorType",
+		"changefeedType",
 	}
 
 	allProperties := make(map[string]interface{})
@@ -455,7 +455,7 @@ func (o *PrivateLinkEndpoint) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "endpointId")
 		delete(additionalProperties, "clusterId")
 		delete(additionalProperties, "privateLinkServiceName")
-		delete(additionalProperties, "connectorType")
+		delete(additionalProperties, "changefeedType")
 		delete(additionalProperties, "state")
 		delete(additionalProperties, "kafka")
 		delete(additionalProperties, "message")

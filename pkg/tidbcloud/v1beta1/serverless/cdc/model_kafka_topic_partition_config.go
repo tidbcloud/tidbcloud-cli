@@ -14,43 +14,43 @@ import (
 	"encoding/json"
 )
 
-// checks if the TopicPartitionConfig type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &TopicPartitionConfig{}
+// checks if the KafkaTopicPartitionConfig type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &KafkaTopicPartitionConfig{}
 
-// TopicPartitionConfig struct for TopicPartitionConfig
-type TopicPartitionConfig struct {
-	DispatchType         *TopicDispatchTypeEnum      `json:"dispatchType,omitempty"`
-	DefaultTopic         *string                     `json:"defaultTopic,omitempty"`
-	TopicPrefix          *string                     `json:"topicPrefix,omitempty"`
-	Separator            *string                     `json:"separator,omitempty"`
-	TopicSuffix          *string                     `json:"topicSuffix,omitempty"`
-	ReplicationFactor    *int64                      `json:"replicationFactor,omitempty"`
-	PartitionNum         *int64                      `json:"partitionNum,omitempty"`
-	PartitionDispatchers []PartitionDispatcherConfig `json:"partitionDispatchers,omitempty"`
+// KafkaTopicPartitionConfig struct for KafkaTopicPartitionConfig
+type KafkaTopicPartitionConfig struct {
+	DispatchType         *TopicDispatchTypeEnum           `json:"dispatchType,omitempty"`
+	DefaultTopic         *string                          `json:"defaultTopic,omitempty"`
+	TopicPrefix          *string                          `json:"topicPrefix,omitempty"`
+	Separator            *string                          `json:"separator,omitempty"`
+	TopicSuffix          *string                          `json:"topicSuffix,omitempty"`
+	ReplicationFactor    *int64                           `json:"replicationFactor,omitempty"`
+	PartitionNum         *int64                           `json:"partitionNum,omitempty"`
+	PartitionDispatchers []KafkaPartitionDispatcherConfig `json:"partitionDispatchers,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _TopicPartitionConfig TopicPartitionConfig
+type _KafkaTopicPartitionConfig KafkaTopicPartitionConfig
 
-// NewTopicPartitionConfig instantiates a new TopicPartitionConfig object
+// NewKafkaTopicPartitionConfig instantiates a new KafkaTopicPartitionConfig object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewTopicPartitionConfig() *TopicPartitionConfig {
-	this := TopicPartitionConfig{}
+func NewKafkaTopicPartitionConfig() *KafkaTopicPartitionConfig {
+	this := KafkaTopicPartitionConfig{}
 	return &this
 }
 
-// NewTopicPartitionConfigWithDefaults instantiates a new TopicPartitionConfig object
+// NewKafkaTopicPartitionConfigWithDefaults instantiates a new KafkaTopicPartitionConfig object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewTopicPartitionConfigWithDefaults() *TopicPartitionConfig {
-	this := TopicPartitionConfig{}
+func NewKafkaTopicPartitionConfigWithDefaults() *KafkaTopicPartitionConfig {
+	this := KafkaTopicPartitionConfig{}
 	return &this
 }
 
 // GetDispatchType returns the DispatchType field value if set, zero value otherwise.
-func (o *TopicPartitionConfig) GetDispatchType() TopicDispatchTypeEnum {
+func (o *KafkaTopicPartitionConfig) GetDispatchType() TopicDispatchTypeEnum {
 	if o == nil || IsNil(o.DispatchType) {
 		var ret TopicDispatchTypeEnum
 		return ret
@@ -60,7 +60,7 @@ func (o *TopicPartitionConfig) GetDispatchType() TopicDispatchTypeEnum {
 
 // GetDispatchTypeOk returns a tuple with the DispatchType field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TopicPartitionConfig) GetDispatchTypeOk() (*TopicDispatchTypeEnum, bool) {
+func (o *KafkaTopicPartitionConfig) GetDispatchTypeOk() (*TopicDispatchTypeEnum, bool) {
 	if o == nil || IsNil(o.DispatchType) {
 		return nil, false
 	}
@@ -68,7 +68,7 @@ func (o *TopicPartitionConfig) GetDispatchTypeOk() (*TopicDispatchTypeEnum, bool
 }
 
 // HasDispatchType returns a boolean if a field has been set.
-func (o *TopicPartitionConfig) HasDispatchType() bool {
+func (o *KafkaTopicPartitionConfig) HasDispatchType() bool {
 	if o != nil && !IsNil(o.DispatchType) {
 		return true
 	}
@@ -77,12 +77,12 @@ func (o *TopicPartitionConfig) HasDispatchType() bool {
 }
 
 // SetDispatchType gets a reference to the given TopicDispatchTypeEnum and assigns it to the DispatchType field.
-func (o *TopicPartitionConfig) SetDispatchType(v TopicDispatchTypeEnum) {
+func (o *KafkaTopicPartitionConfig) SetDispatchType(v TopicDispatchTypeEnum) {
 	o.DispatchType = &v
 }
 
 // GetDefaultTopic returns the DefaultTopic field value if set, zero value otherwise.
-func (o *TopicPartitionConfig) GetDefaultTopic() string {
+func (o *KafkaTopicPartitionConfig) GetDefaultTopic() string {
 	if o == nil || IsNil(o.DefaultTopic) {
 		var ret string
 		return ret
@@ -92,7 +92,7 @@ func (o *TopicPartitionConfig) GetDefaultTopic() string {
 
 // GetDefaultTopicOk returns a tuple with the DefaultTopic field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TopicPartitionConfig) GetDefaultTopicOk() (*string, bool) {
+func (o *KafkaTopicPartitionConfig) GetDefaultTopicOk() (*string, bool) {
 	if o == nil || IsNil(o.DefaultTopic) {
 		return nil, false
 	}
@@ -100,7 +100,7 @@ func (o *TopicPartitionConfig) GetDefaultTopicOk() (*string, bool) {
 }
 
 // HasDefaultTopic returns a boolean if a field has been set.
-func (o *TopicPartitionConfig) HasDefaultTopic() bool {
+func (o *KafkaTopicPartitionConfig) HasDefaultTopic() bool {
 	if o != nil && !IsNil(o.DefaultTopic) {
 		return true
 	}
@@ -109,12 +109,12 @@ func (o *TopicPartitionConfig) HasDefaultTopic() bool {
 }
 
 // SetDefaultTopic gets a reference to the given string and assigns it to the DefaultTopic field.
-func (o *TopicPartitionConfig) SetDefaultTopic(v string) {
+func (o *KafkaTopicPartitionConfig) SetDefaultTopic(v string) {
 	o.DefaultTopic = &v
 }
 
 // GetTopicPrefix returns the TopicPrefix field value if set, zero value otherwise.
-func (o *TopicPartitionConfig) GetTopicPrefix() string {
+func (o *KafkaTopicPartitionConfig) GetTopicPrefix() string {
 	if o == nil || IsNil(o.TopicPrefix) {
 		var ret string
 		return ret
@@ -124,7 +124,7 @@ func (o *TopicPartitionConfig) GetTopicPrefix() string {
 
 // GetTopicPrefixOk returns a tuple with the TopicPrefix field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TopicPartitionConfig) GetTopicPrefixOk() (*string, bool) {
+func (o *KafkaTopicPartitionConfig) GetTopicPrefixOk() (*string, bool) {
 	if o == nil || IsNil(o.TopicPrefix) {
 		return nil, false
 	}
@@ -132,7 +132,7 @@ func (o *TopicPartitionConfig) GetTopicPrefixOk() (*string, bool) {
 }
 
 // HasTopicPrefix returns a boolean if a field has been set.
-func (o *TopicPartitionConfig) HasTopicPrefix() bool {
+func (o *KafkaTopicPartitionConfig) HasTopicPrefix() bool {
 	if o != nil && !IsNil(o.TopicPrefix) {
 		return true
 	}
@@ -141,12 +141,12 @@ func (o *TopicPartitionConfig) HasTopicPrefix() bool {
 }
 
 // SetTopicPrefix gets a reference to the given string and assigns it to the TopicPrefix field.
-func (o *TopicPartitionConfig) SetTopicPrefix(v string) {
+func (o *KafkaTopicPartitionConfig) SetTopicPrefix(v string) {
 	o.TopicPrefix = &v
 }
 
 // GetSeparator returns the Separator field value if set, zero value otherwise.
-func (o *TopicPartitionConfig) GetSeparator() string {
+func (o *KafkaTopicPartitionConfig) GetSeparator() string {
 	if o == nil || IsNil(o.Separator) {
 		var ret string
 		return ret
@@ -156,7 +156,7 @@ func (o *TopicPartitionConfig) GetSeparator() string {
 
 // GetSeparatorOk returns a tuple with the Separator field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TopicPartitionConfig) GetSeparatorOk() (*string, bool) {
+func (o *KafkaTopicPartitionConfig) GetSeparatorOk() (*string, bool) {
 	if o == nil || IsNil(o.Separator) {
 		return nil, false
 	}
@@ -164,7 +164,7 @@ func (o *TopicPartitionConfig) GetSeparatorOk() (*string, bool) {
 }
 
 // HasSeparator returns a boolean if a field has been set.
-func (o *TopicPartitionConfig) HasSeparator() bool {
+func (o *KafkaTopicPartitionConfig) HasSeparator() bool {
 	if o != nil && !IsNil(o.Separator) {
 		return true
 	}
@@ -173,12 +173,12 @@ func (o *TopicPartitionConfig) HasSeparator() bool {
 }
 
 // SetSeparator gets a reference to the given string and assigns it to the Separator field.
-func (o *TopicPartitionConfig) SetSeparator(v string) {
+func (o *KafkaTopicPartitionConfig) SetSeparator(v string) {
 	o.Separator = &v
 }
 
 // GetTopicSuffix returns the TopicSuffix field value if set, zero value otherwise.
-func (o *TopicPartitionConfig) GetTopicSuffix() string {
+func (o *KafkaTopicPartitionConfig) GetTopicSuffix() string {
 	if o == nil || IsNil(o.TopicSuffix) {
 		var ret string
 		return ret
@@ -188,7 +188,7 @@ func (o *TopicPartitionConfig) GetTopicSuffix() string {
 
 // GetTopicSuffixOk returns a tuple with the TopicSuffix field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TopicPartitionConfig) GetTopicSuffixOk() (*string, bool) {
+func (o *KafkaTopicPartitionConfig) GetTopicSuffixOk() (*string, bool) {
 	if o == nil || IsNil(o.TopicSuffix) {
 		return nil, false
 	}
@@ -196,7 +196,7 @@ func (o *TopicPartitionConfig) GetTopicSuffixOk() (*string, bool) {
 }
 
 // HasTopicSuffix returns a boolean if a field has been set.
-func (o *TopicPartitionConfig) HasTopicSuffix() bool {
+func (o *KafkaTopicPartitionConfig) HasTopicSuffix() bool {
 	if o != nil && !IsNil(o.TopicSuffix) {
 		return true
 	}
@@ -205,12 +205,12 @@ func (o *TopicPartitionConfig) HasTopicSuffix() bool {
 }
 
 // SetTopicSuffix gets a reference to the given string and assigns it to the TopicSuffix field.
-func (o *TopicPartitionConfig) SetTopicSuffix(v string) {
+func (o *KafkaTopicPartitionConfig) SetTopicSuffix(v string) {
 	o.TopicSuffix = &v
 }
 
 // GetReplicationFactor returns the ReplicationFactor field value if set, zero value otherwise.
-func (o *TopicPartitionConfig) GetReplicationFactor() int64 {
+func (o *KafkaTopicPartitionConfig) GetReplicationFactor() int64 {
 	if o == nil || IsNil(o.ReplicationFactor) {
 		var ret int64
 		return ret
@@ -220,7 +220,7 @@ func (o *TopicPartitionConfig) GetReplicationFactor() int64 {
 
 // GetReplicationFactorOk returns a tuple with the ReplicationFactor field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TopicPartitionConfig) GetReplicationFactorOk() (*int64, bool) {
+func (o *KafkaTopicPartitionConfig) GetReplicationFactorOk() (*int64, bool) {
 	if o == nil || IsNil(o.ReplicationFactor) {
 		return nil, false
 	}
@@ -228,7 +228,7 @@ func (o *TopicPartitionConfig) GetReplicationFactorOk() (*int64, bool) {
 }
 
 // HasReplicationFactor returns a boolean if a field has been set.
-func (o *TopicPartitionConfig) HasReplicationFactor() bool {
+func (o *KafkaTopicPartitionConfig) HasReplicationFactor() bool {
 	if o != nil && !IsNil(o.ReplicationFactor) {
 		return true
 	}
@@ -237,12 +237,12 @@ func (o *TopicPartitionConfig) HasReplicationFactor() bool {
 }
 
 // SetReplicationFactor gets a reference to the given int64 and assigns it to the ReplicationFactor field.
-func (o *TopicPartitionConfig) SetReplicationFactor(v int64) {
+func (o *KafkaTopicPartitionConfig) SetReplicationFactor(v int64) {
 	o.ReplicationFactor = &v
 }
 
 // GetPartitionNum returns the PartitionNum field value if set, zero value otherwise.
-func (o *TopicPartitionConfig) GetPartitionNum() int64 {
+func (o *KafkaTopicPartitionConfig) GetPartitionNum() int64 {
 	if o == nil || IsNil(o.PartitionNum) {
 		var ret int64
 		return ret
@@ -252,7 +252,7 @@ func (o *TopicPartitionConfig) GetPartitionNum() int64 {
 
 // GetPartitionNumOk returns a tuple with the PartitionNum field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TopicPartitionConfig) GetPartitionNumOk() (*int64, bool) {
+func (o *KafkaTopicPartitionConfig) GetPartitionNumOk() (*int64, bool) {
 	if o == nil || IsNil(o.PartitionNum) {
 		return nil, false
 	}
@@ -260,7 +260,7 @@ func (o *TopicPartitionConfig) GetPartitionNumOk() (*int64, bool) {
 }
 
 // HasPartitionNum returns a boolean if a field has been set.
-func (o *TopicPartitionConfig) HasPartitionNum() bool {
+func (o *KafkaTopicPartitionConfig) HasPartitionNum() bool {
 	if o != nil && !IsNil(o.PartitionNum) {
 		return true
 	}
@@ -269,14 +269,14 @@ func (o *TopicPartitionConfig) HasPartitionNum() bool {
 }
 
 // SetPartitionNum gets a reference to the given int64 and assigns it to the PartitionNum field.
-func (o *TopicPartitionConfig) SetPartitionNum(v int64) {
+func (o *KafkaTopicPartitionConfig) SetPartitionNum(v int64) {
 	o.PartitionNum = &v
 }
 
 // GetPartitionDispatchers returns the PartitionDispatchers field value if set, zero value otherwise.
-func (o *TopicPartitionConfig) GetPartitionDispatchers() []PartitionDispatcherConfig {
+func (o *KafkaTopicPartitionConfig) GetPartitionDispatchers() []KafkaPartitionDispatcherConfig {
 	if o == nil || IsNil(o.PartitionDispatchers) {
-		var ret []PartitionDispatcherConfig
+		var ret []KafkaPartitionDispatcherConfig
 		return ret
 	}
 	return o.PartitionDispatchers
@@ -284,7 +284,7 @@ func (o *TopicPartitionConfig) GetPartitionDispatchers() []PartitionDispatcherCo
 
 // GetPartitionDispatchersOk returns a tuple with the PartitionDispatchers field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *TopicPartitionConfig) GetPartitionDispatchersOk() ([]PartitionDispatcherConfig, bool) {
+func (o *KafkaTopicPartitionConfig) GetPartitionDispatchersOk() ([]KafkaPartitionDispatcherConfig, bool) {
 	if o == nil || IsNil(o.PartitionDispatchers) {
 		return nil, false
 	}
@@ -292,7 +292,7 @@ func (o *TopicPartitionConfig) GetPartitionDispatchersOk() ([]PartitionDispatche
 }
 
 // HasPartitionDispatchers returns a boolean if a field has been set.
-func (o *TopicPartitionConfig) HasPartitionDispatchers() bool {
+func (o *KafkaTopicPartitionConfig) HasPartitionDispatchers() bool {
 	if o != nil && !IsNil(o.PartitionDispatchers) {
 		return true
 	}
@@ -300,12 +300,12 @@ func (o *TopicPartitionConfig) HasPartitionDispatchers() bool {
 	return false
 }
 
-// SetPartitionDispatchers gets a reference to the given []PartitionDispatcherConfig and assigns it to the PartitionDispatchers field.
-func (o *TopicPartitionConfig) SetPartitionDispatchers(v []PartitionDispatcherConfig) {
+// SetPartitionDispatchers gets a reference to the given []KafkaPartitionDispatcherConfig and assigns it to the PartitionDispatchers field.
+func (o *KafkaTopicPartitionConfig) SetPartitionDispatchers(v []KafkaPartitionDispatcherConfig) {
 	o.PartitionDispatchers = v
 }
 
-func (o TopicPartitionConfig) MarshalJSON() ([]byte, error) {
+func (o KafkaTopicPartitionConfig) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -313,7 +313,7 @@ func (o TopicPartitionConfig) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o TopicPartitionConfig) ToMap() (map[string]interface{}, error) {
+func (o KafkaTopicPartitionConfig) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.DispatchType) {
 		toSerialize["dispatchType"] = o.DispatchType
@@ -347,16 +347,16 @@ func (o TopicPartitionConfig) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *TopicPartitionConfig) UnmarshalJSON(data []byte) (err error) {
-	varTopicPartitionConfig := _TopicPartitionConfig{}
+func (o *KafkaTopicPartitionConfig) UnmarshalJSON(data []byte) (err error) {
+	varKafkaTopicPartitionConfig := _KafkaTopicPartitionConfig{}
 
-	err = json.Unmarshal(data, &varTopicPartitionConfig)
+	err = json.Unmarshal(data, &varKafkaTopicPartitionConfig)
 
 	if err != nil {
 		return err
 	}
 
-	*o = TopicPartitionConfig(varTopicPartitionConfig)
+	*o = KafkaTopicPartitionConfig(varKafkaTopicPartitionConfig)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -375,38 +375,38 @@ func (o *TopicPartitionConfig) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
-type NullableTopicPartitionConfig struct {
-	value *TopicPartitionConfig
+type NullableKafkaTopicPartitionConfig struct {
+	value *KafkaTopicPartitionConfig
 	isSet bool
 }
 
-func (v NullableTopicPartitionConfig) Get() *TopicPartitionConfig {
+func (v NullableKafkaTopicPartitionConfig) Get() *KafkaTopicPartitionConfig {
 	return v.value
 }
 
-func (v *NullableTopicPartitionConfig) Set(val *TopicPartitionConfig) {
+func (v *NullableKafkaTopicPartitionConfig) Set(val *KafkaTopicPartitionConfig) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableTopicPartitionConfig) IsSet() bool {
+func (v NullableKafkaTopicPartitionConfig) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableTopicPartitionConfig) Unset() {
+func (v *NullableKafkaTopicPartitionConfig) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableTopicPartitionConfig(val *TopicPartitionConfig) *NullableTopicPartitionConfig {
-	return &NullableTopicPartitionConfig{value: val, isSet: true}
+func NewNullableKafkaTopicPartitionConfig(val *KafkaTopicPartitionConfig) *NullableKafkaTopicPartitionConfig {
+	return &NullableKafkaTopicPartitionConfig{value: val, isSet: true}
 }
 
-func (v NullableTopicPartitionConfig) MarshalJSON() ([]byte, error) {
+func (v NullableKafkaTopicPartitionConfig) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableTopicPartitionConfig) UnmarshalJSON(src []byte) error {
+func (v *NullableKafkaTopicPartitionConfig) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

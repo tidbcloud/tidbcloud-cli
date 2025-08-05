@@ -7,7 +7,7 @@
   },
   "tags": [
     {
-      "name": "ConnectorService"
+      "name": "ChangefeedService"
     }
   ],
   "host": "serverless.tidbapi.com",
@@ -21,15 +21,15 @@
     "application/json"
   ],
   "paths": {
-    "/v1beta1/clusters/{clusterId}/connectors": {
+    "/v1beta1/clusters/{clusterId}/changefeeds": {
       "get": {
-        "summary": "List connectors.",
-        "operationId": "ConnectorService_ListConnectors",
+        "summary": "List changefeeds.",
+        "operationId": "ChangefeedService_ListChangefeeds",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/Connectors"
+              "$ref": "#/definitions/Changefeeds"
             }
           },
           "default": {
@@ -49,7 +49,7 @@
           },
           {
             "name": "pageSize",
-            "description": "Optional. The maximum number of connectors to return. Default is 10.",
+            "description": "Optional. The maximum number of changefeeds to return. Default is 10.",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -63,35 +63,36 @@
             "type": "string"
           },
           {
-            "name": "connectorType",
-            "description": "Optional. The type of the connector. DEFAULT is all.\n\n - KAFKA: Kafka connector type.",
+            "name": "changefeedType",
+            "description": "Optional. The type of the changefeed. DEFAULT is all.\n\n - KAFKA: Kafka changefeed type.\n - MYSQL: MySQL changefeed type.",
             "in": "query",
             "required": false,
             "type": "string",
             "enum": [
-              "KAFKA"
+              "KAFKA",
+              "MYSQL"
             ]
           },
           {
             "name": "orderBy",
-            "description": "Optional. List connectors order by, separated by comma, default is ascending. Example: \"create_time, bar desc\". Supported field: create_time",
+            "description": "Optional. List changefeeds order by, separated by comma, default is ascending. Example: \"create_time, bar desc\". Supported field: create_time",
             "in": "query",
             "required": false,
             "type": "string"
           }
         ],
         "tags": [
-          "ConnectorService"
+          "ChangefeedService"
         ]
       },
       "post": {
-        "summary": "Create a connector.",
-        "operationId": "ConnectorService_CreateConnector",
+        "summary": "Create a changefeed.",
+        "operationId": "ChangefeedService_CreateChangefeed",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ConnectorID"
+              "$ref": "#/definitions/Changefeed"
             }
           },
           "default": {
@@ -114,24 +115,24 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ConnectorService.CreateConnectorBody"
+              "$ref": "#/definitions/ChangefeedService.CreateChangefeedBody"
             }
           }
         ],
         "tags": [
-          "ConnectorService"
+          "ChangefeedService"
         ]
       }
     },
-    "/v1beta1/clusters/{clusterId}/connectors/{connectorId}": {
+    "/v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}": {
       "get": {
-        "summary": "Get a connector.",
-        "operationId": "ConnectorService_GetConnector",
+        "summary": "Get a changefeed.",
+        "operationId": "ChangefeedService_GetChangefeed",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/Connector"
+              "$ref": "#/definitions/Changefeed"
             }
           },
           "default": {
@@ -150,25 +151,25 @@
             "type": "string"
           },
           {
-            "name": "connectorId",
-            "description": "Required. The ID of the connector.",
+            "name": "changefeedId",
+            "description": "Required. The ID of the changefeed.",
             "in": "path",
             "required": true,
             "type": "string"
           }
         ],
         "tags": [
-          "ConnectorService"
+          "ChangefeedService"
         ]
       },
       "delete": {
-        "summary": "Delete a connector.",
-        "operationId": "ConnectorService_DeleteConnector",
+        "summary": "Delete a changefeed.",
+        "operationId": "ChangefeedService_DeleteChangefeed",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ConnectorID"
+              "$ref": "#/definitions/Changefeed"
             }
           },
           "default": {
@@ -187,27 +188,25 @@
             "type": "string"
           },
           {
-            "name": "connectorId",
-            "description": "Required. The ID of the connector.",
+            "name": "changefeedId",
+            "description": "Required. The ID of the changefeed.",
             "in": "path",
             "required": true,
             "type": "string"
           }
         ],
         "tags": [
-          "ConnectorService"
+          "ChangefeedService"
         ]
-      }
-    },
-    "/v1beta1/clusters/{clusterId}/connectors/{connectorId}:start": {
-      "post": {
-        "summary": "Start a connector.",
-        "operationId": "ConnectorService_StartConnector",
+      },
+      "patch": {
+        "summary": "Edit a changefeed.",
+        "operationId": "ChangefeedService_EditChangefeed",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ConnectorID"
+              "$ref": "#/definitions/Changefeed"
             }
           },
           "default": {
@@ -226,8 +225,8 @@
             "type": "string"
           },
           {
-            "name": "connectorId",
-            "description": "Required. The ID of the connector.",
+            "name": "changefeedId",
+            "description": "Required. The ID of the changefeed.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -237,24 +236,24 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ConnectorService.StartConnectorBody"
+              "$ref": "#/definitions/ChangefeedService.EditChangefeedBody"
             }
           }
         ],
         "tags": [
-          "ConnectorService"
+          "ChangefeedService"
         ]
       }
     },
-    "/v1beta1/clusters/{clusterId}/connectors/{connectorId}:stop": {
+    "/v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:start": {
       "post": {
-        "summary": "Stop a connector.",
-        "operationId": "ConnectorService_StopConnector",
+        "summary": "Start a changefeed.",
+        "operationId": "ChangefeedService_StartChangefeed",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ConnectorID"
+              "$ref": "#/definitions/Changefeed"
             }
           },
           "default": {
@@ -273,8 +272,8 @@
             "type": "string"
           },
           {
-            "name": "connectorId",
-            "description": "Required. The ID of the connector.",
+            "name": "changefeedId",
+            "description": "Required. The ID of the changefeed.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -284,24 +283,24 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ConnectorService.StopConnectorBody"
+              "$ref": "#/definitions/ChangefeedService.StartChangefeedBody"
             }
           }
         ],
         "tags": [
-          "ConnectorService"
+          "ChangefeedService"
         ]
       }
     },
-    "/v1beta1/clusters/{clusterId}/connectors/{connectorId}:edit": {
+    "/v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:stop": {
       "post": {
-        "summary": "Edit a connector.",
-        "operationId": "ConnectorService_EditConnector",
+        "summary": "Stop a changefeed.",
+        "operationId": "ChangefeedService_StopChangefeed",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ConnectorID"
+              "$ref": "#/definitions/Changefeed"
             }
           },
           "default": {
@@ -320,8 +319,8 @@
             "type": "string"
           },
           {
-            "name": "connectorId",
-            "description": "Required. The ID of the connector.",
+            "name": "changefeedId",
+            "description": "Required. The ID of the changefeed.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -331,19 +330,19 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ConnectorService.EditConnectorBody"
+              "$ref": "#/definitions/ChangefeedService.StopChangefeedBody"
             }
           }
         ],
         "tags": [
-          "ConnectorService"
+          "ChangefeedService"
         ]
       }
     },
-    "/v1beta1/clusters/{clusterId}/connectors:test": {
+    "/v1beta1/clusters/{clusterId}/changefeeds:test": {
       "post": {
-        "summary": "Test a connector.",
-        "operationId": "ConnectorService_TestConnector",
+        "summary": "Test a changefeed.",
+        "operationId": "ChangefeedService_TestChangefeed",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -372,19 +371,19 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ConnectorService.TestConnectorBody"
+              "$ref": "#/definitions/ChangefeedService.TestChangefeedBody"
             }
           }
         ],
         "tags": [
-          "ConnectorService"
+          "ChangefeedService"
         ]
       }
     },
-    "/v1beta1/clusters/{clusterId}/connectors:describeSchemaTable": {
+    "/v1beta1/clusters/{clusterId}/changefeeds:describeSchemaTable": {
       "post": {
         "summary": "Describe schema table.",
-        "operationId": "ConnectorService_DescribeSchemaTable",
+        "operationId": "ChangefeedService_DescribeSchemaTable",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -412,19 +411,19 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ConnectorService.DescribeSchemaTableBody"
+              "$ref": "#/definitions/ChangefeedService.DescribeSchemaTableBody"
             }
           }
         ],
         "tags": [
-          "ConnectorService"
+          "ChangefeedService"
         ]
       }
     },
-    "/v1beta1/clusters/{clusterId}/connectors/private-link-endpoints": {
+    "/v1beta1/clusters/{clusterId}/changefeeds/private-link-endpoints": {
       "post": {
         "summary": "Create a private link",
-        "operationId": "ConnectorService_CreatePrivateLinkEndpoint",
+        "operationId": "ChangefeedService_CreatePrivateLinkEndpoint",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -452,19 +451,19 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ConnectorService.CreatePrivateLinkEndpointBody"
+              "$ref": "#/definitions/ChangefeedService.CreatePrivateLinkEndpointBody"
             }
           }
         ],
         "tags": [
-          "ConnectorService"
+          "ChangefeedService"
         ]
       }
     },
-    "/v1beta1/clusters/{clusterId}/connectors/private-links-endpoints": {
+    "/v1beta1/clusters/{clusterId}/changefeeds/private-links-endpoints": {
       "get": {
         "summary": "Get a private link",
-        "operationId": "ConnectorService_GetPrivateLinkEndpoint",
+        "operationId": "ChangefeedService_GetPrivateLinkEndpoint",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -496,12 +495,12 @@
           }
         ],
         "tags": [
-          "ConnectorService"
+          "ChangefeedService"
         ]
       },
       "delete": {
         "summary": "Delete a private link",
-        "operationId": "ConnectorService_DeletePrivateLinkEndpoint",
+        "operationId": "ChangefeedService_DeletePrivateLinkEndpoint",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -533,7 +532,7 @@
           }
         ],
         "tags": [
-          "ConnectorService"
+          "ChangefeedService"
         ]
       }
     }
@@ -547,20 +546,6 @@
         }
       },
       "additionalProperties": {}
-    },
-    "Authentication": {
-      "type": "object",
-      "properties": {
-        "authType": {
-          "$ref": "#/definitions/KafkaAuthType.Enum"
-        },
-        "userName": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        }
-      }
     },
     "AvroConfig": {
       "type": "object",
@@ -596,23 +581,6 @@
         "STRING"
       ],
       "description": " - LONG: Long handling mode for unsigned bigint.\n - STRING: String handling mode for unsigned bigint."
-    },
-    "Broker": {
-      "type": "object",
-      "properties": {
-        "kafkaVersion": {
-          "$ref": "#/definitions/KafkaVersion.Enum"
-        },
-        "brokerEndpoints": {
-          "type": "string"
-        },
-        "tlsEnable": {
-          "type": "boolean"
-        },
-        "compression": {
-          "$ref": "#/definitions/KafkaCompressionType.Enum"
-        }
-      }
     },
     "CDCCheckpoint": {
       "type": "object",
@@ -651,15 +619,6 @@
         }
       }
     },
-    "CDCProtocol.Enum": {
-      "type": "string",
-      "enum": [
-        "CANAL_JSON",
-        "OPEN_PROTOCOL",
-        "AVRO"
-      ],
-      "description": " - CANAL_JSON: Canal-JSON protocol.\n - OPEN_PROTOCOL: Open Protocol.\n - AVRO: Avro protocol."
-    },
     "CDCState.Enum": {
       "type": "string",
       "enum": [
@@ -673,61 +632,20 @@
       ],
       "description": " - RUNNING: The changefeed is running.\n - CREATE_FAILED: The changefeed has failed during creation.\n - RUNNING_FAILED: The changefeed has failed during running.\n - CREATING: The changefeed is being created.\n - PAUSED: The changefeed is paused.\n - DELETED: The changefeed is deleted.\n - WARNING: The changefeed has a warning."
     },
-    "ColumnSelector": {
-      "type": "object",
-      "properties": {
-        "matcher": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "columns": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "ConfluentSchemaRegistry": {
-      "type": "object",
-      "properties": {
-        "endpoint": {
-          "type": "string",
-          "description": "Required. The schema registry endpoint."
-        },
-        "enableHttpAuth": {
-          "type": "boolean",
-          "description": "Optional. Enable HTTP authentication."
-        },
-        "userName": {
-          "type": "string",
-          "description": "Optional. The username for HTTP authentication."
-        },
-        "password": {
-          "type": "string",
-          "description": "Optional. The password for HTTP authentication."
-        }
-      },
-      "required": [
-        "endpoint"
-      ]
-    },
-    "Connector": {
+    "Changefeed": {
       "type": "object",
       "properties": {
         "clusterId": {
           "type": "string",
           "description": "Required. The ID of the cluster."
         },
-        "connectorId": {
+        "changefeedId": {
           "type": "string",
-          "description": "Output_only. The ID of the connector.",
+          "description": "Output_only. The ID of the changefeed.",
           "readOnly": true
         },
         "state": {
-          "description": "Output_only. The state of the connector.\n\nOptional. The name of the connector.",
+          "description": "Output_only. The state of the changefeed.\n\nOptional. The name of the changefeed.",
           "readOnly": true,
           "allOf": [
             {
@@ -735,12 +653,12 @@
             }
           ]
         },
-        "name": {
+        "displayName": {
           "type": "string",
-          "description": "Optional. The name of the connector."
+          "description": "Optional. The name of the changefeed."
         },
         "sink": {
-          "description": "Required. The sink of the connector.",
+          "description": "Required. The sink of the changefeed.",
           "allOf": [
             {
               "$ref": "#/definitions/SinkInfo"
@@ -748,7 +666,7 @@
           ]
         },
         "filter": {
-          "description": "Required. The filter of the connector.",
+          "description": "Required. The filter of the changefeed.",
           "allOf": [
             {
               "$ref": "#/definitions/CDCFilter"
@@ -756,7 +674,7 @@
           ]
         },
         "startPosition": {
-          "description": "Required. The start position of the connector.",
+          "description": "Required. The start position of the changefeed.",
           "allOf": [
             {
               "$ref": "#/definitions/StartPosition"
@@ -764,7 +682,7 @@
           ]
         },
         "checkpoint": {
-          "description": "Output_only. The current checkpoint for the connector.",
+          "description": "Output_only. The current checkpoint for the changefeed.",
           "readOnly": true,
           "allOf": [
             {
@@ -798,32 +716,15 @@
         "startPosition"
       ]
     },
-    "ConnectorID": {
+    "ChangefeedService.CreateChangefeedBody": {
       "type": "object",
       "properties": {
-        "connectorId": {
+        "displayName": {
           "type": "string",
-          "description": "Required. The ID of the connector."
-        },
-        "clusterId": {
-          "type": "string",
-          "description": "Required. The ID of the cluster."
-        }
-      },
-      "required": [
-        "connectorId",
-        "clusterId"
-      ]
-    },
-    "ConnectorService.CreateConnectorBody": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "Optional. The name of the connector."
+          "description": "Optional. The name of the changefeed."
         },
         "sink": {
-          "description": "Required. The sink of the connector.",
+          "description": "Required. The sink of the changefeed.",
           "allOf": [
             {
               "$ref": "#/definitions/SinkInfo"
@@ -831,7 +732,7 @@
           ]
         },
         "filter": {
-          "description": "Required. The filter of the connector.",
+          "description": "Required. The filter of the changefeed.",
           "allOf": [
             {
               "$ref": "#/definitions/CDCFilter"
@@ -839,7 +740,7 @@
           ]
         },
         "startPosition": {
-          "description": "Required. The start position of the connector.",
+          "description": "Required. The start position of the changefeed.",
           "allOf": [
             {
               "$ref": "#/definitions/StartPosition"
@@ -852,7 +753,7 @@
         "filter"
       ]
     },
-    "ConnectorService.CreatePrivateLinkEndpointBody": {
+    "ChangefeedService.CreatePrivateLinkEndpointBody": {
       "type": "object",
       "properties": {
         "endpointId": {
@@ -864,11 +765,11 @@
           "type": "string",
           "description": "Required. The private link service name."
         },
-        "connectorType": {
+        "changefeedType": {
           "description": "Required. The type of the sink.",
           "allOf": [
             {
-              "$ref": "#/definitions/ConnectorType.Enum"
+              "$ref": "#/definitions/ChangefeedType.Enum"
             }
           ]
         },
@@ -915,10 +816,10 @@
       },
       "required": [
         "privateLinkServiceName",
-        "connectorType"
+        "changefeedType"
       ]
     },
-    "ConnectorService.DescribeSchemaTableBody": {
+    "ChangefeedService.DescribeSchemaTableBody": {
       "type": "object",
       "properties": {
         "filterRule": {
@@ -930,15 +831,15 @@
         }
       }
     },
-    "ConnectorService.EditConnectorBody": {
+    "ChangefeedService.EditChangefeedBody": {
       "type": "object",
       "properties": {
-        "name": {
+        "displayName": {
           "type": "string",
-          "description": "Optional. The name of the connector."
+          "description": "Optional. The name of the changefeed."
         },
         "sink": {
-          "description": "Required. The sink of the connector.",
+          "description": "Required. The sink of the changefeed.",
           "allOf": [
             {
               "$ref": "#/definitions/SinkInfo"
@@ -946,7 +847,7 @@
           ]
         },
         "filter": {
-          "description": "Required. The filter of the connector.",
+          "description": "Required. The filter of the changefeed.",
           "allOf": [
             {
               "$ref": "#/definitions/CDCFilter"
@@ -959,17 +860,17 @@
         "filter"
       ]
     },
-    "ConnectorService.StartConnectorBody": {
+    "ChangefeedService.StartChangefeedBody": {
       "type": "object"
     },
-    "ConnectorService.StopConnectorBody": {
+    "ChangefeedService.StopChangefeedBody": {
       "type": "object"
     },
-    "ConnectorService.TestConnectorBody": {
+    "ChangefeedService.TestChangefeedBody": {
       "type": "object",
       "properties": {
         "sink": {
-          "description": "Required. The sink of the connector.",
+          "description": "Required. The sink of the changefeed.",
           "allOf": [
             {
               "$ref": "#/definitions/SinkInfo"
@@ -981,23 +882,24 @@
         "sink"
       ]
     },
-    "ConnectorType.Enum": {
+    "ChangefeedType.Enum": {
       "type": "string",
       "enum": [
-        "KAFKA"
+        "KAFKA",
+        "MYSQL"
       ],
-      "description": " - KAFKA: Kafka connector type."
+      "description": " - KAFKA: Kafka changefeed type.\n - MYSQL: MySQL changefeed type."
     },
-    "Connectors": {
+    "Changefeeds": {
       "type": "object",
       "properties": {
-        "connectors": {
+        "changefeeds": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/Connector"
+            "$ref": "#/definitions/Changefeed"
           },
-          "description": "The list of connectors."
+          "description": "The list of changefeeds."
         },
         "nextPageToken": {
           "type": "string",
@@ -1006,24 +908,33 @@
         "totalSize": {
           "type": "integer",
           "format": "int64",
-          "description": "The total number of connectors."
+          "description": "The total number of changefeeds."
         }
       }
     },
-    "DataFormat": {
+    "ConfluentSchemaRegistry": {
       "type": "object",
       "properties": {
-        "protocol": {
-          "$ref": "#/definitions/CDCProtocol.Enum"
+        "endpoint": {
+          "type": "string",
+          "description": "Required. The schema registry endpoint."
         },
-        "enableTidbExtension": {
+        "enableHttpAuth": {
           "type": "boolean",
-          "title": "only available when protocol is CANAL_JSON and AVRO"
+          "description": "Optional. Enable HTTP authentication."
         },
-        "avroConfig": {
-          "$ref": "#/definitions/AvroConfig"
+        "userName": {
+          "type": "string",
+          "description": "Optional. The username for HTTP authentication."
+        },
+        "password": {
+          "type": "string",
+          "description": "Optional. The password for HTTP authentication."
         }
-      }
+      },
+      "required": [
+        "endpoint"
+      ]
     },
     "DecimalHandlingMode.Enum": {
       "type": "string",
@@ -1108,6 +1019,165 @@
         "secretAccessKey"
       ]
     },
+    "Kafka": {
+      "type": "object",
+      "properties": {
+        "network": {
+          "$ref": "#/definitions/Kafka.Network"
+        },
+        "broker": {
+          "$ref": "#/definitions/Kafka.Broker"
+        },
+        "authentication": {
+          "$ref": "#/definitions/Kafka.Authentication"
+        },
+        "dataFormat": {
+          "$ref": "#/definitions/Kafka.DataFormat"
+        },
+        "topicPartitionConfig": {
+          "$ref": "#/definitions/Kafka.TopicPartitionConfig"
+        },
+        "columnSelectors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Kafka.ColumnSelector"
+          }
+        }
+      }
+    },
+    "Kafka.Authentication": {
+      "type": "object",
+      "properties": {
+        "authType": {
+          "$ref": "#/definitions/KafkaAuthType.Enum"
+        },
+        "userName": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "enableTls": {
+          "type": "boolean"
+        }
+      }
+    },
+    "Kafka.Broker": {
+      "type": "object",
+      "properties": {
+        "kafkaVersion": {
+          "$ref": "#/definitions/KafkaVersion.Enum"
+        },
+        "compression": {
+          "$ref": "#/definitions/KafkaCompressionType.Enum"
+        }
+      }
+    },
+    "Kafka.ColumnSelector": {
+      "type": "object",
+      "properties": {
+        "matcher": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Kafka.DataFormat": {
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "$ref": "#/definitions/KafkaProtocol.Enum"
+        },
+        "enableTidbExtension": {
+          "type": "boolean",
+          "title": "only available when protocol is CANAL_JSON and AVRO"
+        },
+        "avroConfig": {
+          "$ref": "#/definitions/AvroConfig"
+        }
+      }
+    },
+    "Kafka.Network": {
+      "type": "object",
+      "properties": {
+        "networkType": {
+          "$ref": "#/definitions/KafkaNetworkType.Enum"
+        },
+        "privateLinkServiceName": {
+          "type": "string"
+        },
+        "publicEndpoints": {
+          "type": "string"
+        }
+      }
+    },
+    "Kafka.PartitionDispatcherConfig": {
+      "type": "object",
+      "properties": {
+        "partitionType": {
+          "$ref": "#/definitions/PartitionDispatcher.Enum"
+        },
+        "matcher": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "indexName": {
+          "type": "string"
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Kafka.TopicPartitionConfig": {
+      "type": "object",
+      "properties": {
+        "dispatchType": {
+          "$ref": "#/definitions/TopicDispatchType.Enum"
+        },
+        "defaultTopic": {
+          "type": "string"
+        },
+        "topicPrefix": {
+          "type": "string"
+        },
+        "separator": {
+          "type": "string"
+        },
+        "topicSuffix": {
+          "type": "string"
+        },
+        "replicationFactor": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "partitionNum": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "partitionDispatchers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Kafka.PartitionDispatcherConfig"
+          }
+        }
+      }
+    },
     "KafkaAuthType.Enum": {
       "type": "string",
       "enum": [
@@ -1152,33 +1222,6 @@
         "advertisedListenersPattern"
       ]
     },
-    "KafkaInfo": {
-      "type": "object",
-      "properties": {
-        "networkInfo": {
-          "$ref": "#/definitions/NetworkInfo"
-        },
-        "broker": {
-          "$ref": "#/definitions/Broker"
-        },
-        "authentication": {
-          "$ref": "#/definitions/Authentication"
-        },
-        "dataFormat": {
-          "$ref": "#/definitions/DataFormat"
-        },
-        "topicPartitionConfig": {
-          "$ref": "#/definitions/TopicPartitionConfig"
-        },
-        "columnSelectors": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/ColumnSelector"
-          }
-        }
-      }
-    },
     "KafkaNetworkType.Enum": {
       "type": "string",
       "enum": [
@@ -1186,6 +1229,15 @@
         "PRIVATE_LINK"
       ],
       "description": " - PUBLIC: Public network.\n - PRIVATE_LINK: Private Link network."
+    },
+    "KafkaProtocol.Enum": {
+      "type": "string",
+      "enum": [
+        "CANAL_JSON",
+        "OPEN_PROTOCOL",
+        "AVRO"
+      ],
+      "description": " - CANAL_JSON: Canal-JSON protocol.\n - OPEN_PROTOCOL: Open Protocol.\n - AVRO: Avro protocol."
     },
     "KafkaType.Enum": {
       "type": "string",
@@ -1204,16 +1256,74 @@
       ],
       "description": " - VERSION_2XX: Kafka 2.x.x version.\n - VERSION_3XX: Kafka 3.x.x version."
     },
-    "NetworkInfo": {
+    "MySQL": {
+      "type": "object",
+      "properties": {
+        "network": {
+          "description": "Required. The network configuration for the MySQL instance.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/MySQL.Network"
+            }
+          ]
+        },
+        "authentication": {
+          "description": "Required. The authentication information for the MySQL instance.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/MySQL.Authentication"
+            }
+          ]
+        }
+      },
+      "required": [
+        "network",
+        "authentication"
+      ]
+    },
+    "MySQL.Authentication": {
+      "type": "object",
+      "properties": {
+        "userName": {
+          "type": "string",
+          "description": "Required. The username for the MySQL instance."
+        },
+        "password": {
+          "type": "string",
+          "description": "Required. The password for the MySQL instance."
+        },
+        "enableTls": {
+          "type": "boolean",
+          "description": "Optional. Enable TLS for the MySQL connection."
+        }
+      },
+      "required": [
+        "userName",
+        "password"
+      ]
+    },
+    "MySQL.Network": {
       "type": "object",
       "properties": {
         "networkType": {
-          "$ref": "#/definitions/KafkaNetworkType.Enum"
+          "$ref": "#/definitions/MySQLNetworkType.Enum"
         },
-        "privateLinkServiceName": {
+        "publicEndpoint": {
           "type": "string"
         }
-      }
+      },
+      "required": [
+        "networkType",
+        "publicEndpoint"
+      ]
+    },
+    "MySQLNetworkType.Enum": {
+      "type": "string",
+      "enum": [
+        "PUBLIC",
+        "PRIVATE_LINK"
+      ],
+      "description": " - PUBLIC: Public network.\n - PRIVATE_LINK: Private network."
     },
     "PartitionDispatcher.Enum": {
       "type": "string",
@@ -1224,29 +1334,6 @@
         "COLUMNS"
       ],
       "description": " - TABLE: Partition by table.\n - INDEX_VALUE: Partition by index value.\n - TS: Partition by timestamp.\n - COLUMNS: Partition by columns."
-    },
-    "PartitionDispatcherConfig": {
-      "type": "object",
-      "properties": {
-        "partitionType": {
-          "$ref": "#/definitions/PartitionDispatcher.Enum"
-        },
-        "matcher": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "indexName": {
-          "type": "string"
-        },
-        "columns": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
     },
     "PrivateLinkEndpoint": {
       "type": "object",
@@ -1264,11 +1351,11 @@
           "type": "string",
           "description": "Required. The private link service name."
         },
-        "connectorType": {
+        "changefeedType": {
           "description": "Required. The type of the sink.",
           "allOf": [
             {
-              "$ref": "#/definitions/ConnectorType.Enum"
+              "$ref": "#/definitions/ChangefeedType.Enum"
             }
           ]
         },
@@ -1316,7 +1403,7 @@
       "required": [
         "clusterId",
         "privateLinkServiceName",
-        "connectorType"
+        "changefeedType"
       ]
     },
     "PrivateLinkEndpointState.Enum": {
@@ -1340,7 +1427,7 @@
           "description": "Required. The type of the sink.",
           "allOf": [
             {
-              "$ref": "#/definitions/ConnectorType.Enum"
+              "$ref": "#/definitions/ChangefeedType.Enum"
             }
           ]
         },
@@ -1348,7 +1435,15 @@
           "description": "Optional. The Kafka sink information.",
           "allOf": [
             {
-              "$ref": "#/definitions/KafkaInfo"
+              "$ref": "#/definitions/Kafka"
+            }
+          ]
+        },
+        "mysql": {
+          "description": "Optional. The MySQL sink information.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/MySQL"
             }
           ]
         }
@@ -1416,41 +1511,6 @@
         "BY_DATABASE"
       ],
       "description": " - ONE_TOPIC: One topic for all data.\n - BY_TABLE: Dispatch by table.\n - BY_DATABASE: Dispatch by database."
-    },
-    "TopicPartitionConfig": {
-      "type": "object",
-      "properties": {
-        "dispatchType": {
-          "$ref": "#/definitions/TopicDispatchType.Enum"
-        },
-        "defaultTopic": {
-          "type": "string"
-        },
-        "topicPrefix": {
-          "type": "string"
-        },
-        "separator": {
-          "type": "string"
-        },
-        "topicSuffix": {
-          "type": "string"
-        },
-        "replicationFactor": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "partitionNum": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "partitionDispatchers": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/PartitionDispatcherConfig"
-          }
-        }
-      }
     }
   }
 }

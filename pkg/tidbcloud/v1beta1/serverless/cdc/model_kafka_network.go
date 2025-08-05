@@ -14,37 +14,38 @@ import (
 	"encoding/json"
 )
 
-// checks if the NetworkInfo type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &NetworkInfo{}
+// checks if the KafkaNetwork type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &KafkaNetwork{}
 
-// NetworkInfo struct for NetworkInfo
-type NetworkInfo struct {
+// KafkaNetwork struct for KafkaNetwork
+type KafkaNetwork struct {
 	NetworkType            *KafkaNetworkTypeEnum `json:"networkType,omitempty"`
 	PrivateLinkServiceName *string               `json:"privateLinkServiceName,omitempty"`
+	PublicEndpoints        *string               `json:"publicEndpoints,omitempty"`
 	AdditionalProperties   map[string]interface{}
 }
 
-type _NetworkInfo NetworkInfo
+type _KafkaNetwork KafkaNetwork
 
-// NewNetworkInfo instantiates a new NetworkInfo object
+// NewKafkaNetwork instantiates a new KafkaNetwork object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewNetworkInfo() *NetworkInfo {
-	this := NetworkInfo{}
+func NewKafkaNetwork() *KafkaNetwork {
+	this := KafkaNetwork{}
 	return &this
 }
 
-// NewNetworkInfoWithDefaults instantiates a new NetworkInfo object
+// NewKafkaNetworkWithDefaults instantiates a new KafkaNetwork object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewNetworkInfoWithDefaults() *NetworkInfo {
-	this := NetworkInfo{}
+func NewKafkaNetworkWithDefaults() *KafkaNetwork {
+	this := KafkaNetwork{}
 	return &this
 }
 
 // GetNetworkType returns the NetworkType field value if set, zero value otherwise.
-func (o *NetworkInfo) GetNetworkType() KafkaNetworkTypeEnum {
+func (o *KafkaNetwork) GetNetworkType() KafkaNetworkTypeEnum {
 	if o == nil || IsNil(o.NetworkType) {
 		var ret KafkaNetworkTypeEnum
 		return ret
@@ -54,7 +55,7 @@ func (o *NetworkInfo) GetNetworkType() KafkaNetworkTypeEnum {
 
 // GetNetworkTypeOk returns a tuple with the NetworkType field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *NetworkInfo) GetNetworkTypeOk() (*KafkaNetworkTypeEnum, bool) {
+func (o *KafkaNetwork) GetNetworkTypeOk() (*KafkaNetworkTypeEnum, bool) {
 	if o == nil || IsNil(o.NetworkType) {
 		return nil, false
 	}
@@ -62,7 +63,7 @@ func (o *NetworkInfo) GetNetworkTypeOk() (*KafkaNetworkTypeEnum, bool) {
 }
 
 // HasNetworkType returns a boolean if a field has been set.
-func (o *NetworkInfo) HasNetworkType() bool {
+func (o *KafkaNetwork) HasNetworkType() bool {
 	if o != nil && !IsNil(o.NetworkType) {
 		return true
 	}
@@ -71,12 +72,12 @@ func (o *NetworkInfo) HasNetworkType() bool {
 }
 
 // SetNetworkType gets a reference to the given KafkaNetworkTypeEnum and assigns it to the NetworkType field.
-func (o *NetworkInfo) SetNetworkType(v KafkaNetworkTypeEnum) {
+func (o *KafkaNetwork) SetNetworkType(v KafkaNetworkTypeEnum) {
 	o.NetworkType = &v
 }
 
 // GetPrivateLinkServiceName returns the PrivateLinkServiceName field value if set, zero value otherwise.
-func (o *NetworkInfo) GetPrivateLinkServiceName() string {
+func (o *KafkaNetwork) GetPrivateLinkServiceName() string {
 	if o == nil || IsNil(o.PrivateLinkServiceName) {
 		var ret string
 		return ret
@@ -86,7 +87,7 @@ func (o *NetworkInfo) GetPrivateLinkServiceName() string {
 
 // GetPrivateLinkServiceNameOk returns a tuple with the PrivateLinkServiceName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *NetworkInfo) GetPrivateLinkServiceNameOk() (*string, bool) {
+func (o *KafkaNetwork) GetPrivateLinkServiceNameOk() (*string, bool) {
 	if o == nil || IsNil(o.PrivateLinkServiceName) {
 		return nil, false
 	}
@@ -94,7 +95,7 @@ func (o *NetworkInfo) GetPrivateLinkServiceNameOk() (*string, bool) {
 }
 
 // HasPrivateLinkServiceName returns a boolean if a field has been set.
-func (o *NetworkInfo) HasPrivateLinkServiceName() bool {
+func (o *KafkaNetwork) HasPrivateLinkServiceName() bool {
 	if o != nil && !IsNil(o.PrivateLinkServiceName) {
 		return true
 	}
@@ -103,11 +104,43 @@ func (o *NetworkInfo) HasPrivateLinkServiceName() bool {
 }
 
 // SetPrivateLinkServiceName gets a reference to the given string and assigns it to the PrivateLinkServiceName field.
-func (o *NetworkInfo) SetPrivateLinkServiceName(v string) {
+func (o *KafkaNetwork) SetPrivateLinkServiceName(v string) {
 	o.PrivateLinkServiceName = &v
 }
 
-func (o NetworkInfo) MarshalJSON() ([]byte, error) {
+// GetPublicEndpoints returns the PublicEndpoints field value if set, zero value otherwise.
+func (o *KafkaNetwork) GetPublicEndpoints() string {
+	if o == nil || IsNil(o.PublicEndpoints) {
+		var ret string
+		return ret
+	}
+	return *o.PublicEndpoints
+}
+
+// GetPublicEndpointsOk returns a tuple with the PublicEndpoints field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *KafkaNetwork) GetPublicEndpointsOk() (*string, bool) {
+	if o == nil || IsNil(o.PublicEndpoints) {
+		return nil, false
+	}
+	return o.PublicEndpoints, true
+}
+
+// HasPublicEndpoints returns a boolean if a field has been set.
+func (o *KafkaNetwork) HasPublicEndpoints() bool {
+	if o != nil && !IsNil(o.PublicEndpoints) {
+		return true
+	}
+
+	return false
+}
+
+// SetPublicEndpoints gets a reference to the given string and assigns it to the PublicEndpoints field.
+func (o *KafkaNetwork) SetPublicEndpoints(v string) {
+	o.PublicEndpoints = &v
+}
+
+func (o KafkaNetwork) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -115,13 +148,16 @@ func (o NetworkInfo) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o NetworkInfo) ToMap() (map[string]interface{}, error) {
+func (o KafkaNetwork) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.NetworkType) {
 		toSerialize["networkType"] = o.NetworkType
 	}
 	if !IsNil(o.PrivateLinkServiceName) {
 		toSerialize["privateLinkServiceName"] = o.PrivateLinkServiceName
+	}
+	if !IsNil(o.PublicEndpoints) {
+		toSerialize["publicEndpoints"] = o.PublicEndpoints
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -131,60 +167,61 @@ func (o NetworkInfo) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *NetworkInfo) UnmarshalJSON(data []byte) (err error) {
-	varNetworkInfo := _NetworkInfo{}
+func (o *KafkaNetwork) UnmarshalJSON(data []byte) (err error) {
+	varKafkaNetwork := _KafkaNetwork{}
 
-	err = json.Unmarshal(data, &varNetworkInfo)
+	err = json.Unmarshal(data, &varKafkaNetwork)
 
 	if err != nil {
 		return err
 	}
 
-	*o = NetworkInfo(varNetworkInfo)
+	*o = KafkaNetwork(varKafkaNetwork)
 
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "networkType")
 		delete(additionalProperties, "privateLinkServiceName")
+		delete(additionalProperties, "publicEndpoints")
 		o.AdditionalProperties = additionalProperties
 	}
 
 	return err
 }
 
-type NullableNetworkInfo struct {
-	value *NetworkInfo
+type NullableKafkaNetwork struct {
+	value *KafkaNetwork
 	isSet bool
 }
 
-func (v NullableNetworkInfo) Get() *NetworkInfo {
+func (v NullableKafkaNetwork) Get() *KafkaNetwork {
 	return v.value
 }
 
-func (v *NullableNetworkInfo) Set(val *NetworkInfo) {
+func (v *NullableKafkaNetwork) Set(val *KafkaNetwork) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableNetworkInfo) IsSet() bool {
+func (v NullableKafkaNetwork) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableNetworkInfo) Unset() {
+func (v *NullableKafkaNetwork) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableNetworkInfo(val *NetworkInfo) *NullableNetworkInfo {
-	return &NullableNetworkInfo{value: val, isSet: true}
+func NewNullableKafkaNetwork(val *KafkaNetwork) *NullableKafkaNetwork {
+	return &NullableKafkaNetwork{value: val, isSet: true}
 }
 
-func (v NullableNetworkInfo) MarshalJSON() ([]byte, error) {
+func (v NullableKafkaNetwork) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableNetworkInfo) UnmarshalJSON(src []byte) error {
+func (v *NullableKafkaNetwork) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

@@ -14,38 +14,39 @@ import (
 	"encoding/json"
 )
 
-// checks if the Authentication type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &Authentication{}
+// checks if the KafkaAuthentication type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &KafkaAuthentication{}
 
-// Authentication struct for Authentication
-type Authentication struct {
+// KafkaAuthentication struct for KafkaAuthentication
+type KafkaAuthentication struct {
 	AuthType             *KafkaAuthTypeEnum `json:"authType,omitempty"`
 	UserName             *string            `json:"userName,omitempty"`
 	Password             *string            `json:"password,omitempty"`
+	EnableTls            *bool              `json:"enableTls,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _Authentication Authentication
+type _KafkaAuthentication KafkaAuthentication
 
-// NewAuthentication instantiates a new Authentication object
+// NewKafkaAuthentication instantiates a new KafkaAuthentication object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewAuthentication() *Authentication {
-	this := Authentication{}
+func NewKafkaAuthentication() *KafkaAuthentication {
+	this := KafkaAuthentication{}
 	return &this
 }
 
-// NewAuthenticationWithDefaults instantiates a new Authentication object
+// NewKafkaAuthenticationWithDefaults instantiates a new KafkaAuthentication object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewAuthenticationWithDefaults() *Authentication {
-	this := Authentication{}
+func NewKafkaAuthenticationWithDefaults() *KafkaAuthentication {
+	this := KafkaAuthentication{}
 	return &this
 }
 
 // GetAuthType returns the AuthType field value if set, zero value otherwise.
-func (o *Authentication) GetAuthType() KafkaAuthTypeEnum {
+func (o *KafkaAuthentication) GetAuthType() KafkaAuthTypeEnum {
 	if o == nil || IsNil(o.AuthType) {
 		var ret KafkaAuthTypeEnum
 		return ret
@@ -55,7 +56,7 @@ func (o *Authentication) GetAuthType() KafkaAuthTypeEnum {
 
 // GetAuthTypeOk returns a tuple with the AuthType field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Authentication) GetAuthTypeOk() (*KafkaAuthTypeEnum, bool) {
+func (o *KafkaAuthentication) GetAuthTypeOk() (*KafkaAuthTypeEnum, bool) {
 	if o == nil || IsNil(o.AuthType) {
 		return nil, false
 	}
@@ -63,7 +64,7 @@ func (o *Authentication) GetAuthTypeOk() (*KafkaAuthTypeEnum, bool) {
 }
 
 // HasAuthType returns a boolean if a field has been set.
-func (o *Authentication) HasAuthType() bool {
+func (o *KafkaAuthentication) HasAuthType() bool {
 	if o != nil && !IsNil(o.AuthType) {
 		return true
 	}
@@ -72,12 +73,12 @@ func (o *Authentication) HasAuthType() bool {
 }
 
 // SetAuthType gets a reference to the given KafkaAuthTypeEnum and assigns it to the AuthType field.
-func (o *Authentication) SetAuthType(v KafkaAuthTypeEnum) {
+func (o *KafkaAuthentication) SetAuthType(v KafkaAuthTypeEnum) {
 	o.AuthType = &v
 }
 
 // GetUserName returns the UserName field value if set, zero value otherwise.
-func (o *Authentication) GetUserName() string {
+func (o *KafkaAuthentication) GetUserName() string {
 	if o == nil || IsNil(o.UserName) {
 		var ret string
 		return ret
@@ -87,7 +88,7 @@ func (o *Authentication) GetUserName() string {
 
 // GetUserNameOk returns a tuple with the UserName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Authentication) GetUserNameOk() (*string, bool) {
+func (o *KafkaAuthentication) GetUserNameOk() (*string, bool) {
 	if o == nil || IsNil(o.UserName) {
 		return nil, false
 	}
@@ -95,7 +96,7 @@ func (o *Authentication) GetUserNameOk() (*string, bool) {
 }
 
 // HasUserName returns a boolean if a field has been set.
-func (o *Authentication) HasUserName() bool {
+func (o *KafkaAuthentication) HasUserName() bool {
 	if o != nil && !IsNil(o.UserName) {
 		return true
 	}
@@ -104,12 +105,12 @@ func (o *Authentication) HasUserName() bool {
 }
 
 // SetUserName gets a reference to the given string and assigns it to the UserName field.
-func (o *Authentication) SetUserName(v string) {
+func (o *KafkaAuthentication) SetUserName(v string) {
 	o.UserName = &v
 }
 
 // GetPassword returns the Password field value if set, zero value otherwise.
-func (o *Authentication) GetPassword() string {
+func (o *KafkaAuthentication) GetPassword() string {
 	if o == nil || IsNil(o.Password) {
 		var ret string
 		return ret
@@ -119,7 +120,7 @@ func (o *Authentication) GetPassword() string {
 
 // GetPasswordOk returns a tuple with the Password field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Authentication) GetPasswordOk() (*string, bool) {
+func (o *KafkaAuthentication) GetPasswordOk() (*string, bool) {
 	if o == nil || IsNil(o.Password) {
 		return nil, false
 	}
@@ -127,7 +128,7 @@ func (o *Authentication) GetPasswordOk() (*string, bool) {
 }
 
 // HasPassword returns a boolean if a field has been set.
-func (o *Authentication) HasPassword() bool {
+func (o *KafkaAuthentication) HasPassword() bool {
 	if o != nil && !IsNil(o.Password) {
 		return true
 	}
@@ -136,11 +137,43 @@ func (o *Authentication) HasPassword() bool {
 }
 
 // SetPassword gets a reference to the given string and assigns it to the Password field.
-func (o *Authentication) SetPassword(v string) {
+func (o *KafkaAuthentication) SetPassword(v string) {
 	o.Password = &v
 }
 
-func (o Authentication) MarshalJSON() ([]byte, error) {
+// GetEnableTls returns the EnableTls field value if set, zero value otherwise.
+func (o *KafkaAuthentication) GetEnableTls() bool {
+	if o == nil || IsNil(o.EnableTls) {
+		var ret bool
+		return ret
+	}
+	return *o.EnableTls
+}
+
+// GetEnableTlsOk returns a tuple with the EnableTls field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *KafkaAuthentication) GetEnableTlsOk() (*bool, bool) {
+	if o == nil || IsNil(o.EnableTls) {
+		return nil, false
+	}
+	return o.EnableTls, true
+}
+
+// HasEnableTls returns a boolean if a field has been set.
+func (o *KafkaAuthentication) HasEnableTls() bool {
+	if o != nil && !IsNil(o.EnableTls) {
+		return true
+	}
+
+	return false
+}
+
+// SetEnableTls gets a reference to the given bool and assigns it to the EnableTls field.
+func (o *KafkaAuthentication) SetEnableTls(v bool) {
+	o.EnableTls = &v
+}
+
+func (o KafkaAuthentication) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -148,7 +181,7 @@ func (o Authentication) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o Authentication) ToMap() (map[string]interface{}, error) {
+func (o KafkaAuthentication) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.AuthType) {
 		toSerialize["authType"] = o.AuthType
@@ -159,6 +192,9 @@ func (o Authentication) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Password) {
 		toSerialize["password"] = o.Password
 	}
+	if !IsNil(o.EnableTls) {
+		toSerialize["enableTls"] = o.EnableTls
+	}
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -167,16 +203,16 @@ func (o Authentication) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *Authentication) UnmarshalJSON(data []byte) (err error) {
-	varAuthentication := _Authentication{}
+func (o *KafkaAuthentication) UnmarshalJSON(data []byte) (err error) {
+	varKafkaAuthentication := _KafkaAuthentication{}
 
-	err = json.Unmarshal(data, &varAuthentication)
+	err = json.Unmarshal(data, &varKafkaAuthentication)
 
 	if err != nil {
 		return err
 	}
 
-	*o = Authentication(varAuthentication)
+	*o = KafkaAuthentication(varKafkaAuthentication)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -184,44 +220,45 @@ func (o *Authentication) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "authType")
 		delete(additionalProperties, "userName")
 		delete(additionalProperties, "password")
+		delete(additionalProperties, "enableTls")
 		o.AdditionalProperties = additionalProperties
 	}
 
 	return err
 }
 
-type NullableAuthentication struct {
-	value *Authentication
+type NullableKafkaAuthentication struct {
+	value *KafkaAuthentication
 	isSet bool
 }
 
-func (v NullableAuthentication) Get() *Authentication {
+func (v NullableKafkaAuthentication) Get() *KafkaAuthentication {
 	return v.value
 }
 
-func (v *NullableAuthentication) Set(val *Authentication) {
+func (v *NullableKafkaAuthentication) Set(val *KafkaAuthentication) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableAuthentication) IsSet() bool {
+func (v NullableKafkaAuthentication) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableAuthentication) Unset() {
+func (v *NullableKafkaAuthentication) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableAuthentication(val *Authentication) *NullableAuthentication {
-	return &NullableAuthentication{value: val, isSet: true}
+func NewNullableKafkaAuthentication(val *KafkaAuthentication) *NullableKafkaAuthentication {
+	return &NullableKafkaAuthentication{value: val, isSet: true}
 }
 
-func (v NullableAuthentication) MarshalJSON() ([]byte, error) {
+func (v NullableKafkaAuthentication) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableAuthentication) UnmarshalJSON(src []byte) error {
+func (v *NullableKafkaAuthentication) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

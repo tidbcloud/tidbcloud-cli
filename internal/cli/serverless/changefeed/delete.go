@@ -150,7 +150,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			_, err = d.DeleteConnector(ctx, clusterID, changefeedID)
+			_, err = d.DeleteChangefeed(ctx, clusterID, changefeedID)
 			if err != nil {
 				return errors.Trace(err)
 			}

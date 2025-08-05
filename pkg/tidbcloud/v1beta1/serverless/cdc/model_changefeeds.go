@@ -14,73 +14,73 @@ import (
 	"encoding/json"
 )
 
-// checks if the Connectors type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &Connectors{}
+// checks if the Changefeeds type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Changefeeds{}
 
-// Connectors struct for Connectors
-type Connectors struct {
-	// The list of connectors.
-	Connectors []Connector `json:"connectors,omitempty"`
+// Changefeeds struct for Changefeeds
+type Changefeeds struct {
+	// The list of changefeeds.
+	Changefeeds []Changefeed `json:"changefeeds,omitempty"`
 	// The token provided to retrieve the next page of results.
 	NextPageToken *string `json:"nextPageToken,omitempty"`
-	// The total number of connectors.
+	// The total number of changefeeds.
 	TotalSize            *int64 `json:"totalSize,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _Connectors Connectors
+type _Changefeeds Changefeeds
 
-// NewConnectors instantiates a new Connectors object
+// NewChangefeeds instantiates a new Changefeeds object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewConnectors() *Connectors {
-	this := Connectors{}
+func NewChangefeeds() *Changefeeds {
+	this := Changefeeds{}
 	return &this
 }
 
-// NewConnectorsWithDefaults instantiates a new Connectors object
+// NewChangefeedsWithDefaults instantiates a new Changefeeds object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewConnectorsWithDefaults() *Connectors {
-	this := Connectors{}
+func NewChangefeedsWithDefaults() *Changefeeds {
+	this := Changefeeds{}
 	return &this
 }
 
-// GetConnectors returns the Connectors field value if set, zero value otherwise.
-func (o *Connectors) GetConnectors() []Connector {
-	if o == nil || IsNil(o.Connectors) {
-		var ret []Connector
+// GetChangefeeds returns the Changefeeds field value if set, zero value otherwise.
+func (o *Changefeeds) GetChangefeeds() []Changefeed {
+	if o == nil || IsNil(o.Changefeeds) {
+		var ret []Changefeed
 		return ret
 	}
-	return o.Connectors
+	return o.Changefeeds
 }
 
-// GetConnectorsOk returns a tuple with the Connectors field value if set, nil otherwise
+// GetChangefeedsOk returns a tuple with the Changefeeds field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Connectors) GetConnectorsOk() ([]Connector, bool) {
-	if o == nil || IsNil(o.Connectors) {
+func (o *Changefeeds) GetChangefeedsOk() ([]Changefeed, bool) {
+	if o == nil || IsNil(o.Changefeeds) {
 		return nil, false
 	}
-	return o.Connectors, true
+	return o.Changefeeds, true
 }
 
-// HasConnectors returns a boolean if a field has been set.
-func (o *Connectors) HasConnectors() bool {
-	if o != nil && !IsNil(o.Connectors) {
+// HasChangefeeds returns a boolean if a field has been set.
+func (o *Changefeeds) HasChangefeeds() bool {
+	if o != nil && !IsNil(o.Changefeeds) {
 		return true
 	}
 
 	return false
 }
 
-// SetConnectors gets a reference to the given []Connector and assigns it to the Connectors field.
-func (o *Connectors) SetConnectors(v []Connector) {
-	o.Connectors = v
+// SetChangefeeds gets a reference to the given []Changefeed and assigns it to the Changefeeds field.
+func (o *Changefeeds) SetChangefeeds(v []Changefeed) {
+	o.Changefeeds = v
 }
 
 // GetNextPageToken returns the NextPageToken field value if set, zero value otherwise.
-func (o *Connectors) GetNextPageToken() string {
+func (o *Changefeeds) GetNextPageToken() string {
 	if o == nil || IsNil(o.NextPageToken) {
 		var ret string
 		return ret
@@ -90,7 +90,7 @@ func (o *Connectors) GetNextPageToken() string {
 
 // GetNextPageTokenOk returns a tuple with the NextPageToken field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Connectors) GetNextPageTokenOk() (*string, bool) {
+func (o *Changefeeds) GetNextPageTokenOk() (*string, bool) {
 	if o == nil || IsNil(o.NextPageToken) {
 		return nil, false
 	}
@@ -98,7 +98,7 @@ func (o *Connectors) GetNextPageTokenOk() (*string, bool) {
 }
 
 // HasNextPageToken returns a boolean if a field has been set.
-func (o *Connectors) HasNextPageToken() bool {
+func (o *Changefeeds) HasNextPageToken() bool {
 	if o != nil && !IsNil(o.NextPageToken) {
 		return true
 	}
@@ -107,12 +107,12 @@ func (o *Connectors) HasNextPageToken() bool {
 }
 
 // SetNextPageToken gets a reference to the given string and assigns it to the NextPageToken field.
-func (o *Connectors) SetNextPageToken(v string) {
+func (o *Changefeeds) SetNextPageToken(v string) {
 	o.NextPageToken = &v
 }
 
 // GetTotalSize returns the TotalSize field value if set, zero value otherwise.
-func (o *Connectors) GetTotalSize() int64 {
+func (o *Changefeeds) GetTotalSize() int64 {
 	if o == nil || IsNil(o.TotalSize) {
 		var ret int64
 		return ret
@@ -122,7 +122,7 @@ func (o *Connectors) GetTotalSize() int64 {
 
 // GetTotalSizeOk returns a tuple with the TotalSize field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Connectors) GetTotalSizeOk() (*int64, bool) {
+func (o *Changefeeds) GetTotalSizeOk() (*int64, bool) {
 	if o == nil || IsNil(o.TotalSize) {
 		return nil, false
 	}
@@ -130,7 +130,7 @@ func (o *Connectors) GetTotalSizeOk() (*int64, bool) {
 }
 
 // HasTotalSize returns a boolean if a field has been set.
-func (o *Connectors) HasTotalSize() bool {
+func (o *Changefeeds) HasTotalSize() bool {
 	if o != nil && !IsNil(o.TotalSize) {
 		return true
 	}
@@ -139,11 +139,11 @@ func (o *Connectors) HasTotalSize() bool {
 }
 
 // SetTotalSize gets a reference to the given int64 and assigns it to the TotalSize field.
-func (o *Connectors) SetTotalSize(v int64) {
+func (o *Changefeeds) SetTotalSize(v int64) {
 	o.TotalSize = &v
 }
 
-func (o Connectors) MarshalJSON() ([]byte, error) {
+func (o Changefeeds) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -151,10 +151,10 @@ func (o Connectors) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o Connectors) ToMap() (map[string]interface{}, error) {
+func (o Changefeeds) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Connectors) {
-		toSerialize["connectors"] = o.Connectors
+	if !IsNil(o.Changefeeds) {
+		toSerialize["changefeeds"] = o.Changefeeds
 	}
 	if !IsNil(o.NextPageToken) {
 		toSerialize["nextPageToken"] = o.NextPageToken
@@ -170,21 +170,21 @@ func (o Connectors) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *Connectors) UnmarshalJSON(data []byte) (err error) {
-	varConnectors := _Connectors{}
+func (o *Changefeeds) UnmarshalJSON(data []byte) (err error) {
+	varChangefeeds := _Changefeeds{}
 
-	err = json.Unmarshal(data, &varConnectors)
+	err = json.Unmarshal(data, &varChangefeeds)
 
 	if err != nil {
 		return err
 	}
 
-	*o = Connectors(varConnectors)
+	*o = Changefeeds(varChangefeeds)
 
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "connectors")
+		delete(additionalProperties, "changefeeds")
 		delete(additionalProperties, "nextPageToken")
 		delete(additionalProperties, "totalSize")
 		o.AdditionalProperties = additionalProperties
@@ -193,38 +193,38 @@ func (o *Connectors) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
-type NullableConnectors struct {
-	value *Connectors
+type NullableChangefeeds struct {
+	value *Changefeeds
 	isSet bool
 }
 
-func (v NullableConnectors) Get() *Connectors {
+func (v NullableChangefeeds) Get() *Changefeeds {
 	return v.value
 }
 
-func (v *NullableConnectors) Set(val *Connectors) {
+func (v *NullableChangefeeds) Set(val *Changefeeds) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableConnectors) IsSet() bool {
+func (v NullableChangefeeds) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableConnectors) Unset() {
+func (v *NullableChangefeeds) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableConnectors(val *Connectors) *NullableConnectors {
-	return &NullableConnectors{value: val, isSet: true}
+func NewNullableChangefeeds(val *Changefeeds) *NullableChangefeeds {
+	return &NullableChangefeeds{value: val, isSet: true}
 }
 
-func (v NullableConnectors) MarshalJSON() ([]byte, error) {
+func (v NullableChangefeeds) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableConnectors) UnmarshalJSON(src []byte) error {
+func (v *NullableChangefeeds) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

@@ -16,26 +16,26 @@ import (
 	"time"
 )
 
-// checks if the Connector type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &Connector{}
+// checks if the Changefeed type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Changefeed{}
 
-// Connector struct for Connector
-type Connector struct {
+// Changefeed struct for Changefeed
+type Changefeed struct {
 	// Required. The ID of the cluster.
 	ClusterId string `json:"clusterId"`
-	// Output_only. The ID of the connector.
-	ConnectorId *string `json:"connectorId,omitempty"`
-	// Output_only. The state of the connector.  Optional. The name of the connector.
+	// Output_only. The ID of the changefeed.
+	ChangefeedId *string `json:"changefeedId,omitempty"`
+	// Output_only. The state of the changefeed.  Optional. The name of the changefeed.
 	State *CDCStateEnum `json:"state,omitempty"`
-	// Optional. The name of the connector.
-	Name *string `json:"name,omitempty"`
-	// Required. The sink of the connector.
+	// Optional. The name of the changefeed.
+	DisplayName *string `json:"displayName,omitempty"`
+	// Required. The sink of the changefeed.
 	Sink SinkInfo `json:"sink"`
-	// Required. The filter of the connector.
+	// Required. The filter of the changefeed.
 	Filter CDCFilter `json:"filter"`
-	// Required. The start position of the connector.
+	// Required. The start position of the changefeed.
 	StartPosition StartPosition `json:"startPosition"`
-	// Output_only. The current checkpoint for the connector.
+	// Output_only. The current checkpoint for the changefeed.
 	Checkpoint *CDCCheckpoint `json:"checkpoint,omitempty"`
 	// Output_only. The error message.
 	Error *string `json:"error,omitempty"`
@@ -46,14 +46,14 @@ type Connector struct {
 	AdditionalProperties map[string]interface{}
 }
 
-type _Connector Connector
+type _Changefeed Changefeed
 
-// NewConnector instantiates a new Connector object
+// NewChangefeed instantiates a new Changefeed object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewConnector(clusterId string, sink SinkInfo, filter CDCFilter, startPosition StartPosition) *Connector {
-	this := Connector{}
+func NewChangefeed(clusterId string, sink SinkInfo, filter CDCFilter, startPosition StartPosition) *Changefeed {
+	this := Changefeed{}
 	this.ClusterId = clusterId
 	this.Sink = sink
 	this.Filter = filter
@@ -61,16 +61,16 @@ func NewConnector(clusterId string, sink SinkInfo, filter CDCFilter, startPositi
 	return &this
 }
 
-// NewConnectorWithDefaults instantiates a new Connector object
+// NewChangefeedWithDefaults instantiates a new Changefeed object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewConnectorWithDefaults() *Connector {
-	this := Connector{}
+func NewChangefeedWithDefaults() *Changefeed {
+	this := Changefeed{}
 	return &this
 }
 
 // GetClusterId returns the ClusterId field value
-func (o *Connector) GetClusterId() string {
+func (o *Changefeed) GetClusterId() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -81,7 +81,7 @@ func (o *Connector) GetClusterId() string {
 
 // GetClusterIdOk returns a tuple with the ClusterId field value
 // and a boolean to check if the value has been set.
-func (o *Connector) GetClusterIdOk() (*string, bool) {
+func (o *Changefeed) GetClusterIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -89,44 +89,44 @@ func (o *Connector) GetClusterIdOk() (*string, bool) {
 }
 
 // SetClusterId sets field value
-func (o *Connector) SetClusterId(v string) {
+func (o *Changefeed) SetClusterId(v string) {
 	o.ClusterId = v
 }
 
-// GetConnectorId returns the ConnectorId field value if set, zero value otherwise.
-func (o *Connector) GetConnectorId() string {
-	if o == nil || IsNil(o.ConnectorId) {
+// GetChangefeedId returns the ChangefeedId field value if set, zero value otherwise.
+func (o *Changefeed) GetChangefeedId() string {
+	if o == nil || IsNil(o.ChangefeedId) {
 		var ret string
 		return ret
 	}
-	return *o.ConnectorId
+	return *o.ChangefeedId
 }
 
-// GetConnectorIdOk returns a tuple with the ConnectorId field value if set, nil otherwise
+// GetChangefeedIdOk returns a tuple with the ChangefeedId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Connector) GetConnectorIdOk() (*string, bool) {
-	if o == nil || IsNil(o.ConnectorId) {
+func (o *Changefeed) GetChangefeedIdOk() (*string, bool) {
+	if o == nil || IsNil(o.ChangefeedId) {
 		return nil, false
 	}
-	return o.ConnectorId, true
+	return o.ChangefeedId, true
 }
 
-// HasConnectorId returns a boolean if a field has been set.
-func (o *Connector) HasConnectorId() bool {
-	if o != nil && !IsNil(o.ConnectorId) {
+// HasChangefeedId returns a boolean if a field has been set.
+func (o *Changefeed) HasChangefeedId() bool {
+	if o != nil && !IsNil(o.ChangefeedId) {
 		return true
 	}
 
 	return false
 }
 
-// SetConnectorId gets a reference to the given string and assigns it to the ConnectorId field.
-func (o *Connector) SetConnectorId(v string) {
-	o.ConnectorId = &v
+// SetChangefeedId gets a reference to the given string and assigns it to the ChangefeedId field.
+func (o *Changefeed) SetChangefeedId(v string) {
+	o.ChangefeedId = &v
 }
 
 // GetState returns the State field value if set, zero value otherwise.
-func (o *Connector) GetState() CDCStateEnum {
+func (o *Changefeed) GetState() CDCStateEnum {
 	if o == nil || IsNil(o.State) {
 		var ret CDCStateEnum
 		return ret
@@ -136,7 +136,7 @@ func (o *Connector) GetState() CDCStateEnum {
 
 // GetStateOk returns a tuple with the State field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Connector) GetStateOk() (*CDCStateEnum, bool) {
+func (o *Changefeed) GetStateOk() (*CDCStateEnum, bool) {
 	if o == nil || IsNil(o.State) {
 		return nil, false
 	}
@@ -144,7 +144,7 @@ func (o *Connector) GetStateOk() (*CDCStateEnum, bool) {
 }
 
 // HasState returns a boolean if a field has been set.
-func (o *Connector) HasState() bool {
+func (o *Changefeed) HasState() bool {
 	if o != nil && !IsNil(o.State) {
 		return true
 	}
@@ -153,44 +153,44 @@ func (o *Connector) HasState() bool {
 }
 
 // SetState gets a reference to the given CDCStateEnum and assigns it to the State field.
-func (o *Connector) SetState(v CDCStateEnum) {
+func (o *Changefeed) SetState(v CDCStateEnum) {
 	o.State = &v
 }
 
-// GetName returns the Name field value if set, zero value otherwise.
-func (o *Connector) GetName() string {
-	if o == nil || IsNil(o.Name) {
+// GetDisplayName returns the DisplayName field value if set, zero value otherwise.
+func (o *Changefeed) GetDisplayName() string {
+	if o == nil || IsNil(o.DisplayName) {
 		var ret string
 		return ret
 	}
-	return *o.Name
+	return *o.DisplayName
 }
 
-// GetNameOk returns a tuple with the Name field value if set, nil otherwise
+// GetDisplayNameOk returns a tuple with the DisplayName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Connector) GetNameOk() (*string, bool) {
-	if o == nil || IsNil(o.Name) {
+func (o *Changefeed) GetDisplayNameOk() (*string, bool) {
+	if o == nil || IsNil(o.DisplayName) {
 		return nil, false
 	}
-	return o.Name, true
+	return o.DisplayName, true
 }
 
-// HasName returns a boolean if a field has been set.
-func (o *Connector) HasName() bool {
-	if o != nil && !IsNil(o.Name) {
+// HasDisplayName returns a boolean if a field has been set.
+func (o *Changefeed) HasDisplayName() bool {
+	if o != nil && !IsNil(o.DisplayName) {
 		return true
 	}
 
 	return false
 }
 
-// SetName gets a reference to the given string and assigns it to the Name field.
-func (o *Connector) SetName(v string) {
-	o.Name = &v
+// SetDisplayName gets a reference to the given string and assigns it to the DisplayName field.
+func (o *Changefeed) SetDisplayName(v string) {
+	o.DisplayName = &v
 }
 
 // GetSink returns the Sink field value
-func (o *Connector) GetSink() SinkInfo {
+func (o *Changefeed) GetSink() SinkInfo {
 	if o == nil {
 		var ret SinkInfo
 		return ret
@@ -201,7 +201,7 @@ func (o *Connector) GetSink() SinkInfo {
 
 // GetSinkOk returns a tuple with the Sink field value
 // and a boolean to check if the value has been set.
-func (o *Connector) GetSinkOk() (*SinkInfo, bool) {
+func (o *Changefeed) GetSinkOk() (*SinkInfo, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -209,12 +209,12 @@ func (o *Connector) GetSinkOk() (*SinkInfo, bool) {
 }
 
 // SetSink sets field value
-func (o *Connector) SetSink(v SinkInfo) {
+func (o *Changefeed) SetSink(v SinkInfo) {
 	o.Sink = v
 }
 
 // GetFilter returns the Filter field value
-func (o *Connector) GetFilter() CDCFilter {
+func (o *Changefeed) GetFilter() CDCFilter {
 	if o == nil {
 		var ret CDCFilter
 		return ret
@@ -225,7 +225,7 @@ func (o *Connector) GetFilter() CDCFilter {
 
 // GetFilterOk returns a tuple with the Filter field value
 // and a boolean to check if the value has been set.
-func (o *Connector) GetFilterOk() (*CDCFilter, bool) {
+func (o *Changefeed) GetFilterOk() (*CDCFilter, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -233,12 +233,12 @@ func (o *Connector) GetFilterOk() (*CDCFilter, bool) {
 }
 
 // SetFilter sets field value
-func (o *Connector) SetFilter(v CDCFilter) {
+func (o *Changefeed) SetFilter(v CDCFilter) {
 	o.Filter = v
 }
 
 // GetStartPosition returns the StartPosition field value
-func (o *Connector) GetStartPosition() StartPosition {
+func (o *Changefeed) GetStartPosition() StartPosition {
 	if o == nil {
 		var ret StartPosition
 		return ret
@@ -249,7 +249,7 @@ func (o *Connector) GetStartPosition() StartPosition {
 
 // GetStartPositionOk returns a tuple with the StartPosition field value
 // and a boolean to check if the value has been set.
-func (o *Connector) GetStartPositionOk() (*StartPosition, bool) {
+func (o *Changefeed) GetStartPositionOk() (*StartPosition, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -257,12 +257,12 @@ func (o *Connector) GetStartPositionOk() (*StartPosition, bool) {
 }
 
 // SetStartPosition sets field value
-func (o *Connector) SetStartPosition(v StartPosition) {
+func (o *Changefeed) SetStartPosition(v StartPosition) {
 	o.StartPosition = v
 }
 
 // GetCheckpoint returns the Checkpoint field value if set, zero value otherwise.
-func (o *Connector) GetCheckpoint() CDCCheckpoint {
+func (o *Changefeed) GetCheckpoint() CDCCheckpoint {
 	if o == nil || IsNil(o.Checkpoint) {
 		var ret CDCCheckpoint
 		return ret
@@ -272,7 +272,7 @@ func (o *Connector) GetCheckpoint() CDCCheckpoint {
 
 // GetCheckpointOk returns a tuple with the Checkpoint field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Connector) GetCheckpointOk() (*CDCCheckpoint, bool) {
+func (o *Changefeed) GetCheckpointOk() (*CDCCheckpoint, bool) {
 	if o == nil || IsNil(o.Checkpoint) {
 		return nil, false
 	}
@@ -280,7 +280,7 @@ func (o *Connector) GetCheckpointOk() (*CDCCheckpoint, bool) {
 }
 
 // HasCheckpoint returns a boolean if a field has been set.
-func (o *Connector) HasCheckpoint() bool {
+func (o *Changefeed) HasCheckpoint() bool {
 	if o != nil && !IsNil(o.Checkpoint) {
 		return true
 	}
@@ -289,12 +289,12 @@ func (o *Connector) HasCheckpoint() bool {
 }
 
 // SetCheckpoint gets a reference to the given CDCCheckpoint and assigns it to the Checkpoint field.
-func (o *Connector) SetCheckpoint(v CDCCheckpoint) {
+func (o *Changefeed) SetCheckpoint(v CDCCheckpoint) {
 	o.Checkpoint = &v
 }
 
 // GetError returns the Error field value if set, zero value otherwise.
-func (o *Connector) GetError() string {
+func (o *Changefeed) GetError() string {
 	if o == nil || IsNil(o.Error) {
 		var ret string
 		return ret
@@ -304,7 +304,7 @@ func (o *Connector) GetError() string {
 
 // GetErrorOk returns a tuple with the Error field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Connector) GetErrorOk() (*string, bool) {
+func (o *Changefeed) GetErrorOk() (*string, bool) {
 	if o == nil || IsNil(o.Error) {
 		return nil, false
 	}
@@ -312,7 +312,7 @@ func (o *Connector) GetErrorOk() (*string, bool) {
 }
 
 // HasError returns a boolean if a field has been set.
-func (o *Connector) HasError() bool {
+func (o *Changefeed) HasError() bool {
 	if o != nil && !IsNil(o.Error) {
 		return true
 	}
@@ -321,12 +321,12 @@ func (o *Connector) HasError() bool {
 }
 
 // SetError gets a reference to the given string and assigns it to the Error field.
-func (o *Connector) SetError(v string) {
+func (o *Changefeed) SetError(v string) {
 	o.Error = &v
 }
 
 // GetCreateTime returns the CreateTime field value if set, zero value otherwise.
-func (o *Connector) GetCreateTime() time.Time {
+func (o *Changefeed) GetCreateTime() time.Time {
 	if o == nil || IsNil(o.CreateTime) {
 		var ret time.Time
 		return ret
@@ -336,7 +336,7 @@ func (o *Connector) GetCreateTime() time.Time {
 
 // GetCreateTimeOk returns a tuple with the CreateTime field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Connector) GetCreateTimeOk() (*time.Time, bool) {
+func (o *Changefeed) GetCreateTimeOk() (*time.Time, bool) {
 	if o == nil || IsNil(o.CreateTime) {
 		return nil, false
 	}
@@ -344,7 +344,7 @@ func (o *Connector) GetCreateTimeOk() (*time.Time, bool) {
 }
 
 // HasCreateTime returns a boolean if a field has been set.
-func (o *Connector) HasCreateTime() bool {
+func (o *Changefeed) HasCreateTime() bool {
 	if o != nil && !IsNil(o.CreateTime) {
 		return true
 	}
@@ -353,12 +353,12 @@ func (o *Connector) HasCreateTime() bool {
 }
 
 // SetCreateTime gets a reference to the given time.Time and assigns it to the CreateTime field.
-func (o *Connector) SetCreateTime(v time.Time) {
+func (o *Changefeed) SetCreateTime(v time.Time) {
 	o.CreateTime = &v
 }
 
 // GetUpdateTime returns the UpdateTime field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *Connector) GetUpdateTime() time.Time {
+func (o *Changefeed) GetUpdateTime() time.Time {
 	if o == nil || IsNil(o.UpdateTime.Get()) {
 		var ret time.Time
 		return ret
@@ -369,7 +369,7 @@ func (o *Connector) GetUpdateTime() time.Time {
 // GetUpdateTimeOk returns a tuple with the UpdateTime field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Connector) GetUpdateTimeOk() (*time.Time, bool) {
+func (o *Changefeed) GetUpdateTimeOk() (*time.Time, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -377,7 +377,7 @@ func (o *Connector) GetUpdateTimeOk() (*time.Time, bool) {
 }
 
 // HasUpdateTime returns a boolean if a field has been set.
-func (o *Connector) HasUpdateTime() bool {
+func (o *Changefeed) HasUpdateTime() bool {
 	if o != nil && o.UpdateTime.IsSet() {
 		return true
 	}
@@ -386,21 +386,21 @@ func (o *Connector) HasUpdateTime() bool {
 }
 
 // SetUpdateTime gets a reference to the given NullableTime and assigns it to the UpdateTime field.
-func (o *Connector) SetUpdateTime(v time.Time) {
+func (o *Changefeed) SetUpdateTime(v time.Time) {
 	o.UpdateTime.Set(&v)
 }
 
 // SetUpdateTimeNil sets the value for UpdateTime to be an explicit nil
-func (o *Connector) SetUpdateTimeNil() {
+func (o *Changefeed) SetUpdateTimeNil() {
 	o.UpdateTime.Set(nil)
 }
 
 // UnsetUpdateTime ensures that no value is present for UpdateTime, not even an explicit nil
-func (o *Connector) UnsetUpdateTime() {
+func (o *Changefeed) UnsetUpdateTime() {
 	o.UpdateTime.Unset()
 }
 
-func (o Connector) MarshalJSON() ([]byte, error) {
+func (o Changefeed) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -408,17 +408,17 @@ func (o Connector) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o Connector) ToMap() (map[string]interface{}, error) {
+func (o Changefeed) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["clusterId"] = o.ClusterId
-	if !IsNil(o.ConnectorId) {
-		toSerialize["connectorId"] = o.ConnectorId
+	if !IsNil(o.ChangefeedId) {
+		toSerialize["changefeedId"] = o.ChangefeedId
 	}
 	if !IsNil(o.State) {
 		toSerialize["state"] = o.State
 	}
-	if !IsNil(o.Name) {
-		toSerialize["name"] = o.Name
+	if !IsNil(o.DisplayName) {
+		toSerialize["displayName"] = o.DisplayName
 	}
 	toSerialize["sink"] = o.Sink
 	toSerialize["filter"] = o.Filter
@@ -443,7 +443,7 @@ func (o Connector) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *Connector) UnmarshalJSON(data []byte) (err error) {
+func (o *Changefeed) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -468,23 +468,23 @@ func (o *Connector) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varConnector := _Connector{}
+	varChangefeed := _Changefeed{}
 
-	err = json.Unmarshal(data, &varConnector)
+	err = json.Unmarshal(data, &varChangefeed)
 
 	if err != nil {
 		return err
 	}
 
-	*o = Connector(varConnector)
+	*o = Changefeed(varChangefeed)
 
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "clusterId")
-		delete(additionalProperties, "connectorId")
+		delete(additionalProperties, "changefeedId")
 		delete(additionalProperties, "state")
-		delete(additionalProperties, "name")
+		delete(additionalProperties, "displayName")
 		delete(additionalProperties, "sink")
 		delete(additionalProperties, "filter")
 		delete(additionalProperties, "startPosition")
@@ -498,38 +498,38 @@ func (o *Connector) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
-type NullableConnector struct {
-	value *Connector
+type NullableChangefeed struct {
+	value *Changefeed
 	isSet bool
 }
 
-func (v NullableConnector) Get() *Connector {
+func (v NullableChangefeed) Get() *Changefeed {
 	return v.value
 }
 
-func (v *NullableConnector) Set(val *Connector) {
+func (v *NullableChangefeed) Set(val *Changefeed) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableConnector) IsSet() bool {
+func (v NullableChangefeed) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableConnector) Unset() {
+func (v *NullableChangefeed) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableConnector(val *Connector) *NullableConnector {
-	return &NullableConnector{value: val, isSet: true}
+func NewNullableChangefeed(val *Changefeed) *NullableChangefeed {
+	return &NullableChangefeed{value: val, isSet: true}
 }
 
-func (v NullableConnector) MarshalJSON() ([]byte, error) {
+func (v NullableChangefeed) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableConnector) UnmarshalJSON(src []byte) error {
+func (v *NullableChangefeed) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

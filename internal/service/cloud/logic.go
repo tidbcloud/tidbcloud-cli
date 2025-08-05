@@ -966,14 +966,15 @@ func GetSelectedChangefeed(ctx context.Context, clusterID string, pageSize int64
 	pageSizeInt32 := int32(pageSize)
 	var pageToken *string
 
-	resp, err := client.ListConnectors(ctx, clusterID, &pageSizeInt32, nil, nil, nil)
+	resp, err := client.ListChangefeeds(ctx, clusterID, &pageSizeInt32, nil, nil, nil)
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
-	for _, item := range resp.Connectors {
+	for _, item := range resp.Changefeeds {
 		items = append(items, &Changefeed{
-			ID:   *item.ConnectorId,
-			Name: *item.Name,
+			ID:   *item.ChangefeedId,
+			Name: *item.DisplayName,
+			Type: string(item.Sink.Type),
 		})
 	}
 	for {
@@ -981,14 +982,15 @@ func GetSelectedChangefeed(ctx context.Context, clusterID string, pageSize int64
 		if pageToken == nil || *pageToken == "" {
 			break
 		}
-		resp, err = client.ListConnectors(ctx, clusterID, &pageSizeInt32, pageToken, nil, nil)
+		resp, err = client.ListChangefeeds(ctx, clusterID, &pageSizeInt32, pageToken, nil, nil)
 		if err != nil {
 			return nil, errors.Trace(err)
 		}
-		for _, item := range resp.Connectors {
+		for _, item := range resp.Changefeeds {
 			items = append(items, &Changefeed{
-				ID:   *item.ConnectorId,
-				Name: *item.Name,
+				ID:   *item.ChangefeedId,
+				Name: *item.DisplayName,
+				Type: string(item.Sink.Type),
 			})
 		}
 	}

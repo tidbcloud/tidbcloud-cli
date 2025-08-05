@@ -108,7 +108,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			pageSize := int32(h.QueryPageSize)
-			resp, err := d.ListConnectors(ctx, clusterID, &pageSize, nil, nil, nil)
+			resp, err := d.ListChangefeeds(ctx, clusterID, &pageSize, nil, nil, nil)
 			if err != nil {
 				return err
 			}
@@ -132,10 +132,10 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 					"CreateTime",
 				}
 				var rows []output.Row
-				for _, item := range resp.Connectors {
+				for _, item := range resp.Changefeeds {
 					rows = append(rows, output.Row{
-						*item.ConnectorId,
-						*item.Name,
+						*item.ChangefeedId,
+						*item.DisplayName,
 						string(item.Sink.Type),
 						string(*item.State),
 						item.CreateTime.String(),

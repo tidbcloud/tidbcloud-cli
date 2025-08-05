@@ -16,17 +16,17 @@ import (
 	"time"
 )
 
-// checks if the ConnectorServiceCreatePrivateLinkEndpointBody type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &ConnectorServiceCreatePrivateLinkEndpointBody{}
+// checks if the ChangefeedServiceCreatePrivateLinkEndpointBody type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ChangefeedServiceCreatePrivateLinkEndpointBody{}
 
-// ConnectorServiceCreatePrivateLinkEndpointBody struct for ConnectorServiceCreatePrivateLinkEndpointBody
-type ConnectorServiceCreatePrivateLinkEndpointBody struct {
+// ChangefeedServiceCreatePrivateLinkEndpointBody struct for ChangefeedServiceCreatePrivateLinkEndpointBody
+type ChangefeedServiceCreatePrivateLinkEndpointBody struct {
 	// Output_only  The ID of the private link endpoint.
 	EndpointId *string `json:"endpointId,omitempty"`
 	// Required. The private link service name.
 	PrivateLinkServiceName string `json:"privateLinkServiceName"`
 	// Required. The type of the sink.
-	ConnectorType ConnectorTypeEnum `json:"connectorType"`
+	ChangefeedType ChangefeedTypeEnum `json:"changefeedType"`
 	// Output_only. The state of the private link.
 	State *PrivateLinkEndpointStateEnum `json:"state,omitempty"`
 	// Optional. Kafka private link endpoint information.
@@ -42,29 +42,29 @@ type ConnectorServiceCreatePrivateLinkEndpointBody struct {
 	AdditionalProperties map[string]interface{}
 }
 
-type _ConnectorServiceCreatePrivateLinkEndpointBody ConnectorServiceCreatePrivateLinkEndpointBody
+type _ChangefeedServiceCreatePrivateLinkEndpointBody ChangefeedServiceCreatePrivateLinkEndpointBody
 
-// NewConnectorServiceCreatePrivateLinkEndpointBody instantiates a new ConnectorServiceCreatePrivateLinkEndpointBody object
+// NewChangefeedServiceCreatePrivateLinkEndpointBody instantiates a new ChangefeedServiceCreatePrivateLinkEndpointBody object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewConnectorServiceCreatePrivateLinkEndpointBody(privateLinkServiceName string, connectorType ConnectorTypeEnum) *ConnectorServiceCreatePrivateLinkEndpointBody {
-	this := ConnectorServiceCreatePrivateLinkEndpointBody{}
+func NewChangefeedServiceCreatePrivateLinkEndpointBody(privateLinkServiceName string, changefeedType ChangefeedTypeEnum) *ChangefeedServiceCreatePrivateLinkEndpointBody {
+	this := ChangefeedServiceCreatePrivateLinkEndpointBody{}
 	this.PrivateLinkServiceName = privateLinkServiceName
-	this.ConnectorType = connectorType
+	this.ChangefeedType = changefeedType
 	return &this
 }
 
-// NewConnectorServiceCreatePrivateLinkEndpointBodyWithDefaults instantiates a new ConnectorServiceCreatePrivateLinkEndpointBody object
+// NewChangefeedServiceCreatePrivateLinkEndpointBodyWithDefaults instantiates a new ChangefeedServiceCreatePrivateLinkEndpointBody object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewConnectorServiceCreatePrivateLinkEndpointBodyWithDefaults() *ConnectorServiceCreatePrivateLinkEndpointBody {
-	this := ConnectorServiceCreatePrivateLinkEndpointBody{}
+func NewChangefeedServiceCreatePrivateLinkEndpointBodyWithDefaults() *ChangefeedServiceCreatePrivateLinkEndpointBody {
+	this := ChangefeedServiceCreatePrivateLinkEndpointBody{}
 	return &this
 }
 
 // GetEndpointId returns the EndpointId field value if set, zero value otherwise.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetEndpointId() string {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetEndpointId() string {
 	if o == nil || IsNil(o.EndpointId) {
 		var ret string
 		return ret
@@ -74,7 +74,7 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetEndpointId() string {
 
 // GetEndpointIdOk returns a tuple with the EndpointId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetEndpointIdOk() (*string, bool) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetEndpointIdOk() (*string, bool) {
 	if o == nil || IsNil(o.EndpointId) {
 		return nil, false
 	}
@@ -82,7 +82,7 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetEndpointIdOk() (*stri
 }
 
 // HasEndpointId returns a boolean if a field has been set.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) HasEndpointId() bool {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) HasEndpointId() bool {
 	if o != nil && !IsNil(o.EndpointId) {
 		return true
 	}
@@ -91,12 +91,12 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) HasEndpointId() bool {
 }
 
 // SetEndpointId gets a reference to the given string and assigns it to the EndpointId field.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) SetEndpointId(v string) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) SetEndpointId(v string) {
 	o.EndpointId = &v
 }
 
 // GetPrivateLinkServiceName returns the PrivateLinkServiceName field value
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetPrivateLinkServiceName() string {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetPrivateLinkServiceName() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -107,7 +107,7 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetPrivateLinkServiceNam
 
 // GetPrivateLinkServiceNameOk returns a tuple with the PrivateLinkServiceName field value
 // and a boolean to check if the value has been set.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetPrivateLinkServiceNameOk() (*string, bool) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetPrivateLinkServiceNameOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -115,36 +115,36 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetPrivateLinkServiceNam
 }
 
 // SetPrivateLinkServiceName sets field value
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) SetPrivateLinkServiceName(v string) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) SetPrivateLinkServiceName(v string) {
 	o.PrivateLinkServiceName = v
 }
 
-// GetConnectorType returns the ConnectorType field value
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetConnectorType() ConnectorTypeEnum {
+// GetChangefeedType returns the ChangefeedType field value
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetChangefeedType() ChangefeedTypeEnum {
 	if o == nil {
-		var ret ConnectorTypeEnum
+		var ret ChangefeedTypeEnum
 		return ret
 	}
 
-	return o.ConnectorType
+	return o.ChangefeedType
 }
 
-// GetConnectorTypeOk returns a tuple with the ConnectorType field value
+// GetChangefeedTypeOk returns a tuple with the ChangefeedType field value
 // and a boolean to check if the value has been set.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetConnectorTypeOk() (*ConnectorTypeEnum, bool) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetChangefeedTypeOk() (*ChangefeedTypeEnum, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.ConnectorType, true
+	return &o.ChangefeedType, true
 }
 
-// SetConnectorType sets field value
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) SetConnectorType(v ConnectorTypeEnum) {
-	o.ConnectorType = v
+// SetChangefeedType sets field value
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) SetChangefeedType(v ChangefeedTypeEnum) {
+	o.ChangefeedType = v
 }
 
 // GetState returns the State field value if set, zero value otherwise.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetState() PrivateLinkEndpointStateEnum {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetState() PrivateLinkEndpointStateEnum {
 	if o == nil || IsNil(o.State) {
 		var ret PrivateLinkEndpointStateEnum
 		return ret
@@ -154,7 +154,7 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetState() PrivateLinkEn
 
 // GetStateOk returns a tuple with the State field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetStateOk() (*PrivateLinkEndpointStateEnum, bool) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetStateOk() (*PrivateLinkEndpointStateEnum, bool) {
 	if o == nil || IsNil(o.State) {
 		return nil, false
 	}
@@ -162,7 +162,7 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetStateOk() (*PrivateLi
 }
 
 // HasState returns a boolean if a field has been set.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) HasState() bool {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) HasState() bool {
 	if o != nil && !IsNil(o.State) {
 		return true
 	}
@@ -171,12 +171,12 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) HasState() bool {
 }
 
 // SetState gets a reference to the given PrivateLinkEndpointStateEnum and assigns it to the State field.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) SetState(v PrivateLinkEndpointStateEnum) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) SetState(v PrivateLinkEndpointStateEnum) {
 	o.State = &v
 }
 
 // GetKafka returns the Kafka field value if set, zero value otherwise.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetKafka() KafkaEndpoint {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetKafka() KafkaEndpoint {
 	if o == nil || IsNil(o.Kafka) {
 		var ret KafkaEndpoint
 		return ret
@@ -186,7 +186,7 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetKafka() KafkaEndpoint
 
 // GetKafkaOk returns a tuple with the Kafka field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetKafkaOk() (*KafkaEndpoint, bool) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetKafkaOk() (*KafkaEndpoint, bool) {
 	if o == nil || IsNil(o.Kafka) {
 		return nil, false
 	}
@@ -194,7 +194,7 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetKafkaOk() (*KafkaEndp
 }
 
 // HasKafka returns a boolean if a field has been set.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) HasKafka() bool {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) HasKafka() bool {
 	if o != nil && !IsNil(o.Kafka) {
 		return true
 	}
@@ -203,12 +203,12 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) HasKafka() bool {
 }
 
 // SetKafka gets a reference to the given KafkaEndpoint and assigns it to the Kafka field.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) SetKafka(v KafkaEndpoint) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) SetKafka(v KafkaEndpoint) {
 	o.Kafka = &v
 }
 
 // GetMessage returns the Message field value if set, zero value otherwise.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetMessage() string {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetMessage() string {
 	if o == nil || IsNil(o.Message) {
 		var ret string
 		return ret
@@ -218,7 +218,7 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetMessage() string {
 
 // GetMessageOk returns a tuple with the Message field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetMessageOk() (*string, bool) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetMessageOk() (*string, bool) {
 	if o == nil || IsNil(o.Message) {
 		return nil, false
 	}
@@ -226,7 +226,7 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetMessageOk() (*string,
 }
 
 // HasMessage returns a boolean if a field has been set.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) HasMessage() bool {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) HasMessage() bool {
 	if o != nil && !IsNil(o.Message) {
 		return true
 	}
@@ -235,12 +235,12 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) HasMessage() bool {
 }
 
 // SetMessage gets a reference to the given string and assigns it to the Message field.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) SetMessage(v string) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) SetMessage(v string) {
 	o.Message = &v
 }
 
 // GetEndpointUrl returns the EndpointUrl field value if set, zero value otherwise.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetEndpointUrl() string {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetEndpointUrl() string {
 	if o == nil || IsNil(o.EndpointUrl) {
 		var ret string
 		return ret
@@ -250,7 +250,7 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetEndpointUrl() string 
 
 // GetEndpointUrlOk returns a tuple with the EndpointUrl field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetEndpointUrlOk() (*string, bool) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetEndpointUrlOk() (*string, bool) {
 	if o == nil || IsNil(o.EndpointUrl) {
 		return nil, false
 	}
@@ -258,7 +258,7 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetEndpointUrlOk() (*str
 }
 
 // HasEndpointUrl returns a boolean if a field has been set.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) HasEndpointUrl() bool {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) HasEndpointUrl() bool {
 	if o != nil && !IsNil(o.EndpointUrl) {
 		return true
 	}
@@ -267,12 +267,12 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) HasEndpointUrl() bool {
 }
 
 // SetEndpointUrl gets a reference to the given string and assigns it to the EndpointUrl field.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) SetEndpointUrl(v string) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) SetEndpointUrl(v string) {
 	o.EndpointUrl = &v
 }
 
 // GetCreateTime returns the CreateTime field value if set, zero value otherwise.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetCreateTime() time.Time {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetCreateTime() time.Time {
 	if o == nil || IsNil(o.CreateTime) {
 		var ret time.Time
 		return ret
@@ -282,7 +282,7 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetCreateTime() time.Tim
 
 // GetCreateTimeOk returns a tuple with the CreateTime field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetCreateTimeOk() (*time.Time, bool) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetCreateTimeOk() (*time.Time, bool) {
 	if o == nil || IsNil(o.CreateTime) {
 		return nil, false
 	}
@@ -290,7 +290,7 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetCreateTimeOk() (*time
 }
 
 // HasCreateTime returns a boolean if a field has been set.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) HasCreateTime() bool {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) HasCreateTime() bool {
 	if o != nil && !IsNil(o.CreateTime) {
 		return true
 	}
@@ -299,12 +299,12 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) HasCreateTime() bool {
 }
 
 // SetCreateTime gets a reference to the given time.Time and assigns it to the CreateTime field.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) SetCreateTime(v time.Time) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) SetCreateTime(v time.Time) {
 	o.CreateTime = &v
 }
 
 // GetUpdateTime returns the UpdateTime field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetUpdateTime() time.Time {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetUpdateTime() time.Time {
 	if o == nil || IsNil(o.UpdateTime.Get()) {
 		var ret time.Time
 		return ret
@@ -315,7 +315,7 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetUpdateTime() time.Tim
 // GetUpdateTimeOk returns a tuple with the UpdateTime field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetUpdateTimeOk() (*time.Time, bool) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) GetUpdateTimeOk() (*time.Time, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -323,7 +323,7 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) GetUpdateTimeOk() (*time
 }
 
 // HasUpdateTime returns a boolean if a field has been set.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) HasUpdateTime() bool {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) HasUpdateTime() bool {
 	if o != nil && o.UpdateTime.IsSet() {
 		return true
 	}
@@ -332,21 +332,21 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) HasUpdateTime() bool {
 }
 
 // SetUpdateTime gets a reference to the given NullableTime and assigns it to the UpdateTime field.
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) SetUpdateTime(v time.Time) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) SetUpdateTime(v time.Time) {
 	o.UpdateTime.Set(&v)
 }
 
 // SetUpdateTimeNil sets the value for UpdateTime to be an explicit nil
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) SetUpdateTimeNil() {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) SetUpdateTimeNil() {
 	o.UpdateTime.Set(nil)
 }
 
 // UnsetUpdateTime ensures that no value is present for UpdateTime, not even an explicit nil
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) UnsetUpdateTime() {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) UnsetUpdateTime() {
 	o.UpdateTime.Unset()
 }
 
-func (o ConnectorServiceCreatePrivateLinkEndpointBody) MarshalJSON() ([]byte, error) {
+func (o ChangefeedServiceCreatePrivateLinkEndpointBody) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -354,13 +354,13 @@ func (o ConnectorServiceCreatePrivateLinkEndpointBody) MarshalJSON() ([]byte, er
 	return json.Marshal(toSerialize)
 }
 
-func (o ConnectorServiceCreatePrivateLinkEndpointBody) ToMap() (map[string]interface{}, error) {
+func (o ChangefeedServiceCreatePrivateLinkEndpointBody) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.EndpointId) {
 		toSerialize["endpointId"] = o.EndpointId
 	}
 	toSerialize["privateLinkServiceName"] = o.PrivateLinkServiceName
-	toSerialize["connectorType"] = o.ConnectorType
+	toSerialize["changefeedType"] = o.ChangefeedType
 	if !IsNil(o.State) {
 		toSerialize["state"] = o.State
 	}
@@ -387,13 +387,13 @@ func (o ConnectorServiceCreatePrivateLinkEndpointBody) ToMap() (map[string]inter
 	return toSerialize, nil
 }
 
-func (o *ConnectorServiceCreatePrivateLinkEndpointBody) UnmarshalJSON(data []byte) (err error) {
+func (o *ChangefeedServiceCreatePrivateLinkEndpointBody) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
 		"privateLinkServiceName",
-		"connectorType",
+		"changefeedType",
 	}
 
 	allProperties := make(map[string]interface{})
@@ -410,22 +410,22 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) UnmarshalJSON(data []byt
 		}
 	}
 
-	varConnectorServiceCreatePrivateLinkEndpointBody := _ConnectorServiceCreatePrivateLinkEndpointBody{}
+	varChangefeedServiceCreatePrivateLinkEndpointBody := _ChangefeedServiceCreatePrivateLinkEndpointBody{}
 
-	err = json.Unmarshal(data, &varConnectorServiceCreatePrivateLinkEndpointBody)
+	err = json.Unmarshal(data, &varChangefeedServiceCreatePrivateLinkEndpointBody)
 
 	if err != nil {
 		return err
 	}
 
-	*o = ConnectorServiceCreatePrivateLinkEndpointBody(varConnectorServiceCreatePrivateLinkEndpointBody)
+	*o = ChangefeedServiceCreatePrivateLinkEndpointBody(varChangefeedServiceCreatePrivateLinkEndpointBody)
 
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "endpointId")
 		delete(additionalProperties, "privateLinkServiceName")
-		delete(additionalProperties, "connectorType")
+		delete(additionalProperties, "changefeedType")
 		delete(additionalProperties, "state")
 		delete(additionalProperties, "kafka")
 		delete(additionalProperties, "message")
@@ -438,38 +438,38 @@ func (o *ConnectorServiceCreatePrivateLinkEndpointBody) UnmarshalJSON(data []byt
 	return err
 }
 
-type NullableConnectorServiceCreatePrivateLinkEndpointBody struct {
-	value *ConnectorServiceCreatePrivateLinkEndpointBody
+type NullableChangefeedServiceCreatePrivateLinkEndpointBody struct {
+	value *ChangefeedServiceCreatePrivateLinkEndpointBody
 	isSet bool
 }
 
-func (v NullableConnectorServiceCreatePrivateLinkEndpointBody) Get() *ConnectorServiceCreatePrivateLinkEndpointBody {
+func (v NullableChangefeedServiceCreatePrivateLinkEndpointBody) Get() *ChangefeedServiceCreatePrivateLinkEndpointBody {
 	return v.value
 }
 
-func (v *NullableConnectorServiceCreatePrivateLinkEndpointBody) Set(val *ConnectorServiceCreatePrivateLinkEndpointBody) {
+func (v *NullableChangefeedServiceCreatePrivateLinkEndpointBody) Set(val *ChangefeedServiceCreatePrivateLinkEndpointBody) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableConnectorServiceCreatePrivateLinkEndpointBody) IsSet() bool {
+func (v NullableChangefeedServiceCreatePrivateLinkEndpointBody) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableConnectorServiceCreatePrivateLinkEndpointBody) Unset() {
+func (v *NullableChangefeedServiceCreatePrivateLinkEndpointBody) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableConnectorServiceCreatePrivateLinkEndpointBody(val *ConnectorServiceCreatePrivateLinkEndpointBody) *NullableConnectorServiceCreatePrivateLinkEndpointBody {
-	return &NullableConnectorServiceCreatePrivateLinkEndpointBody{value: val, isSet: true}
+func NewNullableChangefeedServiceCreatePrivateLinkEndpointBody(val *ChangefeedServiceCreatePrivateLinkEndpointBody) *NullableChangefeedServiceCreatePrivateLinkEndpointBody {
+	return &NullableChangefeedServiceCreatePrivateLinkEndpointBody{value: val, isSet: true}
 }
 
-func (v NullableConnectorServiceCreatePrivateLinkEndpointBody) MarshalJSON() ([]byte, error) {
+func (v NullableChangefeedServiceCreatePrivateLinkEndpointBody) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableConnectorServiceCreatePrivateLinkEndpointBody) UnmarshalJSON(src []byte) error {
+func (v *NullableChangefeedServiceCreatePrivateLinkEndpointBody) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

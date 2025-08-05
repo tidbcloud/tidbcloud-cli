@@ -15,38 +15,38 @@ import (
 	"fmt"
 )
 
-// checks if the ConnectorServiceTestConnectorBody type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &ConnectorServiceTestConnectorBody{}
+// checks if the ChangefeedServiceTestChangefeedBody type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ChangefeedServiceTestChangefeedBody{}
 
-// ConnectorServiceTestConnectorBody struct for ConnectorServiceTestConnectorBody
-type ConnectorServiceTestConnectorBody struct {
-	// Required. The sink of the connector.
+// ChangefeedServiceTestChangefeedBody struct for ChangefeedServiceTestChangefeedBody
+type ChangefeedServiceTestChangefeedBody struct {
+	// Required. The sink of the changefeed.
 	Sink                 SinkInfo `json:"sink"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _ConnectorServiceTestConnectorBody ConnectorServiceTestConnectorBody
+type _ChangefeedServiceTestChangefeedBody ChangefeedServiceTestChangefeedBody
 
-// NewConnectorServiceTestConnectorBody instantiates a new ConnectorServiceTestConnectorBody object
+// NewChangefeedServiceTestChangefeedBody instantiates a new ChangefeedServiceTestChangefeedBody object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewConnectorServiceTestConnectorBody(sink SinkInfo) *ConnectorServiceTestConnectorBody {
-	this := ConnectorServiceTestConnectorBody{}
+func NewChangefeedServiceTestChangefeedBody(sink SinkInfo) *ChangefeedServiceTestChangefeedBody {
+	this := ChangefeedServiceTestChangefeedBody{}
 	this.Sink = sink
 	return &this
 }
 
-// NewConnectorServiceTestConnectorBodyWithDefaults instantiates a new ConnectorServiceTestConnectorBody object
+// NewChangefeedServiceTestChangefeedBodyWithDefaults instantiates a new ChangefeedServiceTestChangefeedBody object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewConnectorServiceTestConnectorBodyWithDefaults() *ConnectorServiceTestConnectorBody {
-	this := ConnectorServiceTestConnectorBody{}
+func NewChangefeedServiceTestChangefeedBodyWithDefaults() *ChangefeedServiceTestChangefeedBody {
+	this := ChangefeedServiceTestChangefeedBody{}
 	return &this
 }
 
 // GetSink returns the Sink field value
-func (o *ConnectorServiceTestConnectorBody) GetSink() SinkInfo {
+func (o *ChangefeedServiceTestChangefeedBody) GetSink() SinkInfo {
 	if o == nil {
 		var ret SinkInfo
 		return ret
@@ -57,7 +57,7 @@ func (o *ConnectorServiceTestConnectorBody) GetSink() SinkInfo {
 
 // GetSinkOk returns a tuple with the Sink field value
 // and a boolean to check if the value has been set.
-func (o *ConnectorServiceTestConnectorBody) GetSinkOk() (*SinkInfo, bool) {
+func (o *ChangefeedServiceTestChangefeedBody) GetSinkOk() (*SinkInfo, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -65,11 +65,11 @@ func (o *ConnectorServiceTestConnectorBody) GetSinkOk() (*SinkInfo, bool) {
 }
 
 // SetSink sets field value
-func (o *ConnectorServiceTestConnectorBody) SetSink(v SinkInfo) {
+func (o *ChangefeedServiceTestChangefeedBody) SetSink(v SinkInfo) {
 	o.Sink = v
 }
 
-func (o ConnectorServiceTestConnectorBody) MarshalJSON() ([]byte, error) {
+func (o ChangefeedServiceTestChangefeedBody) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -77,7 +77,7 @@ func (o ConnectorServiceTestConnectorBody) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o ConnectorServiceTestConnectorBody) ToMap() (map[string]interface{}, error) {
+func (o ChangefeedServiceTestChangefeedBody) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["sink"] = o.Sink
 
@@ -88,7 +88,7 @@ func (o ConnectorServiceTestConnectorBody) ToMap() (map[string]interface{}, erro
 	return toSerialize, nil
 }
 
-func (o *ConnectorServiceTestConnectorBody) UnmarshalJSON(data []byte) (err error) {
+func (o *ChangefeedServiceTestChangefeedBody) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -110,15 +110,15 @@ func (o *ConnectorServiceTestConnectorBody) UnmarshalJSON(data []byte) (err erro
 		}
 	}
 
-	varConnectorServiceTestConnectorBody := _ConnectorServiceTestConnectorBody{}
+	varChangefeedServiceTestChangefeedBody := _ChangefeedServiceTestChangefeedBody{}
 
-	err = json.Unmarshal(data, &varConnectorServiceTestConnectorBody)
+	err = json.Unmarshal(data, &varChangefeedServiceTestChangefeedBody)
 
 	if err != nil {
 		return err
 	}
 
-	*o = ConnectorServiceTestConnectorBody(varConnectorServiceTestConnectorBody)
+	*o = ChangefeedServiceTestChangefeedBody(varChangefeedServiceTestChangefeedBody)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -130,38 +130,38 @@ func (o *ConnectorServiceTestConnectorBody) UnmarshalJSON(data []byte) (err erro
 	return err
 }
 
-type NullableConnectorServiceTestConnectorBody struct {
-	value *ConnectorServiceTestConnectorBody
+type NullableChangefeedServiceTestChangefeedBody struct {
+	value *ChangefeedServiceTestChangefeedBody
 	isSet bool
 }
 
-func (v NullableConnectorServiceTestConnectorBody) Get() *ConnectorServiceTestConnectorBody {
+func (v NullableChangefeedServiceTestChangefeedBody) Get() *ChangefeedServiceTestChangefeedBody {
 	return v.value
 }
 
-func (v *NullableConnectorServiceTestConnectorBody) Set(val *ConnectorServiceTestConnectorBody) {
+func (v *NullableChangefeedServiceTestChangefeedBody) Set(val *ChangefeedServiceTestChangefeedBody) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableConnectorServiceTestConnectorBody) IsSet() bool {
+func (v NullableChangefeedServiceTestChangefeedBody) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableConnectorServiceTestConnectorBody) Unset() {
+func (v *NullableChangefeedServiceTestChangefeedBody) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableConnectorServiceTestConnectorBody(val *ConnectorServiceTestConnectorBody) *NullableConnectorServiceTestConnectorBody {
-	return &NullableConnectorServiceTestConnectorBody{value: val, isSet: true}
+func NewNullableChangefeedServiceTestChangefeedBody(val *ChangefeedServiceTestChangefeedBody) *NullableChangefeedServiceTestChangefeedBody {
+	return &NullableChangefeedServiceTestChangefeedBody{value: val, isSet: true}
 }
 
-func (v NullableConnectorServiceTestConnectorBody) MarshalJSON() ([]byte, error) {
+func (v NullableChangefeedServiceTestChangefeedBody) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableConnectorServiceTestConnectorBody) UnmarshalJSON(src []byte) error {
+func (v *NullableChangefeedServiceTestChangefeedBody) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

@@ -14,40 +14,40 @@ import (
 	"encoding/json"
 )
 
-// checks if the DataFormat type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &DataFormat{}
+// checks if the KafkaDataFormat type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &KafkaDataFormat{}
 
-// DataFormat struct for DataFormat
-type DataFormat struct {
-	Protocol             *CDCProtocolEnum `json:"protocol,omitempty"`
-	EnableTidbExtension  *bool            `json:"enableTidbExtension,omitempty"`
-	AvroConfig           *AvroConfig      `json:"avroConfig,omitempty"`
+// KafkaDataFormat struct for KafkaDataFormat
+type KafkaDataFormat struct {
+	Protocol             *KafkaProtocolEnum `json:"protocol,omitempty"`
+	EnableTidbExtension  *bool              `json:"enableTidbExtension,omitempty"`
+	AvroConfig           *AvroConfig        `json:"avroConfig,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _DataFormat DataFormat
+type _KafkaDataFormat KafkaDataFormat
 
-// NewDataFormat instantiates a new DataFormat object
+// NewKafkaDataFormat instantiates a new KafkaDataFormat object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewDataFormat() *DataFormat {
-	this := DataFormat{}
+func NewKafkaDataFormat() *KafkaDataFormat {
+	this := KafkaDataFormat{}
 	return &this
 }
 
-// NewDataFormatWithDefaults instantiates a new DataFormat object
+// NewKafkaDataFormatWithDefaults instantiates a new KafkaDataFormat object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewDataFormatWithDefaults() *DataFormat {
-	this := DataFormat{}
+func NewKafkaDataFormatWithDefaults() *KafkaDataFormat {
+	this := KafkaDataFormat{}
 	return &this
 }
 
 // GetProtocol returns the Protocol field value if set, zero value otherwise.
-func (o *DataFormat) GetProtocol() CDCProtocolEnum {
+func (o *KafkaDataFormat) GetProtocol() KafkaProtocolEnum {
 	if o == nil || IsNil(o.Protocol) {
-		var ret CDCProtocolEnum
+		var ret KafkaProtocolEnum
 		return ret
 	}
 	return *o.Protocol
@@ -55,7 +55,7 @@ func (o *DataFormat) GetProtocol() CDCProtocolEnum {
 
 // GetProtocolOk returns a tuple with the Protocol field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *DataFormat) GetProtocolOk() (*CDCProtocolEnum, bool) {
+func (o *KafkaDataFormat) GetProtocolOk() (*KafkaProtocolEnum, bool) {
 	if o == nil || IsNil(o.Protocol) {
 		return nil, false
 	}
@@ -63,7 +63,7 @@ func (o *DataFormat) GetProtocolOk() (*CDCProtocolEnum, bool) {
 }
 
 // HasProtocol returns a boolean if a field has been set.
-func (o *DataFormat) HasProtocol() bool {
+func (o *KafkaDataFormat) HasProtocol() bool {
 	if o != nil && !IsNil(o.Protocol) {
 		return true
 	}
@@ -71,13 +71,13 @@ func (o *DataFormat) HasProtocol() bool {
 	return false
 }
 
-// SetProtocol gets a reference to the given CDCProtocolEnum and assigns it to the Protocol field.
-func (o *DataFormat) SetProtocol(v CDCProtocolEnum) {
+// SetProtocol gets a reference to the given KafkaProtocolEnum and assigns it to the Protocol field.
+func (o *KafkaDataFormat) SetProtocol(v KafkaProtocolEnum) {
 	o.Protocol = &v
 }
 
 // GetEnableTidbExtension returns the EnableTidbExtension field value if set, zero value otherwise.
-func (o *DataFormat) GetEnableTidbExtension() bool {
+func (o *KafkaDataFormat) GetEnableTidbExtension() bool {
 	if o == nil || IsNil(o.EnableTidbExtension) {
 		var ret bool
 		return ret
@@ -87,7 +87,7 @@ func (o *DataFormat) GetEnableTidbExtension() bool {
 
 // GetEnableTidbExtensionOk returns a tuple with the EnableTidbExtension field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *DataFormat) GetEnableTidbExtensionOk() (*bool, bool) {
+func (o *KafkaDataFormat) GetEnableTidbExtensionOk() (*bool, bool) {
 	if o == nil || IsNil(o.EnableTidbExtension) {
 		return nil, false
 	}
@@ -95,7 +95,7 @@ func (o *DataFormat) GetEnableTidbExtensionOk() (*bool, bool) {
 }
 
 // HasEnableTidbExtension returns a boolean if a field has been set.
-func (o *DataFormat) HasEnableTidbExtension() bool {
+func (o *KafkaDataFormat) HasEnableTidbExtension() bool {
 	if o != nil && !IsNil(o.EnableTidbExtension) {
 		return true
 	}
@@ -104,12 +104,12 @@ func (o *DataFormat) HasEnableTidbExtension() bool {
 }
 
 // SetEnableTidbExtension gets a reference to the given bool and assigns it to the EnableTidbExtension field.
-func (o *DataFormat) SetEnableTidbExtension(v bool) {
+func (o *KafkaDataFormat) SetEnableTidbExtension(v bool) {
 	o.EnableTidbExtension = &v
 }
 
 // GetAvroConfig returns the AvroConfig field value if set, zero value otherwise.
-func (o *DataFormat) GetAvroConfig() AvroConfig {
+func (o *KafkaDataFormat) GetAvroConfig() AvroConfig {
 	if o == nil || IsNil(o.AvroConfig) {
 		var ret AvroConfig
 		return ret
@@ -119,7 +119,7 @@ func (o *DataFormat) GetAvroConfig() AvroConfig {
 
 // GetAvroConfigOk returns a tuple with the AvroConfig field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *DataFormat) GetAvroConfigOk() (*AvroConfig, bool) {
+func (o *KafkaDataFormat) GetAvroConfigOk() (*AvroConfig, bool) {
 	if o == nil || IsNil(o.AvroConfig) {
 		return nil, false
 	}
@@ -127,7 +127,7 @@ func (o *DataFormat) GetAvroConfigOk() (*AvroConfig, bool) {
 }
 
 // HasAvroConfig returns a boolean if a field has been set.
-func (o *DataFormat) HasAvroConfig() bool {
+func (o *KafkaDataFormat) HasAvroConfig() bool {
 	if o != nil && !IsNil(o.AvroConfig) {
 		return true
 	}
@@ -136,11 +136,11 @@ func (o *DataFormat) HasAvroConfig() bool {
 }
 
 // SetAvroConfig gets a reference to the given AvroConfig and assigns it to the AvroConfig field.
-func (o *DataFormat) SetAvroConfig(v AvroConfig) {
+func (o *KafkaDataFormat) SetAvroConfig(v AvroConfig) {
 	o.AvroConfig = &v
 }
 
-func (o DataFormat) MarshalJSON() ([]byte, error) {
+func (o KafkaDataFormat) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -148,7 +148,7 @@ func (o DataFormat) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o DataFormat) ToMap() (map[string]interface{}, error) {
+func (o KafkaDataFormat) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Protocol) {
 		toSerialize["protocol"] = o.Protocol
@@ -167,16 +167,16 @@ func (o DataFormat) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *DataFormat) UnmarshalJSON(data []byte) (err error) {
-	varDataFormat := _DataFormat{}
+func (o *KafkaDataFormat) UnmarshalJSON(data []byte) (err error) {
+	varKafkaDataFormat := _KafkaDataFormat{}
 
-	err = json.Unmarshal(data, &varDataFormat)
+	err = json.Unmarshal(data, &varKafkaDataFormat)
 
 	if err != nil {
 		return err
 	}
 
-	*o = DataFormat(varDataFormat)
+	*o = KafkaDataFormat(varKafkaDataFormat)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -190,38 +190,38 @@ func (o *DataFormat) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
-type NullableDataFormat struct {
-	value *DataFormat
+type NullableKafkaDataFormat struct {
+	value *KafkaDataFormat
 	isSet bool
 }
 
-func (v NullableDataFormat) Get() *DataFormat {
+func (v NullableKafkaDataFormat) Get() *KafkaDataFormat {
 	return v.value
 }
 
-func (v *NullableDataFormat) Set(val *DataFormat) {
+func (v *NullableKafkaDataFormat) Set(val *KafkaDataFormat) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableDataFormat) IsSet() bool {
+func (v NullableKafkaDataFormat) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableDataFormat) Unset() {
+func (v *NullableKafkaDataFormat) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableDataFormat(val *DataFormat) *NullableDataFormat {
-	return &NullableDataFormat{value: val, isSet: true}
+func NewNullableKafkaDataFormat(val *KafkaDataFormat) *NullableKafkaDataFormat {
+	return &NullableKafkaDataFormat{value: val, isSet: true}
 }
 
-func (v NullableDataFormat) MarshalJSON() ([]byte, error) {
+func (v NullableKafkaDataFormat) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableDataFormat) UnmarshalJSON(src []byte) error {
+func (v *NullableKafkaDataFormat) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

@@ -78,57 +78,61 @@ All URIs are relative to *https://serverless.tidbapi.com*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*ConnectorServiceAPI* | [**ConnectorServiceCreateConnector**](docs/ConnectorServiceAPI.md#connectorservicecreateconnector) | **Post** /v1beta1/clusters/{clusterId}/connectors | Create a connector.
-*ConnectorServiceAPI* | [**ConnectorServiceCreatePrivateLinkEndpoint**](docs/ConnectorServiceAPI.md#connectorservicecreateprivatelinkendpoint) | **Post** /v1beta1/clusters/{clusterId}/connectors/private-link-endpoints | Create a private link
-*ConnectorServiceAPI* | [**ConnectorServiceDeleteConnector**](docs/ConnectorServiceAPI.md#connectorservicedeleteconnector) | **Delete** /v1beta1/clusters/{clusterId}/connectors/{connectorId} | Delete a connector.
-*ConnectorServiceAPI* | [**ConnectorServiceDeletePrivateLinkEndpoint**](docs/ConnectorServiceAPI.md#connectorservicedeleteprivatelinkendpoint) | **Delete** /v1beta1/clusters/{clusterId}/connectors/private-links-endpoints | Delete a private link
-*ConnectorServiceAPI* | [**ConnectorServiceDescribeSchemaTable**](docs/ConnectorServiceAPI.md#connectorservicedescribeschematable) | **Post** /v1beta1/clusters/{clusterId}/connectors:describeSchemaTable | Describe schema table.
-*ConnectorServiceAPI* | [**ConnectorServiceEditConnector**](docs/ConnectorServiceAPI.md#connectorserviceeditconnector) | **Post** /v1beta1/clusters/{clusterId}/connectors/{connectorId}:edit | Edit a connector.
-*ConnectorServiceAPI* | [**ConnectorServiceGetConnector**](docs/ConnectorServiceAPI.md#connectorservicegetconnector) | **Get** /v1beta1/clusters/{clusterId}/connectors/{connectorId} | Get a connector.
-*ConnectorServiceAPI* | [**ConnectorServiceGetPrivateLinkEndpoint**](docs/ConnectorServiceAPI.md#connectorservicegetprivatelinkendpoint) | **Get** /v1beta1/clusters/{clusterId}/connectors/private-links-endpoints | Get a private link
-*ConnectorServiceAPI* | [**ConnectorServiceListConnectors**](docs/ConnectorServiceAPI.md#connectorservicelistconnectors) | **Get** /v1beta1/clusters/{clusterId}/connectors | List connectors.
-*ConnectorServiceAPI* | [**ConnectorServiceStartConnector**](docs/ConnectorServiceAPI.md#connectorservicestartconnector) | **Post** /v1beta1/clusters/{clusterId}/connectors/{connectorId}:start | Start a connector.
-*ConnectorServiceAPI* | [**ConnectorServiceStopConnector**](docs/ConnectorServiceAPI.md#connectorservicestopconnector) | **Post** /v1beta1/clusters/{clusterId}/connectors/{connectorId}:stop | Stop a connector.
-*ConnectorServiceAPI* | [**ConnectorServiceTestConnector**](docs/ConnectorServiceAPI.md#connectorservicetestconnector) | **Post** /v1beta1/clusters/{clusterId}/connectors:test | Test a connector.
+*ChangefeedServiceAPI* | [**ChangefeedServiceCreateChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicecreatechangefeed) | **Post** /v1beta1/clusters/{clusterId}/changefeeds | Create a changefeed.
+*ChangefeedServiceAPI* | [**ChangefeedServiceCreatePrivateLinkEndpoint**](docs/ChangefeedServiceAPI.md#changefeedservicecreateprivatelinkendpoint) | **Post** /v1beta1/clusters/{clusterId}/changefeeds/private-link-endpoints | Create a private link
+*ChangefeedServiceAPI* | [**ChangefeedServiceDeleteChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicedeletechangefeed) | **Delete** /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId} | Delete a changefeed.
+*ChangefeedServiceAPI* | [**ChangefeedServiceDeletePrivateLinkEndpoint**](docs/ChangefeedServiceAPI.md#changefeedservicedeleteprivatelinkendpoint) | **Delete** /v1beta1/clusters/{clusterId}/changefeeds/private-links-endpoints | Delete a private link
+*ChangefeedServiceAPI* | [**ChangefeedServiceDescribeSchemaTable**](docs/ChangefeedServiceAPI.md#changefeedservicedescribeschematable) | **Post** /v1beta1/clusters/{clusterId}/changefeeds:describeSchemaTable | Describe schema table.
+*ChangefeedServiceAPI* | [**ChangefeedServiceEditChangefeed**](docs/ChangefeedServiceAPI.md#changefeedserviceeditchangefeed) | **Patch** /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId} | Edit a changefeed.
+*ChangefeedServiceAPI* | [**ChangefeedServiceGetChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicegetchangefeed) | **Get** /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId} | Get a changefeed.
+*ChangefeedServiceAPI* | [**ChangefeedServiceGetPrivateLinkEndpoint**](docs/ChangefeedServiceAPI.md#changefeedservicegetprivatelinkendpoint) | **Get** /v1beta1/clusters/{clusterId}/changefeeds/private-links-endpoints | Get a private link
+*ChangefeedServiceAPI* | [**ChangefeedServiceListChangefeeds**](docs/ChangefeedServiceAPI.md#changefeedservicelistchangefeeds) | **Get** /v1beta1/clusters/{clusterId}/changefeeds | List changefeeds.
+*ChangefeedServiceAPI* | [**ChangefeedServiceStartChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicestartchangefeed) | **Post** /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:start | Start a changefeed.
+*ChangefeedServiceAPI* | [**ChangefeedServiceStopChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicestopchangefeed) | **Post** /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:stop | Stop a changefeed.
+*ChangefeedServiceAPI* | [**ChangefeedServiceTestChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicetestchangefeed) | **Post** /v1beta1/clusters/{clusterId}/changefeeds:test | Test a changefeed.
 
 
 ## Documentation For Models
 
  - [Any](docs/Any.md)
- - [Authentication](docs/Authentication.md)
  - [AvroConfig](docs/AvroConfig.md)
  - [BigintUnsignedHandlingModeEnum](docs/BigintUnsignedHandlingModeEnum.md)
- - [Broker](docs/Broker.md)
  - [CDCCheckpoint](docs/CDCCheckpoint.md)
  - [CDCFilter](docs/CDCFilter.md)
- - [CDCProtocolEnum](docs/CDCProtocolEnum.md)
  - [CDCStateEnum](docs/CDCStateEnum.md)
- - [ColumnSelector](docs/ColumnSelector.md)
+ - [Changefeed](docs/Changefeed.md)
+ - [ChangefeedServiceCreateChangefeedBody](docs/ChangefeedServiceCreateChangefeedBody.md)
+ - [ChangefeedServiceCreatePrivateLinkEndpointBody](docs/ChangefeedServiceCreatePrivateLinkEndpointBody.md)
+ - [ChangefeedServiceDescribeSchemaTableBody](docs/ChangefeedServiceDescribeSchemaTableBody.md)
+ - [ChangefeedServiceEditChangefeedBody](docs/ChangefeedServiceEditChangefeedBody.md)
+ - [ChangefeedServiceListChangefeedsChangefeedTypeParameter](docs/ChangefeedServiceListChangefeedsChangefeedTypeParameter.md)
+ - [ChangefeedServiceTestChangefeedBody](docs/ChangefeedServiceTestChangefeedBody.md)
+ - [ChangefeedTypeEnum](docs/ChangefeedTypeEnum.md)
+ - [Changefeeds](docs/Changefeeds.md)
  - [ConfluentSchemaRegistry](docs/ConfluentSchemaRegistry.md)
- - [Connector](docs/Connector.md)
- - [ConnectorID](docs/ConnectorID.md)
- - [ConnectorServiceCreateConnectorBody](docs/ConnectorServiceCreateConnectorBody.md)
- - [ConnectorServiceCreatePrivateLinkEndpointBody](docs/ConnectorServiceCreatePrivateLinkEndpointBody.md)
- - [ConnectorServiceDescribeSchemaTableBody](docs/ConnectorServiceDescribeSchemaTableBody.md)
- - [ConnectorServiceEditConnectorBody](docs/ConnectorServiceEditConnectorBody.md)
- - [ConnectorServiceListConnectorsConnectorTypeParameter](docs/ConnectorServiceListConnectorsConnectorTypeParameter.md)
- - [ConnectorServiceTestConnectorBody](docs/ConnectorServiceTestConnectorBody.md)
- - [ConnectorTypeEnum](docs/ConnectorTypeEnum.md)
- - [Connectors](docs/Connectors.md)
- - [DataFormat](docs/DataFormat.md)
  - [DecimalHandlingModeEnum](docs/DecimalHandlingModeEnum.md)
  - [DescribeSchemaTableResp](docs/DescribeSchemaTableResp.md)
  - [EventFilterRule](docs/EventFilterRule.md)
  - [GlueSchemaRegistry](docs/GlueSchemaRegistry.md)
+ - [Kafka](docs/Kafka.md)
  - [KafkaAuthTypeEnum](docs/KafkaAuthTypeEnum.md)
+ - [KafkaAuthentication](docs/KafkaAuthentication.md)
+ - [KafkaBroker](docs/KafkaBroker.md)
+ - [KafkaColumnSelector](docs/KafkaColumnSelector.md)
  - [KafkaCompressionTypeEnum](docs/KafkaCompressionTypeEnum.md)
+ - [KafkaDataFormat](docs/KafkaDataFormat.md)
  - [KafkaEndpoint](docs/KafkaEndpoint.md)
- - [KafkaInfo](docs/KafkaInfo.md)
+ - [KafkaNetwork](docs/KafkaNetwork.md)
  - [KafkaNetworkTypeEnum](docs/KafkaNetworkTypeEnum.md)
+ - [KafkaPartitionDispatcherConfig](docs/KafkaPartitionDispatcherConfig.md)
+ - [KafkaProtocolEnum](docs/KafkaProtocolEnum.md)
+ - [KafkaTopicPartitionConfig](docs/KafkaTopicPartitionConfig.md)
  - [KafkaTypeEnum](docs/KafkaTypeEnum.md)
  - [KafkaVersionEnum](docs/KafkaVersionEnum.md)
- - [NetworkInfo](docs/NetworkInfo.md)
- - [PartitionDispatcherConfig](docs/PartitionDispatcherConfig.md)
+ - [MySQL](docs/MySQL.md)
+ - [MySQLAuthentication](docs/MySQLAuthentication.md)
+ - [MySQLNetwork](docs/MySQLNetwork.md)
+ - [MySQLNetworkTypeEnum](docs/MySQLNetworkTypeEnum.md)
  - [PartitionDispatcherEnum](docs/PartitionDispatcherEnum.md)
  - [PrivateLinkEndpoint](docs/PrivateLinkEndpoint.md)
  - [PrivateLinkEndpointStateEnum](docs/PrivateLinkEndpointStateEnum.md)
@@ -138,7 +142,6 @@ Class | Method | HTTP request | Description
  - [Status](docs/Status.md)
  - [TableModeEnum](docs/TableModeEnum.md)
  - [TopicDispatchTypeEnum](docs/TopicDispatchTypeEnum.md)
- - [TopicPartitionConfig](docs/TopicPartitionConfig.md)
 
 
 ## Documentation For Authorization

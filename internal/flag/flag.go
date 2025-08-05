@@ -107,6 +107,7 @@ const (
 	ChangefeedType     string = "type"
 	ChangefeedName     string = "name"
 	ChangefeedKafka    string = "kafka"
+	ChangefeedMySQL    string = "mysql"
 	ChangefeedFilter   string = "filter"
 	ChangefeedStartTSO string = "start-tso"
 	ChangefeedID       string = "changefeed-id"

@@ -122,16 +122,16 @@ type TiDBCloudClient interface {
 
 	ListAuditLogs(ctx context.Context, clusterID string, pageSize *int32, pageToken *string, date *string) (*auditlog.ListAuditLogsResponse, error)
 
-	// CDC Connector methods
-	CreateConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceCreateConnectorBody) (*cdc.ConnectorID, error)
-	DeleteConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error)
-	EditConnector(ctx context.Context, clusterId, connectorId string, body *cdc.ConnectorServiceEditConnectorBody) (*cdc.ConnectorID, error)
-	GetConnector(ctx context.Context, clusterId, connectorId string) (*cdc.Connector, error)
-	ListConnectors(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, connectorType *cdc.ConnectorServiceListConnectorsConnectorTypeParameter, orderBy *string) (*cdc.Connectors, error)
-	StartConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error)
-	StopConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error)
-	TestConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceTestConnectorBody) (map[string]interface{}, error)
-	DescribeSchemaTable(ctx context.Context, clusterId string, body *cdc.ConnectorServiceDescribeSchemaTableBody) (*cdc.DescribeSchemaTableResp, error)
+	// CDC Changefeed methods
+	CreateChangefeed(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceCreateChangefeedBody) (*cdc.Changefeed, error)
+	DeleteChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error)
+	EditChangefeed(ctx context.Context, clusterId, changefeedId string, body *cdc.ChangefeedServiceEditChangefeedBody) (*cdc.Changefeed, error)
+	GetChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error)
+	ListChangefeeds(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, changefeedType *cdc.ChangefeedServiceListChangefeedsChangefeedTypeParameter, orderBy *string) (*cdc.Changefeeds, error)
+	StartChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error)
+	StopChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error)
+	TestChangefeed(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceTestChangefeedBody) (map[string]interface{}, error)
+	DescribeSchemaTable(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceDescribeSchemaTableBody) (*cdc.DescribeSchemaTableResp, error)
 
 	CreateAuditLogFilterRule(ctx context.Context, clusterID string, body *auditlog.AuditLogServiceCreateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error)
 
@@ -744,8 +744,8 @@ func parseError(err error, resp *http.Response) error {
 	return fmt.Errorf("%s[%s][%s] %s", path, err.Error(), traceId, body)
 }
 
-func (d *ClientDelegate) CreateConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceCreateConnectorBody) (*cdc.ConnectorID, error) {
-	r := d.cdc.ConnectorServiceAPI.ConnectorServiceCreateConnector(ctx, clusterId)
+func (d *ClientDelegate) CreateChangefeed(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceCreateChangefeedBody) (*cdc.Changefeed, error) {
+	r := d.cdc.ChangefeedServiceAPI.ChangefeedServiceCreateChangefeed(ctx, clusterId)
 	if body != nil {
 		r = r.Body(*body)
 	}
@@ -753,13 +753,13 @@ func (d *ClientDelegate) CreateConnector(ctx context.Context, clusterId string, 
 	return resp, parseError(err, h)
 }
 
-func (d *ClientDelegate) DeleteConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error) {
-	resp, h, err := d.cdc.ConnectorServiceAPI.ConnectorServiceDeleteConnector(ctx, clusterId, connectorId).Execute()
+func (d *ClientDelegate) DeleteChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error) {
+	resp, h, err := d.cdc.ChangefeedServiceAPI.ChangefeedServiceDeleteChangefeed(ctx, clusterId, changefeedId).Execute()
 	return resp, parseError(err, h)
 }
 
-func (d *ClientDelegate) EditConnector(ctx context.Context, clusterId, connectorId string, body *cdc.ConnectorServiceEditConnectorBody) (*cdc.ConnectorID, error) {
-	r := d.cdc.ConnectorServiceAPI.ConnectorServiceEditConnector(ctx, clusterId, connectorId)
+func (d *ClientDelegate) EditChangefeed(ctx context.Context, clusterId, changefeedId string, body *cdc.ChangefeedServiceEditChangefeedBody) (*cdc.Changefeed, error) {
+	r := d.cdc.ChangefeedServiceAPI.ChangefeedServiceEditChangefeed(ctx, clusterId, changefeedId)
 	if body != nil {
 		r = r.Body(*body)
 	}
@@ -767,21 +767,21 @@ func (d *ClientDelegate) EditConnector(ctx context.Context, clusterId, connector
 	return resp, parseError(err, h)
 }
 
-func (d *ClientDelegate) GetConnector(ctx context.Context, clusterId, connectorId string) (*cdc.Connector, error) {
-	resp, h, err := d.cdc.ConnectorServiceAPI.ConnectorServiceGetConnector(ctx, clusterId, connectorId).Execute()
+func (d *ClientDelegate) GetChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error) {
+	resp, h, err := d.cdc.ChangefeedServiceAPI.ChangefeedServiceGetChangefeed(ctx, clusterId, changefeedId).Execute()
 	return resp, parseError(err, h)
 }
 
-func (d *ClientDelegate) ListConnectors(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, connectorType *cdc.ConnectorServiceListConnectorsConnectorTypeParameter, orderBy *string) (*cdc.Connectors, error) {
-	r := d.cdc.ConnectorServiceAPI.ConnectorServiceListConnectors(ctx, clusterId)
+func (d *ClientDelegate) ListChangefeeds(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, changefeedType *cdc.ChangefeedServiceListChangefeedsChangefeedTypeParameter, orderBy *string) (*cdc.Changefeeds, error) {
+	r := d.cdc.ChangefeedServiceAPI.ChangefeedServiceListChangefeeds(ctx, clusterId)
 	if pageSize != nil {
 		r = r.PageSize(*pageSize)
 	}
 	if pageToken != nil {
 		r = r.PageToken(*pageToken)
 	}
-	if connectorType != nil {
-		r = r.ConnectorType(*connectorType)
+	if changefeedType != nil {
+		r = r.ChangefeedType(*changefeedType)
 	}
 	if orderBy != nil {
 		r = r.OrderBy(*orderBy)
@@ -790,22 +790,22 @@ func (d *ClientDelegate) ListConnectors(ctx context.Context, clusterId string, p
 	return resp, parseError(err, h)
 }
 
-func (d *ClientDelegate) StartConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error) {
-	r := d.cdc.ConnectorServiceAPI.ConnectorServiceStartConnector(ctx, clusterId, connectorId)
+func (d *ClientDelegate) StartChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error) {
+	r := d.cdc.ChangefeedServiceAPI.ChangefeedServiceStartChangefeed(ctx, clusterId, changefeedId)
 	r = r.Body(map[string]interface{}{})
 	resp, h, err := r.Execute()
 	return resp, parseError(err, h)
 }
 
-func (d *ClientDelegate) StopConnector(ctx context.Context, clusterId, connectorId string) (*cdc.ConnectorID, error) {
-	r := d.cdc.ConnectorServiceAPI.ConnectorServiceStopConnector(ctx, clusterId, connectorId)
+func (d *ClientDelegate) StopChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error) {
+	r := d.cdc.ChangefeedServiceAPI.ChangefeedServiceStopChangefeed(ctx, clusterId, changefeedId)
 	r = r.Body(map[string]interface{}{})
 	resp, h, err := r.Execute()
 	return resp, parseError(err, h)
 }
 
-func (d *ClientDelegate) TestConnector(ctx context.Context, clusterId string, body *cdc.ConnectorServiceTestConnectorBody) (map[string]interface{}, error) {
-	r := d.cdc.ConnectorServiceAPI.ConnectorServiceTestConnector(ctx, clusterId)
+func (d *ClientDelegate) TestChangefeed(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceTestChangefeedBody) (map[string]interface{}, error) {
+	r := d.cdc.ChangefeedServiceAPI.ChangefeedServiceTestChangefeed(ctx, clusterId)
 	if body != nil {
 		r = r.Body(*body)
 	}
@@ -813,8 +813,8 @@ func (d *ClientDelegate) TestConnector(ctx context.Context, clusterId string, bo
 	return resp, parseError(err, h)
 }
 
-func (d *ClientDelegate) DescribeSchemaTable(ctx context.Context, clusterId string, body *cdc.ConnectorServiceDescribeSchemaTableBody) (*cdc.DescribeSchemaTableResp, error) {
-	r := d.cdc.ConnectorServiceAPI.ConnectorServiceDescribeSchemaTable(ctx, clusterId)
+func (d *ClientDelegate) DescribeSchemaTable(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceDescribeSchemaTableBody) (*cdc.DescribeSchemaTableResp, error) {
+	r := d.cdc.ChangefeedServiceAPI.ChangefeedServiceDescribeSchemaTable(ctx, clusterId)
 	if body != nil {
 		r = r.Body(*body)
 	}

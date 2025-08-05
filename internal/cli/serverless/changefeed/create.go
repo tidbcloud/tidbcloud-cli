@@ -17,9 +17,7 @@ package changefeed
 import (
 	"encoding/json"
 	"fmt"
-	"slices"
 	"strconv"
-	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/fatih/color"
@@ -43,6 +41,7 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 		flag.ClusterID,
 		flag.ChangefeedType,
 		flag.ChangefeedKafka,
+		flag.ChangefeedMySQL,
 		flag.ChangefeedFilter,
 		flag.ChangefeedStartTSO,
 		flag.ChangefeedName,
@@ -53,7 +52,6 @@ func (c CreateOpts) RequiredFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.ChangefeedType,
-		flag.ChangefeedKafka,
 		flag.ChangefeedFilter,
 	}
 }
@@ -105,10 +103,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			var clusterID, name, changefeedType, kafkaStr, filterStr string
+			var clusterID, name, kafkaStr, mysqlStr, filterStr string
 			var startTSO uint64
-			var kafkaInfo cdc.KafkaInfo
 			var filter cdc.CDCFilter
+			var kafkaInfo cdc.Kafka
+			var mysqlInfo cdc.MySQL
+			var changefeedType cdc.ChangefeedTypeEnum
 
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
@@ -123,17 +123,36 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				clusterID = cluster.ID
-
-				inputs := []string{flag.ChangefeedName, flag.ChangefeedType, flag.ChangefeedKafka, flag.ChangefeedFilter, flag.ChangefeedStartTSO}
-				textInput, err := ui.InitialInputModel(inputs, inputDescription)
+				changefeedType, err = GetSelectedChangefeedType()
 				if err != nil {
 					return err
 				}
-				name = textInput.Inputs[0].Value()
-				changefeedType = textInput.Inputs[1].Value()
-				kafkaStr = textInput.Inputs[2].Value()
-				filterStr = textInput.Inputs[3].Value()
-				startTSOStr := textInput.Inputs[4].Value()
+
+				var startTSOStr string
+				switch changefeedType {
+				case cdc.CHANGEFEEDTYPEENUM_KAFKA:
+					inputs := []string{flag.ChangefeedName, flag.ChangefeedKafka, flag.ChangefeedFilter, flag.ChangefeedStartTSO}
+					textInput, err := ui.InitialInputModel(inputs, createKafkaInputDescription)
+					if err != nil {
+						return err
+					}
+					name = textInput.Inputs[0].Value()
+					kafkaStr = textInput.Inputs[1].Value()
+					filterStr = textInput.Inputs[2].Value()
+					startTSOStr = textInput.Inputs[3].Value()
+				case cdc.CHANGEFEEDTYPEENUM_MYSQL:
+					inputs := []string{flag.ChangefeedName, flag.ChangefeedMySQL, flag.ChangefeedFilter, flag.ChangefeedStartTSO}
+					textInput, err := ui.InitialInputModel(inputs, createKafkaInputDescription)
+					if err != nil {
+						return err
+					}
+					name = textInput.Inputs[0].Value()
+					mysqlStr = textInput.Inputs[1].Value()
+					filterStr = textInput.Inputs[2].Value()
+					startTSOStr = textInput.Inputs[3].Value()
+				default:
+					return errors.Errorf("currently only %s and %s type is supported", cdc.CHANGEFEEDTYPEENUM_KAFKA, cdc.CHANGEFEEDTYPEENUM_MYSQL)
+				}
 				if startTSOStr == "" {
 					startTSO = 0
 				} else {
@@ -152,32 +171,22 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				changefeedType, err = cmd.Flags().GetString(flag.ChangefeedType)
+				changefeedTypeStr, err := cmd.Flags().GetString(flag.ChangefeedType)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if changefeedType == "" {
-					return errors.New("type is required")
-				}
+				changefeedType = cdc.ChangefeedTypeEnum(changefeedTypeStr)
 				kafkaStr, err = cmd.Flags().GetString(flag.ChangefeedKafka)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if kafkaStr == "" {
-					return errors.New("kafka info is required")
-				}
-				if err := json.Unmarshal([]byte(kafkaStr), &kafkaInfo); err != nil {
-					return errors.New("invalid kafka info, please use JSON format")
+				mysqlStr, err = cmd.Flags().GetString(flag.ChangefeedMySQL)
+				if err != nil {
+					return errors.Trace(err)
 				}
 				filterStr, err = cmd.Flags().GetString(flag.ChangefeedFilter)
 				if err != nil {
 					return errors.Trace(err)
-				}
-				if filterStr == "" {
-					return errors.New("filter is required")
-				}
-				if err := json.Unmarshal([]byte(filterStr), &filter); err != nil {
-					return errors.New("invalid filter, please use JSON format")
 				}
 				startTSO, err = cmd.Flags().GetUint64(flag.ChangefeedStartTSO)
 				if err != nil {
@@ -186,15 +195,25 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			// check all the parameters
-			if changefeedType == "" {
-				return errors.New("type is required")
+			switch changefeedType {
+			case cdc.CHANGEFEEDTYPEENUM_KAFKA:
+				if kafkaStr == "" {
+					return errors.New("kafka info is required")
+				}
+				if err := json.Unmarshal([]byte(kafkaStr), &kafkaInfo); err != nil {
+					return errors.New("invalid kafka info, please use JSON format")
+				}
+			case cdc.CHANGEFEEDTYPEENUM_MYSQL:
+				if mysqlStr == "" {
+					return errors.New("mysql info is required")
+				}
+				if err := json.Unmarshal([]byte(mysqlStr), &mysqlInfo); err != nil {
+					return errors.New("invalid mysql info, please use JSON format")
+				}
+			default:
+				return errors.New("currently only KAFKA and MYSQL type is supported")
 			}
-			if kafkaStr == "" {
-				return errors.New("kafka info is required")
-			}
-			if err := json.Unmarshal([]byte(kafkaStr), &kafkaInfo); err != nil {
-				return errors.New("invalid kafka info, please use JSON format")
-			}
+
 			if filterStr == "" {
 				return errors.New("filter is required")
 			}
@@ -202,22 +221,20 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				return errors.New("invalid filter, please use JSON format")
 			}
 
-			if !slices.Contains(cdc.AllowedConnectorTypeEnumEnumValues, cdc.ConnectorTypeEnum(changefeedType)) {
-				return errors.New("currently only KAFKA type is supported")
-			}
-
 			// create the changefeed
-			body := &cdc.ConnectorServiceCreateConnectorBody{
-				Name: &name,
+			body := &cdc.ChangefeedServiceCreateChangefeedBody{
+				DisplayName: &name,
 				Sink: cdc.SinkInfo{
-					Type: cdc.ConnectorTypeEnum(changefeedType),
+					Type: cdc.ChangefeedTypeEnum(changefeedType),
 				},
 				Filter: filter,
 			}
 
 			switch body.Sink.Type {
-			case cdc.CONNECTORTYPEENUM_KAFKA:
+			case cdc.CHANGEFEEDTYPEENUM_KAFKA:
 				body.Sink.Kafka = &kafkaInfo
+			case cdc.CHANGEFEEDTYPEENUM_MYSQL:
+				body.Sink.Mysql = &mysqlInfo
 			}
 			if startTSO == 0 {
 				mode := cdc.STARTMODEENUM_FROM_NOW
@@ -232,18 +249,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			now := time.Now().UTC().Format(time.RFC3339)
-			mode := cdc.STARTMODEENUM_FROM_UTC
-			body.StartPosition = &cdc.StartPosition{
-				Mode: &mode,
-				Utc:  &now,
-			}
-
-			resp, err := d.CreateConnector(ctx, clusterID, body)
+			resp, err := d.CreateChangefeed(ctx, clusterID, body)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("changefeed %s created", resp.ConnectorId))
+			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("changefeed %s created", resp.ChangefeedId))
 			if err != nil {
 				return err
 			}
@@ -253,19 +263,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
 	createCmd.Flags().String(flag.ChangefeedName, "", "The name of the changefeed.")
-	createCmd.Flags().String(flag.ChangefeedType, "", fmt.Sprintf("The type of the changefeed, one of %q", cdc.AllowedConnectorTypeEnumEnumValues))
+	createCmd.Flags().String(flag.ChangefeedType, "", fmt.Sprintf("The type of the changefeed, one of %q", cdc.AllowedChangefeedTypeEnumEnumValues))
 	createCmd.Flags().String(flag.ChangefeedKafka, "", "Kafka information in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
+	createCmd.Flags().String(flag.ChangefeedMySQL, "", "MySQL information in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
 	createCmd.Flags().String(flag.ChangefeedFilter, "", "Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
 	createCmd.Flags().Uint64(flag.ChangefeedStartTSO, 0, "Start TSO for the changefeed, default to current TSO. See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.")
 
 	return createCmd
-}
-
-// inputDescription 用于交互式输入提示
-var inputDescription = map[string]string{
-	flag.ChangefeedName:     "The name of the changefeed, skip to use the default name",
-	flag.ChangefeedType:     fmt.Sprintf("The type of the changefeed, one of %q", cdc.AllowedConnectorTypeEnumEnumValues),
-	flag.ChangefeedKafka:    "Kafka information in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
-	flag.ChangefeedFilter:   "Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
-	flag.ChangefeedStartTSO: "Start TSO (uint64) for the changefeed, skip to use the current TSO. See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.",
 }

@@ -48,7 +48,7 @@ type APIClient struct {
 
 	// API Services
 
-	ConnectorServiceAPI *ConnectorServiceAPIService
+	ChangefeedServiceAPI *ChangefeedServiceAPIService
 }
 
 type service struct {
@@ -67,7 +67,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.common.client = c
 
 	// API Services
-	c.ConnectorServiceAPI = (*ConnectorServiceAPIService)(&c.common)
+	c.ChangefeedServiceAPI = (*ChangefeedServiceAPIService)(&c.common)
 
 	return c
 }

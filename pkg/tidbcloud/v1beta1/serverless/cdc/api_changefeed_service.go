@@ -19,34 +19,34 @@ import (
 	"strings"
 )
 
-// ConnectorServiceAPIService ConnectorServiceAPI service
-type ConnectorServiceAPIService service
+// ChangefeedServiceAPIService ChangefeedServiceAPI service
+type ChangefeedServiceAPIService service
 
-type ApiConnectorServiceCreateConnectorRequest struct {
+type ApiChangefeedServiceCreateChangefeedRequest struct {
 	ctx        context.Context
-	ApiService *ConnectorServiceAPIService
+	ApiService *ChangefeedServiceAPIService
 	clusterId  string
-	body       *ConnectorServiceCreateConnectorBody
+	body       *ChangefeedServiceCreateChangefeedBody
 }
 
-func (r ApiConnectorServiceCreateConnectorRequest) Body(body ConnectorServiceCreateConnectorBody) ApiConnectorServiceCreateConnectorRequest {
+func (r ApiChangefeedServiceCreateChangefeedRequest) Body(body ChangefeedServiceCreateChangefeedBody) ApiChangefeedServiceCreateChangefeedRequest {
 	r.body = &body
 	return r
 }
 
-func (r ApiConnectorServiceCreateConnectorRequest) Execute() (*ConnectorID, *http.Response, error) {
-	return r.ApiService.ConnectorServiceCreateConnectorExecute(r)
+func (r ApiChangefeedServiceCreateChangefeedRequest) Execute() (*Changefeed, *http.Response, error) {
+	return r.ApiService.ChangefeedServiceCreateChangefeedExecute(r)
 }
 
 /*
-ConnectorServiceCreateConnector Create a connector.
+ChangefeedServiceCreateChangefeed Create a changefeed.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId Required. The ID of the cluster.
-	@return ApiConnectorServiceCreateConnectorRequest
+	@return ApiChangefeedServiceCreateChangefeedRequest
 */
-func (a *ConnectorServiceAPIService) ConnectorServiceCreateConnector(ctx context.Context, clusterId string) ApiConnectorServiceCreateConnectorRequest {
-	return ApiConnectorServiceCreateConnectorRequest{
+func (a *ChangefeedServiceAPIService) ChangefeedServiceCreateChangefeed(ctx context.Context, clusterId string) ApiChangefeedServiceCreateChangefeedRequest {
+	return ApiChangefeedServiceCreateChangefeedRequest{
 		ApiService: a,
 		ctx:        ctx,
 		clusterId:  clusterId,
@@ -55,21 +55,21 @@ func (a *ConnectorServiceAPIService) ConnectorServiceCreateConnector(ctx context
 
 // Execute executes the request
 //
-//	@return ConnectorID
-func (a *ConnectorServiceAPIService) ConnectorServiceCreateConnectorExecute(r ApiConnectorServiceCreateConnectorRequest) (*ConnectorID, *http.Response, error) {
+//	@return Changefeed
+func (a *ChangefeedServiceAPIService) ChangefeedServiceCreateChangefeedExecute(r ApiChangefeedServiceCreateChangefeedRequest) (*Changefeed, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPost
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *ConnectorID
+		localVarReturnValue *Changefeed
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ConnectorServiceAPIService.ConnectorServiceCreateConnector")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ChangefeedServiceAPIService.ChangefeedServiceCreateChangefeed")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/connectors"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -143,31 +143,31 @@ func (a *ConnectorServiceAPIService) ConnectorServiceCreateConnectorExecute(r Ap
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiConnectorServiceCreatePrivateLinkEndpointRequest struct {
+type ApiChangefeedServiceCreatePrivateLinkEndpointRequest struct {
 	ctx        context.Context
-	ApiService *ConnectorServiceAPIService
+	ApiService *ChangefeedServiceAPIService
 	clusterId  string
-	body       *ConnectorServiceCreatePrivateLinkEndpointBody
+	body       *ChangefeedServiceCreatePrivateLinkEndpointBody
 }
 
-func (r ApiConnectorServiceCreatePrivateLinkEndpointRequest) Body(body ConnectorServiceCreatePrivateLinkEndpointBody) ApiConnectorServiceCreatePrivateLinkEndpointRequest {
+func (r ApiChangefeedServiceCreatePrivateLinkEndpointRequest) Body(body ChangefeedServiceCreatePrivateLinkEndpointBody) ApiChangefeedServiceCreatePrivateLinkEndpointRequest {
 	r.body = &body
 	return r
 }
 
-func (r ApiConnectorServiceCreatePrivateLinkEndpointRequest) Execute() (*PrivateLinkEndpoint, *http.Response, error) {
-	return r.ApiService.ConnectorServiceCreatePrivateLinkEndpointExecute(r)
+func (r ApiChangefeedServiceCreatePrivateLinkEndpointRequest) Execute() (*PrivateLinkEndpoint, *http.Response, error) {
+	return r.ApiService.ChangefeedServiceCreatePrivateLinkEndpointExecute(r)
 }
 
 /*
-ConnectorServiceCreatePrivateLinkEndpoint Create a private link
+ChangefeedServiceCreatePrivateLinkEndpoint Create a private link
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId Required. The ID of the cluster.
-	@return ApiConnectorServiceCreatePrivateLinkEndpointRequest
+	@return ApiChangefeedServiceCreatePrivateLinkEndpointRequest
 */
-func (a *ConnectorServiceAPIService) ConnectorServiceCreatePrivateLinkEndpoint(ctx context.Context, clusterId string) ApiConnectorServiceCreatePrivateLinkEndpointRequest {
-	return ApiConnectorServiceCreatePrivateLinkEndpointRequest{
+func (a *ChangefeedServiceAPIService) ChangefeedServiceCreatePrivateLinkEndpoint(ctx context.Context, clusterId string) ApiChangefeedServiceCreatePrivateLinkEndpointRequest {
+	return ApiChangefeedServiceCreatePrivateLinkEndpointRequest{
 		ApiService: a,
 		ctx:        ctx,
 		clusterId:  clusterId,
@@ -177,7 +177,7 @@ func (a *ConnectorServiceAPIService) ConnectorServiceCreatePrivateLinkEndpoint(c
 // Execute executes the request
 //
 //	@return PrivateLinkEndpoint
-func (a *ConnectorServiceAPIService) ConnectorServiceCreatePrivateLinkEndpointExecute(r ApiConnectorServiceCreatePrivateLinkEndpointRequest) (*PrivateLinkEndpoint, *http.Response, error) {
+func (a *ChangefeedServiceAPIService) ChangefeedServiceCreatePrivateLinkEndpointExecute(r ApiChangefeedServiceCreatePrivateLinkEndpointRequest) (*PrivateLinkEndpoint, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPost
 		localVarPostBody    interface{}
@@ -185,12 +185,12 @@ func (a *ConnectorServiceAPIService) ConnectorServiceCreatePrivateLinkEndpointEx
 		localVarReturnValue *PrivateLinkEndpoint
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ConnectorServiceAPIService.ConnectorServiceCreatePrivateLinkEndpoint")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ChangefeedServiceAPIService.ChangefeedServiceCreatePrivateLinkEndpoint")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/connectors/private-link-endpoints"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds/private-link-endpoints"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -264,53 +264,53 @@ func (a *ConnectorServiceAPIService) ConnectorServiceCreatePrivateLinkEndpointEx
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiConnectorServiceDeleteConnectorRequest struct {
-	ctx         context.Context
-	ApiService  *ConnectorServiceAPIService
-	clusterId   string
-	connectorId string
+type ApiChangefeedServiceDeleteChangefeedRequest struct {
+	ctx          context.Context
+	ApiService   *ChangefeedServiceAPIService
+	clusterId    string
+	changefeedId string
 }
 
-func (r ApiConnectorServiceDeleteConnectorRequest) Execute() (*ConnectorID, *http.Response, error) {
-	return r.ApiService.ConnectorServiceDeleteConnectorExecute(r)
+func (r ApiChangefeedServiceDeleteChangefeedRequest) Execute() (*Changefeed, *http.Response, error) {
+	return r.ApiService.ChangefeedServiceDeleteChangefeedExecute(r)
 }
 
 /*
-ConnectorServiceDeleteConnector Delete a connector.
+ChangefeedServiceDeleteChangefeed Delete a changefeed.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId Required. The ID of the cluster.
-	@param connectorId Required. The ID of the connector.
-	@return ApiConnectorServiceDeleteConnectorRequest
+	@param changefeedId Required. The ID of the changefeed.
+	@return ApiChangefeedServiceDeleteChangefeedRequest
 */
-func (a *ConnectorServiceAPIService) ConnectorServiceDeleteConnector(ctx context.Context, clusterId string, connectorId string) ApiConnectorServiceDeleteConnectorRequest {
-	return ApiConnectorServiceDeleteConnectorRequest{
-		ApiService:  a,
-		ctx:         ctx,
-		clusterId:   clusterId,
-		connectorId: connectorId,
+func (a *ChangefeedServiceAPIService) ChangefeedServiceDeleteChangefeed(ctx context.Context, clusterId string, changefeedId string) ApiChangefeedServiceDeleteChangefeedRequest {
+	return ApiChangefeedServiceDeleteChangefeedRequest{
+		ApiService:   a,
+		ctx:          ctx,
+		clusterId:    clusterId,
+		changefeedId: changefeedId,
 	}
 }
 
 // Execute executes the request
 //
-//	@return ConnectorID
-func (a *ConnectorServiceAPIService) ConnectorServiceDeleteConnectorExecute(r ApiConnectorServiceDeleteConnectorRequest) (*ConnectorID, *http.Response, error) {
+//	@return Changefeed
+func (a *ChangefeedServiceAPIService) ChangefeedServiceDeleteChangefeedExecute(r ApiChangefeedServiceDeleteChangefeedRequest) (*Changefeed, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodDelete
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *ConnectorID
+		localVarReturnValue *Changefeed
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ConnectorServiceAPIService.ConnectorServiceDeleteConnector")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ChangefeedServiceAPIService.ChangefeedServiceDeleteChangefeed")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/connectors/{connectorId}"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"connectorId"+"}", url.PathEscape(parameterValueToString(r.connectorId, "connectorId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"changefeedId"+"}", url.PathEscape(parameterValueToString(r.changefeedId, "changefeedId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -378,32 +378,32 @@ func (a *ConnectorServiceAPIService) ConnectorServiceDeleteConnectorExecute(r Ap
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiConnectorServiceDeletePrivateLinkEndpointRequest struct {
+type ApiChangefeedServiceDeletePrivateLinkEndpointRequest struct {
 	ctx                    context.Context
-	ApiService             *ConnectorServiceAPIService
+	ApiService             *ChangefeedServiceAPIService
 	clusterId              string
 	privateLinkServiceName *string
 }
 
 // Required. The private link service name.
-func (r ApiConnectorServiceDeletePrivateLinkEndpointRequest) PrivateLinkServiceName(privateLinkServiceName string) ApiConnectorServiceDeletePrivateLinkEndpointRequest {
+func (r ApiChangefeedServiceDeletePrivateLinkEndpointRequest) PrivateLinkServiceName(privateLinkServiceName string) ApiChangefeedServiceDeletePrivateLinkEndpointRequest {
 	r.privateLinkServiceName = &privateLinkServiceName
 	return r
 }
 
-func (r ApiConnectorServiceDeletePrivateLinkEndpointRequest) Execute() (*PrivateLinkEndpoint, *http.Response, error) {
-	return r.ApiService.ConnectorServiceDeletePrivateLinkEndpointExecute(r)
+func (r ApiChangefeedServiceDeletePrivateLinkEndpointRequest) Execute() (*PrivateLinkEndpoint, *http.Response, error) {
+	return r.ApiService.ChangefeedServiceDeletePrivateLinkEndpointExecute(r)
 }
 
 /*
-ConnectorServiceDeletePrivateLinkEndpoint Delete a private link
+ChangefeedServiceDeletePrivateLinkEndpoint Delete a private link
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId Required. The ID of the cluster.
-	@return ApiConnectorServiceDeletePrivateLinkEndpointRequest
+	@return ApiChangefeedServiceDeletePrivateLinkEndpointRequest
 */
-func (a *ConnectorServiceAPIService) ConnectorServiceDeletePrivateLinkEndpoint(ctx context.Context, clusterId string) ApiConnectorServiceDeletePrivateLinkEndpointRequest {
-	return ApiConnectorServiceDeletePrivateLinkEndpointRequest{
+func (a *ChangefeedServiceAPIService) ChangefeedServiceDeletePrivateLinkEndpoint(ctx context.Context, clusterId string) ApiChangefeedServiceDeletePrivateLinkEndpointRequest {
+	return ApiChangefeedServiceDeletePrivateLinkEndpointRequest{
 		ApiService: a,
 		ctx:        ctx,
 		clusterId:  clusterId,
@@ -413,7 +413,7 @@ func (a *ConnectorServiceAPIService) ConnectorServiceDeletePrivateLinkEndpoint(c
 // Execute executes the request
 //
 //	@return PrivateLinkEndpoint
-func (a *ConnectorServiceAPIService) ConnectorServiceDeletePrivateLinkEndpointExecute(r ApiConnectorServiceDeletePrivateLinkEndpointRequest) (*PrivateLinkEndpoint, *http.Response, error) {
+func (a *ChangefeedServiceAPIService) ChangefeedServiceDeletePrivateLinkEndpointExecute(r ApiChangefeedServiceDeletePrivateLinkEndpointRequest) (*PrivateLinkEndpoint, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodDelete
 		localVarPostBody    interface{}
@@ -421,12 +421,12 @@ func (a *ConnectorServiceAPIService) ConnectorServiceDeletePrivateLinkEndpointEx
 		localVarReturnValue *PrivateLinkEndpoint
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ConnectorServiceAPIService.ConnectorServiceDeletePrivateLinkEndpoint")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ChangefeedServiceAPIService.ChangefeedServiceDeletePrivateLinkEndpoint")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/connectors/private-links-endpoints"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds/private-links-endpoints"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -499,31 +499,31 @@ func (a *ConnectorServiceAPIService) ConnectorServiceDeletePrivateLinkEndpointEx
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiConnectorServiceDescribeSchemaTableRequest struct {
+type ApiChangefeedServiceDescribeSchemaTableRequest struct {
 	ctx        context.Context
-	ApiService *ConnectorServiceAPIService
+	ApiService *ChangefeedServiceAPIService
 	clusterId  string
-	body       *ConnectorServiceDescribeSchemaTableBody
+	body       *ChangefeedServiceDescribeSchemaTableBody
 }
 
-func (r ApiConnectorServiceDescribeSchemaTableRequest) Body(body ConnectorServiceDescribeSchemaTableBody) ApiConnectorServiceDescribeSchemaTableRequest {
+func (r ApiChangefeedServiceDescribeSchemaTableRequest) Body(body ChangefeedServiceDescribeSchemaTableBody) ApiChangefeedServiceDescribeSchemaTableRequest {
 	r.body = &body
 	return r
 }
 
-func (r ApiConnectorServiceDescribeSchemaTableRequest) Execute() (*DescribeSchemaTableResp, *http.Response, error) {
-	return r.ApiService.ConnectorServiceDescribeSchemaTableExecute(r)
+func (r ApiChangefeedServiceDescribeSchemaTableRequest) Execute() (*DescribeSchemaTableResp, *http.Response, error) {
+	return r.ApiService.ChangefeedServiceDescribeSchemaTableExecute(r)
 }
 
 /*
-ConnectorServiceDescribeSchemaTable Describe schema table.
+ChangefeedServiceDescribeSchemaTable Describe schema table.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId Required. The ID of the cluster.
-	@return ApiConnectorServiceDescribeSchemaTableRequest
+	@return ApiChangefeedServiceDescribeSchemaTableRequest
 */
-func (a *ConnectorServiceAPIService) ConnectorServiceDescribeSchemaTable(ctx context.Context, clusterId string) ApiConnectorServiceDescribeSchemaTableRequest {
-	return ApiConnectorServiceDescribeSchemaTableRequest{
+func (a *ChangefeedServiceAPIService) ChangefeedServiceDescribeSchemaTable(ctx context.Context, clusterId string) ApiChangefeedServiceDescribeSchemaTableRequest {
+	return ApiChangefeedServiceDescribeSchemaTableRequest{
 		ApiService: a,
 		ctx:        ctx,
 		clusterId:  clusterId,
@@ -533,7 +533,7 @@ func (a *ConnectorServiceAPIService) ConnectorServiceDescribeSchemaTable(ctx con
 // Execute executes the request
 //
 //	@return DescribeSchemaTableResp
-func (a *ConnectorServiceAPIService) ConnectorServiceDescribeSchemaTableExecute(r ApiConnectorServiceDescribeSchemaTableRequest) (*DescribeSchemaTableResp, *http.Response, error) {
+func (a *ChangefeedServiceAPIService) ChangefeedServiceDescribeSchemaTableExecute(r ApiChangefeedServiceDescribeSchemaTableRequest) (*DescribeSchemaTableResp, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPost
 		localVarPostBody    interface{}
@@ -541,12 +541,12 @@ func (a *ConnectorServiceAPIService) ConnectorServiceDescribeSchemaTableExecute(
 		localVarReturnValue *DescribeSchemaTableResp
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ConnectorServiceAPIService.ConnectorServiceDescribeSchemaTable")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ChangefeedServiceAPIService.ChangefeedServiceDescribeSchemaTable")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/connectors:describeSchemaTable"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds:describeSchemaTable"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -620,59 +620,59 @@ func (a *ConnectorServiceAPIService) ConnectorServiceDescribeSchemaTableExecute(
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiConnectorServiceEditConnectorRequest struct {
-	ctx         context.Context
-	ApiService  *ConnectorServiceAPIService
-	clusterId   string
-	connectorId string
-	body        *ConnectorServiceEditConnectorBody
+type ApiChangefeedServiceEditChangefeedRequest struct {
+	ctx          context.Context
+	ApiService   *ChangefeedServiceAPIService
+	clusterId    string
+	changefeedId string
+	body         *ChangefeedServiceEditChangefeedBody
 }
 
-func (r ApiConnectorServiceEditConnectorRequest) Body(body ConnectorServiceEditConnectorBody) ApiConnectorServiceEditConnectorRequest {
+func (r ApiChangefeedServiceEditChangefeedRequest) Body(body ChangefeedServiceEditChangefeedBody) ApiChangefeedServiceEditChangefeedRequest {
 	r.body = &body
 	return r
 }
 
-func (r ApiConnectorServiceEditConnectorRequest) Execute() (*ConnectorID, *http.Response, error) {
-	return r.ApiService.ConnectorServiceEditConnectorExecute(r)
+func (r ApiChangefeedServiceEditChangefeedRequest) Execute() (*Changefeed, *http.Response, error) {
+	return r.ApiService.ChangefeedServiceEditChangefeedExecute(r)
 }
 
 /*
-ConnectorServiceEditConnector Edit a connector.
+ChangefeedServiceEditChangefeed Edit a changefeed.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId Required. The ID of the cluster.
-	@param connectorId Required. The ID of the connector.
-	@return ApiConnectorServiceEditConnectorRequest
+	@param changefeedId Required. The ID of the changefeed.
+	@return ApiChangefeedServiceEditChangefeedRequest
 */
-func (a *ConnectorServiceAPIService) ConnectorServiceEditConnector(ctx context.Context, clusterId string, connectorId string) ApiConnectorServiceEditConnectorRequest {
-	return ApiConnectorServiceEditConnectorRequest{
-		ApiService:  a,
-		ctx:         ctx,
-		clusterId:   clusterId,
-		connectorId: connectorId,
+func (a *ChangefeedServiceAPIService) ChangefeedServiceEditChangefeed(ctx context.Context, clusterId string, changefeedId string) ApiChangefeedServiceEditChangefeedRequest {
+	return ApiChangefeedServiceEditChangefeedRequest{
+		ApiService:   a,
+		ctx:          ctx,
+		clusterId:    clusterId,
+		changefeedId: changefeedId,
 	}
 }
 
 // Execute executes the request
 //
-//	@return ConnectorID
-func (a *ConnectorServiceAPIService) ConnectorServiceEditConnectorExecute(r ApiConnectorServiceEditConnectorRequest) (*ConnectorID, *http.Response, error) {
+//	@return Changefeed
+func (a *ChangefeedServiceAPIService) ChangefeedServiceEditChangefeedExecute(r ApiChangefeedServiceEditChangefeedRequest) (*Changefeed, *http.Response, error) {
 	var (
-		localVarHTTPMethod  = http.MethodPost
+		localVarHTTPMethod  = http.MethodPatch
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *ConnectorID
+		localVarReturnValue *Changefeed
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ConnectorServiceAPIService.ConnectorServiceEditConnector")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ChangefeedServiceAPIService.ChangefeedServiceEditChangefeed")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/connectors/{connectorId}:edit"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"connectorId"+"}", url.PathEscape(parameterValueToString(r.connectorId, "connectorId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"changefeedId"+"}", url.PathEscape(parameterValueToString(r.changefeedId, "changefeedId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -745,53 +745,53 @@ func (a *ConnectorServiceAPIService) ConnectorServiceEditConnectorExecute(r ApiC
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiConnectorServiceGetConnectorRequest struct {
-	ctx         context.Context
-	ApiService  *ConnectorServiceAPIService
-	clusterId   string
-	connectorId string
+type ApiChangefeedServiceGetChangefeedRequest struct {
+	ctx          context.Context
+	ApiService   *ChangefeedServiceAPIService
+	clusterId    string
+	changefeedId string
 }
 
-func (r ApiConnectorServiceGetConnectorRequest) Execute() (*Connector, *http.Response, error) {
-	return r.ApiService.ConnectorServiceGetConnectorExecute(r)
+func (r ApiChangefeedServiceGetChangefeedRequest) Execute() (*Changefeed, *http.Response, error) {
+	return r.ApiService.ChangefeedServiceGetChangefeedExecute(r)
 }
 
 /*
-ConnectorServiceGetConnector Get a connector.
+ChangefeedServiceGetChangefeed Get a changefeed.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId Required. The ID of the cluster.
-	@param connectorId Required. The ID of the connector.
-	@return ApiConnectorServiceGetConnectorRequest
+	@param changefeedId Required. The ID of the changefeed.
+	@return ApiChangefeedServiceGetChangefeedRequest
 */
-func (a *ConnectorServiceAPIService) ConnectorServiceGetConnector(ctx context.Context, clusterId string, connectorId string) ApiConnectorServiceGetConnectorRequest {
-	return ApiConnectorServiceGetConnectorRequest{
-		ApiService:  a,
-		ctx:         ctx,
-		clusterId:   clusterId,
-		connectorId: connectorId,
+func (a *ChangefeedServiceAPIService) ChangefeedServiceGetChangefeed(ctx context.Context, clusterId string, changefeedId string) ApiChangefeedServiceGetChangefeedRequest {
+	return ApiChangefeedServiceGetChangefeedRequest{
+		ApiService:   a,
+		ctx:          ctx,
+		clusterId:    clusterId,
+		changefeedId: changefeedId,
 	}
 }
 
 // Execute executes the request
 //
-//	@return Connector
-func (a *ConnectorServiceAPIService) ConnectorServiceGetConnectorExecute(r ApiConnectorServiceGetConnectorRequest) (*Connector, *http.Response, error) {
+//	@return Changefeed
+func (a *ChangefeedServiceAPIService) ChangefeedServiceGetChangefeedExecute(r ApiChangefeedServiceGetChangefeedRequest) (*Changefeed, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *Connector
+		localVarReturnValue *Changefeed
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ConnectorServiceAPIService.ConnectorServiceGetConnector")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ChangefeedServiceAPIService.ChangefeedServiceGetChangefeed")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/connectors/{connectorId}"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"connectorId"+"}", url.PathEscape(parameterValueToString(r.connectorId, "connectorId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"changefeedId"+"}", url.PathEscape(parameterValueToString(r.changefeedId, "changefeedId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -859,32 +859,32 @@ func (a *ConnectorServiceAPIService) ConnectorServiceGetConnectorExecute(r ApiCo
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiConnectorServiceGetPrivateLinkEndpointRequest struct {
+type ApiChangefeedServiceGetPrivateLinkEndpointRequest struct {
 	ctx                    context.Context
-	ApiService             *ConnectorServiceAPIService
+	ApiService             *ChangefeedServiceAPIService
 	clusterId              string
 	privateLinkServiceName *string
 }
 
 // Required. The private link service name.
-func (r ApiConnectorServiceGetPrivateLinkEndpointRequest) PrivateLinkServiceName(privateLinkServiceName string) ApiConnectorServiceGetPrivateLinkEndpointRequest {
+func (r ApiChangefeedServiceGetPrivateLinkEndpointRequest) PrivateLinkServiceName(privateLinkServiceName string) ApiChangefeedServiceGetPrivateLinkEndpointRequest {
 	r.privateLinkServiceName = &privateLinkServiceName
 	return r
 }
 
-func (r ApiConnectorServiceGetPrivateLinkEndpointRequest) Execute() (*PrivateLinkEndpoint, *http.Response, error) {
-	return r.ApiService.ConnectorServiceGetPrivateLinkEndpointExecute(r)
+func (r ApiChangefeedServiceGetPrivateLinkEndpointRequest) Execute() (*PrivateLinkEndpoint, *http.Response, error) {
+	return r.ApiService.ChangefeedServiceGetPrivateLinkEndpointExecute(r)
 }
 
 /*
-ConnectorServiceGetPrivateLinkEndpoint Get a private link
+ChangefeedServiceGetPrivateLinkEndpoint Get a private link
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId Required. The ID of the cluster.
-	@return ApiConnectorServiceGetPrivateLinkEndpointRequest
+	@return ApiChangefeedServiceGetPrivateLinkEndpointRequest
 */
-func (a *ConnectorServiceAPIService) ConnectorServiceGetPrivateLinkEndpoint(ctx context.Context, clusterId string) ApiConnectorServiceGetPrivateLinkEndpointRequest {
-	return ApiConnectorServiceGetPrivateLinkEndpointRequest{
+func (a *ChangefeedServiceAPIService) ChangefeedServiceGetPrivateLinkEndpoint(ctx context.Context, clusterId string) ApiChangefeedServiceGetPrivateLinkEndpointRequest {
+	return ApiChangefeedServiceGetPrivateLinkEndpointRequest{
 		ApiService: a,
 		ctx:        ctx,
 		clusterId:  clusterId,
@@ -894,7 +894,7 @@ func (a *ConnectorServiceAPIService) ConnectorServiceGetPrivateLinkEndpoint(ctx 
 // Execute executes the request
 //
 //	@return PrivateLinkEndpoint
-func (a *ConnectorServiceAPIService) ConnectorServiceGetPrivateLinkEndpointExecute(r ApiConnectorServiceGetPrivateLinkEndpointRequest) (*PrivateLinkEndpoint, *http.Response, error) {
+func (a *ChangefeedServiceAPIService) ChangefeedServiceGetPrivateLinkEndpointExecute(r ApiChangefeedServiceGetPrivateLinkEndpointRequest) (*PrivateLinkEndpoint, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
@@ -902,12 +902,12 @@ func (a *ConnectorServiceAPIService) ConnectorServiceGetPrivateLinkEndpointExecu
 		localVarReturnValue *PrivateLinkEndpoint
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ConnectorServiceAPIService.ConnectorServiceGetPrivateLinkEndpoint")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ChangefeedServiceAPIService.ChangefeedServiceGetPrivateLinkEndpoint")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/connectors/private-links-endpoints"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds/private-links-endpoints"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -980,53 +980,53 @@ func (a *ConnectorServiceAPIService) ConnectorServiceGetPrivateLinkEndpointExecu
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiConnectorServiceListConnectorsRequest struct {
-	ctx           context.Context
-	ApiService    *ConnectorServiceAPIService
-	clusterId     string
-	pageSize      *int32
-	pageToken     *string
-	connectorType *ConnectorServiceListConnectorsConnectorTypeParameter
-	orderBy       *string
+type ApiChangefeedServiceListChangefeedsRequest struct {
+	ctx            context.Context
+	ApiService     *ChangefeedServiceAPIService
+	clusterId      string
+	pageSize       *int32
+	pageToken      *string
+	changefeedType *ChangefeedServiceListChangefeedsChangefeedTypeParameter
+	orderBy        *string
 }
 
-// Optional. The maximum number of connectors to return. Default is 10.
-func (r ApiConnectorServiceListConnectorsRequest) PageSize(pageSize int32) ApiConnectorServiceListConnectorsRequest {
+// Optional. The maximum number of changefeeds to return. Default is 10.
+func (r ApiChangefeedServiceListChangefeedsRequest) PageSize(pageSize int32) ApiChangefeedServiceListChangefeedsRequest {
 	r.pageSize = &pageSize
 	return r
 }
 
 // Optional. The page token from the previous response for pagination.
-func (r ApiConnectorServiceListConnectorsRequest) PageToken(pageToken string) ApiConnectorServiceListConnectorsRequest {
+func (r ApiChangefeedServiceListChangefeedsRequest) PageToken(pageToken string) ApiChangefeedServiceListChangefeedsRequest {
 	r.pageToken = &pageToken
 	return r
 }
 
-// Optional. The type of the connector. DEFAULT is all.   - KAFKA: Kafka connector type.
-func (r ApiConnectorServiceListConnectorsRequest) ConnectorType(connectorType ConnectorServiceListConnectorsConnectorTypeParameter) ApiConnectorServiceListConnectorsRequest {
-	r.connectorType = &connectorType
+// Optional. The type of the changefeed. DEFAULT is all.   - KAFKA: Kafka changefeed type.  - MYSQL: MySQL changefeed type.
+func (r ApiChangefeedServiceListChangefeedsRequest) ChangefeedType(changefeedType ChangefeedServiceListChangefeedsChangefeedTypeParameter) ApiChangefeedServiceListChangefeedsRequest {
+	r.changefeedType = &changefeedType
 	return r
 }
 
-// Optional. List connectors order by, separated by comma, default is ascending. Example: \&quot;create_time, bar desc\&quot;. Supported field: create_time
-func (r ApiConnectorServiceListConnectorsRequest) OrderBy(orderBy string) ApiConnectorServiceListConnectorsRequest {
+// Optional. List changefeeds order by, separated by comma, default is ascending. Example: \&quot;create_time, bar desc\&quot;. Supported field: create_time
+func (r ApiChangefeedServiceListChangefeedsRequest) OrderBy(orderBy string) ApiChangefeedServiceListChangefeedsRequest {
 	r.orderBy = &orderBy
 	return r
 }
 
-func (r ApiConnectorServiceListConnectorsRequest) Execute() (*Connectors, *http.Response, error) {
-	return r.ApiService.ConnectorServiceListConnectorsExecute(r)
+func (r ApiChangefeedServiceListChangefeedsRequest) Execute() (*Changefeeds, *http.Response, error) {
+	return r.ApiService.ChangefeedServiceListChangefeedsExecute(r)
 }
 
 /*
-ConnectorServiceListConnectors List connectors.
+ChangefeedServiceListChangefeeds List changefeeds.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId Required. The ID of the cluster.
-	@return ApiConnectorServiceListConnectorsRequest
+	@return ApiChangefeedServiceListChangefeedsRequest
 */
-func (a *ConnectorServiceAPIService) ConnectorServiceListConnectors(ctx context.Context, clusterId string) ApiConnectorServiceListConnectorsRequest {
-	return ApiConnectorServiceListConnectorsRequest{
+func (a *ChangefeedServiceAPIService) ChangefeedServiceListChangefeeds(ctx context.Context, clusterId string) ApiChangefeedServiceListChangefeedsRequest {
+	return ApiChangefeedServiceListChangefeedsRequest{
 		ApiService: a,
 		ctx:        ctx,
 		clusterId:  clusterId,
@@ -1035,21 +1035,21 @@ func (a *ConnectorServiceAPIService) ConnectorServiceListConnectors(ctx context.
 
 // Execute executes the request
 //
-//	@return Connectors
-func (a *ConnectorServiceAPIService) ConnectorServiceListConnectorsExecute(r ApiConnectorServiceListConnectorsRequest) (*Connectors, *http.Response, error) {
+//	@return Changefeeds
+func (a *ChangefeedServiceAPIService) ChangefeedServiceListChangefeedsExecute(r ApiChangefeedServiceListChangefeedsRequest) (*Changefeeds, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *Connectors
+		localVarReturnValue *Changefeeds
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ConnectorServiceAPIService.ConnectorServiceListConnectors")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ChangefeedServiceAPIService.ChangefeedServiceListChangefeeds")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/connectors"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -1062,8 +1062,8 @@ func (a *ConnectorServiceAPIService) ConnectorServiceListConnectorsExecute(r Api
 	if r.pageToken != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "pageToken", r.pageToken, "", "")
 	}
-	if r.connectorType != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "connectorType", r.connectorType, "", "")
+	if r.changefeedType != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "changefeedType", r.changefeedType, "", "")
 	}
 	if r.orderBy != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "orderBy", r.orderBy, "", "")
@@ -1130,59 +1130,59 @@ func (a *ConnectorServiceAPIService) ConnectorServiceListConnectorsExecute(r Api
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiConnectorServiceStartConnectorRequest struct {
-	ctx         context.Context
-	ApiService  *ConnectorServiceAPIService
-	clusterId   string
-	connectorId string
-	body        *map[string]interface{}
+type ApiChangefeedServiceStartChangefeedRequest struct {
+	ctx          context.Context
+	ApiService   *ChangefeedServiceAPIService
+	clusterId    string
+	changefeedId string
+	body         *map[string]interface{}
 }
 
-func (r ApiConnectorServiceStartConnectorRequest) Body(body map[string]interface{}) ApiConnectorServiceStartConnectorRequest {
+func (r ApiChangefeedServiceStartChangefeedRequest) Body(body map[string]interface{}) ApiChangefeedServiceStartChangefeedRequest {
 	r.body = &body
 	return r
 }
 
-func (r ApiConnectorServiceStartConnectorRequest) Execute() (*ConnectorID, *http.Response, error) {
-	return r.ApiService.ConnectorServiceStartConnectorExecute(r)
+func (r ApiChangefeedServiceStartChangefeedRequest) Execute() (*Changefeed, *http.Response, error) {
+	return r.ApiService.ChangefeedServiceStartChangefeedExecute(r)
 }
 
 /*
-ConnectorServiceStartConnector Start a connector.
+ChangefeedServiceStartChangefeed Start a changefeed.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId Required. The ID of the cluster.
-	@param connectorId Required. The ID of the connector.
-	@return ApiConnectorServiceStartConnectorRequest
+	@param changefeedId Required. The ID of the changefeed.
+	@return ApiChangefeedServiceStartChangefeedRequest
 */
-func (a *ConnectorServiceAPIService) ConnectorServiceStartConnector(ctx context.Context, clusterId string, connectorId string) ApiConnectorServiceStartConnectorRequest {
-	return ApiConnectorServiceStartConnectorRequest{
-		ApiService:  a,
-		ctx:         ctx,
-		clusterId:   clusterId,
-		connectorId: connectorId,
+func (a *ChangefeedServiceAPIService) ChangefeedServiceStartChangefeed(ctx context.Context, clusterId string, changefeedId string) ApiChangefeedServiceStartChangefeedRequest {
+	return ApiChangefeedServiceStartChangefeedRequest{
+		ApiService:   a,
+		ctx:          ctx,
+		clusterId:    clusterId,
+		changefeedId: changefeedId,
 	}
 }
 
 // Execute executes the request
 //
-//	@return ConnectorID
-func (a *ConnectorServiceAPIService) ConnectorServiceStartConnectorExecute(r ApiConnectorServiceStartConnectorRequest) (*ConnectorID, *http.Response, error) {
+//	@return Changefeed
+func (a *ChangefeedServiceAPIService) ChangefeedServiceStartChangefeedExecute(r ApiChangefeedServiceStartChangefeedRequest) (*Changefeed, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPost
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *ConnectorID
+		localVarReturnValue *Changefeed
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ConnectorServiceAPIService.ConnectorServiceStartConnector")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ChangefeedServiceAPIService.ChangefeedServiceStartChangefeed")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/connectors/{connectorId}:start"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:start"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"connectorId"+"}", url.PathEscape(parameterValueToString(r.connectorId, "connectorId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"changefeedId"+"}", url.PathEscape(parameterValueToString(r.changefeedId, "changefeedId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1255,59 +1255,59 @@ func (a *ConnectorServiceAPIService) ConnectorServiceStartConnectorExecute(r Api
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiConnectorServiceStopConnectorRequest struct {
-	ctx         context.Context
-	ApiService  *ConnectorServiceAPIService
-	clusterId   string
-	connectorId string
-	body        *map[string]interface{}
+type ApiChangefeedServiceStopChangefeedRequest struct {
+	ctx          context.Context
+	ApiService   *ChangefeedServiceAPIService
+	clusterId    string
+	changefeedId string
+	body         *map[string]interface{}
 }
 
-func (r ApiConnectorServiceStopConnectorRequest) Body(body map[string]interface{}) ApiConnectorServiceStopConnectorRequest {
+func (r ApiChangefeedServiceStopChangefeedRequest) Body(body map[string]interface{}) ApiChangefeedServiceStopChangefeedRequest {
 	r.body = &body
 	return r
 }
 
-func (r ApiConnectorServiceStopConnectorRequest) Execute() (*ConnectorID, *http.Response, error) {
-	return r.ApiService.ConnectorServiceStopConnectorExecute(r)
+func (r ApiChangefeedServiceStopChangefeedRequest) Execute() (*Changefeed, *http.Response, error) {
+	return r.ApiService.ChangefeedServiceStopChangefeedExecute(r)
 }
 
 /*
-ConnectorServiceStopConnector Stop a connector.
+ChangefeedServiceStopChangefeed Stop a changefeed.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId Required. The ID of the cluster.
-	@param connectorId Required. The ID of the connector.
-	@return ApiConnectorServiceStopConnectorRequest
+	@param changefeedId Required. The ID of the changefeed.
+	@return ApiChangefeedServiceStopChangefeedRequest
 */
-func (a *ConnectorServiceAPIService) ConnectorServiceStopConnector(ctx context.Context, clusterId string, connectorId string) ApiConnectorServiceStopConnectorRequest {
-	return ApiConnectorServiceStopConnectorRequest{
-		ApiService:  a,
-		ctx:         ctx,
-		clusterId:   clusterId,
-		connectorId: connectorId,
+func (a *ChangefeedServiceAPIService) ChangefeedServiceStopChangefeed(ctx context.Context, clusterId string, changefeedId string) ApiChangefeedServiceStopChangefeedRequest {
+	return ApiChangefeedServiceStopChangefeedRequest{
+		ApiService:   a,
+		ctx:          ctx,
+		clusterId:    clusterId,
+		changefeedId: changefeedId,
 	}
 }
 
 // Execute executes the request
 //
-//	@return ConnectorID
-func (a *ConnectorServiceAPIService) ConnectorServiceStopConnectorExecute(r ApiConnectorServiceStopConnectorRequest) (*ConnectorID, *http.Response, error) {
+//	@return Changefeed
+func (a *ChangefeedServiceAPIService) ChangefeedServiceStopChangefeedExecute(r ApiChangefeedServiceStopChangefeedRequest) (*Changefeed, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPost
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *ConnectorID
+		localVarReturnValue *Changefeed
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ConnectorServiceAPIService.ConnectorServiceStopConnector")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ChangefeedServiceAPIService.ChangefeedServiceStopChangefeed")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/connectors/{connectorId}:stop"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:stop"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"connectorId"+"}", url.PathEscape(parameterValueToString(r.connectorId, "connectorId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"changefeedId"+"}", url.PathEscape(parameterValueToString(r.changefeedId, "changefeedId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1380,31 +1380,31 @@ func (a *ConnectorServiceAPIService) ConnectorServiceStopConnectorExecute(r ApiC
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiConnectorServiceTestConnectorRequest struct {
+type ApiChangefeedServiceTestChangefeedRequest struct {
 	ctx        context.Context
-	ApiService *ConnectorServiceAPIService
+	ApiService *ChangefeedServiceAPIService
 	clusterId  string
-	body       *ConnectorServiceTestConnectorBody
+	body       *ChangefeedServiceTestChangefeedBody
 }
 
-func (r ApiConnectorServiceTestConnectorRequest) Body(body ConnectorServiceTestConnectorBody) ApiConnectorServiceTestConnectorRequest {
+func (r ApiChangefeedServiceTestChangefeedRequest) Body(body ChangefeedServiceTestChangefeedBody) ApiChangefeedServiceTestChangefeedRequest {
 	r.body = &body
 	return r
 }
 
-func (r ApiConnectorServiceTestConnectorRequest) Execute() (map[string]interface{}, *http.Response, error) {
-	return r.ApiService.ConnectorServiceTestConnectorExecute(r)
+func (r ApiChangefeedServiceTestChangefeedRequest) Execute() (map[string]interface{}, *http.Response, error) {
+	return r.ApiService.ChangefeedServiceTestChangefeedExecute(r)
 }
 
 /*
-ConnectorServiceTestConnector Test a connector.
+ChangefeedServiceTestChangefeed Test a changefeed.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId Required. The ID of the cluster.
-	@return ApiConnectorServiceTestConnectorRequest
+	@return ApiChangefeedServiceTestChangefeedRequest
 */
-func (a *ConnectorServiceAPIService) ConnectorServiceTestConnector(ctx context.Context, clusterId string) ApiConnectorServiceTestConnectorRequest {
-	return ApiConnectorServiceTestConnectorRequest{
+func (a *ChangefeedServiceAPIService) ChangefeedServiceTestChangefeed(ctx context.Context, clusterId string) ApiChangefeedServiceTestChangefeedRequest {
+	return ApiChangefeedServiceTestChangefeedRequest{
 		ApiService: a,
 		ctx:        ctx,
 		clusterId:  clusterId,
@@ -1414,7 +1414,7 @@ func (a *ConnectorServiceAPIService) ConnectorServiceTestConnector(ctx context.C
 // Execute executes the request
 //
 //	@return map[string]interface{}
-func (a *ConnectorServiceAPIService) ConnectorServiceTestConnectorExecute(r ApiConnectorServiceTestConnectorRequest) (map[string]interface{}, *http.Response, error) {
+func (a *ChangefeedServiceAPIService) ChangefeedServiceTestChangefeedExecute(r ApiChangefeedServiceTestChangefeedRequest) (map[string]interface{}, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPost
 		localVarPostBody    interface{}
@@ -1422,12 +1422,12 @@ func (a *ConnectorServiceAPIService) ConnectorServiceTestConnectorExecute(r ApiC
 		localVarReturnValue map[string]interface{}
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ConnectorServiceAPIService.ConnectorServiceTestConnector")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "ChangefeedServiceAPIService.ChangefeedServiceTestChangefeed")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/connectors:test"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds:test"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
 
 	localVarHeaderParams := make(map[string]string)

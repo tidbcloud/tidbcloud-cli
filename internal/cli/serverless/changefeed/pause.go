@@ -120,7 +120,7 @@ func PauseCmd(h *internal.Helper) *cobra.Command {
 				return errors.New("changefeed-id is required")
 			}
 
-			_, err = d.StopConnector(ctx, clusterID, changefeedID)
+			_, err = d.StopChangefeed(ctx, clusterID, changefeedID)
 			if err != nil {
 				return errors.Trace(err)
 			}

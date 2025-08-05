@@ -118,7 +118,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				return errors.New("changefeed-id is required")
 			}
 
-			changefeed, err := d.GetConnector(ctx, clusterID, changefeedID)
+			changefeed, err := d.GetChangefeed(ctx, clusterID, changefeedID)
 			if err != nil {
 				return errors.Trace(err)
 			}

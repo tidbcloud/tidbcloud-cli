@@ -120,7 +120,7 @@ func ResumeCmd(h *internal.Helper) *cobra.Command {
 				return errors.New("changefeed-id is required")
 			}
 
-			_, err = d.StartConnector(ctx, clusterID, changefeedID)
+			_, err = d.StartChangefeed(ctx, clusterID, changefeedID)
 			if err != nil {
 				return errors.Trace(err)
 			}

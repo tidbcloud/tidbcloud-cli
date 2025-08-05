@@ -14,11 +14,11 @@ import (
 	"encoding/json"
 )
 
-// checks if the PartitionDispatcherConfig type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &PartitionDispatcherConfig{}
+// checks if the KafkaPartitionDispatcherConfig type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &KafkaPartitionDispatcherConfig{}
 
-// PartitionDispatcherConfig struct for PartitionDispatcherConfig
-type PartitionDispatcherConfig struct {
+// KafkaPartitionDispatcherConfig struct for KafkaPartitionDispatcherConfig
+type KafkaPartitionDispatcherConfig struct {
 	PartitionType        *PartitionDispatcherEnum `json:"partitionType,omitempty"`
 	Matcher              []string                 `json:"matcher,omitempty"`
 	IndexName            *string                  `json:"indexName,omitempty"`
@@ -26,27 +26,27 @@ type PartitionDispatcherConfig struct {
 	AdditionalProperties map[string]interface{}
 }
 
-type _PartitionDispatcherConfig PartitionDispatcherConfig
+type _KafkaPartitionDispatcherConfig KafkaPartitionDispatcherConfig
 
-// NewPartitionDispatcherConfig instantiates a new PartitionDispatcherConfig object
+// NewKafkaPartitionDispatcherConfig instantiates a new KafkaPartitionDispatcherConfig object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPartitionDispatcherConfig() *PartitionDispatcherConfig {
-	this := PartitionDispatcherConfig{}
+func NewKafkaPartitionDispatcherConfig() *KafkaPartitionDispatcherConfig {
+	this := KafkaPartitionDispatcherConfig{}
 	return &this
 }
 
-// NewPartitionDispatcherConfigWithDefaults instantiates a new PartitionDispatcherConfig object
+// NewKafkaPartitionDispatcherConfigWithDefaults instantiates a new KafkaPartitionDispatcherConfig object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewPartitionDispatcherConfigWithDefaults() *PartitionDispatcherConfig {
-	this := PartitionDispatcherConfig{}
+func NewKafkaPartitionDispatcherConfigWithDefaults() *KafkaPartitionDispatcherConfig {
+	this := KafkaPartitionDispatcherConfig{}
 	return &this
 }
 
 // GetPartitionType returns the PartitionType field value if set, zero value otherwise.
-func (o *PartitionDispatcherConfig) GetPartitionType() PartitionDispatcherEnum {
+func (o *KafkaPartitionDispatcherConfig) GetPartitionType() PartitionDispatcherEnum {
 	if o == nil || IsNil(o.PartitionType) {
 		var ret PartitionDispatcherEnum
 		return ret
@@ -56,7 +56,7 @@ func (o *PartitionDispatcherConfig) GetPartitionType() PartitionDispatcherEnum {
 
 // GetPartitionTypeOk returns a tuple with the PartitionType field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PartitionDispatcherConfig) GetPartitionTypeOk() (*PartitionDispatcherEnum, bool) {
+func (o *KafkaPartitionDispatcherConfig) GetPartitionTypeOk() (*PartitionDispatcherEnum, bool) {
 	if o == nil || IsNil(o.PartitionType) {
 		return nil, false
 	}
@@ -64,7 +64,7 @@ func (o *PartitionDispatcherConfig) GetPartitionTypeOk() (*PartitionDispatcherEn
 }
 
 // HasPartitionType returns a boolean if a field has been set.
-func (o *PartitionDispatcherConfig) HasPartitionType() bool {
+func (o *KafkaPartitionDispatcherConfig) HasPartitionType() bool {
 	if o != nil && !IsNil(o.PartitionType) {
 		return true
 	}
@@ -73,12 +73,12 @@ func (o *PartitionDispatcherConfig) HasPartitionType() bool {
 }
 
 // SetPartitionType gets a reference to the given PartitionDispatcherEnum and assigns it to the PartitionType field.
-func (o *PartitionDispatcherConfig) SetPartitionType(v PartitionDispatcherEnum) {
+func (o *KafkaPartitionDispatcherConfig) SetPartitionType(v PartitionDispatcherEnum) {
 	o.PartitionType = &v
 }
 
 // GetMatcher returns the Matcher field value if set, zero value otherwise.
-func (o *PartitionDispatcherConfig) GetMatcher() []string {
+func (o *KafkaPartitionDispatcherConfig) GetMatcher() []string {
 	if o == nil || IsNil(o.Matcher) {
 		var ret []string
 		return ret
@@ -88,7 +88,7 @@ func (o *PartitionDispatcherConfig) GetMatcher() []string {
 
 // GetMatcherOk returns a tuple with the Matcher field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PartitionDispatcherConfig) GetMatcherOk() ([]string, bool) {
+func (o *KafkaPartitionDispatcherConfig) GetMatcherOk() ([]string, bool) {
 	if o == nil || IsNil(o.Matcher) {
 		return nil, false
 	}
@@ -96,7 +96,7 @@ func (o *PartitionDispatcherConfig) GetMatcherOk() ([]string, bool) {
 }
 
 // HasMatcher returns a boolean if a field has been set.
-func (o *PartitionDispatcherConfig) HasMatcher() bool {
+func (o *KafkaPartitionDispatcherConfig) HasMatcher() bool {
 	if o != nil && !IsNil(o.Matcher) {
 		return true
 	}
@@ -105,12 +105,12 @@ func (o *PartitionDispatcherConfig) HasMatcher() bool {
 }
 
 // SetMatcher gets a reference to the given []string and assigns it to the Matcher field.
-func (o *PartitionDispatcherConfig) SetMatcher(v []string) {
+func (o *KafkaPartitionDispatcherConfig) SetMatcher(v []string) {
 	o.Matcher = v
 }
 
 // GetIndexName returns the IndexName field value if set, zero value otherwise.
-func (o *PartitionDispatcherConfig) GetIndexName() string {
+func (o *KafkaPartitionDispatcherConfig) GetIndexName() string {
 	if o == nil || IsNil(o.IndexName) {
 		var ret string
 		return ret
@@ -120,7 +120,7 @@ func (o *PartitionDispatcherConfig) GetIndexName() string {
 
 // GetIndexNameOk returns a tuple with the IndexName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PartitionDispatcherConfig) GetIndexNameOk() (*string, bool) {
+func (o *KafkaPartitionDispatcherConfig) GetIndexNameOk() (*string, bool) {
 	if o == nil || IsNil(o.IndexName) {
 		return nil, false
 	}
@@ -128,7 +128,7 @@ func (o *PartitionDispatcherConfig) GetIndexNameOk() (*string, bool) {
 }
 
 // HasIndexName returns a boolean if a field has been set.
-func (o *PartitionDispatcherConfig) HasIndexName() bool {
+func (o *KafkaPartitionDispatcherConfig) HasIndexName() bool {
 	if o != nil && !IsNil(o.IndexName) {
 		return true
 	}
@@ -137,12 +137,12 @@ func (o *PartitionDispatcherConfig) HasIndexName() bool {
 }
 
 // SetIndexName gets a reference to the given string and assigns it to the IndexName field.
-func (o *PartitionDispatcherConfig) SetIndexName(v string) {
+func (o *KafkaPartitionDispatcherConfig) SetIndexName(v string) {
 	o.IndexName = &v
 }
 
 // GetColumns returns the Columns field value if set, zero value otherwise.
-func (o *PartitionDispatcherConfig) GetColumns() []string {
+func (o *KafkaPartitionDispatcherConfig) GetColumns() []string {
 	if o == nil || IsNil(o.Columns) {
 		var ret []string
 		return ret
@@ -152,7 +152,7 @@ func (o *PartitionDispatcherConfig) GetColumns() []string {
 
 // GetColumnsOk returns a tuple with the Columns field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PartitionDispatcherConfig) GetColumnsOk() ([]string, bool) {
+func (o *KafkaPartitionDispatcherConfig) GetColumnsOk() ([]string, bool) {
 	if o == nil || IsNil(o.Columns) {
 		return nil, false
 	}
@@ -160,7 +160,7 @@ func (o *PartitionDispatcherConfig) GetColumnsOk() ([]string, bool) {
 }
 
 // HasColumns returns a boolean if a field has been set.
-func (o *PartitionDispatcherConfig) HasColumns() bool {
+func (o *KafkaPartitionDispatcherConfig) HasColumns() bool {
 	if o != nil && !IsNil(o.Columns) {
 		return true
 	}
@@ -169,11 +169,11 @@ func (o *PartitionDispatcherConfig) HasColumns() bool {
 }
 
 // SetColumns gets a reference to the given []string and assigns it to the Columns field.
-func (o *PartitionDispatcherConfig) SetColumns(v []string) {
+func (o *KafkaPartitionDispatcherConfig) SetColumns(v []string) {
 	o.Columns = v
 }
 
-func (o PartitionDispatcherConfig) MarshalJSON() ([]byte, error) {
+func (o KafkaPartitionDispatcherConfig) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -181,7 +181,7 @@ func (o PartitionDispatcherConfig) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o PartitionDispatcherConfig) ToMap() (map[string]interface{}, error) {
+func (o KafkaPartitionDispatcherConfig) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.PartitionType) {
 		toSerialize["partitionType"] = o.PartitionType
@@ -203,16 +203,16 @@ func (o PartitionDispatcherConfig) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *PartitionDispatcherConfig) UnmarshalJSON(data []byte) (err error) {
-	varPartitionDispatcherConfig := _PartitionDispatcherConfig{}
+func (o *KafkaPartitionDispatcherConfig) UnmarshalJSON(data []byte) (err error) {
+	varKafkaPartitionDispatcherConfig := _KafkaPartitionDispatcherConfig{}
 
-	err = json.Unmarshal(data, &varPartitionDispatcherConfig)
+	err = json.Unmarshal(data, &varKafkaPartitionDispatcherConfig)
 
 	if err != nil {
 		return err
 	}
 
-	*o = PartitionDispatcherConfig(varPartitionDispatcherConfig)
+	*o = KafkaPartitionDispatcherConfig(varKafkaPartitionDispatcherConfig)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -227,38 +227,38 @@ func (o *PartitionDispatcherConfig) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
-type NullablePartitionDispatcherConfig struct {
-	value *PartitionDispatcherConfig
+type NullableKafkaPartitionDispatcherConfig struct {
+	value *KafkaPartitionDispatcherConfig
 	isSet bool
 }
 
-func (v NullablePartitionDispatcherConfig) Get() *PartitionDispatcherConfig {
+func (v NullableKafkaPartitionDispatcherConfig) Get() *KafkaPartitionDispatcherConfig {
 	return v.value
 }
 
-func (v *NullablePartitionDispatcherConfig) Set(val *PartitionDispatcherConfig) {
+func (v *NullableKafkaPartitionDispatcherConfig) Set(val *KafkaPartitionDispatcherConfig) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullablePartitionDispatcherConfig) IsSet() bool {
+func (v NullableKafkaPartitionDispatcherConfig) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullablePartitionDispatcherConfig) Unset() {
+func (v *NullableKafkaPartitionDispatcherConfig) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullablePartitionDispatcherConfig(val *PartitionDispatcherConfig) *NullablePartitionDispatcherConfig {
-	return &NullablePartitionDispatcherConfig{value: val, isSet: true}
+func NewNullableKafkaPartitionDispatcherConfig(val *KafkaPartitionDispatcherConfig) *NullableKafkaPartitionDispatcherConfig {
+	return &NullableKafkaPartitionDispatcherConfig{value: val, isSet: true}
 }
 
-func (v NullablePartitionDispatcherConfig) MarshalJSON() ([]byte, error) {
+func (v NullableKafkaPartitionDispatcherConfig) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullablePartitionDispatcherConfig) UnmarshalJSON(src []byte) error {
+func (v *NullableKafkaPartitionDispatcherConfig) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

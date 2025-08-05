@@ -14,75 +14,75 @@ import (
 	"encoding/json"
 )
 
-// checks if the KafkaInfo type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &KafkaInfo{}
+// checks if the Kafka type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Kafka{}
 
-// KafkaInfo struct for KafkaInfo
-type KafkaInfo struct {
-	NetworkInfo          *NetworkInfo          `json:"networkInfo,omitempty"`
-	Broker               *Broker               `json:"broker,omitempty"`
-	Authentication       *Authentication       `json:"authentication,omitempty"`
-	DataFormat           *DataFormat           `json:"dataFormat,omitempty"`
-	TopicPartitionConfig *TopicPartitionConfig `json:"topicPartitionConfig,omitempty"`
-	ColumnSelectors      []ColumnSelector      `json:"columnSelectors,omitempty"`
+// Kafka struct for Kafka
+type Kafka struct {
+	Network              *KafkaNetwork              `json:"network,omitempty"`
+	Broker               *KafkaBroker               `json:"broker,omitempty"`
+	Authentication       *KafkaAuthentication       `json:"authentication,omitempty"`
+	DataFormat           *KafkaDataFormat           `json:"dataFormat,omitempty"`
+	TopicPartitionConfig *KafkaTopicPartitionConfig `json:"topicPartitionConfig,omitempty"`
+	ColumnSelectors      []KafkaColumnSelector      `json:"columnSelectors,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _KafkaInfo KafkaInfo
+type _Kafka Kafka
 
-// NewKafkaInfo instantiates a new KafkaInfo object
+// NewKafka instantiates a new Kafka object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewKafkaInfo() *KafkaInfo {
-	this := KafkaInfo{}
+func NewKafka() *Kafka {
+	this := Kafka{}
 	return &this
 }
 
-// NewKafkaInfoWithDefaults instantiates a new KafkaInfo object
+// NewKafkaWithDefaults instantiates a new Kafka object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewKafkaInfoWithDefaults() *KafkaInfo {
-	this := KafkaInfo{}
+func NewKafkaWithDefaults() *Kafka {
+	this := Kafka{}
 	return &this
 }
 
-// GetNetworkInfo returns the NetworkInfo field value if set, zero value otherwise.
-func (o *KafkaInfo) GetNetworkInfo() NetworkInfo {
-	if o == nil || IsNil(o.NetworkInfo) {
-		var ret NetworkInfo
+// GetNetwork returns the Network field value if set, zero value otherwise.
+func (o *Kafka) GetNetwork() KafkaNetwork {
+	if o == nil || IsNil(o.Network) {
+		var ret KafkaNetwork
 		return ret
 	}
-	return *o.NetworkInfo
+	return *o.Network
 }
 
-// GetNetworkInfoOk returns a tuple with the NetworkInfo field value if set, nil otherwise
+// GetNetworkOk returns a tuple with the Network field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *KafkaInfo) GetNetworkInfoOk() (*NetworkInfo, bool) {
-	if o == nil || IsNil(o.NetworkInfo) {
+func (o *Kafka) GetNetworkOk() (*KafkaNetwork, bool) {
+	if o == nil || IsNil(o.Network) {
 		return nil, false
 	}
-	return o.NetworkInfo, true
+	return o.Network, true
 }
 
-// HasNetworkInfo returns a boolean if a field has been set.
-func (o *KafkaInfo) HasNetworkInfo() bool {
-	if o != nil && !IsNil(o.NetworkInfo) {
+// HasNetwork returns a boolean if a field has been set.
+func (o *Kafka) HasNetwork() bool {
+	if o != nil && !IsNil(o.Network) {
 		return true
 	}
 
 	return false
 }
 
-// SetNetworkInfo gets a reference to the given NetworkInfo and assigns it to the NetworkInfo field.
-func (o *KafkaInfo) SetNetworkInfo(v NetworkInfo) {
-	o.NetworkInfo = &v
+// SetNetwork gets a reference to the given KafkaNetwork and assigns it to the Network field.
+func (o *Kafka) SetNetwork(v KafkaNetwork) {
+	o.Network = &v
 }
 
 // GetBroker returns the Broker field value if set, zero value otherwise.
-func (o *KafkaInfo) GetBroker() Broker {
+func (o *Kafka) GetBroker() KafkaBroker {
 	if o == nil || IsNil(o.Broker) {
-		var ret Broker
+		var ret KafkaBroker
 		return ret
 	}
 	return *o.Broker
@@ -90,7 +90,7 @@ func (o *KafkaInfo) GetBroker() Broker {
 
 // GetBrokerOk returns a tuple with the Broker field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *KafkaInfo) GetBrokerOk() (*Broker, bool) {
+func (o *Kafka) GetBrokerOk() (*KafkaBroker, bool) {
 	if o == nil || IsNil(o.Broker) {
 		return nil, false
 	}
@@ -98,7 +98,7 @@ func (o *KafkaInfo) GetBrokerOk() (*Broker, bool) {
 }
 
 // HasBroker returns a boolean if a field has been set.
-func (o *KafkaInfo) HasBroker() bool {
+func (o *Kafka) HasBroker() bool {
 	if o != nil && !IsNil(o.Broker) {
 		return true
 	}
@@ -106,15 +106,15 @@ func (o *KafkaInfo) HasBroker() bool {
 	return false
 }
 
-// SetBroker gets a reference to the given Broker and assigns it to the Broker field.
-func (o *KafkaInfo) SetBroker(v Broker) {
+// SetBroker gets a reference to the given KafkaBroker and assigns it to the Broker field.
+func (o *Kafka) SetBroker(v KafkaBroker) {
 	o.Broker = &v
 }
 
 // GetAuthentication returns the Authentication field value if set, zero value otherwise.
-func (o *KafkaInfo) GetAuthentication() Authentication {
+func (o *Kafka) GetAuthentication() KafkaAuthentication {
 	if o == nil || IsNil(o.Authentication) {
-		var ret Authentication
+		var ret KafkaAuthentication
 		return ret
 	}
 	return *o.Authentication
@@ -122,7 +122,7 @@ func (o *KafkaInfo) GetAuthentication() Authentication {
 
 // GetAuthenticationOk returns a tuple with the Authentication field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *KafkaInfo) GetAuthenticationOk() (*Authentication, bool) {
+func (o *Kafka) GetAuthenticationOk() (*KafkaAuthentication, bool) {
 	if o == nil || IsNil(o.Authentication) {
 		return nil, false
 	}
@@ -130,7 +130,7 @@ func (o *KafkaInfo) GetAuthenticationOk() (*Authentication, bool) {
 }
 
 // HasAuthentication returns a boolean if a field has been set.
-func (o *KafkaInfo) HasAuthentication() bool {
+func (o *Kafka) HasAuthentication() bool {
 	if o != nil && !IsNil(o.Authentication) {
 		return true
 	}
@@ -138,15 +138,15 @@ func (o *KafkaInfo) HasAuthentication() bool {
 	return false
 }
 
-// SetAuthentication gets a reference to the given Authentication and assigns it to the Authentication field.
-func (o *KafkaInfo) SetAuthentication(v Authentication) {
+// SetAuthentication gets a reference to the given KafkaAuthentication and assigns it to the Authentication field.
+func (o *Kafka) SetAuthentication(v KafkaAuthentication) {
 	o.Authentication = &v
 }
 
 // GetDataFormat returns the DataFormat field value if set, zero value otherwise.
-func (o *KafkaInfo) GetDataFormat() DataFormat {
+func (o *Kafka) GetDataFormat() KafkaDataFormat {
 	if o == nil || IsNil(o.DataFormat) {
-		var ret DataFormat
+		var ret KafkaDataFormat
 		return ret
 	}
 	return *o.DataFormat
@@ -154,7 +154,7 @@ func (o *KafkaInfo) GetDataFormat() DataFormat {
 
 // GetDataFormatOk returns a tuple with the DataFormat field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *KafkaInfo) GetDataFormatOk() (*DataFormat, bool) {
+func (o *Kafka) GetDataFormatOk() (*KafkaDataFormat, bool) {
 	if o == nil || IsNil(o.DataFormat) {
 		return nil, false
 	}
@@ -162,7 +162,7 @@ func (o *KafkaInfo) GetDataFormatOk() (*DataFormat, bool) {
 }
 
 // HasDataFormat returns a boolean if a field has been set.
-func (o *KafkaInfo) HasDataFormat() bool {
+func (o *Kafka) HasDataFormat() bool {
 	if o != nil && !IsNil(o.DataFormat) {
 		return true
 	}
@@ -170,15 +170,15 @@ func (o *KafkaInfo) HasDataFormat() bool {
 	return false
 }
 
-// SetDataFormat gets a reference to the given DataFormat and assigns it to the DataFormat field.
-func (o *KafkaInfo) SetDataFormat(v DataFormat) {
+// SetDataFormat gets a reference to the given KafkaDataFormat and assigns it to the DataFormat field.
+func (o *Kafka) SetDataFormat(v KafkaDataFormat) {
 	o.DataFormat = &v
 }
 
 // GetTopicPartitionConfig returns the TopicPartitionConfig field value if set, zero value otherwise.
-func (o *KafkaInfo) GetTopicPartitionConfig() TopicPartitionConfig {
+func (o *Kafka) GetTopicPartitionConfig() KafkaTopicPartitionConfig {
 	if o == nil || IsNil(o.TopicPartitionConfig) {
-		var ret TopicPartitionConfig
+		var ret KafkaTopicPartitionConfig
 		return ret
 	}
 	return *o.TopicPartitionConfig
@@ -186,7 +186,7 @@ func (o *KafkaInfo) GetTopicPartitionConfig() TopicPartitionConfig {
 
 // GetTopicPartitionConfigOk returns a tuple with the TopicPartitionConfig field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *KafkaInfo) GetTopicPartitionConfigOk() (*TopicPartitionConfig, bool) {
+func (o *Kafka) GetTopicPartitionConfigOk() (*KafkaTopicPartitionConfig, bool) {
 	if o == nil || IsNil(o.TopicPartitionConfig) {
 		return nil, false
 	}
@@ -194,7 +194,7 @@ func (o *KafkaInfo) GetTopicPartitionConfigOk() (*TopicPartitionConfig, bool) {
 }
 
 // HasTopicPartitionConfig returns a boolean if a field has been set.
-func (o *KafkaInfo) HasTopicPartitionConfig() bool {
+func (o *Kafka) HasTopicPartitionConfig() bool {
 	if o != nil && !IsNil(o.TopicPartitionConfig) {
 		return true
 	}
@@ -202,15 +202,15 @@ func (o *KafkaInfo) HasTopicPartitionConfig() bool {
 	return false
 }
 
-// SetTopicPartitionConfig gets a reference to the given TopicPartitionConfig and assigns it to the TopicPartitionConfig field.
-func (o *KafkaInfo) SetTopicPartitionConfig(v TopicPartitionConfig) {
+// SetTopicPartitionConfig gets a reference to the given KafkaTopicPartitionConfig and assigns it to the TopicPartitionConfig field.
+func (o *Kafka) SetTopicPartitionConfig(v KafkaTopicPartitionConfig) {
 	o.TopicPartitionConfig = &v
 }
 
 // GetColumnSelectors returns the ColumnSelectors field value if set, zero value otherwise.
-func (o *KafkaInfo) GetColumnSelectors() []ColumnSelector {
+func (o *Kafka) GetColumnSelectors() []KafkaColumnSelector {
 	if o == nil || IsNil(o.ColumnSelectors) {
-		var ret []ColumnSelector
+		var ret []KafkaColumnSelector
 		return ret
 	}
 	return o.ColumnSelectors
@@ -218,7 +218,7 @@ func (o *KafkaInfo) GetColumnSelectors() []ColumnSelector {
 
 // GetColumnSelectorsOk returns a tuple with the ColumnSelectors field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *KafkaInfo) GetColumnSelectorsOk() ([]ColumnSelector, bool) {
+func (o *Kafka) GetColumnSelectorsOk() ([]KafkaColumnSelector, bool) {
 	if o == nil || IsNil(o.ColumnSelectors) {
 		return nil, false
 	}
@@ -226,7 +226,7 @@ func (o *KafkaInfo) GetColumnSelectorsOk() ([]ColumnSelector, bool) {
 }
 
 // HasColumnSelectors returns a boolean if a field has been set.
-func (o *KafkaInfo) HasColumnSelectors() bool {
+func (o *Kafka) HasColumnSelectors() bool {
 	if o != nil && !IsNil(o.ColumnSelectors) {
 		return true
 	}
@@ -234,12 +234,12 @@ func (o *KafkaInfo) HasColumnSelectors() bool {
 	return false
 }
 
-// SetColumnSelectors gets a reference to the given []ColumnSelector and assigns it to the ColumnSelectors field.
-func (o *KafkaInfo) SetColumnSelectors(v []ColumnSelector) {
+// SetColumnSelectors gets a reference to the given []KafkaColumnSelector and assigns it to the ColumnSelectors field.
+func (o *Kafka) SetColumnSelectors(v []KafkaColumnSelector) {
 	o.ColumnSelectors = v
 }
 
-func (o KafkaInfo) MarshalJSON() ([]byte, error) {
+func (o Kafka) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -247,10 +247,10 @@ func (o KafkaInfo) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o KafkaInfo) ToMap() (map[string]interface{}, error) {
+func (o Kafka) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.NetworkInfo) {
-		toSerialize["networkInfo"] = o.NetworkInfo
+	if !IsNil(o.Network) {
+		toSerialize["network"] = o.Network
 	}
 	if !IsNil(o.Broker) {
 		toSerialize["broker"] = o.Broker
@@ -275,21 +275,21 @@ func (o KafkaInfo) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *KafkaInfo) UnmarshalJSON(data []byte) (err error) {
-	varKafkaInfo := _KafkaInfo{}
+func (o *Kafka) UnmarshalJSON(data []byte) (err error) {
+	varKafka := _Kafka{}
 
-	err = json.Unmarshal(data, &varKafkaInfo)
+	err = json.Unmarshal(data, &varKafka)
 
 	if err != nil {
 		return err
 	}
 
-	*o = KafkaInfo(varKafkaInfo)
+	*o = Kafka(varKafka)
 
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "networkInfo")
+		delete(additionalProperties, "network")
 		delete(additionalProperties, "broker")
 		delete(additionalProperties, "authentication")
 		delete(additionalProperties, "dataFormat")
@@ -301,38 +301,38 @@ func (o *KafkaInfo) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
-type NullableKafkaInfo struct {
-	value *KafkaInfo
+type NullableKafka struct {
+	value *Kafka
 	isSet bool
 }
 
-func (v NullableKafkaInfo) Get() *KafkaInfo {
+func (v NullableKafka) Get() *Kafka {
 	return v.value
 }
 
-func (v *NullableKafkaInfo) Set(val *KafkaInfo) {
+func (v *NullableKafka) Set(val *Kafka) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableKafkaInfo) IsSet() bool {
+func (v NullableKafka) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableKafkaInfo) Unset() {
+func (v *NullableKafka) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableKafkaInfo(val *KafkaInfo) *NullableKafkaInfo {
-	return &NullableKafkaInfo{value: val, isSet: true}
+func NewNullableKafka(val *Kafka) *NullableKafka {
+	return &NullableKafka{value: val, isSet: true}
 }
 
-func (v NullableKafkaInfo) MarshalJSON() ([]byte, error) {
+func (v NullableKafka) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableKafkaInfo) UnmarshalJSON(src []byte) error {
+func (v *NullableKafka) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
