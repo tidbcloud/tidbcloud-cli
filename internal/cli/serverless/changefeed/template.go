@@ -186,28 +186,28 @@ const (
 	MySQLTemplateWithExplain = `{
  "network": {
     // required "PUBLIC", "PRIVATE"
-		"network_type": "PUBLIC"
+		"network_type": "PUBLIC",
     "public_endpoint": "127.0.0.1:3306"
 	},
 	"authentication": {
     // required the user name for MySQL
 		"user_name": "",
     // required the password for MySQL
-		"password": ""
+		"password": "",
     // optional, enable TLS for MySQL connection
-    "enable_tls": false,
+    "enable_tls": false
 	}
 }`
 
 	MySQLTemplate = `{
  "network": {
-		"network_type": "PUBLIC"
+		"network_type": "PUBLIC",
     "public_endpoint": "127.0.0.1:3306"
 	},
 	"authentication": {
 		"user_name": "",
-		"password": ""
-    "enable_tls": false,
+		"password": "",
+    "enable_tls": false
 	}
 }`
 )
