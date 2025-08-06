@@ -253,7 +253,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
-			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("changefeed %s created", resp.ChangefeedId))
+			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("changefeed %s created", *resp.ChangefeedId))
 			if err != nil {
 				return err
 			}
