@@ -1313,8 +1313,7 @@
         }
       },
       "required": [
-        "networkType",
-        "publicEndpoint"
+        "networkType"
       ]
     },
     "MySQLNetworkType.Enum": {

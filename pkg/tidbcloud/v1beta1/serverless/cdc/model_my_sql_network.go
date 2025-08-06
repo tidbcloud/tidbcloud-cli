@@ -21,7 +21,7 @@ var _ MappedNullable = &MySQLNetwork{}
 // MySQLNetwork struct for MySQLNetwork
 type MySQLNetwork struct {
 	NetworkType          MySQLNetworkTypeEnum `json:"networkType"`
-	PublicEndpoint       string               `json:"publicEndpoint"`
+	PublicEndpoint       *string              `json:"publicEndpoint,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -31,10 +31,9 @@ type _MySQLNetwork MySQLNetwork
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMySQLNetwork(networkType MySQLNetworkTypeEnum, publicEndpoint string) *MySQLNetwork {
+func NewMySQLNetwork(networkType MySQLNetworkTypeEnum) *MySQLNetwork {
 	this := MySQLNetwork{}
 	this.NetworkType = networkType
-	this.PublicEndpoint = publicEndpoint
 	return &this
 }
 
@@ -70,28 +69,36 @@ func (o *MySQLNetwork) SetNetworkType(v MySQLNetworkTypeEnum) {
 	o.NetworkType = v
 }
 
-// GetPublicEndpoint returns the PublicEndpoint field value
+// GetPublicEndpoint returns the PublicEndpoint field value if set, zero value otherwise.
 func (o *MySQLNetwork) GetPublicEndpoint() string {
-	if o == nil {
+	if o == nil || IsNil(o.PublicEndpoint) {
 		var ret string
 		return ret
 	}
-
-	return o.PublicEndpoint
+	return *o.PublicEndpoint
 }
 
-// GetPublicEndpointOk returns a tuple with the PublicEndpoint field value
+// GetPublicEndpointOk returns a tuple with the PublicEndpoint field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 func (o *MySQLNetwork) GetPublicEndpointOk() (*string, bool) {
-	if o == nil {
+	if o == nil || IsNil(o.PublicEndpoint) {
 		return nil, false
 	}
-	return &o.PublicEndpoint, true
+	return o.PublicEndpoint, true
 }
 
-// SetPublicEndpoint sets field value
+// HasPublicEndpoint returns a boolean if a field has been set.
+func (o *MySQLNetwork) HasPublicEndpoint() bool {
+	if o != nil && !IsNil(o.PublicEndpoint) {
+		return true
+	}
+
+	return false
+}
+
+// SetPublicEndpoint gets a reference to the given string and assigns it to the PublicEndpoint field.
 func (o *MySQLNetwork) SetPublicEndpoint(v string) {
-	o.PublicEndpoint = v
+	o.PublicEndpoint = &v
 }
 
 func (o MySQLNetwork) MarshalJSON() ([]byte, error) {
@@ -105,7 +112,9 @@ func (o MySQLNetwork) MarshalJSON() ([]byte, error) {
 func (o MySQLNetwork) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["networkType"] = o.NetworkType
-	toSerialize["publicEndpoint"] = o.PublicEndpoint
+	if !IsNil(o.PublicEndpoint) {
+		toSerialize["publicEndpoint"] = o.PublicEndpoint
+	}
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -120,7 +129,6 @@ func (o *MySQLNetwork) UnmarshalJSON(data []byte) (err error) {
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
 		"networkType",
-		"publicEndpoint",
 	}
 
 	allProperties := make(map[string]interface{})

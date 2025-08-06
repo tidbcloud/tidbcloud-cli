@@ -201,14 +201,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.New("kafka info is required")
 				}
 				if err := json.Unmarshal([]byte(kafkaStr), &kafkaInfo); err != nil {
-					return errors.New("invalid kafka info, please use JSON format")
+					return errors.Errorf("invalid kafka: %v", err)
 				}
 			case cdc.CHANGEFEEDTYPEENUM_MYSQL:
 				if mysqlStr == "" {
 					return errors.New("mysql info is required")
 				}
 				if err := json.Unmarshal([]byte(mysqlStr), &mysqlInfo); err != nil {
-					return errors.New("invalid mysql info, please use JSON format")
+					return errors.Errorf("invalid mysql: %v", err)
 				}
 			default:
 				return errors.New("currently only KAFKA and MYSQL type is supported")
@@ -218,7 +218,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				return errors.New("filter is required")
 			}
 			if err := json.Unmarshal([]byte(filterStr), &filter); err != nil {
-				return errors.New("invalid filter, please use JSON format")
+				return errors.Errorf("invalid filter: %v", err)
 			}
 
 			// create the changefeed

@@ -27,188 +27,187 @@ import (
 
 const (
 	KafkaInfoTemplateWithExplain = `{
-        "network": {
-                "network_type": "PUBLIC"
-                "public_endpoints": "broker:9092",
-        },
-        "broker": {
-                // "kafka_version": "VERSION_2XX", "VERSION_3XX"
-                "kafka_version": "VERSION_2XX",
-                // "compression": "NONE", "GZIP", "LZ4", "ZSTD", "SNAPPY"
-                "compression": "NONE"
-        },
-        "authentication": {
-                // "auth_type": "DISABLE", "SASL_PLAIN", "SASL_SCRAM_SHA_256", "SASL_SCRAM_SHA_512"
-                "auth_type": "DISABLE",
-                // required when auth_type is SASL_PLAIN, SASL_SCRAM_SHA_256, or SASL_SCRAM_SHA_512
-                "user_name": "",
-                // required when auth_type is SASL_PLAIN, SASL_SCRAM_SHA_256, or SASL_SCRAM_SHA_512
+    "network": {
+        "networkType": "PUBLIC",
+        "publicEndpoints": "broker:9092"
+    },
+    "broker": {
+        // "kafkaVersion": "VERSION_2XX", "VERSION_3XX"
+        "kafkaVersion": "VERSION_2XX",
+        // "compression": "NONE", "GZIP", "LZ4", "ZSTD", "SNAPPY"
+        "compression": "NONE"
+    },
+    "authentication": {
+        // "authType": "DISABLE", "SASL_PLAIN", "SASL_SCRAM_SHA_256", "SASL_SCRAM_SHA_512"
+        "authType": "DISABLE",
+        // required when authType is SASL_PLAIN, SASL_SCRAM_SHA_256, or SASL_SCRAM_SHA_512
+        "userName": "",
+        // required when authType is SASL_PLAIN, SASL_SCRAM_SHA_256, or SASL_SCRAM_SHA_512
+        "password": "",
+        "enableTls": false
+    },
+    "dataFormat": {
+        // "protocol": "CANAL_JSON", "AVRO", "OPEN_PROTOCOL"
+        "protocol": "CANAL_JSON",
+        // available when protocol is CANAL_JSON
+        "enableTidbExtension": false,
+        // available when protocol is AVRO
+        "avroConfig": {
+            "decimalHandlingMode": "PRECISE",
+            "bigintUnsignedHandlingMode": "LONG",
+            // one of "confluentSchemaRegistry", "awsGlueSchemaRegistry"
+            "confluentSchemaRegistry": {
+                "endpoint": "",
+                "enableHttpAuth": false,
+                "userName": "",
                 "password": ""
-                "enable_tls": false,
-        },
-        "data_format": {
-                // "protocol": "CANAL_JSON", "AVRO", "OPEN_PROTOCOL"
-                "protocol": "CANAL_JSON",
-                // available when protocol is CANAL_JSON
-                "enable_tidb_extension": false,
-                // available when protocol is AVRO
-                "avro_config": {
-                        "decimal_handling_mode": "PRECISE",
-                        "bigint_unsigned_handling_mode": "LONG",
-                        // one of "confluent_schema_registry", "aws_glue_schema_registry"
-                        "confluent_schema_registry": {
-                                "endpoint": "",
-                                "enable_http_auth": false,
-                                "user_name": "",
-                                "password": ""
-                        },
-                        "aws_glue_schema_registry": {
-                                "region": "",
-                                "name": "",
-                                "access_key_id": "",
-                                "secret_access_key": ""
-                        }
-                }
-        },
-        "topic_partition_config": {
-                // "dispatch_type": "ONE_TOPIC", "BY_TABLE", "BY_DATABASE"
-                "dispatch_type": "ONE_TOPIC",
-                "default_topic": "test-topic",
-                // required when dispatch_type is BY_TABLE or BY_DATABASE
-                "topic_prefix": "_prefix",
-                 // required when dispatch_type is BY_TABLE or BY_DATABASE
-                "separator": "_",
-                 // required when dispatch_type is BY_TABLE or BY_DATABASE
-                "topic_suffix": "_suffix",
-                "replication_factor": 1,
-                "partition_num": 1,
-                "partition_dispatchers": [
-                  {
-                        // "partition_type": "TABLE", "INDEX_VALUE", "TS", "COLUMN"
-                        "partition_type": "TABLE",
-                        // available when partition_type is TABLE
-                        "matcher": ["*.*"],
-                        // available when partition_type is INDEX_VALUE
-                        "index_name": "index1",
-                        // available when partition_type is COLUMN
-                        "columns": ["col1", "col2"]
-                  }
-                ]
-        },
-        "column_selectors": [
-          {
-              "matcher": ["*.*"],
-              "columns": ["col1", "col2"]
-          }
+            },
+            "awsGlueSchemaRegistry": {
+                "region": "",
+                "name": "",
+                "accessKeyId": "",
+                "secretAccessKey": ""
+            }
+        }
+    },
+    "topicPartitionConfig": {
+        // "dispatchType": "ONE_TOPIC", "BY_TABLE", "BY_DATABASE"
+        "dispatchType": "ONE_TOPIC",
+        "defaultTopic": "test-topic",
+        // required when dispatchType is BY_TABLE or BY_DATABASE
+        "topicPrefix": "_prefix",
+        // required when dispatchType is BY_TABLE or BY_DATABASE
+        "separator": "_",
+        // required when dispatchType is BY_TABLE or BY_DATABASE
+        "topicSuffix": "_suffix",
+        "replicationFactor": 1,
+        "partitionNum": 1,
+        "partitionDispatchers": [
+            {
+                // "partitionType": "TABLE", "INDEX_VALUE", "TS", "COLUMN"
+                "partitionType": "TABLE",
+                // available when partitionType is TABLE
+                "matcher": ["*.*"],
+                // available when partitionType is INDEX_VALUE
+                "indexName": "index1",
+                // available when partitionType is COLUMN
+                "columns": ["col1", "col2"]
+            }
         ]
+    },
+    "columnSelectors": [
+        {
+            "matcher": ["*.*"],
+            "columns": ["col1", "col2"]
+        }
+    ]
 }`
 
 	KafkaInfoTemplate = `{
-	"network": {
-		"network_type": "PUBLIC"
-    "public_endpoints": "broker1:9092,broker2:9092"
-	},
-	"broker": {
-		"kafka_version": "VERSION_2XX",
-		"compression": "NONE"
-	},
-	"authentication": {
-		"auth_type": "DISABLE",
-		"user_name": "",
-		"password": ""
-    "enable_tls": false,
-	},
-	"data_format": {
-		"protocol": "CANAL_JSON",
-		"enable_tidb_extension": false,
-		"avro_config": {
-			"decimal_handling_mode": "PRECISE",
-			"bigint_unsigned_handling_mode": "LONG",
-			"confluent_schema_registry": {
-				"schema_registry_endpoints": "",
-				"enable_http_auth": false,
-				"user_name": "",
-				"password": ""
-			},
-			"aws_glue_schema_registry": {
-				"region": "",
-				"name": "",
-				"access_key_id": "",
-				"secret_access_key": ""
-			}
-		}
-	},
-	"topic_partition_config": {
-		"dispatch_type": "ONE_TOPIC",
-		"default_topic": "test-topic",
-		"topic_prefix": "_prefix",
-		"separator": "_",
-		"topic_suffix": "_suffix",
-		"replication_factor": 1,
-		"partition_num": 1,
-		"partition_dispatchers": [{
-			"partition_type": "TABLE",
-			"matcher": ["*.*"],
-			"index_name": "index1",
-			"columns": ["col1", "col2"]
-		}]
-	},
-	"column_selectors": [{
-		"matcher": ["*.*"],
-		"columns": ["col1", "col2"]
-	}]
-}
-  `
+    "network": {
+        "networkType": "PUBLIC",
+        "publicEndpoints": "broker1:9092,broker2:9092"
+    },
+    "broker": {
+        "kafkaVersion": "VERSION_2XX",
+        "compression": "NONE"
+    },
+    "authentication": {
+        "authType": "DISABLE",
+        "userName": "",
+        "password": "",
+        "enableTls": false
+    },
+    "dataFormat": {
+        "protocol": "CANAL_JSON",
+        "enableTidbExtension": false,
+        "avroConfig": {
+            "decimalHandlingMode": "PRECISE",
+            "bigintUnsignedHandlingMode": "LONG",
+            "confluentSchemaRegistry": {
+                "schemaRegistryEndpoints": "",
+                "enableHttpAuth": false,
+                "userName": "",
+                "password": ""
+            },
+            "awsGlueSchemaRegistry": {
+                "region": "",
+                "name": "",
+                "accessKeyId": "",
+                "secretAccessKey": ""
+            }
+        }
+    },
+    "topicPartitionConfig": {
+        "dispatchType": "ONE_TOPIC",
+        "defaultTopic": "test-topic",
+        "topicPrefix": "_prefix",
+        "separator": "_",
+        "topicSuffix": "_suffix",
+        "replicationFactor": 1,
+        "partitionNum": 1,
+        "partitionDispatchers": [{
+            "partitionType": "TABLE",
+            "matcher": ["*.*"],
+            "indexName": "index1",
+            "columns": ["col1", "col2"]
+        }]
+    },
+    "columnSelectors": [{
+        "matcher": ["*.*"],
+        "columns": ["col1", "col2"]
+    }]
+}`
 
 	CDCFilterTemplateWithExplain = `{
-  "filterRule": ["test.t1", "test.t2"],
-  // "mode": "IGNORE_NOT_SUPPORT_TABLE", "FORCE_SYNC"
-  "mode": "IGNORE_NOT_SUPPORT_TABLE",
-  "eventFilterRule": [
-    {
-      "matcher": ["test.t1", "test.t2"],
-      "ignore_event": ["all dml", "all ddl"]
-    }
-  ]
+    "filterRule": ["test.t1", "test.t2"],
+    // "mode": "IGNORE_NOT_SUPPORT_TABLE", "FORCE_SYNC"
+    "mode": "IGNORE_NOT_SUPPORT_TABLE",
+    "eventFilterRule": [
+        {
+            "matcher": ["test.t1", "test.t2"],
+            "ignoreEvent": ["all dml", "all ddl"]
+        }
+    ]
 }`
 
 	CDCFilterTemplate = `{
-  "filterRule": ["test.t1", "test.t2"],
-  "mode": "IGNORE_NOT_SUPPORT_TABLE",
-  "eventFilterRule": [
-    {
-      "matcher": ["test.t1", "test.t2"],
-      "ignore_event": ["all dml", "all ddl"]
-    }
-  ]
+    "filterRule": ["test.t1", "test.t2"],
+    "mode": "IGNORE_NOT_SUPPORT_TABLE",
+    "eventFilterRule": [
+        {
+            "matcher": ["test.t1", "test.t2"],
+            "ignoreEvent": ["all dml", "all ddl"]
+        }
+    ]
 }`
 
 	MySQLTemplateWithExplain = `{
- "network": {
-    // required "PUBLIC", "PRIVATE"
-		"network_type": "PUBLIC",
-    "public_endpoint": "127.0.0.1:3306"
-	},
-	"authentication": {
-    // required the user name for MySQL
-		"user_name": "",
-    // required the password for MySQL
-		"password": "",
-    // optional, enable TLS for MySQL connection
-    "enable_tls": false
-	}
+    "network": {
+        // required "PUBLIC", "PRIVATE"
+        "networkType": "PUBLIC",
+        "publicEndpoint": "127.0.0.1:3306"
+    },
+    "authentication": {
+        // required the user name for MySQL
+        "userName": "",
+        // required the password for MySQL
+        "password": "",
+        // optional, enable TLS for MySQL connection
+        "enableTls": false
+    }
 }`
 
 	MySQLTemplate = `{
- "network": {
-		"network_type": "PUBLIC",
-    "public_endpoint": "127.0.0.1:3306"
-	},
-	"authentication": {
-		"user_name": "",
-		"password": "",
-    "enable_tls": false
-	}
+    "network": {
+        "networkType": "PUBLIC",
+        "publicEndpoint": "127.0.0.1:3306"
+    },
+    "authentication": {
+        "userName": "",
+        "password": "",
+        "enableTls": false
+    }
 }`
 )
 
