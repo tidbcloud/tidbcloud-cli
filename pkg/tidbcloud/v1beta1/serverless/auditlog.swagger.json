@@ -1,13 +1,13 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "TiDB Cloud Serverless Database Audit Logging Open API",
-    "description": "TiDB Cloud Serverless Database Audit Logging Open API",
+    "title": "TiDB Cloud Starter and Essential Database Audit Logging Open API",
+    "description": "TiDB Cloud Starter and Essential Database Audit Logging Open API",
     "version": "v1beta1"
   },
   "tags": [
     {
-      "name": "AuditLogService"
+      "name": "DatabaseAuditLogService"
     }
   ],
   "host": "serverless.tidbapi.com",
@@ -21,15 +21,15 @@
     "application/json"
   ],
   "paths": {
-    "/v1beta1/clusters/{clusterId}/auditlogs": {
+    "/v1beta1/clusters/{clusterId}/auditLog/files": {
       "get": {
-        "summary": "List database audit logs.",
-        "operationId": "AuditLogService_ListAuditLogs",
+        "summary": "List audit log files, only available when audit logs are stored in TiDB Cloud.",
+        "operationId": "DatabaseAuditLogService_ListAuditLogFiles",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ListAuditLogsResponse"
+              "$ref": "#/definitions/ListAuditLogFilesResponse"
             }
           },
           "default": {
@@ -71,19 +71,19 @@
           }
         ],
         "tags": [
-          "AuditLogService"
+          "DatabaseAuditLogService"
         ]
       }
     },
-    "/v1beta1/clusters/{clusterId}/auditlogs:download": {
+    "/v1beta1/clusters/{clusterId}/auditLog/files:download": {
       "post": {
-        "summary": "Generate audit logs download url",
-        "operationId": "AuditLogService_DownloadAuditLogs",
+        "summary": "Generate audit log files download url, only available when audit logs are stored in TiDB Cloud.",
+        "operationId": "DatabaseAuditLogService_DownloadAuditLogFiles",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/DownloadAuditLogsResponse"
+              "$ref": "#/definitions/DownloadAuditLogFilesResponse"
             }
           },
           "default": {
@@ -106,19 +106,19 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AuditLogService.DownloadAuditLogsBody"
+              "$ref": "#/definitions/DatabaseAuditLogService.DownloadAuditLogFilesBody"
             }
           }
         ],
         "tags": [
-          "AuditLogService"
+          "DatabaseAuditLogService"
         ]
       }
     },
-    "/v1beta1/clusters/{clusterId}/auditlogs/filterRules/{name}": {
+    "/v1beta1/clusters/{clusterId}/auditLog/filterRules/{filterRuleId}": {
       "get": {
         "summary": "Get audit log filter rule.",
-        "operationId": "AuditLogService_GetAuditLogFilterRule",
+        "operationId": "DatabaseAuditLogService_GetAuditLogFilterRule",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -136,26 +136,26 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required.",
+            "description": "Required. The cluster ID",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
-            "name": "name",
-            "description": "Required. The name of the filter rule.",
+            "name": "filterRuleId",
+            "description": "Required. The id of the filter rule.",
             "in": "path",
             "required": true,
             "type": "string"
           }
         ],
         "tags": [
-          "AuditLogService"
+          "DatabaseAuditLogService"
         ]
       },
       "delete": {
         "summary": "Delete audit log filter rule.",
-        "operationId": "AuditLogService_DeleteAuditLogFilterRule",
+        "operationId": "DatabaseAuditLogService_DeleteAuditLogFilterRule",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -173,26 +173,26 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required.",
+            "description": "Required. The cluster ID",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
-            "name": "name",
-            "description": "Required. The name of the filter rule.",
+            "name": "filterRuleId",
+            "description": "Required. The id of the filter rule.",
             "in": "path",
             "required": true,
             "type": "string"
           }
         ],
         "tags": [
-          "AuditLogService"
+          "DatabaseAuditLogService"
         ]
       },
       "patch": {
         "summary": "Update audit log filter rule.",
-        "operationId": "AuditLogService_UpdateAuditLogFilterRule",
+        "operationId": "DatabaseAuditLogService_UpdateAuditLogFilterRule",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -210,14 +210,14 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required.",
+            "description": "Required. The cluster ID",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
-            "name": "name",
-            "description": "Required. The name of the filter rule.",
+            "name": "filterRuleId",
+            "description": "Required. The id of the filter rule.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -227,19 +227,19 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AuditLogService.UpdateAuditLogFilterRuleBody"
+              "$ref": "#/definitions/DatabaseAuditLogService.UpdateAuditLogFilterRuleBody"
             }
           }
         ],
         "tags": [
-          "AuditLogService"
+          "DatabaseAuditLogService"
         ]
       }
     },
-    "/v1beta1/clusters/{clusterId}/auditlogs/filterRules": {
+    "/v1beta1/clusters/{clusterId}/auditLog/filterRules": {
       "get": {
         "summary": "List audit log filter rules.",
-        "operationId": "AuditLogService_ListAuditLogFilterRules",
+        "operationId": "DatabaseAuditLogService_ListAuditLogFilterRules",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -257,19 +257,34 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required.",
+            "description": "Required. The cluster ID",
             "in": "path",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "Optional. The maximum number to return, default is 10, and the maximum is 100.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "Optional. The page token from the previous response for pagination.",
+            "in": "query",
+            "required": false,
             "type": "string"
           }
         ],
         "tags": [
-          "AuditLogService"
+          "DatabaseAuditLogService"
         ]
       },
       "post": {
         "summary": "Create audit log filter rule.",
-        "operationId": "AuditLogService_CreateAuditLogFilterRule",
+        "operationId": "DatabaseAuditLogService_CreateAuditLogFilterRule",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -287,7 +302,7 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required.",
+            "description": "Required. The cluster ID",
             "in": "path",
             "required": true,
             "type": "string"
@@ -297,12 +312,122 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AuditLogService.CreateAuditLogFilterRuleBody"
+              "$ref": "#/definitions/DatabaseAuditLogService.CreateAuditLogFilterRuleBody"
             }
           }
         ],
         "tags": [
-          "AuditLogService"
+          "DatabaseAuditLogService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/auditLog/config": {
+      "get": {
+        "summary": "Get audit log configuration.",
+        "operationId": "DatabaseAuditLogService_GetAuditLogConfig",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/AuditLogConfig"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The cluster ID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "DatabaseAuditLogService"
+        ]
+      },
+      "patch": {
+        "summary": "Update audit log configuration.",
+        "operationId": "DatabaseAuditLogService_UpdateAuditLogConfig",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/AuditLogConfig"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The cluster ID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DatabaseAuditLogService.UpdateAuditLogConfigBody"
+            }
+          }
+        ],
+        "tags": [
+          "DatabaseAuditLogService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/auditLog/config:precheck": {
+      "post": {
+        "summary": "PreCheck audit Log configuration.",
+        "operationId": "DatabaseAuditLogService_PreCheckAuditLogConfig",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PreCheckAuditLogConfigResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "Required. The cluster ID",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DatabaseAuditLogService.PreCheckAuditLogConfigBody"
+            }
+          }
+        ],
+        "tags": [
+          "DatabaseAuditLogService"
         ]
       }
     }
@@ -317,14 +442,52 @@
       },
       "additionalProperties": {}
     },
-    "AuditLog": {
+    "AuditLogConfig": {
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "type": "string",
+          "description": "OUTPUT_ONLY. The ID of the cluster.",
+          "readOnly": true
+        },
+        "enabled": {
+          "type": "boolean",
+          "x-nullable": true,
+          "description": "Optional. Whether audit log is enabled."
+        },
+        "unredacted": {
+          "type": "boolean",
+          "x-nullable": true,
+          "description": "Optional. Whether unredacted the audit log."
+        },
+        "cloudStorage": {
+          "description": "Optional. The cloud storage for audit logs.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/CloudStorage"
+            }
+          ]
+        },
+        "rotationIntervalMinutes": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Optional. The rotation interval in minutes for audit logs. Default to 60 minutes."
+        },
+        "rotationSizeMib": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Optional. The rotation size in MiB for audit logs. Default to 100 MiB."
+        }
+      }
+    },
+    "AuditLogFile": {
       "type": "object",
       "properties": {
         "name": {
           "type": "string",
           "description": "The name of the audit log."
         },
-        "size": {
+        "sizeBytes": {
           "type": "integer",
           "format": "int64",
           "description": "The size in bytes of the audit log."
@@ -332,6 +495,11 @@
         "url": {
           "type": "string",
           "description": "download url of the audit log."
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The create time of the audit log."
         }
       }
     },
@@ -366,7 +534,17 @@
     "AuditLogFilterRule": {
       "type": "object",
       "properties": {
-        "name": {
+        "filterRuleId": {
+          "type": "string",
+          "description": "OUTPUT_ONLY. The audit log filter rule ID.",
+          "readOnly": true
+        },
+        "clusterId": {
+          "type": "string",
+          "description": "OUTPUT_ONLY. The clusrer ID.",
+          "readOnly": true
+        },
+        "displayName": {
           "type": "string",
           "description": "Required. Unique name of the filter rule within a cluster."
         },
@@ -389,19 +567,104 @@
           "type": "boolean",
           "description": "OUTPUT_ONLY. Indicates whether the filter rule is disabled.",
           "readOnly": true
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "OUTPUT_ONLY. Timestamp when the filter rule was created.",
+          "readOnly": true
+        },
+        "updateTime": {
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true,
+          "description": "OUTPUT_ONLY. Timestamp when the filter rule was updated.",
+          "readOnly": true
         }
       },
       "required": [
-        "name",
+        "displayName",
         "users",
         "filters"
       ]
     },
-    "AuditLogService.CreateAuditLogFilterRuleBody": {
+    "AzureBlobCloudStorage": {
+      "type": "object",
+      "properties": {
+        "uri": {
+          "type": "string",
+          "description": "Required. The Azure Blob URI. For example: azure://<account>.blob.core.windows.net/<container>/<path>/ or https://<account>.blob.core.windows.net/<container>/<path>/."
+        },
+        "authType": {
+          "description": "Required. The auth method of Azure Blob.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/AzureBlobCloudStorage.AzureBlobAuthType"
+            }
+          ]
+        },
+        "sasToken": {
+          "type": "string",
+          "description": "Optional. The sas token."
+        }
+      },
+      "required": [
+        "uri",
+        "authType"
+      ]
+    },
+    "AzureBlobCloudStorage.AzureBlobAuthType": {
+      "type": "string",
+      "enum": [
+        "SAS_TOKEN"
+      ],
+      "description": " - SAS_TOKEN: The access method is sas token."
+    },
+    "CloudStorage": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Required. The type of cloud storage.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/CloudStorageType.Enum"
+            }
+          ]
+        },
+        "s3": {
+          "$ref": "#/definitions/S3CloudStorage"
+        },
+        "gcs": {
+          "$ref": "#/definitions/GCSCloudStorage"
+        },
+        "azureBlob": {
+          "$ref": "#/definitions/AzureBlobCloudStorage"
+        },
+        "oss": {
+          "$ref": "#/definitions/OSSCloudStorage"
+        }
+      },
+      "description": "Message for cloud storage.",
+      "required": [
+        "type"
+      ]
+    },
+    "CloudStorageType.Enum": {
+      "type": "string",
+      "enum": [
+        "TIDB_CLOUD",
+        "S3",
+        "GCS",
+        "AZURE_BLOB",
+        "OSS"
+      ],
+      "description": " - TIDB_CLOUD: TiDB Cloud's own cloud storage.\n - S3: Amazon S3 cloud storage.\n - GCS: Google Cloud Storage.\n - AZURE_BLOB: Azure Blob Storage.\n - OSS: Alibaba Cloud OSS."
+    },
+    "DatabaseAuditLogService.CreateAuditLogFilterRuleBody": {
       "type": "object",
       "properties": {
         "filterRule": {
-          "description": "Required. The filter rule to create.",
+          "title": "Required. The filter rule to create",
           "allOf": [
             {
               "$ref": "#/definitions/AuditLogFilterRule"
@@ -413,7 +676,7 @@
         "filterRule"
       ]
     },
-    "AuditLogService.DownloadAuditLogsBody": {
+    "DatabaseAuditLogService.DownloadAuditLogFilesBody": {
       "type": "object",
       "properties": {
         "auditLogNames": {
@@ -428,7 +691,36 @@
         "auditLogNames"
       ]
     },
-    "AuditLogService.UpdateAuditLogFilterRuleBody": {
+    "DatabaseAuditLogService.PreCheckAuditLogConfigBody": {
+      "type": "object",
+      "properties": {
+        "cloudStorage": {
+          "description": "OPTIONAL. PreCheck the audit log cloud storage configuration.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/CloudStorage"
+            }
+          ]
+        }
+      }
+    },
+    "DatabaseAuditLogService.UpdateAuditLogConfigBody": {
+      "type": "object",
+      "properties": {
+        "auditLogConfig": {
+          "description": "Required. The audit log configuration to update.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/AuditLogConfig"
+            }
+          ]
+        }
+      },
+      "required": [
+        "auditLogConfig"
+      ]
+    },
+    "DatabaseAuditLogService.UpdateAuditLogFilterRuleBody": {
       "type": "object",
       "properties": {
         "filters": {
@@ -444,25 +736,78 @@
           "items": {
             "type": "string"
           },
-          "title": "Required. Database users in the format <user>@<host> or <user> (host defaults to %), e.g., %@%, 4C3z3cdMX8iXks5.root"
+          "title": "OPTIONAL. Database users in the format <user>@<host> or <user> (host defaults to %), e.g., %@%, 4C3z3cdMX8iXks5.root"
         },
         "disabled": {
           "type": "boolean",
           "x-nullable": true,
           "description": "OPTIONAL. Indicates whether the filter rule is disabled."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "OPTIONAL. Display name of the filter rule."
         }
       }
     },
-    "DownloadAuditLogsResponse": {
+    "DownloadAuditLogFilesResponse": {
       "type": "object",
       "properties": {
-        "auditLogs": {
+        "auditLogFiles": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/AuditLog"
+            "$ref": "#/definitions/AuditLogFile"
           },
           "description": "The audit logs with the download url."
+        }
+      }
+    },
+    "GCSCloudStorage": {
+      "type": "object",
+      "properties": {
+        "uri": {
+          "type": "string",
+          "description": "Required. The GCS URI. For example: gs://<bucket>/<path>/."
+        },
+        "authType": {
+          "description": "Required. The auth method of GCS.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/GCSCloudStorage.GCSAuthType"
+            }
+          ]
+        },
+        "serviceAccountKey": {
+          "type": "string",
+          "description": "Required. The service account key."
+        }
+      },
+      "required": [
+        "uri",
+        "authType"
+      ]
+    },
+    "GCSCloudStorage.GCSAuthType": {
+      "type": "string",
+      "enum": [
+        "SERVICE_ACCOUNT_KEY"
+      ],
+      "description": " - SERVICE_ACCOUNT_KEY: The access method is service account key."
+    },
+    "ListAuditLogFilesResponse": {
+      "type": "object",
+      "properties": {
+        "auditLogFiles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/AuditLogFile"
+          },
+          "description": "The audit log files without the download url."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Token provided to retrieve the next page of results."
         }
       }
     },
@@ -475,25 +820,134 @@
             "type": "object",
             "$ref": "#/definitions/AuditLogFilterRule"
           }
+        },
+        "nextPageToken": {
+          "type": "string"
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int64"
         }
       }
     },
-    "ListAuditLogsResponse": {
+    "OSSCloudStorage": {
       "type": "object",
       "properties": {
-        "auditLogs": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/AuditLog"
-          },
-          "description": "The audit logs without the download url."
-        },
-        "nextPageToken": {
+        "uri": {
           "type": "string",
-          "description": "Token provided to retrieve the next page of results."
+          "description": "Required. The OSS URI. For example: oss://<bucket>/<path>/."
+        },
+        "authType": {
+          "description": "Required. The auth method of OSS.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/OSSCloudStorage.OSSAuthType"
+            }
+          ]
+        },
+        "accessKey": {
+          "description": "Optional. The access key.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/OSSCloudStorage.AccessKey"
+            }
+          ]
+        },
+        "roleArn": {
+          "type": "string",
+          "description": "Optional. The role arn."
         }
-      }
+      },
+      "required": [
+        "uri",
+        "authType"
+      ]
+    },
+    "OSSCloudStorage.AccessKey": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Required. The access key id."
+        },
+        "secret": {
+          "type": "string",
+          "description": "Required. The access key secret. This field is input-only."
+        }
+      },
+      "required": [
+        "id",
+        "secret"
+      ]
+    },
+    "OSSCloudStorage.OSSAuthType": {
+      "type": "string",
+      "enum": [
+        "ACCESS_KEY",
+        "ROLE_ARN"
+      ],
+      "description": " - ACCESS_KEY: The access method is access key.\n - ROLE_ARN: The access method is role arn."
+    },
+    "PreCheckAuditLogConfigResponse": {
+      "type": "object"
+    },
+    "S3CloudStorage": {
+      "type": "object",
+      "properties": {
+        "uri": {
+          "type": "string",
+          "description": "Required. The URI of the S3 folder. For example: s3://<bucket>/<path>/."
+        },
+        "authType": {
+          "description": "Required. The auth method of S3.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/S3CloudStorage.S3AuthType"
+            }
+          ]
+        },
+        "accessKey": {
+          "description": "Optional. The access key of the S3.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/S3CloudStorage.AccessKey"
+            }
+          ]
+        },
+        "roleArn": {
+          "type": "string",
+          "description": "Optional. The role arn of the S3."
+        }
+      },
+      "required": [
+        "uri",
+        "authType"
+      ]
+    },
+    "S3CloudStorage.AccessKey": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Required. The access key id of the S3."
+        },
+        "secret": {
+          "type": "string",
+          "description": "Required. The secret access key of the S3."
+        }
+      },
+      "required": [
+        "id",
+        "secret"
+      ]
+    },
+    "S3CloudStorage.S3AuthType": {
+      "type": "string",
+      "enum": [
+        "ROLE_ARN",
+        "ACCESS_KEY"
+      ],
+      "description": " - ROLE_ARN: The access method is role arn.\n - ACCESS_KEY: The access method is access key."
     },
     "Status": {
       "type": "object",

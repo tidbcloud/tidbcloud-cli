@@ -1,4 +1,18 @@
-package auditlog
+// Copyright 2025 PingCAP, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//	http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package config
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
@@ -6,6 +20,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/auditlog"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 )
 
@@ -23,9 +38,9 @@ var inputDescription = map[string]string{
 	flag.OSSAccessKeySecret:   "Input your OSS access key secret",
 }
 
-func GetSelectedCloudStorage() (cluster.V1beta1ClusterCloudStorage, error) {
-	selectTypes := make([]interface{}, 0, len(cluster.AllowedV1beta1ClusterCloudStorageEnumValues))
-	for _, v := range cluster.AllowedV1beta1ClusterCloudStorageEnumValues {
+func GetSelectedCloudStorage() (auditlog.CloudStorageTypeEnum, error) {
+	selectTypes := make([]interface{}, 0, len(auditlog.AllowedCloudStorageTypeEnumEnumValues))
+	for _, v := range auditlog.AllowedCloudStorageTypeEnumEnumValues {
 		selectTypes = append(selectTypes, v)
 	}
 	selectModel, err := ui.InitialSelectModel(selectTypes, "Choose the cloud storage:")
@@ -45,32 +60,32 @@ func GetSelectedCloudStorage() (cluster.V1beta1ClusterCloudStorage, error) {
 	if selectType == nil {
 		return "", errors.New("no cloud storage selected")
 	}
-	return selectType.(cluster.V1beta1ClusterCloudStorage), nil
+	return selectType.(auditlog.CloudStorageTypeEnum), nil
 }
 
-func GetSelectedAuthType(target cluster.V1beta1ClusterCloudStorage, provider cluster.V1beta1RegionCloudProvider) (_ string, err error) {
+func GetSelectedAuthType(target auditlog.CloudStorageTypeEnum, provider cluster.V1beta1RegionCloudProvider) (_ string, err error) {
 	var model *ui.SelectModel
 	switch target {
-	case cluster.V1BETA1CLUSTERCLOUDSTORAGE_S3:
+	case auditlog.CLOUDSTORAGETYPEENUM_S3:
 		if provider != cluster.V1BETA1REGIONCLOUDPROVIDER_AWS {
-			return string(cluster.S3CLOUDSTORAGES3AUTHTYPE_ACCESS_KEY), nil
+			return string(auditlog.S3CLOUDSTORAGES3AUTHTYPE_ACCESS_KEY), nil
 		}
-		authTypes := make([]interface{}, 0, len(cluster.AllowedS3CloudStorageS3AuthTypeEnumValues))
-		for _, v := range cluster.AllowedS3CloudStorageS3AuthTypeEnumValues {
+		authTypes := make([]interface{}, 0, len(auditlog.AllowedS3CloudStorageS3AuthTypeEnumValues))
+		for _, v := range auditlog.AllowedS3CloudStorageS3AuthTypeEnumValues {
 			authTypes = append(authTypes, string(v))
 		}
 		model, err = ui.InitialSelectModel(authTypes, "Choose and input the S3 auth:")
 		if err != nil {
 			return "", errors.Trace(err)
 		}
-	case cluster.V1BETA1CLUSTERCLOUDSTORAGE_GCS:
-		return string(cluster.GCSCLOUDSTORAGEGCSAUTHTYPE_SERVICE_ACCOUNT_KEY), nil
-	case cluster.V1BETA1CLUSTERCLOUDSTORAGE_AZURE_BLOB:
-		return string(cluster.AZUREBLOBCLOUDSTORAGEAZUREBLOBAUTHTYPE_SAS_TOKEN), nil
-	case cluster.V1BETA1CLUSTERCLOUDSTORAGE_TI_DB_CLOUD:
+	case auditlog.CLOUDSTORAGETYPEENUM_GCS:
+		return string(auditlog.GCSCLOUDSTORAGEGCSAUTHTYPE_SERVICE_ACCOUNT_KEY), nil
+	case auditlog.CLOUDSTORAGETYPEENUM_AZURE_BLOB:
+		return string(auditlog.AZUREBLOBCLOUDSTORAGEAZUREBLOBAUTHTYPE_SAS_TOKEN), nil
+	case auditlog.CLOUDSTORAGETYPEENUM_TIDB_CLOUD:
 		return "", nil
-	case cluster.V1BETA1CLUSTERCLOUDSTORAGE_OSS:
-		return string(cluster.OSSCLOUDSTORAGEOSSAUTHTYPE_ACCESS_KEY), nil
+	case auditlog.CLOUDSTORAGETYPEENUM_OSS:
+		return string(auditlog.OSSCLOUDSTORAGEOSSAUTHTYPE_ACCESS_KEY), nil
 	}
 	if model == nil {
 		return "", errors.New("unknown auth type")

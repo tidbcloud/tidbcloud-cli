@@ -100,7 +100,7 @@ const (
 	EndDate                string = "end-date"
 
 	AuditLogUnRedacted      string = "unredacted"
-	AuditLogFilterRuleName  string = "name"
+	AuditLogFilterRuleID    string = "filter-rule-id"
 	AuditLogFilterRule      string = "rule"
 	Enabled                 string = "enabled"
 	CloudStorageType        string = "cloud-storage"

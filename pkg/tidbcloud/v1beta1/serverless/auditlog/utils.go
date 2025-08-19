@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Database Audit Logging Open API
+TiDB Cloud Starter and Essential Database Audit Logging Open API
 
-TiDB Cloud Serverless Database Audit Logging Open API
+TiDB Cloud Starter and Essential Database Audit Logging Open API
 
 API version: v1beta1
 */

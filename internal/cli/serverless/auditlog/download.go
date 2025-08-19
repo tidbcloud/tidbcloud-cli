@@ -174,7 +174,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			var totalSize int64
 			auditLogNames := make([]string, 0)
 			for _, log := range auditLogs {
-				totalSize += *log.Size
+				totalSize += *log.SizeBytes
 				auditLogNames = append(auditLogNames, *log.Name)
 			}
 

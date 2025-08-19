@@ -36,7 +36,7 @@ type DeleteFilterRuleOpts struct {
 func (o DeleteFilterRuleOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.AuditLogFilterRuleName,
+		flag.AuditLogFilterRuleID,
 	}
 }
 
@@ -74,7 +74,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless audit-log filter delete
 
   Delete an audit log filter rule in non-interactive mode:
-  $ %[1]s serverless audit-log filter delete --cluster-id <cluster-id> --name <rule-name>
+  $ %[1]s serverless audit-log filter delete --cluster-id <cluster-id> --filter-rule-id <rule-id>
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
@@ -86,7 +86,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			var clusterID, ruleName string
+			var clusterID, ruleID string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -100,16 +100,17 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				clusterID = cluster.ID
-				ruleName, err = cloud.GetSelectedRuleName(ctx, cluster.ID, d)
+				filterRule, err := cloud.GetSelectedFilterRule(ctx, cluster.ID, d)
 				if err != nil {
 					return err
 				}
+				ruleID = filterRule.FilterRuleId
 			} else {
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				ruleName, err = cmd.Flags().GetString(flag.AuditLogFilterRuleName)
+				ruleID, err = cmd.Flags().GetString(flag.AuditLogFilterRuleID)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -117,24 +118,24 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 
 			if !force {
 				if err = ui.ConfirmPrompt(
-					fmt.Sprintf("Are you sure you want to delete the filter rule '%s' in cluster '%s'?", ruleName, clusterID),
+					fmt.Sprintf("Are you sure you want to delete the filter rule '%s' in cluster '%s'?", ruleID, clusterID),
 					h.IOStreams.CanPrompt); err != nil {
 					return err
 				}
 			}
 
-			_, err = d.DeleteAuditLogFilterRule(ctx, clusterID, ruleName)
+			_, err = d.DeleteAuditLogFilterRule(ctx, clusterID, ruleID)
 			if err != nil {
 				return errors.Trace(err)
 			}
 
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("filter rule %s deleted", ruleName)))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("filter rule %s deleted", ruleID)))
 			return nil
 		},
 	}
 
 	deleteCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
-	deleteCmd.Flags().String(flag.AuditLogFilterRuleName, "", "The name of the filter rule.")
+	deleteCmd.Flags().String(flag.AuditLogFilterRuleID, "", "The ID of the filter rule.")
 	deleteCmd.Flags().BoolVar(&force, flag.Force, false, "Delete a cluster without confirmation.")
 
 	return deleteCmd

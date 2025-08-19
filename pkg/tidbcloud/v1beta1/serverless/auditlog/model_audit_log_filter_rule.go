@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Database Audit Logging Open API
+TiDB Cloud Starter and Essential Database Audit Logging Open API
 
-TiDB Cloud Serverless Database Audit Logging Open API
+TiDB Cloud Starter and Essential Database Audit Logging Open API
 
 API version: v1beta1
 */
@@ -13,6 +13,7 @@ package auditlog
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 )
 
 // checks if the AuditLogFilterRule type satisfies the MappedNullable interface at compile time
@@ -20,13 +21,21 @@ var _ MappedNullable = &AuditLogFilterRule{}
 
 // AuditLogFilterRule struct for AuditLogFilterRule
 type AuditLogFilterRule struct {
+	// OUTPUT_ONLY. The audit log filter rule ID.
+	FilterRuleId *string `json:"filterRuleId,omitempty"`
+	// OUTPUT_ONLY. The clusrer ID.
+	ClusterId *string `json:"clusterId,omitempty"`
 	// Required. Unique name of the filter rule within a cluster.
-	Name  string   `json:"name"`
-	Users []string `json:"users"`
+	DisplayName string   `json:"displayName"`
+	Users       []string `json:"users"`
 	// Required. List of filters combined with an OR relationship. Set filters to [{}] will filter all logs.
 	Filters []AuditLogFilter `json:"filters"`
 	// OUTPUT_ONLY. Indicates whether the filter rule is disabled.
-	Disabled             *bool `json:"disabled,omitempty"`
+	Disabled *bool `json:"disabled,omitempty"`
+	// OUTPUT_ONLY. Timestamp when the filter rule was created.
+	CreateTime *time.Time `json:"createTime,omitempty"`
+	// OUTPUT_ONLY. Timestamp when the filter rule was updated.
+	UpdateTime           NullableTime `json:"updateTime,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -36,9 +45,9 @@ type _AuditLogFilterRule AuditLogFilterRule
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewAuditLogFilterRule(name string, users []string, filters []AuditLogFilter) *AuditLogFilterRule {
+func NewAuditLogFilterRule(displayName string, users []string, filters []AuditLogFilter) *AuditLogFilterRule {
 	this := AuditLogFilterRule{}
-	this.Name = name
+	this.DisplayName = displayName
 	this.Users = users
 	this.Filters = filters
 	return &this
@@ -52,28 +61,92 @@ func NewAuditLogFilterRuleWithDefaults() *AuditLogFilterRule {
 	return &this
 }
 
-// GetName returns the Name field value
-func (o *AuditLogFilterRule) GetName() string {
+// GetFilterRuleId returns the FilterRuleId field value if set, zero value otherwise.
+func (o *AuditLogFilterRule) GetFilterRuleId() string {
+	if o == nil || IsNil(o.FilterRuleId) {
+		var ret string
+		return ret
+	}
+	return *o.FilterRuleId
+}
+
+// GetFilterRuleIdOk returns a tuple with the FilterRuleId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *AuditLogFilterRule) GetFilterRuleIdOk() (*string, bool) {
+	if o == nil || IsNil(o.FilterRuleId) {
+		return nil, false
+	}
+	return o.FilterRuleId, true
+}
+
+// HasFilterRuleId returns a boolean if a field has been set.
+func (o *AuditLogFilterRule) HasFilterRuleId() bool {
+	if o != nil && !IsNil(o.FilterRuleId) {
+		return true
+	}
+
+	return false
+}
+
+// SetFilterRuleId gets a reference to the given string and assigns it to the FilterRuleId field.
+func (o *AuditLogFilterRule) SetFilterRuleId(v string) {
+	o.FilterRuleId = &v
+}
+
+// GetClusterId returns the ClusterId field value if set, zero value otherwise.
+func (o *AuditLogFilterRule) GetClusterId() string {
+	if o == nil || IsNil(o.ClusterId) {
+		var ret string
+		return ret
+	}
+	return *o.ClusterId
+}
+
+// GetClusterIdOk returns a tuple with the ClusterId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *AuditLogFilterRule) GetClusterIdOk() (*string, bool) {
+	if o == nil || IsNil(o.ClusterId) {
+		return nil, false
+	}
+	return o.ClusterId, true
+}
+
+// HasClusterId returns a boolean if a field has been set.
+func (o *AuditLogFilterRule) HasClusterId() bool {
+	if o != nil && !IsNil(o.ClusterId) {
+		return true
+	}
+
+	return false
+}
+
+// SetClusterId gets a reference to the given string and assigns it to the ClusterId field.
+func (o *AuditLogFilterRule) SetClusterId(v string) {
+	o.ClusterId = &v
+}
+
+// GetDisplayName returns the DisplayName field value
+func (o *AuditLogFilterRule) GetDisplayName() string {
 	if o == nil {
 		var ret string
 		return ret
 	}
 
-	return o.Name
+	return o.DisplayName
 }
 
-// GetNameOk returns a tuple with the Name field value
+// GetDisplayNameOk returns a tuple with the DisplayName field value
 // and a boolean to check if the value has been set.
-func (o *AuditLogFilterRule) GetNameOk() (*string, bool) {
+func (o *AuditLogFilterRule) GetDisplayNameOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.Name, true
+	return &o.DisplayName, true
 }
 
-// SetName sets field value
-func (o *AuditLogFilterRule) SetName(v string) {
-	o.Name = v
+// SetDisplayName sets field value
+func (o *AuditLogFilterRule) SetDisplayName(v string) {
+	o.DisplayName = v
 }
 
 // GetUsers returns the Users field value
@@ -156,6 +229,81 @@ func (o *AuditLogFilterRule) SetDisabled(v bool) {
 	o.Disabled = &v
 }
 
+// GetCreateTime returns the CreateTime field value if set, zero value otherwise.
+func (o *AuditLogFilterRule) GetCreateTime() time.Time {
+	if o == nil || IsNil(o.CreateTime) {
+		var ret time.Time
+		return ret
+	}
+	return *o.CreateTime
+}
+
+// GetCreateTimeOk returns a tuple with the CreateTime field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *AuditLogFilterRule) GetCreateTimeOk() (*time.Time, bool) {
+	if o == nil || IsNil(o.CreateTime) {
+		return nil, false
+	}
+	return o.CreateTime, true
+}
+
+// HasCreateTime returns a boolean if a field has been set.
+func (o *AuditLogFilterRule) HasCreateTime() bool {
+	if o != nil && !IsNil(o.CreateTime) {
+		return true
+	}
+
+	return false
+}
+
+// SetCreateTime gets a reference to the given time.Time and assigns it to the CreateTime field.
+func (o *AuditLogFilterRule) SetCreateTime(v time.Time) {
+	o.CreateTime = &v
+}
+
+// GetUpdateTime returns the UpdateTime field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *AuditLogFilterRule) GetUpdateTime() time.Time {
+	if o == nil || IsNil(o.UpdateTime.Get()) {
+		var ret time.Time
+		return ret
+	}
+	return *o.UpdateTime.Get()
+}
+
+// GetUpdateTimeOk returns a tuple with the UpdateTime field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *AuditLogFilterRule) GetUpdateTimeOk() (*time.Time, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.UpdateTime.Get(), o.UpdateTime.IsSet()
+}
+
+// HasUpdateTime returns a boolean if a field has been set.
+func (o *AuditLogFilterRule) HasUpdateTime() bool {
+	if o != nil && o.UpdateTime.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetUpdateTime gets a reference to the given NullableTime and assigns it to the UpdateTime field.
+func (o *AuditLogFilterRule) SetUpdateTime(v time.Time) {
+	o.UpdateTime.Set(&v)
+}
+
+// SetUpdateTimeNil sets the value for UpdateTime to be an explicit nil
+func (o *AuditLogFilterRule) SetUpdateTimeNil() {
+	o.UpdateTime.Set(nil)
+}
+
+// UnsetUpdateTime ensures that no value is present for UpdateTime, not even an explicit nil
+func (o *AuditLogFilterRule) UnsetUpdateTime() {
+	o.UpdateTime.Unset()
+}
+
 func (o AuditLogFilterRule) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -166,11 +314,23 @@ func (o AuditLogFilterRule) MarshalJSON() ([]byte, error) {
 
 func (o AuditLogFilterRule) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["name"] = o.Name
+	if !IsNil(o.FilterRuleId) {
+		toSerialize["filterRuleId"] = o.FilterRuleId
+	}
+	if !IsNil(o.ClusterId) {
+		toSerialize["clusterId"] = o.ClusterId
+	}
+	toSerialize["displayName"] = o.DisplayName
 	toSerialize["users"] = o.Users
 	toSerialize["filters"] = o.Filters
 	if !IsNil(o.Disabled) {
 		toSerialize["disabled"] = o.Disabled
+	}
+	if !IsNil(o.CreateTime) {
+		toSerialize["createTime"] = o.CreateTime
+	}
+	if o.UpdateTime.IsSet() {
+		toSerialize["updateTime"] = o.UpdateTime.Get()
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -185,7 +345,7 @@ func (o *AuditLogFilterRule) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"name",
+		"displayName",
 		"users",
 		"filters",
 	}
@@ -217,10 +377,14 @@ func (o *AuditLogFilterRule) UnmarshalJSON(data []byte) (err error) {
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "name")
+		delete(additionalProperties, "filterRuleId")
+		delete(additionalProperties, "clusterId")
+		delete(additionalProperties, "displayName")
 		delete(additionalProperties, "users")
 		delete(additionalProperties, "filters")
 		delete(additionalProperties, "disabled")
+		delete(additionalProperties, "createTime")
+		delete(additionalProperties, "updateTime")
 		o.AdditionalProperties = additionalProperties
 	}
 
