@@ -504,11 +504,6 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					}
 				}
 			}
-
-			// output, err := json.Marshal(body)
-			// if err == nil {
-			// 	fmt.Println(string(output))
-			// }
 			_, err = d.UpdateAuditLogConfig(ctx, clusterID, body)
 			if err != nil {
 				return errors.Trace(err)
