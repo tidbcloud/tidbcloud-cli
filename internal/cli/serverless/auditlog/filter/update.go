@@ -70,7 +70,7 @@ func (o *UpdateFilterRuleOpts) MarkInteractive(cmd *cobra.Command) error {
 				return err
 			}
 		}
-		cmd.MarkFlagsOneRequired(flag.AuditLogFilterRule, flag.Enabled)
+		cmd.MarkFlagsOneRequired(flag.AuditLogFilterRule, flag.Enabled, flag.DisplayName)
 	}
 	return nil
 }

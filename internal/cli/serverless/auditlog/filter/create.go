@@ -177,7 +177,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
-			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("audit log filter rule %s created", resp.FilterRuleId))
+			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("audit log filter rule %s created", *resp.FilterRuleId))
 			if err != nil {
 				return err
 			}

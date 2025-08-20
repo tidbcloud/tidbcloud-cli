@@ -96,7 +96,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 
 	var downloadCmd = &cobra.Command{
 		Use:   "download",
-		Short: "Download the database audit logs",
+		Short: "Download the database audit log files",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Download the database audit logs in interactive mode:
   $ %[1]s serverless audit-log download

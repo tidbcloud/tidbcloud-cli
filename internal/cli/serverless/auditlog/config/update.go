@@ -102,7 +102,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	var updateCmd = &cobra.Command{
-		Use:         "config",
+		Use:         "update",
 		Short:       "Update the database audit logging configuration",
 		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
