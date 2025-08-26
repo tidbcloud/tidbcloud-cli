@@ -19,17 +19,17 @@ var _ MappedNullable = &AuditLogConfig{}
 
 // AuditLogConfig struct for AuditLogConfig
 type AuditLogConfig struct {
-	// OUTPUT_ONLY. The ID of the cluster.
+	// The ID of the cluster.
 	ClusterId *string `json:"clusterId,omitempty"`
-	// Optional. Whether audit log is enabled.
+	// Whether audit log is enabled.
 	Enabled NullableBool `json:"enabled,omitempty"`
-	// Optional. Whether unredacted the audit log.
+	// Whether unredacted the audit log.
 	Unredacted NullableBool `json:"unredacted,omitempty"`
-	// Optional. The cloud storage for audit logs.
+	// The cloud storage for audit logs.
 	CloudStorage *CloudStorage `json:"cloudStorage,omitempty"`
-	// Optional. The rotation interval in minutes for audit logs. Default to 60 minutes.
+	// The rotation interval in minutes for audit logs. Default to 60 minutes.
 	RotationIntervalMinutes *int32 `json:"rotationIntervalMinutes,omitempty"`
-	// Optional. The rotation size in MiB for audit logs. Default to 100 MiB.
+	// The rotation size in MiB for audit logs. Default to 100 MiB.
 	RotationSizeMib      *int32 `json:"rotationSizeMib,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

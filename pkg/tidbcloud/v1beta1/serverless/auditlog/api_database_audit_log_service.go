@@ -42,7 +42,7 @@ func (r ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) Execute() (*A
 DatabaseAuditLogServiceCreateAuditLogFilterRule Create audit log filter rule.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The cluster ID
+	@param clusterId The cluster ID
 	@return ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest
 */
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLogFilterRule(ctx context.Context, clusterId string) ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest {
@@ -158,8 +158,8 @@ func (r ApiDatabaseAuditLogServiceDeleteAuditLogFilterRuleRequest) Execute() (*A
 DatabaseAuditLogServiceDeleteAuditLogFilterRule Delete audit log filter rule.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The cluster ID
-	@param filterRuleId Required. The id of the filter rule.
+	@param clusterId The cluster ID
+	@param filterRuleId The id of the filter rule.
 	@return ApiDatabaseAuditLogServiceDeleteAuditLogFilterRuleRequest
 */
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceDeleteAuditLogFilterRule(ctx context.Context, clusterId string, filterRuleId string) ApiDatabaseAuditLogServiceDeleteAuditLogFilterRuleRequest {
@@ -277,7 +277,7 @@ func (r ApiDatabaseAuditLogServiceDownloadAuditLogFilesRequest) Execute() (*Down
 DatabaseAuditLogServiceDownloadAuditLogFiles Generate audit log files download url, only available when audit logs are stored in TiDB Cloud.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The ID of the cluster.
+	@param clusterId The ID of the cluster.
 	@return ApiDatabaseAuditLogServiceDownloadAuditLogFilesRequest
 */
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceDownloadAuditLogFiles(ctx context.Context, clusterId string) ApiDatabaseAuditLogServiceDownloadAuditLogFilesRequest {
@@ -392,7 +392,7 @@ func (r ApiDatabaseAuditLogServiceGetAuditLogConfigRequest) Execute() (*AuditLog
 DatabaseAuditLogServiceGetAuditLogConfig Get audit log configuration.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The cluster ID
+	@param clusterId The cluster ID
 	@return ApiDatabaseAuditLogServiceGetAuditLogConfigRequest
 */
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogConfig(ctx context.Context, clusterId string) ApiDatabaseAuditLogServiceGetAuditLogConfigRequest {
@@ -503,8 +503,8 @@ func (r ApiDatabaseAuditLogServiceGetAuditLogFilterRuleRequest) Execute() (*Audi
 DatabaseAuditLogServiceGetAuditLogFilterRule Get audit log filter rule.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The cluster ID
-	@param filterRuleId Required. The id of the filter rule.
+	@param clusterId The cluster ID
+	@param filterRuleId The id of the filter rule.
 	@return ApiDatabaseAuditLogServiceGetAuditLogFilterRuleRequest
 */
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogFilterRule(ctx context.Context, clusterId string, filterRuleId string) ApiDatabaseAuditLogServiceGetAuditLogFilterRuleRequest {
@@ -611,19 +611,19 @@ type ApiDatabaseAuditLogServiceListAuditLogFilesRequest struct {
 	pageToken  *string
 }
 
-// Optional. The UTC date of the audit logs in the format of &#x60;YYYY-MM-DD&#x60; (e.g. 2025-01-01).
+// The UTC date of the audit logs in the format of &#x60;YYYY-MM-DD&#x60; (e.g. 2025-01-01).
 func (r ApiDatabaseAuditLogServiceListAuditLogFilesRequest) Date(date string) ApiDatabaseAuditLogServiceListAuditLogFilesRequest {
 	r.date = &date
 	return r
 }
 
-// Optional. The maximum number to return, default is 100, and the maximum is 1000.
+// The maximum number to return, default is 100, and the maximum is 1000.
 func (r ApiDatabaseAuditLogServiceListAuditLogFilesRequest) PageSize(pageSize int32) ApiDatabaseAuditLogServiceListAuditLogFilesRequest {
 	r.pageSize = &pageSize
 	return r
 }
 
-// Optional. The page token from the previous response for pagination.
+// The page token from the previous response for pagination.
 func (r ApiDatabaseAuditLogServiceListAuditLogFilesRequest) PageToken(pageToken string) ApiDatabaseAuditLogServiceListAuditLogFilesRequest {
 	r.pageToken = &pageToken
 	return r
@@ -637,7 +637,7 @@ func (r ApiDatabaseAuditLogServiceListAuditLogFilesRequest) Execute() (*ListAudi
 DatabaseAuditLogServiceListAuditLogFiles List audit log files, only available when audit logs are stored in TiDB Cloud.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The ID of the cluster.
+	@param clusterId The ID of the cluster.
 	@return ApiDatabaseAuditLogServiceListAuditLogFilesRequest
 */
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceListAuditLogFiles(ctx context.Context, clusterId string) ApiDatabaseAuditLogServiceListAuditLogFilesRequest {
@@ -750,13 +750,13 @@ type ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest struct {
 	pageToken  *string
 }
 
-// Optional. The maximum number to return, default is 10, and the maximum is 100.
+// The maximum number to return, default is 10, and the maximum is 100.
 func (r ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest) PageSize(pageSize int32) ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest {
 	r.pageSize = &pageSize
 	return r
 }
 
-// Optional. The page token from the previous response for pagination.
+// The page token from the previous response for pagination.
 func (r ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest) PageToken(pageToken string) ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest {
 	r.pageToken = &pageToken
 	return r
@@ -770,7 +770,7 @@ func (r ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest) Execute() (*Li
 DatabaseAuditLogServiceListAuditLogFilterRules List audit log filter rules.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The cluster ID
+	@param clusterId The cluster ID
 	@return ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest
 */
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceListAuditLogFilterRules(ctx context.Context, clusterId string) ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest {
@@ -872,127 +872,6 @@ func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceListAuditLogF
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiDatabaseAuditLogServicePreCheckAuditLogConfigRequest struct {
-	ctx        context.Context
-	ApiService *DatabaseAuditLogServiceAPIService
-	clusterId  string
-	body       *DatabaseAuditLogServicePreCheckAuditLogConfigBody
-}
-
-func (r ApiDatabaseAuditLogServicePreCheckAuditLogConfigRequest) Body(body DatabaseAuditLogServicePreCheckAuditLogConfigBody) ApiDatabaseAuditLogServicePreCheckAuditLogConfigRequest {
-	r.body = &body
-	return r
-}
-
-func (r ApiDatabaseAuditLogServicePreCheckAuditLogConfigRequest) Execute() (map[string]interface{}, *http.Response, error) {
-	return r.ApiService.DatabaseAuditLogServicePreCheckAuditLogConfigExecute(r)
-}
-
-/*
-DatabaseAuditLogServicePreCheckAuditLogConfig PreCheck audit Log configuration.
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The cluster ID
-	@return ApiDatabaseAuditLogServicePreCheckAuditLogConfigRequest
-*/
-func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServicePreCheckAuditLogConfig(ctx context.Context, clusterId string) ApiDatabaseAuditLogServicePreCheckAuditLogConfigRequest {
-	return ApiDatabaseAuditLogServicePreCheckAuditLogConfigRequest{
-		ApiService: a,
-		ctx:        ctx,
-		clusterId:  clusterId,
-	}
-}
-
-// Execute executes the request
-//
-//	@return map[string]interface{}
-func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServicePreCheckAuditLogConfigExecute(r ApiDatabaseAuditLogServicePreCheckAuditLogConfigRequest) (map[string]interface{}, *http.Response, error) {
-	var (
-		localVarHTTPMethod  = http.MethodPost
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue map[string]interface{}
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServicePreCheckAuditLogConfig")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/auditLog/config:precheck"
-	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-	if r.body == nil {
-		return localVarReturnValue, nil, reportError("body is required and must be specified")
-	}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"application/json"}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	// body params
-	localVarPostBody = r.body
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		var v Status
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
 type ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest struct {
 	ctx        context.Context
 	ApiService *DatabaseAuditLogServiceAPIService
@@ -1013,7 +892,7 @@ func (r ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest) Execute() (*Audit
 DatabaseAuditLogServiceUpdateAuditLogConfig Update audit log configuration.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The cluster ID
+	@param clusterId The cluster ID
 	@return ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest
 */
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceUpdateAuditLogConfig(ctx context.Context, clusterId string) ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest {
@@ -1135,8 +1014,8 @@ func (r ApiDatabaseAuditLogServiceUpdateAuditLogFilterRuleRequest) Execute() (*A
 DatabaseAuditLogServiceUpdateAuditLogFilterRule Update audit log filter rule.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The cluster ID
-	@param filterRuleId Required. The id of the filter rule.
+	@param clusterId The cluster ID
+	@param filterRuleId The id of the filter rule.
 	@return ApiDatabaseAuditLogServiceUpdateAuditLogFilterRuleRequest
 */
 func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceUpdateAuditLogFilterRule(ctx context.Context, clusterId string, filterRuleId string) ApiDatabaseAuditLogServiceUpdateAuditLogFilterRuleRequest {

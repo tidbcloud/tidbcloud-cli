@@ -20,8 +20,8 @@ var _ MappedNullable = &DatabaseAuditLogServiceDownloadAuditLogFilesBody{}
 
 // DatabaseAuditLogServiceDownloadAuditLogFilesBody struct for DatabaseAuditLogServiceDownloadAuditLogFilesBody
 type DatabaseAuditLogServiceDownloadAuditLogFilesBody struct {
-	// Required. The name of the audit logs to download. Up to 100 audit logs can be downloaded at the same time.
-	AuditLogNames        []string `json:"auditLogNames"`
+	// The name of the audit log files to download. Up to 100 audit logs can be downloaded at the same time.
+	AuditLogFileNames    []string `json:"auditLogFileNames"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -31,9 +31,9 @@ type _DatabaseAuditLogServiceDownloadAuditLogFilesBody DatabaseAuditLogServiceDo
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewDatabaseAuditLogServiceDownloadAuditLogFilesBody(auditLogNames []string) *DatabaseAuditLogServiceDownloadAuditLogFilesBody {
+func NewDatabaseAuditLogServiceDownloadAuditLogFilesBody(auditLogFileNames []string) *DatabaseAuditLogServiceDownloadAuditLogFilesBody {
 	this := DatabaseAuditLogServiceDownloadAuditLogFilesBody{}
-	this.AuditLogNames = auditLogNames
+	this.AuditLogFileNames = auditLogFileNames
 	return &this
 }
 
@@ -45,28 +45,28 @@ func NewDatabaseAuditLogServiceDownloadAuditLogFilesBodyWithDefaults() *Database
 	return &this
 }
 
-// GetAuditLogNames returns the AuditLogNames field value
-func (o *DatabaseAuditLogServiceDownloadAuditLogFilesBody) GetAuditLogNames() []string {
+// GetAuditLogFileNames returns the AuditLogFileNames field value
+func (o *DatabaseAuditLogServiceDownloadAuditLogFilesBody) GetAuditLogFileNames() []string {
 	if o == nil {
 		var ret []string
 		return ret
 	}
 
-	return o.AuditLogNames
+	return o.AuditLogFileNames
 }
 
-// GetAuditLogNamesOk returns a tuple with the AuditLogNames field value
+// GetAuditLogFileNamesOk returns a tuple with the AuditLogFileNames field value
 // and a boolean to check if the value has been set.
-func (o *DatabaseAuditLogServiceDownloadAuditLogFilesBody) GetAuditLogNamesOk() ([]string, bool) {
+func (o *DatabaseAuditLogServiceDownloadAuditLogFilesBody) GetAuditLogFileNamesOk() ([]string, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return o.AuditLogNames, true
+	return o.AuditLogFileNames, true
 }
 
-// SetAuditLogNames sets field value
-func (o *DatabaseAuditLogServiceDownloadAuditLogFilesBody) SetAuditLogNames(v []string) {
-	o.AuditLogNames = v
+// SetAuditLogFileNames sets field value
+func (o *DatabaseAuditLogServiceDownloadAuditLogFilesBody) SetAuditLogFileNames(v []string) {
+	o.AuditLogFileNames = v
 }
 
 func (o DatabaseAuditLogServiceDownloadAuditLogFilesBody) MarshalJSON() ([]byte, error) {
@@ -79,7 +79,7 @@ func (o DatabaseAuditLogServiceDownloadAuditLogFilesBody) MarshalJSON() ([]byte,
 
 func (o DatabaseAuditLogServiceDownloadAuditLogFilesBody) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["auditLogNames"] = o.AuditLogNames
+	toSerialize["auditLogFileNames"] = o.AuditLogFileNames
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -93,7 +93,7 @@ func (o *DatabaseAuditLogServiceDownloadAuditLogFilesBody) UnmarshalJSON(data []
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"auditLogNames",
+		"auditLogFileNames",
 	}
 
 	allProperties := make(map[string]interface{})
@@ -123,7 +123,7 @@ func (o *DatabaseAuditLogServiceDownloadAuditLogFilesBody) UnmarshalJSON(data []
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "auditLogNames")
+		delete(additionalProperties, "auditLogFileNames")
 		o.AdditionalProperties = additionalProperties
 	}
 

@@ -21,20 +21,20 @@ var _ MappedNullable = &AuditLogFilterRule{}
 
 // AuditLogFilterRule struct for AuditLogFilterRule
 type AuditLogFilterRule struct {
-	// OUTPUT_ONLY. The audit log filter rule ID.
+	// The audit log filter rule ID.
 	FilterRuleId *string `json:"filterRuleId,omitempty"`
-	// OUTPUT_ONLY. The clusrer ID.
+	// The cluster ID.
 	ClusterId *string `json:"clusterId,omitempty"`
-	// Required. Unique name of the filter rule within a cluster.
+	// Unique name of the filter rule within a cluster.
 	DisplayName string   `json:"displayName"`
 	Users       []string `json:"users"`
-	// Required. List of filters combined with an OR relationship. Set filters to [{}] will filter all logs.
+	// List of filters combined with an OR relationship. Set filters to [{}] will filter all logs.
 	Filters []AuditLogFilter `json:"filters"`
-	// OUTPUT_ONLY. Indicates whether the filter rule is disabled.
+	// Indicates whether the filter rule is disabled.
 	Disabled *bool `json:"disabled,omitempty"`
-	// OUTPUT_ONLY. Timestamp when the filter rule was created.
+	// Timestamp when the filter rule was created.
 	CreateTime *time.Time `json:"createTime,omitempty"`
-	// OUTPUT_ONLY. Timestamp when the filter rule was updated.
+	// Timestamp when the filter rule was updated.
 	UpdateTime           NullableTime `json:"updateTime,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

@@ -19,12 +19,12 @@ var _ MappedNullable = &DatabaseAuditLogServiceUpdateAuditLogFilterRuleBody{}
 
 // DatabaseAuditLogServiceUpdateAuditLogFilterRuleBody struct for DatabaseAuditLogServiceUpdateAuditLogFilterRuleBody
 type DatabaseAuditLogServiceUpdateAuditLogFilterRuleBody struct {
-	// OPTIONAL. List of filters combined with an OR relationship. Set filters to [{}] will filter all logs.
+	// List of filters combined with an OR relationship. Set filters to [{}] will filter all logs.
 	Filters []AuditLogFilter `json:"filters,omitempty"`
 	Users   []string         `json:"users,omitempty"`
-	// OPTIONAL. Indicates whether the filter rule is disabled.
+	// Indicates whether the filter rule is disabled.
 	Disabled NullableBool `json:"disabled,omitempty"`
-	// OPTIONAL. Display name of the filter rule.
+	// Display name of the filter rule.
 	DisplayName          *string `json:"displayName,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

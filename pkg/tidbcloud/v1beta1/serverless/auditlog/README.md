@@ -85,7 +85,6 @@ Class | Method | HTTP request | Description
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceGetAuditLogFilterRule**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogservicegetauditlogfilterrule) | **Get** /v1beta1/clusters/{clusterId}/auditLog/filterRules/{filterRuleId} | Get audit log filter rule.
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceListAuditLogFiles**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogservicelistauditlogfiles) | **Get** /v1beta1/clusters/{clusterId}/auditLog/files | List audit log files, only available when audit logs are stored in TiDB Cloud.
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceListAuditLogFilterRules**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogservicelistauditlogfilterrules) | **Get** /v1beta1/clusters/{clusterId}/auditLog/filterRules | List audit log filter rules.
-*DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServicePreCheckAuditLogConfig**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogserviceprecheckauditlogconfig) | **Post** /v1beta1/clusters/{clusterId}/auditLog/config:precheck | PreCheck audit Log configuration.
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceUpdateAuditLogConfig**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogserviceupdateauditlogconfig) | **Patch** /v1beta1/clusters/{clusterId}/auditLog/config | Update audit log configuration.
 *DatabaseAuditLogServiceAPI* | [**DatabaseAuditLogServiceUpdateAuditLogFilterRule**](docs/DatabaseAuditLogServiceAPI.md#databaseauditlogserviceupdateauditlogfilterrule) | **Patch** /v1beta1/clusters/{clusterId}/auditLog/filterRules/{filterRuleId} | Update audit log filter rule.
 
@@ -103,7 +102,6 @@ Class | Method | HTTP request | Description
  - [CloudStorageTypeEnum](docs/CloudStorageTypeEnum.md)
  - [DatabaseAuditLogServiceCreateAuditLogFilterRuleBody](docs/DatabaseAuditLogServiceCreateAuditLogFilterRuleBody.md)
  - [DatabaseAuditLogServiceDownloadAuditLogFilesBody](docs/DatabaseAuditLogServiceDownloadAuditLogFilesBody.md)
- - [DatabaseAuditLogServicePreCheckAuditLogConfigBody](docs/DatabaseAuditLogServicePreCheckAuditLogConfigBody.md)
  - [DatabaseAuditLogServiceUpdateAuditLogConfigBody](docs/DatabaseAuditLogServiceUpdateAuditLogConfigBody.md)
  - [DatabaseAuditLogServiceUpdateAuditLogFilterRuleBody](docs/DatabaseAuditLogServiceUpdateAuditLogFilterRuleBody.md)
  - [DownloadAuditLogFilesResponse](docs/DownloadAuditLogFilesResponse.md)

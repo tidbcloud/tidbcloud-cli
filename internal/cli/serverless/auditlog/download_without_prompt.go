@@ -28,7 +28,7 @@ func DownloadFilesWithoutPrompt(h *internal.Helper, path string,
 
 	generateFunc := func(ctx context.Context, fileNames []string) (map[string]*string, error) {
 		resp, err := client.DownloadAuditLogs(ctx, clusterID, &auditlog.DatabaseAuditLogServiceDownloadAuditLogFilesBody{
-			AuditLogNames: fileNames,
+			AuditLogFileNames: fileNames,
 		})
 		if err != nil {
 			return nil, err

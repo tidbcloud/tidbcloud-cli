@@ -20,7 +20,7 @@ var _ MappedNullable = &DatabaseAuditLogServiceUpdateAuditLogConfigBody{}
 
 // DatabaseAuditLogServiceUpdateAuditLogConfigBody struct for DatabaseAuditLogServiceUpdateAuditLogConfigBody
 type DatabaseAuditLogServiceUpdateAuditLogConfigBody struct {
-	// Required. The audit log configuration to update.
+	// The audit log configuration to update.
 	AuditLogConfig       AuditLogConfig `json:"auditLogConfig"`
 	AdditionalProperties map[string]interface{}
 }

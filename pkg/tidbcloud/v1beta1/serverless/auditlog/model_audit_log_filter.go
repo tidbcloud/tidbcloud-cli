@@ -19,11 +19,11 @@ var _ MappedNullable = &AuditLogFilter{}
 
 // AuditLogFilter Message for filter, only the entry matching all the conditions will be audit logged.
 type AuditLogFilter struct {
-	// OPTIONAL. Classes to include in the filter combined with an OR relationship.
+	// Classes to include in the filter combined with an OR relationship.
 	Classes []string `json:"classes,omitempty"`
-	// OPTIONAL. Tables to include in the filter combined with an OR relationship.
+	// Tables to include in the filter combined with an OR relationship.
 	Tables []string `json:"tables,omitempty"`
-	// OPTIONAL. Status codes to include in the filter combined with an OR relationship.
+	// Status codes to include in the filter combined with an OR relationship.
 	StatusCodes          []int32 `json:"statusCodes,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
