@@ -17,6 +17,7 @@ package auditlog
 import (
 	"github.com/spf13/cobra"
 	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/auditlog/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/auditlog/filter"
 )
 
@@ -28,8 +29,7 @@ func AuditLoggingCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	auditLoggingCmd.AddCommand(DownloadCmd(h))
-	auditLoggingCmd.AddCommand(DescribeCmd(h))
-	auditLoggingCmd.AddCommand(ConfigCmd(h))
+	auditLoggingCmd.AddCommand(config.ConfigCmd(h))
 	auditLoggingCmd.AddCommand(filter.FilterRuleCmd(h))
 
 	return auditLoggingCmd

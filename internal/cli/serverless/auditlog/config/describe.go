@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package auditlog
+package config
 
 import (
 	"fmt"
@@ -24,7 +24,6 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/output"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
-	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 )
 
 type DescribeOpts struct {
@@ -69,10 +68,10 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		Aliases: []string{"get"},
 		Args:    cobra.NoArgs,
 		Example: fmt.Sprintf(`  Get the database audit logging configuration in interactive mode:
-  $ %[1]s serverless audit-log describe
+  $ %[1]s serverless audit-log config describe
 
   Get the database audit logging configuration in non-interactive mode:
-  $ %[1]s serverless audit-log describe -c <cluster-id> `, config.CliName),
+  $ %[1]s serverless audit-log config describe -c <cluster-id> `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
@@ -104,12 +103,12 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			cluster, err := d.GetCluster(ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
+			auditlogConfig, err := d.GetAuditLogConfig(ctx, clusterID)
 			if err != nil {
 				return errors.Trace(err)
 			}
 
-			err = output.PrintJson(h.IOStreams.Out, cluster.AuditLogConfig)
+			err = output.PrintJson(h.IOStreams.Out, auditlogConfig)
 			return errors.Trace(err)
 		},
 	}

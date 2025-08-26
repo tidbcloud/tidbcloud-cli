@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Database Audit Logging Open API
+TiDB Cloud Starter and Essential Database Audit Logging Open API
 
-TiDB Cloud Serverless Database Audit Logging Open API
+TiDB Cloud Starter and Essential Database Audit Logging Open API
 
 API version: v1beta1
 */
@@ -19,34 +19,34 @@ import (
 	"strings"
 )
 
-// AuditLogServiceAPIService AuditLogServiceAPI service
-type AuditLogServiceAPIService service
+// DatabaseAuditLogServiceAPIService DatabaseAuditLogServiceAPI service
+type DatabaseAuditLogServiceAPIService service
 
-type ApiAuditLogServiceCreateAuditLogFilterRuleRequest struct {
+type ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest struct {
 	ctx        context.Context
-	ApiService *AuditLogServiceAPIService
+	ApiService *DatabaseAuditLogServiceAPIService
 	clusterId  string
-	body       *AuditLogServiceCreateAuditLogFilterRuleBody
+	body       *DatabaseAuditLogServiceCreateAuditLogFilterRuleBody
 }
 
-func (r ApiAuditLogServiceCreateAuditLogFilterRuleRequest) Body(body AuditLogServiceCreateAuditLogFilterRuleBody) ApiAuditLogServiceCreateAuditLogFilterRuleRequest {
+func (r ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) Body(body DatabaseAuditLogServiceCreateAuditLogFilterRuleBody) ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest {
 	r.body = &body
 	return r
 }
 
-func (r ApiAuditLogServiceCreateAuditLogFilterRuleRequest) Execute() (*AuditLogFilterRule, *http.Response, error) {
-	return r.ApiService.AuditLogServiceCreateAuditLogFilterRuleExecute(r)
+func (r ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) Execute() (*AuditLogFilterRule, *http.Response, error) {
+	return r.ApiService.DatabaseAuditLogServiceCreateAuditLogFilterRuleExecute(r)
 }
 
 /*
-AuditLogServiceCreateAuditLogFilterRule Create audit log filter rule.
+DatabaseAuditLogServiceCreateAuditLogFilterRule Create audit log filter rule.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required.
-	@return ApiAuditLogServiceCreateAuditLogFilterRuleRequest
+	@param clusterId The cluster ID
+	@return ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest
 */
-func (a *AuditLogServiceAPIService) AuditLogServiceCreateAuditLogFilterRule(ctx context.Context, clusterId string) ApiAuditLogServiceCreateAuditLogFilterRuleRequest {
-	return ApiAuditLogServiceCreateAuditLogFilterRuleRequest{
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLogFilterRule(ctx context.Context, clusterId string) ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest {
+	return ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest{
 		ApiService: a,
 		ctx:        ctx,
 		clusterId:  clusterId,
@@ -56,7 +56,7 @@ func (a *AuditLogServiceAPIService) AuditLogServiceCreateAuditLogFilterRule(ctx 
 // Execute executes the request
 //
 //	@return AuditLogFilterRule
-func (a *AuditLogServiceAPIService) AuditLogServiceCreateAuditLogFilterRuleExecute(r ApiAuditLogServiceCreateAuditLogFilterRuleRequest) (*AuditLogFilterRule, *http.Response, error) {
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceCreateAuditLogFilterRuleExecute(r ApiDatabaseAuditLogServiceCreateAuditLogFilterRuleRequest) (*AuditLogFilterRule, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPost
 		localVarPostBody    interface{}
@@ -64,12 +64,12 @@ func (a *AuditLogServiceAPIService) AuditLogServiceCreateAuditLogFilterRuleExecu
 		localVarReturnValue *AuditLogFilterRule
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuditLogServiceAPIService.AuditLogServiceCreateAuditLogFilterRule")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceCreateAuditLogFilterRule")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/auditlogs/filterRules"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/auditLog/filterRules"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -143,38 +143,38 @@ func (a *AuditLogServiceAPIService) AuditLogServiceCreateAuditLogFilterRuleExecu
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiAuditLogServiceDeleteAuditLogFilterRuleRequest struct {
-	ctx        context.Context
-	ApiService *AuditLogServiceAPIService
-	clusterId  string
-	name       string
+type ApiDatabaseAuditLogServiceDeleteAuditLogFilterRuleRequest struct {
+	ctx          context.Context
+	ApiService   *DatabaseAuditLogServiceAPIService
+	clusterId    string
+	filterRuleId string
 }
 
-func (r ApiAuditLogServiceDeleteAuditLogFilterRuleRequest) Execute() (*AuditLogFilterRule, *http.Response, error) {
-	return r.ApiService.AuditLogServiceDeleteAuditLogFilterRuleExecute(r)
+func (r ApiDatabaseAuditLogServiceDeleteAuditLogFilterRuleRequest) Execute() (*AuditLogFilterRule, *http.Response, error) {
+	return r.ApiService.DatabaseAuditLogServiceDeleteAuditLogFilterRuleExecute(r)
 }
 
 /*
-AuditLogServiceDeleteAuditLogFilterRule Delete audit log filter rule.
+DatabaseAuditLogServiceDeleteAuditLogFilterRule Delete audit log filter rule.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required.
-	@param name Required. The name of the filter rule.
-	@return ApiAuditLogServiceDeleteAuditLogFilterRuleRequest
+	@param clusterId The cluster ID
+	@param filterRuleId The id of the filter rule.
+	@return ApiDatabaseAuditLogServiceDeleteAuditLogFilterRuleRequest
 */
-func (a *AuditLogServiceAPIService) AuditLogServiceDeleteAuditLogFilterRule(ctx context.Context, clusterId string, name string) ApiAuditLogServiceDeleteAuditLogFilterRuleRequest {
-	return ApiAuditLogServiceDeleteAuditLogFilterRuleRequest{
-		ApiService: a,
-		ctx:        ctx,
-		clusterId:  clusterId,
-		name:       name,
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceDeleteAuditLogFilterRule(ctx context.Context, clusterId string, filterRuleId string) ApiDatabaseAuditLogServiceDeleteAuditLogFilterRuleRequest {
+	return ApiDatabaseAuditLogServiceDeleteAuditLogFilterRuleRequest{
+		ApiService:   a,
+		ctx:          ctx,
+		clusterId:    clusterId,
+		filterRuleId: filterRuleId,
 	}
 }
 
 // Execute executes the request
 //
 //	@return AuditLogFilterRule
-func (a *AuditLogServiceAPIService) AuditLogServiceDeleteAuditLogFilterRuleExecute(r ApiAuditLogServiceDeleteAuditLogFilterRuleRequest) (*AuditLogFilterRule, *http.Response, error) {
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceDeleteAuditLogFilterRuleExecute(r ApiDatabaseAuditLogServiceDeleteAuditLogFilterRuleRequest) (*AuditLogFilterRule, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodDelete
 		localVarPostBody    interface{}
@@ -182,14 +182,14 @@ func (a *AuditLogServiceAPIService) AuditLogServiceDeleteAuditLogFilterRuleExecu
 		localVarReturnValue *AuditLogFilterRule
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuditLogServiceAPIService.AuditLogServiceDeleteAuditLogFilterRule")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceDeleteAuditLogFilterRule")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/auditlogs/filterRules/{name}"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/auditLog/filterRules/{filterRuleId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", url.PathEscape(parameterValueToString(r.name, "name")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"filterRuleId"+"}", url.PathEscape(parameterValueToString(r.filterRuleId, "filterRuleId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -257,31 +257,31 @@ func (a *AuditLogServiceAPIService) AuditLogServiceDeleteAuditLogFilterRuleExecu
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiAuditLogServiceDownloadAuditLogsRequest struct {
+type ApiDatabaseAuditLogServiceDownloadAuditLogFilesRequest struct {
 	ctx        context.Context
-	ApiService *AuditLogServiceAPIService
+	ApiService *DatabaseAuditLogServiceAPIService
 	clusterId  string
-	body       *AuditLogServiceDownloadAuditLogsBody
+	body       *DatabaseAuditLogServiceDownloadAuditLogFilesBody
 }
 
-func (r ApiAuditLogServiceDownloadAuditLogsRequest) Body(body AuditLogServiceDownloadAuditLogsBody) ApiAuditLogServiceDownloadAuditLogsRequest {
+func (r ApiDatabaseAuditLogServiceDownloadAuditLogFilesRequest) Body(body DatabaseAuditLogServiceDownloadAuditLogFilesBody) ApiDatabaseAuditLogServiceDownloadAuditLogFilesRequest {
 	r.body = &body
 	return r
 }
 
-func (r ApiAuditLogServiceDownloadAuditLogsRequest) Execute() (*DownloadAuditLogsResponse, *http.Response, error) {
-	return r.ApiService.AuditLogServiceDownloadAuditLogsExecute(r)
+func (r ApiDatabaseAuditLogServiceDownloadAuditLogFilesRequest) Execute() (*DownloadAuditLogFilesResponse, *http.Response, error) {
+	return r.ApiService.DatabaseAuditLogServiceDownloadAuditLogFilesExecute(r)
 }
 
 /*
-AuditLogServiceDownloadAuditLogs Generate audit logs download url
+DatabaseAuditLogServiceDownloadAuditLogFiles Generate audit log files download url, only available when audit logs are stored in TiDB Cloud.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The ID of the cluster.
-	@return ApiAuditLogServiceDownloadAuditLogsRequest
+	@param clusterId The ID of the cluster.
+	@return ApiDatabaseAuditLogServiceDownloadAuditLogFilesRequest
 */
-func (a *AuditLogServiceAPIService) AuditLogServiceDownloadAuditLogs(ctx context.Context, clusterId string) ApiAuditLogServiceDownloadAuditLogsRequest {
-	return ApiAuditLogServiceDownloadAuditLogsRequest{
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceDownloadAuditLogFiles(ctx context.Context, clusterId string) ApiDatabaseAuditLogServiceDownloadAuditLogFilesRequest {
+	return ApiDatabaseAuditLogServiceDownloadAuditLogFilesRequest{
 		ApiService: a,
 		ctx:        ctx,
 		clusterId:  clusterId,
@@ -290,21 +290,21 @@ func (a *AuditLogServiceAPIService) AuditLogServiceDownloadAuditLogs(ctx context
 
 // Execute executes the request
 //
-//	@return DownloadAuditLogsResponse
-func (a *AuditLogServiceAPIService) AuditLogServiceDownloadAuditLogsExecute(r ApiAuditLogServiceDownloadAuditLogsRequest) (*DownloadAuditLogsResponse, *http.Response, error) {
+//	@return DownloadAuditLogFilesResponse
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceDownloadAuditLogFilesExecute(r ApiDatabaseAuditLogServiceDownloadAuditLogFilesRequest) (*DownloadAuditLogFilesResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPost
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *DownloadAuditLogsResponse
+		localVarReturnValue *DownloadAuditLogFilesResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuditLogServiceAPIService.AuditLogServiceDownloadAuditLogs")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceDownloadAuditLogFiles")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/auditlogs:download"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/auditLog/files:download"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -378,38 +378,148 @@ func (a *AuditLogServiceAPIService) AuditLogServiceDownloadAuditLogsExecute(r Ap
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiAuditLogServiceGetAuditLogFilterRuleRequest struct {
+type ApiDatabaseAuditLogServiceGetAuditLogConfigRequest struct {
 	ctx        context.Context
-	ApiService *AuditLogServiceAPIService
+	ApiService *DatabaseAuditLogServiceAPIService
 	clusterId  string
-	name       string
 }
 
-func (r ApiAuditLogServiceGetAuditLogFilterRuleRequest) Execute() (*AuditLogFilterRule, *http.Response, error) {
-	return r.ApiService.AuditLogServiceGetAuditLogFilterRuleExecute(r)
+func (r ApiDatabaseAuditLogServiceGetAuditLogConfigRequest) Execute() (*AuditLogConfig, *http.Response, error) {
+	return r.ApiService.DatabaseAuditLogServiceGetAuditLogConfigExecute(r)
 }
 
 /*
-AuditLogServiceGetAuditLogFilterRule Get audit log filter rule.
+DatabaseAuditLogServiceGetAuditLogConfig Get audit log configuration.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required.
-	@param name Required. The name of the filter rule.
-	@return ApiAuditLogServiceGetAuditLogFilterRuleRequest
+	@param clusterId The cluster ID
+	@return ApiDatabaseAuditLogServiceGetAuditLogConfigRequest
 */
-func (a *AuditLogServiceAPIService) AuditLogServiceGetAuditLogFilterRule(ctx context.Context, clusterId string, name string) ApiAuditLogServiceGetAuditLogFilterRuleRequest {
-	return ApiAuditLogServiceGetAuditLogFilterRuleRequest{
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogConfig(ctx context.Context, clusterId string) ApiDatabaseAuditLogServiceGetAuditLogConfigRequest {
+	return ApiDatabaseAuditLogServiceGetAuditLogConfigRequest{
 		ApiService: a,
 		ctx:        ctx,
 		clusterId:  clusterId,
-		name:       name,
+	}
+}
+
+// Execute executes the request
+//
+//	@return AuditLogConfig
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogConfigExecute(r ApiDatabaseAuditLogServiceGetAuditLogConfigRequest) (*AuditLogConfig, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *AuditLogConfig
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceGetAuditLogConfig")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/auditLog/config"
+	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v Status
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiDatabaseAuditLogServiceGetAuditLogFilterRuleRequest struct {
+	ctx          context.Context
+	ApiService   *DatabaseAuditLogServiceAPIService
+	clusterId    string
+	filterRuleId string
+}
+
+func (r ApiDatabaseAuditLogServiceGetAuditLogFilterRuleRequest) Execute() (*AuditLogFilterRule, *http.Response, error) {
+	return r.ApiService.DatabaseAuditLogServiceGetAuditLogFilterRuleExecute(r)
+}
+
+/*
+DatabaseAuditLogServiceGetAuditLogFilterRule Get audit log filter rule.
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId The cluster ID
+	@param filterRuleId The id of the filter rule.
+	@return ApiDatabaseAuditLogServiceGetAuditLogFilterRuleRequest
+*/
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogFilterRule(ctx context.Context, clusterId string, filterRuleId string) ApiDatabaseAuditLogServiceGetAuditLogFilterRuleRequest {
+	return ApiDatabaseAuditLogServiceGetAuditLogFilterRuleRequest{
+		ApiService:   a,
+		ctx:          ctx,
+		clusterId:    clusterId,
+		filterRuleId: filterRuleId,
 	}
 }
 
 // Execute executes the request
 //
 //	@return AuditLogFilterRule
-func (a *AuditLogServiceAPIService) AuditLogServiceGetAuditLogFilterRuleExecute(r ApiAuditLogServiceGetAuditLogFilterRuleRequest) (*AuditLogFilterRule, *http.Response, error) {
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceGetAuditLogFilterRuleExecute(r ApiDatabaseAuditLogServiceGetAuditLogFilterRuleRequest) (*AuditLogFilterRule, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
@@ -417,14 +527,14 @@ func (a *AuditLogServiceAPIService) AuditLogServiceGetAuditLogFilterRuleExecute(
 		localVarReturnValue *AuditLogFilterRule
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuditLogServiceAPIService.AuditLogServiceGetAuditLogFilterRule")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceGetAuditLogFilterRule")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/auditlogs/filterRules/{name}"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/auditLog/filterRules/{filterRuleId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", url.PathEscape(parameterValueToString(r.name, "name")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"filterRuleId"+"}", url.PathEscape(parameterValueToString(r.filterRuleId, "filterRuleId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -492,156 +602,46 @@ func (a *AuditLogServiceAPIService) AuditLogServiceGetAuditLogFilterRuleExecute(
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiAuditLogServiceListAuditLogFilterRulesRequest struct {
+type ApiDatabaseAuditLogServiceListAuditLogFilesRequest struct {
 	ctx        context.Context
-	ApiService *AuditLogServiceAPIService
-	clusterId  string
-}
-
-func (r ApiAuditLogServiceListAuditLogFilterRulesRequest) Execute() (*ListAuditLogFilterRulesResponse, *http.Response, error) {
-	return r.ApiService.AuditLogServiceListAuditLogFilterRulesExecute(r)
-}
-
-/*
-AuditLogServiceListAuditLogFilterRules List audit log filter rules.
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required.
-	@return ApiAuditLogServiceListAuditLogFilterRulesRequest
-*/
-func (a *AuditLogServiceAPIService) AuditLogServiceListAuditLogFilterRules(ctx context.Context, clusterId string) ApiAuditLogServiceListAuditLogFilterRulesRequest {
-	return ApiAuditLogServiceListAuditLogFilterRulesRequest{
-		ApiService: a,
-		ctx:        ctx,
-		clusterId:  clusterId,
-	}
-}
-
-// Execute executes the request
-//
-//	@return ListAuditLogFilterRulesResponse
-func (a *AuditLogServiceAPIService) AuditLogServiceListAuditLogFilterRulesExecute(r ApiAuditLogServiceListAuditLogFilterRulesRequest) (*ListAuditLogFilterRulesResponse, *http.Response, error) {
-	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *ListAuditLogFilterRulesResponse
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuditLogServiceAPIService.AuditLogServiceListAuditLogFilterRules")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/auditlogs/filterRules"
-	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		var v Status
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiAuditLogServiceListAuditLogsRequest struct {
-	ctx        context.Context
-	ApiService *AuditLogServiceAPIService
+	ApiService *DatabaseAuditLogServiceAPIService
 	clusterId  string
 	date       *string
 	pageSize   *int32
 	pageToken  *string
 }
 
-// Optional. The UTC date of the audit logs in the format of &#x60;YYYY-MM-DD&#x60; (e.g. 2025-01-01).
-func (r ApiAuditLogServiceListAuditLogsRequest) Date(date string) ApiAuditLogServiceListAuditLogsRequest {
+// The UTC date of the audit logs in the format of &#x60;YYYY-MM-DD&#x60; (e.g. 2025-01-01).
+func (r ApiDatabaseAuditLogServiceListAuditLogFilesRequest) Date(date string) ApiDatabaseAuditLogServiceListAuditLogFilesRequest {
 	r.date = &date
 	return r
 }
 
-// Optional. The maximum number to return, default is 100, and the maximum is 1000.
-func (r ApiAuditLogServiceListAuditLogsRequest) PageSize(pageSize int32) ApiAuditLogServiceListAuditLogsRequest {
+// The maximum number to return, default is 100, and the maximum is 1000.
+func (r ApiDatabaseAuditLogServiceListAuditLogFilesRequest) PageSize(pageSize int32) ApiDatabaseAuditLogServiceListAuditLogFilesRequest {
 	r.pageSize = &pageSize
 	return r
 }
 
-// Optional. The page token from the previous response for pagination.
-func (r ApiAuditLogServiceListAuditLogsRequest) PageToken(pageToken string) ApiAuditLogServiceListAuditLogsRequest {
+// The page token from the previous response for pagination.
+func (r ApiDatabaseAuditLogServiceListAuditLogFilesRequest) PageToken(pageToken string) ApiDatabaseAuditLogServiceListAuditLogFilesRequest {
 	r.pageToken = &pageToken
 	return r
 }
 
-func (r ApiAuditLogServiceListAuditLogsRequest) Execute() (*ListAuditLogsResponse, *http.Response, error) {
-	return r.ApiService.AuditLogServiceListAuditLogsExecute(r)
+func (r ApiDatabaseAuditLogServiceListAuditLogFilesRequest) Execute() (*ListAuditLogFilesResponse, *http.Response, error) {
+	return r.ApiService.DatabaseAuditLogServiceListAuditLogFilesExecute(r)
 }
 
 /*
-AuditLogServiceListAuditLogs List database audit logs.
+DatabaseAuditLogServiceListAuditLogFiles List audit log files, only available when audit logs are stored in TiDB Cloud.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The ID of the cluster.
-	@return ApiAuditLogServiceListAuditLogsRequest
+	@param clusterId The ID of the cluster.
+	@return ApiDatabaseAuditLogServiceListAuditLogFilesRequest
 */
-func (a *AuditLogServiceAPIService) AuditLogServiceListAuditLogs(ctx context.Context, clusterId string) ApiAuditLogServiceListAuditLogsRequest {
-	return ApiAuditLogServiceListAuditLogsRequest{
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceListAuditLogFiles(ctx context.Context, clusterId string) ApiDatabaseAuditLogServiceListAuditLogFilesRequest {
+	return ApiDatabaseAuditLogServiceListAuditLogFilesRequest{
 		ApiService: a,
 		ctx:        ctx,
 		clusterId:  clusterId,
@@ -650,21 +650,21 @@ func (a *AuditLogServiceAPIService) AuditLogServiceListAuditLogs(ctx context.Con
 
 // Execute executes the request
 //
-//	@return ListAuditLogsResponse
-func (a *AuditLogServiceAPIService) AuditLogServiceListAuditLogsExecute(r ApiAuditLogServiceListAuditLogsRequest) (*ListAuditLogsResponse, *http.Response, error) {
+//	@return ListAuditLogFilesResponse
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceListAuditLogFilesExecute(r ApiDatabaseAuditLogServiceListAuditLogFilesRequest) (*ListAuditLogFilesResponse, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *ListAuditLogsResponse
+		localVarReturnValue *ListAuditLogFilesResponse
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuditLogServiceAPIService.AuditLogServiceListAuditLogs")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceListAuditLogFiles")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/auditlogs"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/auditLog/files"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -742,44 +742,295 @@ func (a *AuditLogServiceAPIService) AuditLogServiceListAuditLogsExecute(r ApiAud
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiAuditLogServiceUpdateAuditLogFilterRuleRequest struct {
+type ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest struct {
 	ctx        context.Context
-	ApiService *AuditLogServiceAPIService
+	ApiService *DatabaseAuditLogServiceAPIService
 	clusterId  string
-	name       string
-	body       *AuditLogServiceUpdateAuditLogFilterRuleBody
+	pageSize   *int32
+	pageToken  *string
 }
 
-func (r ApiAuditLogServiceUpdateAuditLogFilterRuleRequest) Body(body AuditLogServiceUpdateAuditLogFilterRuleBody) ApiAuditLogServiceUpdateAuditLogFilterRuleRequest {
+// The maximum number to return, default is 10, and the maximum is 100.
+func (r ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest) PageSize(pageSize int32) ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest {
+	r.pageSize = &pageSize
+	return r
+}
+
+// The page token from the previous response for pagination.
+func (r ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest) PageToken(pageToken string) ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest {
+	r.pageToken = &pageToken
+	return r
+}
+
+func (r ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest) Execute() (*ListAuditLogFilterRulesResponse, *http.Response, error) {
+	return r.ApiService.DatabaseAuditLogServiceListAuditLogFilterRulesExecute(r)
+}
+
+/*
+DatabaseAuditLogServiceListAuditLogFilterRules List audit log filter rules.
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId The cluster ID
+	@return ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest
+*/
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceListAuditLogFilterRules(ctx context.Context, clusterId string) ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest {
+	return ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest{
+		ApiService: a,
+		ctx:        ctx,
+		clusterId:  clusterId,
+	}
+}
+
+// Execute executes the request
+//
+//	@return ListAuditLogFilterRulesResponse
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceListAuditLogFilterRulesExecute(r ApiDatabaseAuditLogServiceListAuditLogFilterRulesRequest) (*ListAuditLogFilterRulesResponse, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *ListAuditLogFilterRulesResponse
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceListAuditLogFilterRules")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/auditLog/filterRules"
+	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	if r.pageSize != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "pageSize", r.pageSize, "", "")
+	}
+	if r.pageToken != nil {
+		parameterAddToHeaderOrQuery(localVarQueryParams, "pageToken", r.pageToken, "", "")
+	}
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v Status
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest struct {
+	ctx        context.Context
+	ApiService *DatabaseAuditLogServiceAPIService
+	clusterId  string
+	body       *DatabaseAuditLogServiceUpdateAuditLogConfigBody
+}
+
+func (r ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest) Body(body DatabaseAuditLogServiceUpdateAuditLogConfigBody) ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest {
 	r.body = &body
 	return r
 }
 
-func (r ApiAuditLogServiceUpdateAuditLogFilterRuleRequest) Execute() (*AuditLogFilterRule, *http.Response, error) {
-	return r.ApiService.AuditLogServiceUpdateAuditLogFilterRuleExecute(r)
+func (r ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest) Execute() (*AuditLogConfig, *http.Response, error) {
+	return r.ApiService.DatabaseAuditLogServiceUpdateAuditLogConfigExecute(r)
 }
 
 /*
-AuditLogServiceUpdateAuditLogFilterRule Update audit log filter rule.
+DatabaseAuditLogServiceUpdateAuditLogConfig Update audit log configuration.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required.
-	@param name Required. The name of the filter rule.
-	@return ApiAuditLogServiceUpdateAuditLogFilterRuleRequest
+	@param clusterId The cluster ID
+	@return ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest
 */
-func (a *AuditLogServiceAPIService) AuditLogServiceUpdateAuditLogFilterRule(ctx context.Context, clusterId string, name string) ApiAuditLogServiceUpdateAuditLogFilterRuleRequest {
-	return ApiAuditLogServiceUpdateAuditLogFilterRuleRequest{
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceUpdateAuditLogConfig(ctx context.Context, clusterId string) ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest {
+	return ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest{
 		ApiService: a,
 		ctx:        ctx,
 		clusterId:  clusterId,
-		name:       name,
+	}
+}
+
+// Execute executes the request
+//
+//	@return AuditLogConfig
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceUpdateAuditLogConfigExecute(r ApiDatabaseAuditLogServiceUpdateAuditLogConfigRequest) (*AuditLogConfig, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodPatch
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *AuditLogConfig
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceUpdateAuditLogConfig")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/auditLog/config"
+	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.body == nil {
+		return localVarReturnValue, nil, reportError("body is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.body
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v Status
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiDatabaseAuditLogServiceUpdateAuditLogFilterRuleRequest struct {
+	ctx          context.Context
+	ApiService   *DatabaseAuditLogServiceAPIService
+	clusterId    string
+	filterRuleId string
+	body         *DatabaseAuditLogServiceUpdateAuditLogFilterRuleBody
+}
+
+func (r ApiDatabaseAuditLogServiceUpdateAuditLogFilterRuleRequest) Body(body DatabaseAuditLogServiceUpdateAuditLogFilterRuleBody) ApiDatabaseAuditLogServiceUpdateAuditLogFilterRuleRequest {
+	r.body = &body
+	return r
+}
+
+func (r ApiDatabaseAuditLogServiceUpdateAuditLogFilterRuleRequest) Execute() (*AuditLogFilterRule, *http.Response, error) {
+	return r.ApiService.DatabaseAuditLogServiceUpdateAuditLogFilterRuleExecute(r)
+}
+
+/*
+DatabaseAuditLogServiceUpdateAuditLogFilterRule Update audit log filter rule.
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId The cluster ID
+	@param filterRuleId The id of the filter rule.
+	@return ApiDatabaseAuditLogServiceUpdateAuditLogFilterRuleRequest
+*/
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceUpdateAuditLogFilterRule(ctx context.Context, clusterId string, filterRuleId string) ApiDatabaseAuditLogServiceUpdateAuditLogFilterRuleRequest {
+	return ApiDatabaseAuditLogServiceUpdateAuditLogFilterRuleRequest{
+		ApiService:   a,
+		ctx:          ctx,
+		clusterId:    clusterId,
+		filterRuleId: filterRuleId,
 	}
 }
 
 // Execute executes the request
 //
 //	@return AuditLogFilterRule
-func (a *AuditLogServiceAPIService) AuditLogServiceUpdateAuditLogFilterRuleExecute(r ApiAuditLogServiceUpdateAuditLogFilterRuleRequest) (*AuditLogFilterRule, *http.Response, error) {
+func (a *DatabaseAuditLogServiceAPIService) DatabaseAuditLogServiceUpdateAuditLogFilterRuleExecute(r ApiDatabaseAuditLogServiceUpdateAuditLogFilterRuleRequest) (*AuditLogFilterRule, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPatch
 		localVarPostBody    interface{}
@@ -787,14 +1038,14 @@ func (a *AuditLogServiceAPIService) AuditLogServiceUpdateAuditLogFilterRuleExecu
 		localVarReturnValue *AuditLogFilterRule
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "AuditLogServiceAPIService.AuditLogServiceUpdateAuditLogFilterRule")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "DatabaseAuditLogServiceAPIService.DatabaseAuditLogServiceUpdateAuditLogFilterRule")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/auditlogs/filterRules/{name}"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/auditLog/filterRules/{filterRuleId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"name"+"}", url.PathEscape(parameterValueToString(r.name, "name")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"filterRuleId"+"}", url.PathEscape(parameterValueToString(r.filterRuleId, "filterRuleId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

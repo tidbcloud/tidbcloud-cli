@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Database Audit Logging Open API
+TiDB Cloud Starter and Essential Database Audit Logging Open API
 
-TiDB Cloud Serverless Database Audit Logging Open API
+TiDB Cloud Starter and Essential Database Audit Logging Open API
 
 API version: v1beta1
 */
@@ -40,7 +40,7 @@ var (
 	queryDescape    = strings.NewReplacer("%5B", "[", "%5D", "]")
 )
 
-// APIClient manages communication with the TiDB Cloud Serverless Database Audit Logging Open API API vv1beta1
+// APIClient manages communication with the TiDB Cloud Starter and Essential Database Audit Logging Open API API vv1beta1
 // In most cases there should be only one, shared, APIClient.
 type APIClient struct {
 	cfg    *Configuration
@@ -48,7 +48,7 @@ type APIClient struct {
 
 	// API Services
 
-	AuditLogServiceAPI *AuditLogServiceAPIService
+	DatabaseAuditLogServiceAPI *DatabaseAuditLogServiceAPIService
 }
 
 type service struct {
@@ -67,7 +67,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.common.client = c
 
 	// API Services
-	c.AuditLogServiceAPI = (*AuditLogServiceAPIService)(&c.common)
+	c.DatabaseAuditLogServiceAPI = (*DatabaseAuditLogServiceAPIService)(&c.common)
 
 	return c
 }

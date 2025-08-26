@@ -22,9 +22,10 @@ type EndpointsPrivate struct {
 	// Output_only. The hostname of the private endpoint.
 	Host *string `json:"host,omitempty"`
 	// Output_only. The port of the private endpoint.
-	Port                 *int32      `json:"port,omitempty"`
-	Aws                  *PrivateAWS `json:"aws,omitempty"`
-	Gcp                  *PrivateGCP `json:"gcp,omitempty"`
+	Port                 *int32           `json:"port,omitempty"`
+	Aws                  *PrivateAWS      `json:"aws,omitempty"`
+	Gcp                  *PrivateGCP      `json:"gcp,omitempty"`
+	Alicloud             *PrivateALICLOUD `json:"alicloud,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -175,6 +176,38 @@ func (o *EndpointsPrivate) SetGcp(v PrivateGCP) {
 	o.Gcp = &v
 }
 
+// GetAlicloud returns the Alicloud field value if set, zero value otherwise.
+func (o *EndpointsPrivate) GetAlicloud() PrivateALICLOUD {
+	if o == nil || IsNil(o.Alicloud) {
+		var ret PrivateALICLOUD
+		return ret
+	}
+	return *o.Alicloud
+}
+
+// GetAlicloudOk returns a tuple with the Alicloud field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *EndpointsPrivate) GetAlicloudOk() (*PrivateALICLOUD, bool) {
+	if o == nil || IsNil(o.Alicloud) {
+		return nil, false
+	}
+	return o.Alicloud, true
+}
+
+// HasAlicloud returns a boolean if a field has been set.
+func (o *EndpointsPrivate) HasAlicloud() bool {
+	if o != nil && !IsNil(o.Alicloud) {
+		return true
+	}
+
+	return false
+}
+
+// SetAlicloud gets a reference to the given PrivateALICLOUD and assigns it to the Alicloud field.
+func (o *EndpointsPrivate) SetAlicloud(v PrivateALICLOUD) {
+	o.Alicloud = &v
+}
+
 func (o EndpointsPrivate) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -196,6 +229,9 @@ func (o EndpointsPrivate) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Gcp) {
 		toSerialize["gcp"] = o.Gcp
+	}
+	if !IsNil(o.Alicloud) {
+		toSerialize["alicloud"] = o.Alicloud
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -223,6 +259,7 @@ func (o *EndpointsPrivate) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "port")
 		delete(additionalProperties, "aws")
 		delete(additionalProperties, "gcp")
+		delete(additionalProperties, "alicloud")
 		o.AdditionalProperties = additionalProperties
 	}
 

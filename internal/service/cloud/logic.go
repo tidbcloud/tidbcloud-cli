@@ -81,12 +81,21 @@ type AuthorizedNetwork struct {
 	EndIPAddress   string
 }
 
+type AuditLogFilterRule struct {
+	FilterRuleId string
+	DisplayName  string
+}
+
 func (a AuthorizedNetwork) String() string {
 	return fmt.Sprintf("%s-%s(%s)", a.StartIPAddress, a.EndIPAddress, a.DisplayName)
 }
 
 func (c ServerlessBackup) String() string {
 	return fmt.Sprintf("%s(%s)", c.CreateTime, c.ID)
+}
+
+func (a AuditLogFilterRule) String() string {
+	return fmt.Sprintf("%s(%s)", a.DisplayName, a.FilterRuleId)
 }
 
 const (
@@ -862,8 +871,8 @@ func GetAllExportFiles(ctx context.Context, cID string, eID string, d TiDBCloudC
 }
 
 // GetAllAuditLogs assumes that the start date and end date are valid
-func GetAllAuditLogs(ctx context.Context, cID, sDate, eDate string, d TiDBCloudClient) ([]auditlog.AuditLog, error) {
-	var auditLogs []auditlog.AuditLog
+func GetAllAuditLogs(ctx context.Context, cID, sDate, eDate string, d TiDBCloudClient) ([]auditlog.AuditLogFile, error) {
+	var auditLogs []auditlog.AuditLogFile
 	for date := sDate; date <= eDate; date = getNextDay(date) {
 		auditLogsOneDay, err := GetOneDateAuditLogs(ctx, cID, date, d)
 		if err != nil {
@@ -880,15 +889,15 @@ func getNextDay(date string) string {
 	return t.Format(time.DateOnly)
 }
 
-func GetOneDateAuditLogs(ctx context.Context, cID, date string, d TiDBCloudClient) ([]auditlog.AuditLog, error) {
-	var auditLogs []auditlog.AuditLog
+func GetOneDateAuditLogs(ctx context.Context, cID, date string, d TiDBCloudClient) ([]auditlog.AuditLogFile, error) {
+	var auditLogs []auditlog.AuditLogFile
 	var pageSize int32 = 1000
 	var pageToken *string
 	resp, err := d.ListAuditLogs(ctx, cID, &pageSize, nil, &date)
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
-	auditLogs = append(auditLogs, resp.AuditLogs...)
+	auditLogs = append(auditLogs, resp.AuditLogFiles...)
 	for {
 		pageToken = resp.NextPageToken
 		if util.IsNilOrEmpty(pageToken) {
@@ -898,7 +907,7 @@ func GetOneDateAuditLogs(ctx context.Context, cID, date string, d TiDBCloudClien
 		if err != nil {
 			return nil, errors.Trace(err)
 		}
-		auditLogs = append(auditLogs, resp.AuditLogs...)
+		auditLogs = append(auditLogs, resp.AuditLogFiles...)
 	}
 	return auditLogs, nil
 }
@@ -951,23 +960,26 @@ func GetSelectedAuthorizedNetwork(ctx context.Context, clusterID string, client 
 	return authorizedNetwork.(*AuthorizedNetwork).StartIPAddress, authorizedNetwork.(*AuthorizedNetwork).EndIPAddress, nil
 }
 
-func GetSelectedRuleName(ctx context.Context, clusterID string, client TiDBCloudClient) (string, error) {
+func GetSelectedFilterRule(ctx context.Context, clusterID string, client TiDBCloudClient) (*AuditLogFilterRule, error) {
 	rulesResp, err := client.ListAuditLogFilterRules(ctx, clusterID)
 	if err != nil {
-		return "", errors.Trace(err)
+		return nil, errors.Trace(err)
 	}
 	if len(rulesResp.FilterRules) == 0 {
-		return "", fmt.Errorf("no audit log filter rules found")
+		return nil, fmt.Errorf("no audit log filter rules found")
 	}
 
 	var items = make([]interface{}, 0, len(rulesResp.FilterRules))
 	for _, rule := range rulesResp.FilterRules {
-		items = append(items, rule.Name)
+		items = append(items, &AuditLogFilterRule{
+			FilterRuleId: *rule.FilterRuleId,
+			DisplayName:  rule.DisplayName,
+		})
 	}
 
 	model, err := ui.InitialSelectModel(items, "Choose the audit log filter rule:")
 	if err != nil {
-		return "", errors.Trace(err)
+		return nil, errors.Trace(err)
 	}
 	model.EnableFilter()
 	itemsPerPage := 6
@@ -976,14 +988,14 @@ func GetSelectedRuleName(ctx context.Context, clusterID string, client TiDBCloud
 	p := tea.NewProgram(model)
 	ruleModel, err := p.Run()
 	if err != nil {
-		return "", errors.Trace(err)
+		return nil, errors.Trace(err)
 	}
 	if m, _ := ruleModel.(ui.SelectModel); m.Interrupted {
-		return "", util.InterruptError
+		return nil, util.InterruptError
 	}
 	selected := ruleModel.(ui.SelectModel).GetSelectedItem()
 	if selected == nil {
-		return "", errors.New("no filter rule selected")
+		return nil, errors.New("no filter rule selected")
 	}
-	return selected.(string), nil
+	return selected.(*AuditLogFilterRule), nil
 }

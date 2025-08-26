@@ -35,7 +35,7 @@ type DescribeFilterRuleOpts struct {
 func (o DescribeFilterRuleOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.AuditLogFilterRuleName,
+		flag.AuditLogFilterRuleID,
 	}
 }
 
@@ -73,7 +73,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless audit-log filter describe
 
   Describe an audit log filter rule in non-interactive mode:
-  $ %[1]s serverless audit-log filter describe --cluster-id <cluster-id> --name <rule-name>
+  $ %[1]s serverless audit-log filter describe --cluster-id <cluster-id> --filter-rule-id <rule-id>
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
@@ -85,7 +85,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			var clusterID, ruleName string
+			var clusterID, ruleID string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -99,22 +99,23 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				clusterID = cluster.ID
-				ruleName, err = cloud.GetSelectedRuleName(ctx, cluster.ID, d)
+				rule, err := cloud.GetSelectedFilterRule(ctx, cluster.ID, d)
 				if err != nil {
 					return err
 				}
+				ruleID = rule.FilterRuleId
 			} else {
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				ruleName, err = cmd.Flags().GetString(flag.AuditLogFilterRuleName)
+				ruleID, err = cmd.Flags().GetString(flag.AuditLogFilterRuleID)
 				if err != nil {
 					return errors.Trace(err)
 				}
 			}
 
-			rule, err := d.GetAuditLogFilterRule(ctx, clusterID, ruleName)
+			rule, err := d.GetAuditLogFilterRule(ctx, clusterID, ruleID)
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -123,7 +124,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	describeCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
-	describeCmd.Flags().String(flag.AuditLogFilterRuleName, "", "The name of the filter rule.")
+	describeCmd.Flags().String(flag.AuditLogFilterRuleID, "", "The ID of the filter rule.")
 
 	return describeCmd
 }
