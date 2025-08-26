@@ -24,7 +24,6 @@ const (
 	PublicKey          string = "public-key"
 	PrivateKey         string = "private-key"
 	CurProfile         string = "current-profile"
-	ApiUrl             string = "api-url"
 	ServerlessEndpoint string = "serverless-endpoint"
 	IAMEndpoint        string = "iam-endpoint"
 	OAuthEndpoint      string = "oauth-endpoint"
@@ -43,7 +42,7 @@ func GlobalProperties() []string {
 }
 
 func ProfileProperties() []string {
-	return []string{PublicKey, PrivateKey, ApiUrl, ServerlessEndpoint, IAMEndpoint, OAuthEndpoint, OAuthClientID, OAuthClientSecret, TelemetryEnabled}
+	return []string{PublicKey, PrivateKey, ServerlessEndpoint, IAMEndpoint, OAuthEndpoint, OAuthClientID, OAuthClientSecret, TelemetryEnabled}
 }
 
 func ValidateApiUrl(value string) (*url.URL, error) {
