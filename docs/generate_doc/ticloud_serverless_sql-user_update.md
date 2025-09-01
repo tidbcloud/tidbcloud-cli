@@ -25,7 +25,7 @@ ticloud serverless sql-user update [flags]
   -h, --help                  help for update
       --password string       The new password of the SQL user.
       --role strings          The new role(s) of the SQL user. Passing this flag replaces preexisting data, supported roles ["role_admin" "role_readwrite" "role_readonly"]
-  -u, --user string           The name of the SQL user to be updated.
+  -u, --user string           The name of the SQL user to be updated, user prefix will be added automatically.
 ```
 
 ### Options inherited from parent commands
