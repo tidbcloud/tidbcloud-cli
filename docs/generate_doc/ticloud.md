@@ -17,7 +17,6 @@ ticloud is a CLI library for communicating with TiDB Cloud's API.
 
 ### SEE ALSO
 
-* [ticloud ai](ticloud_ai.md)	 - Chat with TiDB Bot
 * [ticloud auth](ticloud_auth.md)	 - Login and logout via TiDB Cloud API
 * [ticloud completion](ticloud_completion.md)	 - Generate the autocompletion script for the specified shell
 * [ticloud config](ticloud_config.md)	 - Configure and manage your user profiles

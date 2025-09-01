@@ -24,7 +24,7 @@ ticloud serverless sql-user update [flags]
       --delete-role strings   The role(s) to be deleted from the SQL user.
   -h, --help                  help for update
       --password string       The new password of the SQL user.
-      --role strings          The new role(s) of the SQL user. Passing this flag replaces preexisting data.
+      --role strings          The new role(s) of the SQL user. Passing this flag replaces preexisting data, supported roles ["role_admin" "role_readwrite" "role_readonly"]
   -u, --user string           The name of the SQL user to be updated.
 ```
 
