@@ -284,10 +284,10 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	updateCmd.Flags().StringP(flag.User, flag.UserShort, "", "The name of the SQL user to be updated.")
+	updateCmd.Flags().StringP(flag.User, flag.UserShort, "", "The name of the SQL user to be updated, user prefix will be added automatically.")
 	updateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the SQL user to be updated.")
 	updateCmd.Flags().StringP(flag.Password, "", "", "The new password of the SQL user.")
-	updateCmd.Flags().StringSliceP(flag.UserRole, "", nil, "The new role(s) of the SQL user. Passing this flag replaces preexisting data.")
+	updateCmd.Flags().StringSliceP(flag.UserRole, "", nil, fmt.Sprintf("The new role(s) of the SQL user. Passing this flag replaces preexisting data, supported roles %q", supportedRoles))
 	updateCmd.Flags().StringSliceP(flag.AddRole, "", nil, "The role(s) to be added to the SQL user.")
 	updateCmd.Flags().StringSliceP(flag.DeleteRole, "", nil, "The role(s) to be deleted from the SQL user.")
 

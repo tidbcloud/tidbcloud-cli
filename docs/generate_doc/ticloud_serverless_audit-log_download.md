@@ -1,6 +1,6 @@
 ## ticloud serverless audit-log download
 
-Download the database audit logs
+Download the database audit log files
 
 ```
 ticloud serverless audit-log download [flags]
