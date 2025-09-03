@@ -14,179 +14,96 @@ import (
 	"encoding/json"
 )
 
-// checks if the PrivateALICLOUD type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &PrivateALICLOUD{}
+// ClusterServiceListRegionsServicePlanParameter the model 'ClusterServiceListRegionsServicePlanParameter'
+type ClusterServiceListRegionsServicePlanParameter string
 
-// PrivateALICLOUD The [Alibaba Cloud PrivateLink](https://www.alibabacloud.com/help/en/privatelink/product-overview/what-is-a-private-network-connection) configuration for private access.
-type PrivateALICLOUD struct {
-	// The Alibaba Cloud service name for private access.
-	ServiceName *string `json:"serviceName,omitempty"`
-	// A list of availability zones where the service is available.
-	AvailabilityZone     []string `json:"availabilityZone,omitempty"`
-	AdditionalProperties map[string]interface{}
+// List of ClusterService_ListRegions_servicePlan_parameter
+const (
+	CLUSTERSERVICELISTREGIONSSERVICEPLANPARAMETER_STARTER   ClusterServiceListRegionsServicePlanParameter = "Starter"
+	CLUSTERSERVICELISTREGIONSSERVICEPLANPARAMETER_ESSENTIAL ClusterServiceListRegionsServicePlanParameter = "Essential"
+	CLUSTERSERVICELISTREGIONSSERVICEPLANPARAMETER_PREMIUM   ClusterServiceListRegionsServicePlanParameter = "Premium"
+	CLUSTERSERVICELISTREGIONSSERVICEPLANPARAMETER_BYOC      ClusterServiceListRegionsServicePlanParameter = "BYOC"
+)
+
+// All allowed values of ClusterServiceListRegionsServicePlanParameter enum
+var AllowedClusterServiceListRegionsServicePlanParameterEnumValues = []ClusterServiceListRegionsServicePlanParameter{
+	"Starter",
+	"Essential",
+	"Premium",
+	"BYOC",
 }
 
-type _PrivateALICLOUD PrivateALICLOUD
-
-// NewPrivateALICLOUD instantiates a new PrivateALICLOUD object
-// This constructor will assign default values to properties that have it defined,
-// and makes sure properties required by API are set, but the set of arguments
-// will change when the set of required properties is changed
-func NewPrivateALICLOUD() *PrivateALICLOUD {
-	this := PrivateALICLOUD{}
-	return &this
-}
-
-// NewPrivateALICLOUDWithDefaults instantiates a new PrivateALICLOUD object
-// This constructor will only assign default values to properties that have it defined,
-// but it doesn't guarantee that properties required by API are set
-func NewPrivateALICLOUDWithDefaults() *PrivateALICLOUD {
-	this := PrivateALICLOUD{}
-	return &this
-}
-
-// GetServiceName returns the ServiceName field value if set, zero value otherwise.
-func (o *PrivateALICLOUD) GetServiceName() string {
-	if o == nil || IsNil(o.ServiceName) {
-		var ret string
-		return ret
-	}
-	return *o.ServiceName
-}
-
-// GetServiceNameOk returns a tuple with the ServiceName field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PrivateALICLOUD) GetServiceNameOk() (*string, bool) {
-	if o == nil || IsNil(o.ServiceName) {
-		return nil, false
-	}
-	return o.ServiceName, true
-}
-
-// HasServiceName returns a boolean if a field has been set.
-func (o *PrivateALICLOUD) HasServiceName() bool {
-	if o != nil && !IsNil(o.ServiceName) {
-		return true
-	}
-
-	return false
-}
-
-// SetServiceName gets a reference to the given string and assigns it to the ServiceName field.
-func (o *PrivateALICLOUD) SetServiceName(v string) {
-	o.ServiceName = &v
-}
-
-// GetAvailabilityZone returns the AvailabilityZone field value if set, zero value otherwise.
-func (o *PrivateALICLOUD) GetAvailabilityZone() []string {
-	if o == nil || IsNil(o.AvailabilityZone) {
-		var ret []string
-		return ret
-	}
-	return o.AvailabilityZone
-}
-
-// GetAvailabilityZoneOk returns a tuple with the AvailabilityZone field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PrivateALICLOUD) GetAvailabilityZoneOk() ([]string, bool) {
-	if o == nil || IsNil(o.AvailabilityZone) {
-		return nil, false
-	}
-	return o.AvailabilityZone, true
-}
-
-// HasAvailabilityZone returns a boolean if a field has been set.
-func (o *PrivateALICLOUD) HasAvailabilityZone() bool {
-	if o != nil && !IsNil(o.AvailabilityZone) {
-		return true
-	}
-
-	return false
-}
-
-// SetAvailabilityZone gets a reference to the given []string and assigns it to the AvailabilityZone field.
-func (o *PrivateALICLOUD) SetAvailabilityZone(v []string) {
-	o.AvailabilityZone = v
-}
-
-func (o PrivateALICLOUD) MarshalJSON() ([]byte, error) {
-	toSerialize, err := o.ToMap()
-	if err != nil {
-		return []byte{}, err
-	}
-	return json.Marshal(toSerialize)
-}
-
-func (o PrivateALICLOUD) ToMap() (map[string]interface{}, error) {
-	toSerialize := map[string]interface{}{}
-	if !IsNil(o.ServiceName) {
-		toSerialize["serviceName"] = o.ServiceName
-	}
-	if !IsNil(o.AvailabilityZone) {
-		toSerialize["availabilityZone"] = o.AvailabilityZone
-	}
-
-	for key, value := range o.AdditionalProperties {
-		toSerialize[key] = value
-	}
-
-	return toSerialize, nil
-}
-
-func (o *PrivateALICLOUD) UnmarshalJSON(data []byte) (err error) {
-	varPrivateALICLOUD := _PrivateALICLOUD{}
-
-	err = json.Unmarshal(data, &varPrivateALICLOUD)
-
+func (v *ClusterServiceListRegionsServicePlanParameter) UnmarshalJSON(src []byte) error {
+	var value string
+	err := json.Unmarshal(src, &value)
 	if err != nil {
 		return err
 	}
-
-	*o = PrivateALICLOUD(varPrivateALICLOUD)
-
-	additionalProperties := make(map[string]interface{})
-
-	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "serviceName")
-		delete(additionalProperties, "availabilityZone")
-		o.AdditionalProperties = additionalProperties
+	enumTypeValue := ClusterServiceListRegionsServicePlanParameter(value)
+	for _, existing := range AllowedClusterServiceListRegionsServicePlanParameterEnumValues {
+		if existing == enumTypeValue {
+			*v = enumTypeValue
+			return nil
+		}
 	}
 
-	return err
+	*v = ClusterServiceListRegionsServicePlanParameter(value)
+	return nil
 }
 
-type NullablePrivateALICLOUD struct {
-	value *PrivateALICLOUD
+// NewClusterServiceListRegionsServicePlanParameterFromValue returns a pointer to a valid ClusterServiceListRegionsServicePlanParameter for the value passed as argument
+func NewClusterServiceListRegionsServicePlanParameterFromValue(v string) *ClusterServiceListRegionsServicePlanParameter {
+	ev := ClusterServiceListRegionsServicePlanParameter(v)
+	return &ev
+}
+
+// IsValid return true if the value is valid for the enum, false otherwise
+func (v ClusterServiceListRegionsServicePlanParameter) IsValid() bool {
+	for _, existing := range AllowedClusterServiceListRegionsServicePlanParameterEnumValues {
+		if existing == v {
+			return true
+		}
+	}
+	return false
+}
+
+// Ptr returns reference to ClusterService_ListRegions_servicePlan_parameter value
+func (v ClusterServiceListRegionsServicePlanParameter) Ptr() *ClusterServiceListRegionsServicePlanParameter {
+	return &v
+}
+
+type NullableClusterServiceListRegionsServicePlanParameter struct {
+	value *ClusterServiceListRegionsServicePlanParameter
 	isSet bool
 }
 
-func (v NullablePrivateALICLOUD) Get() *PrivateALICLOUD {
+func (v NullableClusterServiceListRegionsServicePlanParameter) Get() *ClusterServiceListRegionsServicePlanParameter {
 	return v.value
 }
 
-func (v *NullablePrivateALICLOUD) Set(val *PrivateALICLOUD) {
+func (v *NullableClusterServiceListRegionsServicePlanParameter) Set(val *ClusterServiceListRegionsServicePlanParameter) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullablePrivateALICLOUD) IsSet() bool {
+func (v NullableClusterServiceListRegionsServicePlanParameter) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullablePrivateALICLOUD) Unset() {
+func (v *NullableClusterServiceListRegionsServicePlanParameter) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullablePrivateALICLOUD(val *PrivateALICLOUD) *NullablePrivateALICLOUD {
-	return &NullablePrivateALICLOUD{value: val, isSet: true}
+func NewNullableClusterServiceListRegionsServicePlanParameter(val *ClusterServiceListRegionsServicePlanParameter) *NullableClusterServiceListRegionsServicePlanParameter {
+	return &NullableClusterServiceListRegionsServicePlanParameter{value: val, isSet: true}
 }
 
-func (v NullablePrivateALICLOUD) MarshalJSON() ([]byte, error) {
+func (v NullableClusterServiceListRegionsServicePlanParameter) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullablePrivateALICLOUD) UnmarshalJSON(src []byte) error {
+func (v *NullableClusterServiceListRegionsServicePlanParameter) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

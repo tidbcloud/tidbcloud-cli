@@ -651,7 +651,7 @@ func (_m *TiDBCloudClient) GetBranch(ctx context.Context, clusterId string, bran
 }
 
 // GetCluster provides a mock function with given fields: ctx, clusterId, view
-func (_m *TiDBCloudClient) GetCluster(ctx context.Context, clusterId string, view cluster.ServerlessServiceGetClusterViewParameter) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+func (_m *TiDBCloudClient) GetCluster(ctx context.Context, clusterId string, view cluster.ClusterServiceGetClusterViewParameter) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
 	ret := _m.Called(ctx, clusterId, view)
 
 	if len(ret) == 0 {
@@ -660,10 +660,10 @@ func (_m *TiDBCloudClient) GetCluster(ctx context.Context, clusterId string, vie
 
 	var r0 *cluster.TidbCloudOpenApiserverlessv1beta1Cluster
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, cluster.ServerlessServiceGetClusterViewParameter) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string, cluster.ClusterServiceGetClusterViewParameter) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)); ok {
 		return rf(ctx, clusterId, view)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string, cluster.ServerlessServiceGetClusterViewParameter) *cluster.TidbCloudOpenApiserverlessv1beta1Cluster); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string, cluster.ClusterServiceGetClusterViewParameter) *cluster.TidbCloudOpenApiserverlessv1beta1Cluster); ok {
 		r0 = rf(ctx, clusterId, view)
 	} else {
 		if ret.Get(0) != nil {
@@ -671,7 +671,7 @@ func (_m *TiDBCloudClient) GetCluster(ctx context.Context, clusterId string, vie
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string, cluster.ServerlessServiceGetClusterViewParameter) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, string, cluster.ClusterServiceGetClusterViewParameter) error); ok {
 		r1 = rf(ctx, clusterId, view)
 	} else {
 		r1 = ret.Error(1)
@@ -1101,7 +1101,7 @@ func (_m *TiDBCloudClient) ListSQLUsers(ctx context.Context, clusterID string, p
 }
 
 // PartialUpdateCluster provides a mock function with given fields: ctx, clusterId, body
-func (_m *TiDBCloudClient) PartialUpdateCluster(ctx context.Context, clusterId string, body *cluster.V1beta1ServerlessServicePartialUpdateClusterBody) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+func (_m *TiDBCloudClient) PartialUpdateCluster(ctx context.Context, clusterId string, body *cluster.V1beta1ClusterServicePartialUpdateClusterBody) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
 	ret := _m.Called(ctx, clusterId, body)
 
 	if len(ret) == 0 {
@@ -1110,10 +1110,10 @@ func (_m *TiDBCloudClient) PartialUpdateCluster(ctx context.Context, clusterId s
 
 	var r0 *cluster.TidbCloudOpenApiserverlessv1beta1Cluster
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, *cluster.V1beta1ServerlessServicePartialUpdateClusterBody) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string, *cluster.V1beta1ClusterServicePartialUpdateClusterBody) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)); ok {
 		return rf(ctx, clusterId, body)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, string, *cluster.V1beta1ServerlessServicePartialUpdateClusterBody) *cluster.TidbCloudOpenApiserverlessv1beta1Cluster); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, string, *cluster.V1beta1ClusterServicePartialUpdateClusterBody) *cluster.TidbCloudOpenApiserverlessv1beta1Cluster); ok {
 		r0 = rf(ctx, clusterId, body)
 	} else {
 		if ret.Get(0) != nil {
@@ -1121,7 +1121,7 @@ func (_m *TiDBCloudClient) PartialUpdateCluster(ctx context.Context, clusterId s
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string, *cluster.V1beta1ServerlessServicePartialUpdateClusterBody) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, string, *cluster.V1beta1ClusterServicePartialUpdateClusterBody) error); ok {
 		r1 = rf(ctx, clusterId, body)
 	} else {
 		r1 = ret.Error(1)

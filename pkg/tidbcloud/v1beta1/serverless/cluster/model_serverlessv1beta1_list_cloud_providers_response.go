@@ -14,102 +14,68 @@ import (
 	"encoding/json"
 )
 
-// checks if the PrivateALICLOUD type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &PrivateALICLOUD{}
+// checks if the Serverlessv1beta1ListCloudProvidersResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Serverlessv1beta1ListCloudProvidersResponse{}
 
-// PrivateALICLOUD The [Alibaba Cloud PrivateLink](https://www.alibabacloud.com/help/en/privatelink/product-overview/what-is-a-private-network-connection) configuration for private access.
-type PrivateALICLOUD struct {
-	// The Alibaba Cloud service name for private access.
-	ServiceName *string `json:"serviceName,omitempty"`
-	// A list of availability zones where the service is available.
-	AvailabilityZone     []string `json:"availabilityZone,omitempty"`
+// Serverlessv1beta1ListCloudProvidersResponse struct for Serverlessv1beta1ListCloudProvidersResponse
+type Serverlessv1beta1ListCloudProvidersResponse struct {
+	// The list of cloud providers.
+	CloudProviders       []V1beta1RegionCloudProvider `json:"cloudProviders,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _PrivateALICLOUD PrivateALICLOUD
+type _Serverlessv1beta1ListCloudProvidersResponse Serverlessv1beta1ListCloudProvidersResponse
 
-// NewPrivateALICLOUD instantiates a new PrivateALICLOUD object
+// NewServerlessv1beta1ListCloudProvidersResponse instantiates a new Serverlessv1beta1ListCloudProvidersResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPrivateALICLOUD() *PrivateALICLOUD {
-	this := PrivateALICLOUD{}
+func NewServerlessv1beta1ListCloudProvidersResponse() *Serverlessv1beta1ListCloudProvidersResponse {
+	this := Serverlessv1beta1ListCloudProvidersResponse{}
 	return &this
 }
 
-// NewPrivateALICLOUDWithDefaults instantiates a new PrivateALICLOUD object
+// NewServerlessv1beta1ListCloudProvidersResponseWithDefaults instantiates a new Serverlessv1beta1ListCloudProvidersResponse object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewPrivateALICLOUDWithDefaults() *PrivateALICLOUD {
-	this := PrivateALICLOUD{}
+func NewServerlessv1beta1ListCloudProvidersResponseWithDefaults() *Serverlessv1beta1ListCloudProvidersResponse {
+	this := Serverlessv1beta1ListCloudProvidersResponse{}
 	return &this
 }
 
-// GetServiceName returns the ServiceName field value if set, zero value otherwise.
-func (o *PrivateALICLOUD) GetServiceName() string {
-	if o == nil || IsNil(o.ServiceName) {
-		var ret string
+// GetCloudProviders returns the CloudProviders field value if set, zero value otherwise.
+func (o *Serverlessv1beta1ListCloudProvidersResponse) GetCloudProviders() []V1beta1RegionCloudProvider {
+	if o == nil || IsNil(o.CloudProviders) {
+		var ret []V1beta1RegionCloudProvider
 		return ret
 	}
-	return *o.ServiceName
+	return o.CloudProviders
 }
 
-// GetServiceNameOk returns a tuple with the ServiceName field value if set, nil otherwise
+// GetCloudProvidersOk returns a tuple with the CloudProviders field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PrivateALICLOUD) GetServiceNameOk() (*string, bool) {
-	if o == nil || IsNil(o.ServiceName) {
+func (o *Serverlessv1beta1ListCloudProvidersResponse) GetCloudProvidersOk() ([]V1beta1RegionCloudProvider, bool) {
+	if o == nil || IsNil(o.CloudProviders) {
 		return nil, false
 	}
-	return o.ServiceName, true
+	return o.CloudProviders, true
 }
 
-// HasServiceName returns a boolean if a field has been set.
-func (o *PrivateALICLOUD) HasServiceName() bool {
-	if o != nil && !IsNil(o.ServiceName) {
+// HasCloudProviders returns a boolean if a field has been set.
+func (o *Serverlessv1beta1ListCloudProvidersResponse) HasCloudProviders() bool {
+	if o != nil && !IsNil(o.CloudProviders) {
 		return true
 	}
 
 	return false
 }
 
-// SetServiceName gets a reference to the given string and assigns it to the ServiceName field.
-func (o *PrivateALICLOUD) SetServiceName(v string) {
-	o.ServiceName = &v
+// SetCloudProviders gets a reference to the given []V1beta1RegionCloudProvider and assigns it to the CloudProviders field.
+func (o *Serverlessv1beta1ListCloudProvidersResponse) SetCloudProviders(v []V1beta1RegionCloudProvider) {
+	o.CloudProviders = v
 }
 
-// GetAvailabilityZone returns the AvailabilityZone field value if set, zero value otherwise.
-func (o *PrivateALICLOUD) GetAvailabilityZone() []string {
-	if o == nil || IsNil(o.AvailabilityZone) {
-		var ret []string
-		return ret
-	}
-	return o.AvailabilityZone
-}
-
-// GetAvailabilityZoneOk returns a tuple with the AvailabilityZone field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PrivateALICLOUD) GetAvailabilityZoneOk() ([]string, bool) {
-	if o == nil || IsNil(o.AvailabilityZone) {
-		return nil, false
-	}
-	return o.AvailabilityZone, true
-}
-
-// HasAvailabilityZone returns a boolean if a field has been set.
-func (o *PrivateALICLOUD) HasAvailabilityZone() bool {
-	if o != nil && !IsNil(o.AvailabilityZone) {
-		return true
-	}
-
-	return false
-}
-
-// SetAvailabilityZone gets a reference to the given []string and assigns it to the AvailabilityZone field.
-func (o *PrivateALICLOUD) SetAvailabilityZone(v []string) {
-	o.AvailabilityZone = v
-}
-
-func (o PrivateALICLOUD) MarshalJSON() ([]byte, error) {
+func (o Serverlessv1beta1ListCloudProvidersResponse) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -117,13 +83,10 @@ func (o PrivateALICLOUD) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o PrivateALICLOUD) ToMap() (map[string]interface{}, error) {
+func (o Serverlessv1beta1ListCloudProvidersResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.ServiceName) {
-		toSerialize["serviceName"] = o.ServiceName
-	}
-	if !IsNil(o.AvailabilityZone) {
-		toSerialize["availabilityZone"] = o.AvailabilityZone
+	if !IsNil(o.CloudProviders) {
+		toSerialize["cloudProviders"] = o.CloudProviders
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -133,60 +96,59 @@ func (o PrivateALICLOUD) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *PrivateALICLOUD) UnmarshalJSON(data []byte) (err error) {
-	varPrivateALICLOUD := _PrivateALICLOUD{}
+func (o *Serverlessv1beta1ListCloudProvidersResponse) UnmarshalJSON(data []byte) (err error) {
+	varServerlessv1beta1ListCloudProvidersResponse := _Serverlessv1beta1ListCloudProvidersResponse{}
 
-	err = json.Unmarshal(data, &varPrivateALICLOUD)
+	err = json.Unmarshal(data, &varServerlessv1beta1ListCloudProvidersResponse)
 
 	if err != nil {
 		return err
 	}
 
-	*o = PrivateALICLOUD(varPrivateALICLOUD)
+	*o = Serverlessv1beta1ListCloudProvidersResponse(varServerlessv1beta1ListCloudProvidersResponse)
 
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "serviceName")
-		delete(additionalProperties, "availabilityZone")
+		delete(additionalProperties, "cloudProviders")
 		o.AdditionalProperties = additionalProperties
 	}
 
 	return err
 }
 
-type NullablePrivateALICLOUD struct {
-	value *PrivateALICLOUD
+type NullableServerlessv1beta1ListCloudProvidersResponse struct {
+	value *Serverlessv1beta1ListCloudProvidersResponse
 	isSet bool
 }
 
-func (v NullablePrivateALICLOUD) Get() *PrivateALICLOUD {
+func (v NullableServerlessv1beta1ListCloudProvidersResponse) Get() *Serverlessv1beta1ListCloudProvidersResponse {
 	return v.value
 }
 
-func (v *NullablePrivateALICLOUD) Set(val *PrivateALICLOUD) {
+func (v *NullableServerlessv1beta1ListCloudProvidersResponse) Set(val *Serverlessv1beta1ListCloudProvidersResponse) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullablePrivateALICLOUD) IsSet() bool {
+func (v NullableServerlessv1beta1ListCloudProvidersResponse) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullablePrivateALICLOUD) Unset() {
+func (v *NullableServerlessv1beta1ListCloudProvidersResponse) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullablePrivateALICLOUD(val *PrivateALICLOUD) *NullablePrivateALICLOUD {
-	return &NullablePrivateALICLOUD{value: val, isSet: true}
+func NewNullableServerlessv1beta1ListCloudProvidersResponse(val *Serverlessv1beta1ListCloudProvidersResponse) *NullableServerlessv1beta1ListCloudProvidersResponse {
+	return &NullableServerlessv1beta1ListCloudProvidersResponse{value: val, isSet: true}
 }
 
-func (v NullablePrivateALICLOUD) MarshalJSON() ([]byte, error) {
+func (v NullableServerlessv1beta1ListCloudProvidersResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullablePrivateALICLOUD) UnmarshalJSON(src []byte) error {
+func (v *NullableServerlessv1beta1ListCloudProvidersResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

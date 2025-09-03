@@ -12,104 +12,64 @@ package cluster
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
-// checks if the PrivateALICLOUD type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &PrivateALICLOUD{}
+// checks if the ClusterServiceChangeRootPasswordBody type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ClusterServiceChangeRootPasswordBody{}
 
-// PrivateALICLOUD The [Alibaba Cloud PrivateLink](https://www.alibabacloud.com/help/en/privatelink/product-overview/what-is-a-private-network-connection) configuration for private access.
-type PrivateALICLOUD struct {
-	// The Alibaba Cloud service name for private access.
-	ServiceName *string `json:"serviceName,omitempty"`
-	// A list of availability zones where the service is available.
-	AvailabilityZone     []string `json:"availabilityZone,omitempty"`
+// ClusterServiceChangeRootPasswordBody Message for requesting to change the root password of a TiDB Cloud Starter or Essential cluster.
+type ClusterServiceChangeRootPasswordBody struct {
+	// The new root password for the cluster.
+	Password             string `json:"password"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _PrivateALICLOUD PrivateALICLOUD
+type _ClusterServiceChangeRootPasswordBody ClusterServiceChangeRootPasswordBody
 
-// NewPrivateALICLOUD instantiates a new PrivateALICLOUD object
+// NewClusterServiceChangeRootPasswordBody instantiates a new ClusterServiceChangeRootPasswordBody object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPrivateALICLOUD() *PrivateALICLOUD {
-	this := PrivateALICLOUD{}
+func NewClusterServiceChangeRootPasswordBody(password string) *ClusterServiceChangeRootPasswordBody {
+	this := ClusterServiceChangeRootPasswordBody{}
+	this.Password = password
 	return &this
 }
 
-// NewPrivateALICLOUDWithDefaults instantiates a new PrivateALICLOUD object
+// NewClusterServiceChangeRootPasswordBodyWithDefaults instantiates a new ClusterServiceChangeRootPasswordBody object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewPrivateALICLOUDWithDefaults() *PrivateALICLOUD {
-	this := PrivateALICLOUD{}
+func NewClusterServiceChangeRootPasswordBodyWithDefaults() *ClusterServiceChangeRootPasswordBody {
+	this := ClusterServiceChangeRootPasswordBody{}
 	return &this
 }
 
-// GetServiceName returns the ServiceName field value if set, zero value otherwise.
-func (o *PrivateALICLOUD) GetServiceName() string {
-	if o == nil || IsNil(o.ServiceName) {
+// GetPassword returns the Password field value
+func (o *ClusterServiceChangeRootPasswordBody) GetPassword() string {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.ServiceName
+
+	return o.Password
 }
 
-// GetServiceNameOk returns a tuple with the ServiceName field value if set, nil otherwise
+// GetPasswordOk returns a tuple with the Password field value
 // and a boolean to check if the value has been set.
-func (o *PrivateALICLOUD) GetServiceNameOk() (*string, bool) {
-	if o == nil || IsNil(o.ServiceName) {
+func (o *ClusterServiceChangeRootPasswordBody) GetPasswordOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
-	return o.ServiceName, true
+	return &o.Password, true
 }
 
-// HasServiceName returns a boolean if a field has been set.
-func (o *PrivateALICLOUD) HasServiceName() bool {
-	if o != nil && !IsNil(o.ServiceName) {
-		return true
-	}
-
-	return false
+// SetPassword sets field value
+func (o *ClusterServiceChangeRootPasswordBody) SetPassword(v string) {
+	o.Password = v
 }
 
-// SetServiceName gets a reference to the given string and assigns it to the ServiceName field.
-func (o *PrivateALICLOUD) SetServiceName(v string) {
-	o.ServiceName = &v
-}
-
-// GetAvailabilityZone returns the AvailabilityZone field value if set, zero value otherwise.
-func (o *PrivateALICLOUD) GetAvailabilityZone() []string {
-	if o == nil || IsNil(o.AvailabilityZone) {
-		var ret []string
-		return ret
-	}
-	return o.AvailabilityZone
-}
-
-// GetAvailabilityZoneOk returns a tuple with the AvailabilityZone field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PrivateALICLOUD) GetAvailabilityZoneOk() ([]string, bool) {
-	if o == nil || IsNil(o.AvailabilityZone) {
-		return nil, false
-	}
-	return o.AvailabilityZone, true
-}
-
-// HasAvailabilityZone returns a boolean if a field has been set.
-func (o *PrivateALICLOUD) HasAvailabilityZone() bool {
-	if o != nil && !IsNil(o.AvailabilityZone) {
-		return true
-	}
-
-	return false
-}
-
-// SetAvailabilityZone gets a reference to the given []string and assigns it to the AvailabilityZone field.
-func (o *PrivateALICLOUD) SetAvailabilityZone(v []string) {
-	o.AvailabilityZone = v
-}
-
-func (o PrivateALICLOUD) MarshalJSON() ([]byte, error) {
+func (o ClusterServiceChangeRootPasswordBody) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -117,14 +77,9 @@ func (o PrivateALICLOUD) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o PrivateALICLOUD) ToMap() (map[string]interface{}, error) {
+func (o ClusterServiceChangeRootPasswordBody) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.ServiceName) {
-		toSerialize["serviceName"] = o.ServiceName
-	}
-	if !IsNil(o.AvailabilityZone) {
-		toSerialize["availabilityZone"] = o.AvailabilityZone
-	}
+	toSerialize["password"] = o.Password
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -133,60 +88,80 @@ func (o PrivateALICLOUD) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *PrivateALICLOUD) UnmarshalJSON(data []byte) (err error) {
-	varPrivateALICLOUD := _PrivateALICLOUD{}
+func (o *ClusterServiceChangeRootPasswordBody) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"password",
+	}
 
-	err = json.Unmarshal(data, &varPrivateALICLOUD)
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
 		return err
 	}
 
-	*o = PrivateALICLOUD(varPrivateALICLOUD)
+	for _, requiredProperty := range requiredProperties {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varClusterServiceChangeRootPasswordBody := _ClusterServiceChangeRootPasswordBody{}
+
+	err = json.Unmarshal(data, &varClusterServiceChangeRootPasswordBody)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ClusterServiceChangeRootPasswordBody(varClusterServiceChangeRootPasswordBody)
 
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "serviceName")
-		delete(additionalProperties, "availabilityZone")
+		delete(additionalProperties, "password")
 		o.AdditionalProperties = additionalProperties
 	}
 
 	return err
 }
 
-type NullablePrivateALICLOUD struct {
-	value *PrivateALICLOUD
+type NullableClusterServiceChangeRootPasswordBody struct {
+	value *ClusterServiceChangeRootPasswordBody
 	isSet bool
 }
 
-func (v NullablePrivateALICLOUD) Get() *PrivateALICLOUD {
+func (v NullableClusterServiceChangeRootPasswordBody) Get() *ClusterServiceChangeRootPasswordBody {
 	return v.value
 }
 
-func (v *NullablePrivateALICLOUD) Set(val *PrivateALICLOUD) {
+func (v *NullableClusterServiceChangeRootPasswordBody) Set(val *ClusterServiceChangeRootPasswordBody) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullablePrivateALICLOUD) IsSet() bool {
+func (v NullableClusterServiceChangeRootPasswordBody) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullablePrivateALICLOUD) Unset() {
+func (v *NullableClusterServiceChangeRootPasswordBody) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullablePrivateALICLOUD(val *PrivateALICLOUD) *NullablePrivateALICLOUD {
-	return &NullablePrivateALICLOUD{value: val, isSet: true}
+func NewNullableClusterServiceChangeRootPasswordBody(val *ClusterServiceChangeRootPasswordBody) *NullableClusterServiceChangeRootPasswordBody {
+	return &NullableClusterServiceChangeRootPasswordBody{value: val, isSet: true}
 }
 
-func (v NullablePrivateALICLOUD) MarshalJSON() ([]byte, error) {
+func (v NullableClusterServiceChangeRootPasswordBody) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullablePrivateALICLOUD) UnmarshalJSON(src []byte) error {
+func (v *NullableClusterServiceChangeRootPasswordBody) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

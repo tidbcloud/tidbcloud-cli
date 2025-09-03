@@ -59,11 +59,11 @@ func (suite *UpdateClusterSuite) TestUpdateClusterArgs() {
 	ctx := context.Background()
 
 	displayName := "update_name"
-	c := &cluster.RequiredTheClusterToBeUpdated{
+	c := &cluster.V1beta1ClusterServicePartialUpdateClusterBodyCluster{
 		DisplayName: &displayName,
 	}
 	mask := "displayName"
-	body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
+	body := &cluster.V1beta1ClusterServicePartialUpdateClusterBody{
 		Cluster:    c,
 		UpdateMask: mask,
 	}
@@ -113,10 +113,10 @@ func (suite *UpdateClusterSuite) TestUpdateLabels() {
 
 	labelsMap := make(map[string]string)
 	_ = json.Unmarshal([]byte(labels), &labelsMap)
-	c := &cluster.RequiredTheClusterToBeUpdated{
+	c := &cluster.V1beta1ClusterServicePartialUpdateClusterBodyCluster{
 		Labels: &labelsMap,
 	}
-	body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
+	body := &cluster.V1beta1ClusterServicePartialUpdateClusterBody{
 		Cluster:    c,
 		UpdateMask: mask,
 	}

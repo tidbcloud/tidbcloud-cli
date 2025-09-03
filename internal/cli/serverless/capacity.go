@@ -150,8 +150,8 @@ func CapacityCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
-				Cluster: &cluster.RequiredTheClusterToBeUpdated{
+			body := &cluster.V1beta1ClusterServicePartialUpdateClusterBody{
+				Cluster: &cluster.V1beta1ClusterServicePartialUpdateClusterBodyCluster{
 					AutoScaling: &cluster.V1beta1ClusterAutoScaling{},
 				},
 			}

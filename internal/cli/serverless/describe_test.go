@@ -111,7 +111,7 @@ func (suite *DescribeClusterSuite) TestDescribeClusterArgs() {
 	assert.Nil(err)
 
 	clusterID := "12345"
-	suite.mockClient.On("GetCluster", ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_FULL).Return(body, nil)
+	suite.mockClient.On("GetCluster", ctx, clusterID, cluster.CLUSTERSERVICEGETCLUSTERVIEWPARAMETER_FULL).Return(body, nil)
 
 	tests := []struct {
 		name         string
