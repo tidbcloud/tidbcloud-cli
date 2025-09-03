@@ -1,42 +1,242 @@
 openapi: 3.0.1
 info:
-  description: TiDB Cloud Serverless Open API
-  title: TiDB Cloud Serverless Open API
+  description: |
+    *TiDB Cloud API is in beta.*
+
+    This API manages [TiDB Cloud Starter](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#tidb-cloud-serverless) and [TiDB Cloud Essential](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#essential) clusters. For [TiDB Cloud Dedicated](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#tidb-cloud-dedicated) clusters, use the [TiDB Cloud Dedicated API](https://docs.pingcap.com/tidbcloud/api/v1beta1/dedicated/). For more information about TiDB Cloud API, see [TiDB Cloud API Overview](https://docs.pingcap.com/tidbcloud/api-overview/).
+
+    # Overview
+
+    The TiDB Cloud API is a [REST interface](https://en.wikipedia.org/wiki/Representational_state_transfer) that provides you with programmatic access to manage clusters and related resources within TiDB Cloud.
+
+    The API has the following features:
+
+    - **JSON entities.** All entities are expressed in JSON.
+    - **HTTPS-only.** You can only access the API via HTTPS, ensuring all the data sent over the network is encrypted with TLS.
+    - **Key-based access and digest authentication.** Before you access TiDB Cloud API, you must generate an API key. All requests are authenticated through [HTTP Digest Authentication](https://en.wikipedia.org/wiki/Digest_access_authentication), ensuring the API key is never sent over the network.
+
+    # Get Started
+
+    This guide helps you make your first API call to TiDB Cloud API. You'll learn how to authenticate a request, build a request, and interpret the response.
+
+    ## Prerequisites
+
+    To complete this guide, you need to perform the following tasks:
+
+    - Create a [TiDB Cloud account](https://tidbcloud.com/free-trial)
+    - Install [curl](https://curl.se/)
+
+    ## Step 1. Create an API key
+
+    To create an API key, log in to your TiDB Cloud console. Navigate to the [**API Keys**](https://tidbcloud.com/org-settings/api-keys) page of your organization, and create an API key.
+
+    An API key contains a public key and a private key. Copy and save them in a secure location. You will need to use the API key later in this guide.
+
+    For more details about creating API key, refer to [API Key Management](#section/Authentication/API-Key-Management).
+
+    ## Step 2. Make your first API call
+
+    ### Build an API call
+
+    TiDB Cloud API call consists of the following components:
+
+    - **A host**. The host for TiDB Cloud API is <https://serverless.tidbapi.com>.
+    - **An API Key**. The public key and the private key are required for authentication.
+    - **A request**. When submitting data to a resource via `POST`, `PATCH`, or `PUT`, you must submit your payload in JSON.
+
+    In this guide, you call the [List all clusters](#tag/Cluster/operation/ClusterService_ListClusters) endpoint. For the detailed description of the endpoint, see the [API reference](#tag/Cluster/operation/ClusterService_ListClusters).
+
+    ### Call an API endpoint
+
+    To get all clusters in your organization, run the following command in your terminal. Remember to change `YOUR_PUBLIC_KEY` to your public key and `YOUR_PRIVATE_KEY` to your private key.
+
+    ```shell
+    curl --digest \
+     --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+     --request GET \
+     --url 'https://serverless.tidbapi.com/v1beta1/clusters'
+    ```
+
+    ## Step 3. Check the response
+
+    After making the API call, if the status code in response is `200` and you see details about all clusters in your organization, your request is successful.
+
+    # Authentication
+
+    The TiDB Cloud API uses [HTTP Digest Authentication](https://en.wikipedia.org/wiki/Digest_access_authentication). It protects your private key from being sent over the network. For more details about HTTP Digest Authentication, refer to the [IETF RFC](https://datatracker.ietf.org/doc/html/rfc7616).
+
+    ## API key overview
+
+    - The API key contains a public key and a private key, which act as the username and password required in the HTTP Digest Authentication. The private key only displays upon the key creation.
+    - The API key belongs to your organization and acts as the `Organization Owner` role. You can check [permissions of owner](https://docs.pingcap.com/tidbcloud/manage-user-access#configure-member-roles).
+    - You must provide the correct API key in every request. Otherwise, the TiDB Cloud responds with a `401` error.
+
+    ## API key management
+
+    ### Create an API key
+
+    Only the **owner** of an organization can create an API key.
+
+    To create an API key in an organization, perform the following steps:
+
+    1. In the [TiDB Cloud console](https://tidbcloud.com), switch to your target organization using the combo box in the upper-left corner.
+    2. In the left navigation pane, click **Organization Settings** > **API Keys**.
+    3. On the **API Keys** page, click **Create API Key**.
+    4. Enter a description for your API key. The role of the API key is always `Organization Owner` currently.
+    5. Click **Next**. Copy and save the public key and the private key.
+    6. Make sure that you have copied and saved the private key in a secure location. The private key only displays upon the creation. After leaving this page, you will not be able to get the full private key again.
+    7. Click **Done**.
+
+    ### View details of an API key
+
+    To view details of an API key, perform the following steps:
+
+    1. In the [TiDB Cloud console](https://tidbcloud.com), switch to your target organization using the combo box in the upper-left corner.
+    2. In the left navigation pane, click **Organization Settings** > **API Keys**.
+    3. You can view the details of the API keys on the page.
+
+    ### Edit an API key
+
+    Only the **owner** of an organization can modify an API key.
+
+    To edit an API key in an organization, perform the following steps:
+
+    1. In the [TiDB Cloud console](https://tidbcloud.com), switch to your target organization using the combo box in the upper-left corner.
+    2. In the left navigation pane, click **Organization Settings** > **API Keys**.
+    3. On the **API Keys** page, click **...** in the API key row that you want to change, and then click **Edit**.
+    4. You can update the API key description.
+    5. Click **Update**.
+
+    ### Delete an API key
+
+    Only the **owner** of an organization can delete an API key.
+
+    To delete an API key in an organization, perform the following steps:
+
+    1. In the [TiDB Cloud console](https://tidbcloud.com), switch to your target organization using the combo box in the upper-left corner.
+    2. In the left navigation pane, click **Organization Settings** > **API Keys**.
+    3. On the **API Keys** page, click **...** in the API key row that you want to delete, and then click **Delete**.
+    4. Click **I understand, delete it.**
+
+    # Rate Limiting
+
+    The TiDB Cloud API allows up to 100 requests per minute per API key. If you exceed the rate limit, the API returns a `429` error. For more quota, you can [submit a request](https://support.pingcap.com/hc/en-us/requests/new?ticket_form_id=7800003722519) to contact our support team.
+
+    Each API request returns the following headers about the limit.
+
+    - `X-Ratelimit-Limit-Minute`: The number of requests allowed per minute. It is 100 currently.
+    - `X-Ratelimit-Remaining-Minute`: The number of remaining requests in the current minute. When it reaches `0`, the API returns a `429` error and indicates that you exceed the rate limit.
+    - `X-Ratelimit-Reset`: The time in seconds at which the current rate limit resets.
+
+    If you exceed the rate limit, an error response returns like this.
+
+    ```
+    > HTTP/2 429
+    > date: Fri, 22 Jul 2022 05:28:37 GMT
+    > content-type: application/json
+    > content-length: 66
+    > x-ratelimit-reset: 23
+    > x-ratelimit-remaining-minute: 0
+    > x-ratelimit-limit-minute: 100
+    > x-kong-response-latency: 2
+    > server: kong/2.8.1
+
+    > {"details":[],"code":49900007,"message":"The request exceeded the limit of 100 times per apikey per minute. For more quota, please contact us: https://support.pingcap.com/hc/en-us/requests/new?ticket_form_id=7800003722519"}
+    ```
+
+    # API Changelog
+
+    This changelog lists all changes to the TiDB Cloud API.
+
+    <!-- In reverse chronological order -->
+
+    ## 20250812
+
+    - Initial release of the TiDB Cloud Starter and Essential API, including the following resources and endpoints:
+
+     - Cluster:
+     - [List TiDB Cloud Starter and Essential clusters](#tag/Cluster/operation/ClusterService_ListClusters)
+     - [Create a new TiDB Cloud Starter or Essential cluster](#tag/Cluster/operation/ClusterService_CreateCluster)
+     - [Get details of a TiDB Cloud Starter or Essential cluster](#tag/Cluster/operation/ClusterService_GetCluster)
+     - [Delete a TiDB Cloud Starter or Essential cluster](#tag/Cluster/operation/ClusterService_DeleteCluster)
+     - [Update a TiDB Cloud Starter or Essential cluster](#tag/Cluster/operation/ClusterService_PartialUpdateCluster)
+     - [List available regions for an organization](#tag/Cluster/operation/ClusterService_ListRegions)
+     - Branch:
+     - [List branches](#tag/Branch/operation/BranchService_ListBranches)
+     - [Create a branch](#tag/Branch/operation/BranchService_CreateBranch)
+     - [Get details of a branch](#tag/Branch/operation/BranchService_GetBranch)
+     - [Delete a branch](#tag/Branch/operation/BranchService_DeleteBranch)
+     - [Reset a branch](#tag/Branch/operation/BranchService_ResetBranch)
+     - Export:
+     - [List export tasks for a cluster](#tag/Export/operation/ExportService_ListExports)
+     - [Create an export task](#tag/Export/operation/ExportService_CreateExport)
+     - [Get details of an export task](#tag/Export/operation/ExportService_GetExport)
+     - [Delete an export task](#tag/Export/operation/ExportService_DeleteExport)
+     - [Cancel an export task](#tag/Export/operation/ExportService_CancelExport)
+     - Import:
+     - [List import tasks for a cluster](#tag/Import/operation/ImportService_ListImports)
+     - [Create an import task](#tag/Import/operation/ImportService_CreateImport)
+     - [Get an import task](#tag/Import/operation/ImportService_GetImport)
+     - [Cancel an import task](#tag/Import/operation/ImportService_CancelImport)
+  title: TiDB Cloud Starter and Essential API
   version: v1beta1
+externalDocs:
+  description: More about TiDB Cloud API
+  url: https://docs.pingcap.com/tidbcloud/api-overview
 servers:
 - url: https://serverless.tidbapi.com/v1beta1
 tags:
-- name: ServerlessService
+- name: ClusterService
 paths:
   /clusters:
     get:
-      operationId: ServerlessService_ListClusters
+      operationId: ClusterService_ListClusters
       parameters:
-      - description: Optional. The maximum number of clusters to return.
+      - description: "The maximum number of clusters to return. If not specified,\
+          \ at most 10 clusters will be returned. The maximum value is `100`. Values\
+          \ greater than `100` are set to `100`."
         in: query
         name: pageSize
         schema:
+          default: 10
           format: int32
           type: integer
-      - description: Optional. The page token from the previous response for pagination.
+      - description: |-
+          The pagination token received from a previous [List clusters](#tag/Cluster/operation/ClusterService_ListClusters) request. Use this token to retrieve the next page of results.
+
+          **Note**: When paginating, all other parameters must match the original request.
         in: query
         name: pageToken
         schema:
           type: string
-      - description: Optional. The filter expression to filter clusters.
+      - description: |-
+          An expression that filters the list of clusters based on specific criteria. Uses Google AIP syntax with `=` and `AND` operators. You can filter by `region`, `state`, `projectId`, `clusterId`, `displayName`, and `labels`.
+
+          **Available filters**:
+          - `region.provider`: the cloud provider where the cluster is located, such as `aws` or `alicloud`.
+          - `region.name`: the name of the region where the cluster is located, in the format of `regions/{provider}-{region}`, such as `regions/aws-us-east-1`.
+          - `state`: the state of the cluster state, such as `ACTIVE` or `CREATING`.
+          - `projectId`: the ID of the project ID. You can specify multiple values separated by commas.
+          - `clusterId`: the ID of the cluster. You can specify multiple values separated by commas.
+          - `displayName`: the display name of the cluster.
+          - `labels.{key}`: the labels of the cluster labels, such as `labels.environment=production`.
+
+          **Examples**:
+          - `filter=region.provider="aws" AND state="ACTIVE"`
+          - `filter=projectId=12345 AND displayName="my-cluster"`
         in: query
         name: filter
         schema:
           type: string
-      - description: Optional. The order by expression for sorting clusters.
+      - description: The number of individual resources to skip before starting to
+          return results.
         in: query
         name: orderBy
         schema:
           type: string
-      - description: |-
-          The number of individual resources to skip before starting to return results.
-          If the skip value causes the cursor to move past the end of the collection,
-          the response will be 200 OK with an empty result set and no next_page_token.
+      - description: "The number of clusters to skip before returning results. If\
+          \ the value exceeds the total number of clusters, the response is `200`\
+          \ with an empty list and no `nextPageToken`."
         in: query
         name: skip
         schema:
@@ -49,23 +249,60 @@ paths:
               schema:
                 $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1ListClustersResponse'
           description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key does not have permission to access the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal server error.
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Provides a list of TiDB Cloud Serverless clusters in a project.
+      summary: List TiDB Cloud Starter and Essential clusters
       tags:
-      - ServerlessService
+      - ClusterService
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location 'https://serverless.tidbapi.com/v1beta1/clusters' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
     post:
-      operationId: ServerlessService_CreateCluster
+      operationId: ClusterService_CreateCluster
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1Cluster'
-        description: Required. The cluster to be created.
+        description: The cluster to create.
         required: true
       responses:
         "200":
@@ -74,21 +311,68 @@ paths:
               schema:
                 $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1Cluster'
           description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key does not have permission to access the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal server error.
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Creates a new TiDB Serverless cluster.
+      summary: Create a new TiDB Cloud Starter or Essential cluster
       tags:
-      - ServerlessService
+      - ClusterService
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location 'https://serverless.tidbapi.com/v1beta1/clusters' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Content-Type: application/json' \
+          --header 'Accept: application/json' \
+          --data '{
+              "displayName": "test",
+              "labels": {
+                  "tidb.cloud/project": "2293484"
+              },
+              "region": {
+                  "name": "regions/aws-us-east-1"
+              }
+          }'
       x-codegen-request-body-name: cluster
   /clusters/{clusterId}:
     delete:
-      operationId: ServerlessService_DeleteCluster
+      operationId: ClusterService_DeleteCluster
       parameters:
-      - description: Required. The ID of the cluster to be deleted.
+      - description: The ID of the cluster to delete.
         in: path
         name: clusterId
         required: true
@@ -101,33 +385,70 @@ paths:
               schema:
                 $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1Cluster'
           description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key does not have permission to access the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal server error.
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Deletes a specific TiDB Cloud Serverless cluster.
+      summary: Delete a TiDB Cloud Starter or Essential cluster
       tags:
-      - ServerlessService
+      - ClusterService
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location --request DELETE 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
     get:
-      operationId: ServerlessService_GetCluster
+      operationId: ClusterService_GetCluster
       parameters:
-      - description: Required. The ID of the cluster to be retrieved.
+      - description: The ID of the cluster to retrieve.
         in: path
         name: clusterId
         required: true
         schema:
           type: string
       - description: |-
-          Optional. The level of detail to return for the cluster.
+          The detail level of the cluster information to return.
 
-           - BASIC: Only basic information about the cluster is returned.
-           - FULL: All details about the cluster are returned.
+          - `BASIC`: returns only basic cluster information.
+          - `FULL`: returns complete cluster details.
         in: query
         name: view
         schema:
-          $ref: '#/components/schemas/ServerlessService_GetCluster_view_parameter'
+          $ref: '#/components/schemas/ClusterService_GetCluster_view_parameter'
       responses:
         "200":
           content:
@@ -135,20 +456,57 @@ paths:
               schema:
                 $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1Cluster'
           description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key does not have permission to access the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal server error.
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Retrieves details of a specific TiDB Cloud Serverless cluster.
+      summary: Get details of a TiDB Cloud Starter or Essential cluster
       tags:
-      - ServerlessService
+      - ClusterService
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
   /clusters/{cluster.clusterId}:
     patch:
-      operationId: ServerlessService_PartialUpdateCluster
+      operationId: ClusterService_PartialUpdateCluster
       parameters:
-      - description: Output_only. The unique ID of the cluster.
+      - description: The ID of the cluster to update.
         in: path
         name: cluster.clusterId
         required: true
@@ -158,7 +516,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/v1beta1ServerlessServicePartialUpdateClusterBody'
+              $ref: '#/components/schemas/v1beta1ClusterServicePartialUpdateClusterBody'
         required: true
       responses:
         "200":
@@ -167,22 +525,94 @@ paths:
               schema:
                 $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1Cluster'
           description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key does not have permission to access the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal server error.
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Partially updates a specific TiDB Cloud Serverless cluster.
+      summary: Update a TiDB Cloud Starter or Essential cluster
       tags:
-      - ServerlessService
+      - ClusterService
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location --request PATCH 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Content-Type: application/json' \
+          --header 'Accept: application/json' \
+          --data '{
+            "updateMask": "displayName",
+            "cluster": {
+              "displayName": "test",
+              "spendingLimit": {
+                "monthly": 10000
+              },
+              "automatedBackupPolicy": {
+                "startTime": "10:00"
+              },
+              "endpoints": {
+                "public": {
+                  "disabled": false,
+                  "authorizedNetworks": [
+                    {
+                      "startIpAddress": "0.0.0.0",
+                      "endIpAddress": "255.255.255.255",
+                      "displayName": "allow-all"
+                    }
+                  ]
+                }
+              },
+              "labels": {
+                "label1": "label1"
+              },
+              "auditLogConfig": {
+                "enabled": true,
+                "unredacted": true
+              },
+              "autoScaling": {
+                "minRcu": 20000,
+                "maxRcu": 30000
+              }
+            }
+          }'
       x-codegen-request-body-name: body
   /clusters/{clusterId}/password:
     put:
-      operationId: ServerlessService_ChangeRootPassword
+      operationId: ClusterService_ChangeRootPassword
       parameters:
-      - description: Required. The ID of the cluster for which the password is to
-          be changed.
+      - description: The ID of the cluster for which the password is to be changed.
         in: path
         name: clusterId
         required: true
@@ -192,7 +622,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ServerlessServiceChangeRootPasswordBody'
+              $ref: '#/components/schemas/ClusterServiceChangeRootPasswordBody'
         required: true
       responses:
         "200":
@@ -201,19 +631,64 @@ paths:
               schema:
                 $ref: '#/components/schemas/v1beta1ChangeRootPasswordResponse'
           description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key does not have permission to access the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal server error.
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Changes the root password of a specific TiDB Cloud Serverless cluster.
+      summary: Changes the root password of a specific TiDB Cloud Serverless cluster
       tags:
-      - ServerlessService
+      - ClusterService
       x-codegen-request-body-name: body
   /regions:
     get:
-      operationId: ServerlessService_ListRegions
+      description: "Before creating a TiDB Cloud Starter or Essential cluster, you\
+        \ can use this endpoint to list available regions in your organization."
+      operationId: ClusterService_ListRegions
+      parameters:
+      - description: "If specified, only regions of the specified cloud provider will\
+          \ be returned."
+        in: query
+        name: cloudProvider
+        schema:
+          type: string
+      - description: "If specified, only regions that support the specified service\
+          \ plan will be returned."
+        in: query
+        name: servicePlan
+        schema:
+          $ref: '#/components/schemas/ClusterService_ListRegions_servicePlan_parameter'
       responses:
         "200":
           content:
@@ -221,25 +696,113 @@ paths:
               schema:
                 $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1ListRegionsResponse'
           description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key does not have permission to access the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal server error.
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: Provides a list of available regions for TiDB Cloud Serverless clusters.
+      summary: List available regions for an organization
       tags:
-      - ServerlessService
+      - ClusterService
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location 'https://serverless.tidbapi.com/v1beta1/regions' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
+  /regions:listCloudProviders:
+    get:
+      operationId: ClusterService_ListCloudProviders
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/serverlessv1beta1ListCloudProvidersResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key does not have permission to access the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: An unexpected error response.
+      summary: List available cloud providers for an organization
+      tags:
+      - ClusterService
   /clusters:batchCreate:
     post:
-      operationId: ServerlessService_BatchCreateClusters
+      description: "The operation is atomic: it fails for all clusters or succeeds\
+        \ for all clusters (no partial success)."
+      operationId: ClusterService_BatchCreateClusters
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/v1beta1BatchCreateClustersRequest'
-        description: Message for requesting to create a batch of TiDB Cloud Serverless
-          clusters.
+        description: Message for requesting to create a batch of TiDB Cloud Starter
+          and Essential clusters.
         required: true
       responses:
         "200":
@@ -248,21 +811,52 @@ paths:
               schema:
                 $ref: '#/components/schemas/v1beta1BatchCreateClustersResponse'
           description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key does not have permission to access the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal server error.
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: |-
-        Creates new TiDB Cloud Serverless clusters in batch.
-        The operation is atomic: it fails for all clusters or succeeds for all clusters (no partial success).
+      summary: Creates new TiDB Cloud Starter and Essential clusters in batch
       tags:
-      - ServerlessService
+      - ClusterService
       x-codegen-request-body-name: body
   /clusters:batchGet:
     get:
-      operationId: ServerlessService_BatchGetClusters
+      description: |-
+        The operation is atomic: it fails for all clusters or succeeds for all clusters (no partial success).
+        For situations requiring partial failures, ListClusters method should be used.
+      operationId: ClusterService_BatchGetClusters
       parameters:
       - description: A maximum of 1000 clusters can be get in a batch.
         explode: true
@@ -274,15 +868,11 @@ paths:
             type: string
           type: array
         style: form
-      - description: |-
-          Optional. The level of detail to return for the cluster.
-
-           - BASIC: Only basic information about the cluster is returned.
-           - FULL: All details about the cluster are returned.
+      - description: The level of detail to return for the cluster.
         in: query
         name: view
         schema:
-          $ref: '#/components/schemas/ServerlessService_GetCluster_view_parameter'
+          $ref: '#/components/schemas/ClusterService_GetCluster_view_parameter'
       responses:
         "200":
           content:
@@ -290,57 +880,75 @@ paths:
               schema:
                 $ref: '#/components/schemas/v1beta1BatchGetClustersResponse'
           description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: The API key does not have permission to access the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/googlerpcStatus'
+          description: Internal server error.
         default:
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/googlerpcStatus'
           description: An unexpected error response.
-      summary: |-
-        Retrieves details of TiDB Cloud Serverless clusters in batch.
-        The operation is atomic: it fails for all clusters or succeeds for all clusters (no partial success).
-        For situations requiring partial failures, ListClusters method should be used.
+      summary: Retrieves details of TiDB Cloud Starter and Essential clusters in batch
       tags:
-      - ServerlessService
+      - ClusterService
 components:
   schemas:
-    AzureBlobCloudStorageAzureBlobAuthType:
-      description: " - SAS_TOKEN: The access method is sas token."
-      enum:
-      - SAS_TOKEN
-      type: string
-    ClusterAuditLogCloudStorage:
-      description: Message for audit log cloud storage.
-      properties:
-        type:
-          allOf:
-          - $ref: '#/components/schemas/v1beta1ClusterCloudStorage'
-          description: Required. The type of cloud storage for audit logs.
-          type: object
-        s3:
-          $ref: '#/components/schemas/v1beta1ClusterS3CloudStorage'
-        gcs:
-          $ref: '#/components/schemas/v1beta1ClusterGCSCloudStorage'
-        azureBlob:
-          $ref: '#/components/schemas/v1beta1ClusterAzureBlobCloudStorage'
-        oss:
-          $ref: '#/components/schemas/v1beta1ClusterOSSCloudStorage'
-      required:
-      - type
-      type: object
     ClusterClusterPlan:
+      description: |-
+        The plan of the cluster.
+
+        - `STARTER`: [TiDB Cloud Starter](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#tidb-cloud-serverless)
+        - `ESSENTIAL`: [TiDB Cloud Essential](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#essential).
       enum:
       - STARTER
       - ESSENTIAL
-      title: |-
-        - STARTER: alicloud starter plan
-         - ESSENTIAL: alicloud essential plan
       type: string
+    ClusterServiceChangeRootPasswordBody:
+      description: Message for requesting to change the root password of a TiDB Cloud
+        Starter or Essential cluster.
+      example:
+        password: password
+      properties:
+        password:
+          description: The new root password for the cluster.
+          type: string
+      required:
+      - password
+      type: object
     ClusterSpendingLimit:
       description: Message for spending limit configuration.
       properties:
         monthly:
-          description: Optional. Maximum monthly spending limit in USD cents.
+          description: "The maximum spending limit for the cluster per month, in USD\
+            \ cents."
           format: int32
           type: integer
       type: object
@@ -348,11 +956,11 @@ components:
       description: Message for private endpoint to securely connect to the cluster.
       properties:
         host:
-          description: Output_only. The hostname of the private endpoint.
+          description: The hostname of the private endpoint.
           readOnly: true
           type: string
         port:
-          description: Output_only. The port of the private endpoint.
+          description: The port number of the private endpoint.
           format: int32
           readOnly: true
           type: integer
@@ -373,71 +981,64 @@ components:
       description: Message for public endpoint to connect to the cluster.
       properties:
         host:
-          description: Output_only. The hostname of the public endpoint.
+          description: The hostname of the public endpoint.
           readOnly: true
           type: string
         port:
-          description: Output_only. The port of the public endpoint.
           format: int32
           readOnly: true
+          title: The port number of the public endpoint
           type: integer
         disabled:
-          description: Optional. Whether the public endpoint is disabled.
+          description: Indicates whether the public endpoint is disabled.
           type: boolean
         authorizedNetworks:
+          description: The list of networks that are allowed to connect to the cluster.
           items:
             $ref: '#/components/schemas/EndpointsPublicAuthorizedNetwork'
-          title: The list of networks that are allowed to connect to the cluster
           type: array
       type: object
     EndpointsPublicAuthorizedNetwork:
       properties:
         startIpAddress:
+          description: The starting IP address of the authorized network range.
           type: string
         endIpAddress:
+          description: The ending IP address of the authorized network range.
           type: string
         displayName:
+          description: The display name of the authorized network.
           type: string
       required:
       - displayName
       - endIpAddress
       - startIpAddress
       type: object
-    GCSCloudStorageGCSAuthType:
-      description: " - SERVICE_ACCOUNT_KEY: The access method is service account key."
-      enum:
-      - SERVICE_ACCOUNT_KEY
-      type: string
-    OSSCloudStorageOSSAuthType:
-      description: " - ACCESS_KEY: The access method is access key."
-      enum:
-      - ACCESS_KEY
-      type: string
     PrivateALICLOUD:
-      description: Message for ALICLOUD Private Service information.
+      description: "The [Alibaba Cloud PrivateLink](https://www.alibabacloud.com/help/en/privatelink/product-overview/what-is-a-private-network-connection)\
+        \ configuration for private access."
       properties:
         serviceName:
-          description: Output_only. The ALICLOUD service name for private access.
+          description: The Alibaba Cloud service name for private access.
           readOnly: true
           type: string
         availabilityZone:
-          description: Output_only. The availability zones that the service is available
-            in.
+          description: A list of availability zones where the service is available.
           items:
             type: string
           readOnly: true
           type: array
       type: object
     PrivateAWS:
-      description: Message for AWS PrivateLink information.
+      description: "The [AWS PrivateLink](https://aws.amazon.com/privatelink/) configuration\
+        \ details for private access."
       properties:
         serviceName:
-          description: Output_only. The AWS service name for private access.
+          description: The AWS service name for private access.
           readOnly: true
           type: string
         availabilityZone:
-          description: Output_only. The availability zones that the service is available
-            in.
+          description: A list of availability zones where the service is available.
           items:
             type: string
           readOnly: true
@@ -447,30 +1048,9 @@ components:
       description: Message for GCP Private Service information.
       properties:
         serviceAttachmentName:
-          description: Output_only. The target GCP service attachment name for private
-            access.
+          description: The target GCP service attachment name for private access.
           readOnly: true
           type: string
-      type: object
-    S3CloudStorageS3AuthType:
-      description: |2-
-         - ROLE_ARN: The access method is role arn.
-         - ACCESS_KEY: The access method is access key.
-      enum:
-      - ROLE_ARN
-      - ACCESS_KEY
-      type: string
-    ServerlessServiceChangeRootPasswordBody:
-      description: Message for requesting to change the root password of a TiDB Cloud
-        Serverless cluster.
-      example:
-        password: password
-      properties:
-        password:
-          description: Required. The new root password for the cluster.
-          type: string
-      required:
-      - password
       type: object
     commonv1beta1ClusterState:
       description: |-
@@ -524,14 +1104,14 @@ components:
         - Premium
       properties:
         name:
-          description: "The unique name of the region, formatted as `regions/{region_id}`.\
-            \ e.g. `regions/aws-us-west-2`."
+          description: "The unique name of the region, in the format of `regions/{region_id}`.\
+            \ For example, `regions/aws-us-west-2`."
           example: regions/aws-us-west-2
           pattern: ^regions/(aws|gcp|azure)-(.+)$
           type: string
         regionId:
-          description: "The unique identifier of the region, formatted as `{cloud_provider}-{region_code}`.\
-            \ e.g. `aws-us-west-2`."
+          description: "The unique identifier for the region, in the format of `{cloud_provider}-{region_code}`.\
+            \ For example, `aws-us-west-2`."
           example: aws-us-west-2
           pattern: "^(aws|gcp|azure|alicloud)-[a-z0-9-]+$"
           readOnly: true
@@ -539,27 +1119,34 @@ components:
         cloudProvider:
           allOf:
           - $ref: '#/components/schemas/v1beta1RegionCloudProvider'
-          description: "The cloud provider for the region, e.g. `aws`, `gcp`, `azure`,\
-            \ or `alicloud`."
+          description: |-
+            The cloud provider that offers the region.
+
+            - `"aws"`: Amazon Web Services
+
+            - `"gcp"`: Google Cloud
+
+            - `"azure"`: Microsoft Azure
+
+            - `"alicloud"`: Alibaba Cloud
           example: aws
           type: object
         displayName:
-          description: "A user-friendly display name for the region, e.g. `Oregon\
+          description: "A human-readable name for the region. For example, `Oregon\
             \ (us-west-2)`."
           example: Oregon (us-west-2)
           readOnly: true
           type: string
         provider:
-          description: "The cloud provider name for the region, e.g. `aws`, `gcp`,\
-            \ `azure`, or `alicloud`. Deprecated, use `cloudProvider` instead."
+          description: "**Deprecated.** Use `cloudProvider` instead. The name of the\
+            \ cloud provider. For example, `aws`, `gcp`, `azure`, or `alicloud`."
           example: aws
           nullable: true
           readOnly: true
           title: Deprecated
           type: string
         servicePlans:
-          description: Optional service plans available in the region. For Next-Gen
-            clusters only.
+          description: The service plans available in this region.
           example:
           - Starter
           - Essential
@@ -739,31 +1326,42 @@ components:
           type: string
       type: object
     serverlessv1beta1ClusterHighAvailabilityType:
+      description: |-
+        The high availability configuration for the cluster.
+
+        - `ZONAL`: high availability within a single availability zone. For more information, see [Zonal high availability architecture](https://docs.pingcap.com/tidbcloud/serverless-high-availability/#zonal-high-availability-architecture).
+        - `REGIONAL`: high availability across multiple availability zones within a region. For more information, see [Regional high availability architecture](https://docs.pingcap.com/tidbcloud/serverless-high-availability/#regional-high-availability-architecture).
       enum:
       - ZONAL
       - REGIONAL
-      title: |-
-        - ZONAL: High availability within a single zone
-         - REGIONAL: High availability across multiple zones within a region
       type: string
     serverlessv1beta1ClusterView:
-      description: |-
-        Enum for the different types of detail view to be returned for a TiDB Cloud Serverless cluster.
-
-         - BASIC: Only basic information about the cluster is returned.
-         - FULL: All details about the cluster are returned.
+      description: Enum for the different types of detail view to be returned for
+        a TiDB Cloud Starter or Essential cluster.
       enum:
       - BASIC
       - FULL
       type: string
+    serverlessv1beta1ListCloudProvidersResponse:
+      example:
+        cloudProviders:
+        - aws
+        - aws
+      properties:
+        cloudProviders:
+          description: The list of cloud providers.
+          items:
+            $ref: '#/components/schemas/v1beta1RegionCloudProvider'
+          type: array
+      type: object
     tidb_cloud_open_apiserverlessv1beta1Cluster:
-      description: Message for a serverless TiDB cluster resource.
+      description: Message for a TiDB Cloud Starter or Essential cluster.
       example:
         encryptionConfig: "{}"
         endpoints: "{}"
         autoScaling: "{}"
         automatedBackupPolicy: "{}"
-        displayName: displayName
+        displayName: foo-bar
         annotations:
           key: annotations
         updateTime: 2000-01-23T04:56:07.000+00:00
@@ -773,6 +1371,7 @@ components:
           key: labels
         clusterPlan: "{}"
         spendingLimit: "{}"
+        servicePlan: "{}"
         createdBy: createdBy
         createTime: 2000-01-23T04:56:07.000+00:00
         auditLogConfig: "{}"
@@ -784,37 +1383,45 @@ components:
         rootPassword: my-shining-password
       properties:
         name:
-          description: Output_only. The unique name of the cluster.
+          description: "The unique identifier for the TiDB cluster, which is generated\
+            \ by the API and follows the format `clusters/{clusterId}`."
           readOnly: true
           type: string
         clusterId:
-          description: Output_only. The unique ID of the cluster.
+          description: The ID of the cluster.
           readOnly: true
           type: string
         displayName:
-          description: Required. User friendly display name of the cluster.
+          description: The user-defined name of the cluster.
+          example: foo-bar
+          maxLength: 64
+          minLength: 4
+          pattern: "^[A-Za-z0-9][-A-Za-z0-9]{2,62}[A-Za-z0-9]$"
           type: string
         region:
           allOf:
           - $ref: '#/components/schemas/commonv1beta1Region'
-          description: Required. Region where the cluster will be created.
+          description: The region where the cluster is deployed.
           type: object
         spendingLimit:
           allOf:
           - $ref: '#/components/schemas/ClusterSpendingLimit'
-          description: Optional. The spending limit for the cluster.
+          description: "The [spending limit](https://docs.pingcap.com/tidbcloud/tidb-cloud-glossary/#spending-limit)\
+            \ for the cluster."
           type: object
         automatedBackupPolicy:
           allOf:
           - $ref: '#/components/schemas/v1beta1ClusterAutomatedBackupPolicy'
-          description: Optional. Automated backup policy to set on the cluster.
+          description: The schedule and retention rules for automated database backups.
           type: object
         endpoints:
           allOf:
           - $ref: '#/components/schemas/v1beta1ClusterEndpoints'
-          description: Optional. The endpoints for connecting to the cluster.
+          description: The connection endpoints for accessing the cluster.
           type: object
         rootPassword:
+          description: "The root password of the cluster. It must be between 8 and\
+            \ 64 characters long and can contain letters, numbers, and special characters."
           example: my-shining-password
           maxLength: 64
           minLength: 8
@@ -823,85 +1430,95 @@ components:
         encryptionConfig:
           allOf:
           - $ref: '#/components/schemas/v1beta1ClusterEncryptionConfig'
-          description: Optional. Encryption settings for the cluster.
+          description: The data encryption settings for the cluster.
           type: object
         highAvailabilityType:
           $ref: '#/components/schemas/serverlessv1beta1ClusterHighAvailabilityType'
         version:
-          description: Output_only. The TiDB version of the cluster.
+          description: The TiDB version of the cluster.
           readOnly: true
           type: string
         createdBy:
-          description: Output_only. The email of the creator of the cluster.
+          description: The email address of the user who create the cluster.
           readOnly: true
           type: string
         userPrefix:
-          description: Output_only. The unique prefix in SQL user name.
+          description: "The unique prefix automatically generated for SQL usernames\
+            \ on this cluster. TiDB Cloud uses this prefix to distinguish between\
+            \ clusters. For more information, see [User name prefix](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#user-name-prefix)."
           readOnly: true
           type: string
         state:
           allOf:
           - $ref: '#/components/schemas/commonv1beta1ClusterState'
-          description: Output_only. The current state of the cluster.
+          description: The current state of the cluster.
           type: object
         labels:
           additionalProperties:
             type: string
           description: |-
-            Optional. The labels for the cluster.
-            tidb.cloud/organization. The label for the cluster organization id.
-            tidb.cloud/project. The label for the cluster project id.
+            The labels for the cluster.
+
+            - `tidb.cloud/organization`: the ID of the organization where the cluster belongs.
+            - `tidb.cloud/project`: the ID of the project where the cluster belongs.
           type: object
         annotations:
           additionalProperties:
             type: string
           description: |-
-            OUTPUT_ONLY. The annotations for the cluster.
-            tidb.cloud/has-set-password. The annotation for whether the cluster has set password.
-            tidb.cloud/available-features. The annotation for the available features of the cluster.
+            The annotations for the cluster. The following lists some predefined annotations.
+
+            - `tidb.cloud/has-set-password`: indicates whether the cluster has a root password set.
+            - `tidb.cloud/available-features`: lists available features of the cluster.
           readOnly: true
           type: object
         createTime:
-          description: Output_only. Timestamp when the cluster was created.
+          description: "The timestamp when the cluster was created, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)\
+            \ format."
           format: date-time
           readOnly: true
           type: string
         updateTime:
-          description: Output_only. Timestamp when the cluster was last updated.
+          description: "The timestamp when the cluster was last updated, in the [ISO\
+            \ 8601](https://en.wikipedia.org/wiki/ISO_8601) format."
           format: date-time
           readOnly: true
           type: string
         auditLogConfig:
           allOf:
           - $ref: '#/components/schemas/v1beta1ClusterAuditLogConfig'
-          description: Optional. The audit log configuration for the cluster.
+          description: The audit log configuration for the cluster.
           type: object
         clusterPlan:
           allOf:
           - $ref: '#/components/schemas/ClusterClusterPlan'
-          description: Output_only. The plan of the cluster.
           type: object
         autoScaling:
           allOf:
           - $ref: '#/components/schemas/v1beta1ClusterAutoScaling'
-          description: Optional. The auto scaling config for the cluster.
+          description: The auto-scaling configuration for the cluster.
+          type: object
+        servicePlan:
+          allOf:
+          - $ref: '#/components/schemas/commonv1beta1ServicePlan'
           type: object
       required:
       - displayName
       - region
       type: object
     tidb_cloud_open_apiserverlessv1beta1CreateClusterRequest:
-      description: Message for requesting to create a TiDB Cloud Serverless cluster.
+      description: Message for requesting to create a TiDB Cloud Starter or Essential
+        cluster.
       properties:
         cluster:
           allOf:
           - $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1Cluster'
-          description: Required. The cluster to be created.
+          description: The cluster to create.
           type: object
       type: object
     tidb_cloud_open_apiserverlessv1beta1ListClustersResponse:
-      description: Responses message to the request for listing of TiDB Cloud Serverless
-        clusters.
+      description: Responses message to the request for listing of TiDB Cloud Starter
+        and Essential clusters.
       example:
         totalSize: 0
         nextPageToken: nextPageToken
@@ -910,7 +1527,7 @@ components:
           endpoints: "{}"
           autoScaling: "{}"
           automatedBackupPolicy: "{}"
-          displayName: displayName
+          displayName: foo-bar
           annotations:
             key: annotations
           updateTime: 2000-01-23T04:56:07.000+00:00
@@ -920,6 +1537,7 @@ components:
             key: labels
           clusterPlan: "{}"
           spendingLimit: "{}"
+          servicePlan: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           auditLogConfig: "{}"
@@ -933,7 +1551,7 @@ components:
           endpoints: "{}"
           autoScaling: "{}"
           automatedBackupPolicy: "{}"
-          displayName: displayName
+          displayName: foo-bar
           annotations:
             key: annotations
           updateTime: 2000-01-23T04:56:07.000+00:00
@@ -943,6 +1561,7 @@ components:
             key: labels
           clusterPlan: "{}"
           spendingLimit: "{}"
+          servicePlan: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           auditLogConfig: "{}"
@@ -954,21 +1573,23 @@ components:
           rootPassword: my-shining-password
       properties:
         clusters:
-          description: A list of clusters.
+          description: A list of clusters that match the query.
           items:
             $ref: '#/components/schemas/tidb_cloud_open_apiserverlessv1beta1Cluster'
           type: array
         nextPageToken:
-          description: Token provided to retrieve the next page of results.
+          description: The token to retrieve the next page of results. Use this value
+            as the `pageToken` parameter in the next request. This field is empty
+            when there are no more pages.
           type: string
         totalSize:
-          description: Total number of available clusters.
+          description: The total number of clusters that match the query.
           format: int64
           type: integer
       type: object
     tidb_cloud_open_apiserverlessv1beta1ListRegionsResponse:
       description: Responses message to the request for listing of available regions
-        in TiDB Cloud Serverless.
+        in TiDB Cloud Starter and Essential.
       example:
         regions:
         - regionId: aws-us-west-2
@@ -997,8 +1618,8 @@ components:
           type: array
       type: object
     v1beta1BatchCreateClustersRequest:
-      description: Message for requesting to create a batch of TiDB Cloud Serverless
-        clusters.
+      description: Message for requesting to create a batch of TiDB Cloud Starter
+        and Essential clusters.
       properties:
         requests:
           description: |-
@@ -1012,14 +1633,14 @@ components:
       type: object
     v1beta1BatchCreateClustersResponse:
       description: Responses message to the request for creating a batch of TiDB Cloud
-        Serverless clusters.
+        Starter and Essential clusters.
       example:
         clusters:
         - encryptionConfig: "{}"
           endpoints: "{}"
           autoScaling: "{}"
           automatedBackupPolicy: "{}"
-          displayName: displayName
+          displayName: foo-bar
           annotations:
             key: annotations
           updateTime: 2000-01-23T04:56:07.000+00:00
@@ -1029,6 +1650,7 @@ components:
             key: labels
           clusterPlan: "{}"
           spendingLimit: "{}"
+          servicePlan: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           auditLogConfig: "{}"
@@ -1042,7 +1664,7 @@ components:
           endpoints: "{}"
           autoScaling: "{}"
           automatedBackupPolicy: "{}"
-          displayName: displayName
+          displayName: foo-bar
           annotations:
             key: annotations
           updateTime: 2000-01-23T04:56:07.000+00:00
@@ -1052,6 +1674,7 @@ components:
             key: labels
           clusterPlan: "{}"
           spendingLimit: "{}"
+          servicePlan: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           auditLogConfig: "{}"
@@ -1070,14 +1693,14 @@ components:
       type: object
     v1beta1BatchGetClustersResponse:
       description: Responses message to the request for retrieving a batch of TiDB
-        Cloud Serverless clusters.
+        Cloud Starter and Essential clusters.
       example:
         clusters:
         - encryptionConfig: "{}"
           endpoints: "{}"
           autoScaling: "{}"
           automatedBackupPolicy: "{}"
-          displayName: displayName
+          displayName: foo-bar
           annotations:
             key: annotations
           updateTime: 2000-01-23T04:56:07.000+00:00
@@ -1087,6 +1710,7 @@ components:
             key: labels
           clusterPlan: "{}"
           spendingLimit: "{}"
+          servicePlan: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           auditLogConfig: "{}"
@@ -1100,7 +1724,7 @@ components:
           endpoints: "{}"
           autoScaling: "{}"
           automatedBackupPolicy: "{}"
-          displayName: displayName
+          displayName: foo-bar
           annotations:
             key: annotations
           updateTime: 2000-01-23T04:56:07.000+00:00
@@ -1110,6 +1734,7 @@ components:
             key: labels
           clusterPlan: "{}"
           spendingLimit: "{}"
+          servicePlan: "{}"
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           auditLogConfig: "{}"
@@ -1128,42 +1753,29 @@ components:
       type: object
     v1beta1ChangeRootPasswordResponse:
       description: Responses message to the request for changing the root password
-        of a TiDB Cloud Serverless cluster.
+        of a TiDB Cloud Starter or Essential cluster.
       type: object
     v1beta1ClusterAuditLogConfig:
       description: Message for audit log configuration.
       properties:
         enabled:
-          description: Optional. Whether audit log is enabled.
+          description: Whether audit log is enabled.
           nullable: true
           type: boolean
         unredacted:
-          description: Optional. Whether unredacted the audit log.
+          description: Whether unredacted the audit log.
           nullable: true
           type: boolean
-        cloudStorage:
-          allOf:
-          - $ref: '#/components/schemas/ClusterAuditLogCloudStorage'
-          description: Optional. The cloud storage for audit logs.
-          type: object
-        rotationIntervalMinutes:
-          description: Optional. The rotation interval in minutes for audit logs.
-          format: int32
-          nullable: true
-          type: integer
-        rotationSizeMib:
-          description: Optional. The rotation size in MiB for audit logs.
-          format: int32
-          nullable: true
-          type: integer
       type: object
     v1beta1ClusterAutoScaling:
       description: Message for auto scaling configuration.
       properties:
         minRcu:
+          description: The minimum number of Request Capacity Units (RCUs) for auto-scaling.
           format: int64
           type: integer
         maxRcu:
+          description: The maximum number of Request Capacity Units (RCUs) for auto-scaling.
           format: int64
           type: integer
       type: object
@@ -1171,51 +1783,19 @@ components:
       description: Message for automated backup configuration for a cluster.
       properties:
         startTime:
-          description: "Optional. When automated backups should start, in HH:mm format,\
-            \ UTC."
+          description: The UTC time of day in `HH:mm` format when the automated backup
+            starts.
           type: string
         retentionDays:
-          description: Optional. Number of days to retain automated backups.
+          description: The number of days to retain automated backups.
           format: int32
           type: integer
       type: object
-    v1beta1ClusterAzureBlobCloudStorage:
-      properties:
-        uri:
-          description: "Required. The Azure Blob URI. For example: azure://<account>.blob.core.windows.net/<container>/<path>\
-            \ or https://<account>.blob.core.windows.net/<container>/<path>."
-          type: string
-        authType:
-          allOf:
-          - $ref: '#/components/schemas/AzureBlobCloudStorageAzureBlobAuthType'
-          description: Required. The auth method of Azure Blob.
-          type: object
-        sasToken:
-          description: Optional. The sas token.
-          type: string
-      required:
-      - authType
-      - uri
-      type: object
-    v1beta1ClusterCloudStorage:
-      description: |2-
-         - TiDB_CLOUD: TiDB Cloud's own cloud storage.
-         - S3: Amazon S3 cloud storage.
-         - GCS: Google Cloud Storage.
-         - AZURE_BLOB: Azure Blob Storage.
-         - OSS: Alibaba Cloud OSS.
-      enum:
-      - TiDB_CLOUD
-      - S3
-      - GCS
-      - AZURE_BLOB
-      - OSS
-      type: string
     v1beta1ClusterEncryptionConfig:
       description: Message for encryption settings for a cluster.
       properties:
         enhancedEncryptionEnabled:
-          description: Optional. Whether enhanced encryption for cluster data is enabled.
+          description: Indicates whether enhanced encryption for cluster data is enabled.
           type: boolean
       type: object
     v1beta1ClusterEndpoints:
@@ -1224,136 +1804,71 @@ components:
         public:
           allOf:
           - $ref: '#/components/schemas/EndpointsPublic'
-          description: Optional. Public endpoint to connect to the cluster.
+          description: "The public endpoint configuration for connecting to the cluster.\
+            \ For more information, see [Network](https://docs.pingcap.com/tidbcloud/connect-to-tidb-cluster-serverless/#network)."
           type: object
         private:
           allOf:
           - $ref: '#/components/schemas/EndpointsPrivate'
-          description: Output_only. Private endpoint to securely connect to the cluster.
+          description: "The private endpoint for securely connecting to the cluster.\
+            \ For more information, see [Network](https://docs.pingcap.com/tidbcloud/connect-to-tidb-cluster-serverless/#network)."
           type: object
       type: object
-    v1beta1ClusterGCSCloudStorage:
+    v1beta1ClusterServicePartialUpdateClusterBody:
+      description: Message for requesting a partial update on a TiDB Cloud Starter
+        or Essential cluster.
       properties:
-        uri:
-          description: "Required. The GCS URI. For example: gs://<bucket>/<path>."
-          type: string
-        authType:
-          allOf:
-          - $ref: '#/components/schemas/GCSCloudStorageGCSAuthType'
-          description: Required. The auth method of GCS.
-          type: object
-        serviceAccountKey:
-          description: Optional. The service account key.
+        cluster:
+          $ref: '#/components/schemas/v1beta1ClusterServicePartialUpdateClusterBody_cluster'
+        updateMask:
+          description: Specifies which fields to update in the cluster.
           type: string
       required:
-      - authType
-      - uri
-      type: object
-    v1beta1ClusterOSSCloudStorage:
-      properties:
-        uri:
-          description: "Required. The OSS URI. For example: oss://<bucket>/<path>."
-          type: string
-        authType:
-          allOf:
-          - $ref: '#/components/schemas/OSSCloudStorageOSSAuthType'
-          description: Required. The auth method of OSS.
-          type: object
-        accessKey:
-          allOf:
-          - $ref: '#/components/schemas/v1beta1ClusterOSSCloudStorageAccessKey'
-          description: Optional. The access key.
-          type: object
-      required:
-      - authType
-      - uri
-      type: object
-    v1beta1ClusterOSSCloudStorageAccessKey:
-      properties:
-        id:
-          description: Required. The access key id.
-          type: string
-        secret:
-          description: Required. The access key secret. This field is input-only.
-          type: string
-      required:
-      - id
-      - secret
-      type: object
-    v1beta1ClusterS3CloudStorage:
-      properties:
-        uri:
-          description: "Required. The URI of the S3 folder. For example: s3://<bucket>/<path>."
-          type: string
-        authType:
-          allOf:
-          - $ref: '#/components/schemas/S3CloudStorageS3AuthType'
-          description: Required. The auth method of S3.
-          type: object
-        accessKey:
-          allOf:
-          - $ref: '#/components/schemas/v1beta1ClusterS3CloudStorageAccessKey'
-          description: Optional. The access key of the S3.
-          type: object
-        roleArn:
-          description: Optional. The role arn of the S3.
-          type: string
-      required:
-      - authType
-      - uri
-      type: object
-    v1beta1ClusterS3CloudStorageAccessKey:
-      properties:
-        id:
-          description: Required. The access key id of the S3.
-          type: string
-        secret:
-          description: Required. The secret access key of the S3.
-          type: string
-      required:
-      - id
-      - secret
+      - updateMask
       type: object
     v1beta1PartialUpdateClusterRequestPartialUpdateCluster:
+      description: The updated cluster configuration.
       properties:
         clusterId:
-          description: Output_only. The unique ID of the cluster.
+          description: The ID of the cluster to update.
           type: string
         displayName:
-          description: Required. User friendly display name of the cluster.
+          description: The user-defined name of the cluster.
           type: string
         spendingLimit:
           allOf:
           - $ref: '#/components/schemas/ClusterSpendingLimit'
-          description: Optional. The spending limit for the cluster.
+          description: "The [spending limit](https://docs.pingcap.com/tidbcloud/tidb-cloud-glossary/#spending-limit)\
+            \ for the cluster."
           type: object
         automatedBackupPolicy:
           allOf:
           - $ref: '#/components/schemas/v1beta1ClusterAutomatedBackupPolicy'
-          description: Optional. Automated backup policy to set on the cluster.
+          description: The schedule and retention rules for automated database backups.
           type: object
         endpoints:
           allOf:
           - $ref: '#/components/schemas/v1beta1ClusterEndpoints'
-          description: Optional. The endpoints for connecting to the cluster.
+          description: The connection endpoints for accessing the cluster.
           type: object
         labels:
           additionalProperties:
             type: string
           description: |-
-            Optional. The labels for the cluster.
-            tidb.cloud/organization. The label for the cluster organization id.
-            tidb.cloud/project. The label for the cluster project id.
+            The labels for the cluster.
+
+            - `tidb.cloud/organization`: the ID of the organization where the cluster belongs.
+            - `tidb.cloud/project`: the ID of the project where the cluster belongs.
           type: object
         auditLogConfig:
           allOf:
           - $ref: '#/components/schemas/v1beta1ClusterAuditLogConfig'
-          description: Optional. The audit log configuration for the cluster.
+          description: The audit log configuration for the cluster.
           type: object
         autoScaling:
           allOf:
           - $ref: '#/components/schemas/v1beta1ClusterAutoScaling'
-          description: Optional. The auto scaling config for the cluster.
+          description: The auto-scaling configuration for the cluster.
           type: object
       required:
       - clusterId
@@ -1372,63 +1887,58 @@ components:
       - azure
       - alicloud
       type: string
-    v1beta1ServerlessServicePartialUpdateClusterBody:
-      description: Message for requesting a partial update on a TiDB Cloud Serverless
-        cluster.
-      properties:
-        cluster:
-          $ref: '#/components/schemas/Required__The_cluster_to_be_updated_'
-        updateMask:
-          description: Required. The update mask indicating which fields are to be
-            updated.
-          type: string
-      required:
-      - updateMask
-      type: object
-    ServerlessService_GetCluster_view_parameter:
+    ClusterService_GetCluster_view_parameter:
       enum:
       - BASIC
       - FULL
       type: string
-    Required__The_cluster_to_be_updated_:
-      description: Required. The cluster to be updated.
+    ClusterService_ListRegions_servicePlan_parameter:
+      enum:
+      - Starter
+      - Essential
+      - Premium
+      - BYOC
+      type: string
+    v1beta1ClusterServicePartialUpdateClusterBody_cluster:
+      description: The updated cluster configuration.
       properties:
         displayName:
-          description: Required. User friendly display name of the cluster.
+          description: The user-defined name of the cluster.
           type: string
         spendingLimit:
           allOf:
           - $ref: '#/components/schemas/ClusterSpendingLimit'
-          description: Optional. The spending limit for the cluster.
+          description: "The [spending limit](https://docs.pingcap.com/tidbcloud/tidb-cloud-glossary/#spending-limit)\
+            \ for the cluster."
           type: object
         automatedBackupPolicy:
           allOf:
           - $ref: '#/components/schemas/v1beta1ClusterAutomatedBackupPolicy'
-          description: Optional. Automated backup policy to set on the cluster.
+          description: The schedule and retention rules for automated database backups.
           type: object
         endpoints:
           allOf:
           - $ref: '#/components/schemas/v1beta1ClusterEndpoints'
-          description: Optional. The endpoints for connecting to the cluster.
+          description: The connection endpoints for accessing the cluster.
           type: object
         labels:
           additionalProperties:
             type: string
           description: |-
-            Optional. The labels for the cluster.
-            tidb.cloud/organization. The label for the cluster organization id.
-            tidb.cloud/project. The label for the cluster project id.
+            The labels for the cluster.
+
+            - `tidb.cloud/organization`: the ID of the organization where the cluster belongs.
+            - `tidb.cloud/project`: the ID of the project where the cluster belongs.
           type: object
         auditLogConfig:
           allOf:
           - $ref: '#/components/schemas/v1beta1ClusterAuditLogConfig'
-          description: Optional. The audit log configuration for the cluster.
+          description: The audit log configuration for the cluster.
           type: object
         autoScaling:
           allOf:
           - $ref: '#/components/schemas/v1beta1ClusterAutoScaling'
-          description: Optional. The auto scaling config for the cluster.
+          description: The auto-scaling configuration for the cluster.
           type: object
-      title: Required. The cluster to be updated.
       type: object
 x-original-swagger-version: "2.0"

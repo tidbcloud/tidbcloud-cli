@@ -145,8 +145,8 @@ func SpendingLimitCmd(h *internal.Helper) *cobra.Command {
 				return errors.Errorf("invalid monthly spending limit %d", monthly)
 			}
 
-			body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
-				Cluster: &cluster.RequiredTheClusterToBeUpdated{
+			body := &cluster.V1beta1ClusterServicePartialUpdateClusterBody{
+				Cluster: &cluster.V1beta1ClusterServicePartialUpdateClusterBodyCluster{
 					SpendingLimit: &cluster.ClusterSpendingLimit{},
 				},
 			}

@@ -59,8 +59,8 @@ func (suite *SpendingLimitSuite) TestSetSpendingLimit() {
 
 	clusterID := "0"
 	var monthly int32 = 10
-	body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
-		Cluster: &cluster.RequiredTheClusterToBeUpdated{
+	body := &cluster.V1beta1ClusterServicePartialUpdateClusterBody{
+		Cluster: &cluster.V1beta1ClusterServicePartialUpdateClusterBodyCluster{
 			SpendingLimit: &cluster.ClusterSpendingLimit{},
 		},
 	}

@@ -47,11 +47,11 @@ type TiDBCloudClient interface {
 
 	DeleteCluster(ctx context.Context, clusterId string) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)
 
-	GetCluster(ctx context.Context, clusterId string, view cluster.ServerlessServiceGetClusterViewParameter) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)
+	GetCluster(ctx context.Context, clusterId string, view cluster.ClusterServiceGetClusterViewParameter) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)
 
 	ListClusters(ctx context.Context, filter *string, pageSize *int32, pageToken *string, orderBy *string, skip *int32) (*cluster.TidbCloudOpenApiserverlessv1beta1ListClustersResponse, error)
 
-	PartialUpdateCluster(ctx context.Context, clusterId string, body *cluster.V1beta1ServerlessServicePartialUpdateClusterBody) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)
+	PartialUpdateCluster(ctx context.Context, clusterId string, body *cluster.V1beta1ClusterServicePartialUpdateClusterBody) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error)
 
 	ListProviderRegions(ctx context.Context) (*cluster.TidbCloudOpenApiserverlessv1beta1ListRegionsResponse, error)
 
@@ -177,7 +177,7 @@ func NewClientDelegateWithApiKey(publicKey string, privateKey string, serverless
 }
 
 func (d *ClientDelegate) CreateCluster(ctx context.Context, body *cluster.TidbCloudOpenApiserverlessv1beta1Cluster) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
-	r := d.sc.ServerlessServiceAPI.ServerlessServiceCreateCluster(ctx)
+	r := d.sc.ClusterServiceAPI.ClusterServiceCreateCluster(ctx)
 	if body != nil {
 		r = r.Cluster(*body)
 	}
@@ -186,24 +186,24 @@ func (d *ClientDelegate) CreateCluster(ctx context.Context, body *cluster.TidbCl
 }
 
 func (d *ClientDelegate) DeleteCluster(ctx context.Context, clusterId string) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
-	c, h, err := d.sc.ServerlessServiceAPI.ServerlessServiceDeleteCluster(ctx, clusterId).Execute()
+	c, h, err := d.sc.ClusterServiceAPI.ClusterServiceDeleteCluster(ctx, clusterId).Execute()
 	return c, parseError(err, h)
 }
 
-func (d *ClientDelegate) GetCluster(ctx context.Context, clusterId string, view cluster.ServerlessServiceGetClusterViewParameter) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
-	r := d.sc.ServerlessServiceAPI.ServerlessServiceGetCluster(ctx, clusterId)
+func (d *ClientDelegate) GetCluster(ctx context.Context, clusterId string, view cluster.ClusterServiceGetClusterViewParameter) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+	r := d.sc.ClusterServiceAPI.ClusterServiceGetCluster(ctx, clusterId)
 	r = r.View(view)
 	c, h, err := r.Execute()
 	return c, parseError(err, h)
 }
 
 func (d *ClientDelegate) ListProviderRegions(ctx context.Context) (*cluster.TidbCloudOpenApiserverlessv1beta1ListRegionsResponse, error) {
-	resp, h, err := d.sc.ServerlessServiceAPI.ServerlessServiceListRegions(ctx).Execute()
+	resp, h, err := d.sc.ClusterServiceAPI.ClusterServiceListRegions(ctx).Execute()
 	return resp, parseError(err, h)
 }
 
 func (d *ClientDelegate) ListClusters(ctx context.Context, filter *string, pageSize *int32, pageToken *string, orderBy *string, skip *int32) (*cluster.TidbCloudOpenApiserverlessv1beta1ListClustersResponse, error) {
-	r := d.sc.ServerlessServiceAPI.ServerlessServiceListClusters(ctx)
+	r := d.sc.ClusterServiceAPI.ClusterServiceListClusters(ctx)
 	if filter != nil {
 		r = r.Filter(*filter)
 	}
@@ -223,8 +223,8 @@ func (d *ClientDelegate) ListClusters(ctx context.Context, filter *string, pageS
 	return resp, parseError(err, h)
 }
 
-func (d *ClientDelegate) PartialUpdateCluster(ctx context.Context, clusterId string, body *cluster.V1beta1ServerlessServicePartialUpdateClusterBody) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
-	r := d.sc.ServerlessServiceAPI.ServerlessServicePartialUpdateCluster(ctx, clusterId)
+func (d *ClientDelegate) PartialUpdateCluster(ctx context.Context, clusterId string, body *cluster.V1beta1ClusterServicePartialUpdateClusterBody) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
+	r := d.sc.ClusterServiceAPI.ClusterServicePartialUpdateCluster(ctx, clusterId)
 	if body != nil {
 		r = r.Body(*body)
 	}

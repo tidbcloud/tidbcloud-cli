@@ -69,7 +69,7 @@ func (suite *DeleteAuthorizedNetworkSuite) TestDeleteAuthorizedNetworkArgs() {
 	err := json.Unmarshal([]byte(getClusterResultStr), result)
 	assert.Nil(err)
 
-	c := &cluster.RequiredTheClusterToBeUpdated{
+	c := &cluster.V1beta1ClusterServicePartialUpdateClusterBodyCluster{
 		Endpoints: &cluster.V1beta1ClusterEndpoints{
 			Public: &cluster.EndpointsPublic{
 				AuthorizedNetworks: []cluster.EndpointsPublicAuthorizedNetwork{},
@@ -77,12 +77,12 @@ func (suite *DeleteAuthorizedNetworkSuite) TestDeleteAuthorizedNetworkArgs() {
 		},
 	}
 
-	body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
+	body := &cluster.V1beta1ClusterServicePartialUpdateClusterBody{
 		Cluster:    c,
 		UpdateMask: AuthorizedNetworkMask,
 	}
 
-	suite.mockClient.On("GetCluster", ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC).
+	suite.mockClient.On("GetCluster", ctx, clusterID, cluster.CLUSTERSERVICEGETCLUSTERVIEWPARAMETER_BASIC).
 		Return(result, nil)
 	suite.mockClient.On("PartialUpdateCluster", ctx, clusterID, body).
 		Return(&cluster.TidbCloudOpenApiserverlessv1beta1Cluster{}, nil)

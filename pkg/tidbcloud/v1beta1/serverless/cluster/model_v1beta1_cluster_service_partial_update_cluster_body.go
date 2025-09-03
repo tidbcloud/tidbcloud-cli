@@ -12,104 +12,97 @@ package cluster
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
-// checks if the PrivateALICLOUD type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &PrivateALICLOUD{}
+// checks if the V1beta1ClusterServicePartialUpdateClusterBody type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &V1beta1ClusterServicePartialUpdateClusterBody{}
 
-// PrivateALICLOUD The [Alibaba Cloud PrivateLink](https://www.alibabacloud.com/help/en/privatelink/product-overview/what-is-a-private-network-connection) configuration for private access.
-type PrivateALICLOUD struct {
-	// The Alibaba Cloud service name for private access.
-	ServiceName *string `json:"serviceName,omitempty"`
-	// A list of availability zones where the service is available.
-	AvailabilityZone     []string `json:"availabilityZone,omitempty"`
+// V1beta1ClusterServicePartialUpdateClusterBody Message for requesting a partial update on a TiDB Cloud Starter or Essential cluster.
+type V1beta1ClusterServicePartialUpdateClusterBody struct {
+	Cluster *V1beta1ClusterServicePartialUpdateClusterBodyCluster `json:"cluster,omitempty"`
+	// Specifies which fields to update in the cluster.
+	UpdateMask           string `json:"updateMask"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _PrivateALICLOUD PrivateALICLOUD
+type _V1beta1ClusterServicePartialUpdateClusterBody V1beta1ClusterServicePartialUpdateClusterBody
 
-// NewPrivateALICLOUD instantiates a new PrivateALICLOUD object
+// NewV1beta1ClusterServicePartialUpdateClusterBody instantiates a new V1beta1ClusterServicePartialUpdateClusterBody object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewPrivateALICLOUD() *PrivateALICLOUD {
-	this := PrivateALICLOUD{}
+func NewV1beta1ClusterServicePartialUpdateClusterBody(updateMask string) *V1beta1ClusterServicePartialUpdateClusterBody {
+	this := V1beta1ClusterServicePartialUpdateClusterBody{}
+	this.UpdateMask = updateMask
 	return &this
 }
 
-// NewPrivateALICLOUDWithDefaults instantiates a new PrivateALICLOUD object
+// NewV1beta1ClusterServicePartialUpdateClusterBodyWithDefaults instantiates a new V1beta1ClusterServicePartialUpdateClusterBody object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewPrivateALICLOUDWithDefaults() *PrivateALICLOUD {
-	this := PrivateALICLOUD{}
+func NewV1beta1ClusterServicePartialUpdateClusterBodyWithDefaults() *V1beta1ClusterServicePartialUpdateClusterBody {
+	this := V1beta1ClusterServicePartialUpdateClusterBody{}
 	return &this
 }
 
-// GetServiceName returns the ServiceName field value if set, zero value otherwise.
-func (o *PrivateALICLOUD) GetServiceName() string {
-	if o == nil || IsNil(o.ServiceName) {
+// GetCluster returns the Cluster field value if set, zero value otherwise.
+func (o *V1beta1ClusterServicePartialUpdateClusterBody) GetCluster() V1beta1ClusterServicePartialUpdateClusterBodyCluster {
+	if o == nil || IsNil(o.Cluster) {
+		var ret V1beta1ClusterServicePartialUpdateClusterBodyCluster
+		return ret
+	}
+	return *o.Cluster
+}
+
+// GetClusterOk returns a tuple with the Cluster field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *V1beta1ClusterServicePartialUpdateClusterBody) GetClusterOk() (*V1beta1ClusterServicePartialUpdateClusterBodyCluster, bool) {
+	if o == nil || IsNil(o.Cluster) {
+		return nil, false
+	}
+	return o.Cluster, true
+}
+
+// HasCluster returns a boolean if a field has been set.
+func (o *V1beta1ClusterServicePartialUpdateClusterBody) HasCluster() bool {
+	if o != nil && !IsNil(o.Cluster) {
+		return true
+	}
+
+	return false
+}
+
+// SetCluster gets a reference to the given V1beta1ClusterServicePartialUpdateClusterBodyCluster and assigns it to the Cluster field.
+func (o *V1beta1ClusterServicePartialUpdateClusterBody) SetCluster(v V1beta1ClusterServicePartialUpdateClusterBodyCluster) {
+	o.Cluster = &v
+}
+
+// GetUpdateMask returns the UpdateMask field value
+func (o *V1beta1ClusterServicePartialUpdateClusterBody) GetUpdateMask() string {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.ServiceName
+
+	return o.UpdateMask
 }
 
-// GetServiceNameOk returns a tuple with the ServiceName field value if set, nil otherwise
+// GetUpdateMaskOk returns a tuple with the UpdateMask field value
 // and a boolean to check if the value has been set.
-func (o *PrivateALICLOUD) GetServiceNameOk() (*string, bool) {
-	if o == nil || IsNil(o.ServiceName) {
+func (o *V1beta1ClusterServicePartialUpdateClusterBody) GetUpdateMaskOk() (*string, bool) {
+	if o == nil {
 		return nil, false
 	}
-	return o.ServiceName, true
+	return &o.UpdateMask, true
 }
 
-// HasServiceName returns a boolean if a field has been set.
-func (o *PrivateALICLOUD) HasServiceName() bool {
-	if o != nil && !IsNil(o.ServiceName) {
-		return true
-	}
-
-	return false
+// SetUpdateMask sets field value
+func (o *V1beta1ClusterServicePartialUpdateClusterBody) SetUpdateMask(v string) {
+	o.UpdateMask = v
 }
 
-// SetServiceName gets a reference to the given string and assigns it to the ServiceName field.
-func (o *PrivateALICLOUD) SetServiceName(v string) {
-	o.ServiceName = &v
-}
-
-// GetAvailabilityZone returns the AvailabilityZone field value if set, zero value otherwise.
-func (o *PrivateALICLOUD) GetAvailabilityZone() []string {
-	if o == nil || IsNil(o.AvailabilityZone) {
-		var ret []string
-		return ret
-	}
-	return o.AvailabilityZone
-}
-
-// GetAvailabilityZoneOk returns a tuple with the AvailabilityZone field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *PrivateALICLOUD) GetAvailabilityZoneOk() ([]string, bool) {
-	if o == nil || IsNil(o.AvailabilityZone) {
-		return nil, false
-	}
-	return o.AvailabilityZone, true
-}
-
-// HasAvailabilityZone returns a boolean if a field has been set.
-func (o *PrivateALICLOUD) HasAvailabilityZone() bool {
-	if o != nil && !IsNil(o.AvailabilityZone) {
-		return true
-	}
-
-	return false
-}
-
-// SetAvailabilityZone gets a reference to the given []string and assigns it to the AvailabilityZone field.
-func (o *PrivateALICLOUD) SetAvailabilityZone(v []string) {
-	o.AvailabilityZone = v
-}
-
-func (o PrivateALICLOUD) MarshalJSON() ([]byte, error) {
+func (o V1beta1ClusterServicePartialUpdateClusterBody) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -117,14 +110,12 @@ func (o PrivateALICLOUD) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o PrivateALICLOUD) ToMap() (map[string]interface{}, error) {
+func (o V1beta1ClusterServicePartialUpdateClusterBody) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.ServiceName) {
-		toSerialize["serviceName"] = o.ServiceName
+	if !IsNil(o.Cluster) {
+		toSerialize["cluster"] = o.Cluster
 	}
-	if !IsNil(o.AvailabilityZone) {
-		toSerialize["availabilityZone"] = o.AvailabilityZone
-	}
+	toSerialize["updateMask"] = o.UpdateMask
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -133,60 +124,81 @@ func (o PrivateALICLOUD) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *PrivateALICLOUD) UnmarshalJSON(data []byte) (err error) {
-	varPrivateALICLOUD := _PrivateALICLOUD{}
+func (o *V1beta1ClusterServicePartialUpdateClusterBody) UnmarshalJSON(data []byte) (err error) {
+	// This validates that all required properties are included in the JSON object
+	// by unmarshalling the object into a generic map with string keys and checking
+	// that every required field exists as a key in the generic map.
+	requiredProperties := []string{
+		"updateMask",
+	}
 
-	err = json.Unmarshal(data, &varPrivateALICLOUD)
+	allProperties := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &allProperties)
 
 	if err != nil {
 		return err
 	}
 
-	*o = PrivateALICLOUD(varPrivateALICLOUD)
+	for _, requiredProperty := range requiredProperties {
+		if _, exists := allProperties[requiredProperty]; !exists {
+			return fmt.Errorf("no value given for required property %v", requiredProperty)
+		}
+	}
+
+	varV1beta1ClusterServicePartialUpdateClusterBody := _V1beta1ClusterServicePartialUpdateClusterBody{}
+
+	err = json.Unmarshal(data, &varV1beta1ClusterServicePartialUpdateClusterBody)
+
+	if err != nil {
+		return err
+	}
+
+	*o = V1beta1ClusterServicePartialUpdateClusterBody(varV1beta1ClusterServicePartialUpdateClusterBody)
 
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "serviceName")
-		delete(additionalProperties, "availabilityZone")
+		delete(additionalProperties, "cluster")
+		delete(additionalProperties, "updateMask")
 		o.AdditionalProperties = additionalProperties
 	}
 
 	return err
 }
 
-type NullablePrivateALICLOUD struct {
-	value *PrivateALICLOUD
+type NullableV1beta1ClusterServicePartialUpdateClusterBody struct {
+	value *V1beta1ClusterServicePartialUpdateClusterBody
 	isSet bool
 }
 
-func (v NullablePrivateALICLOUD) Get() *PrivateALICLOUD {
+func (v NullableV1beta1ClusterServicePartialUpdateClusterBody) Get() *V1beta1ClusterServicePartialUpdateClusterBody {
 	return v.value
 }
 
-func (v *NullablePrivateALICLOUD) Set(val *PrivateALICLOUD) {
+func (v *NullableV1beta1ClusterServicePartialUpdateClusterBody) Set(val *V1beta1ClusterServicePartialUpdateClusterBody) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullablePrivateALICLOUD) IsSet() bool {
+func (v NullableV1beta1ClusterServicePartialUpdateClusterBody) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullablePrivateALICLOUD) Unset() {
+func (v *NullableV1beta1ClusterServicePartialUpdateClusterBody) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullablePrivateALICLOUD(val *PrivateALICLOUD) *NullablePrivateALICLOUD {
-	return &NullablePrivateALICLOUD{value: val, isSet: true}
+func NewNullableV1beta1ClusterServicePartialUpdateClusterBody(val *V1beta1ClusterServicePartialUpdateClusterBody) *NullableV1beta1ClusterServicePartialUpdateClusterBody {
+	return &NullableV1beta1ClusterServicePartialUpdateClusterBody{value: val, isSet: true}
 }
 
-func (v NullablePrivateALICLOUD) MarshalJSON() ([]byte, error) {
+func (v NullableV1beta1ClusterServicePartialUpdateClusterBody) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullablePrivateALICLOUD) UnmarshalJSON(src []byte) error {
+func (v *NullableV1beta1ClusterServicePartialUpdateClusterBody) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

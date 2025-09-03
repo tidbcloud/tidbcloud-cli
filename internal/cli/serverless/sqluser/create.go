@@ -273,7 +273,7 @@ func initialCreateInputModel(userPrefix string) ui.TextInputModel {
 }
 
 func getUserPrefix(ctx context.Context, d cloud.TiDBCloudClient, clusterID string) (string, error) {
-	cluster, err := d.GetCluster(ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
+	cluster, err := d.GetCluster(ctx, clusterID, cluster.CLUSTERSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
 	if err != nil {
 		return "", errors.Trace(err)
 	}

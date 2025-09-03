@@ -913,7 +913,7 @@ func GetOneDateAuditLogs(ctx context.Context, cID, date string, d TiDBCloudClien
 }
 
 func RetrieveAuthorizedNetworks(ctx context.Context, clusterID string, d TiDBCloudClient) ([]cluster.EndpointsPublicAuthorizedNetwork, error) {
-	cluster, err := d.GetCluster(ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
+	cluster, err := d.GetCluster(ctx, clusterID, cluster.CLUSTERSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
 	if err != nil {
 		return nil, errors.Trace(err)
 	}

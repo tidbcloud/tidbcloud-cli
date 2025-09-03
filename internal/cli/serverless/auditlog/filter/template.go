@@ -104,7 +104,7 @@ func TemplateCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cid
 			}
 
-			c, err := d.GetCluster(ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
+			c, err := d.GetCluster(ctx, clusterID, cluster.CLUSTERSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
 			if err != nil {
 				return errors.Annotatef(err, "failed to get cluster %s", clusterID)
 			}
