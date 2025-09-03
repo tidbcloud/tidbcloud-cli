@@ -41,15 +41,16 @@ type UpdateFilterRuleOpts struct {
 func (o UpdateFilterRuleOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.AuditLogFilterRuleName,
+		flag.AuditLogFilterRuleID,
 		flag.AuditLogFilterRule,
+		flag.DisplayName,
 	}
 }
 
 func (o UpdateFilterRuleOpts) RequiredFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.AuditLogFilterRuleName,
+		flag.AuditLogFilterRuleID,
 	}
 }
 
@@ -69,7 +70,7 @@ func (o *UpdateFilterRuleOpts) MarkInteractive(cmd *cobra.Command) error {
 				return err
 			}
 		}
-		cmd.MarkFlagsOneRequired(flag.AuditLogFilterRule, flag.Enabled)
+		cmd.MarkFlagsOneRequired(flag.AuditLogFilterRule, flag.Enabled, flag.DisplayName)
 	}
 	return nil
 }
@@ -77,13 +78,15 @@ func (o *UpdateFilterRuleOpts) MarkInteractive(cmd *cobra.Command) error {
 type mutableField string
 
 const (
-	Rule    mutableField = "rule"
-	Enabled mutableField = "enabled"
+	Rule        mutableField = "rule"
+	Enabled     mutableField = "enabled"
+	DisplayName mutableField = "display-name"
 )
 
 var mutableFilterRuleFields = []string{
 	string(Rule),
 	string(Enabled),
+	string(DisplayName),
 }
 
 func UpdateCmd(h *internal.Helper) *cobra.Command {
@@ -97,13 +100,13 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless audit-log filter update
 
   Enable audit log filter rule in non-interactive mode:
-  $ %[1]s serverless audit-log filter update --cluster-id <cluster-id> --name <rule-name> --enabled
+  $ %[1]s serverless audit-log filter update --cluster-id <cluster-id> --filter-rule-id <rule-id> --enabled
 
   Disable audit log filter rule in non-interactive mode:
-  $ %[1]s serverless audit-log filter update --cluster-id <cluster-id> --name <rule-name> --enabled=false
+  $ %[1]s serverless audit-log filter update --cluster-id <cluster-id> --filter-rule-id <rule-id> --enabled=false
 
   Update filters of an audit log filter rule in non-interactive mode:
-  $ %[1]s serverless audit-log filter update --cluster-id <cluster-id> --name <rule-name> --rule '{"users":["%%@%%"],"filters":[{"classes":["QUERY"],"tables":["test.t"]}]}'
+  $ %[1]s serverless audit-log filter update --cluster-id <cluster-id> --filter-rule-id <rule-id> --rule '{"users":["%%@%%"],"filters":[{"classes":["QUERY"],"tables":["test.t"]}]}'
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
@@ -115,7 +118,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			var clusterID, ruleName string
+			var clusterID, ruleID, dispalyName string
 			var filterRule *FilterRuleWithoutName
 			var enabled *bool
 			if opts.interactive {
@@ -133,10 +136,11 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cluster.ID
 
 				// Select rule name
-				ruleName, err = cloud.GetSelectedRuleName(ctx, clusterID, d)
+				rule, err := cloud.GetSelectedFilterRule(ctx, clusterID, d)
 				if err != nil {
 					return err
 				}
+				ruleID = rule.FilterRuleId
 
 				// Select field to update
 				fieldName, err := cloud.GetSelectedField(mutableFilterRuleFields, "Choose the field to update:")
@@ -177,6 +181,13 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 							" to see filter templates.")
 					}
 					filterRule = &f
+				case string(DisplayName):
+					inputs := []string{flag.DisplayName}
+					textInput, err := ui.InitialInputModel(inputs, InputDescription)
+					if err != nil {
+						return err
+					}
+					dispalyName = textInput.Inputs[0].Value()
 				default:
 					return errors.Errorf("invalid field %s", fieldName)
 				}
@@ -186,7 +197,11 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				ruleName, err = cmd.Flags().GetString(flag.AuditLogFilterRuleName)
+				ruleID, err = cmd.Flags().GetString(flag.AuditLogFilterRuleID)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				dispalyName, err = cmd.Flags().GetString(flag.DisplayName)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -210,7 +225,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					filterRule = &f
 				}
 			}
-			if enabled == nil && filterRule == nil {
+			if enabled == nil && filterRule == nil && dispalyName == "" {
 				return errors.New("nothing to update")
 			}
 			if filterRule != nil {
@@ -221,7 +236,7 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 					return errors.New("empty filters, please specify at least one filter")
 				}
 			}
-			body := &auditlog.AuditLogServiceUpdateAuditLogFilterRuleBody{}
+			body := &auditlog.DatabaseAuditLogServiceUpdateAuditLogFilterRuleBody{}
 			if filterRule != nil {
 				body.Users = filterRule.Users
 				body.Filters = filterRule.Filters
@@ -230,18 +245,22 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				disabled := !*enabled
 				body.Disabled = *auditlog.NewNullableBool(&disabled)
 			}
-			_, err = d.UpdateAuditLogFilterRule(ctx, clusterID, ruleName, body)
+			if dispalyName != "" {
+				body.DisplayName = &dispalyName
+			}
+			_, err = d.UpdateAuditLogFilterRule(ctx, clusterID, ruleID, body)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("filter rule %s updated", ruleName)))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString(fmt.Sprintf("filter rule %s updated", ruleID)))
 			return nil
 		},
 	}
 
 	updateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
-	updateCmd.Flags().String(flag.AuditLogFilterRuleName, "", "The name of the filter rule to update.")
+	updateCmd.Flags().String(flag.AuditLogFilterRuleID, "", "The ID of the filter rule.")
 	updateCmd.Flags().String(flag.AuditLogFilterRule, "", "Complete filter rule expressions, use \"ticloud serverless audit-log filter template\" to see filter templates.")
+	updateCmd.Flags().String(flag.DisplayName, "", "The display name of the filter rule.")
 	updateCmd.Flags().Bool(flag.Enabled, false, "Enable or disable the filter rule.")
 
 	return updateCmd

@@ -77,7 +77,7 @@ func (suite *CreateClusterSuite) TestCreateClusterArgs() {
 		Return(&cluster.TidbCloudOpenApiserverlessv1beta1Cluster{
 			ClusterId: &clusterID,
 		}, nil)
-	suite.mockClient.On("GetCluster", ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC).Return(body, nil)
+	suite.mockClient.On("GetCluster", ctx, clusterID, cluster.CLUSTERSERVICEGETCLUSTERVIEWPARAMETER_BASIC).Return(body, nil)
 
 	tests := []struct {
 		name         string
@@ -140,7 +140,7 @@ func (suite *CreateClusterSuite) TestCreateClusterWithoutProject() {
 		Return(&cluster.TidbCloudOpenApiserverlessv1beta1Cluster{
 			ClusterId: &clusterID,
 		}, nil)
-	suite.mockClient.On("GetCluster", ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC).Return(body, nil)
+	suite.mockClient.On("GetCluster", ctx, clusterID, cluster.CLUSTERSERVICEGETCLUSTERVIEWPARAMETER_BASIC).Return(body, nil)
 
 	tests := []struct {
 		name         string

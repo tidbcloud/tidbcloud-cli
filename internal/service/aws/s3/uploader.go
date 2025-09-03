@@ -495,7 +495,7 @@ func (u *multiUploader) shouldContinue(part int32, nextChunkLen int, err error) 
 			msg = fmt.Sprintf("exceeded total allowed S3 limit MaxUploadParts (%d). Adjust PartSize to fit in this limit",
 				MaxUploadParts)
 		}
-		return false, fmt.Errorf(msg)
+		return false, errors.New(msg)
 	}
 
 	return true, err

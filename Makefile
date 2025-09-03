@@ -21,17 +21,10 @@ setup: deps devtools ## Set up dev env
 .PHONY: generate-mocks
 generate-mocks: ## Generate mock objects
 	@echo "==> Generating mock objects"
-	go install github.com/vektra/mockery/v2@v2.43.0
+	go install github.com/vektra/mockery/v2@v2.53.5
 	mockery --name TiDBCloudClient --recursive --output=internal/mock --outpkg mock --filename api_client.go
 	mockery --name EventsSender --recursive --output=internal/mock --outpkg mock --filename sender.go
 	mockery --name Uploader --recursive --output=internal/mock --outpkg mock --filename uploader.go
-
-.PHONY: generate-pingchat-client
-generate-pingchat-client: ## Generate PingChat client
-	@echo "==> Generating PingChat client"
-	rm -rf pkg/tidbcloud/pingchat
-	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/pingchat.swagger.json -g go -o ../../pkg/tidbcloud/pingchat --package-name pingchat -c go/config.yaml
-	cd pkg && go fmt ./tidbcloud/pingchat/... && goimports -w .
 
 .PHONY: addcopy
 addcopy: ## Add copyright to all files
@@ -106,6 +99,6 @@ help:
 	@grep -h -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: generate-docs
-generate-docs: ## Generate mock objects
+generate-docs: ## Generate docs objects
 	@echo "==> Generating docs"
 	go run gen_doc.go

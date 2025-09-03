@@ -110,7 +110,7 @@ func (suite *CreateSQLUserSuite) TestCreateSQLUserArgs() {
 	res := &cluster.TidbCloudOpenApiserverlessv1beta1Cluster{}
 	err = json.Unmarshal([]byte(getClusterResultStr), res)
 	assert.Nil(err)
-	suite.mockClient.On("GetCluster", ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC).Return(res, nil)
+	suite.mockClient.On("GetCluster", ctx, clusterID, cluster.CLUSTERSERVICEGETCLUSTERVIEWPARAMETER_BASIC).Return(res, nil)
 
 	tests := []struct {
 		name         string

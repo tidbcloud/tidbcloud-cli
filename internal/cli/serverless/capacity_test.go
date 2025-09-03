@@ -60,8 +60,8 @@ func (suite *CapacitySuite) TestSetCapacity() {
 	clusterID := "0"
 	var minRcu int64 = 10000
 	var maxRcu int64 = 20000
-	body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
-		Cluster: &cluster.RequiredTheClusterToBeUpdated{
+	body := &cluster.V1beta1ClusterServicePartialUpdateClusterBody{
+		Cluster: &cluster.V1beta1ClusterServicePartialUpdateClusterBodyCluster{
 			AutoScaling: &cluster.V1beta1ClusterAutoScaling{},
 		},
 	}

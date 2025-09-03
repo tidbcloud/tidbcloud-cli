@@ -16,6 +16,7 @@ package serverless
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/output"
@@ -61,6 +62,7 @@ func RegionCmd(h *internal.Helper) *cobra.Command {
 					"Name",
 					"DisplayName",
 					"Provider",
+					"Plan",
 				}
 
 				var rows []output.Row
@@ -69,6 +71,13 @@ func RegionCmd(h *internal.Helper) *cobra.Command {
 						*item.Name,
 						*item.DisplayName,
 						string(*item.CloudProvider),
+						func() string {
+							s := make([]string, len(item.ServicePlans))
+							for i, p := range item.ServicePlans {
+								s[i] = string(p)
+							}
+							return strings.Join(s, ", ")
+						}(),
 					})
 				}
 				err = output.PrintHumanTable(h.IOStreams.Out, columns, rows)

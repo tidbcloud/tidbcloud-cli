@@ -54,6 +54,12 @@ var createSQLUserField = map[string]int{
 	flag.Password: 1,
 }
 
+var supportedRoles = []string{
+	util.ADMIN_ROLE,
+	util.READWRITE_ROLE,
+	util.READONLY_ROLE,
+}
+
 func (c CreateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
@@ -231,9 +237,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	CreateCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
-	CreateCmd.Flags().StringP(flag.User, flag.UserShort, "", "The name of the SQL user.")
+	CreateCmd.Flags().StringP(flag.User, flag.UserShort, "", "The name of the SQL user, user prefix will be added automatically.")
 	CreateCmd.Flags().StringP(flag.Password, "", "", "The password of the SQL user.")
-	CreateCmd.Flags().StringSliceP(flag.UserRole, "", nil, "The role(s) of the SQL user.")
+	CreateCmd.Flags().StringSliceP(flag.UserRole, "", nil, fmt.Sprintf("The role(s) of the SQL user, supported roles %q", supportedRoles))
 
 	return CreateCmd
 }
@@ -267,7 +273,7 @@ func initialCreateInputModel(userPrefix string) ui.TextInputModel {
 }
 
 func getUserPrefix(ctx context.Context, d cloud.TiDBCloudClient, clusterID string) (string, error) {
-	cluster, err := d.GetCluster(ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
+	cluster, err := d.GetCluster(ctx, clusterID, cluster.CLUSTERSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
 	if err != nil {
 		return "", errors.Trace(err)
 	}

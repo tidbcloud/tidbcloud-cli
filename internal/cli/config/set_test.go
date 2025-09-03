@@ -100,7 +100,7 @@ func (suite *SetConfigSuite) TestSetConfigArgs() {
 		},
 		{
 			name: "set config with unknown property",
-			args: []string{"api-url", "baidu.com"},
+			args: []string{"serverless-endpoint", "baidu.com"},
 			err: errors.Annotate(&url.Error{
 				Op:  "parse",
 				URL: "baidu.com",

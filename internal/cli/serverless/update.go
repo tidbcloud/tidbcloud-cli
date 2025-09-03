@@ -192,8 +192,8 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
-				Cluster: &cluster.RequiredTheClusterToBeUpdated{},
+			body := &cluster.V1beta1ClusterServicePartialUpdateClusterBody{
+				Cluster: &cluster.V1beta1ClusterServicePartialUpdateClusterBodyCluster{},
 			}
 			if displayName != "" {
 				body.Cluster.DisplayName = &displayName

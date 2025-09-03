@@ -1,1134 +1,1580 @@
 {
-    "swagger": "2.0",
-    "info": {
-      "title": "TiDB Cloud Serverless Open API",
-      "description": "TiDB Cloud Serverless Open API",
-      "version": "v1beta1"
-    },
-    "tags": [
-      {
-        "name": "ServerlessService"
-      }
-    ],
-    "host": "serverless.tidbapi.com",
-    "basePath": "/v1beta1",
-    "schemes": [
-      "https"
-    ],
-    "consumes": [
-      "application/json"
-    ],
-    "produces": [
-      "application/json"
-    ],
-    "paths": {
-      "/clusters": {
-        "get": {
-          "summary": "Provides a list of TiDB Cloud Serverless clusters in a project.",
-          "operationId": "ServerlessService_ListClusters",
-          "responses": {
-            "200": {
-              "description": "A successful response.",
-              "schema": {
-                "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1ListClustersResponse"
-              }
-            },
-            "default": {
-              "description": "An unexpected error response.",
-              "schema": {
-                "$ref": "#/definitions/googlerpcStatus"
-              }
+  "swagger": "2.0",
+  "info": {
+    "title": "TiDB Cloud Starter and Essential API",
+    "description": "*TiDB Cloud API is in beta.*\n\nThis API manages [TiDB Cloud Starter](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#tidb-cloud-serverless) and [TiDB Cloud Essential](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#essential) clusters. For [TiDB Cloud Dedicated](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#tidb-cloud-dedicated) clusters, use the [TiDB Cloud Dedicated API](https://docs.pingcap.com/tidbcloud/api/v1beta1/dedicated/). For more information about TiDB Cloud API, see [TiDB Cloud API Overview](https://docs.pingcap.com/tidbcloud/api-overview/).\n\n# Overview\n\nThe TiDB Cloud API is a [REST interface](https://en.wikipedia.org/wiki/Representational_state_transfer) that provides you with programmatic access to manage clusters and related resources within TiDB Cloud.\n\nThe API has the following features:\n\n- **JSON entities.** All entities are expressed in JSON.\n- **HTTPS-only.** You can only access the API via HTTPS, ensuring all the data sent over the network is encrypted with TLS.\n- **Key-based access and digest authentication.** Before you access TiDB Cloud API, you must generate an API key. All requests are authenticated through [HTTP Digest Authentication](https://en.wikipedia.org/wiki/Digest_access_authentication), ensuring the API key is never sent over the network.\n\n# Get Started\n\nThis guide helps you make your first API call to TiDB Cloud API. You'll learn how to authenticate a request, build a request, and interpret the response.\n\n## Prerequisites\n\nTo complete this guide, you need to perform the following tasks:\n\n- Create a [TiDB Cloud account](https://tidbcloud.com/free-trial)\n- Install [curl](https://curl.se/)\n\n## Step 1. Create an API key\n\nTo create an API key, log in to your TiDB Cloud console. Navigate to the [**API Keys**](https://tidbcloud.com/org-settings/api-keys) page of your organization, and create an API key.\n\nAn API key contains a public key and a private key. Copy and save them in a secure location. You will need to use the API key later in this guide.\n\nFor more details about creating API key, refer to [API Key Management](#section/Authentication/API-Key-Management).\n\n## Step 2. Make your first API call\n\n### Build an API call\n\nTiDB Cloud API call consists of the following components:\n\n- **A host**. The host for TiDB Cloud API is \u003chttps://serverless.tidbapi.com\u003e.\n- **An API Key**. The public key and the private key are required for authentication.\n- **A request**. When submitting data to a resource via `POST`, `PATCH`, or `PUT`, you must submit your payload in JSON.\n\nIn this guide, you call the [List all clusters](#tag/Cluster/operation/ClusterService_ListClusters) endpoint. For the detailed description of the endpoint, see the [API reference](#tag/Cluster/operation/ClusterService_ListClusters).\n\n### Call an API endpoint\n\nTo get all clusters in your organization, run the following command in your terminal. Remember to change `YOUR_PUBLIC_KEY` to your public key and `YOUR_PRIVATE_KEY` to your private key.\n\n```shell\ncurl --digest \\\n --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n --request GET \\\n --url 'https://serverless.tidbapi.com/v1beta1/clusters'\n```\n\n## Step 3. Check the response\n\nAfter making the API call, if the status code in response is `200` and you see details about all clusters in your organization, your request is successful.\n\n# Authentication\n\nThe TiDB Cloud API uses [HTTP Digest Authentication](https://en.wikipedia.org/wiki/Digest_access_authentication). It protects your private key from being sent over the network. For more details about HTTP Digest Authentication, refer to the [IETF RFC](https://datatracker.ietf.org/doc/html/rfc7616).\n\n## API key overview\n\n- The API key contains a public key and a private key, which act as the username and password required in the HTTP Digest Authentication. The private key only displays upon the key creation.\n- The API key belongs to your organization and acts as the `Organization Owner` role. You can check [permissions of owner](https://docs.pingcap.com/tidbcloud/manage-user-access#configure-member-roles).\n- You must provide the correct API key in every request. Otherwise, the TiDB Cloud responds with a `401` error.\n\n## API key management\n\n### Create an API key\n\nOnly the **owner** of an organization can create an API key.\n\nTo create an API key in an organization, perform the following steps:\n\n1. In the [TiDB Cloud console](https://tidbcloud.com), switch to your target organization using the combo box in the upper-left corner.\n2. In the left navigation pane, click **Organization Settings** \u003e **API Keys**.\n3. On the **API Keys** page, click **Create API Key**.\n4. Enter a description for your API key. The role of the API key is always `Organization Owner` currently.\n5. Click **Next**. Copy and save the public key and the private key.\n6. Make sure that you have copied and saved the private key in a secure location. The private key only displays upon the creation. After leaving this page, you will not be able to get the full private key again.\n7. Click **Done**.\n\n### View details of an API key\n\nTo view details of an API key, perform the following steps:\n\n1. In the [TiDB Cloud console](https://tidbcloud.com), switch to your target organization using the combo box in the upper-left corner.\n2. In the left navigation pane, click **Organization Settings** \u003e **API Keys**.\n3. You can view the details of the API keys on the page.\n\n### Edit an API key\n\nOnly the **owner** of an organization can modify an API key.\n\nTo edit an API key in an organization, perform the following steps:\n\n1. In the [TiDB Cloud console](https://tidbcloud.com), switch to your target organization using the combo box in the upper-left corner.\n2. In the left navigation pane, click **Organization Settings** \u003e **API Keys**.\n3. On the **API Keys** page, click **...** in the API key row that you want to change, and then click **Edit**.\n4. You can update the API key description.\n5. Click **Update**.\n\n### Delete an API key\n\nOnly the **owner** of an organization can delete an API key.\n\nTo delete an API key in an organization, perform the following steps:\n\n1. In the [TiDB Cloud console](https://tidbcloud.com), switch to your target organization using the combo box in the upper-left corner.\n2. In the left navigation pane, click **Organization Settings** \u003e **API Keys**.\n3. On the **API Keys** page, click **...** in the API key row that you want to delete, and then click **Delete**.\n4. Click **I understand, delete it.**\n\n# Rate Limiting\n\nThe TiDB Cloud API allows up to 100 requests per minute per API key. If you exceed the rate limit, the API returns a `429` error. For more quota, you can [submit a request](https://support.pingcap.com/hc/en-us/requests/new?ticket_form_id=7800003722519) to contact our support team.\n\nEach API request returns the following headers about the limit.\n\n- `X-Ratelimit-Limit-Minute`: The number of requests allowed per minute. It is 100 currently.\n- `X-Ratelimit-Remaining-Minute`: The number of remaining requests in the current minute. When it reaches `0`, the API returns a `429` error and indicates that you exceed the rate limit.\n- `X-Ratelimit-Reset`: The time in seconds at which the current rate limit resets.\n\nIf you exceed the rate limit, an error response returns like this.\n\n```\n\u003e HTTP/2 429\n\u003e date: Fri, 22 Jul 2022 05:28:37 GMT\n\u003e content-type: application/json\n\u003e content-length: 66\n\u003e x-ratelimit-reset: 23\n\u003e x-ratelimit-remaining-minute: 0\n\u003e x-ratelimit-limit-minute: 100\n\u003e x-kong-response-latency: 2\n\u003e server: kong/2.8.1\n\n\u003e {\"details\":[],\"code\":49900007,\"message\":\"The request exceeded the limit of 100 times per apikey per minute. For more quota, please contact us: https://support.pingcap.com/hc/en-us/requests/new?ticket_form_id=7800003722519\"}\n```\n\n# API Changelog\n\nThis changelog lists all changes to the TiDB Cloud API.\n\n\u003c!-- In reverse chronological order --\u003e\n\n## 20250812\n\n- Initial release of the TiDB Cloud Starter and Essential API, including the following resources and endpoints:\n\n - Cluster:\n - [List TiDB Cloud Starter and Essential clusters](#tag/Cluster/operation/ClusterService_ListClusters)\n - [Create a new TiDB Cloud Starter or Essential cluster](#tag/Cluster/operation/ClusterService_CreateCluster)\n - [Get details of a TiDB Cloud Starter or Essential cluster](#tag/Cluster/operation/ClusterService_GetCluster)\n - [Delete a TiDB Cloud Starter or Essential cluster](#tag/Cluster/operation/ClusterService_DeleteCluster)\n - [Update a TiDB Cloud Starter or Essential cluster](#tag/Cluster/operation/ClusterService_PartialUpdateCluster)\n - [List available regions for an organization](#tag/Cluster/operation/ClusterService_ListRegions)\n - Branch:\n - [List branches](#tag/Branch/operation/BranchService_ListBranches)\n - [Create a branch](#tag/Branch/operation/BranchService_CreateBranch)\n - [Get details of a branch](#tag/Branch/operation/BranchService_GetBranch)\n - [Delete a branch](#tag/Branch/operation/BranchService_DeleteBranch)\n - [Reset a branch](#tag/Branch/operation/BranchService_ResetBranch)\n - Export:\n - [List export tasks for a cluster](#tag/Export/operation/ExportService_ListExports)\n - [Create an export task](#tag/Export/operation/ExportService_CreateExport)\n - [Get details of an export task](#tag/Export/operation/ExportService_GetExport)\n - [Delete an export task](#tag/Export/operation/ExportService_DeleteExport)\n - [Cancel an export task](#tag/Export/operation/ExportService_CancelExport)\n - Import:\n - [List import tasks for a cluster](#tag/Import/operation/ImportService_ListImports)\n - [Create an import task](#tag/Import/operation/ImportService_CreateImport)\n - [Get an import task](#tag/Import/operation/ImportService_GetImport)\n - [Cancel an import task](#tag/Import/operation/ImportService_CancelImport)\n",
+    "version": "v1beta1"
+  },
+  "tags": [
+    {
+      "name": "ClusterService"
+    }
+  ],
+  "host": "serverless.tidbapi.com",
+  "basePath": "/v1beta1",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/clusters": {
+      "get": {
+        "summary": "List TiDB Cloud Starter and Essential clusters",
+        "operationId": "ClusterService_ListClusters",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1ListClustersResponse"
             }
           },
-          "parameters": [
-            {
-              "name": "pageSize",
-              "description": "Optional. The maximum number of clusters to return.",
-              "in": "query",
-              "required": false,
-              "type": "integer",
-              "format": "int32"
-            },
-            {
-              "name": "pageToken",
-              "description": "Optional. The page token from the previous response for pagination.",
-              "in": "query",
-              "required": false,
-              "type": "string"
-            },
-            {
-              "name": "filter",
-              "description": "Optional. The filter expression to filter clusters.",
-              "in": "query",
-              "required": false,
-              "type": "string"
-            },
-            {
-              "name": "orderBy",
-              "description": "Optional. The order by expression for sorting clusters.",
-              "in": "query",
-              "required": false,
-              "type": "string"
-            },
-            {
-              "name": "skip",
-              "description": "The number of individual resources to skip before starting to return results.\nIf the skip value causes the cursor to move past the end of the collection,\nthe response will be 200 OK with an empty result set and no next_page_token.",
-              "in": "query",
-              "required": false,
-              "type": "integer",
-              "format": "int32"
+          "400": {
+            "description": "A request field is invalid.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
             }
-          ],
-          "tags": [
-            "ServerlessService"
-          ]
+          },
+          "401": {
+            "description": "The API key cannot be authenticated.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "The API key does not have permission to access the resource.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "You have exceeded the rate limit.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
         },
-        "post": {
-          "summary": "Creates a new TiDB Serverless cluster.",
-          "operationId": "ServerlessService_CreateCluster",
-          "responses": {
-            "200": {
-              "description": "A successful response.",
-              "schema": {
-                "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
-              }
-            },
-            "default": {
-              "description": "An unexpected error response.",
-              "schema": {
-                "$ref": "#/definitions/googlerpcStatus"
-              }
-            }
+        "parameters": [
+          {
+            "name": "pageSize",
+            "description": "The maximum number of clusters to return. If not specified, at most 10 clusters will be returned. The maximum value is `100`. Values greater than `100` are set to `100`.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": "10"
           },
-          "parameters": [
-            {
-              "name": "cluster",
-              "description": "Required. The cluster to be created.",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
-              }
-            }
-          ],
-          "tags": [
-            "ServerlessService"
-          ]
-        }
+          {
+            "name": "pageToken",
+            "description": "The pagination token received from a previous [List clusters](#tag/Cluster/operation/ClusterService_ListClusters) request. Use this token to retrieve the next page of results.\n\n**Note**: When paginating, all other parameters must match the original request.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "filter",
+            "description": "An expression that filters the list of clusters based on specific criteria. Uses Google AIP syntax with `=` and `AND` operators. You can filter by `region`, `state`, `projectId`, `clusterId`, `displayName`, and `labels`.\n\n**Available filters**:\n- `region.provider`: the cloud provider where the cluster is located, such as `aws` or `alicloud`.\n- `region.name`: the name of the region where the cluster is located, in the format of `regions/{provider}-{region}`, such as `regions/aws-us-east-1`.\n- `state`: the state of the cluster state, such as `ACTIVE` or `CREATING`.\n- `projectId`: the ID of the project ID. You can specify multiple values separated by commas.\n- `clusterId`: the ID of the cluster. You can specify multiple values separated by commas.\n- `displayName`: the display name of the cluster.\n- `labels.{key}`: the labels of the cluster labels, such as `labels.environment=production`.\n\n**Examples**:\n- `filter=region.provider=\"aws\" AND state=\"ACTIVE\"`\n- `filter=projectId=12345 AND displayName=\"my-cluster\"`",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "orderBy",
+            "description": "The number of individual resources to skip before starting to return results.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "description": "The number of clusters to skip before returning results. If the value exceeds the total number of clusters, the response is `200` with an empty list and no `nextPageToken`.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location 'https://serverless.tidbapi.com/v1beta1/clusters' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Accept: application/json'"
+          }
+        ]
       },
-      "/clusters/{clusterId}": {
-        "get": {
-          "summary": "Retrieves details of a specific TiDB Cloud Serverless cluster.",
-          "operationId": "ServerlessService_GetCluster",
-          "responses": {
-            "200": {
-              "description": "A successful response.",
-              "schema": {
-                "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
-              }
-            },
-            "default": {
-              "description": "An unexpected error response.",
-              "schema": {
-                "$ref": "#/definitions/googlerpcStatus"
-              }
+      "post": {
+        "summary": "Create a new TiDB Cloud Starter or Essential cluster",
+        "operationId": "ClusterService_CreateCluster",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
             }
           },
-          "parameters": [
-            {
-              "name": "clusterId",
-              "description": "Required. The ID of the cluster to be retrieved.",
-              "in": "path",
-              "required": true,
-              "type": "string"
-            },
-            {
-              "name": "view",
-              "description": "Optional. The level of detail to return for the cluster.\n\n - BASIC: Only basic information about the cluster is returned.\n - FULL: All details about the cluster are returned.",
-              "in": "query",
-              "required": false,
-              "type": "string",
-              "enum": [
-                "BASIC",
-                "FULL"
-              ]
+          "400": {
+            "description": "A request field is invalid.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
             }
-          ],
-          "tags": [
-            "ServerlessService"
-          ]
+          },
+          "401": {
+            "description": "The API key cannot be authenticated.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "The API key does not have permission to access the resource.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "You have exceeded the rate limit.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
         },
-        "delete": {
-          "summary": "Deletes a specific TiDB Cloud Serverless cluster.",
-          "operationId": "ServerlessService_DeleteCluster",
-          "responses": {
-            "200": {
-              "description": "A successful response.",
-              "schema": {
-                "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
-              }
-            },
-            "default": {
-              "description": "An unexpected error response.",
-              "schema": {
-                "$ref": "#/definitions/googlerpcStatus"
-              }
+        "parameters": [
+          {
+            "name": "cluster",
+            "description": "The cluster to create.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
             }
-          },
-          "parameters": [
-            {
-              "name": "clusterId",
-              "description": "Required. The ID of the cluster to be deleted.",
-              "in": "path",
-              "required": true,
-              "type": "string"
-            }
-          ],
-          "tags": [
-            "ServerlessService"
-          ]
-        }
-      },
-      "/clusters/{cluster.clusterId}": {
-        "patch": {
-          "summary": "Partially updates a specific TiDB Cloud Serverless cluster.",
-          "operationId": "ServerlessService_PartialUpdateCluster",
-          "responses": {
-            "200": {
-              "description": "A successful response.",
-              "schema": {
-                "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
-              }
-            },
-            "default": {
-              "description": "An unexpected error response.",
-              "schema": {
-                "$ref": "#/definitions/googlerpcStatus"
-              }
-            }
-          },
-          "parameters": [
-            {
-              "name": "cluster.clusterId",
-              "description": "Output_only. The unique ID of the cluster.",
-              "in": "path",
-              "required": true,
-              "type": "string"
-            },
-            {
-              "name": "body",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/v1beta1ServerlessServicePartialUpdateClusterBody"
-              }
-            }
-          ],
-          "tags": [
-            "ServerlessService"
-          ]
-        }
-      },
-      "/clusters/{clusterId}/password": {
-        "put": {
-          "summary": "Changes the root password of a specific TiDB Cloud Serverless cluster.",
-          "operationId": "ServerlessService_ChangeRootPassword",
-          "responses": {
-            "200": {
-              "description": "A successful response.",
-              "schema": {
-                "$ref": "#/definitions/v1beta1ChangeRootPasswordResponse"
-              }
-            },
-            "default": {
-              "description": "An unexpected error response.",
-              "schema": {
-                "$ref": "#/definitions/googlerpcStatus"
-              }
-            }
-          },
-          "parameters": [
-            {
-              "name": "clusterId",
-              "description": "Required. The ID of the cluster for which the password is to be changed.",
-              "in": "path",
-              "required": true,
-              "type": "string"
-            },
-            {
-              "name": "body",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/ServerlessServiceChangeRootPasswordBody"
-              }
-            }
-          ],
-          "tags": [
-            "ServerlessService"
-          ]
-        }
-      },
-      "/regions": {
-        "get": {
-          "summary": "Provides a list of available regions for TiDB Cloud Serverless clusters.",
-          "operationId": "ServerlessService_ListRegions",
-          "responses": {
-            "200": {
-              "description": "A successful response.",
-              "schema": {
-                "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1ListRegionsResponse"
-              }
-            },
-            "default": {
-              "description": "An unexpected error response.",
-              "schema": {
-                "$ref": "#/definitions/googlerpcStatus"
-              }
-            }
-          },
-          "tags": [
-            "ServerlessService"
-          ]
-        }
-      },
-      "/clusters:batchCreate": {
-        "post": {
-          "summary": "Creates new TiDB Cloud Serverless clusters in batch.\nThe operation is atomic: it fails for all clusters or succeeds for all clusters (no partial success).",
-          "operationId": "ServerlessService_BatchCreateClusters",
-          "responses": {
-            "200": {
-              "description": "A successful response.",
-              "schema": {
-                "$ref": "#/definitions/v1beta1BatchCreateClustersResponse"
-              }
-            },
-            "default": {
-              "description": "An unexpected error response.",
-              "schema": {
-                "$ref": "#/definitions/googlerpcStatus"
-              }
-            }
-          },
-          "parameters": [
-            {
-              "name": "body",
-              "description": "Message for requesting to create a batch of TiDB Cloud Serverless clusters.",
-              "in": "body",
-              "required": true,
-              "schema": {
-                "$ref": "#/definitions/v1beta1BatchCreateClustersRequest"
-              }
-            }
-          ],
-          "tags": [
-            "ServerlessService"
-          ]
-        }
-      },
-      "/clusters:batchGet": {
-        "get": {
-          "summary": "Retrieves details of TiDB Cloud Serverless clusters in batch.\nThe operation is atomic: it fails for all clusters or succeeds for all clusters (no partial success).\nFor situations requiring partial failures, ListClusters method should be used.",
-          "operationId": "ServerlessService_BatchGetClusters",
-          "responses": {
-            "200": {
-              "description": "A successful response.",
-              "schema": {
-                "$ref": "#/definitions/v1beta1BatchGetClustersResponse"
-              }
-            },
-            "default": {
-              "description": "An unexpected error response.",
-              "schema": {
-                "$ref": "#/definitions/googlerpcStatus"
-              }
-            }
-          },
-          "parameters": [
-            {
-              "name": "clusterIds",
-              "description": "A maximum of 1000 clusters can be get in a batch.",
-              "in": "query",
-              "required": true,
-              "type": "array",
-              "items": {
-                "type": "string"
-              },
-              "collectionFormat": "multi"
-            },
-            {
-              "name": "view",
-              "description": "Optional. The level of detail to return for the cluster.\n\n - BASIC: Only basic information about the cluster is returned.\n - FULL: All details about the cluster are returned.",
-              "in": "query",
-              "required": false,
-              "type": "string",
-              "enum": [
-                "BASIC",
-                "FULL"
-              ]
-            }
-          ],
-          "tags": [
-            "ServerlessService"
-          ]
-        }
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location 'https://serverless.tidbapi.com/v1beta1/clusters' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Content-Type: application/json' \\\n--header 'Accept: application/json' \\\n--data '{\n    \"displayName\": \"test\",\n    \"labels\": {\n        \"tidb.cloud/project\": \"2293484\"\n    },\n    \"region\": {\n        \"name\": \"regions/aws-us-east-1\"\n    }\n}'"
+          }
+        ]
       }
     },
-    "definitions": {
-      "ClusterClusterPlan": {
-        "type": "string",
-        "enum": [
-          "STARTER",
-          "ESSENTIAL"
-        ],
-        "title": "- STARTER: alicloud starter plan\n - ESSENTIAL: alicloud essential plan"
-      },
-      "ClusterHighAvailabilityType": {
-        "type": "string",
-        "enum": [
-          "ZONAL",
-          "REGIONAL"
-        ],
-        "title": "- ZONAL: High availability within a single zone\n - REGIONAL: High availability across multiple zones within a region"
-      },
-      "ClusterSpendingLimit": {
-        "type": "object",
-        "properties": {
-          "monthly": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Optional. Maximum monthly spending limit in USD cents."
+    "/clusters/{clusterId}": {
+      "get": {
+        "summary": "Get details of a TiDB Cloud Starter or Essential cluster",
+        "operationId": "ClusterService_GetCluster",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
+            }
+          },
+          "400": {
+            "description": "A request field is invalid.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "The API key cannot be authenticated.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "The API key does not have permission to access the resource.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "You have exceeded the rate limit.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
           }
         },
-        "description": "Message for spending limit configuration."
-      },
-      "ClusterUsage": {
-        "type": "object",
-        "properties": {
-          "requestUnit": {
-            "type": "string",
-            "format": "int64",
-            "description": "Output_only. The Request Units used in this month.",
-            "readOnly": true
-          },
-          "rowBasedStorage": {
-            "type": "number",
-            "format": "double",
-            "description": "Output_only. The storage used on row-based storage in bytes.",
-            "readOnly": true
-          },
-          "columnarStorage": {
-            "type": "number",
-            "format": "double",
-            "description": "Output_only. The storage used on column-based storage in bytes.",
-            "readOnly": true
-          }
-        },
-        "description": "Message for usage statistics of a cluster."
-      },
-      "EndpointsPrivate": {
-        "type": "object",
-        "properties": {
-          "host": {
-            "type": "string",
-            "description": "Output_only. The hostname of the private endpoint.",
-            "readOnly": true
-          },
-          "port": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Output_only. The port of the private endpoint.",
-            "readOnly": true
-          },
-          "aws": {
-            "readOnly": true,
-            "allOf": [
-              {
-                "$ref": "#/definitions/PrivateAWS"
-              }
-            ]
-          },
-          "gcp": {
-            "readOnly": true,
-            "allOf": [
-              {
-                "$ref": "#/definitions/PrivateGCP"
-              }
-            ]
-          }
-        },
-        "description": "Message for private endpoint to securely connect to the cluster."
-      },
-      "EndpointsPublic": {
-        "type": "object",
-        "properties": {
-          "host": {
-            "type": "string",
-            "description": "Output_only. The hostname of the public endpoint.",
-            "readOnly": true
-          },
-          "port": {
-            "type": "integer",
-            "format": "int32",
-            "description": "Output_only. The port of the public endpoint.",
-            "readOnly": true
-          },
-          "disabled": {
-            "type": "boolean",
-            "description": "Optional. Whether the public endpoint is disabled."
-          },
-          "authorizedNetworks": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "$ref": "#/definitions/EndpointsPublicAuthorizedNetwork"
-            },
-            "title": "The list of networks that are allowed to connect to the cluster"
-          }
-        },
-        "description": "Message for public endpoint to connect to the cluster."
-      },
-      "EndpointsPublicAuthorizedNetwork": {
-        "type": "object",
-        "properties": {
-          "startIpAddress": {
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster to retrieve.",
+            "in": "path",
+            "required": true,
             "type": "string"
           },
-          "endIpAddress": {
+          {
+            "name": "view",
+            "description": "The detail level of the cluster information to return.\n\n- `BASIC`: returns only basic cluster information.\n- `FULL`: returns complete cluster details.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "BASIC",
+              "FULL"
+            ]
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Accept: application/json'"
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete a TiDB Cloud Starter or Essential cluster",
+        "operationId": "ClusterService_DeleteCluster",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
+            }
+          },
+          "400": {
+            "description": "A request field is invalid.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "The API key cannot be authenticated.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "The API key does not have permission to access the resource.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "You have exceeded the rate limit.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster to delete.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location --request DELETE 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Accept: application/json'"
+          }
+        ]
+      }
+    },
+    "/clusters/{cluster.clusterId}": {
+      "patch": {
+        "summary": "Update a TiDB Cloud Starter or Essential cluster",
+        "operationId": "ClusterService_PartialUpdateCluster",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
+            }
+          },
+          "400": {
+            "description": "A request field is invalid.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "The API key cannot be authenticated.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "The API key does not have permission to access the resource.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "You have exceeded the rate limit.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "cluster.clusterId",
+            "description": "The ID of the cluster to update.",
+            "in": "path",
+            "required": true,
             "type": "string"
           },
-          "displayName": {
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1beta1ClusterServicePartialUpdateClusterBody"
+            }
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location --request PATCH 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Content-Type: application/json' \\\n--header 'Accept: application/json' \\\n--data '{\n  \"updateMask\": \"displayName\",\n  \"cluster\": {\n    \"displayName\": \"test\",\n    \"spendingLimit\": {\n      \"monthly\": 10000\n    },\n    \"automatedBackupPolicy\": {\n      \"startTime\": \"10:00\"\n    },\n    \"endpoints\": {\n      \"public\": {\n        \"disabled\": false,\n        \"authorizedNetworks\": [\n          {\n            \"startIpAddress\": \"0.0.0.0\",\n            \"endIpAddress\": \"255.255.255.255\",\n            \"displayName\": \"allow-all\"\n          }\n        ]\n      }\n    },\n    \"labels\": {\n      \"label1\": \"label1\"\n    },\n    \"auditLogConfig\": {\n      \"enabled\": true,\n      \"unredacted\": true\n    },\n    \"autoScaling\": {\n      \"minRcu\": 20000,\n      \"maxRcu\": 30000\n    }\n  }\n}'"
+          }
+        ]
+      }
+    },
+    "/clusters/{clusterId}/password": {
+      "put": {
+        "summary": "Changes the root password of a specific TiDB Cloud Serverless cluster",
+        "operationId": "ClusterService_ChangeRootPassword",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1ChangeRootPasswordResponse"
+            }
+          },
+          "400": {
+            "description": "A request field is invalid.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "The API key cannot be authenticated.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "The API key does not have permission to access the resource.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "You have exceeded the rate limit.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster for which the password is to be changed.",
+            "in": "path",
+            "required": true,
             "type": "string"
-          }
-        },
-        "required": [
-          "startIpAddress",
-          "endIpAddress",
-          "displayName"
-        ]
-      },
-      "PrivateAWS": {
-        "type": "object",
-        "properties": {
-          "serviceName": {
-            "type": "string",
-            "description": "Output_only. The AWS service name for private access.",
-            "readOnly": true
           },
-          "availabilityZone": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "description": "Output_only. The availability zones that the service is available in.",
-            "readOnly": true
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ClusterServiceChangeRootPasswordBody"
+            }
           }
-        },
-        "description": "Message for AWS PrivateLink information."
-      },
-      "PrivateGCP": {
-        "type": "object",
-        "properties": {
-          "serviceAttachmentName": {
-            "type": "string",
-            "description": "Output_only. The target GCP service attachment name for private access.",
-            "readOnly": true
-          }
-        },
-        "description": "Message for GCP Private Service information."
-      },
-      "ServerlessServiceChangeRootPasswordBody": {
-        "type": "object",
-        "properties": {
-          "password": {
-            "type": "string",
-            "description": "Required. The new root password for the cluster."
-          }
-        },
-        "description": "Message for requesting to change the root password of a TiDB Cloud Serverless cluster.",
-        "required": [
-          "password"
-        ]
-      },
-      "commonv1beta1ClusterState": {
-        "type": "string",
-        "enum": [
-          "CREATING",
-          "DELETING",
-          "ACTIVE",
-          "RESTORING",
-          "MAINTENANCE",
-          "DELETED",
-          "INACTIVE",
-          "UPGRADING",
-          "IMPORTING",
-          "MODIFYING",
-          "PAUSING",
-          "PAUSED",
-          "RESUMING"
         ],
-        "description": "Enum of possible states of a cluster.\n\n - CREATING: Cluster is being created.\n - DELETING: Cluster is being deleted.\n - ACTIVE: Cluster is active for use.\n - RESTORING: Cluster data is being restored.\n - MAINTENANCE: Cluster is under maintenance.\n - DELETED: Cluster has been deleted.\n - INACTIVE: Cluster is not active, but not being deleted.\n - UPGRADING: Cluster is being updated.\nOnly for Dedicated Cluster.\n - IMPORTING: Cluster is being imported.\nOnly for Dedicated Cluster.\n - MODIFYING: Cluster is being modified.\nOnly for Dedicated Cluster.\n - PAUSING: Cluster is being paused.\nOnly for Dedicated Cluster.\n - PAUSED: Cluster is paused.\nOnly for Dedicated Cluster.\n - RESUMING: Cluster is resuming.\nOnly for Dedicated Cluster."
-      },
-      "commonv1beta1Region": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "example": "regions/aws-us-west-2",
-            "title": "The unique name of the region.\nFormat: regions/{region_id}",
-            "pattern": "^regions/(aws|gcp|azure)-(.+)$"
+        "tags": [
+          "ClusterService"
+        ]
+      }
+    },
+    "/regions": {
+      "get": {
+        "summary": "List available regions for an organization",
+        "description": "Before creating a TiDB Cloud Starter or Essential cluster, you can use this endpoint to list available regions in your organization.",
+        "operationId": "ClusterService_ListRegions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1ListRegionsResponse"
+            }
           },
-          "regionId": {
-            "type": "string",
-            "description": "Format: {cloud_provider}-{region_code}\nRegion code: us-west-2, asia-east1.",
-            "readOnly": true
+          "400": {
+            "description": "A request field is invalid.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
           },
-          "cloudProvider": {
-            "description": "The cloud provider for the region.",
-            "readOnly": true,
-            "allOf": [
-              {
-                "$ref": "#/definitions/v1beta1RegionCloudProvider"
-              }
+          "401": {
+            "description": "The API key cannot be authenticated.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "The API key does not have permission to access the resource.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "You have exceeded the rate limit.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "cloudProvider",
+            "description": "If specified, only regions of the specified cloud provider will be returned.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "servicePlan",
+            "description": "If specified, only regions that support the specified service plan will be returned.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "Starter",
+              "Essential",
+              "Premium",
+              "BYOC"
             ]
-          },
-          "displayName": {
-            "type": "string",
-            "description": "User-friendly display name of the region.",
-            "readOnly": true
-          },
-          "provider": {
-            "type": "string",
-            "x-nullable": true,
-            "description": "Optional provider name for the region.\nOnly used for serverless cluster.\nDeprecated.",
-            "readOnly": true
           }
-        },
-        "description": "A representation of a region for deploying TiDB clusters."
-      },
-      "googlerpcStatus": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "format": "int32",
-            "description": "The status code, which should be an enum value of\n[google.rpc.Code][google.rpc.Code]."
-          },
-          "message": {
-            "type": "string",
-            "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\n[google.rpc.Status.details][google.rpc.Status.details] field, or localized\nby the client."
-          },
-          "details": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "$ref": "#/definitions/protobufAny"
-            },
-            "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use."
-          }
-        },
-        "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https://github.com/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https://cloud.google.com/apis/design/errors)."
-      },
-      "protobufAny": {
-        "type": "object",
-        "properties": {
-          "@type": {
-            "type": "string",
-            "description": "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
-          }
-        },
-        "additionalProperties": {},
-        "description": "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(\u0026foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := \u0026pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := \u0026pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": \u003cstring\u003e,\n      \"lastName\": \u003cstring\u003e\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
-      },
-      "serverlessv1beta1ClusterView": {
-        "type": "string",
-        "enum": [
-          "BASIC",
-          "FULL"
         ],
-        "description": "Enum for the different types of detail view to be returned for a TiDB Cloud Serverless cluster.\n\n - BASIC: Only basic information about the cluster is returned.\n - FULL: All details about the cluster are returned."
-      },
-      "tidb_cloud_open_apiserverlessv1beta1Cluster": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Output_only. The unique name of the cluster.",
-            "readOnly": true
-          },
-          "clusterId": {
-            "type": "string",
-            "description": "Output_only. The unique ID of the cluster.",
-            "readOnly": true
-          },
-          "displayName": {
-            "type": "string",
-            "description": "Required. User friendly display name of the cluster."
-          },
-          "region": {
-            "description": "Required. Region where the cluster will be created.",
-            "allOf": [
-              {
-                "$ref": "#/definitions/commonv1beta1Region"
-              }
-            ]
-          },
-          "spendingLimit": {
-            "description": "Optional. The spending limit for the cluster.",
-            "allOf": [
-              {
-                "$ref": "#/definitions/ClusterSpendingLimit"
-              }
-            ]
-          },
-          "automatedBackupPolicy": {
-            "description": "Optional. Automated backup policy to set on the cluster.",
-            "allOf": [
-              {
-                "$ref": "#/definitions/v1beta1ClusterAutomatedBackupPolicy"
-              }
-            ]
-          },
-          "endpoints": {
-            "description": "Optional. The endpoints for connecting to the cluster.",
-            "allOf": [
-              {
-                "$ref": "#/definitions/v1beta1ClusterEndpoints"
-              }
-            ]
-          },
-          "rootPassword": {
-            "type": "string",
-            "example": "my-shining-password",
-            "maxLength": 64,
-            "minLength": 8,
-            "pattern": "^.{8,64}$"
-          },
-          "encryptionConfig": {
-            "description": "Optional. Encryption settings for the cluster.",
-            "allOf": [
-              {
-                "$ref": "#/definitions/v1beta1ClusterEncryptionConfig"
-              }
-            ]
-          },
-          "highAvailabilityType": {
-            "$ref": "#/definitions/ClusterHighAvailabilityType"
-          },
-          "version": {
-            "type": "string",
-            "description": "Output_only. The TiDB version of the cluster.",
-            "readOnly": true
-          },
-          "createdBy": {
-            "type": "string",
-            "description": "Output_only. The email of the creator of the cluster.",
-            "readOnly": true
-          },
-          "userPrefix": {
-            "type": "string",
-            "description": "Output_only. The unique prefix in SQL user name.",
-            "readOnly": true
-          },
-          "state": {
-            "description": "Output_only. The current state of the cluster.",
-            "readOnly": true,
-            "allOf": [
-              {
-                "$ref": "#/definitions/commonv1beta1ClusterState"
-              }
-            ]
-          },
-          "usage": {
-            "description": "Output_only. Usage details of the cluster.",
-            "readOnly": true,
-            "allOf": [
-              {
-                "$ref": "#/definitions/ClusterUsage"
-              }
-            ]
-          },
-          "labels": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            },
-            "description": "Optional. The labels for the cluster.\ntidb.cloud/organization. The label for the cluster organization id.\ntidb.cloud/project. The label for the cluster project id."
-          },
-          "annotations": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            },
-            "description": "OUTPUT_ONLY. The annotations for the cluster.\ntidb.cloud/has-set-password. The annotation for whether the cluster has set password.\ntidb.cloud/available-features. The annotation for the available features of the cluster.",
-            "readOnly": true
-          },
-          "createTime": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Output_only. Timestamp when the cluster was created.",
-            "readOnly": true
-          },
-          "updateTime": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Output_only. Timestamp when the cluster was last updated.",
-            "readOnly": true
-          },
-          "auditLogConfig": {
-            "description": "Optional. The audit log configuration for the cluster.",
-            "allOf": [
-              {
-                "$ref": "#/definitions/v1beta1ClusterAuditLogConfig"
-              }
-            ]
-          },
-          "clusterPlan": {
-            "description": "Output_only. The plan of the cluster.",
-            "readOnly": true,
-            "allOf": [
-              {
-                "$ref": "#/definitions/ClusterClusterPlan"
-              }
-            ]
-          },
-          "autoScaling": {
-            "description": "Optional. The auto scaling config for the cluster.",
-            "allOf": [
-              {
-                "$ref": "#/definitions/v1beta1ClusterAutoScaling"
-              }
-            ]
-          }
-        },
-        "description": "Message for a serverless TiDB cluster resource.",
-        "required": [
-          "displayName",
-          "region"
-        ]
-      },
-      "tidb_cloud_open_apiserverlessv1beta1CreateClusterRequest": {
-        "type": "object",
-        "properties": {
-          "cluster": {
-            "description": "Required. The cluster to be created.",
-            "allOf": [
-              {
-                "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
-              }
-            ]
-          }
-        },
-        "description": "Message for requesting to create a TiDB Cloud Serverless cluster."
-      },
-      "tidb_cloud_open_apiserverlessv1beta1ListClustersResponse": {
-        "type": "object",
-        "properties": {
-          "clusters": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
-            },
-            "description": "A list of clusters."
-          },
-          "nextPageToken": {
-            "type": "string",
-            "description": "Token provided to retrieve the next page of results."
-          },
-          "totalSize": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Total number of available clusters."
-          }
-        },
-        "description": "Responses message to the request for listing of TiDB Cloud Serverless clusters."
-      },
-      "tidb_cloud_open_apiserverlessv1beta1ListRegionsResponse": {
-        "type": "object",
-        "properties": {
-          "regions": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "$ref": "#/definitions/commonv1beta1Region"
-            },
-            "description": "A list of available regions."
-          }
-        },
-        "description": "Responses message to the request for listing of available regions in TiDB Cloud Serverless."
-      },
-      "v1beta1BatchCreateClustersRequest": {
-        "type": "object",
-        "properties": {
-          "requests": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1CreateClusterRequest"
-            },
-            "description": "The request message specifying the resources to create.\nA maximum of 1000 clusters can be created in a batch."
-          }
-        },
-        "description": "Message for requesting to create a batch of TiDB Cloud Serverless clusters.",
-        "required": [
-          "requests"
-        ]
-      },
-      "v1beta1BatchCreateClustersResponse": {
-        "type": "object",
-        "properties": {
-          "clusters": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
-            },
-            "description": "Clusters created."
-          }
-        },
-        "description": "Responses message to the request for creating a batch of TiDB Cloud Serverless clusters."
-      },
-      "v1beta1BatchGetClustersResponse": {
-        "type": "object",
-        "properties": {
-          "clusters": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
-            },
-            "description": "Clusters created."
-          }
-        },
-        "description": "Responses message to the request for retrieving a batch of TiDB Cloud Serverless clusters."
-      },
-      "v1beta1ChangeRootPasswordResponse": {
-        "type": "object",
-        "description": "Responses message to the request for changing the root password of a TiDB Cloud Serverless cluster."
-      },
-      "v1beta1ClusterAuditLogConfig": {
-        "type": "object",
-        "properties": {
-          "enabled": {
-            "type": "boolean",
-            "x-nullable": true,
-            "description": "Optional. Whether audit log is enabled."
-          },
-          "unredacted": {
-            "type": "boolean",
-            "x-nullable": true,
-            "description": "Optional. Whether unredacted the audit log."
-          }
-        },
-        "description": "Message for audit log configuration."
-      },
-      "v1beta1ClusterAutoScaling": {
-        "type": "object",
-        "properties": {
-          "minRcu": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "maxRcu": {
-            "type": "integer",
-            "format": "int64"
-          }
-        },
-        "description": "Message for auto scaling configuration."
-      },
-      "v1beta1ClusterAutomatedBackupPolicy": {
-        "type": "object",
-        "properties": {
-          "startTime": {
-            "type": "string",
-            "description": "Optional. When automated backups should start, in HH:mm format, UTC."
-          },
-          "retentionDays": {
-            "type": "integer",
-            "format": "int32",
-            "description": "OUTPUT_ONLY. Number of days to retain automated backups.",
-            "readOnly": true
-          }
-        },
-        "description": "Message for automated backup configuration for a cluster."
-      },
-      "v1beta1ClusterEncryptionConfig": {
-        "type": "object",
-        "properties": {
-          "enhancedEncryptionEnabled": {
-            "type": "boolean",
-            "description": "Optional. Whether enhanced encryption for cluster data is enabled."
-          }
-        },
-        "description": "Message for encryption settings for a cluster."
-      },
-      "v1beta1ClusterEndpoints": {
-        "type": "object",
-        "properties": {
-          "public": {
-            "description": "Optional. Public endpoint to connect to the cluster.",
-            "allOf": [
-              {
-                "$ref": "#/definitions/EndpointsPublic"
-              }
-            ]
-          },
-          "private": {
-            "description": "Output_only. Private endpoint to securely connect to the cluster.",
-            "readOnly": true,
-            "allOf": [
-              {
-                "$ref": "#/definitions/EndpointsPrivate"
-              }
-            ]
-          }
-        },
-        "description": "Message for endpoint information for connecting to a cluster."
-      },
-      "v1beta1PartialUpdateClusterRequestPartialUpdateCluster": {
-        "type": "object",
-        "properties": {
-          "clusterId": {
-            "type": "string",
-            "description": "Output_only. The unique ID of the cluster."
-          },
-          "displayName": {
-            "type": "string",
-            "description": "Required. User friendly display name of the cluster."
-          },
-          "spendingLimit": {
-            "description": "Optional. The spending limit for the cluster.",
-            "allOf": [
-              {
-                "$ref": "#/definitions/ClusterSpendingLimit"
-              }
-            ]
-          },
-          "automatedBackupPolicy": {
-            "description": "Optional. Automated backup policy to set on the cluster.",
-            "allOf": [
-              {
-                "$ref": "#/definitions/v1beta1ClusterAutomatedBackupPolicy"
-              }
-            ]
-          },
-          "endpoints": {
-            "description": "Optional. The endpoints for connecting to the cluster.",
-            "allOf": [
-              {
-                "$ref": "#/definitions/v1beta1ClusterEndpoints"
-              }
-            ]
-          },
-          "labels": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            },
-            "description": "Optional. The labels for the cluster.\ntidb.cloud/organization. The label for the cluster organization id.\ntidb.cloud/project. The label for the cluster project id."
-          },
-          "auditLogConfig": {
-            "description": "Optional. The audit log configuration for the cluster.",
-            "allOf": [
-              {
-                "$ref": "#/definitions/v1beta1ClusterAuditLogConfig"
-              }
-            ]
-          },
-          "autoScaling": {
-            "description": "Optional. The auto scaling config for the cluster.",
-            "allOf": [
-              {
-                "$ref": "#/definitions/v1beta1ClusterAutoScaling"
-              }
-            ]
-          }
-        },
-        "required": [
-          "clusterId"
-        ]
-      },
-      "v1beta1RegionCloudProvider": {
-        "type": "string",
-        "enum": [
-          "aws",
-          "gcp",
-          "azure",
-          "alicloud"
+        "tags": [
+          "ClusterService"
         ],
-        "description": "Enum of cloud provider names.\n\n - aws: Amazon Web Services.\n - gcp: Google Cloud Platform.\n - azure: Microsoft Azure.\n - alicloud: Alibaba Cloud"
-      },
-      "v1beta1ServerlessServicePartialUpdateClusterBody": {
-        "type": "object",
-        "properties": {
-          "cluster": {
-            "type": "object",
-            "properties": {
-              "displayName": {
-                "type": "string",
-                "description": "Required. User friendly display name of the cluster."
-              },
-              "spendingLimit": {
-                "description": "Optional. The spending limit for the cluster.",
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/ClusterSpendingLimit"
-                  }
-                ]
-              },
-              "automatedBackupPolicy": {
-                "description": "Optional. Automated backup policy to set on the cluster.",
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/v1beta1ClusterAutomatedBackupPolicy"
-                  }
-                ]
-              },
-              "endpoints": {
-                "description": "Optional. The endpoints for connecting to the cluster.",
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/v1beta1ClusterEndpoints"
-                  }
-                ]
-              },
-              "labels": {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "string"
-                },
-                "description": "Optional. The labels for the cluster.\ntidb.cloud/organization. The label for the cluster organization id.\ntidb.cloud/project. The label for the cluster project id."
-              },
-              "auditLogConfig": {
-                "description": "Optional. The audit log configuration for the cluster.",
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/v1beta1ClusterAuditLogConfig"
-                  }
-                ]
-              },
-              "autoScaling": {
-                "description": "Optional. The auto scaling config for the cluster.",
-                "allOf": [
-                  {
-                    "$ref": "#/definitions/v1beta1ClusterAutoScaling"
-                  }
-                ]
-              }
-            },
-            "description": "Required. The cluster to be updated.",
-            "title": "Required. The cluster to be updated."
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location 'https://serverless.tidbapi.com/v1beta1/regions' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Accept: application/json'"
+          }
+        ]
+      }
+    },
+    "/regions:listCloudProviders": {
+      "get": {
+        "summary": "List available cloud providers for an organization",
+        "operationId": "ClusterService_ListCloudProviders",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/serverlessv1beta1ListCloudProvidersResponse"
+            }
           },
-          "updateMask": {
-            "type": "string",
-            "description": "Required. The update mask indicating which fields are to be updated."
+          "400": {
+            "description": "A request field is invalid.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "The API key cannot be authenticated.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "The API key does not have permission to access the resource.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "You have exceeded the rate limit.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
           }
         },
-        "description": "Message for requesting a partial update on a TiDB Cloud Serverless cluster.",
-        "required": [
-          "updateMask"
+        "tags": [
+          "ClusterService"
+        ]
+      }
+    },
+    "/clusters:batchCreate": {
+      "post": {
+        "summary": "Creates new TiDB Cloud Starter and Essential clusters in batch",
+        "description": "The operation is atomic: it fails for all clusters or succeeds for all clusters (no partial success).",
+        "operationId": "ClusterService_BatchCreateClusters",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1BatchCreateClustersResponse"
+            }
+          },
+          "400": {
+            "description": "A request field is invalid.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "The API key cannot be authenticated.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "The API key does not have permission to access the resource.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "You have exceeded the rate limit.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": "Message for requesting to create a batch of TiDB Cloud Starter and Essential clusters.",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1beta1BatchCreateClustersRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ClusterService"
+        ]
+      }
+    },
+    "/clusters:batchGet": {
+      "get": {
+        "summary": "Retrieves details of TiDB Cloud Starter and Essential clusters in batch",
+        "description": "The operation is atomic: it fails for all clusters or succeeds for all clusters (no partial success).\nFor situations requiring partial failures, ListClusters method should be used.",
+        "operationId": "ClusterService_BatchGetClusters",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1beta1BatchGetClustersResponse"
+            }
+          },
+          "400": {
+            "description": "A request field is invalid.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "401": {
+            "description": "The API key cannot be authenticated.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "403": {
+            "description": "The API key does not have permission to access the resource.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "429": {
+            "description": "You have exceeded the rate limit.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/googlerpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterIds",
+            "description": "A maximum of 1000 clusters can be get in a batch.",
+            "in": "query",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "view",
+            "description": "The level of detail to return for the cluster.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "BASIC",
+              "FULL"
+            ]
+          }
+        ],
+        "tags": [
+          "ClusterService"
         ]
       }
     }
+  },
+  "definitions": {
+    "ClusterClusterPlan": {
+      "type": "string",
+      "enum": [
+        "STARTER",
+        "ESSENTIAL"
+      ],
+      "description": "The plan of the cluster.\n\n- `STARTER`: [TiDB Cloud Starter](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#tidb-cloud-serverless)\n- `ESSENTIAL`: [TiDB Cloud Essential](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#essential)."
+    },
+    "ClusterServiceChangeRootPasswordBody": {
+      "type": "object",
+      "properties": {
+        "password": {
+          "type": "string",
+          "description": "The new root password for the cluster."
+        }
+      },
+      "description": "Message for requesting to change the root password of a TiDB Cloud Starter or Essential cluster.",
+      "required": [
+        "password"
+      ]
+    },
+    "ClusterSpendingLimit": {
+      "type": "object",
+      "properties": {
+        "monthly": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The maximum spending limit for the cluster per month, in USD cents."
+        }
+      },
+      "description": "Message for spending limit configuration."
+    },
+    "EndpointsPrivate": {
+      "type": "object",
+      "properties": {
+        "host": {
+          "type": "string",
+          "description": "The hostname of the private endpoint.",
+          "readOnly": true
+        },
+        "port": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The port number of the private endpoint.",
+          "readOnly": true
+        },
+        "aws": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/PrivateAWS"
+            }
+          ]
+        },
+        "gcp": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/PrivateGCP"
+            }
+          ]
+        },
+        "alicloud": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/PrivateALICLOUD"
+            }
+          ]
+        }
+      },
+      "description": "Message for private endpoint to securely connect to the cluster."
+    },
+    "EndpointsPublic": {
+      "type": "object",
+      "properties": {
+        "host": {
+          "type": "string",
+          "description": "The hostname of the public endpoint.",
+          "readOnly": true
+        },
+        "port": {
+          "type": "integer",
+          "format": "int32",
+          "title": "The port number of the public endpoint",
+          "readOnly": true
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "Indicates whether the public endpoint is disabled."
+        },
+        "authorizedNetworks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/EndpointsPublicAuthorizedNetwork"
+          },
+          "description": "The list of networks that are allowed to connect to the cluster."
+        }
+      },
+      "description": "Message for public endpoint to connect to the cluster."
+    },
+    "EndpointsPublicAuthorizedNetwork": {
+      "type": "object",
+      "properties": {
+        "startIpAddress": {
+          "type": "string",
+          "description": "The starting IP address of the authorized network range."
+        },
+        "endIpAddress": {
+          "type": "string",
+          "description": "The ending IP address of the authorized network range."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The display name of the authorized network."
+        }
+      },
+      "required": [
+        "startIpAddress",
+        "endIpAddress",
+        "displayName"
+      ]
+    },
+    "PrivateALICLOUD": {
+      "type": "object",
+      "properties": {
+        "serviceName": {
+          "type": "string",
+          "description": "The Alibaba Cloud service name for private access.",
+          "readOnly": true
+        },
+        "availabilityZone": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of availability zones where the service is available.",
+          "readOnly": true
+        }
+      },
+      "description": "The [Alibaba Cloud PrivateLink](https://www.alibabacloud.com/help/en/privatelink/product-overview/what-is-a-private-network-connection) configuration for private access."
+    },
+    "PrivateAWS": {
+      "type": "object",
+      "properties": {
+        "serviceName": {
+          "type": "string",
+          "description": "The AWS service name for private access.",
+          "readOnly": true
+        },
+        "availabilityZone": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "A list of availability zones where the service is available.",
+          "readOnly": true
+        }
+      },
+      "description": "The [AWS PrivateLink](https://aws.amazon.com/privatelink/) configuration details for private access."
+    },
+    "PrivateGCP": {
+      "type": "object",
+      "properties": {
+        "serviceAttachmentName": {
+          "type": "string",
+          "description": "The target GCP service attachment name for private access.",
+          "readOnly": true
+        }
+      },
+      "description": "Message for GCP Private Service information."
+    },
+    "commonv1beta1ClusterState": {
+      "type": "string",
+      "enum": [
+        "CREATING",
+        "DELETING",
+        "ACTIVE",
+        "RESTORING",
+        "MAINTENANCE",
+        "DELETED",
+        "INACTIVE",
+        "UPGRADING",
+        "IMPORTING",
+        "MODIFYING",
+        "PAUSING",
+        "PAUSED",
+        "RESUMING"
+      ],
+      "description": "Enum of possible states of a cluster.\n\n - CREATING: Cluster is being created.\n - DELETING: Cluster is being deleted.\n - ACTIVE: Cluster is active for use.\n - RESTORING: Cluster data is being restored.\n - MAINTENANCE: Cluster is under maintenance.\n - DELETED: Cluster has been deleted.\n - INACTIVE: Cluster is not active, but not being deleted.\n - UPGRADING: Cluster is being updated.\nOnly for Dedicated Cluster.\n - IMPORTING: Cluster is being imported.\nOnly for Dedicated Cluster.\n - MODIFYING: Cluster is being modified.\nOnly for Dedicated Cluster.\n - PAUSING: Cluster is being paused.\nOnly for Dedicated Cluster.\n - PAUSED: Cluster is paused.\nOnly for Dedicated Cluster.\n - RESUMING: Cluster is resuming.\nOnly for Dedicated Cluster."
+    },
+    "commonv1beta1Region": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "regions/aws-us-west-2",
+          "description": "The unique name of the region, in the format of `regions/{region_id}`. For example, `regions/aws-us-west-2`.",
+          "pattern": "^regions/(aws|gcp|azure)-(.+)$"
+        },
+        "regionId": {
+          "type": "string",
+          "example": "aws-us-west-2",
+          "description": "The unique identifier for the region, in the format of `{cloud_provider}-{region_code}`. For example, `aws-us-west-2`.",
+          "readOnly": true,
+          "pattern": "^(aws|gcp|azure|alicloud)-[a-z0-9-]+$"
+        },
+        "cloudProvider": {
+          "example": "aws",
+          "description": "The cloud provider that offers the region.\n\n- `\"aws\"`: Amazon Web Services\n\n- `\"gcp\"`: Google Cloud\n\n- `\"azure\"`: Microsoft Azure\n\n- `\"alicloud\"`: Alibaba Cloud",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1RegionCloudProvider"
+            }
+          ]
+        },
+        "displayName": {
+          "type": "string",
+          "example": "Oregon (us-west-2)",
+          "description": "A human-readable name for the region. For example, `Oregon (us-west-2)`.",
+          "readOnly": true
+        },
+        "provider": {
+          "type": "string",
+          "x-nullable": true,
+          "example": "aws",
+          "description": "**Deprecated.** Use `cloudProvider` instead. The name of the cloud provider. For example, `aws`, `gcp`, `azure`, or `alicloud`.",
+          "title": "Deprecated",
+          "readOnly": true
+        },
+        "servicePlans": {
+          "type": "array",
+          "example": [
+            "Starter",
+            "Essential",
+            "Premium"
+          ],
+          "items": {
+            "$ref": "#/definitions/commonv1beta1ServicePlan"
+          },
+          "description": "The service plans available in this region.",
+          "title": "ServicePlan",
+          "readOnly": true
+        }
+      },
+      "description": "A representation of a region for deploying TiDB clusters."
+    },
+    "commonv1beta1ServicePlan": {
+      "type": "string",
+      "enum": [
+        "Starter",
+        "Essential",
+        "Premium",
+        "BYOC"
+      ]
+    },
+    "googlerpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The status code, which should be an enum value of\n[google.rpc.Code][google.rpc.Code]."
+        },
+        "message": {
+          "type": "string",
+          "description": "A developer-facing error message, which should be in English. Any\nuser-facing error message should be localized and sent in the\n[google.rpc.Status.details][google.rpc.Status.details] field, or localized\nby the client."
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          },
+          "description": "A list of messages that carry the error details.  There is a common set of\nmessage types for APIs to use."
+        }
+      },
+      "description": "The `Status` type defines a logical error model that is suitable for\ndifferent programming environments, including REST APIs and RPC APIs. It is\nused by [gRPC](https://github.com/grpc). Each `Status` message contains\nthree pieces of data: error code, error message, and error details.\n\nYou can find out more about this error model and how to work with it in the\n[API Design Guide](https://cloud.google.com/apis/design/errors)."
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string",
+          "description": "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com. As of May 2023, there are no widely used type server\nimplementations and no plans to implement one.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+        }
+      },
+      "additionalProperties": {},
+      "description": "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(\u0026foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n    // or ...\n    if (any.isSameTypeAs(Foo.getDefaultInstance())) {\n      foo = any.unpack(Foo.getDefaultInstance());\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := \u0026pb.Foo{...}\n     any, err := anypb.New(foo)\n     if err != nil {\n       ...\n     }\n     ...\n     foo := \u0026pb.Foo{}\n     if err := any.UnmarshalTo(foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": \u003cstring\u003e,\n      \"lastName\": \u003cstring\u003e\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    },
+    "serverlessv1beta1ClusterHighAvailabilityType": {
+      "type": "string",
+      "enum": [
+        "ZONAL",
+        "REGIONAL"
+      ],
+      "description": "The high availability configuration for the cluster.\n\n- `ZONAL`: high availability within a single availability zone. For more information, see [Zonal high availability architecture](https://docs.pingcap.com/tidbcloud/serverless-high-availability/#zonal-high-availability-architecture).\n- `REGIONAL`: high availability across multiple availability zones within a region. For more information, see [Regional high availability architecture](https://docs.pingcap.com/tidbcloud/serverless-high-availability/#regional-high-availability-architecture)."
+    },
+    "serverlessv1beta1ClusterView": {
+      "type": "string",
+      "enum": [
+        "BASIC",
+        "FULL"
+      ],
+      "description": "Enum for the different types of detail view to be returned for a TiDB Cloud Starter or Essential cluster."
+    },
+    "serverlessv1beta1ListCloudProvidersResponse": {
+      "type": "object",
+      "properties": {
+        "cloudProviders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1beta1RegionCloudProvider"
+          },
+          "description": "The list of cloud providers."
+        }
+      }
+    },
+    "tidb_cloud_open_apiserverlessv1beta1Cluster": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The unique identifier for the TiDB cluster, which is generated by the API and follows the format `clusters/{clusterId}`.",
+          "readOnly": true
+        },
+        "clusterId": {
+          "type": "string",
+          "description": "The ID of the cluster.",
+          "readOnly": true
+        },
+        "displayName": {
+          "type": "string",
+          "example": "foo-bar",
+          "description": "The user-defined name of the cluster.",
+          "maxLength": 64,
+          "minLength": 4,
+          "pattern": "^[A-Za-z0-9][-A-Za-z0-9]{2,62}[A-Za-z0-9]$"
+        },
+        "region": {
+          "description": "The region where the cluster is deployed.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/commonv1beta1Region"
+            }
+          ]
+        },
+        "spendingLimit": {
+          "description": "The [spending limit](https://docs.pingcap.com/tidbcloud/tidb-cloud-glossary/#spending-limit) for the cluster.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ClusterSpendingLimit"
+            }
+          ]
+        },
+        "automatedBackupPolicy": {
+          "description": "The schedule and retention rules for automated database backups.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ClusterAutomatedBackupPolicy"
+            }
+          ]
+        },
+        "endpoints": {
+          "description": "The connection endpoints for accessing the cluster.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ClusterEndpoints"
+            }
+          ]
+        },
+        "rootPassword": {
+          "type": "string",
+          "example": "my-shining-password",
+          "description": "The root password of the cluster. It must be between 8 and 64 characters long and can contain letters, numbers, and special characters.",
+          "maxLength": 64,
+          "minLength": 8,
+          "pattern": "^.{8,64}$"
+        },
+        "encryptionConfig": {
+          "description": "The data encryption settings for the cluster.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ClusterEncryptionConfig"
+            }
+          ]
+        },
+        "highAvailabilityType": {
+          "$ref": "#/definitions/serverlessv1beta1ClusterHighAvailabilityType"
+        },
+        "version": {
+          "type": "string",
+          "description": "The TiDB version of the cluster.",
+          "readOnly": true
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "The email address of the user who create the cluster.",
+          "readOnly": true
+        },
+        "userPrefix": {
+          "type": "string",
+          "description": "The unique prefix automatically generated for SQL usernames on this cluster. TiDB Cloud uses this prefix to distinguish between clusters. For more information, see [User name prefix](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#user-name-prefix).",
+          "readOnly": true
+        },
+        "state": {
+          "description": "The current state of the cluster.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/commonv1beta1ClusterState"
+            }
+          ]
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "The labels for the cluster.\n\n- `tidb.cloud/organization`: the ID of the organization where the cluster belongs.\n- `tidb.cloud/project`: the ID of the project where the cluster belongs."
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "The annotations for the cluster. The following lists some predefined annotations.\n\n- `tidb.cloud/has-set-password`: indicates whether the cluster has a root password set.\n- `tidb.cloud/available-features`: lists available features of the cluster.",
+          "readOnly": true
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the cluster was created, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.",
+          "readOnly": true
+        },
+        "updateTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the cluster was last updated, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.",
+          "readOnly": true
+        },
+        "auditLogConfig": {
+          "description": "The audit log configuration for the cluster.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ClusterAuditLogConfig"
+            }
+          ]
+        },
+        "clusterPlan": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/ClusterClusterPlan"
+            }
+          ]
+        },
+        "autoScaling": {
+          "description": "The auto-scaling configuration for the cluster.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ClusterAutoScaling"
+            }
+          ]
+        },
+        "servicePlan": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/commonv1beta1ServicePlan"
+            }
+          ]
+        }
+      },
+      "description": "Message for a TiDB Cloud Starter or Essential cluster.",
+      "required": [
+        "displayName",
+        "region"
+      ]
+    },
+    "tidb_cloud_open_apiserverlessv1beta1CreateClusterRequest": {
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "description": "The cluster to create.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
+            }
+          ]
+        }
+      },
+      "description": "Message for requesting to create a TiDB Cloud Starter or Essential cluster."
+    },
+    "tidb_cloud_open_apiserverlessv1beta1ListClustersResponse": {
+      "type": "object",
+      "properties": {
+        "clusters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
+          },
+          "description": "A list of clusters that match the query."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "The token to retrieve the next page of results. Use this value as the `pageToken` parameter in the next request. This field is empty when there are no more pages."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The total number of clusters that match the query."
+        }
+      },
+      "description": "Responses message to the request for listing of TiDB Cloud Starter and Essential clusters."
+    },
+    "tidb_cloud_open_apiserverlessv1beta1ListRegionsResponse": {
+      "type": "object",
+      "properties": {
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/commonv1beta1Region"
+          },
+          "description": "A list of available regions."
+        }
+      },
+      "description": "Responses message to the request for listing of available regions in TiDB Cloud Starter and Essential."
+    },
+    "v1beta1BatchCreateClustersRequest": {
+      "type": "object",
+      "properties": {
+        "requests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1CreateClusterRequest"
+          },
+          "description": "The request message specifying the resources to create.\nA maximum of 1000 clusters can be created in a batch."
+        }
+      },
+      "description": "Message for requesting to create a batch of TiDB Cloud Starter and Essential clusters.",
+      "required": [
+        "requests"
+      ]
+    },
+    "v1beta1BatchCreateClustersResponse": {
+      "type": "object",
+      "properties": {
+        "clusters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
+          },
+          "description": "Clusters created."
+        }
+      },
+      "description": "Responses message to the request for creating a batch of TiDB Cloud Starter and Essential clusters."
+    },
+    "v1beta1BatchGetClustersResponse": {
+      "type": "object",
+      "properties": {
+        "clusters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/tidb_cloud_open_apiserverlessv1beta1Cluster"
+          },
+          "description": "Clusters created."
+        }
+      },
+      "description": "Responses message to the request for retrieving a batch of TiDB Cloud Starter and Essential clusters."
+    },
+    "v1beta1ChangeRootPasswordResponse": {
+      "type": "object",
+      "description": "Responses message to the request for changing the root password of a TiDB Cloud Starter or Essential cluster."
+    },
+    "v1beta1ClusterAuditLogConfig": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "x-nullable": true,
+          "description": "Whether audit log is enabled."
+        },
+        "unredacted": {
+          "type": "boolean",
+          "x-nullable": true,
+          "description": "Whether unredacted the audit log."
+        }
+      },
+      "description": "Message for audit log configuration."
+    },
+    "v1beta1ClusterAutoScaling": {
+      "type": "object",
+      "properties": {
+        "minRcu": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The minimum number of Request Capacity Units (RCUs) for auto-scaling."
+        },
+        "maxRcu": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The maximum number of Request Capacity Units (RCUs) for auto-scaling."
+        }
+      },
+      "description": "Message for auto scaling configuration."
+    },
+    "v1beta1ClusterAutomatedBackupPolicy": {
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "type": "string",
+          "description": "The UTC time of day in `HH:mm` format when the automated backup starts."
+        },
+        "retentionDays": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The number of days to retain automated backups."
+        }
+      },
+      "description": "Message for automated backup configuration for a cluster."
+    },
+    "v1beta1ClusterEncryptionConfig": {
+      "type": "object",
+      "properties": {
+        "enhancedEncryptionEnabled": {
+          "type": "boolean",
+          "description": "Indicates whether enhanced encryption for cluster data is enabled."
+        }
+      },
+      "description": "Message for encryption settings for a cluster."
+    },
+    "v1beta1ClusterEndpoints": {
+      "type": "object",
+      "properties": {
+        "public": {
+          "description": "The public endpoint configuration for connecting to the cluster. For more information, see [Network](https://docs.pingcap.com/tidbcloud/connect-to-tidb-cluster-serverless/#network).",
+          "allOf": [
+            {
+              "$ref": "#/definitions/EndpointsPublic"
+            }
+          ]
+        },
+        "private": {
+          "description": "The private endpoint for securely connecting to the cluster. For more information, see [Network](https://docs.pingcap.com/tidbcloud/connect-to-tidb-cluster-serverless/#network).",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/EndpointsPrivate"
+            }
+          ]
+        }
+      },
+      "description": "Message for endpoint information for connecting to a cluster."
+    },
+    "v1beta1ClusterServicePartialUpdateClusterBody": {
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "type": "object",
+          "properties": {
+            "displayName": {
+              "type": "string",
+              "description": "The user-defined name of the cluster."
+            },
+            "spendingLimit": {
+              "description": "The [spending limit](https://docs.pingcap.com/tidbcloud/tidb-cloud-glossary/#spending-limit) for the cluster.",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/ClusterSpendingLimit"
+                }
+              ]
+            },
+            "automatedBackupPolicy": {
+              "description": "The schedule and retention rules for automated database backups.",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/v1beta1ClusterAutomatedBackupPolicy"
+                }
+              ]
+            },
+            "endpoints": {
+              "description": "The connection endpoints for accessing the cluster.",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/v1beta1ClusterEndpoints"
+                }
+              ]
+            },
+            "labels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              },
+              "description": "The labels for the cluster.\n\n- `tidb.cloud/organization`: the ID of the organization where the cluster belongs.\n- `tidb.cloud/project`: the ID of the project where the cluster belongs."
+            },
+            "auditLogConfig": {
+              "description": "The audit log configuration for the cluster.",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/v1beta1ClusterAuditLogConfig"
+                }
+              ]
+            },
+            "autoScaling": {
+              "description": "The auto-scaling configuration for the cluster.",
+              "allOf": [
+                {
+                  "$ref": "#/definitions/v1beta1ClusterAutoScaling"
+                }
+              ]
+            }
+          },
+          "description": "The updated cluster configuration."
+        },
+        "updateMask": {
+          "type": "string",
+          "description": "Specifies which fields to update in the cluster."
+        }
+      },
+      "description": "Message for requesting a partial update on a TiDB Cloud Starter or Essential cluster.",
+      "required": [
+        "updateMask"
+      ]
+    },
+    "v1beta1PartialUpdateClusterRequestPartialUpdateCluster": {
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "type": "string",
+          "description": "The ID of the cluster to update."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The user-defined name of the cluster."
+        },
+        "spendingLimit": {
+          "description": "The [spending limit](https://docs.pingcap.com/tidbcloud/tidb-cloud-glossary/#spending-limit) for the cluster.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ClusterSpendingLimit"
+            }
+          ]
+        },
+        "automatedBackupPolicy": {
+          "description": "The schedule and retention rules for automated database backups.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ClusterAutomatedBackupPolicy"
+            }
+          ]
+        },
+        "endpoints": {
+          "description": "The connection endpoints for accessing the cluster.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ClusterEndpoints"
+            }
+          ]
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "The labels for the cluster.\n\n- `tidb.cloud/organization`: the ID of the organization where the cluster belongs.\n- `tidb.cloud/project`: the ID of the project where the cluster belongs."
+        },
+        "auditLogConfig": {
+          "description": "The audit log configuration for the cluster.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ClusterAuditLogConfig"
+            }
+          ]
+        },
+        "autoScaling": {
+          "description": "The auto-scaling configuration for the cluster.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/v1beta1ClusterAutoScaling"
+            }
+          ]
+        }
+      },
+      "description": "The updated cluster configuration.",
+      "required": [
+        "clusterId"
+      ]
+    },
+    "v1beta1RegionCloudProvider": {
+      "type": "string",
+      "enum": [
+        "aws",
+        "gcp",
+        "azure",
+        "alicloud"
+      ],
+      "description": "Enum of cloud provider names.\n\n - aws: Amazon Web Services.\n - gcp: Google Cloud Platform.\n - azure: Microsoft Azure.\n - alicloud: Alibaba Cloud"
+    }
+  },
+  "externalDocs": {
+    "description": "More about TiDB Cloud API",
+    "url": "https://docs.pingcap.com/tidbcloud/api-overview"
   }
+}

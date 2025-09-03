@@ -104,7 +104,7 @@ func (d *downloadPool) Start() error {
 	if pathName == "" {
 		pathName = "current folder"
 	}
-	fmt.Fprintf(d.h.IOStreams.Out, color.GreenString("start to download files to %s:\n", pathName))
+	fmt.Fprintf(d.h.IOStreams.Out, "%s\n", color.GreenString("start to download files to "+pathName))
 	// start produce
 	go d.produce()
 	// start consumers:
@@ -131,7 +131,7 @@ func (d *downloadPool) Start() error {
 		}
 		downloadResults = append(downloadResults, result)
 	}
-	fmt.Fprintf(d.h.IOStreams.Out, GenerateDownloadSummary(succeededCount, skippedCount, failedCount))
+	fmt.Fprintf(d.h.IOStreams.Out, "%s\n", GenerateDownloadSummary(succeededCount, skippedCount, failedCount))
 	index := 0
 	for _, f := range downloadResults {
 		if f.status != Succeeded {
