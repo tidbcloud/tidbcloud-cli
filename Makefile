@@ -60,6 +60,9 @@ generate-v1beta1-serverless-client: install-openapi-generator ## Generate server
 	@echo "==> Generating serverless audit log client"
 	rm -rf pkg/tidbcloud/v1beta1/serverless/auditlog
 	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/auditlog.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/auditlog --package-name auditlog -c go/config.yaml
+	@echo "==> Generating serverless dm client"
+	rm -rf pkg/tidbcloud/v1beta1/serverless/dm
+	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/dm.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/dm --package-name dm -c go/config.yaml
 	cd pkg && go fmt ./tidbcloud/v1beta1/serverless/... && goimports -w .
 
 .PHONY: generate-v1beta1-dedicated-client

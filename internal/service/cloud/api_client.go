@@ -32,6 +32,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/dm"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 
@@ -130,6 +131,17 @@ type TiDBCloudClient interface {
 	ListAuditLogFilterRules(ctx context.Context, clusterID string) (*auditlog.ListAuditLogFilterRulesResponse, error)
 
 	UpdateAuditLogFilterRule(ctx context.Context, clusterID, name string, body *auditlog.AuditLogServiceUpdateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error)
+
+	// DM (Data Migration) operations
+	Precheck(ctx context.Context, clusterID string, body *dm.DMServicePrecheckBody) (*dm.CreateDMPrecheckResp, error)
+	CreateTask(ctx context.Context, clusterID string, body *dm.DMServiceCreateTaskBody) (*dm.DMTask, error)
+	GetTask(ctx context.Context, clusterID string, taskID string) (*dm.DMTask, error)
+	ListTasks(ctx context.Context, clusterID string, pageSize *int32, pageToken *string, orderBy *string) (*dm.ListDMTasksResp, error)
+	DeleteTask(ctx context.Context, clusterID string, taskID string) (*dm.DMTask, error)
+	// used to operate task status, i.e. pause/resume task
+	OperateTask(ctx context.Context, clusterID string, taskID string, body *dm.DMServiceOperateTaskBody) error
+	CancelPrecheck(ctx context.Context, clusterID string, precheckID string) error
+	GetPrecheck(ctx context.Context, clusterID string, precheckID string) (*dm.DMPrecheck, error)
 }
 type ClientDelegate struct {
 	ic  *iam.APIClient
@@ -140,11 +152,12 @@ type ClientDelegate struct {
 	sic *imp.APIClient
 	ec  *export.APIClient
 	alc *auditlog.APIClient
+	dmc *dm.APIClient
 }
 
 func NewClientDelegateWithToken(token string, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*ClientDelegate, error) {
 	transport := NewBearTokenTransport(token)
-	bc, sc, pc, brc, sic, ec, ic, alc, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint)
+	bc, sc, pc, brc, sic, ec, ic, alc, dmc, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -157,12 +170,13 @@ func NewClientDelegateWithToken(token string, apiUrl string, serverlessEndpoint 
 		ic:  ic,
 		sic: sic,
 		alc: alc,
+		dmc: dmc,
 	}, nil
 }
 
 func NewClientDelegateWithApiKey(publicKey string, privateKey string, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*ClientDelegate, error) {
 	transport := NewDigestTransport(publicKey, privateKey)
-	bc, sc, pc, brc, sic, ec, ic, alc, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint)
+	bc, sc, pc, brc, sic, ec, ic, alc, dmc, err := NewApiClient(transport, apiUrl, serverlessEndpoint, iamEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -175,6 +189,7 @@ func NewClientDelegateWithApiKey(publicKey string, privateKey string, apiUrl str
 		ic:  ic,
 		sic: sic,
 		alc: alc,
+		dmc: dmc,
 	}, nil
 }
 
@@ -563,7 +578,7 @@ func (d *ClientDelegate) UpdateAuditLogFilterRule(ctx context.Context, clusterID
 	return res, parseError(err, h)
 }
 
-func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *pingchat.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, *auditlog.APIClient, error) {
+func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *pingchat.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, *auditlog.APIClient, *dm.APIClient, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}
@@ -571,18 +586,18 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	// v1beta api
 	u, err := prop.ValidateApiUrl(apiUrl)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 
 	// v1beta1 api (serverless)
 	serverlessURL, err := prop.ValidateApiUrl(serverlessEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 
 	iamURL, err := prop.ValidateApiUrl(iamEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 
 	userAgent := fmt.Sprintf("%s/%s", config.CliName, version.Version)
@@ -627,10 +642,16 @@ func NewApiClient(rt http.RoundTripper, apiUrl string, serverlessEndpoint string
 	auditLogCfg.Host = serverlessURL.Host
 	auditLogCfg.UserAgent = userAgent
 
+	dmCfg := dm.NewConfiguration()
+	dmCfg.HTTPClient = httpclient
+	dmCfg.Host = serverlessURL.Host
+	dmCfg.UserAgent = userAgent
+
 	return branch.NewAPIClient(branchCfg), cluster.NewAPIClient(clusterCfg),
 		pingchat.NewAPIClient(pingchatCfg), br.NewAPIClient(backupRestoreCfg),
 		imp.NewAPIClient(importCfg), export.NewAPIClient(exportCfg),
-		iam.NewAPIClient(iamCfg), auditlog.NewAPIClient(auditLogCfg), nil
+		iam.NewAPIClient(iamCfg), auditlog.NewAPIClient(auditLogCfg),
+		dm.NewAPIClient(dmCfg), nil
 }
 
 func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {
@@ -722,4 +743,68 @@ func parseError(err error, resp *http.Response) error {
 		traceId = resp.Header.Get("X-Debug-Trace-Id")
 	}
 	return fmt.Errorf("%s[%s][%s] %s", path, err.Error(), traceId, body)
+}
+
+// DM (Data Migration) method implementations
+
+func (d *ClientDelegate) Precheck(ctx context.Context, clusterID string, body *dm.DMServicePrecheckBody) (*dm.CreateDMPrecheckResp, error) {
+	r := d.dmc.DMAPI.DMServicePrecheck(ctx, clusterID)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	result, h, err := r.Execute()
+	return result, parseError(err, h)
+}
+
+func (d *ClientDelegate) CreateTask(ctx context.Context, clusterID string, body *dm.DMServiceCreateTaskBody) (*dm.DMTask, error) {
+	r := d.dmc.DMServiceAPI.DMServiceCreateTask(ctx, clusterID)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	result, h, err := r.Execute()
+	return result, parseError(err, h)
+}
+
+func (d *ClientDelegate) GetTask(ctx context.Context, clusterID string, taskID string) (*dm.DMTask, error) {
+	result, h, err := d.dmc.DMServiceAPI.DMServiceGetTask(ctx, clusterID, taskID).Execute()
+	return result, parseError(err, h)
+}
+
+func (d *ClientDelegate) ListTasks(ctx context.Context, clusterID string, pageSize *int32, pageToken *string, orderBy *string) (*dm.ListDMTasksResp, error) {
+	r := d.dmc.DMServiceAPI.DMServiceListTasks(ctx, clusterID)
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	if orderBy != nil {
+		r = r.OrderBy(*orderBy)
+	}
+	result, h, err := r.Execute()
+	return result, parseError(err, h)
+}
+
+func (d *ClientDelegate) DeleteTask(ctx context.Context, clusterID string, taskID string) (*dm.DMTask, error) {
+	result, h, err := d.dmc.DMServiceAPI.DMServiceDeleteTask(ctx, clusterID, taskID).Execute()
+	return result, parseError(err, h)
+}
+
+func (d *ClientDelegate) OperateTask(ctx context.Context, clusterID string, taskID string, body *dm.DMServiceOperateTaskBody) error {
+	r := d.dmc.DMServiceAPI.DMServiceOperateTask(ctx, clusterID, taskID)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	_, h, err := r.Execute()
+	return parseError(err, h)
+}
+
+func (d *ClientDelegate) CancelPrecheck(ctx context.Context, clusterID string, precheckID string) error {
+	_, h, err := d.dmc.DMServiceAPI.DMServiceCancelPrecheck(ctx, clusterID, precheckID).Execute()
+	return parseError(err, h)
+}
+
+func (d *ClientDelegate) GetPrecheck(ctx context.Context, clusterID string, precheckID string) (*dm.DMPrecheck, error) {
+	result, h, err := d.dmc.DMServiceAPI.DMServiceGetPrecheck(ctx, clusterID, precheckID).Execute()
+	return result, parseError(err, h)
 }

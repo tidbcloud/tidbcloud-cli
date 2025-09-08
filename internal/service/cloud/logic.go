@@ -22,6 +22,7 @@ import (
 
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/auditlog"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/dm"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
@@ -986,4 +987,81 @@ func GetSelectedRuleName(ctx context.Context, clusterID string, client TiDBCloud
 		return "", errors.New("no filter rule selected")
 	}
 	return selected.(string), nil
+}
+
+// DMTask represents a DM task for selection
+type DMTask struct {
+	ID   string
+	Name string
+	Mode string
+}
+
+func (t DMTask) String() string {
+	return fmt.Sprintf("%s (%s) [%s]", t.Name, t.ID, t.Mode)
+}
+
+func GetSelectedDMTask(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*dm.DMTask, error) {
+	tasks, err := client.ListTasks(ctx, clusterID, nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var items = make([]interface{}, 0, len(tasks.Tasks))
+	for _, task := range tasks.Tasks {
+		if task.Id == nil {
+			continue
+		}
+
+		name := ""
+		if task.Name != nil {
+			name = *task.Name
+		}
+
+		mode := ""
+		if task.Mode != nil {
+			mode = string(*task.Mode)
+		}
+
+		items = append(items, &DMTask{
+			ID:   *task.Id,
+			Name: name,
+			Mode: mode,
+		})
+	}
+
+	if len(items) == 0 {
+		return nil, fmt.Errorf("no available DM tasks found")
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the DM task:")
+	if err != nil {
+		return nil, err
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	result, err := p.Run()
+	if err != nil {
+		return nil, err
+	}
+	if m, _ := result.(ui.SelectModel); m.Interrupted {
+		return nil, util.InterruptError
+	}
+	selectedItem := result.(ui.SelectModel).GetSelectedItem()
+	if selectedItem == nil {
+		return nil, errors.New("no DM task selected")
+	}
+
+	selectedTask := selectedItem.(*DMTask)
+	
+	// Find and return the full task details
+	for _, task := range tasks.Tasks {
+		if task.Id != nil && *task.Id == selectedTask.ID {
+			return &task, nil
+		}
+	}
+
+	return nil, errors.New("selected DM task not found")
 }

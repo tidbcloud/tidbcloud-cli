@@ -1,0 +1,20 @@
+{
+  "name": "example-dm-task",
+  "mode": "incremental",
+  "sourceConfig": {
+    "host": "source.example.com",
+    "port": 3306,
+    "user": "root",
+    "password": "password",
+    "database": "source_db"
+  },
+  "targetConfig": {
+    "database": "target_db"
+  },
+  "filterRules": [
+    {
+      "sourceSchema": "source_db",
+      "sourceTable": "users"
+    }
+  ]
+}

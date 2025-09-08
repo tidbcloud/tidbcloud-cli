@@ -1,0 +1,778 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "TiDB Cloud Starter and Essential Open API",
+    "description": "TiDB Cloud Starter and Essential Open API",
+    "version": "v1beta1"
+  },
+  "tags": [
+    {
+      "name": "DMService"
+    }
+  ],
+  "host": "serverless.tidbapi.com",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1beta1/clusters/{clusterId}/dm/precheck": {
+      "post": {
+        "summary": "re-use the param of CreateTask",
+        "operationId": "DMService_Precheck",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateDMPrecheckResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DMService.PrecheckBody"
+            }
+          }
+        ],
+        "tags": ["DM"],
+        "x-codeSamples": [
+          {
+            "label": "CLI",
+            "lang": "cURL",
+            "source": "curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/dm/pre-check' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Accept: application/json'"
+          }
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/dm/tasks": {
+      "get": {
+        "operationId": "DMService_ListTasks",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListDMTasksResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "The maximum number of dm tasks to return. If not specified, at most 10 tasks will be returned. The maximum value is `100`. Values greater than `100` are set to `100`.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 10
+          },
+          {
+            "name": "pageToken",
+            "description": "The pagination token received from a previous [List dm tasks](#tag/Export/operation/ExportService_ListExports) request. Use this token to retrieve the next page of results.\n\n**Note**: When paginating, all other parameters must match the original request.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "orderBy",
+            "description": "Specifies the sorting order of results. Use a comma-separated list of field names, optionally appending `desc` for descending order. For example, `createTime desc`. By default, fields are sorted in ascending order.\n\nSupported field: `createTime`.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": ["DMService"]
+      },
+      "post": {
+        "operationId": "DMService_CreateTask",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DMTask"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DMService.CreateTaskBody"
+            }
+          }
+        ],
+        "tags": ["DMService"]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/dm/tasks/{id}": {
+      "get": {
+        "operationId": "DMService_GetTask",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DMTask"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": ["DMService"]
+      },
+      "delete": {
+        "operationId": "DMService_DeleteTask",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DMTask"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": ["DMService"]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/dm/tasks/{id}/status": {
+      "put": {
+        "summary": "used to operate task status, i.e. pause/resume task",
+        "operationId": "DMService_OperateTask",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DMService.OperateTaskBody"
+            }
+          }
+        ],
+        "tags": ["DMService"]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/dm/precheck/{id}": {
+      "get": {
+        "operationId": "DMService_GetPrecheck",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DMPrecheck"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": ["DMService"]
+      },
+      "delete": {
+        "operationId": "DMService_CancelPrecheck",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": ["DMService"]
+      }
+    }
+  },
+  "definitions": {
+    "Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "BlockAllowRules": {
+      "type": "object",
+      "properties": {
+        "doDbs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "doTables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Table"
+          }
+        }
+      }
+    },
+    "ConnProfile": {
+      "type": "object",
+      "properties": {
+        "host": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "user": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "security": {
+          "title": "optional, if not set, use default",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Security"
+            }
+          ]
+        }
+      }
+    },
+    "CreateDMPrecheckResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "DMPrecheck": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "failedCnt": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "warnCnt": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "successCnt": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status": {
+          "type": "string"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/PrecheckItem"
+          }
+        }
+      }
+    },
+    "DMService.CreateTaskBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Source"
+          }
+        },
+        "targetDb": {
+          "$ref": "#/definitions/TargetDatabase"
+        },
+        "mode": {
+          "$ref": "#/definitions/TaskMode"
+        },
+        "fullInstanceMigration": {
+          "type": "boolean"
+        }
+      }
+    },
+    "DMService.OperateTaskBody": {
+      "type": "object",
+      "properties": {
+        "op": {
+          "$ref": "#/definitions/OperateDMTaskReq.Operation"
+        }
+      }
+    },
+    "DMService.PrecheckBody": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Source"
+          }
+        },
+        "targetDb": {
+          "$ref": "#/definitions/TargetDatabase"
+        },
+        "mode": {
+          "$ref": "#/definitions/TaskMode"
+        },
+        "fullInstanceMigration": {
+          "type": "boolean"
+        }
+      }
+    },
+    "DMTask": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "subTasks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/SubTask"
+          }
+        },
+        "clusterUser": {
+          "type": "string"
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "mode": {
+          "$ref": "#/definitions/TaskMode"
+        }
+      }
+    },
+    "DumpDetail": {
+      "type": "object",
+      "properties": {
+        "bps": {
+          "type": "string",
+          "format": "int64"
+        },
+        "progress": {
+          "type": "string"
+        },
+        "totalTables": {
+          "type": "string",
+          "format": "int64"
+        },
+        "completedTables": {
+          "type": "string",
+          "format": "int64"
+        },
+        "finishedBytes": {
+          "type": "string",
+          "format": "int64"
+        },
+        "finishedRows": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ListDMTasksResp": {
+      "type": "object",
+      "properties": {
+        "tasks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/DMTask"
+          }
+        },
+        "total": {
+          "type": "string",
+          "format": "uint64"
+        }
+      }
+    },
+    "LoadDetail": {
+      "type": "object",
+      "properties": {
+        "bps": {
+          "type": "string",
+          "format": "int64"
+        },
+        "progress": {
+          "type": "string"
+        },
+        "finishedBytes": {
+          "type": "string",
+          "format": "int64"
+        },
+        "totalBytes": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "OperateDMTaskReq.Operation": {
+      "type": "string",
+      "enum": [
+        "OPERATION_PAUSE",
+        "OPERATION_RESUME"
+      ]
+    },
+    "PrecheckItem": {
+      "type": "object",
+      "properties": {
+        "desc": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "solution": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "solutionDocUrl": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/PrecheckItemType"
+        }
+      }
+    },
+    "PrecheckItemType": {
+      "type": "string",
+      "enum": [
+        "PRECHECK_ITEM_TYPE_DUMP_PRIVILEGE_CHECKING",
+        "PRECHECK_ITEM_TYPE_REPLICATION_PRIVILEGE_CHECKING",
+        "PRECHECK_ITEM_TYPE_VERSION_CHECKING",
+        "PRECHECK_ITEM_TYPE_SERVER_ID_CHECKING",
+        "PRECHECK_ITEM_TYPE_BINLOG_ENABLE_CHECKING",
+        "PRECHECK_ITEM_TYPE_BINLOG_FORMAT_CHECKING",
+        "PRECHECK_ITEM_TYPE_BINLOG_ROW_IMAGE_CHECKING",
+        "PRECHECK_ITEM_TYPE_TABLE_SCHEMA_CHECKING",
+        "PRECHECK_ITEM_TYPE_BINLOG_DB_CHECKING",
+        "PRECHECK_ITEM_TYPE_CONN_NUMBER_CHECKING",
+        "PRECHECK_ITEM_TYPE_TARGET_DB_PRIVILEGE_CHECKING",
+        "PRECHECK_ITEM_TYPE_META_POSITION_CHECKING",
+        "PRECHECK_ITEM_TYPE_LIGHTNING_TABLE_EMPTY_CHECKING"
+      ]
+    },
+    "Security": {
+      "type": "object",
+      "properties": {
+        "certAllowedCn": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sslCaContent": {
+          "type": "string"
+        },
+        "sslCertContent": {
+          "type": "string"
+        },
+        "sslKeyContent": {
+          "type": "string"
+        }
+      }
+    },
+    "Source": {
+      "type": "object",
+      "properties": {
+        "connProfile": {
+          "$ref": "#/definitions/ConnProfile"
+        },
+        "baRules": {
+          "$ref": "#/definitions/BlockAllowRules"
+        },
+        "binlogName": {
+          "type": "string",
+          "x-nullable": true
+        },
+        "binlogPos": {
+          "type": "integer",
+          "format": "int32",
+          "x-nullable": true
+        },
+        "binlogGtid": {
+          "type": "string",
+          "x-nullable": true
+        }
+      }
+    },
+    "Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Any"
+          }
+        }
+      }
+    },
+    "SubTask": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "$ref": "#/definitions/Source"
+        },
+        "currentStep": {
+          "$ref": "#/definitions/SubTask.Step"
+        },
+        "stage": {
+          "$ref": "#/definitions/SubTask.Stage"
+        },
+        "dumpDetail": {
+          "$ref": "#/definitions/DumpDetail"
+        },
+        "loadDetail": {
+          "$ref": "#/definitions/LoadDetail"
+        },
+        "syncDetail": {
+          "$ref": "#/definitions/SyncDetail"
+        },
+        "errorMsg": {
+          "type": "string",
+          "x-nullable": true
+        }
+      }
+    },
+    "SubTask.Stage": {
+      "type": "string",
+      "enum": [
+        "STAGE_CREATING",
+        "STAGE_RUNNING",
+        "STAGE_PAUSING",
+        "STAGE_PAUSED",
+        "STAGE_FAILED",
+        "STAGE_FINISHED",
+        "STAGE_DELETING",
+        "STAGE_UNKNOWN"
+      ]
+    },
+    "SubTask.Step": {
+      "type": "string",
+      "enum": [
+        "STEP_DUMP",
+        "STEP_LOAD",
+        "STEP_SYNC"
+      ]
+    },
+    "SyncDetail": {
+      "type": "object",
+      "properties": {
+        "rps": {
+          "type": "string",
+          "format": "int64",
+          "title": "xx row/s"
+        },
+        "latency": {
+          "type": "string",
+          "format": "int64"
+        },
+        "checkpoint": {
+          "type": "string"
+        }
+      }
+    },
+    "Table": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string"
+        },
+        "table": {
+          "type": "string"
+        }
+      }
+    },
+    "TargetDatabase": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "TaskMode": {
+      "type": "string",
+      "enum": [
+        "MODE_ALL",
+        "MODE_INCREMENTAL"
+      ]
+    }
+  }
+}

@@ -1,0 +1,962 @@
+openapi: 3.0.1
+info:
+  description: TiDB Cloud Starter and Essential Open API
+  title: TiDB Cloud Starter and Essential Open API
+  version: v1beta1
+servers:
+- url: https://serverless.tidbapi.com/
+tags:
+- name: DMService
+paths:
+  /v1beta1/clusters/{clusterId}/dm/precheck:
+    post:
+      operationId: DMService_Precheck
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DMService.PrecheckBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateDMPrecheckResp'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: re-use the param of CreateTask
+      tags:
+      - DM
+      x-codeSamples:
+      - label: CLI
+        lang: cURL
+        source: |-
+          curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/dm/pre-check' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/dm/tasks:
+    get:
+      operationId: DMService_ListTasks
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: "The maximum number of dm tasks to return. If not specified,\
+          \ at most 10 tasks will be returned. The maximum value is `100`. Values\
+          \ greater than `100` are set to `100`."
+        in: query
+        name: pageSize
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: |-
+          The pagination token received from a previous [List dm tasks](#tag/Export/operation/ExportService_ListExports) request. Use this token to retrieve the next page of results.
+
+          **Note**: When paginating, all other parameters must match the original request.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: |-
+          Specifies the sorting order of results. Use a comma-separated list of field names, optionally appending `desc` for descending order. For example, `createTime desc`. By default, fields are sorted in ascending order.
+
+          Supported field: `createTime`.
+        in: query
+        name: orderBy
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListDMTasksResp'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - DMService
+    post:
+      operationId: DMService_CreateTask
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DMService.CreateTaskBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DMTask'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - DMService
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/dm/tasks/{id}:
+    delete:
+      operationId: DMService_DeleteTask
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DMTask'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - DMService
+    get:
+      operationId: DMService_GetTask
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DMTask'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - DMService
+  /v1beta1/clusters/{clusterId}/dm/tasks/{id}/status:
+    put:
+      operationId: DMService_OperateTask
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DMService.OperateTaskBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: "used to operate task status, i.e. pause/resume task"
+      tags:
+      - DMService
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/dm/precheck/{id}:
+    delete:
+      operationId: DMService_CancelPrecheck
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - DMService
+    get:
+      operationId: DMService_GetPrecheck
+      parameters:
+      - in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DMPrecheck'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - DMService
+components:
+  schemas:
+    Any:
+      additionalProperties:
+        type: object
+      example:
+        '@type': '@type'
+      properties:
+        '@type':
+          type: string
+      type: object
+    BlockAllowRules:
+      example:
+        doTables:
+        - schema: schema
+          table: table
+        - schema: schema
+          table: table
+        doDbs:
+        - doDbs
+        - doDbs
+      properties:
+        doDbs:
+          items:
+            type: string
+          type: array
+        doTables:
+          items:
+            $ref: '#/components/schemas/Table'
+          type: array
+      type: object
+    ConnProfile:
+      example:
+        password: password
+        security: "{}"
+        port: 0
+        host: host
+        user: user
+      properties:
+        host:
+          type: string
+        port:
+          format: int32
+          type: integer
+        user:
+          type: string
+        password:
+          type: string
+        security:
+          allOf:
+          - $ref: '#/components/schemas/Security'
+          title: "optional, if not set, use default"
+          type: object
+      type: object
+    CreateDMPrecheckResp:
+      example:
+        id: id
+      properties:
+        id:
+          type: string
+      type: object
+    DMPrecheck:
+      example:
+        failedCnt: 6
+        total: 0
+        successCnt: 5
+        warnCnt: 1
+        items:
+        - reason: reason
+          solution: solution
+          solutionDocUrl: solutionDocUrl
+          type: PRECHECK_ITEM_TYPE_DUMP_PRIVILEGE_CHECKING
+          desc: desc
+          status: status
+        - reason: reason
+          solution: solution
+          solutionDocUrl: solutionDocUrl
+          type: PRECHECK_ITEM_TYPE_DUMP_PRIVILEGE_CHECKING
+          desc: desc
+          status: status
+        status: status
+      properties:
+        total:
+          format: int32
+          type: integer
+        failedCnt:
+          format: int32
+          type: integer
+        warnCnt:
+          format: int32
+          type: integer
+        successCnt:
+          format: int32
+          type: integer
+        status:
+          type: string
+        items:
+          items:
+            $ref: '#/components/schemas/PrecheckItem'
+          type: array
+      type: object
+    DMService.CreateTaskBody:
+      properties:
+        name:
+          type: string
+        sources:
+          items:
+            $ref: '#/components/schemas/Source'
+          type: array
+        targetDb:
+          $ref: '#/components/schemas/TargetDatabase'
+        mode:
+          $ref: '#/components/schemas/TaskMode'
+        fullInstanceMigration:
+          type: boolean
+      type: object
+    DMService.OperateTaskBody:
+      properties:
+        op:
+          $ref: '#/components/schemas/OperateDMTaskReq.Operation'
+      type: object
+    DMService.PrecheckBody:
+      properties:
+        name:
+          type: string
+        sources:
+          items:
+            $ref: '#/components/schemas/Source'
+          type: array
+        targetDb:
+          $ref: '#/components/schemas/TargetDatabase'
+        mode:
+          $ref: '#/components/schemas/TaskMode'
+        fullInstanceMigration:
+          type: boolean
+      type: object
+    DMTask:
+      example:
+        clusterUser: clusterUser
+        mode: MODE_ALL
+        createTime: 2000-01-23T04:56:07.000+00:00
+        subTasks:
+        - currentStep: STEP_DUMP
+          syncDetail:
+            checkpoint: checkpoint
+            rps: rps
+            latency: latency
+          stage: STAGE_CREATING
+          dumpDetail:
+            totalTables: totalTables
+            bps: bps
+            progress: progress
+            finishedBytes: finishedBytes
+            finishedRows: finishedRows
+            completedTables: completedTables
+          source:
+            binlogName: binlogName
+            connProfile:
+              password: password
+              security: "{}"
+              port: 0
+              host: host
+              user: user
+            binlogPos: 6
+            baRules:
+              doTables:
+              - schema: schema
+                table: table
+              - schema: schema
+                table: table
+              doDbs:
+              - doDbs
+              - doDbs
+            binlogGtid: binlogGtid
+          loadDetail:
+            bps: bps
+            progress: progress
+            totalBytes: totalBytes
+            finishedBytes: finishedBytes
+          errorMsg: errorMsg
+        - currentStep: STEP_DUMP
+          syncDetail:
+            checkpoint: checkpoint
+            rps: rps
+            latency: latency
+          stage: STAGE_CREATING
+          dumpDetail:
+            totalTables: totalTables
+            bps: bps
+            progress: progress
+            finishedBytes: finishedBytes
+            finishedRows: finishedRows
+            completedTables: completedTables
+          source:
+            binlogName: binlogName
+            connProfile:
+              password: password
+              security: "{}"
+              port: 0
+              host: host
+              user: user
+            binlogPos: 6
+            baRules:
+              doTables:
+              - schema: schema
+                table: table
+              - schema: schema
+                table: table
+              doDbs:
+              - doDbs
+              - doDbs
+            binlogGtid: binlogGtid
+          loadDetail:
+            bps: bps
+            progress: progress
+            totalBytes: totalBytes
+            finishedBytes: finishedBytes
+          errorMsg: errorMsg
+        name: name
+        id: id
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        subTasks:
+          items:
+            $ref: '#/components/schemas/SubTask'
+          type: array
+        clusterUser:
+          type: string
+        createTime:
+          format: date-time
+          type: string
+        mode:
+          $ref: '#/components/schemas/TaskMode'
+      type: object
+    DumpDetail:
+      example:
+        totalTables: totalTables
+        bps: bps
+        progress: progress
+        finishedBytes: finishedBytes
+        finishedRows: finishedRows
+        completedTables: completedTables
+      properties:
+        bps:
+          format: int64
+          type: string
+        progress:
+          type: string
+        totalTables:
+          format: int64
+          type: string
+        completedTables:
+          format: int64
+          type: string
+        finishedBytes:
+          format: int64
+          type: string
+        finishedRows:
+          format: int64
+          type: string
+      type: object
+    ListDMTasksResp:
+      example:
+        total: total
+        tasks:
+        - clusterUser: clusterUser
+          mode: MODE_ALL
+          createTime: 2000-01-23T04:56:07.000+00:00
+          subTasks:
+          - currentStep: STEP_DUMP
+            syncDetail:
+              checkpoint: checkpoint
+              rps: rps
+              latency: latency
+            stage: STAGE_CREATING
+            dumpDetail:
+              totalTables: totalTables
+              bps: bps
+              progress: progress
+              finishedBytes: finishedBytes
+              finishedRows: finishedRows
+              completedTables: completedTables
+            source:
+              binlogName: binlogName
+              connProfile:
+                password: password
+                security: "{}"
+                port: 0
+                host: host
+                user: user
+              binlogPos: 6
+              baRules:
+                doTables:
+                - schema: schema
+                  table: table
+                - schema: schema
+                  table: table
+                doDbs:
+                - doDbs
+                - doDbs
+              binlogGtid: binlogGtid
+            loadDetail:
+              bps: bps
+              progress: progress
+              totalBytes: totalBytes
+              finishedBytes: finishedBytes
+            errorMsg: errorMsg
+          - currentStep: STEP_DUMP
+            syncDetail:
+              checkpoint: checkpoint
+              rps: rps
+              latency: latency
+            stage: STAGE_CREATING
+            dumpDetail:
+              totalTables: totalTables
+              bps: bps
+              progress: progress
+              finishedBytes: finishedBytes
+              finishedRows: finishedRows
+              completedTables: completedTables
+            source:
+              binlogName: binlogName
+              connProfile:
+                password: password
+                security: "{}"
+                port: 0
+                host: host
+                user: user
+              binlogPos: 6
+              baRules:
+                doTables:
+                - schema: schema
+                  table: table
+                - schema: schema
+                  table: table
+                doDbs:
+                - doDbs
+                - doDbs
+              binlogGtid: binlogGtid
+            loadDetail:
+              bps: bps
+              progress: progress
+              totalBytes: totalBytes
+              finishedBytes: finishedBytes
+            errorMsg: errorMsg
+          name: name
+          id: id
+        - clusterUser: clusterUser
+          mode: MODE_ALL
+          createTime: 2000-01-23T04:56:07.000+00:00
+          subTasks:
+          - currentStep: STEP_DUMP
+            syncDetail:
+              checkpoint: checkpoint
+              rps: rps
+              latency: latency
+            stage: STAGE_CREATING
+            dumpDetail:
+              totalTables: totalTables
+              bps: bps
+              progress: progress
+              finishedBytes: finishedBytes
+              finishedRows: finishedRows
+              completedTables: completedTables
+            source:
+              binlogName: binlogName
+              connProfile:
+                password: password
+                security: "{}"
+                port: 0
+                host: host
+                user: user
+              binlogPos: 6
+              baRules:
+                doTables:
+                - schema: schema
+                  table: table
+                - schema: schema
+                  table: table
+                doDbs:
+                - doDbs
+                - doDbs
+              binlogGtid: binlogGtid
+            loadDetail:
+              bps: bps
+              progress: progress
+              totalBytes: totalBytes
+              finishedBytes: finishedBytes
+            errorMsg: errorMsg
+          - currentStep: STEP_DUMP
+            syncDetail:
+              checkpoint: checkpoint
+              rps: rps
+              latency: latency
+            stage: STAGE_CREATING
+            dumpDetail:
+              totalTables: totalTables
+              bps: bps
+              progress: progress
+              finishedBytes: finishedBytes
+              finishedRows: finishedRows
+              completedTables: completedTables
+            source:
+              binlogName: binlogName
+              connProfile:
+                password: password
+                security: "{}"
+                port: 0
+                host: host
+                user: user
+              binlogPos: 6
+              baRules:
+                doTables:
+                - schema: schema
+                  table: table
+                - schema: schema
+                  table: table
+                doDbs:
+                - doDbs
+                - doDbs
+              binlogGtid: binlogGtid
+            loadDetail:
+              bps: bps
+              progress: progress
+              totalBytes: totalBytes
+              finishedBytes: finishedBytes
+            errorMsg: errorMsg
+          name: name
+          id: id
+      properties:
+        tasks:
+          items:
+            $ref: '#/components/schemas/DMTask'
+          type: array
+        total:
+          format: uint64
+          type: string
+      type: object
+    LoadDetail:
+      example:
+        bps: bps
+        progress: progress
+        totalBytes: totalBytes
+        finishedBytes: finishedBytes
+      properties:
+        bps:
+          format: int64
+          type: string
+        progress:
+          type: string
+        finishedBytes:
+          format: int64
+          type: string
+        totalBytes:
+          format: int64
+          type: string
+      type: object
+    OperateDMTaskReq.Operation:
+      enum:
+      - OPERATION_PAUSE
+      - OPERATION_RESUME
+      type: string
+    PrecheckItem:
+      example:
+        reason: reason
+        solution: solution
+        solutionDocUrl: solutionDocUrl
+        type: PRECHECK_ITEM_TYPE_DUMP_PRIVILEGE_CHECKING
+        desc: desc
+        status: status
+      properties:
+        desc:
+          type: string
+        status:
+          type: string
+        solution:
+          type: string
+        reason:
+          type: string
+        solutionDocUrl:
+          type: string
+        type:
+          $ref: '#/components/schemas/PrecheckItemType'
+      type: object
+    PrecheckItemType:
+      enum:
+      - PRECHECK_ITEM_TYPE_DUMP_PRIVILEGE_CHECKING
+      - PRECHECK_ITEM_TYPE_REPLICATION_PRIVILEGE_CHECKING
+      - PRECHECK_ITEM_TYPE_VERSION_CHECKING
+      - PRECHECK_ITEM_TYPE_SERVER_ID_CHECKING
+      - PRECHECK_ITEM_TYPE_BINLOG_ENABLE_CHECKING
+      - PRECHECK_ITEM_TYPE_BINLOG_FORMAT_CHECKING
+      - PRECHECK_ITEM_TYPE_BINLOG_ROW_IMAGE_CHECKING
+      - PRECHECK_ITEM_TYPE_TABLE_SCHEMA_CHECKING
+      - PRECHECK_ITEM_TYPE_BINLOG_DB_CHECKING
+      - PRECHECK_ITEM_TYPE_CONN_NUMBER_CHECKING
+      - PRECHECK_ITEM_TYPE_TARGET_DB_PRIVILEGE_CHECKING
+      - PRECHECK_ITEM_TYPE_META_POSITION_CHECKING
+      - PRECHECK_ITEM_TYPE_LIGHTNING_TABLE_EMPTY_CHECKING
+      type: string
+    Security:
+      properties:
+        certAllowedCn:
+          items:
+            type: string
+          type: array
+        sslCaContent:
+          type: string
+        sslCertContent:
+          type: string
+        sslKeyContent:
+          type: string
+      type: object
+    Source:
+      example:
+        binlogName: binlogName
+        connProfile:
+          password: password
+          security: "{}"
+          port: 0
+          host: host
+          user: user
+        binlogPos: 6
+        baRules:
+          doTables:
+          - schema: schema
+            table: table
+          - schema: schema
+            table: table
+          doDbs:
+          - doDbs
+          - doDbs
+        binlogGtid: binlogGtid
+      properties:
+        connProfile:
+          $ref: '#/components/schemas/ConnProfile'
+        baRules:
+          $ref: '#/components/schemas/BlockAllowRules'
+        binlogName:
+          nullable: true
+          type: string
+        binlogPos:
+          format: int32
+          nullable: true
+          type: integer
+        binlogGtid:
+          nullable: true
+          type: string
+      type: object
+    Status:
+      example:
+        code: 0
+        details:
+        - '@type': '@type'
+        - '@type': '@type'
+        message: message
+      properties:
+        code:
+          format: int32
+          type: integer
+        message:
+          type: string
+        details:
+          items:
+            $ref: '#/components/schemas/Any'
+          type: array
+      type: object
+    SubTask:
+      example:
+        currentStep: STEP_DUMP
+        syncDetail:
+          checkpoint: checkpoint
+          rps: rps
+          latency: latency
+        stage: STAGE_CREATING
+        dumpDetail:
+          totalTables: totalTables
+          bps: bps
+          progress: progress
+          finishedBytes: finishedBytes
+          finishedRows: finishedRows
+          completedTables: completedTables
+        source:
+          binlogName: binlogName
+          connProfile:
+            password: password
+            security: "{}"
+            port: 0
+            host: host
+            user: user
+          binlogPos: 6
+          baRules:
+            doTables:
+            - schema: schema
+              table: table
+            - schema: schema
+              table: table
+            doDbs:
+            - doDbs
+            - doDbs
+          binlogGtid: binlogGtid
+        loadDetail:
+          bps: bps
+          progress: progress
+          totalBytes: totalBytes
+          finishedBytes: finishedBytes
+        errorMsg: errorMsg
+      properties:
+        source:
+          $ref: '#/components/schemas/Source'
+        currentStep:
+          $ref: '#/components/schemas/SubTask.Step'
+        stage:
+          $ref: '#/components/schemas/SubTask.Stage'
+        dumpDetail:
+          $ref: '#/components/schemas/DumpDetail'
+        loadDetail:
+          $ref: '#/components/schemas/LoadDetail'
+        syncDetail:
+          $ref: '#/components/schemas/SyncDetail'
+        errorMsg:
+          nullable: true
+          type: string
+      type: object
+    SubTask.Stage:
+      enum:
+      - STAGE_CREATING
+      - STAGE_RUNNING
+      - STAGE_PAUSING
+      - STAGE_PAUSED
+      - STAGE_FAILED
+      - STAGE_FINISHED
+      - STAGE_DELETING
+      - STAGE_UNKNOWN
+      type: string
+    SubTask.Step:
+      enum:
+      - STEP_DUMP
+      - STEP_LOAD
+      - STEP_SYNC
+      type: string
+    SyncDetail:
+      example:
+        checkpoint: checkpoint
+        rps: rps
+        latency: latency
+      properties:
+        rps:
+          format: int64
+          title: xx row/s
+          type: string
+        latency:
+          format: int64
+          type: string
+        checkpoint:
+          type: string
+      type: object
+    Table:
+      example:
+        schema: schema
+        table: table
+      properties:
+        schema:
+          type: string
+        table:
+          type: string
+      type: object
+    TargetDatabase:
+      properties:
+        user:
+          type: string
+        password:
+          type: string
+      type: object
+    TaskMode:
+      enum:
+      - MODE_ALL
+      - MODE_INCREMENTAL
+      type: string
+x-original-swagger-version: "2.0"

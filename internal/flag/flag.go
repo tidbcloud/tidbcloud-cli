@@ -103,6 +103,13 @@ const (
 	AuditLogFilterRuleName string = "name"
 	AuditLogFilterRule     string = "rule"
 	Enabled                string = "enabled"
+	
+	// DM (Data Migration) flags
+	TaskID       string = "task-id"
+	ConfigFile   string = "config-file"
+	PrecheckID   string = "precheck-id"
+	Operation    string = "operation"
+	GenerateJSON string = "generate-json"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."
