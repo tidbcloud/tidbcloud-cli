@@ -16,9 +16,9 @@ ticloud serverless audit-log config update [flags]
   $ ticloud serverless audit-log config update -c <cluster-id> --unredacted
 
   Enable database audit logging with S3 Cloud Storage in non-interactive mode:
-  $ ticloud serverless audit-log config update -c <cluster-id> --enabled --cloud-storage s3 --s3-uri <s3-uri> --s3-access-key-id <s3-access-key-id> --s3-secret-access-key <s3-secret-access-key>
+  $ ticloud serverless audit-log config update -c <cluster-id> --enabled --cloud-storage S3 --s3.uri <s3-uri> --s3.access-key-id <s3-access-key-id> --s3.secret-access-key <s3-secret-access-key>
 
-  Configurre database audit logging rotation strategy in non-interactive mode:
+  Configure database audit logging rotation strategy in non-interactive mode:
   $ ticloud serverless audit-log config update -c <cluster-id> --rotation-interval-minutes <rotation-interval-minutes> --rotation-size-mib <rotation-size-mib>
 
   Disable database audit logging in non-interactive mode:
