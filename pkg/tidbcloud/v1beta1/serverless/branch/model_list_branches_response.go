@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -17,12 +17,14 @@ import (
 // checks if the ListBranchesResponse type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &ListBranchesResponse{}
 
-// ListBranchesResponse struct for ListBranchesResponse
+// ListBranchesResponse Message for response to list branches.
 type ListBranchesResponse struct {
+	// A list of branches that match the query.
 	Branches []Branch `json:"branches,omitempty"`
-	// A token identifying a page of results the server should return.
-	NextPageToken        *string `json:"nextPageToken,omitempty"`
-	TotalSize            *int64  `json:"totalSize,omitempty"`
+	// The token to retrieve the next page of results. Use this value as the `pageToken` parameter in the next request. This field is empty when there are no more pages.
+	NextPageToken *string `json:"nextPageToken,omitempty"`
+	// The total number of branches that match the query.
+	TotalSize            *int64 `json:"totalSize,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 

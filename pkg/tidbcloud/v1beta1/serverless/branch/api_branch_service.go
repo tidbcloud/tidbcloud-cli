@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -29,7 +29,7 @@ type ApiBranchServiceCreateBranchRequest struct {
 	branch     *Branch
 }
 
-// Required. The resource being created
+// The branch being created.
 func (r ApiBranchServiceCreateBranchRequest) Branch(branch Branch) ApiBranchServiceCreateBranchRequest {
 	r.branch = &branch
 	return r
@@ -40,10 +40,10 @@ func (r ApiBranchServiceCreateBranchRequest) Execute() (*Branch, *http.Response,
 }
 
 /*
-BranchServiceCreateBranch Creates a branch.
+BranchServiceCreateBranch Creates a branch
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The cluster ID of the branch
+	@param clusterId The ID of the cluster to which the branch belongs.
 	@return ApiBranchServiceCreateBranchRequest
 */
 func (a *BranchServiceAPIService) BranchServiceCreateBranch(ctx context.Context, clusterId string) ApiBranchServiceCreateBranchRequest {
@@ -156,11 +156,11 @@ func (r ApiBranchServiceDeleteBranchRequest) Execute() (*Branch, *http.Response,
 }
 
 /*
-BranchServiceDeleteBranch Deletes a branch.
+BranchServiceDeleteBranch Delete a branch
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The cluster ID of the branch
-	@param branchId Required. The branch ID
+	@param clusterId The ID of the cluster to which the branch belongs.
+	@param branchId The ID of the branch.
 	@return ApiBranchServiceDeleteBranchRequest
 */
 func (a *BranchServiceAPIService) BranchServiceDeleteBranch(ctx context.Context, clusterId string, branchId string) ApiBranchServiceDeleteBranchRequest {
@@ -266,7 +266,7 @@ type ApiBranchServiceGetBranchRequest struct {
 	view       *BranchServiceGetBranchViewParameter
 }
 
-// Optional. The view of the branch to return. Defaults to FULL   - BASIC: Basic response contains basic information for a branch.  - FULL: FULL response contains all detailed information for a branch.
+// The detail level of the branch information to return. Default value is &#x60;FULL&#x60;.  - &#x60;BASIC&#x60;: returns only basic branch information. - &#x60;FULL&#x60;: returns complete branch details.
 func (r ApiBranchServiceGetBranchRequest) View(view BranchServiceGetBranchViewParameter) ApiBranchServiceGetBranchRequest {
 	r.view = &view
 	return r
@@ -277,11 +277,11 @@ func (r ApiBranchServiceGetBranchRequest) Execute() (*Branch, *http.Response, er
 }
 
 /*
-BranchServiceGetBranch Gets information about a branch.
+BranchServiceGetBranch Get detail of a branch
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The cluster ID of the branch
-	@param branchId Required. The branch ID
+	@param clusterId The ID of the cluster to which the branch belongs.
+	@param branchId The ID of the branch.
 	@return ApiBranchServiceGetBranchRequest
 */
 func (a *BranchServiceAPIService) BranchServiceGetBranch(ctx context.Context, clusterId string, branchId string) ApiBranchServiceGetBranchRequest {
@@ -390,13 +390,13 @@ type ApiBranchServiceListBranchesRequest struct {
 	pageToken  *string
 }
 
-// Optional. Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.
+// The maximum number of branches to return. If not specified, at most 10 branches will be returned. The maximum value is &#x60;100&#x60;. Values greater than &#x60;100&#x60; are set to &#x60;100&#x60;.
 func (r ApiBranchServiceListBranchesRequest) PageSize(pageSize int32) ApiBranchServiceListBranchesRequest {
 	r.pageSize = &pageSize
 	return r
 }
 
-// Optional. A token identifying a page of results the server should return.
+// The pagination token received from a previous [List branches](#tag/Branch/operation/BranchService_ListBranches) request. Use this token to retrieve the next page of results.  **Note**: When paginating, all other parameters must match the original request.
 func (r ApiBranchServiceListBranchesRequest) PageToken(pageToken string) ApiBranchServiceListBranchesRequest {
 	r.pageToken = &pageToken
 	return r
@@ -407,10 +407,10 @@ func (r ApiBranchServiceListBranchesRequest) Execute() (*ListBranchesResponse, *
 }
 
 /*
-BranchServiceListBranches Lists information about branches.
+BranchServiceListBranches List branches
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The ID of the project to which the clusters belong.
+	@param clusterId The ID of the cluster to which the [branch](https://docs.pingcap.com/tidbcloud/branch-overview/) belongs.
 	@return ApiBranchServiceListBranchesRequest
 */
 func (a *BranchServiceAPIService) BranchServiceListBranches(ctx context.Context, clusterId string) ApiBranchServiceListBranchesRequest {
@@ -446,6 +446,9 @@ func (a *BranchServiceAPIService) BranchServiceListBranchesExecute(r ApiBranchSe
 
 	if r.pageSize != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "pageSize", r.pageSize, "", "")
+	} else {
+		var defaultValue int32 = 10
+		r.pageSize = &defaultValue
 	}
 	if r.pageToken != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "pageToken", r.pageToken, "", "")
@@ -524,11 +527,13 @@ func (r ApiBranchServiceResetBranchRequest) Execute() (*Branch, *http.Response, 
 }
 
 /*
-BranchServiceResetBranch Resets a branch.
+BranchServiceResetBranch Reset a branch
+
+Resets a branch to match the current state of its parent branch.
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The cluster ID of the branch
-	@param branchId Required. The branch ID
+	@param clusterId The ID of the cluster to which the branch belongs.
+	@param branchId The ID of the branch.
 	@return ApiBranchServiceResetBranchRequest
 */
 func (a *BranchServiceAPIService) BranchServiceResetBranch(ctx context.Context, clusterId string, branchId string) ApiBranchServiceResetBranchRequest {
@@ -581,6 +586,135 @@ func (a *BranchServiceAPIService) BranchServiceResetBranchExecute(r ApiBranchSer
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v Status
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiBranchServiceUpdateSqlUserRequest struct {
+	ctx        context.Context
+	ApiService *BranchServiceAPIService
+	clusterId  string
+	branchId   string
+	username   string
+	body       *BranchServiceUpdateSqlUserBody
+}
+
+func (r ApiBranchServiceUpdateSqlUserRequest) Body(body BranchServiceUpdateSqlUserBody) ApiBranchServiceUpdateSqlUserRequest {
+	r.body = &body
+	return r
+}
+
+func (r ApiBranchServiceUpdateSqlUserRequest) Execute() (*SqlUser, *http.Response, error) {
+	return r.ApiService.BranchServiceUpdateSqlUserExecute(r)
+}
+
+/*
+BranchServiceUpdateSqlUser Update a branch sql user
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId The ID of the cluster to which the branch belongs.
+	@param branchId The ID of the branch.
+	@param username The username of the branch sql user.
+	@return ApiBranchServiceUpdateSqlUserRequest
+*/
+func (a *BranchServiceAPIService) BranchServiceUpdateSqlUser(ctx context.Context, clusterId string, branchId string, username string) ApiBranchServiceUpdateSqlUserRequest {
+	return ApiBranchServiceUpdateSqlUserRequest{
+		ApiService: a,
+		ctx:        ctx,
+		clusterId:  clusterId,
+		branchId:   branchId,
+		username:   username,
+	}
+}
+
+// Execute executes the request
+//
+//	@return SqlUser
+func (a *BranchServiceAPIService) BranchServiceUpdateSqlUserExecute(r ApiBranchServiceUpdateSqlUserRequest) (*SqlUser, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodPatch
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *SqlUser
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BranchServiceAPIService.BranchServiceUpdateSqlUser")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/branches/{branchId}/sqlUsers/{username}"
+	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"branchId"+"}", url.PathEscape(parameterValueToString(r.branchId, "branchId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"username"+"}", url.PathEscape(parameterValueToString(r.username, "username")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+	if r.body == nil {
+		return localVarReturnValue, nil, reportError("body is required and must be specified")
+	}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.body
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err

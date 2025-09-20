@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -40,7 +40,7 @@ var (
 	queryDescape    = strings.NewReplacer("%5B", "[", "%5D", "]")
 )
 
-// APIClient manages communication with the TiDB Cloud Serverless Open API API vv1beta1
+// APIClient manages communication with the TiDB Cloud Starter and Essential API API vv1beta1
 // In most cases there should be only one, shared, APIClient.
 type APIClient struct {
 	cfg    *Configuration

@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -14,16 +14,15 @@ import (
 	"encoding/json"
 )
 
-// BranchState Output Only. Branch State.   - CREATING: The branch is being created.  - ACTIVE: The branch is active and running.  - DELETED: The branch is being deleted.  - MAINTENANCE: The branch is under maintenance.  - RESTORING: The branch is restoring.
+// BranchState Branch State.   - CREATING: The branch is being created.  - ACTIVE: The branch is active and running.  - DELETED: The branch is being deleted.  - RESTORING: The branch is restoring.
 type BranchState string
 
 // List of Branch.State
 const (
-	BRANCHSTATE_CREATING    BranchState = "CREATING"
-	BRANCHSTATE_ACTIVE      BranchState = "ACTIVE"
-	BRANCHSTATE_DELETED     BranchState = "DELETED"
-	BRANCHSTATE_MAINTENANCE BranchState = "MAINTENANCE"
-	BRANCHSTATE_RESTORING   BranchState = "RESTORING"
+	BRANCHSTATE_CREATING  BranchState = "CREATING"
+	BRANCHSTATE_ACTIVE    BranchState = "ACTIVE"
+	BRANCHSTATE_DELETED   BranchState = "DELETED"
+	BRANCHSTATE_RESTORING BranchState = "RESTORING"
 )
 
 // All allowed values of BranchState enum
@@ -31,7 +30,6 @@ var AllowedBranchStateEnumValues = []BranchState{
 	"CREATING",
 	"ACTIVE",
 	"DELETED",
-	"MAINTENANCE",
 	"RESTORING",
 }
 

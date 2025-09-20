@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -19,10 +19,11 @@ var _ MappedNullable = &BranchEndpointsPrivate{}
 
 // BranchEndpointsPrivate Message for Private Endpoint for this branch.
 type BranchEndpointsPrivate struct {
-	// Output Only. Host Name of Public Endpoint.
+	// The hostname of the private endpoint.
 	Host *string `json:"host,omitempty"`
-	// Output Only. Port of Public Endpoint.
-	Port                 *int32                     `json:"port,omitempty"`
+	// The port number of the private endpoint.
+	Port *int32 `json:"port,omitempty"`
+	// The [AWS PrivateLink](https://aws.amazon.com/privatelink/) configuration details for private access.
 	Aws                  *BranchEndpointsPrivateAWS `json:"aws,omitempty"`
 	Gcp                  *BranchEndpointsPrivateGCP `json:"gcp,omitempty"`
 	AdditionalProperties map[string]interface{}

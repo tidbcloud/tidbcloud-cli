@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -19,9 +19,9 @@ var _ MappedNullable = &BranchEndpoints{}
 
 // BranchEndpoints Message for the Endpoints for this branch.
 type BranchEndpoints struct {
-	// Optional. Public Endpoint for this branch.
+	// The public endpoint configuration for connecting to the branch.
 	Public *BranchEndpointsPublic `json:"public,omitempty"`
-	// Output only. Private Endpoint for this branch.
+	// The private endpoint for securely connecting to the branch.
 	Private              *BranchEndpointsPrivate `json:"private,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

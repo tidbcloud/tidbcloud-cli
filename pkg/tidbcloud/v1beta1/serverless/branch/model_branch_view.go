@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -14,7 +14,7 @@ import (
 	"encoding/json"
 )
 
-// BranchView View on branch. Pass this enum to control which subsets of fields to get.   - BASIC: Basic response contains basic information for a branch.  - FULL: FULL response contains all detailed information for a branch.
+// BranchView View on branch. Pass this enum to control which subsets of fields to get.
 type BranchView string
 
 // List of BranchView
