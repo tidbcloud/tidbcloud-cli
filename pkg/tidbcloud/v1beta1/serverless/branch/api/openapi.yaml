@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
-  description: TiDB Cloud Serverless Open API
-  title: TiDB Cloud Serverless Open API
+  description: TiDB Cloud Starter and Essential API
+  title: TiDB Cloud Starter and Essential API
   version: v1beta1
 servers:
 - url: https://serverless.tidbapi.com/
@@ -12,22 +12,26 @@ paths:
     get:
       operationId: BranchService_ListBranches
       parameters:
-      - description: Required. The ID of the project to which the clusters belong.
+      - description: "The ID of the cluster to which the [branch](https://docs.pingcap.com/tidbcloud/branch-overview/)\
+          \ belongs."
         in: path
         name: clusterId
         required: true
         schema:
           type: string
-      - description: |-
-          Optional. Requested page size. Server may return fewer items than
-          requested. If unspecified, server will pick an appropriate default.
+      - description: "The maximum number of branches to return. If not specified,\
+          \ at most 10 branches will be returned. The maximum value is `100`. Values\
+          \ greater than `100` are set to `100`."
         in: query
         name: pageSize
         schema:
+          default: 10
           format: int32
           type: integer
-      - description: Optional. A token identifying a page of results the server should
-          return.
+      - description: |-
+          The pagination token received from a previous [List branches](#tag/Branch/operation/BranchService_ListBranches) request. Use this token to retrieve the next page of results.
+
+          **Note**: When paginating, all other parameters must match the original request.
         in: query
         name: pageToken
         schema:
@@ -45,13 +49,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Lists information about branches.
+      summary: List branches
       tags:
       - BranchService
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/branches' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
     post:
       operationId: BranchService_CreateBranch
       parameters:
-      - description: Required. The cluster ID of the branch
+      - description: The ID of the cluster to which the branch belongs.
         in: path
         name: clusterId
         required: true
@@ -62,7 +73,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Branch'
-        description: Required. The resource being created
+        description: The branch being created.
         required: true
       responses:
         "200":
@@ -77,21 +88,32 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Creates a branch.
+      summary: Creates a branch
       tags:
       - BranchService
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/branches' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Content-Type: application/json' \
+          --header 'Accept: application/json' \
+          --data '{
+              "displayName": "test"
+          }'
       x-codegen-request-body-name: branch
   /v1beta1/clusters/{clusterId}/branches/{branchId}:
     delete:
       operationId: BranchService_DeleteBranch
       parameters:
-      - description: Required. The cluster ID of the branch
+      - description: The ID of the cluster to which the branch belongs.
         in: path
         name: clusterId
         required: true
         schema:
           type: string
-      - description: Required. The branch ID
+      - description: The ID of the branch.
         in: path
         name: branchId
         required: true
@@ -110,29 +132,36 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Deletes a branch.
+      summary: Delete a branch
       tags:
       - BranchService
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location --request DELETE 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/branches/{branch_id}' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
     get:
       operationId: BranchService_GetBranch
       parameters:
-      - description: Required. The cluster ID of the branch
+      - description: The ID of the cluster to which the branch belongs.
         in: path
         name: clusterId
         required: true
         schema:
           type: string
-      - description: Required. The branch ID
+      - description: The ID of the branch.
         in: path
         name: branchId
         required: true
         schema:
           type: string
       - description: |-
-          Optional. The view of the branch to return. Defaults to FULL
+          The detail level of the branch information to return. Default value is `FULL`.
 
-           - BASIC: Basic response contains basic information for a branch.
-           - FULL: FULL response contains all detailed information for a branch.
+          - `BASIC`: returns only basic branch information.
+          - `FULL`: returns complete branch details.
         in: query
         name: view
         schema:
@@ -150,20 +179,28 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Gets information about a branch.
+      summary: Get detail of a branch
       tags:
       - BranchService
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/branches/{branch_id}' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
   /v1beta1/clusters/{clusterId}/branches/{branchId}:reset:
     post:
+      description: Resets a branch to match the current state of its parent branch.
       operationId: BranchService_ResetBranch
       parameters:
-      - description: Required. The cluster ID of the branch
+      - description: The ID of the cluster to which the branch belongs.
         in: path
         name: clusterId
         required: true
         schema:
           type: string
-      - description: Required. The branch ID
+      - description: The ID of the branch.
         in: path
         name: branchId
         required: true
@@ -182,9 +219,72 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Resets a branch.
+      summary: Reset a branch
       tags:
       - BranchService
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location --request POST 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/branches/{branch_id}:reset' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
+  /v1beta1/clusters/{clusterId}/branches/{branchId}/sqlUsers/{username}:
+    patch:
+      operationId: BranchService_UpdateSqlUser
+      parameters:
+      - description: The ID of the cluster to which the branch belongs.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the branch.
+        in: path
+        name: branchId
+        required: true
+        schema:
+          type: string
+      - description: The username of the branch sql user.
+        in: path
+        name: username
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BranchService.UpdateSqlUserBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SqlUser'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Update a branch sql user
+      tags:
+      - BranchService
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/branches/{branch_id}/sqlUsers/{username}' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Content-Type: application/json' \
+          --header 'Accept: application/json' \
+          --data '{
+              "password": "test1234"
+          }'
+      x-codegen-request-body-name: body
 components:
   schemas:
     Any:
@@ -197,11 +297,11 @@ components:
           type: string
       type: object
     Branch:
+      description: Message for branch.
       example:
         branchId: branchId
         endpoints: "{}"
         displayName: displayName
-        usage: "{}"
         annotations:
           key: annotations
         updateTime: 2000-01-23T04:56:07.000+00:00
@@ -214,82 +314,85 @@ components:
         name: name
         userPrefix: userPrefix
         state: "{}"
+        rootPassword: my-shining-password
       properties:
         name:
-          description: Output Only. The name of the resource.
+          description: The unique identifier for the branch.
           readOnly: true
           type: string
         branchId:
-          description: Output only. The system-generated ID of the resource.
+          description: The system-generated ID of the branch.
           readOnly: true
           type: string
         displayName:
-          description: Required. User-settable and human-readable display name for
-            the branch.
+          description: The user-defined name of the branch.
           type: string
         clusterId:
-          description: Output only. The cluster ID of this branch.
+          description: The ID of the cluster to which the branch belongs.
           readOnly: true
           type: string
         parentId:
-          description: Optional. The parent ID of this branch.
+          description: The ID of the branch parent.
           type: string
         createdBy:
-          description: Output only. The creator of the branch.
+          description: The email address of the user who create the branch.
           readOnly: true
           type: string
         state:
           allOf:
           - $ref: '#/components/schemas/Branch.State'
-          description: Output only. The state of this branch.
+          description: The state of the branch.
           type: object
         endpoints:
           allOf:
           - $ref: '#/components/schemas/Branch.Endpoints'
-          description: Optional. The endpoints of this branch.
+          description: The connection endpoints for accessing the branch.
           type: object
         userPrefix:
-          description: |-
-            Output only. User name prefix of this branch. For each TiDB Serverless branch,
-            TiDB Cloud generates a unique prefix to distinguish it from other branches.
-            Whenever you use or set a database user name, you must include the prefix in the user name.
+          description: "The unique prefix automatically generated for SQL usernames\
+            \ on this cluster. TiDB Cloud uses this prefix to distinguish between\
+            \ clusters. For more information, see [User name prefix](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#user-name-prefix)."
           nullable: true
           readOnly: true
           type: string
-        usage:
-          allOf:
-          - $ref: '#/components/schemas/Branch.Usage'
-          description: Output only. Usage metrics of this branch. Only display in
-            FULL view.
-          type: object
         createTime:
+          description: "The timestamp when the branch was created, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)\
+            \ format."
           format: date-time
           readOnly: true
-          title: Output only. Create timestamp
           type: string
         updateTime:
+          description: "The timestamp when the branch was last updated, in the [ISO\
+            \ 8601](https://en.wikipedia.org/wiki/ISO_8601) format."
           format: date-time
           readOnly: true
-          title: Output only. Update timestamp
           type: string
         annotations:
           additionalProperties:
             type: string
-          description: Optional. The annotations of this branch..
+          description: The annotations for the branch.
           type: object
         parentDisplayName:
-          description: Output only. The parent display name of this branch.
+          description: The display name of the parent branch from which the branch
+            was created.
           readOnly: true
           type: string
         parentTimestamp:
-          description: Optional. The point in time on the parent branch the branch
-            will be created from.
+          description: The point in time on the parent branch from which the branch
+            is created. The timestamp is truncated to seconds without rounding.
           format: date-time
           nullable: true
           type: string
+        rootPassword:
+          description: "The root password of the branch. It must be between 8 and\
+            \ 64 characters long and can contain letters, numbers, and special characters."
+          example: my-shining-password
+          maxLength: 64
+          minLength: 8
+          pattern: "^.{8,64}$"
+          type: string
       required:
       - displayName
-      title: Message for branch
       type: object
     Branch.Endpoints:
       description: Message for the Endpoints for this branch.
@@ -297,30 +400,31 @@ components:
         public:
           allOf:
           - $ref: '#/components/schemas/Branch.Endpoints.Public'
-          description: Optional. Public Endpoint for this branch.
+          description: The public endpoint configuration for connecting to the branch.
           type: object
         private:
           allOf:
           - $ref: '#/components/schemas/Branch.Endpoints.Private'
-          description: Output only. Private Endpoint for this branch.
+          description: The private endpoint for securely connecting to the branch.
           type: object
       type: object
     Branch.Endpoints.Private:
       description: Message for Private Endpoint for this branch.
       properties:
         host:
-          description: Output Only. Host Name of Public Endpoint.
+          description: The hostname of the private endpoint.
           readOnly: true
           type: string
         port:
-          description: Output Only. Port of Public Endpoint.
+          description: The port number of the private endpoint.
           format: int32
           readOnly: true
           type: integer
         aws:
           allOf:
           - $ref: '#/components/schemas/Branch.Endpoints.Private.AWS'
-          title: Message for AWS
+          description: "The [AWS PrivateLink](https://aws.amazon.com/privatelink/)\
+            \ configuration details for private access."
           type: object
         gcp:
           allOf:
@@ -332,11 +436,11 @@ components:
       description: Message for AWS Private Link Service.
       properties:
         serviceName:
-          description: Output Only. Service Name for Private Link Service.
+          description: The AWS service name for private access.
           readOnly: true
           type: string
         availabilityZone:
-          description: Output Only. Availability Zone for Private Link Service.
+          description: A list of availability zones where the service is available.
           items:
             type: string
           readOnly: true
@@ -346,7 +450,7 @@ components:
       description: Message for GCP Private Link Service.
       properties:
         serviceAttachmentName:
-          description: Output Only. Target Service Account for Private Link Service.
+          description: Target Service Account for Private Link Service.
           readOnly: true
           type: string
       type: object
@@ -354,67 +458,70 @@ components:
       description: Message for Public Endpoint for this branch.
       properties:
         host:
+          description: The hostname of the public endpoint.
           readOnly: true
-          title: Output Only. Host name of Public Endpoint
           type: string
         port:
+          description: The port number of the public endpoint.
           format: int32
           readOnly: true
-          title: Output Only. Port of Public Endpoint
           type: integer
         disabled:
-          title: Optional. Disable Public Endpoint
+          description: Indicates whether the public endpoint is disabled.
           type: boolean
+        authorizedNetworks:
+          description: The list of networks that are allowed to connect to the branch.
+          items:
+            $ref: '#/components/schemas/Branch.Endpoints.Public.AuthorizedNetwork'
+          readOnly: true
+          type: array
+      type: object
+    Branch.Endpoints.Public.AuthorizedNetwork:
+      properties:
+        displayName:
+          description: The display name of the authorized network.
+          type: string
+        startIpAddress:
+          description: The starting IP address of the authorized network range.
+          type: string
+        endIpAddress:
+          description: The ending IP address of the authorized network range.
+          type: string
       type: object
     Branch.State:
       description: |-
-        Output Only. Branch State.
+        Branch State.
 
          - CREATING: The branch is being created.
          - ACTIVE: The branch is active and running.
          - DELETED: The branch is being deleted.
-         - MAINTENANCE: The branch is under maintenance.
          - RESTORING: The branch is restoring.
       enum:
       - CREATING
       - ACTIVE
       - DELETED
-      - MAINTENANCE
       - RESTORING
       type: string
-    Branch.Usage:
-      description: Message for usage metrics for this cluster.
+    BranchService.UpdateSqlUserBody:
       properties:
-        requestUnit:
-          description: Output Only. The latest value of Request Unit Metric for this
-            cluster.
-          format: int64
-          readOnly: true
+        password:
+          description: "The password of the sql user. It must be between 8 and 64\
+            \ characters long and can contain letters, numbers, and special characters."
+          example: my-shining-password
+          maxLength: 64
+          minLength: 8
+          pattern: "^.{8,64}$"
           type: string
-        rowStorage:
-          description: Output Only. The latest value of Row Storage Metric for this
-            cluster.
-          format: double
-          readOnly: true
-          type: number
-        columnarStorage:
-          description: Output Only. The latest value of Columnar Storage Metric for
-            this cluster.
-          format: double
-          readOnly: true
-          type: number
       type: object
     BranchView:
-      description: |-
-        View on branch. Pass this enum to control which subsets of fields to get.
-
-         - BASIC: Basic response contains basic information for a branch.
-         - FULL: FULL response contains all detailed information for a branch.
+      description: View on branch. Pass this enum to control which subsets of fields
+        to get.
       enum:
       - BASIC
       - FULL
       type: string
     ListBranchesResponse:
+      description: Message for response to list branches.
       example:
         totalSize: 0
         nextPageToken: nextPageToken
@@ -422,7 +529,6 @@ components:
         - branchId: branchId
           endpoints: "{}"
           displayName: displayName
-          usage: "{}"
           annotations:
             key: annotations
           updateTime: 2000-01-23T04:56:07.000+00:00
@@ -435,10 +541,10 @@ components:
           name: name
           userPrefix: userPrefix
           state: "{}"
+          rootPassword: my-shining-password
         - branchId: branchId
           endpoints: "{}"
           displayName: displayName
-          usage: "{}"
           annotations:
             key: annotations
           updateTime: 2000-01-23T04:56:07.000+00:00
@@ -451,20 +557,32 @@ components:
           name: name
           userPrefix: userPrefix
           state: "{}"
+          rootPassword: my-shining-password
       properties:
         branches:
+          description: A list of branches that match the query.
           items:
             $ref: '#/components/schemas/Branch'
-          title: The list of branches
           type: array
         nextPageToken:
-          description: A token identifying a page of results the server should return.
+          description: The token to retrieve the next page of results. Use this value
+            as the `pageToken` parameter in the next request. This field is empty
+            when there are no more pages.
           type: string
         totalSize:
+          description: The total number of branches that match the query.
           format: int64
-          title: Total number of branches
           type: integer
-      title: Message for response to list branches
+      type: object
+    SqlUser:
+      example:
+        username: username
+      properties:
+        username:
+          description: The username of the branch sql user.
+          type: string
+      required:
+      - username
       type: object
     Status:
       example:

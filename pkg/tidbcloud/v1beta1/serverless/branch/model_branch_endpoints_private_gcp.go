@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -19,7 +19,7 @@ var _ MappedNullable = &BranchEndpointsPrivateGCP{}
 
 // BranchEndpointsPrivateGCP Message for GCP Private Link Service.
 type BranchEndpointsPrivateGCP struct {
-	// Output Only. Target Service Account for Private Link Service.
+	// Target Service Account for Private Link Service.
 	ServiceAttachmentName *string `json:"serviceAttachmentName,omitempty"`
 	AdditionalProperties  map[string]interface{}
 }

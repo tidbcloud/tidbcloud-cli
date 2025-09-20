@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -19,9 +19,14 @@ var _ MappedNullable = &BranchEndpointsPublic{}
 
 // BranchEndpointsPublic Message for Public Endpoint for this branch.
 type BranchEndpointsPublic struct {
-	Host                 *string `json:"host,omitempty"`
-	Port                 *int32  `json:"port,omitempty"`
-	Disabled             *bool   `json:"disabled,omitempty"`
+	// The hostname of the public endpoint.
+	Host *string `json:"host,omitempty"`
+	// The port number of the public endpoint.
+	Port *int32 `json:"port,omitempty"`
+	// Indicates whether the public endpoint is disabled.
+	Disabled *bool `json:"disabled,omitempty"`
+	// The list of networks that are allowed to connect to the branch.
+	AuthorizedNetworks   []BranchEndpointsPublicAuthorizedNetwork `json:"authorizedNetworks,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -140,6 +145,38 @@ func (o *BranchEndpointsPublic) SetDisabled(v bool) {
 	o.Disabled = &v
 }
 
+// GetAuthorizedNetworks returns the AuthorizedNetworks field value if set, zero value otherwise.
+func (o *BranchEndpointsPublic) GetAuthorizedNetworks() []BranchEndpointsPublicAuthorizedNetwork {
+	if o == nil || IsNil(o.AuthorizedNetworks) {
+		var ret []BranchEndpointsPublicAuthorizedNetwork
+		return ret
+	}
+	return o.AuthorizedNetworks
+}
+
+// GetAuthorizedNetworksOk returns a tuple with the AuthorizedNetworks field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *BranchEndpointsPublic) GetAuthorizedNetworksOk() ([]BranchEndpointsPublicAuthorizedNetwork, bool) {
+	if o == nil || IsNil(o.AuthorizedNetworks) {
+		return nil, false
+	}
+	return o.AuthorizedNetworks, true
+}
+
+// HasAuthorizedNetworks returns a boolean if a field has been set.
+func (o *BranchEndpointsPublic) HasAuthorizedNetworks() bool {
+	if o != nil && !IsNil(o.AuthorizedNetworks) {
+		return true
+	}
+
+	return false
+}
+
+// SetAuthorizedNetworks gets a reference to the given []BranchEndpointsPublicAuthorizedNetwork and assigns it to the AuthorizedNetworks field.
+func (o *BranchEndpointsPublic) SetAuthorizedNetworks(v []BranchEndpointsPublicAuthorizedNetwork) {
+	o.AuthorizedNetworks = v
+}
+
 func (o BranchEndpointsPublic) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -158,6 +195,9 @@ func (o BranchEndpointsPublic) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Disabled) {
 		toSerialize["disabled"] = o.Disabled
+	}
+	if !IsNil(o.AuthorizedNetworks) {
+		toSerialize["authorizedNetworks"] = o.AuthorizedNetworks
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -184,6 +224,7 @@ func (o *BranchEndpointsPublic) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "host")
 		delete(additionalProperties, "port")
 		delete(additionalProperties, "disabled")
+		delete(additionalProperties, "authorizedNetworks")
 		o.AdditionalProperties = additionalProperties
 	}
 
