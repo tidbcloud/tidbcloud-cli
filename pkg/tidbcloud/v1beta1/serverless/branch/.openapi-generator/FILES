@@ -14,11 +14,13 @@ model_branch_endpoints_private.go
 model_branch_endpoints_private_aws.go
 model_branch_endpoints_private_gcp.go
 model_branch_endpoints_public.go
+model_branch_endpoints_public_authorized_network.go
 model_branch_service_get_branch_view_parameter.go
+model_branch_service_update_sql_user_body.go
 model_branch_state.go
-model_branch_usage.go
 model_branch_view.go
 model_list_branches_response.go
+model_sql_user.go
 model_status.go
 response.go
 utils.go

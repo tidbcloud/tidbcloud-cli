@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -19,36 +19,38 @@ import (
 // checks if the Branch type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &Branch{}
 
-// Branch struct for Branch
+// Branch Message for branch.
 type Branch struct {
-	// Output Only. The name of the resource.
+	// The unique identifier for the branch.
 	Name *string `json:"name,omitempty"`
-	// Output only. The system-generated ID of the resource.
+	// The system-generated ID of the branch.
 	BranchId *string `json:"branchId,omitempty"`
-	// Required. User-settable and human-readable display name for the branch.
+	// The user-defined name of the branch.
 	DisplayName string `json:"displayName"`
-	// Output only. The cluster ID of this branch.
+	// The ID of the cluster to which the branch belongs.
 	ClusterId *string `json:"clusterId,omitempty"`
-	// Optional. The parent ID of this branch.
+	// The ID of the branch parent.
 	ParentId *string `json:"parentId,omitempty"`
-	// Output only. The creator of the branch.
+	// The email address of the user who create the branch.
 	CreatedBy *string `json:"createdBy,omitempty"`
-	// Output only. The state of this branch.
+	// The state of the branch.
 	State *BranchState `json:"state,omitempty"`
-	// Optional. The endpoints of this branch.
+	// The connection endpoints for accessing the branch.
 	Endpoints *BranchEndpoints `json:"endpoints,omitempty"`
-	// Output only. User name prefix of this branch. For each TiDB Serverless branch, TiDB Cloud generates a unique prefix to distinguish it from other branches. Whenever you use or set a database user name, you must include the prefix in the user name.
+	// The unique prefix automatically generated for SQL usernames on this cluster. TiDB Cloud uses this prefix to distinguish between clusters. For more information, see [User name prefix](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#user-name-prefix).
 	UserPrefix NullableString `json:"userPrefix,omitempty"`
-	// Output only. Usage metrics of this branch. Only display in FULL view.
-	Usage      *BranchUsage `json:"usage,omitempty"`
-	CreateTime *time.Time   `json:"createTime,omitempty"`
-	UpdateTime *time.Time   `json:"updateTime,omitempty"`
-	// Optional. The annotations of this branch..
+	// The timestamp when the branch was created, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
+	CreateTime *time.Time `json:"createTime,omitempty"`
+	// The timestamp when the branch was last updated, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
+	UpdateTime *time.Time `json:"updateTime,omitempty"`
+	// The annotations for the branch.
 	Annotations *map[string]string `json:"annotations,omitempty"`
-	// Output only. The parent display name of this branch.
+	// The display name of the parent branch from which the branch was created.
 	ParentDisplayName *string `json:"parentDisplayName,omitempty"`
-	// Optional. The point in time on the parent branch the branch will be created from.
-	ParentTimestamp      NullableTime `json:"parentTimestamp,omitempty"`
+	// The point in time on the parent branch from which the branch is created. The timestamp is truncated to seconds without rounding.
+	ParentTimestamp NullableTime `json:"parentTimestamp,omitempty"`
+	// The root password of the branch. It must be between 8 and 64 characters long and can contain letters, numbers, and special characters.
+	RootPassword         *string `json:"rootPassword,omitempty" validate:"regexp=^.{8,64}$"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -363,38 +365,6 @@ func (o *Branch) UnsetUserPrefix() {
 	o.UserPrefix.Unset()
 }
 
-// GetUsage returns the Usage field value if set, zero value otherwise.
-func (o *Branch) GetUsage() BranchUsage {
-	if o == nil || IsNil(o.Usage) {
-		var ret BranchUsage
-		return ret
-	}
-	return *o.Usage
-}
-
-// GetUsageOk returns a tuple with the Usage field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Branch) GetUsageOk() (*BranchUsage, bool) {
-	if o == nil || IsNil(o.Usage) {
-		return nil, false
-	}
-	return o.Usage, true
-}
-
-// HasUsage returns a boolean if a field has been set.
-func (o *Branch) HasUsage() bool {
-	if o != nil && !IsNil(o.Usage) {
-		return true
-	}
-
-	return false
-}
-
-// SetUsage gets a reference to the given BranchUsage and assigns it to the Usage field.
-func (o *Branch) SetUsage(v BranchUsage) {
-	o.Usage = &v
-}
-
 // GetCreateTime returns the CreateTime field value if set, zero value otherwise.
 func (o *Branch) GetCreateTime() time.Time {
 	if o == nil || IsNil(o.CreateTime) {
@@ -566,6 +536,38 @@ func (o *Branch) UnsetParentTimestamp() {
 	o.ParentTimestamp.Unset()
 }
 
+// GetRootPassword returns the RootPassword field value if set, zero value otherwise.
+func (o *Branch) GetRootPassword() string {
+	if o == nil || IsNil(o.RootPassword) {
+		var ret string
+		return ret
+	}
+	return *o.RootPassword
+}
+
+// GetRootPasswordOk returns a tuple with the RootPassword field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Branch) GetRootPasswordOk() (*string, bool) {
+	if o == nil || IsNil(o.RootPassword) {
+		return nil, false
+	}
+	return o.RootPassword, true
+}
+
+// HasRootPassword returns a boolean if a field has been set.
+func (o *Branch) HasRootPassword() bool {
+	if o != nil && !IsNil(o.RootPassword) {
+		return true
+	}
+
+	return false
+}
+
+// SetRootPassword gets a reference to the given string and assigns it to the RootPassword field.
+func (o *Branch) SetRootPassword(v string) {
+	o.RootPassword = &v
+}
+
 func (o Branch) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -601,9 +603,6 @@ func (o Branch) ToMap() (map[string]interface{}, error) {
 	if o.UserPrefix.IsSet() {
 		toSerialize["userPrefix"] = o.UserPrefix.Get()
 	}
-	if !IsNil(o.Usage) {
-		toSerialize["usage"] = o.Usage
-	}
 	if !IsNil(o.CreateTime) {
 		toSerialize["createTime"] = o.CreateTime
 	}
@@ -618,6 +617,9 @@ func (o Branch) ToMap() (map[string]interface{}, error) {
 	}
 	if o.ParentTimestamp.IsSet() {
 		toSerialize["parentTimestamp"] = o.ParentTimestamp.Get()
+	}
+	if !IsNil(o.RootPassword) {
+		toSerialize["rootPassword"] = o.RootPassword
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -671,12 +673,12 @@ func (o *Branch) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "state")
 		delete(additionalProperties, "endpoints")
 		delete(additionalProperties, "userPrefix")
-		delete(additionalProperties, "usage")
 		delete(additionalProperties, "createTime")
 		delete(additionalProperties, "updateTime")
 		delete(additionalProperties, "annotations")
 		delete(additionalProperties, "parentDisplayName")
 		delete(additionalProperties, "parentTimestamp")
+		delete(additionalProperties, "rootPassword")
 		o.AdditionalProperties = additionalProperties
 	}
 
