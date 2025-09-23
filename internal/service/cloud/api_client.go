@@ -123,7 +123,7 @@ type TiDBCloudClient interface {
 	DeleteChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error)
 	EditChangefeed(ctx context.Context, clusterId, changefeedId string, body *cdc.ChangefeedServiceEditChangefeedBody) (*cdc.Changefeed, error)
 	GetChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error)
-	ListChangefeeds(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, changefeedType *cdc.ChangefeedServiceListChangefeedsChangefeedTypeParameter, orderBy *string) (*cdc.Changefeeds, error)
+	ListChangefeeds(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, changefeedType *cdc.ChangefeedServiceListChangefeedsChangefeedTypeParameter) (*cdc.Changefeeds, error)
 	StartChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error)
 	StopChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error)
 	TestChangefeed(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceTestChangefeedBody) (map[string]interface{}, error)
@@ -764,7 +764,7 @@ func (d *ClientDelegate) GetChangefeed(ctx context.Context, clusterId, changefee
 	return resp, parseError(err, h)
 }
 
-func (d *ClientDelegate) ListChangefeeds(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, changefeedType *cdc.ChangefeedServiceListChangefeedsChangefeedTypeParameter, orderBy *string) (*cdc.Changefeeds, error) {
+func (d *ClientDelegate) ListChangefeeds(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, changefeedType *cdc.ChangefeedServiceListChangefeedsChangefeedTypeParameter) (*cdc.Changefeeds, error) {
 	r := d.cdc.ChangefeedServiceAPI.ChangefeedServiceListChangefeeds(ctx, clusterId)
 	if pageSize != nil {
 		r = r.PageSize(*pageSize)
@@ -774,9 +774,6 @@ func (d *ClientDelegate) ListChangefeeds(ctx context.Context, clusterId string, 
 	}
 	if changefeedType != nil {
 		r = r.ChangefeedType(*changefeedType)
-	}
-	if orderBy != nil {
-		r = r.OrderBy(*orderBy)
 	}
 	resp, h, err := r.Execute()
 	return resp, parseError(err, h)

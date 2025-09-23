@@ -105,7 +105,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 			var clusterID, name, kafkaStr, mysqlStr, filterStr string
 			var startTSO uint64
-			var filter cdc.CDCFilter
+			var filter cdc.ChangefeedFilter
 			var kafkaInfo cdc.Kafka
 			var mysqlInfo cdc.MySQL
 			var changefeedType cdc.ChangefeedTypeEnum

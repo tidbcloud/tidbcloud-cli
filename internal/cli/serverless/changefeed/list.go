@@ -108,7 +108,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			pageSize := int32(h.QueryPageSize)
-			resp, err := d.ListChangefeeds(ctx, clusterID, &pageSize, nil, nil, nil)
+			resp, err := d.ListChangefeeds(ctx, clusterID, &pageSize, nil, nil)
 			if err != nil {
 				return err
 			}

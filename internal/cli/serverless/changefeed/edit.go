@@ -98,7 +98,7 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 			var clusterID, changefeedID, kafkaStr, mysqlStr, filterStr string
 			var kafkaInfo cdc.Kafka
 			var mysqlInfo cdc.MySQL
-			var filter cdc.CDCFilter
+			var filter cdc.ChangefeedFilter
 			var name *string
 
 			if opts.interactive {
