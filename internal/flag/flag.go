@@ -99,11 +99,11 @@ const (
 	StartDate              string = "start-date"
 	EndDate                string = "end-date"
 
-	AuditLogUnRedacted     string = "unredacted"
-	AuditLogFilterRuleName string = "name"
-	AuditLogFilterRule     string = "rule"
-	Enabled                string = "enabled"
-  CloudStorageType        string = "cloud-storage"
+	AuditLogUnRedacted      string = "unredacted"
+	AuditLogFilterRuleID    string = "filter-rule-id"
+	AuditLogFilterRule      string = "rule"
+	Enabled                 string = "enabled"
+	CloudStorageType        string = "cloud-storage"
 	RotationIntervalMinutes string = "rotation-interval-minutes"
 	RotationSizeMib         string = "rotation-size-mib"
 
@@ -117,7 +117,6 @@ const (
 	ChangefeedIDShort     string = "f"
 	Explain               string = "explain"
 	ChangfeedTemplateType string = "type"
-
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."
