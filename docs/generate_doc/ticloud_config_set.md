@@ -5,7 +5,7 @@ Configure specific properties of the active profile
 ### Synopsis
 
 Configure specific properties of the active profile.
-Available properties : [public-key private-key api-url serverless-endpoint iam-endpoint oauth-endpoint oauth-client-id oauth-client-secret telemetry-enabled].
+Available properties : [public-key private-key serverless-endpoint iam-endpoint oauth-endpoint oauth-client-id oauth-client-secret telemetry-enabled].
 
 If using -P flag, the config in the specific profile will be set.
 If not, the config in the active profile will be set

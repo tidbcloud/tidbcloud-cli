@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Database Audit Logging Open API
+TiDB Cloud Starter and Essential Database Audit Logging Open API
 
-TiDB Cloud Serverless Database Audit Logging Open API
+TiDB Cloud Starter and Essential Database Audit Logging Open API
 
 API version: v1beta1
 */
@@ -20,6 +20,8 @@ var _ MappedNullable = &ListAuditLogFilterRulesResponse{}
 // ListAuditLogFilterRulesResponse struct for ListAuditLogFilterRulesResponse
 type ListAuditLogFilterRulesResponse struct {
 	FilterRules          []AuditLogFilterRule `json:"filterRules,omitempty"`
+	NextPageToken        *string              `json:"nextPageToken,omitempty"`
+	TotalSize            *int64               `json:"totalSize,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -74,6 +76,70 @@ func (o *ListAuditLogFilterRulesResponse) SetFilterRules(v []AuditLogFilterRule)
 	o.FilterRules = v
 }
 
+// GetNextPageToken returns the NextPageToken field value if set, zero value otherwise.
+func (o *ListAuditLogFilterRulesResponse) GetNextPageToken() string {
+	if o == nil || IsNil(o.NextPageToken) {
+		var ret string
+		return ret
+	}
+	return *o.NextPageToken
+}
+
+// GetNextPageTokenOk returns a tuple with the NextPageToken field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ListAuditLogFilterRulesResponse) GetNextPageTokenOk() (*string, bool) {
+	if o == nil || IsNil(o.NextPageToken) {
+		return nil, false
+	}
+	return o.NextPageToken, true
+}
+
+// HasNextPageToken returns a boolean if a field has been set.
+func (o *ListAuditLogFilterRulesResponse) HasNextPageToken() bool {
+	if o != nil && !IsNil(o.NextPageToken) {
+		return true
+	}
+
+	return false
+}
+
+// SetNextPageToken gets a reference to the given string and assigns it to the NextPageToken field.
+func (o *ListAuditLogFilterRulesResponse) SetNextPageToken(v string) {
+	o.NextPageToken = &v
+}
+
+// GetTotalSize returns the TotalSize field value if set, zero value otherwise.
+func (o *ListAuditLogFilterRulesResponse) GetTotalSize() int64 {
+	if o == nil || IsNil(o.TotalSize) {
+		var ret int64
+		return ret
+	}
+	return *o.TotalSize
+}
+
+// GetTotalSizeOk returns a tuple with the TotalSize field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ListAuditLogFilterRulesResponse) GetTotalSizeOk() (*int64, bool) {
+	if o == nil || IsNil(o.TotalSize) {
+		return nil, false
+	}
+	return o.TotalSize, true
+}
+
+// HasTotalSize returns a boolean if a field has been set.
+func (o *ListAuditLogFilterRulesResponse) HasTotalSize() bool {
+	if o != nil && !IsNil(o.TotalSize) {
+		return true
+	}
+
+	return false
+}
+
+// SetTotalSize gets a reference to the given int64 and assigns it to the TotalSize field.
+func (o *ListAuditLogFilterRulesResponse) SetTotalSize(v int64) {
+	o.TotalSize = &v
+}
+
 func (o ListAuditLogFilterRulesResponse) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -86,6 +152,12 @@ func (o ListAuditLogFilterRulesResponse) ToMap() (map[string]interface{}, error)
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.FilterRules) {
 		toSerialize["filterRules"] = o.FilterRules
+	}
+	if !IsNil(o.NextPageToken) {
+		toSerialize["nextPageToken"] = o.NextPageToken
+	}
+	if !IsNil(o.TotalSize) {
+		toSerialize["totalSize"] = o.TotalSize
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -110,6 +182,8 @@ func (o *ListAuditLogFilterRulesResponse) UnmarshalJSON(data []byte) (err error)
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "filterRules")
+		delete(additionalProperties, "nextPageToken")
+		delete(additionalProperties, "totalSize")
 		o.AdditionalProperties = additionalProperties
 	}
 

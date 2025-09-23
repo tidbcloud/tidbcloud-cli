@@ -22,7 +22,6 @@ import (
 	"strings"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
-	"github.com/tidbcloud/tidbcloud-cli/internal/cli/ai"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/auth"
 	configCmd "github.com/tidbcloud/tidbcloud-cli/internal/cli/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/project"
@@ -57,11 +56,6 @@ func Execute(ctx context.Context) {
 	h := &internal.Helper{
 		Client: func() (cloud.TiDBCloudClient, error) {
 			publicKey, privateKey := config.GetPublicKey(), config.GetPrivateKey()
-			apiUrl := config.GetApiUrl()
-			// If the user has not set the api url, use the default one.
-			if apiUrl == "" {
-				apiUrl = cloud.DefaultApiUrl
-			}
 			serverlessEndpoint := config.GetServerlessEndpoint()
 			if serverlessEndpoint == "" {
 				serverlessEndpoint = cloud.DefaultServerlessEndpoint
@@ -74,7 +68,7 @@ func Execute(ctx context.Context) {
 			var delegate cloud.TiDBCloudClient
 			if publicKey != "" && privateKey != "" {
 				var err error
-				delegate, err = cloud.NewClientDelegateWithApiKey(publicKey, privateKey, apiUrl, serverlessEndpoint, iamEndpoint)
+				delegate, err = cloud.NewClientDelegateWithApiKey(publicKey, privateKey, serverlessEndpoint, iamEndpoint)
 				if err != nil {
 					return nil, err
 				}
@@ -93,7 +87,7 @@ func Execute(ctx context.Context) {
 					}
 					return nil, err
 				}
-				delegate, err = cloud.NewClientDelegateWithToken(token, apiUrl, serverlessEndpoint, iamEndpoint)
+				delegate, err = cloud.NewClientDelegateWithToken(token, serverlessEndpoint, iamEndpoint)
 				if err != nil {
 					return nil, err
 				}
@@ -201,7 +195,6 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 	rootCmd.AddCommand(auth.AuthCmd(h))
 	rootCmd.AddCommand(configCmd.ConfigCmd(h))
 	rootCmd.AddCommand(serverless.Cmd(h))
-	rootCmd.AddCommand(ai.AICmd(h))
 	rootCmd.AddCommand(project.ProjectCmd(h))
 	rootCmd.AddCommand(version.VersionCmd(h))
 	rootCmd.AddCommand(upgrade.Cmd(h))

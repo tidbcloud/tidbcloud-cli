@@ -31,8 +31,8 @@ import (
 )
 
 var InputDescription = map[string]string{
-	flag.AuditLogFilterRuleName: "Input the filter rule name",
-	flag.AuditLogFilterRule:     "Input the filter rule expression, use \"ticloud serverless audit-log filter template\" to get the template",
+	flag.DisplayName:        "Input the filter rule name",
+	flag.AuditLogFilterRule: "Input the filter rule expression, use \"ticloud serverless audit-log filter template\" to get the template",
 }
 
 type FilterRuleWithoutName struct {
@@ -47,7 +47,7 @@ type FilterRuleOpts struct {
 func (o FilterRuleOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.AuditLogFilterRuleName,
+		flag.DisplayName,
 		flag.AuditLogFilterRule,
 	}
 }
@@ -55,7 +55,7 @@ func (o FilterRuleOpts) NonInteractiveFlags() []string {
 func (o FilterRuleOpts) RequiredFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.AuditLogFilterRuleName,
+		flag.DisplayName,
 		flag.AuditLogFilterRule,
 	}
 }
@@ -91,10 +91,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless audit-log filter create
 
   Create a filter rule which filters all audit logs in non-interactive mode:
-  $ %[1]s serverless audit-log filter create --cluster-id <cluster-id> --name <rule-name> --rule '{"users":["%%@%%"],"filters":[{}]}'
+  $ %[1]s serverless audit-log filter create --cluster-id <cluster-id> --display-name <rule-name> --rule '{"users":["%%@%%"],"filters":[{}]}'
 
   Create a filter rule which filters QUERY and EXECUTE for test.t and filter QUERY for all tables in non-interactive mode:
-  $ %[1]s serverless audit-log filter create --cluster-id <cluster-id> --name <rule-name> --rule '{"users":["%%@%%"],"filters":[{"classes":["QUERY","EXECUTE"],"tables":["test.t"]},{"classes":["QUERY"]}]}'
+  $ %[1]s serverless audit-log filter create --cluster-id <cluster-id> --display-name <rule-name> --rule '{"users":["%%@%%"],"filters":[{"classes":["QUERY","EXECUTE"],"tables":["test.t"]},{"classes":["QUERY"]}]}'
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
@@ -123,7 +123,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				inputs := []string{flag.AuditLogFilterRuleName, flag.AuditLogFilterRule}
+				inputs := []string{flag.DisplayName, flag.AuditLogFilterRule}
 				textInput, err := ui.InitialInputModel(inputs, InputDescription)
 				if err != nil {
 					return err
@@ -140,7 +140,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				name, err = cmd.Flags().GetString(flag.AuditLogFilterRuleName)
+				name, err = cmd.Flags().GetString(flag.DisplayName)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -163,21 +163,21 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				return errors.New("empty filters, please specify at least one filter")
 			}
 			params := auditlog.AuditLogFilterRule{
-				Name:    name,
-				Users:   filterRule.Users,
-				Filters: filterRule.Filters,
+				DisplayName: name,
+				Users:       filterRule.Users,
+				Filters:     filterRule.Filters,
 			}
 
 			resp, err := d.CreateAuditLogFilterRule(
 				ctx,
 				clusterID,
-				&auditlog.AuditLogServiceCreateAuditLogFilterRuleBody{
+				&auditlog.DatabaseAuditLogServiceCreateAuditLogFilterRuleBody{
 					FilterRule: params,
 				})
 			if err != nil {
 				return errors.Trace(err)
 			}
-			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("audit log filter rule %s created", resp.Name))
+			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("audit log filter rule %s created", *resp.FilterRuleId))
 			if err != nil {
 				return err
 			}
@@ -186,7 +186,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
-	cmd.Flags().String(flag.AuditLogFilterRuleName, "", "The name of the filter rule.")
+	cmd.Flags().String(flag.DisplayName, "", "The display name of the filter rule.")
 	cmd.Flags().String(flag.AuditLogFilterRule, "", "Filter rule expressions, use \"ticloud serverless audit-log filter template\" to see filter templates.")
 
 	return cmd

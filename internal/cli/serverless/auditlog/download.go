@@ -96,7 +96,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 
 	var downloadCmd = &cobra.Command{
 		Use:   "download",
-		Short: "Download the database audit logs",
+		Short: "Download the database audit log files",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Download the database audit logs in interactive mode:
   $ %[1]s serverless audit-log download
@@ -174,7 +174,7 @@ func DownloadCmd(h *internal.Helper) *cobra.Command {
 			var totalSize int64
 			auditLogNames := make([]string, 0)
 			for _, log := range auditLogs {
-				totalSize += *log.Size
+				totalSize += *log.SizeBytes
 				auditLogNames = append(auditLogNames, *log.Name)
 			}
 

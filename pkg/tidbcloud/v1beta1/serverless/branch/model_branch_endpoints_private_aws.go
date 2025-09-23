@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -19,9 +19,9 @@ var _ MappedNullable = &BranchEndpointsPrivateAWS{}
 
 // BranchEndpointsPrivateAWS Message for AWS Private Link Service.
 type BranchEndpointsPrivateAWS struct {
-	// Output Only. Service Name for Private Link Service.
+	// The AWS service name for private access.
 	ServiceName *string `json:"serviceName,omitempty"`
-	// Output Only. Availability Zone for Private Link Service.
+	// A list of availability zones where the service is available.
 	AvailabilityZone     []string `json:"availabilityZone,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

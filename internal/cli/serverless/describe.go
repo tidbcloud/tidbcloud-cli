@@ -111,7 +111,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				clusterID = cID
 			}
 
-			c, err := d.GetCluster(ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_FULL)
+			c, err := d.GetCluster(ctx, clusterID, cluster.CLUSTERSERVICEGETCLUSTERVIEWPARAMETER_FULL)
 			if err != nil {
 				return errors.Trace(err)
 			}

@@ -1,8 +1,8 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "TiDB Cloud Serverless Open API",
-    "description": "TiDB Cloud Serverless Open API",
+    "title": "TiDB Cloud Starter and Essential API",
+    "description": "TiDB Cloud Starter and Essential API",
     "version": "v1beta1"
   },
   "tags": [
@@ -23,7 +23,7 @@
   "paths": {
     "/v1beta1/clusters/{clusterId}/branches": {
       "get": {
-        "summary": "Lists information about branches.",
+        "summary": "List branches",
         "operationId": "BranchService_ListBranches",
         "responses": {
           "200": {
@@ -42,22 +42,23 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required. The ID of the project to which the clusters belong.",
+            "description": "The ID of the cluster to which the [branch](https://docs.pingcap.com/tidbcloud/branch-overview/) belongs.",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "pageSize",
-            "description": "Optional. Requested page size. Server may return fewer items than\nrequested. If unspecified, server will pick an appropriate default.",
+            "description": "The maximum number of branches to return. If not specified, at most 10 branches will be returned. The maximum value is `100`. Values greater than `100` are set to `100`.",
             "in": "query",
             "required": false,
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "default": 10
           },
           {
             "name": "pageToken",
-            "description": "Optional. A token identifying a page of results the server should return.",
+            "description": "The pagination token received from a previous [List branches](#tag/Branch/operation/BranchService_ListBranches) request. Use this token to retrieve the next page of results.\n\n**Note**: When paginating, all other parameters must match the original request.",
             "in": "query",
             "required": false,
             "type": "string"
@@ -65,10 +66,17 @@
         ],
         "tags": [
           "BranchService"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/branches' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Accept: application/json'"
+          }
         ]
       },
       "post": {
-        "summary": "Creates a branch.",
+        "summary": "Creates a branch",
         "operationId": "BranchService_CreateBranch",
         "responses": {
           "200": {
@@ -87,14 +95,14 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required. The cluster ID of the branch",
+            "description": "The ID of the cluster to which the branch belongs.",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "branch",
-            "description": "Required. The resource being created",
+            "description": "The branch being created.",
             "in": "body",
             "required": true,
             "schema": {
@@ -104,12 +112,19 @@
         ],
         "tags": [
           "BranchService"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/branches' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Content-Type: application/json' \\\n--header 'Accept: application/json' \\\n--data '{\n    \"displayName\": \"test\"\n}'"
+          }
         ]
       }
     },
     "/v1beta1/clusters/{clusterId}/branches/{branchId}": {
       "get": {
-        "summary": "Gets information about a branch.",
+        "summary": "Get detail of a branch",
         "operationId": "BranchService_GetBranch",
         "responses": {
           "200": {
@@ -128,21 +143,21 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required. The cluster ID of the branch",
+            "description": "The ID of the cluster to which the branch belongs.",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "branchId",
-            "description": "Required. The branch ID",
+            "description": "The ID of the branch.",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "view",
-            "description": "Optional. The view of the branch to return. Defaults to FULL\n\n - BASIC: Basic response contains basic information for a branch.\n - FULL: FULL response contains all detailed information for a branch.",
+            "description": "The detail level of the branch information to return. Default value is `FULL`.\n\n- `BASIC`: returns only basic branch information.\n- `FULL`: returns complete branch details.",
             "in": "query",
             "required": false,
             "type": "string",
@@ -154,10 +169,17 @@
         ],
         "tags": [
           "BranchService"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/branches/{branch_id}' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Accept: application/json'"
+          }
         ]
       },
       "delete": {
-        "summary": "Deletes a branch.",
+        "summary": "Delete a branch",
         "operationId": "BranchService_DeleteBranch",
         "responses": {
           "200": {
@@ -176,14 +198,14 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required. The cluster ID of the branch",
+            "description": "The ID of the cluster to which the branch belongs.",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "branchId",
-            "description": "Required. The branch ID",
+            "description": "The ID of the branch.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -191,12 +213,20 @@
         ],
         "tags": [
           "BranchService"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location --request DELETE 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/branches/{branch_id}' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Accept: application/json'"
+          }
         ]
       }
     },
     "/v1beta1/clusters/{clusterId}/branches/{branchId}:reset": {
       "post": {
-        "summary": "Resets a branch.",
+        "summary": "Reset a branch",
+        "description": "Resets a branch to match the current state of its parent branch.",
         "operationId": "BranchService_ResetBranch",
         "responses": {
           "200": {
@@ -215,14 +245,14 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required. The cluster ID of the branch",
+            "description": "The ID of the cluster to which the branch belongs.",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "branchId",
-            "description": "Required. The branch ID",
+            "description": "The ID of the branch.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -230,6 +260,74 @@
         ],
         "tags": [
           "BranchService"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location --request POST 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/branches/{branch_id}:reset' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Accept: application/json'"
+          }
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/branches/{branchId}/sqlUsers/{username}": {
+      "patch": {
+        "summary": "Update a branch sql user",
+        "operationId": "BranchService_UpdateSqlUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/SqlUser"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster to which the branch belongs.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "branchId",
+            "description": "The ID of the branch.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "username",
+            "description": "The username of the branch sql user.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BranchService.UpdateSqlUserBody"
+            }
+          }
+        ],
+        "tags": [
+          "BranchService"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/branches/{branch_id}/sqlUsers/{username}' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Content-Type: application/json' \\\n--header 'Accept: application/json' \\\n--data '{\n    \"password\": \"test1234\"\n}'"
+          }
         ]
       }
     }
@@ -249,34 +347,34 @@
       "properties": {
         "name": {
           "type": "string",
-          "description": "Output Only. The name of the resource.",
+          "description": "The unique identifier for the branch.",
           "readOnly": true
         },
         "branchId": {
           "type": "string",
-          "description": "Output only. The system-generated ID of the resource.",
+          "description": "The system-generated ID of the branch.",
           "readOnly": true
         },
         "displayName": {
           "type": "string",
-          "description": "Required. User-settable and human-readable display name for the branch."
+          "description": "The user-defined name of the branch."
         },
         "clusterId": {
           "type": "string",
-          "description": "Output only. The cluster ID of this branch.",
+          "description": "The ID of the cluster to which the branch belongs.",
           "readOnly": true
         },
         "parentId": {
           "type": "string",
-          "description": "Optional. The parent ID of this branch."
+          "description": "The ID of the branch parent."
         },
         "createdBy": {
           "type": "string",
-          "description": "Output only. The creator of the branch.",
+          "description": "The email address of the user who create the branch.",
           "readOnly": true
         },
         "state": {
-          "description": "Output only. The state of this branch.",
+          "description": "The state of the branch.",
           "readOnly": true,
           "allOf": [
             {
@@ -285,7 +383,8 @@
           ]
         },
         "endpoints": {
-          "description": "Optional. The endpoints of this branch.",
+          "description": "The connection endpoints for accessing the branch.",
+          "readOnly": true,
           "allOf": [
             {
               "$ref": "#/definitions/Branch.Endpoints"
@@ -295,28 +394,19 @@
         "userPrefix": {
           "type": "string",
           "x-nullable": true,
-          "description": "Output only. User name prefix of this branch. For each TiDB Serverless branch,\nTiDB Cloud generates a unique prefix to distinguish it from other branches.\nWhenever you use or set a database user name, you must include the prefix in the user name.",
+          "description": "The unique prefix automatically generated for SQL usernames on this cluster. TiDB Cloud uses this prefix to distinguish between clusters. For more information, see [User name prefix](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#user-name-prefix).",
           "readOnly": true
-        },
-        "usage": {
-          "description": "Output only. Usage metrics of this branch. Only display in FULL view.",
-          "readOnly": true,
-          "allOf": [
-            {
-              "$ref": "#/definitions/Branch.Usage"
-            }
-          ]
         },
         "createTime": {
           "type": "string",
           "format": "date-time",
-          "title": "Output only. Create timestamp",
+          "description": "The timestamp when the branch was created, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.",
           "readOnly": true
         },
         "updateTime": {
           "type": "string",
           "format": "date-time",
-          "title": "Output only. Update timestamp",
+          "description": "The timestamp when the branch was last updated, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.",
           "readOnly": true
         },
         "annotations": {
@@ -324,21 +414,29 @@
           "additionalProperties": {
             "type": "string"
           },
-          "description": "Optional. The annotations of this branch.."
+          "description": "The annotations for the branch."
         },
         "parentDisplayName": {
           "type": "string",
-          "description": "Output only. The parent display name of this branch.",
+          "description": "The display name of the parent branch from which the branch was created.",
           "readOnly": true
         },
         "parentTimestamp": {
           "type": "string",
           "format": "date-time",
           "x-nullable": true,
-          "description": "Optional. The point in time on the parent branch the branch will be created from."
+          "description": "The point in time on the parent branch from which the branch is created. The timestamp is truncated to seconds without rounding."
+        },
+        "rootPassword": {
+          "type": "string",
+          "example": "my-shining-password",
+          "description": "The root password of the branch. It must be between 8 and 64 characters long and can contain letters, numbers, and special characters.",
+          "maxLength": 64,
+          "minLength": 8,
+          "pattern": "^.{8,64}$"
         }
       },
-      "title": "Message for branch",
+      "description": "Message for branch.",
       "required": [
         "displayName"
       ]
@@ -347,7 +445,7 @@
       "type": "object",
       "properties": {
         "public": {
-          "description": "Optional. Public Endpoint for this branch.",
+          "description": "The public endpoint configuration for connecting to the branch.",
           "allOf": [
             {
               "$ref": "#/definitions/Branch.Endpoints.Public"
@@ -355,7 +453,7 @@
           ]
         },
         "private": {
-          "description": "Output only. Private Endpoint for this branch.",
+          "description": "The private endpoint for securely connecting to the branch.",
           "readOnly": true,
           "allOf": [
             {
@@ -371,17 +469,17 @@
       "properties": {
         "host": {
           "type": "string",
-          "description": "Output Only. Host Name of Public Endpoint.",
+          "description": "The hostname of the private endpoint.",
           "readOnly": true
         },
         "port": {
           "type": "integer",
           "format": "int32",
-          "description": "Output Only. Port of Public Endpoint.",
+          "description": "The port number of the private endpoint.",
           "readOnly": true
         },
         "aws": {
-          "title": "Message for AWS",
+          "description": "The [AWS PrivateLink](https://aws.amazon.com/privatelink/) configuration details for private access.",
           "readOnly": true,
           "allOf": [
             {
@@ -406,7 +504,7 @@
       "properties": {
         "serviceName": {
           "type": "string",
-          "description": "Output Only. Service Name for Private Link Service.",
+          "description": "The AWS service name for private access.",
           "readOnly": true
         },
         "availabilityZone": {
@@ -414,7 +512,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Output Only. Availability Zone for Private Link Service.",
+          "description": "A list of availability zones where the service is available.",
           "readOnly": true
         }
       },
@@ -425,7 +523,7 @@
       "properties": {
         "serviceAttachmentName": {
           "type": "string",
-          "description": "Output Only. Target Service Account for Private Link Service.",
+          "description": "Target Service Account for Private Link Service.",
           "readOnly": true
         }
       },
@@ -436,21 +534,47 @@
       "properties": {
         "host": {
           "type": "string",
-          "title": "Output Only. Host name of Public Endpoint",
+          "description": "The hostname of the public endpoint.",
           "readOnly": true
         },
         "port": {
           "type": "integer",
           "format": "int32",
-          "title": "Output Only. Port of Public Endpoint",
+          "description": "The port number of the public endpoint.",
           "readOnly": true
         },
         "disabled": {
           "type": "boolean",
-          "title": "Optional. Disable Public Endpoint"
+          "description": "Indicates whether the public endpoint is disabled."
+        },
+        "authorizedNetworks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Branch.Endpoints.Public.AuthorizedNetwork"
+          },
+          "description": "The list of networks that are allowed to connect to the branch.",
+          "readOnly": true
         }
       },
       "description": "Message for Public Endpoint for this branch."
+    },
+    "Branch.Endpoints.Public.AuthorizedNetwork": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "description": "The display name of the authorized network."
+        },
+        "startIpAddress": {
+          "type": "string",
+          "description": "The starting IP address of the authorized network range."
+        },
+        "endIpAddress": {
+          "type": "string",
+          "description": "The ending IP address of the authorized network range."
+        }
+      }
     },
     "Branch.State": {
       "type": "string",
@@ -458,34 +582,22 @@
         "CREATING",
         "ACTIVE",
         "DELETED",
-        "MAINTENANCE",
         "RESTORING"
       ],
-      "description": "Output Only. Branch State.\n\n - CREATING: The branch is being created.\n - ACTIVE: The branch is active and running.\n - DELETED: The branch is being deleted.\n - MAINTENANCE: The branch is under maintenance.\n - RESTORING: The branch is restoring."
+      "description": "Branch State.\n\n - CREATING: The branch is being created.\n - ACTIVE: The branch is active and running.\n - DELETED: The branch is being deleted.\n - RESTORING: The branch is restoring."
     },
-    "Branch.Usage": {
+    "BranchService.UpdateSqlUserBody": {
       "type": "object",
       "properties": {
-        "requestUnit": {
+        "password": {
           "type": "string",
-          "format": "int64",
-          "description": "Output Only. The latest value of Request Unit Metric for this cluster.",
-          "readOnly": true
-        },
-        "rowStorage": {
-          "type": "number",
-          "format": "double",
-          "description": "Output Only. The latest value of Row Storage Metric for this cluster.",
-          "readOnly": true
-        },
-        "columnarStorage": {
-          "type": "number",
-          "format": "double",
-          "description": "Output Only. The latest value of Columnar Storage Metric for this cluster.",
-          "readOnly": true
+          "example": "my-shining-password",
+          "description": "The password of the sql user. It must be between 8 and 64 characters long and can contain letters, numbers, and special characters.",
+          "maxLength": 64,
+          "minLength": 8,
+          "pattern": "^.{8,64}$"
         }
-      },
-      "description": "Message for usage metrics for this cluster."
+      }
     },
     "BranchView": {
       "type": "string",
@@ -493,7 +605,7 @@
         "BASIC",
         "FULL"
       ],
-      "description": "View on branch. Pass this enum to control which subsets of fields to get.\n\n - BASIC: Basic response contains basic information for a branch.\n - FULL: FULL response contains all detailed information for a branch."
+      "description": "View on branch. Pass this enum to control which subsets of fields to get."
     },
     "ListBranchesResponse": {
       "type": "object",
@@ -504,19 +616,31 @@
             "type": "object",
             "$ref": "#/definitions/Branch"
           },
-          "title": "The list of branches"
+          "description": "A list of branches that match the query."
         },
         "nextPageToken": {
           "type": "string",
-          "description": "A token identifying a page of results the server should return."
+          "description": "The token to retrieve the next page of results. Use this value as the `pageToken` parameter in the next request. This field is empty when there are no more pages."
         },
         "totalSize": {
           "type": "integer",
           "format": "int64",
-          "title": "Total number of branches"
+          "description": "The total number of branches that match the query."
         }
       },
-      "title": "Message for response to list branches"
+      "description": "Message for response to list branches."
+    },
+    "SqlUser": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "The username of the branch sql user."
+        }
+      },
+      "required": [
+        "username"
+      ]
     },
     "Status": {
       "type": "object",

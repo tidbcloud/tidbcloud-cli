@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"slices"
 	"sort"
 	"strconv"
 	"time"
@@ -152,10 +153,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return errors.Trace(err)
 				}
 
-				// filter out regions for the selected cloud provider
+				clusterPlan, err := GetClusterPlan()
+				if err != nil {
+					return errors.Trace(err)
+				}
+
+				// filter out regions for the selected cloud provider and cluster plan
 				regionSet := hashset.New()
 				for _, provider := range opts.serverlessProviders {
-					if string(*provider.CloudProvider) == cloudProvider {
+					if string(*provider.CloudProvider) == cloudProvider && slices.Contains(provider.ServicePlans, clusterPlan) {
 						regionSet.Add(cloud.Region{
 							Name:        *provider.Name,
 							DisplayName: *provider.DisplayName,
@@ -192,7 +198,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 
 				// advanced options: spending limit/capacity and enhanced encryption
-				if cloudProvider == string(cluster.V1BETA1REGIONCLOUDPROVIDER_AWS) {
+				if clusterPlan == cluster.COMMONV1BETA1SERVICEPLAN_STARTER {
 					var spendingLimitString string
 					spendingLimitPrompt := &survey.Input{
 						Message: "Set spending limit monthly in USD cents (Example: 10, default is 0)?",
@@ -210,7 +216,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if err != nil {
 						return errors.Trace(err)
 					}
-					if spendingLimitMonthly > 0 {
+					if spendingLimitMonthly > 0 && cloudProvider == string(cluster.V1BETA1REGIONCLOUDPROVIDER_AWS) {
 						encryptionPrompt := &survey.Confirm{
 							Message: "Enable Enhanced Encryption at Rest?",
 							Default: false,
@@ -226,79 +232,54 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 				}
 
-				if cloudProvider == string(cluster.V1BETA1REGIONCLOUDPROVIDER_ALICLOUD) {
-					clusterPlan, err := GetClusterPlan()
+				if clusterPlan == cluster.COMMONV1BETA1SERVICEPLAN_ESSENTIAL {
+					var minRcuString, maxRcuString string
+					minRcuPrompt := &survey.Input{
+						Message: "Set minimum RCU (default is 2000)?",
+						Default: "2000",
+					}
+					err = survey.AskOne(minRcuPrompt, &minRcuString)
 					if err != nil {
-						return err
-					}
-					if clusterPlan == cluster.CLUSTERCLUSTERPLAN_ESSENTIAL {
-						var minRcuString, maxRcuString string
-						minRcuPrompt := &survey.Input{
-							Message: "Set minimum RCU (default is 2000)?",
-							Default: "2000",
-						}
-						err = survey.AskOne(minRcuPrompt, &minRcuString)
-						if err != nil {
-							if err == terminal.InterruptErr {
-								return util.InterruptError
-							} else {
-								return err
-							}
-						}
-						minRcu, err = getAndCheckNumber(minRcuString, "minimum RCU")
-						if err != nil {
-							return errors.Trace(err)
-						}
-						maxRcuPrompt := &survey.Input{
-							Message: "Set maximum RCU (default is 4000)?",
-							Default: "4000",
-						}
-						err = survey.AskOne(maxRcuPrompt, &maxRcuString)
-						if err != nil {
-							if err == terminal.InterruptErr {
-								return util.InterruptError
-							} else {
-								return err
-							}
-						}
-						maxRcu, err = getAndCheckNumber(maxRcuString, "maximum RCU")
-						if err != nil {
-							return errors.Trace(err)
-						}
-						err = checkCapacity(minRcu, maxRcu)
-						if err != nil {
-							return errors.Trace(err)
-						}
-						encryptionPrompt := &survey.Confirm{
-							Message: "Enable Enhanced Encryption at Rest?",
-							Default: false,
-						}
-						err = survey.AskOne(encryptionPrompt, &encryption)
-						if err != nil {
-							if err == terminal.InterruptErr {
-								return util.InterruptError
-							} else {
-								return err
-							}
+						if err == terminal.InterruptErr {
+							return util.InterruptError
+						} else {
+							return err
 						}
 					}
-					if clusterPlan == cluster.CLUSTERCLUSTERPLAN_STARTER {
-						var spendingLimitString string
-						spendingLimitPrompt := &survey.Input{
-							Message: "Set spending limit monthly in USD cents (Example: 10, default is 0)?",
-							Default: "0",
+					minRcu, err = getAndCheckNumber(minRcuString, "minimum RCU")
+					if err != nil {
+						return errors.Trace(err)
+					}
+					maxRcuPrompt := &survey.Input{
+						Message: "Set maximum RCU (default is 4000)?",
+						Default: "4000",
+					}
+					err = survey.AskOne(maxRcuPrompt, &maxRcuString)
+					if err != nil {
+						if err == terminal.InterruptErr {
+							return util.InterruptError
+						} else {
+							return err
 						}
-						err = survey.AskOne(spendingLimitPrompt, &spendingLimitString)
-						if err != nil {
-							if err == terminal.InterruptErr {
-								return util.InterruptError
-							} else {
-								return err
-							}
-						}
-						spendingLimitMonthly, err = getAndCheckNumber(spendingLimitString, "monthly spending limit")
-						if err != nil {
-							return errors.Trace(err)
+					}
+					maxRcu, err = getAndCheckNumber(maxRcuString, "maximum RCU")
+					if err != nil {
+						return errors.Trace(err)
+					}
+					err = checkCapacity(minRcu, maxRcu)
+					if err != nil {
+						return errors.Trace(err)
+					}
+					encryptionPrompt := &survey.Confirm{
+						Message: "Enable Enhanced Encryption at Rest?",
+						Default: true,
+					}
+					err = survey.AskOne(encryptionPrompt, &encryption)
+					if err != nil {
+						if err == terminal.InterruptErr {
+							return util.InterruptError
+						} else {
+							return err
 						}
 					}
 				}
@@ -436,7 +417,7 @@ func CreateAndWaitReady(ctx context.Context, h *internal.Helper, d cloud.TiDBClo
 		case <-timer:
 			return errors.New(fmt.Sprintf("Timeout waiting for cluster %s to be ready, please check status on dashboard.", newClusterID))
 		case <-ticker.C:
-			clusterResult, err := d.GetCluster(ctx, newClusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
+			clusterResult, err := d.GetCluster(ctx, newClusterID, cluster.CLUSTERSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -465,7 +446,7 @@ func CreateAndSpinnerWait(ctx context.Context, h *internal.Helper, d cloud.TiDBC
 			case <-timer:
 				return ui.Result(fmt.Sprintf("Timeout waiting for cluster %s to be ready, please check status on dashboard.", newClusterID))
 			case <-ticker.C:
-				clusterResult, err := d.GetCluster(ctx, newClusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
+				clusterResult, err := d.GetCluster(ctx, newClusterID, cluster.CLUSTERSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -598,9 +579,13 @@ func GetProvider(providers *hashset.Set) (string, error) {
 	return cloudProvider, nil
 }
 
-func GetClusterPlan() (cluster.ClusterClusterPlan, error) {
-	choices := make([]interface{}, len(cluster.AllowedClusterClusterPlanEnumValues))
-	for i, v := range cluster.AllowedClusterClusterPlanEnumValues {
+func GetClusterPlan() (cluster.Commonv1beta1ServicePlan, error) {
+	allowedPlans := []cluster.Commonv1beta1ServicePlan{
+		cluster.COMMONV1BETA1SERVICEPLAN_STARTER,
+		cluster.COMMONV1BETA1SERVICEPLAN_ESSENTIAL,
+	}
+	choices := make([]interface{}, len(allowedPlans))
+	for i, v := range allowedPlans {
 		choices[i] = v
 	}
 	model, err := ui.InitialSelectModel(choices, "Choose the cluster plan:")
@@ -615,7 +600,7 @@ func GetClusterPlan() (cluster.ClusterClusterPlan, error) {
 	if m, _ := planModel.(ui.SelectModel); m.Interrupted {
 		return "", util.InterruptError
 	}
-	clusterPlan := planModel.(ui.SelectModel).Choices[planModel.(ui.SelectModel).Selected].(cluster.ClusterClusterPlan)
+	clusterPlan := planModel.(ui.SelectModel).Choices[planModel.(ui.SelectModel).Selected].(cluster.Commonv1beta1ServicePlan)
 	return clusterPlan, nil
 }
 

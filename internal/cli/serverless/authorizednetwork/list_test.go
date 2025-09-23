@@ -110,7 +110,7 @@ func (suite *ListAuthorizedNetworkSuite) TestListAuthorizedNetworkArgs() {
 	err := json.Unmarshal([]byte(listClusterResultStr), result)
 	assert.Nil(err)
 
-	suite.mockClient.On("GetCluster", ctx, clusterID, cluster.SERVERLESSSERVICEGETCLUSTERVIEWPARAMETER_BASIC).
+	suite.mockClient.On("GetCluster", ctx, clusterID, cluster.CLUSTERSERVICEGETCLUSTERVIEWPARAMETER_BASIC).
 		Return(result, nil)
 
 	tests := []struct {

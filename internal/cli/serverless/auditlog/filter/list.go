@@ -127,7 +127,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				}
 			} else if format == output.HumanFormat {
 				columns := []output.Column{
-					"Name",
+					"ID",
+					"Display Name",
 					"Users",
 					"Disabled",
 				}
@@ -144,7 +145,8 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 						displayUsers = strings.Join(item.Users, ", ")
 					}
 					rows = append(rows, output.Row{
-						item.Name,
+						*item.FilterRuleId,
+						item.DisplayName,
 						displayUsers,
 						disabled,
 					})

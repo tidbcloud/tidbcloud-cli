@@ -218,8 +218,8 @@ func UpdateCmd(h *internal.Helper) *cobra.Command {
 
 			authorizedNetworks := append(existedAuthorizedNetworks, newAuthorizedNetwork)
 
-			body := &cluster.V1beta1ServerlessServicePartialUpdateClusterBody{
-				Cluster: &cluster.RequiredTheClusterToBeUpdated{
+			body := &cluster.V1beta1ClusterServicePartialUpdateClusterBody{
+				Cluster: &cluster.V1beta1ClusterServicePartialUpdateClusterBodyCluster{
 					Endpoints: &cluster.V1beta1ClusterEndpoints{
 						Public: &cluster.EndpointsPublic{
 							AuthorizedNetworks: authorizedNetworks,

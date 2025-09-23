@@ -22,8 +22,8 @@ ticloud serverless sql-user create [flags]
   -c, --cluster-id string   The ID of the cluster.
   -h, --help                help for create
       --password string     The password of the SQL user.
-      --role strings        The role(s) of the SQL user.
-  -u, --user string         The name of the SQL user.
+      --role strings        The role(s) of the SQL user, supported roles ["role_admin" "role_readwrite" "role_readonly"]
+  -u, --user string         The name of the SQL user, user prefix will be added automatically.
 ```
 
 ### Options inherited from parent commands

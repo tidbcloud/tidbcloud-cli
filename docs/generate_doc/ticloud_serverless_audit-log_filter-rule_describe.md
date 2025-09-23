@@ -13,16 +13,16 @@ ticloud serverless audit-log filter-rule describe [flags]
   $ ticloud serverless audit-log filter describe
 
   Describe an audit log filter rule in non-interactive mode:
-  $ ticloud serverless audit-log filter describe --cluster-id <cluster-id> --name <rule-name>
+  $ ticloud serverless audit-log filter describe --cluster-id <cluster-id> --filter-rule-id <rule-id>
 
 ```
 
 ### Options
 
 ```
-  -c, --cluster-id string   The ID of the cluster.
-  -h, --help                help for describe
-      --name string         The name of the filter rule.
+  -c, --cluster-id string       The ID of the cluster.
+      --filter-rule-id string   The ID of the filter rule.
+  -h, --help                    help for describe
 ```
 
 ### Options inherited from parent commands

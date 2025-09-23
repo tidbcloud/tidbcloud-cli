@@ -39,14 +39,14 @@ func DownloadFilesPrompt(h *internal.Helper, path string,
 	}
 
 	generateFunc := func(ctx context.Context, fileNames []string) (map[string]*string, error) {
-		resp, err := client.DownloadAuditLogs(ctx, clusterID, &auditlog.AuditLogServiceDownloadAuditLogsBody{
-			AuditLogNames: fileNames,
+		resp, err := client.DownloadAuditLogs(ctx, clusterID, &auditlog.DatabaseAuditLogServiceDownloadAuditLogFilesBody{
+			AuditLogFileNames: fileNames,
 		})
 		if err != nil {
 			return nil, err
 		}
 		fileMap := make(map[string]*string)
-		for _, file := range resp.AuditLogs {
+		for _, file := range resp.AuditLogFiles {
 			fileMap[*file.Name] = file.Url
 		}
 		return fileMap, nil
