@@ -20,13 +20,13 @@ var _ MappedNullable = &GlueSchemaRegistry{}
 
 // GlueSchemaRegistry struct for GlueSchemaRegistry
 type GlueSchemaRegistry struct {
-	// Required. The region of schema registry.
+	// The region of schema registry.
 	Region string `json:"region"`
-	// Required. The name of schema registry.
+	// The name of schema registry.
 	Name string `json:"name"`
-	// Required. The AWS access key ID.
+	// The AWS access key ID.
 	AccessKeyId string `json:"accessKeyId"`
-	// Required. The AWS secret access key.
+	// The AWS secret access key.
 	SecretAccessKey      string `json:"secretAccessKey"`
 	AdditionalProperties map[string]interface{}
 }

@@ -12,6 +12,7 @@ package cdc
 
 import (
 	"encoding/json"
+	"time"
 )
 
 // checks if the StartPosition type satisfies the MappedNullable interface at compile time
@@ -21,7 +22,7 @@ var _ MappedNullable = &StartPosition{}
 type StartPosition struct {
 	Mode                 *StartModeEnum `json:"mode,omitempty"`
 	Tso                  *string        `json:"tso,omitempty"`
-	Utc                  *string        `json:"utc,omitempty"`
+	Time                 *time.Time     `json:"time,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -108,36 +109,36 @@ func (o *StartPosition) SetTso(v string) {
 	o.Tso = &v
 }
 
-// GetUtc returns the Utc field value if set, zero value otherwise.
-func (o *StartPosition) GetUtc() string {
-	if o == nil || IsNil(o.Utc) {
-		var ret string
+// GetTime returns the Time field value if set, zero value otherwise.
+func (o *StartPosition) GetTime() time.Time {
+	if o == nil || IsNil(o.Time) {
+		var ret time.Time
 		return ret
 	}
-	return *o.Utc
+	return *o.Time
 }
 
-// GetUtcOk returns a tuple with the Utc field value if set, nil otherwise
+// GetTimeOk returns a tuple with the Time field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *StartPosition) GetUtcOk() (*string, bool) {
-	if o == nil || IsNil(o.Utc) {
+func (o *StartPosition) GetTimeOk() (*time.Time, bool) {
+	if o == nil || IsNil(o.Time) {
 		return nil, false
 	}
-	return o.Utc, true
+	return o.Time, true
 }
 
-// HasUtc returns a boolean if a field has been set.
-func (o *StartPosition) HasUtc() bool {
-	if o != nil && !IsNil(o.Utc) {
+// HasTime returns a boolean if a field has been set.
+func (o *StartPosition) HasTime() bool {
+	if o != nil && !IsNil(o.Time) {
 		return true
 	}
 
 	return false
 }
 
-// SetUtc gets a reference to the given string and assigns it to the Utc field.
-func (o *StartPosition) SetUtc(v string) {
-	o.Utc = &v
+// SetTime gets a reference to the given time.Time and assigns it to the Time field.
+func (o *StartPosition) SetTime(v time.Time) {
+	o.Time = &v
 }
 
 func (o StartPosition) MarshalJSON() ([]byte, error) {
@@ -156,8 +157,8 @@ func (o StartPosition) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Tso) {
 		toSerialize["tso"] = o.Tso
 	}
-	if !IsNil(o.Utc) {
-		toSerialize["utc"] = o.Utc
+	if !IsNil(o.Time) {
+		toSerialize["time"] = o.Time
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -183,7 +184,7 @@ func (o *StartPosition) UnmarshalJSON(data []byte) (err error) {
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "mode")
 		delete(additionalProperties, "tso")
-		delete(additionalProperties, "utc")
+		delete(additionalProperties, "time")
 		o.AdditionalProperties = additionalProperties
 	}
 

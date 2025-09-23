@@ -78,18 +78,18 @@ All URIs are relative to *https://serverless.tidbapi.com*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*ChangefeedServiceAPI* | [**ChangefeedServiceCreateChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicecreatechangefeed) | **Post** /v1beta1/clusters/{clusterId}/changefeeds | Create a changefeed.
-*ChangefeedServiceAPI* | [**ChangefeedServiceCreatePrivateLinkEndpoint**](docs/ChangefeedServiceAPI.md#changefeedservicecreateprivatelinkendpoint) | **Post** /v1beta1/clusters/{clusterId}/changefeeds/private-link-endpoints | Create a private link
-*ChangefeedServiceAPI* | [**ChangefeedServiceDeleteChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicedeletechangefeed) | **Delete** /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId} | Delete a changefeed.
-*ChangefeedServiceAPI* | [**ChangefeedServiceDeletePrivateLinkEndpoint**](docs/ChangefeedServiceAPI.md#changefeedservicedeleteprivatelinkendpoint) | **Delete** /v1beta1/clusters/{clusterId}/changefeeds/private-links-endpoints | Delete a private link
-*ChangefeedServiceAPI* | [**ChangefeedServiceDescribeSchemaTable**](docs/ChangefeedServiceAPI.md#changefeedservicedescribeschematable) | **Post** /v1beta1/clusters/{clusterId}/changefeeds:describeSchemaTable | Describe schema table.
-*ChangefeedServiceAPI* | [**ChangefeedServiceEditChangefeed**](docs/ChangefeedServiceAPI.md#changefeedserviceeditchangefeed) | **Patch** /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId} | Edit a changefeed.
-*ChangefeedServiceAPI* | [**ChangefeedServiceGetChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicegetchangefeed) | **Get** /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId} | Get a changefeed.
-*ChangefeedServiceAPI* | [**ChangefeedServiceGetPrivateLinkEndpoint**](docs/ChangefeedServiceAPI.md#changefeedservicegetprivatelinkendpoint) | **Get** /v1beta1/clusters/{clusterId}/changefeeds/private-links-endpoints | Get a private link
-*ChangefeedServiceAPI* | [**ChangefeedServiceListChangefeeds**](docs/ChangefeedServiceAPI.md#changefeedservicelistchangefeeds) | **Get** /v1beta1/clusters/{clusterId}/changefeeds | List changefeeds.
-*ChangefeedServiceAPI* | [**ChangefeedServiceStartChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicestartchangefeed) | **Post** /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:start | Start a changefeed.
-*ChangefeedServiceAPI* | [**ChangefeedServiceStopChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicestopchangefeed) | **Post** /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:stop | Stop a changefeed.
-*ChangefeedServiceAPI* | [**ChangefeedServiceTestChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicetestchangefeed) | **Post** /v1beta1/clusters/{clusterId}/changefeeds:test | Test a changefeed.
+*ChangefeedServiceAPI* | [**ChangefeedServiceCreateChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicecreatechangefeed) | **Post** /v1beta1/clusters/{clusterId}/changefeeds | 
+*ChangefeedServiceAPI* | [**ChangefeedServiceCreatePrivateLinkEndpoint**](docs/ChangefeedServiceAPI.md#changefeedservicecreateprivatelinkendpoint) | **Post** /v1beta1/clusters/{clusterId}/changefeeds/privateLinkEndpoint | 
+*ChangefeedServiceAPI* | [**ChangefeedServiceDeleteChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicedeletechangefeed) | **Delete** /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId} | 
+*ChangefeedServiceAPI* | [**ChangefeedServiceDeletePrivateLinkEndpoint**](docs/ChangefeedServiceAPI.md#changefeedservicedeleteprivatelinkendpoint) | **Delete** /v1beta1/clusters/{clusterId}/changefeeds/privateLinkEndpoint | 
+*ChangefeedServiceAPI* | [**ChangefeedServiceDescribeSchemaTable**](docs/ChangefeedServiceAPI.md#changefeedservicedescribeschematable) | **Post** /v1beta1/clusters/{clusterId}/changefeeds:describeSchemaTable | 
+*ChangefeedServiceAPI* | [**ChangefeedServiceEditChangefeed**](docs/ChangefeedServiceAPI.md#changefeedserviceeditchangefeed) | **Patch** /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId} | 
+*ChangefeedServiceAPI* | [**ChangefeedServiceGetChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicegetchangefeed) | **Get** /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId} | 
+*ChangefeedServiceAPI* | [**ChangefeedServiceGetPrivateLinkEndpoint**](docs/ChangefeedServiceAPI.md#changefeedservicegetprivatelinkendpoint) | **Get** /v1beta1/clusters/{clusterId}/changefeeds/privateLinkEndpoint | 
+*ChangefeedServiceAPI* | [**ChangefeedServiceListChangefeeds**](docs/ChangefeedServiceAPI.md#changefeedservicelistchangefeeds) | **Get** /v1beta1/clusters/{clusterId}/changefeeds | 
+*ChangefeedServiceAPI* | [**ChangefeedServiceStartChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicestartchangefeed) | **Post** /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:start | 
+*ChangefeedServiceAPI* | [**ChangefeedServiceStopChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicestopchangefeed) | **Post** /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:stop | 
+*ChangefeedServiceAPI* | [**ChangefeedServiceTestChangefeed**](docs/ChangefeedServiceAPI.md#changefeedservicetestchangefeed) | **Post** /v1beta1/clusters/{clusterId}/changefeeds:test | 
 
 
 ## Documentation For Models
@@ -97,18 +97,18 @@ Class | Method | HTTP request | Description
  - [Any](docs/Any.md)
  - [AvroConfig](docs/AvroConfig.md)
  - [BigintUnsignedHandlingModeEnum](docs/BigintUnsignedHandlingModeEnum.md)
- - [CDCCheckpoint](docs/CDCCheckpoint.md)
- - [CDCFilter](docs/CDCFilter.md)
- - [CDCStateEnum](docs/CDCStateEnum.md)
  - [Changefeed](docs/Changefeed.md)
+ - [ChangefeedFilter](docs/ChangefeedFilter.md)
  - [ChangefeedServiceCreateChangefeedBody](docs/ChangefeedServiceCreateChangefeedBody.md)
  - [ChangefeedServiceCreatePrivateLinkEndpointBody](docs/ChangefeedServiceCreatePrivateLinkEndpointBody.md)
  - [ChangefeedServiceDescribeSchemaTableBody](docs/ChangefeedServiceDescribeSchemaTableBody.md)
  - [ChangefeedServiceEditChangefeedBody](docs/ChangefeedServiceEditChangefeedBody.md)
  - [ChangefeedServiceListChangefeedsChangefeedTypeParameter](docs/ChangefeedServiceListChangefeedsChangefeedTypeParameter.md)
  - [ChangefeedServiceTestChangefeedBody](docs/ChangefeedServiceTestChangefeedBody.md)
+ - [ChangefeedStateEnum](docs/ChangefeedStateEnum.md)
  - [ChangefeedTypeEnum](docs/ChangefeedTypeEnum.md)
  - [Changefeeds](docs/Changefeeds.md)
+ - [Checkpoint](docs/Checkpoint.md)
  - [ConfluentSchemaRegistry](docs/ConfluentSchemaRegistry.md)
  - [DecimalHandlingModeEnum](docs/DecimalHandlingModeEnum.md)
  - [DescribeSchemaTableResp](docs/DescribeSchemaTableResp.md)

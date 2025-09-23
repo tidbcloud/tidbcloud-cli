@@ -14,38 +14,38 @@ import (
 	"encoding/json"
 )
 
-// checks if the CDCFilter type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &CDCFilter{}
+// checks if the ChangefeedFilter type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ChangefeedFilter{}
 
-// CDCFilter struct for CDCFilter
-type CDCFilter struct {
+// ChangefeedFilter struct for ChangefeedFilter
+type ChangefeedFilter struct {
 	FilterRule           []string          `json:"filterRule,omitempty"`
 	Mode                 *TableModeEnum    `json:"mode,omitempty"`
 	EventFilterRule      []EventFilterRule `json:"eventFilterRule,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _CDCFilter CDCFilter
+type _ChangefeedFilter ChangefeedFilter
 
-// NewCDCFilter instantiates a new CDCFilter object
+// NewChangefeedFilter instantiates a new ChangefeedFilter object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCDCFilter() *CDCFilter {
-	this := CDCFilter{}
+func NewChangefeedFilter() *ChangefeedFilter {
+	this := ChangefeedFilter{}
 	return &this
 }
 
-// NewCDCFilterWithDefaults instantiates a new CDCFilter object
+// NewChangefeedFilterWithDefaults instantiates a new ChangefeedFilter object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewCDCFilterWithDefaults() *CDCFilter {
-	this := CDCFilter{}
+func NewChangefeedFilterWithDefaults() *ChangefeedFilter {
+	this := ChangefeedFilter{}
 	return &this
 }
 
 // GetFilterRule returns the FilterRule field value if set, zero value otherwise.
-func (o *CDCFilter) GetFilterRule() []string {
+func (o *ChangefeedFilter) GetFilterRule() []string {
 	if o == nil || IsNil(o.FilterRule) {
 		var ret []string
 		return ret
@@ -55,7 +55,7 @@ func (o *CDCFilter) GetFilterRule() []string {
 
 // GetFilterRuleOk returns a tuple with the FilterRule field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CDCFilter) GetFilterRuleOk() ([]string, bool) {
+func (o *ChangefeedFilter) GetFilterRuleOk() ([]string, bool) {
 	if o == nil || IsNil(o.FilterRule) {
 		return nil, false
 	}
@@ -63,7 +63,7 @@ func (o *CDCFilter) GetFilterRuleOk() ([]string, bool) {
 }
 
 // HasFilterRule returns a boolean if a field has been set.
-func (o *CDCFilter) HasFilterRule() bool {
+func (o *ChangefeedFilter) HasFilterRule() bool {
 	if o != nil && !IsNil(o.FilterRule) {
 		return true
 	}
@@ -72,12 +72,12 @@ func (o *CDCFilter) HasFilterRule() bool {
 }
 
 // SetFilterRule gets a reference to the given []string and assigns it to the FilterRule field.
-func (o *CDCFilter) SetFilterRule(v []string) {
+func (o *ChangefeedFilter) SetFilterRule(v []string) {
 	o.FilterRule = v
 }
 
 // GetMode returns the Mode field value if set, zero value otherwise.
-func (o *CDCFilter) GetMode() TableModeEnum {
+func (o *ChangefeedFilter) GetMode() TableModeEnum {
 	if o == nil || IsNil(o.Mode) {
 		var ret TableModeEnum
 		return ret
@@ -87,7 +87,7 @@ func (o *CDCFilter) GetMode() TableModeEnum {
 
 // GetModeOk returns a tuple with the Mode field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CDCFilter) GetModeOk() (*TableModeEnum, bool) {
+func (o *ChangefeedFilter) GetModeOk() (*TableModeEnum, bool) {
 	if o == nil || IsNil(o.Mode) {
 		return nil, false
 	}
@@ -95,7 +95,7 @@ func (o *CDCFilter) GetModeOk() (*TableModeEnum, bool) {
 }
 
 // HasMode returns a boolean if a field has been set.
-func (o *CDCFilter) HasMode() bool {
+func (o *ChangefeedFilter) HasMode() bool {
 	if o != nil && !IsNil(o.Mode) {
 		return true
 	}
@@ -104,12 +104,12 @@ func (o *CDCFilter) HasMode() bool {
 }
 
 // SetMode gets a reference to the given TableModeEnum and assigns it to the Mode field.
-func (o *CDCFilter) SetMode(v TableModeEnum) {
+func (o *ChangefeedFilter) SetMode(v TableModeEnum) {
 	o.Mode = &v
 }
 
 // GetEventFilterRule returns the EventFilterRule field value if set, zero value otherwise.
-func (o *CDCFilter) GetEventFilterRule() []EventFilterRule {
+func (o *ChangefeedFilter) GetEventFilterRule() []EventFilterRule {
 	if o == nil || IsNil(o.EventFilterRule) {
 		var ret []EventFilterRule
 		return ret
@@ -119,7 +119,7 @@ func (o *CDCFilter) GetEventFilterRule() []EventFilterRule {
 
 // GetEventFilterRuleOk returns a tuple with the EventFilterRule field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CDCFilter) GetEventFilterRuleOk() ([]EventFilterRule, bool) {
+func (o *ChangefeedFilter) GetEventFilterRuleOk() ([]EventFilterRule, bool) {
 	if o == nil || IsNil(o.EventFilterRule) {
 		return nil, false
 	}
@@ -127,7 +127,7 @@ func (o *CDCFilter) GetEventFilterRuleOk() ([]EventFilterRule, bool) {
 }
 
 // HasEventFilterRule returns a boolean if a field has been set.
-func (o *CDCFilter) HasEventFilterRule() bool {
+func (o *ChangefeedFilter) HasEventFilterRule() bool {
 	if o != nil && !IsNil(o.EventFilterRule) {
 		return true
 	}
@@ -136,11 +136,11 @@ func (o *CDCFilter) HasEventFilterRule() bool {
 }
 
 // SetEventFilterRule gets a reference to the given []EventFilterRule and assigns it to the EventFilterRule field.
-func (o *CDCFilter) SetEventFilterRule(v []EventFilterRule) {
+func (o *ChangefeedFilter) SetEventFilterRule(v []EventFilterRule) {
 	o.EventFilterRule = v
 }
 
-func (o CDCFilter) MarshalJSON() ([]byte, error) {
+func (o ChangefeedFilter) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -148,7 +148,7 @@ func (o CDCFilter) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o CDCFilter) ToMap() (map[string]interface{}, error) {
+func (o ChangefeedFilter) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.FilterRule) {
 		toSerialize["filterRule"] = o.FilterRule
@@ -167,16 +167,16 @@ func (o CDCFilter) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *CDCFilter) UnmarshalJSON(data []byte) (err error) {
-	varCDCFilter := _CDCFilter{}
+func (o *ChangefeedFilter) UnmarshalJSON(data []byte) (err error) {
+	varChangefeedFilter := _ChangefeedFilter{}
 
-	err = json.Unmarshal(data, &varCDCFilter)
+	err = json.Unmarshal(data, &varChangefeedFilter)
 
 	if err != nil {
 		return err
 	}
 
-	*o = CDCFilter(varCDCFilter)
+	*o = ChangefeedFilter(varChangefeedFilter)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -190,38 +190,38 @@ func (o *CDCFilter) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
-type NullableCDCFilter struct {
-	value *CDCFilter
+type NullableChangefeedFilter struct {
+	value *ChangefeedFilter
 	isSet bool
 }
 
-func (v NullableCDCFilter) Get() *CDCFilter {
+func (v NullableChangefeedFilter) Get() *ChangefeedFilter {
 	return v.value
 }
 
-func (v *NullableCDCFilter) Set(val *CDCFilter) {
+func (v *NullableChangefeedFilter) Set(val *ChangefeedFilter) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableCDCFilter) IsSet() bool {
+func (v NullableChangefeedFilter) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableCDCFilter) Unset() {
+func (v *NullableChangefeedFilter) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableCDCFilter(val *CDCFilter) *NullableCDCFilter {
-	return &NullableCDCFilter{value: val, isSet: true}
+func NewNullableChangefeedFilter(val *ChangefeedFilter) *NullableChangefeedFilter {
+	return &NullableChangefeedFilter{value: val, isSet: true}
 }
 
-func (v NullableCDCFilter) MarshalJSON() ([]byte, error) {
+func (v NullableChangefeedFilter) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableCDCFilter) UnmarshalJSON(src []byte) error {
+func (v *NullableChangefeedFilter) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

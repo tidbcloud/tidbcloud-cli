@@ -20,11 +20,11 @@ var _ MappedNullable = &SinkInfo{}
 
 // SinkInfo struct for SinkInfo
 type SinkInfo struct {
-	// Required. The type of the sink.
+	// The type of the sink.
 	Type ChangefeedTypeEnum `json:"type"`
-	// Optional. The Kafka sink information.
+	// The Kafka sink information.
 	Kafka *Kafka `json:"kafka,omitempty"`
-	// Optional. The MySQL sink information.
+	// The MySQL sink information.
 	Mysql                *MySQL `json:"mysql,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

@@ -14,7 +14,7 @@ import (
 	"encoding/json"
 )
 
-// PrivateLinkEndpointStateEnum  - PENDING_ACCEPTANCE: The private link endpoint is pending acceptance.  - PENDING: The private link endpoint is pending.  - AVAILABLE: The private link endpoint is available.  - REJECTED: The private link endpoint is rejected.  - EXPIRED: The private link endpoint is Expired.  - FAILED: The private link endpoint is failed.  - PARTIAL: The private link endpoint is partial.  - DELETING: The private link endpoint is deleting.
+// PrivateLinkEndpointStateEnum  - PENDING_ACCEPTANCE: The private link endpoint is pending acceptance.  - PENDING: The private link endpoint is pending.  - AVAILABLE: The private link endpoint is available.  - REJECTED: The private link endpoint is rejected.  - EXPIRED: The private link endpoint is Expired.  - FAILED: The private link endpoint is failed.  - DELETING: The private link endpoint is deleting.
 type PrivateLinkEndpointStateEnum string
 
 // List of PrivateLinkEndpointState.Enum
@@ -25,7 +25,6 @@ const (
 	PRIVATELINKENDPOINTSTATEENUM_REJECTED           PrivateLinkEndpointStateEnum = "REJECTED"
 	PRIVATELINKENDPOINTSTATEENUM_EXPIRED            PrivateLinkEndpointStateEnum = "EXPIRED"
 	PRIVATELINKENDPOINTSTATEENUM_FAILED             PrivateLinkEndpointStateEnum = "FAILED"
-	PRIVATELINKENDPOINTSTATEENUM_PARTIAL            PrivateLinkEndpointStateEnum = "PARTIAL"
 	PRIVATELINKENDPOINTSTATEENUM_DELETING           PrivateLinkEndpointStateEnum = "DELETING"
 )
 
@@ -37,7 +36,6 @@ var AllowedPrivateLinkEndpointStateEnumEnumValues = []PrivateLinkEndpointStateEn
 	"REJECTED",
 	"EXPIRED",
 	"FAILED",
-	"PARTIAL",
 	"DELETING",
 }
 

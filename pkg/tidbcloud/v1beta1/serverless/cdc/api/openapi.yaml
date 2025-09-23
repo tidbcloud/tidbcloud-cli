@@ -12,26 +12,25 @@ paths:
     get:
       operationId: ChangefeedService_ListChangefeeds
       parameters:
-      - description: Required. The ID of the cluster.
+      - description: The ID of the cluster.
         in: path
         name: clusterId
         required: true
         schema:
           type: string
-      - description: Optional. The maximum number of changefeeds to return. Default
-          is 10.
+      - description: The maximum number of changefeeds to return. Default is 10.
         in: query
         name: pageSize
         schema:
           format: int32
           type: integer
-      - description: Optional. The page token from the previous response for pagination.
+      - description: The page token from the previous response for pagination.
         in: query
         name: pageToken
         schema:
           type: string
       - description: |-
-          Optional. The type of the changefeed. DEFAULT is all.
+          The type of the changefeed. DEFAULT is all.
 
            - KAFKA: Kafka changefeed type.
            - MYSQL: MySQL changefeed type.
@@ -39,12 +38,6 @@ paths:
         name: changefeedType
         schema:
           $ref: '#/components/schemas/ChangefeedService_ListChangefeeds_changefeedType_parameter'
-      - description: "Optional. List changefeeds order by, separated by comma, default\
-          \ is ascending. Example: \"create_time, bar desc\". Supported field: create_time"
-        in: query
-        name: orderBy
-        schema:
-          type: string
       responses:
         "200":
           content:
@@ -58,13 +51,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: List changefeeds.
       tags:
       - ChangefeedService
     post:
       operationId: ChangefeedService_CreateChangefeed
       parameters:
-      - description: Required. The ID of the cluster.
+      - description: The ID of the cluster.
         in: path
         name: clusterId
         required: true
@@ -89,7 +81,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Create a changefeed.
       tags:
       - ChangefeedService
       x-codegen-request-body-name: body
@@ -97,13 +88,13 @@ paths:
     delete:
       operationId: ChangefeedService_DeleteChangefeed
       parameters:
-      - description: Required. The ID of the cluster.
+      - description: The ID of the cluster.
         in: path
         name: clusterId
         required: true
         schema:
           type: string
-      - description: Required. The ID of the changefeed.
+      - description: The ID of the changefeed.
         in: path
         name: changefeedId
         required: true
@@ -122,19 +113,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Delete a changefeed.
       tags:
       - ChangefeedService
     get:
       operationId: ChangefeedService_GetChangefeed
       parameters:
-      - description: Required. The ID of the cluster.
+      - description: The ID of the cluster.
         in: path
         name: clusterId
         required: true
         schema:
           type: string
-      - description: Required. The ID of the changefeed.
+      - description: The ID of the changefeed.
         in: path
         name: changefeedId
         required: true
@@ -153,19 +143,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Get a changefeed.
       tags:
       - ChangefeedService
     patch:
       operationId: ChangefeedService_EditChangefeed
       parameters:
-      - description: Required. The ID of the cluster.
+      - description: The ID of the cluster.
         in: path
         name: clusterId
         required: true
         schema:
           type: string
-      - description: Required. The ID of the changefeed.
+      - description: The ID of the changefeed.
         in: path
         name: changefeedId
         required: true
@@ -190,7 +179,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Edit a changefeed.
       tags:
       - ChangefeedService
       x-codegen-request-body-name: body
@@ -198,13 +186,13 @@ paths:
     post:
       operationId: ChangefeedService_StartChangefeed
       parameters:
-      - description: Required. The ID of the cluster.
+      - description: The ID of the cluster.
         in: path
         name: clusterId
         required: true
         schema:
           type: string
-      - description: Required. The ID of the changefeed.
+      - description: The ID of the changefeed.
         in: path
         name: changefeedId
         required: true
@@ -229,7 +217,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Start a changefeed.
       tags:
       - ChangefeedService
       x-codegen-request-body-name: body
@@ -237,13 +224,13 @@ paths:
     post:
       operationId: ChangefeedService_StopChangefeed
       parameters:
-      - description: Required. The ID of the cluster.
+      - description: The ID of the cluster.
         in: path
         name: clusterId
         required: true
         schema:
           type: string
-      - description: Required. The ID of the changefeed.
+      - description: The ID of the changefeed.
         in: path
         name: changefeedId
         required: true
@@ -268,7 +255,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Stop a changefeed.
       tags:
       - ChangefeedService
       x-codegen-request-body-name: body
@@ -276,7 +262,7 @@ paths:
     post:
       operationId: ChangefeedService_TestChangefeed
       parameters:
-      - description: Required. The ID of the cluster.
+      - description: The ID of the cluster.
         in: path
         name: clusterId
         required: true
@@ -301,7 +287,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Test a changefeed.
       tags:
       - ChangefeedService
       x-codegen-request-body-name: body
@@ -309,7 +294,7 @@ paths:
     post:
       operationId: ChangefeedService_DescribeSchemaTable
       parameters:
-      - description: Required. The ID of the cluster.
+      - description: The ID of the cluster.
         in: path
         name: clusterId
         required: true
@@ -334,15 +319,74 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Describe schema table.
       tags:
       - ChangefeedService
       x-codegen-request-body-name: body
-  /v1beta1/clusters/{clusterId}/changefeeds/private-link-endpoints:
+  /v1beta1/clusters/{clusterId}/changefeeds/privateLinkEndpoint:
+    delete:
+      operationId: ChangefeedService_DeletePrivateLinkEndpoint
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The private link service name.
+        in: query
+        name: privateLinkServiceName
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateLinkEndpoint'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - ChangefeedService
+    get:
+      operationId: ChangefeedService_GetPrivateLinkEndpoint
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The private link service name.
+        in: query
+        name: privateLinkServiceName
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateLinkEndpoint'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - ChangefeedService
     post:
       operationId: ChangefeedService_CreatePrivateLinkEndpoint
       parameters:
-      - description: Required. The ID of the cluster.
+      - description: The ID of the cluster.
         in: path
         name: clusterId
         required: true
@@ -367,73 +411,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Create a private link
       tags:
       - ChangefeedService
       x-codegen-request-body-name: body
-  /v1beta1/clusters/{clusterId}/changefeeds/private-links-endpoints:
-    delete:
-      operationId: ChangefeedService_DeletePrivateLinkEndpoint
-      parameters:
-      - description: Required. The ID of the cluster.
-        in: path
-        name: clusterId
-        required: true
-        schema:
-          type: string
-      - description: Required. The private link service name.
-        in: query
-        name: privateLinkServiceName
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PrivateLinkEndpoint'
-          description: A successful response.
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-          description: An unexpected error response.
-      summary: Delete a private link
-      tags:
-      - ChangefeedService
-    get:
-      operationId: ChangefeedService_GetPrivateLinkEndpoint
-      parameters:
-      - description: Required. The ID of the cluster.
-        in: path
-        name: clusterId
-        required: true
-        schema:
-          type: string
-      - description: Required. The private link service name.
-        in: query
-        name: privateLinkServiceName
-        required: true
-        schema:
-          type: string
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PrivateLinkEndpoint'
-          description: A successful response.
-        default:
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Status'
-          description: An unexpected error response.
-      summary: Get a private link
-      tags:
-      - ChangefeedService
 components:
   schemas:
     Any:
@@ -470,19 +450,80 @@ components:
       - LONG
       - STRING
       type: string
-    CDCCheckpoint:
+    Changefeed:
+      example:
+        filter: "{}"
+        checkpoint: "{}"
+        createTime: 2000-01-23T04:56:07.000+00:00
+        displayName: displayName
+        sink: "{}"
+        updateTime: 2000-01-23T04:56:07.000+00:00
+        clusterId: clusterId
+        changefeedId: changefeedId
+        state: "{}"
+        error: error
+        startPosition: "{}"
       properties:
-        tso:
-          description: OUTPUT_ONLY. The checkpoint TSO.
-          format: uint64
+        clusterId:
+          description: The ID of the cluster.
+          type: string
+        changefeedId:
+          description: The ID of the changefeed.
           readOnly: true
           type: string
-        time:
-          description: OUTPUT_ONLY. The checkpoint in utc.
+        state:
+          allOf:
+          - $ref: '#/components/schemas/ChangefeedState.Enum'
+          description: |-
+            The state of the changefeed.
+
+            The name of the changefeed.
+          type: object
+        displayName:
+          description: The name of the changefeed.
+          type: string
+        sink:
+          allOf:
+          - $ref: '#/components/schemas/SinkInfo'
+          description: The sink of the changefeed.
+          type: object
+        filter:
+          allOf:
+          - $ref: '#/components/schemas/ChangefeedFilter'
+          description: The filter of the changefeed.
+          type: object
+        startPosition:
+          allOf:
+          - $ref: '#/components/schemas/StartPosition'
+          description: The start position of the changefeed.
+          type: object
+        checkpoint:
+          allOf:
+          - $ref: '#/components/schemas/Checkpoint'
+          description: The current checkpoint for the changefeed.
+          type: object
+        error:
+          description: The error message.
           readOnly: true
           type: string
+        createTime:
+          description: Timestamp when the changefeed was created.
+          format: date-time
+          readOnly: true
+          type: string
+        updateTime:
+          description: Timestamp when the changefeed was updated.
+          format: date-time
+          nullable: true
+          readOnly: true
+          type: string
+      required:
+      - clusterId
+      - filter
+      - sink
+      - startPosition
       type: object
-    CDCFilter:
+    ChangefeedFilter:
       properties:
         filterRule:
           items:
@@ -495,7 +536,119 @@ components:
             $ref: '#/components/schemas/EventFilterRule'
           type: array
       type: object
-    CDCState.Enum:
+    ChangefeedService.CreateChangefeedBody:
+      properties:
+        displayName:
+          description: The name of the changefeed.
+          type: string
+        sink:
+          allOf:
+          - $ref: '#/components/schemas/SinkInfo'
+          description: The sink of the changefeed.
+          type: object
+        filter:
+          allOf:
+          - $ref: '#/components/schemas/ChangefeedFilter'
+          description: The filter of the changefeed.
+          type: object
+        startPosition:
+          allOf:
+          - $ref: '#/components/schemas/StartPosition'
+          description: The start position of the changefeed.
+          type: object
+      required:
+      - filter
+      - sink
+      type: object
+    ChangefeedService.CreatePrivateLinkEndpointBody:
+      properties:
+        endpointId:
+          description: The ID of the private link endpoint.
+          readOnly: true
+          type: string
+        privateLinkServiceName:
+          description: The private link service name.
+          type: string
+        changefeedType:
+          allOf:
+          - $ref: '#/components/schemas/ChangefeedType.Enum'
+          description: The type of the sink.
+          type: object
+        state:
+          allOf:
+          - $ref: '#/components/schemas/PrivateLinkEndpointState.Enum'
+          description: The state of the private link.
+          type: object
+        kafka:
+          allOf:
+          - $ref: '#/components/schemas/KafkaEndpoint'
+          description: Kafka private link endpoint information.
+          type: object
+        message:
+          description: The message.
+          readOnly: true
+          type: string
+        endpointUrl:
+          description: The message.
+          readOnly: true
+          type: string
+        createTime:
+          description: Timestamp when the private link endpoint was created.
+          format: date-time
+          readOnly: true
+          type: string
+        updateTime:
+          description: Timestamp when the private link endpoint was updated.
+          format: date-time
+          nullable: true
+          readOnly: true
+          type: string
+      required:
+      - changefeedType
+      - privateLinkServiceName
+      type: object
+    ChangefeedService.DescribeSchemaTableBody:
+      properties:
+        filterRules:
+          description: The filter rules for schema tables.
+          items:
+            type: string
+          type: array
+      type: object
+    ChangefeedService.EditChangefeedBody:
+      properties:
+        displayName:
+          description: The name of the changefeed.
+          type: string
+        sink:
+          allOf:
+          - $ref: '#/components/schemas/SinkInfo'
+          description: The sink of the changefeed.
+          type: object
+        filter:
+          allOf:
+          - $ref: '#/components/schemas/ChangefeedFilter'
+          description: The filter of the changefeed.
+          type: object
+      required:
+      - filter
+      - sink
+      type: object
+    ChangefeedService.StartChangefeedBody:
+      type: object
+    ChangefeedService.StopChangefeedBody:
+      type: object
+    ChangefeedService.TestChangefeedBody:
+      properties:
+        sink:
+          allOf:
+          - $ref: '#/components/schemas/SinkInfo'
+          description: The sink of the changefeed.
+          type: object
+      required:
+      - sink
+      type: object
+    ChangefeedState.Enum:
       description: |2-
          - RUNNING: The changefeed is running.
          - CREATE_FAILED: The changefeed has failed during creation.
@@ -513,191 +666,6 @@ components:
       - DELETED
       - WARNING
       type: string
-    Changefeed:
-      example:
-        filter: "{}"
-        checkpoint: "{}"
-        createTime: 2000-01-23T04:56:07.000+00:00
-        displayName: displayName
-        sink: "{}"
-        updateTime: 2000-01-23T04:56:07.000+00:00
-        clusterId: clusterId
-        changefeedId: changefeedId
-        state: "{}"
-        error: error
-        startPosition: "{}"
-      properties:
-        clusterId:
-          description: Required. The ID of the cluster.
-          type: string
-        changefeedId:
-          description: Output_only. The ID of the changefeed.
-          readOnly: true
-          type: string
-        state:
-          allOf:
-          - $ref: '#/components/schemas/CDCState.Enum'
-          description: |-
-            Output_only. The state of the changefeed.
-
-            Optional. The name of the changefeed.
-          type: object
-        displayName:
-          description: Optional. The name of the changefeed.
-          type: string
-        sink:
-          allOf:
-          - $ref: '#/components/schemas/SinkInfo'
-          description: Required. The sink of the changefeed.
-          type: object
-        filter:
-          allOf:
-          - $ref: '#/components/schemas/CDCFilter'
-          description: Required. The filter of the changefeed.
-          type: object
-        startPosition:
-          allOf:
-          - $ref: '#/components/schemas/StartPosition'
-          description: Required. The start position of the changefeed.
-          type: object
-        checkpoint:
-          allOf:
-          - $ref: '#/components/schemas/CDCCheckpoint'
-          description: Output_only. The current checkpoint for the changefeed.
-          type: object
-        error:
-          description: Output_only. The error message.
-          readOnly: true
-          type: string
-        createTime:
-          description: Output_only. Timestamp when the changefeed was created.
-          format: date-time
-          readOnly: true
-          type: string
-        updateTime:
-          description: Output_only. Timestamp when the changefeed was updated.
-          format: date-time
-          nullable: true
-          readOnly: true
-          type: string
-      required:
-      - clusterId
-      - filter
-      - sink
-      - startPosition
-      type: object
-    ChangefeedService.CreateChangefeedBody:
-      properties:
-        displayName:
-          description: Optional. The name of the changefeed.
-          type: string
-        sink:
-          allOf:
-          - $ref: '#/components/schemas/SinkInfo'
-          description: Required. The sink of the changefeed.
-          type: object
-        filter:
-          allOf:
-          - $ref: '#/components/schemas/CDCFilter'
-          description: Required. The filter of the changefeed.
-          type: object
-        startPosition:
-          allOf:
-          - $ref: '#/components/schemas/StartPosition'
-          description: Required. The start position of the changefeed.
-          type: object
-      required:
-      - filter
-      - sink
-      type: object
-    ChangefeedService.CreatePrivateLinkEndpointBody:
-      properties:
-        endpointId:
-          description: Output_only  The ID of the private link endpoint.
-          readOnly: true
-          type: string
-        privateLinkServiceName:
-          description: Required. The private link service name.
-          type: string
-        changefeedType:
-          allOf:
-          - $ref: '#/components/schemas/ChangefeedType.Enum'
-          description: Required. The type of the sink.
-          type: object
-        state:
-          allOf:
-          - $ref: '#/components/schemas/PrivateLinkEndpointState.Enum'
-          description: Output_only. The state of the private link.
-          type: object
-        kafka:
-          allOf:
-          - $ref: '#/components/schemas/KafkaEndpoint'
-          description: Optional. Kafka private link endpoint information.
-          type: object
-        message:
-          description: Output_only. The message.
-          readOnly: true
-          type: string
-        endpointUrl:
-          description: Output_only. The message.
-          readOnly: true
-          type: string
-        createTime:
-          description: Output_only. Timestamp when the private link endpoint was created.
-          format: date-time
-          readOnly: true
-          type: string
-        updateTime:
-          description: Output_only. Timestamp when the private link endpoint was updated.
-          format: date-time
-          nullable: true
-          readOnly: true
-          type: string
-      required:
-      - changefeedType
-      - privateLinkServiceName
-      type: object
-    ChangefeedService.DescribeSchemaTableBody:
-      properties:
-        filterRule:
-          description: Optional. The filter rules for schema tables.
-          items:
-            type: string
-          type: array
-      type: object
-    ChangefeedService.EditChangefeedBody:
-      properties:
-        displayName:
-          description: Optional. The name of the changefeed.
-          type: string
-        sink:
-          allOf:
-          - $ref: '#/components/schemas/SinkInfo'
-          description: Required. The sink of the changefeed.
-          type: object
-        filter:
-          allOf:
-          - $ref: '#/components/schemas/CDCFilter'
-          description: Required. The filter of the changefeed.
-          type: object
-      required:
-      - filter
-      - sink
-      type: object
-    ChangefeedService.StartChangefeedBody:
-      type: object
-    ChangefeedService.StopChangefeedBody:
-      type: object
-    ChangefeedService.TestChangefeedBody:
-      properties:
-        sink:
-          allOf:
-          - $ref: '#/components/schemas/SinkInfo'
-          description: Required. The sink of the changefeed.
-          type: object
-      required:
-      - sink
-      type: object
     ChangefeedType.Enum:
       description: |2-
          - KAFKA: Kafka changefeed type.
@@ -747,19 +715,32 @@ components:
           format: int64
           type: integer
       type: object
+    Checkpoint:
+      properties:
+        tso:
+          description: The checkpoint TSO.
+          format: uint64
+          readOnly: true
+          type: string
+        time:
+          description: The checkpoint in time.
+          format: date-time
+          readOnly: true
+          type: string
+      type: object
     ConfluentSchemaRegistry:
       properties:
         endpoint:
-          description: Required. The schema registry endpoint.
+          description: The schema registry endpoint.
           type: string
         enableHttpAuth:
-          description: Optional. Enable HTTP authentication.
+          description: Enable HTTP authentication.
           type: boolean
-        userName:
-          description: Optional. The username for HTTP authentication.
+        username:
+          description: The username for HTTP authentication.
           type: string
         password:
-          description: Optional. The password for HTTP authentication.
+          description: The password for HTTP authentication.
           type: string
       required:
       - endpoint
@@ -774,30 +755,32 @@ components:
       type: string
     DescribeSchemaTableResp:
       example:
-        replicateAllowSchemaTable:
-        - replicateAllowSchemaTable
-        - replicateAllowSchemaTable
+        nonHandleKeyTables:
+        - nonHandleKeyTables
+        - nonHandleKeyTables
+        handleKeyTables:
+        - handleKeyTables
+        - handleKeyTables
         gcSafePoint: 2000-01-23T04:56:07.000+00:00
         clusterId: clusterId
-        replicateDenySchemaTable:
-        - replicateDenySchemaTable
-        - replicateDenySchemaTable
       properties:
         clusterId:
-          description: Required. The ID of the cluster.
+          description: The ID of the cluster.
           type: string
-        replicateAllowSchemaTable:
-          description: Optional. The allowed schema tables to replicate.
+        handleKeyTables:
+          description: "The tables with handle key(pk or not null uk), up to 1000\
+            \ tables will be returned."
           items:
             type: string
           type: array
-        replicateDenySchemaTable:
-          description: Optional. The denied schema tables to replicate.
+        nonHandleKeyTables:
+          description: "The tables without handle key(pk or not null uk), up to 1000\
+            \ tables will be returned."
           items:
             type: string
           type: array
         gcSafePoint:
-          description: Optional. The GC safe point timestamp.
+          description: The GC safe point timestamp.
           format: date-time
           type: string
       required:
@@ -817,16 +800,16 @@ components:
     GlueSchemaRegistry:
       properties:
         region:
-          description: Required. The region of schema registry.
+          description: The region of schema registry.
           type: string
         name:
-          description: Required. The name of schema registry.
+          description: The name of schema registry.
           type: string
         accessKeyId:
-          description: Required. The AWS access key ID.
+          description: The AWS access key ID.
           type: string
         secretAccessKey:
-          description: Required. The AWS secret access key.
+          description: The AWS secret access key.
           type: string
       required:
       - accessKeyId
@@ -855,7 +838,7 @@ components:
       properties:
         authType:
           $ref: '#/components/schemas/KafkaAuthType.Enum'
-        userName:
+        username:
           type: string
         password:
           type: string
@@ -962,12 +945,12 @@ components:
         kafkaType:
           allOf:
           - $ref: '#/components/schemas/KafkaType.Enum'
-          description: Required. The type of the Kafka instance.
+          description: The type of the Kafka instance.
           type: object
         advertisedListenersPattern:
           additionalProperties:
             type: string
-          description: Required. The advertised listeners pattern.
+          description: The advertised listeners pattern.
           type: object
       required:
       - advertisedListenersPattern
@@ -1014,12 +997,12 @@ components:
         network:
           allOf:
           - $ref: '#/components/schemas/MySQL.Network'
-          description: Required. The network configuration for the MySQL instance.
+          description: The network configuration for the MySQL instance.
           type: object
         authentication:
           allOf:
           - $ref: '#/components/schemas/MySQL.Authentication'
-          description: Required. The authentication information for the MySQL instance.
+          description: The authentication information for the MySQL instance.
           type: object
       required:
       - authentication
@@ -1028,13 +1011,13 @@ components:
     MySQL.Authentication:
       properties:
         userName:
-          description: Required. The username for the MySQL instance.
+          description: The username for the MySQL instance.
           type: string
         password:
-          description: Required. The password for the MySQL instance.
+          description: The password for the MySQL instance.
           type: string
         enableTls:
-          description: Optional. Enable TLS for the MySQL connection.
+          description: Enable TLS for the MySQL connection.
           type: boolean
       required:
       - password
@@ -1083,45 +1066,45 @@ components:
         message: message
       properties:
         endpointId:
-          description: Output_only  The ID of the private link endpoint.
+          description: The ID of the private link endpoint.
           readOnly: true
           type: string
         clusterId:
-          description: Required. The ID of the cluster.
+          description: The ID of the cluster.
           type: string
         privateLinkServiceName:
-          description: Required. The private link service name.
+          description: The private link service name.
           type: string
         changefeedType:
           allOf:
           - $ref: '#/components/schemas/ChangefeedType.Enum'
-          description: Required. The type of the sink.
+          description: The type of the sink.
           type: object
         state:
           allOf:
           - $ref: '#/components/schemas/PrivateLinkEndpointState.Enum'
-          description: Output_only. The state of the private link.
+          description: The state of the private link.
           type: object
         kafka:
           allOf:
           - $ref: '#/components/schemas/KafkaEndpoint'
-          description: Optional. Kafka private link endpoint information.
+          description: Kafka private link endpoint information.
           type: object
         message:
-          description: Output_only. The message.
+          description: The message.
           readOnly: true
           type: string
         endpointUrl:
-          description: Output_only. The message.
+          description: The message.
           readOnly: true
           type: string
         createTime:
-          description: Output_only. Timestamp when the private link endpoint was created.
+          description: Timestamp when the private link endpoint was created.
           format: date-time
           readOnly: true
           type: string
         updateTime:
-          description: Output_only. Timestamp when the private link endpoint was updated.
+          description: Timestamp when the private link endpoint was updated.
           format: date-time
           nullable: true
           readOnly: true
@@ -1139,7 +1122,6 @@ components:
          - REJECTED: The private link endpoint is rejected.
          - EXPIRED: The private link endpoint is Expired.
          - FAILED: The private link endpoint is failed.
-         - PARTIAL: The private link endpoint is partial.
          - DELETING: The private link endpoint is deleting.
       enum:
       - PENDING_ACCEPTANCE
@@ -1148,7 +1130,6 @@ components:
       - REJECTED
       - EXPIRED
       - FAILED
-      - PARTIAL
       - DELETING
       type: string
     SinkInfo:
@@ -1156,17 +1137,17 @@ components:
         type:
           allOf:
           - $ref: '#/components/schemas/ChangefeedType.Enum'
-          description: Required. The type of the sink.
+          description: The type of the sink.
           type: object
         kafka:
           allOf:
           - $ref: '#/components/schemas/Kafka'
-          description: Optional. The Kafka sink information.
+          description: The Kafka sink information.
           type: object
         mysql:
           allOf:
           - $ref: '#/components/schemas/MySQL'
-          description: Optional. The MySQL sink information.
+          description: The MySQL sink information.
           type: object
       required:
       - type
@@ -1175,11 +1156,11 @@ components:
       description: |2-
          - FROM_NOW: Start from now.
          - FROM_TSO: Start from TSO.
-         - FROM_UTC: Start from UTC.
+         - FROM_TIME: Start from Time.
       enum:
       - FROM_NOW
       - FROM_TSO
-      - FROM_UTC
+      - FROM_TIME
       type: string
     StartPosition:
       properties:
@@ -1187,8 +1168,11 @@ components:
           $ref: '#/components/schemas/StartMode.Enum'
         tso:
           format: uint64
+          title: The start position in TSO
           type: string
-        utc:
+        time:
+          format: date-time
+          title: The start position in time
           type: string
       type: object
     Status:

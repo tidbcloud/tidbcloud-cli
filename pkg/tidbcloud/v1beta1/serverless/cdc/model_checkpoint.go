@@ -12,41 +12,42 @@ package cdc
 
 import (
 	"encoding/json"
+	"time"
 )
 
-// checks if the CDCCheckpoint type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &CDCCheckpoint{}
+// checks if the Checkpoint type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Checkpoint{}
 
-// CDCCheckpoint struct for CDCCheckpoint
-type CDCCheckpoint struct {
-	// OUTPUT_ONLY. The checkpoint TSO.
+// Checkpoint struct for Checkpoint
+type Checkpoint struct {
+	// The checkpoint TSO.
 	Tso *string `json:"tso,omitempty"`
-	// OUTPUT_ONLY. The checkpoint in utc.
-	Time                 *string `json:"time,omitempty"`
+	// The checkpoint in time.
+	Time                 *time.Time `json:"time,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _CDCCheckpoint CDCCheckpoint
+type _Checkpoint Checkpoint
 
-// NewCDCCheckpoint instantiates a new CDCCheckpoint object
+// NewCheckpoint instantiates a new Checkpoint object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewCDCCheckpoint() *CDCCheckpoint {
-	this := CDCCheckpoint{}
+func NewCheckpoint() *Checkpoint {
+	this := Checkpoint{}
 	return &this
 }
 
-// NewCDCCheckpointWithDefaults instantiates a new CDCCheckpoint object
+// NewCheckpointWithDefaults instantiates a new Checkpoint object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewCDCCheckpointWithDefaults() *CDCCheckpoint {
-	this := CDCCheckpoint{}
+func NewCheckpointWithDefaults() *Checkpoint {
+	this := Checkpoint{}
 	return &this
 }
 
 // GetTso returns the Tso field value if set, zero value otherwise.
-func (o *CDCCheckpoint) GetTso() string {
+func (o *Checkpoint) GetTso() string {
 	if o == nil || IsNil(o.Tso) {
 		var ret string
 		return ret
@@ -56,7 +57,7 @@ func (o *CDCCheckpoint) GetTso() string {
 
 // GetTsoOk returns a tuple with the Tso field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CDCCheckpoint) GetTsoOk() (*string, bool) {
+func (o *Checkpoint) GetTsoOk() (*string, bool) {
 	if o == nil || IsNil(o.Tso) {
 		return nil, false
 	}
@@ -64,7 +65,7 @@ func (o *CDCCheckpoint) GetTsoOk() (*string, bool) {
 }
 
 // HasTso returns a boolean if a field has been set.
-func (o *CDCCheckpoint) HasTso() bool {
+func (o *Checkpoint) HasTso() bool {
 	if o != nil && !IsNil(o.Tso) {
 		return true
 	}
@@ -73,14 +74,14 @@ func (o *CDCCheckpoint) HasTso() bool {
 }
 
 // SetTso gets a reference to the given string and assigns it to the Tso field.
-func (o *CDCCheckpoint) SetTso(v string) {
+func (o *Checkpoint) SetTso(v string) {
 	o.Tso = &v
 }
 
 // GetTime returns the Time field value if set, zero value otherwise.
-func (o *CDCCheckpoint) GetTime() string {
+func (o *Checkpoint) GetTime() time.Time {
 	if o == nil || IsNil(o.Time) {
-		var ret string
+		var ret time.Time
 		return ret
 	}
 	return *o.Time
@@ -88,7 +89,7 @@ func (o *CDCCheckpoint) GetTime() string {
 
 // GetTimeOk returns a tuple with the Time field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CDCCheckpoint) GetTimeOk() (*string, bool) {
+func (o *Checkpoint) GetTimeOk() (*time.Time, bool) {
 	if o == nil || IsNil(o.Time) {
 		return nil, false
 	}
@@ -96,7 +97,7 @@ func (o *CDCCheckpoint) GetTimeOk() (*string, bool) {
 }
 
 // HasTime returns a boolean if a field has been set.
-func (o *CDCCheckpoint) HasTime() bool {
+func (o *Checkpoint) HasTime() bool {
 	if o != nil && !IsNil(o.Time) {
 		return true
 	}
@@ -104,12 +105,12 @@ func (o *CDCCheckpoint) HasTime() bool {
 	return false
 }
 
-// SetTime gets a reference to the given string and assigns it to the Time field.
-func (o *CDCCheckpoint) SetTime(v string) {
+// SetTime gets a reference to the given time.Time and assigns it to the Time field.
+func (o *Checkpoint) SetTime(v time.Time) {
 	o.Time = &v
 }
 
-func (o CDCCheckpoint) MarshalJSON() ([]byte, error) {
+func (o Checkpoint) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -117,7 +118,7 @@ func (o CDCCheckpoint) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o CDCCheckpoint) ToMap() (map[string]interface{}, error) {
+func (o Checkpoint) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Tso) {
 		toSerialize["tso"] = o.Tso
@@ -133,16 +134,16 @@ func (o CDCCheckpoint) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *CDCCheckpoint) UnmarshalJSON(data []byte) (err error) {
-	varCDCCheckpoint := _CDCCheckpoint{}
+func (o *Checkpoint) UnmarshalJSON(data []byte) (err error) {
+	varCheckpoint := _Checkpoint{}
 
-	err = json.Unmarshal(data, &varCDCCheckpoint)
+	err = json.Unmarshal(data, &varCheckpoint)
 
 	if err != nil {
 		return err
 	}
 
-	*o = CDCCheckpoint(varCDCCheckpoint)
+	*o = Checkpoint(varCheckpoint)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -155,38 +156,38 @@ func (o *CDCCheckpoint) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
-type NullableCDCCheckpoint struct {
-	value *CDCCheckpoint
+type NullableCheckpoint struct {
+	value *Checkpoint
 	isSet bool
 }
 
-func (v NullableCDCCheckpoint) Get() *CDCCheckpoint {
+func (v NullableCheckpoint) Get() *Checkpoint {
 	return v.value
 }
 
-func (v *NullableCDCCheckpoint) Set(val *CDCCheckpoint) {
+func (v *NullableCheckpoint) Set(val *Checkpoint) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableCDCCheckpoint) IsSet() bool {
+func (v NullableCheckpoint) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableCDCCheckpoint) Unset() {
+func (v *NullableCheckpoint) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableCDCCheckpoint(val *CDCCheckpoint) *NullableCDCCheckpoint {
-	return &NullableCDCCheckpoint{value: val, isSet: true}
+func NewNullableCheckpoint(val *Checkpoint) *NullableCheckpoint {
+	return &NullableCheckpoint{value: val, isSet: true}
 }
 
-func (v NullableCDCCheckpoint) MarshalJSON() ([]byte, error) {
+func (v NullableCheckpoint) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableCDCCheckpoint) UnmarshalJSON(src []byte) error {
+func (v *NullableCheckpoint) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

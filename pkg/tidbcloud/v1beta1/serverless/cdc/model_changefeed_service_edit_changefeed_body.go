@@ -20,12 +20,12 @@ var _ MappedNullable = &ChangefeedServiceEditChangefeedBody{}
 
 // ChangefeedServiceEditChangefeedBody struct for ChangefeedServiceEditChangefeedBody
 type ChangefeedServiceEditChangefeedBody struct {
-	// Optional. The name of the changefeed.
+	// The name of the changefeed.
 	DisplayName *string `json:"displayName,omitempty"`
-	// Required. The sink of the changefeed.
+	// The sink of the changefeed.
 	Sink SinkInfo `json:"sink"`
-	// Required. The filter of the changefeed.
-	Filter               CDCFilter `json:"filter"`
+	// The filter of the changefeed.
+	Filter               ChangefeedFilter `json:"filter"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -35,7 +35,7 @@ type _ChangefeedServiceEditChangefeedBody ChangefeedServiceEditChangefeedBody
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewChangefeedServiceEditChangefeedBody(sink SinkInfo, filter CDCFilter) *ChangefeedServiceEditChangefeedBody {
+func NewChangefeedServiceEditChangefeedBody(sink SinkInfo, filter ChangefeedFilter) *ChangefeedServiceEditChangefeedBody {
 	this := ChangefeedServiceEditChangefeedBody{}
 	this.Sink = sink
 	this.Filter = filter
@@ -107,9 +107,9 @@ func (o *ChangefeedServiceEditChangefeedBody) SetSink(v SinkInfo) {
 }
 
 // GetFilter returns the Filter field value
-func (o *ChangefeedServiceEditChangefeedBody) GetFilter() CDCFilter {
+func (o *ChangefeedServiceEditChangefeedBody) GetFilter() ChangefeedFilter {
 	if o == nil {
-		var ret CDCFilter
+		var ret ChangefeedFilter
 		return ret
 	}
 
@@ -118,7 +118,7 @@ func (o *ChangefeedServiceEditChangefeedBody) GetFilter() CDCFilter {
 
 // GetFilterOk returns a tuple with the Filter field value
 // and a boolean to check if the value has been set.
-func (o *ChangefeedServiceEditChangefeedBody) GetFilterOk() (*CDCFilter, bool) {
+func (o *ChangefeedServiceEditChangefeedBody) GetFilterOk() (*ChangefeedFilter, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -126,7 +126,7 @@ func (o *ChangefeedServiceEditChangefeedBody) GetFilterOk() (*CDCFilter, bool) {
 }
 
 // SetFilter sets field value
-func (o *ChangefeedServiceEditChangefeedBody) SetFilter(v CDCFilter) {
+func (o *ChangefeedServiceEditChangefeedBody) SetFilter(v ChangefeedFilter) {
 	o.Filter = v
 }
 

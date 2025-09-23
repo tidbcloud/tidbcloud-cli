@@ -19,8 +19,8 @@ var _ MappedNullable = &ChangefeedServiceDescribeSchemaTableBody{}
 
 // ChangefeedServiceDescribeSchemaTableBody struct for ChangefeedServiceDescribeSchemaTableBody
 type ChangefeedServiceDescribeSchemaTableBody struct {
-	// Optional. The filter rules for schema tables.
-	FilterRule           []string `json:"filterRule,omitempty"`
+	// The filter rules for schema tables.
+	FilterRules          []string `json:"filterRules,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -43,36 +43,36 @@ func NewChangefeedServiceDescribeSchemaTableBodyWithDefaults() *ChangefeedServic
 	return &this
 }
 
-// GetFilterRule returns the FilterRule field value if set, zero value otherwise.
-func (o *ChangefeedServiceDescribeSchemaTableBody) GetFilterRule() []string {
-	if o == nil || IsNil(o.FilterRule) {
+// GetFilterRules returns the FilterRules field value if set, zero value otherwise.
+func (o *ChangefeedServiceDescribeSchemaTableBody) GetFilterRules() []string {
+	if o == nil || IsNil(o.FilterRules) {
 		var ret []string
 		return ret
 	}
-	return o.FilterRule
+	return o.FilterRules
 }
 
-// GetFilterRuleOk returns a tuple with the FilterRule field value if set, nil otherwise
+// GetFilterRulesOk returns a tuple with the FilterRules field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ChangefeedServiceDescribeSchemaTableBody) GetFilterRuleOk() ([]string, bool) {
-	if o == nil || IsNil(o.FilterRule) {
+func (o *ChangefeedServiceDescribeSchemaTableBody) GetFilterRulesOk() ([]string, bool) {
+	if o == nil || IsNil(o.FilterRules) {
 		return nil, false
 	}
-	return o.FilterRule, true
+	return o.FilterRules, true
 }
 
-// HasFilterRule returns a boolean if a field has been set.
-func (o *ChangefeedServiceDescribeSchemaTableBody) HasFilterRule() bool {
-	if o != nil && !IsNil(o.FilterRule) {
+// HasFilterRules returns a boolean if a field has been set.
+func (o *ChangefeedServiceDescribeSchemaTableBody) HasFilterRules() bool {
+	if o != nil && !IsNil(o.FilterRules) {
 		return true
 	}
 
 	return false
 }
 
-// SetFilterRule gets a reference to the given []string and assigns it to the FilterRule field.
-func (o *ChangefeedServiceDescribeSchemaTableBody) SetFilterRule(v []string) {
-	o.FilterRule = v
+// SetFilterRules gets a reference to the given []string and assigns it to the FilterRules field.
+func (o *ChangefeedServiceDescribeSchemaTableBody) SetFilterRules(v []string) {
+	o.FilterRules = v
 }
 
 func (o ChangefeedServiceDescribeSchemaTableBody) MarshalJSON() ([]byte, error) {
@@ -85,8 +85,8 @@ func (o ChangefeedServiceDescribeSchemaTableBody) MarshalJSON() ([]byte, error) 
 
 func (o ChangefeedServiceDescribeSchemaTableBody) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.FilterRule) {
-		toSerialize["filterRule"] = o.FilterRule
+	if !IsNil(o.FilterRules) {
+		toSerialize["filterRules"] = o.FilterRules
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -110,7 +110,7 @@ func (o *ChangefeedServiceDescribeSchemaTableBody) UnmarshalJSON(data []byte) (e
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "filterRule")
+		delete(additionalProperties, "filterRules")
 		o.AdditionalProperties = additionalProperties
 	}
 

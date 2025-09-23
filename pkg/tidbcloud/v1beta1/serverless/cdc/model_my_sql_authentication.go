@@ -20,11 +20,11 @@ var _ MappedNullable = &MySQLAuthentication{}
 
 // MySQLAuthentication struct for MySQLAuthentication
 type MySQLAuthentication struct {
-	// Required. The username for the MySQL instance.
+	// The username for the MySQL instance.
 	UserName string `json:"userName"`
-	// Required. The password for the MySQL instance.
+	// The password for the MySQL instance.
 	Password string `json:"password"`
-	// Optional. Enable TLS for the MySQL connection.
+	// Enable TLS for the MySQL connection.
 	EnableTls            *bool `json:"enableTls,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

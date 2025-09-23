@@ -21,25 +21,25 @@ var _ MappedNullable = &PrivateLinkEndpoint{}
 
 // PrivateLinkEndpoint struct for PrivateLinkEndpoint
 type PrivateLinkEndpoint struct {
-	// Output_only  The ID of the private link endpoint.
+	// The ID of the private link endpoint.
 	EndpointId *string `json:"endpointId,omitempty"`
-	// Required. The ID of the cluster.
+	// The ID of the cluster.
 	ClusterId string `json:"clusterId"`
-	// Required. The private link service name.
+	// The private link service name.
 	PrivateLinkServiceName string `json:"privateLinkServiceName"`
-	// Required. The type of the sink.
+	// The type of the sink.
 	ChangefeedType ChangefeedTypeEnum `json:"changefeedType"`
-	// Output_only. The state of the private link.
+	// The state of the private link.
 	State *PrivateLinkEndpointStateEnum `json:"state,omitempty"`
-	// Optional. Kafka private link endpoint information.
+	// Kafka private link endpoint information.
 	Kafka *KafkaEndpoint `json:"kafka,omitempty"`
-	// Output_only. The message.
+	// The message.
 	Message *string `json:"message,omitempty"`
-	// Output_only. The message.
+	// The message.
 	EndpointUrl *string `json:"endpointUrl,omitempty"`
-	// Output_only. Timestamp when the private link endpoint was created.
+	// Timestamp when the private link endpoint was created.
 	CreateTime *time.Time `json:"createTime,omitempty"`
-	// Output_only. Timestamp when the private link endpoint was updated.
+	// Timestamp when the private link endpoint was updated.
 	UpdateTime           NullableTime `json:"updateTime,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

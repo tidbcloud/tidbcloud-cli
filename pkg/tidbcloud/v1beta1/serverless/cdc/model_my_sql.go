@@ -20,9 +20,9 @@ var _ MappedNullable = &MySQL{}
 
 // MySQL struct for MySQL
 type MySQL struct {
-	// Required. The network configuration for the MySQL instance.
+	// The network configuration for the MySQL instance.
 	Network MySQLNetwork `json:"network"`
-	// Required. The authentication information for the MySQL instance.
+	// The authentication information for the MySQL instance.
 	Authentication       MySQLAuthentication `json:"authentication"`
 	AdditionalProperties map[string]interface{}
 }

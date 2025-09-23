@@ -20,7 +20,7 @@ var _ MappedNullable = &KafkaAuthentication{}
 // KafkaAuthentication struct for KafkaAuthentication
 type KafkaAuthentication struct {
 	AuthType             *KafkaAuthTypeEnum `json:"authType,omitempty"`
-	UserName             *string            `json:"userName,omitempty"`
+	Username             *string            `json:"username,omitempty"`
 	Password             *string            `json:"password,omitempty"`
 	EnableTls            *bool              `json:"enableTls,omitempty"`
 	AdditionalProperties map[string]interface{}
@@ -77,36 +77,36 @@ func (o *KafkaAuthentication) SetAuthType(v KafkaAuthTypeEnum) {
 	o.AuthType = &v
 }
 
-// GetUserName returns the UserName field value if set, zero value otherwise.
-func (o *KafkaAuthentication) GetUserName() string {
-	if o == nil || IsNil(o.UserName) {
+// GetUsername returns the Username field value if set, zero value otherwise.
+func (o *KafkaAuthentication) GetUsername() string {
+	if o == nil || IsNil(o.Username) {
 		var ret string
 		return ret
 	}
-	return *o.UserName
+	return *o.Username
 }
 
-// GetUserNameOk returns a tuple with the UserName field value if set, nil otherwise
+// GetUsernameOk returns a tuple with the Username field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *KafkaAuthentication) GetUserNameOk() (*string, bool) {
-	if o == nil || IsNil(o.UserName) {
+func (o *KafkaAuthentication) GetUsernameOk() (*string, bool) {
+	if o == nil || IsNil(o.Username) {
 		return nil, false
 	}
-	return o.UserName, true
+	return o.Username, true
 }
 
-// HasUserName returns a boolean if a field has been set.
-func (o *KafkaAuthentication) HasUserName() bool {
-	if o != nil && !IsNil(o.UserName) {
+// HasUsername returns a boolean if a field has been set.
+func (o *KafkaAuthentication) HasUsername() bool {
+	if o != nil && !IsNil(o.Username) {
 		return true
 	}
 
 	return false
 }
 
-// SetUserName gets a reference to the given string and assigns it to the UserName field.
-func (o *KafkaAuthentication) SetUserName(v string) {
-	o.UserName = &v
+// SetUsername gets a reference to the given string and assigns it to the Username field.
+func (o *KafkaAuthentication) SetUsername(v string) {
+	o.Username = &v
 }
 
 // GetPassword returns the Password field value if set, zero value otherwise.
@@ -186,8 +186,8 @@ func (o KafkaAuthentication) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.AuthType) {
 		toSerialize["authType"] = o.AuthType
 	}
-	if !IsNil(o.UserName) {
-		toSerialize["userName"] = o.UserName
+	if !IsNil(o.Username) {
+		toSerialize["username"] = o.Username
 	}
 	if !IsNil(o.Password) {
 		toSerialize["password"] = o.Password
@@ -218,7 +218,7 @@ func (o *KafkaAuthentication) UnmarshalJSON(data []byte) (err error) {
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "authType")
-		delete(additionalProperties, "userName")
+		delete(additionalProperties, "username")
 		delete(additionalProperties, "password")
 		delete(additionalProperties, "enableTls")
 		o.AdditionalProperties = additionalProperties

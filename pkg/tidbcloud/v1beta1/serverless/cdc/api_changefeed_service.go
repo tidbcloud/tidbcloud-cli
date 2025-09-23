@@ -39,10 +39,10 @@ func (r ApiChangefeedServiceCreateChangefeedRequest) Execute() (*Changefeed, *ht
 }
 
 /*
-ChangefeedServiceCreateChangefeed Create a changefeed.
+ChangefeedServiceCreateChangefeed Method for ChangefeedServiceCreateChangefeed
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The ID of the cluster.
+	@param clusterId The ID of the cluster.
 	@return ApiChangefeedServiceCreateChangefeedRequest
 */
 func (a *ChangefeedServiceAPIService) ChangefeedServiceCreateChangefeed(ctx context.Context, clusterId string) ApiChangefeedServiceCreateChangefeedRequest {
@@ -160,10 +160,10 @@ func (r ApiChangefeedServiceCreatePrivateLinkEndpointRequest) Execute() (*Privat
 }
 
 /*
-ChangefeedServiceCreatePrivateLinkEndpoint Create a private link
+ChangefeedServiceCreatePrivateLinkEndpoint Method for ChangefeedServiceCreatePrivateLinkEndpoint
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The ID of the cluster.
+	@param clusterId The ID of the cluster.
 	@return ApiChangefeedServiceCreatePrivateLinkEndpointRequest
 */
 func (a *ChangefeedServiceAPIService) ChangefeedServiceCreatePrivateLinkEndpoint(ctx context.Context, clusterId string) ApiChangefeedServiceCreatePrivateLinkEndpointRequest {
@@ -190,7 +190,7 @@ func (a *ChangefeedServiceAPIService) ChangefeedServiceCreatePrivateLinkEndpoint
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds/private-link-endpoints"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds/privateLinkEndpoint"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -276,11 +276,11 @@ func (r ApiChangefeedServiceDeleteChangefeedRequest) Execute() (*Changefeed, *ht
 }
 
 /*
-ChangefeedServiceDeleteChangefeed Delete a changefeed.
+ChangefeedServiceDeleteChangefeed Method for ChangefeedServiceDeleteChangefeed
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The ID of the cluster.
-	@param changefeedId Required. The ID of the changefeed.
+	@param clusterId The ID of the cluster.
+	@param changefeedId The ID of the changefeed.
 	@return ApiChangefeedServiceDeleteChangefeedRequest
 */
 func (a *ChangefeedServiceAPIService) ChangefeedServiceDeleteChangefeed(ctx context.Context, clusterId string, changefeedId string) ApiChangefeedServiceDeleteChangefeedRequest {
@@ -385,7 +385,7 @@ type ApiChangefeedServiceDeletePrivateLinkEndpointRequest struct {
 	privateLinkServiceName *string
 }
 
-// Required. The private link service name.
+// The private link service name.
 func (r ApiChangefeedServiceDeletePrivateLinkEndpointRequest) PrivateLinkServiceName(privateLinkServiceName string) ApiChangefeedServiceDeletePrivateLinkEndpointRequest {
 	r.privateLinkServiceName = &privateLinkServiceName
 	return r
@@ -396,10 +396,10 @@ func (r ApiChangefeedServiceDeletePrivateLinkEndpointRequest) Execute() (*Privat
 }
 
 /*
-ChangefeedServiceDeletePrivateLinkEndpoint Delete a private link
+ChangefeedServiceDeletePrivateLinkEndpoint Method for ChangefeedServiceDeletePrivateLinkEndpoint
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The ID of the cluster.
+	@param clusterId The ID of the cluster.
 	@return ApiChangefeedServiceDeletePrivateLinkEndpointRequest
 */
 func (a *ChangefeedServiceAPIService) ChangefeedServiceDeletePrivateLinkEndpoint(ctx context.Context, clusterId string) ApiChangefeedServiceDeletePrivateLinkEndpointRequest {
@@ -426,7 +426,7 @@ func (a *ChangefeedServiceAPIService) ChangefeedServiceDeletePrivateLinkEndpoint
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds/private-links-endpoints"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds/privateLinkEndpoint"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -516,10 +516,10 @@ func (r ApiChangefeedServiceDescribeSchemaTableRequest) Execute() (*DescribeSche
 }
 
 /*
-ChangefeedServiceDescribeSchemaTable Describe schema table.
+ChangefeedServiceDescribeSchemaTable Method for ChangefeedServiceDescribeSchemaTable
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The ID of the cluster.
+	@param clusterId The ID of the cluster.
 	@return ApiChangefeedServiceDescribeSchemaTableRequest
 */
 func (a *ChangefeedServiceAPIService) ChangefeedServiceDescribeSchemaTable(ctx context.Context, clusterId string) ApiChangefeedServiceDescribeSchemaTableRequest {
@@ -638,11 +638,11 @@ func (r ApiChangefeedServiceEditChangefeedRequest) Execute() (*Changefeed, *http
 }
 
 /*
-ChangefeedServiceEditChangefeed Edit a changefeed.
+ChangefeedServiceEditChangefeed Method for ChangefeedServiceEditChangefeed
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The ID of the cluster.
-	@param changefeedId Required. The ID of the changefeed.
+	@param clusterId The ID of the cluster.
+	@param changefeedId The ID of the changefeed.
 	@return ApiChangefeedServiceEditChangefeedRequest
 */
 func (a *ChangefeedServiceAPIService) ChangefeedServiceEditChangefeed(ctx context.Context, clusterId string, changefeedId string) ApiChangefeedServiceEditChangefeedRequest {
@@ -757,11 +757,11 @@ func (r ApiChangefeedServiceGetChangefeedRequest) Execute() (*Changefeed, *http.
 }
 
 /*
-ChangefeedServiceGetChangefeed Get a changefeed.
+ChangefeedServiceGetChangefeed Method for ChangefeedServiceGetChangefeed
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The ID of the cluster.
-	@param changefeedId Required. The ID of the changefeed.
+	@param clusterId The ID of the cluster.
+	@param changefeedId The ID of the changefeed.
 	@return ApiChangefeedServiceGetChangefeedRequest
 */
 func (a *ChangefeedServiceAPIService) ChangefeedServiceGetChangefeed(ctx context.Context, clusterId string, changefeedId string) ApiChangefeedServiceGetChangefeedRequest {
@@ -866,7 +866,7 @@ type ApiChangefeedServiceGetPrivateLinkEndpointRequest struct {
 	privateLinkServiceName *string
 }
 
-// Required. The private link service name.
+// The private link service name.
 func (r ApiChangefeedServiceGetPrivateLinkEndpointRequest) PrivateLinkServiceName(privateLinkServiceName string) ApiChangefeedServiceGetPrivateLinkEndpointRequest {
 	r.privateLinkServiceName = &privateLinkServiceName
 	return r
@@ -877,10 +877,10 @@ func (r ApiChangefeedServiceGetPrivateLinkEndpointRequest) Execute() (*PrivateLi
 }
 
 /*
-ChangefeedServiceGetPrivateLinkEndpoint Get a private link
+ChangefeedServiceGetPrivateLinkEndpoint Method for ChangefeedServiceGetPrivateLinkEndpoint
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The ID of the cluster.
+	@param clusterId The ID of the cluster.
 	@return ApiChangefeedServiceGetPrivateLinkEndpointRequest
 */
 func (a *ChangefeedServiceAPIService) ChangefeedServiceGetPrivateLinkEndpoint(ctx context.Context, clusterId string) ApiChangefeedServiceGetPrivateLinkEndpointRequest {
@@ -907,7 +907,7 @@ func (a *ChangefeedServiceAPIService) ChangefeedServiceGetPrivateLinkEndpointExe
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds/private-links-endpoints"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/changefeeds/privateLinkEndpoint"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
@@ -987,30 +987,23 @@ type ApiChangefeedServiceListChangefeedsRequest struct {
 	pageSize       *int32
 	pageToken      *string
 	changefeedType *ChangefeedServiceListChangefeedsChangefeedTypeParameter
-	orderBy        *string
 }
 
-// Optional. The maximum number of changefeeds to return. Default is 10.
+// The maximum number of changefeeds to return. Default is 10.
 func (r ApiChangefeedServiceListChangefeedsRequest) PageSize(pageSize int32) ApiChangefeedServiceListChangefeedsRequest {
 	r.pageSize = &pageSize
 	return r
 }
 
-// Optional. The page token from the previous response for pagination.
+// The page token from the previous response for pagination.
 func (r ApiChangefeedServiceListChangefeedsRequest) PageToken(pageToken string) ApiChangefeedServiceListChangefeedsRequest {
 	r.pageToken = &pageToken
 	return r
 }
 
-// Optional. The type of the changefeed. DEFAULT is all.   - KAFKA: Kafka changefeed type.  - MYSQL: MySQL changefeed type.
+// The type of the changefeed. DEFAULT is all.   - KAFKA: Kafka changefeed type.  - MYSQL: MySQL changefeed type.
 func (r ApiChangefeedServiceListChangefeedsRequest) ChangefeedType(changefeedType ChangefeedServiceListChangefeedsChangefeedTypeParameter) ApiChangefeedServiceListChangefeedsRequest {
 	r.changefeedType = &changefeedType
-	return r
-}
-
-// Optional. List changefeeds order by, separated by comma, default is ascending. Example: \&quot;create_time, bar desc\&quot;. Supported field: create_time
-func (r ApiChangefeedServiceListChangefeedsRequest) OrderBy(orderBy string) ApiChangefeedServiceListChangefeedsRequest {
-	r.orderBy = &orderBy
 	return r
 }
 
@@ -1019,10 +1012,10 @@ func (r ApiChangefeedServiceListChangefeedsRequest) Execute() (*Changefeeds, *ht
 }
 
 /*
-ChangefeedServiceListChangefeeds List changefeeds.
+ChangefeedServiceListChangefeeds Method for ChangefeedServiceListChangefeeds
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The ID of the cluster.
+	@param clusterId The ID of the cluster.
 	@return ApiChangefeedServiceListChangefeedsRequest
 */
 func (a *ChangefeedServiceAPIService) ChangefeedServiceListChangefeeds(ctx context.Context, clusterId string) ApiChangefeedServiceListChangefeedsRequest {
@@ -1064,9 +1057,6 @@ func (a *ChangefeedServiceAPIService) ChangefeedServiceListChangefeedsExecute(r 
 	}
 	if r.changefeedType != nil {
 		parameterAddToHeaderOrQuery(localVarQueryParams, "changefeedType", r.changefeedType, "", "")
-	}
-	if r.orderBy != nil {
-		parameterAddToHeaderOrQuery(localVarQueryParams, "orderBy", r.orderBy, "", "")
 	}
 	// to determine the Content-Type header
 	localVarHTTPContentTypes := []string{}
@@ -1148,11 +1138,11 @@ func (r ApiChangefeedServiceStartChangefeedRequest) Execute() (*Changefeed, *htt
 }
 
 /*
-ChangefeedServiceStartChangefeed Start a changefeed.
+ChangefeedServiceStartChangefeed Method for ChangefeedServiceStartChangefeed
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The ID of the cluster.
-	@param changefeedId Required. The ID of the changefeed.
+	@param clusterId The ID of the cluster.
+	@param changefeedId The ID of the changefeed.
 	@return ApiChangefeedServiceStartChangefeedRequest
 */
 func (a *ChangefeedServiceAPIService) ChangefeedServiceStartChangefeed(ctx context.Context, clusterId string, changefeedId string) ApiChangefeedServiceStartChangefeedRequest {
@@ -1273,11 +1263,11 @@ func (r ApiChangefeedServiceStopChangefeedRequest) Execute() (*Changefeed, *http
 }
 
 /*
-ChangefeedServiceStopChangefeed Stop a changefeed.
+ChangefeedServiceStopChangefeed Method for ChangefeedServiceStopChangefeed
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The ID of the cluster.
-	@param changefeedId Required. The ID of the changefeed.
+	@param clusterId The ID of the cluster.
+	@param changefeedId The ID of the changefeed.
 	@return ApiChangefeedServiceStopChangefeedRequest
 */
 func (a *ChangefeedServiceAPIService) ChangefeedServiceStopChangefeed(ctx context.Context, clusterId string, changefeedId string) ApiChangefeedServiceStopChangefeedRequest {
@@ -1397,10 +1387,10 @@ func (r ApiChangefeedServiceTestChangefeedRequest) Execute() (map[string]interfa
 }
 
 /*
-ChangefeedServiceTestChangefeed Test a changefeed.
+ChangefeedServiceTestChangefeed Method for ChangefeedServiceTestChangefeed
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId Required. The ID of the cluster.
+	@param clusterId The ID of the cluster.
 	@return ApiChangefeedServiceTestChangefeedRequest
 */
 func (a *ChangefeedServiceAPIService) ChangefeedServiceTestChangefeed(ctx context.Context, clusterId string) ApiChangefeedServiceTestChangefeedRequest {

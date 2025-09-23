@@ -20,7 +20,7 @@ var _ MappedNullable = &ChangefeedServiceTestChangefeedBody{}
 
 // ChangefeedServiceTestChangefeedBody struct for ChangefeedServiceTestChangefeedBody
 type ChangefeedServiceTestChangefeedBody struct {
-	// Required. The sink of the changefeed.
+	// The sink of the changefeed.
 	Sink                 SinkInfo `json:"sink"`
 	AdditionalProperties map[string]interface{}
 }

@@ -21,13 +21,13 @@ var _ MappedNullable = &DescribeSchemaTableResp{}
 
 // DescribeSchemaTableResp struct for DescribeSchemaTableResp
 type DescribeSchemaTableResp struct {
-	// Required. The ID of the cluster.
+	// The ID of the cluster.
 	ClusterId string `json:"clusterId"`
-	// Optional. The allowed schema tables to replicate.
-	ReplicateAllowSchemaTable []string `json:"replicateAllowSchemaTable,omitempty"`
-	// Optional. The denied schema tables to replicate.
-	ReplicateDenySchemaTable []string `json:"replicateDenySchemaTable,omitempty"`
-	// Optional. The GC safe point timestamp.
+	// The tables with handle key(pk or not null uk), up to 1000 tables will be returned.
+	HandleKeyTables []string `json:"handleKeyTables,omitempty"`
+	// The tables without handle key(pk or not null uk), up to 1000 tables will be returned.
+	NonHandleKeyTables []string `json:"nonHandleKeyTables,omitempty"`
+	// The GC safe point timestamp.
 	GcSafePoint          *time.Time `json:"gcSafePoint,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
@@ -76,68 +76,68 @@ func (o *DescribeSchemaTableResp) SetClusterId(v string) {
 	o.ClusterId = v
 }
 
-// GetReplicateAllowSchemaTable returns the ReplicateAllowSchemaTable field value if set, zero value otherwise.
-func (o *DescribeSchemaTableResp) GetReplicateAllowSchemaTable() []string {
-	if o == nil || IsNil(o.ReplicateAllowSchemaTable) {
+// GetHandleKeyTables returns the HandleKeyTables field value if set, zero value otherwise.
+func (o *DescribeSchemaTableResp) GetHandleKeyTables() []string {
+	if o == nil || IsNil(o.HandleKeyTables) {
 		var ret []string
 		return ret
 	}
-	return o.ReplicateAllowSchemaTable
+	return o.HandleKeyTables
 }
 
-// GetReplicateAllowSchemaTableOk returns a tuple with the ReplicateAllowSchemaTable field value if set, nil otherwise
+// GetHandleKeyTablesOk returns a tuple with the HandleKeyTables field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *DescribeSchemaTableResp) GetReplicateAllowSchemaTableOk() ([]string, bool) {
-	if o == nil || IsNil(o.ReplicateAllowSchemaTable) {
+func (o *DescribeSchemaTableResp) GetHandleKeyTablesOk() ([]string, bool) {
+	if o == nil || IsNil(o.HandleKeyTables) {
 		return nil, false
 	}
-	return o.ReplicateAllowSchemaTable, true
+	return o.HandleKeyTables, true
 }
 
-// HasReplicateAllowSchemaTable returns a boolean if a field has been set.
-func (o *DescribeSchemaTableResp) HasReplicateAllowSchemaTable() bool {
-	if o != nil && !IsNil(o.ReplicateAllowSchemaTable) {
+// HasHandleKeyTables returns a boolean if a field has been set.
+func (o *DescribeSchemaTableResp) HasHandleKeyTables() bool {
+	if o != nil && !IsNil(o.HandleKeyTables) {
 		return true
 	}
 
 	return false
 }
 
-// SetReplicateAllowSchemaTable gets a reference to the given []string and assigns it to the ReplicateAllowSchemaTable field.
-func (o *DescribeSchemaTableResp) SetReplicateAllowSchemaTable(v []string) {
-	o.ReplicateAllowSchemaTable = v
+// SetHandleKeyTables gets a reference to the given []string and assigns it to the HandleKeyTables field.
+func (o *DescribeSchemaTableResp) SetHandleKeyTables(v []string) {
+	o.HandleKeyTables = v
 }
 
-// GetReplicateDenySchemaTable returns the ReplicateDenySchemaTable field value if set, zero value otherwise.
-func (o *DescribeSchemaTableResp) GetReplicateDenySchemaTable() []string {
-	if o == nil || IsNil(o.ReplicateDenySchemaTable) {
+// GetNonHandleKeyTables returns the NonHandleKeyTables field value if set, zero value otherwise.
+func (o *DescribeSchemaTableResp) GetNonHandleKeyTables() []string {
+	if o == nil || IsNil(o.NonHandleKeyTables) {
 		var ret []string
 		return ret
 	}
-	return o.ReplicateDenySchemaTable
+	return o.NonHandleKeyTables
 }
 
-// GetReplicateDenySchemaTableOk returns a tuple with the ReplicateDenySchemaTable field value if set, nil otherwise
+// GetNonHandleKeyTablesOk returns a tuple with the NonHandleKeyTables field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *DescribeSchemaTableResp) GetReplicateDenySchemaTableOk() ([]string, bool) {
-	if o == nil || IsNil(o.ReplicateDenySchemaTable) {
+func (o *DescribeSchemaTableResp) GetNonHandleKeyTablesOk() ([]string, bool) {
+	if o == nil || IsNil(o.NonHandleKeyTables) {
 		return nil, false
 	}
-	return o.ReplicateDenySchemaTable, true
+	return o.NonHandleKeyTables, true
 }
 
-// HasReplicateDenySchemaTable returns a boolean if a field has been set.
-func (o *DescribeSchemaTableResp) HasReplicateDenySchemaTable() bool {
-	if o != nil && !IsNil(o.ReplicateDenySchemaTable) {
+// HasNonHandleKeyTables returns a boolean if a field has been set.
+func (o *DescribeSchemaTableResp) HasNonHandleKeyTables() bool {
+	if o != nil && !IsNil(o.NonHandleKeyTables) {
 		return true
 	}
 
 	return false
 }
 
-// SetReplicateDenySchemaTable gets a reference to the given []string and assigns it to the ReplicateDenySchemaTable field.
-func (o *DescribeSchemaTableResp) SetReplicateDenySchemaTable(v []string) {
-	o.ReplicateDenySchemaTable = v
+// SetNonHandleKeyTables gets a reference to the given []string and assigns it to the NonHandleKeyTables field.
+func (o *DescribeSchemaTableResp) SetNonHandleKeyTables(v []string) {
+	o.NonHandleKeyTables = v
 }
 
 // GetGcSafePoint returns the GcSafePoint field value if set, zero value otherwise.
@@ -183,11 +183,11 @@ func (o DescribeSchemaTableResp) MarshalJSON() ([]byte, error) {
 func (o DescribeSchemaTableResp) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["clusterId"] = o.ClusterId
-	if !IsNil(o.ReplicateAllowSchemaTable) {
-		toSerialize["replicateAllowSchemaTable"] = o.ReplicateAllowSchemaTable
+	if !IsNil(o.HandleKeyTables) {
+		toSerialize["handleKeyTables"] = o.HandleKeyTables
 	}
-	if !IsNil(o.ReplicateDenySchemaTable) {
-		toSerialize["replicateDenySchemaTable"] = o.ReplicateDenySchemaTable
+	if !IsNil(o.NonHandleKeyTables) {
+		toSerialize["nonHandleKeyTables"] = o.NonHandleKeyTables
 	}
 	if !IsNil(o.GcSafePoint) {
 		toSerialize["gcSafePoint"] = o.GcSafePoint
@@ -236,8 +236,8 @@ func (o *DescribeSchemaTableResp) UnmarshalJSON(data []byte) (err error) {
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "clusterId")
-		delete(additionalProperties, "replicateAllowSchemaTable")
-		delete(additionalProperties, "replicateDenySchemaTable")
+		delete(additionalProperties, "handleKeyTables")
+		delete(additionalProperties, "nonHandleKeyTables")
 		delete(additionalProperties, "gcSafePoint")
 		o.AdditionalProperties = additionalProperties
 	}

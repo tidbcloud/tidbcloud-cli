@@ -21,27 +21,27 @@ var _ MappedNullable = &Changefeed{}
 
 // Changefeed struct for Changefeed
 type Changefeed struct {
-	// Required. The ID of the cluster.
+	// The ID of the cluster.
 	ClusterId string `json:"clusterId"`
-	// Output_only. The ID of the changefeed.
+	// The ID of the changefeed.
 	ChangefeedId *string `json:"changefeedId,omitempty"`
-	// Output_only. The state of the changefeed.  Optional. The name of the changefeed.
-	State *CDCStateEnum `json:"state,omitempty"`
-	// Optional. The name of the changefeed.
+	// The state of the changefeed.  The name of the changefeed.
+	State *ChangefeedStateEnum `json:"state,omitempty"`
+	// The name of the changefeed.
 	DisplayName *string `json:"displayName,omitempty"`
-	// Required. The sink of the changefeed.
+	// The sink of the changefeed.
 	Sink SinkInfo `json:"sink"`
-	// Required. The filter of the changefeed.
-	Filter CDCFilter `json:"filter"`
-	// Required. The start position of the changefeed.
+	// The filter of the changefeed.
+	Filter ChangefeedFilter `json:"filter"`
+	// The start position of the changefeed.
 	StartPosition StartPosition `json:"startPosition"`
-	// Output_only. The current checkpoint for the changefeed.
-	Checkpoint *CDCCheckpoint `json:"checkpoint,omitempty"`
-	// Output_only. The error message.
+	// The current checkpoint for the changefeed.
+	Checkpoint *Checkpoint `json:"checkpoint,omitempty"`
+	// The error message.
 	Error *string `json:"error,omitempty"`
-	// Output_only. Timestamp when the changefeed was created.
+	// Timestamp when the changefeed was created.
 	CreateTime *time.Time `json:"createTime,omitempty"`
-	// Output_only. Timestamp when the changefeed was updated.
+	// Timestamp when the changefeed was updated.
 	UpdateTime           NullableTime `json:"updateTime,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
@@ -52,7 +52,7 @@ type _Changefeed Changefeed
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewChangefeed(clusterId string, sink SinkInfo, filter CDCFilter, startPosition StartPosition) *Changefeed {
+func NewChangefeed(clusterId string, sink SinkInfo, filter ChangefeedFilter, startPosition StartPosition) *Changefeed {
 	this := Changefeed{}
 	this.ClusterId = clusterId
 	this.Sink = sink
@@ -126,9 +126,9 @@ func (o *Changefeed) SetChangefeedId(v string) {
 }
 
 // GetState returns the State field value if set, zero value otherwise.
-func (o *Changefeed) GetState() CDCStateEnum {
+func (o *Changefeed) GetState() ChangefeedStateEnum {
 	if o == nil || IsNil(o.State) {
-		var ret CDCStateEnum
+		var ret ChangefeedStateEnum
 		return ret
 	}
 	return *o.State
@@ -136,7 +136,7 @@ func (o *Changefeed) GetState() CDCStateEnum {
 
 // GetStateOk returns a tuple with the State field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Changefeed) GetStateOk() (*CDCStateEnum, bool) {
+func (o *Changefeed) GetStateOk() (*ChangefeedStateEnum, bool) {
 	if o == nil || IsNil(o.State) {
 		return nil, false
 	}
@@ -152,8 +152,8 @@ func (o *Changefeed) HasState() bool {
 	return false
 }
 
-// SetState gets a reference to the given CDCStateEnum and assigns it to the State field.
-func (o *Changefeed) SetState(v CDCStateEnum) {
+// SetState gets a reference to the given ChangefeedStateEnum and assigns it to the State field.
+func (o *Changefeed) SetState(v ChangefeedStateEnum) {
 	o.State = &v
 }
 
@@ -214,9 +214,9 @@ func (o *Changefeed) SetSink(v SinkInfo) {
 }
 
 // GetFilter returns the Filter field value
-func (o *Changefeed) GetFilter() CDCFilter {
+func (o *Changefeed) GetFilter() ChangefeedFilter {
 	if o == nil {
-		var ret CDCFilter
+		var ret ChangefeedFilter
 		return ret
 	}
 
@@ -225,7 +225,7 @@ func (o *Changefeed) GetFilter() CDCFilter {
 
 // GetFilterOk returns a tuple with the Filter field value
 // and a boolean to check if the value has been set.
-func (o *Changefeed) GetFilterOk() (*CDCFilter, bool) {
+func (o *Changefeed) GetFilterOk() (*ChangefeedFilter, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -233,7 +233,7 @@ func (o *Changefeed) GetFilterOk() (*CDCFilter, bool) {
 }
 
 // SetFilter sets field value
-func (o *Changefeed) SetFilter(v CDCFilter) {
+func (o *Changefeed) SetFilter(v ChangefeedFilter) {
 	o.Filter = v
 }
 
@@ -262,9 +262,9 @@ func (o *Changefeed) SetStartPosition(v StartPosition) {
 }
 
 // GetCheckpoint returns the Checkpoint field value if set, zero value otherwise.
-func (o *Changefeed) GetCheckpoint() CDCCheckpoint {
+func (o *Changefeed) GetCheckpoint() Checkpoint {
 	if o == nil || IsNil(o.Checkpoint) {
-		var ret CDCCheckpoint
+		var ret Checkpoint
 		return ret
 	}
 	return *o.Checkpoint
@@ -272,7 +272,7 @@ func (o *Changefeed) GetCheckpoint() CDCCheckpoint {
 
 // GetCheckpointOk returns a tuple with the Checkpoint field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Changefeed) GetCheckpointOk() (*CDCCheckpoint, bool) {
+func (o *Changefeed) GetCheckpointOk() (*Checkpoint, bool) {
 	if o == nil || IsNil(o.Checkpoint) {
 		return nil, false
 	}
@@ -288,8 +288,8 @@ func (o *Changefeed) HasCheckpoint() bool {
 	return false
 }
 
-// SetCheckpoint gets a reference to the given CDCCheckpoint and assigns it to the Checkpoint field.
-func (o *Changefeed) SetCheckpoint(v CDCCheckpoint) {
+// SetCheckpoint gets a reference to the given Checkpoint and assigns it to the Checkpoint field.
+func (o *Changefeed) SetCheckpoint(v Checkpoint) {
 	o.Checkpoint = &v
 }
 

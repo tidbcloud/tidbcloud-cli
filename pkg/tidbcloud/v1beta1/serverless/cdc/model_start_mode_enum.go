@@ -14,21 +14,21 @@ import (
 	"encoding/json"
 )
 
-// StartModeEnum  - FROM_NOW: Start from now.  - FROM_TSO: Start from TSO.  - FROM_UTC: Start from UTC.
+// StartModeEnum  - FROM_NOW: Start from now.  - FROM_TSO: Start from TSO.  - FROM_TIME: Start from Time.
 type StartModeEnum string
 
 // List of StartMode.Enum
 const (
-	STARTMODEENUM_FROM_NOW StartModeEnum = "FROM_NOW"
-	STARTMODEENUM_FROM_TSO StartModeEnum = "FROM_TSO"
-	STARTMODEENUM_FROM_UTC StartModeEnum = "FROM_UTC"
+	STARTMODEENUM_FROM_NOW  StartModeEnum = "FROM_NOW"
+	STARTMODEENUM_FROM_TSO  StartModeEnum = "FROM_TSO"
+	STARTMODEENUM_FROM_TIME StartModeEnum = "FROM_TIME"
 )
 
 // All allowed values of StartModeEnum enum
 var AllowedStartModeEnumEnumValues = []StartModeEnum{
 	"FROM_NOW",
 	"FROM_TSO",
-	"FROM_UTC",
+	"FROM_TIME",
 }
 
 func (v *StartModeEnum) UnmarshalJSON(src []byte) error {

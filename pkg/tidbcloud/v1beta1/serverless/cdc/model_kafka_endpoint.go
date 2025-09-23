@@ -20,9 +20,9 @@ var _ MappedNullable = &KafkaEndpoint{}
 
 // KafkaEndpoint struct for KafkaEndpoint
 type KafkaEndpoint struct {
-	// Required. The type of the Kafka instance.
+	// The type of the Kafka instance.
 	KafkaType KafkaTypeEnum `json:"kafkaType"`
-	// Required. The advertised listeners pattern.
+	// The advertised listeners pattern.
 	AdvertisedListenersPattern map[string]string `json:"advertisedListenersPattern"`
 	AdditionalProperties       map[string]interface{}
 }

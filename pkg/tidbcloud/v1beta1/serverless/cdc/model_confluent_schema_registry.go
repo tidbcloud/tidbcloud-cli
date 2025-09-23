@@ -20,13 +20,13 @@ var _ MappedNullable = &ConfluentSchemaRegistry{}
 
 // ConfluentSchemaRegistry struct for ConfluentSchemaRegistry
 type ConfluentSchemaRegistry struct {
-	// Required. The schema registry endpoint.
+	// The schema registry endpoint.
 	Endpoint string `json:"endpoint"`
-	// Optional. Enable HTTP authentication.
+	// Enable HTTP authentication.
 	EnableHttpAuth *bool `json:"enableHttpAuth,omitempty"`
-	// Optional. The username for HTTP authentication.
-	UserName *string `json:"userName,omitempty"`
-	// Optional. The password for HTTP authentication.
+	// The username for HTTP authentication.
+	Username *string `json:"username,omitempty"`
+	// The password for HTTP authentication.
 	Password             *string `json:"password,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
@@ -107,36 +107,36 @@ func (o *ConfluentSchemaRegistry) SetEnableHttpAuth(v bool) {
 	o.EnableHttpAuth = &v
 }
 
-// GetUserName returns the UserName field value if set, zero value otherwise.
-func (o *ConfluentSchemaRegistry) GetUserName() string {
-	if o == nil || IsNil(o.UserName) {
+// GetUsername returns the Username field value if set, zero value otherwise.
+func (o *ConfluentSchemaRegistry) GetUsername() string {
+	if o == nil || IsNil(o.Username) {
 		var ret string
 		return ret
 	}
-	return *o.UserName
+	return *o.Username
 }
 
-// GetUserNameOk returns a tuple with the UserName field value if set, nil otherwise
+// GetUsernameOk returns a tuple with the Username field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ConfluentSchemaRegistry) GetUserNameOk() (*string, bool) {
-	if o == nil || IsNil(o.UserName) {
+func (o *ConfluentSchemaRegistry) GetUsernameOk() (*string, bool) {
+	if o == nil || IsNil(o.Username) {
 		return nil, false
 	}
-	return o.UserName, true
+	return o.Username, true
 }
 
-// HasUserName returns a boolean if a field has been set.
-func (o *ConfluentSchemaRegistry) HasUserName() bool {
-	if o != nil && !IsNil(o.UserName) {
+// HasUsername returns a boolean if a field has been set.
+func (o *ConfluentSchemaRegistry) HasUsername() bool {
+	if o != nil && !IsNil(o.Username) {
 		return true
 	}
 
 	return false
 }
 
-// SetUserName gets a reference to the given string and assigns it to the UserName field.
-func (o *ConfluentSchemaRegistry) SetUserName(v string) {
-	o.UserName = &v
+// SetUsername gets a reference to the given string and assigns it to the Username field.
+func (o *ConfluentSchemaRegistry) SetUsername(v string) {
+	o.Username = &v
 }
 
 // GetPassword returns the Password field value if set, zero value otherwise.
@@ -185,8 +185,8 @@ func (o ConfluentSchemaRegistry) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.EnableHttpAuth) {
 		toSerialize["enableHttpAuth"] = o.EnableHttpAuth
 	}
-	if !IsNil(o.UserName) {
-		toSerialize["userName"] = o.UserName
+	if !IsNil(o.Username) {
+		toSerialize["username"] = o.Username
 	}
 	if !IsNil(o.Password) {
 		toSerialize["password"] = o.Password
@@ -236,7 +236,7 @@ func (o *ConfluentSchemaRegistry) UnmarshalJSON(data []byte) (err error) {
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "endpoint")
 		delete(additionalProperties, "enableHttpAuth")
-		delete(additionalProperties, "userName")
+		delete(additionalProperties, "username")
 		delete(additionalProperties, "password")
 		o.AdditionalProperties = additionalProperties
 	}
