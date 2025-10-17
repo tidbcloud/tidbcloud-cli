@@ -142,7 +142,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					startTSOStr = textInput.Inputs[3].Value()
 				case cdc.CHANGEFEEDTYPEENUM_MYSQL:
 					inputs := []string{flag.ChangefeedName, flag.ChangefeedMySQL, flag.ChangefeedFilter, flag.ChangefeedStartTSO}
-					textInput, err := ui.InitialInputModel(inputs, createKafkaInputDescription)
+					textInput, err := ui.InitialInputModel(inputs, createMySQLInputDescription)
 					if err != nil {
 						return err
 					}
