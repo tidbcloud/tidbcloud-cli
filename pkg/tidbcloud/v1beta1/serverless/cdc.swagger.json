@@ -1,0 +1,1497 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "TiDB Cloud Serverless CDC Open API",
+    "description": "TiDB Cloud Serverless CDC Open API",
+    "version": "v1beta1"
+  },
+  "tags": [
+    {
+      "name": "ChangefeedService"
+    }
+  ],
+  "host": "serverless.tidbapi.com",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1beta1/clusters/{clusterId}/changefeeds": {
+      "get": {
+        "operationId": "ChangefeedService_ListChangefeeds",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Changefeeds"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "The maximum number of changefeeds to return. Default is 10.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "The page token from the previous response for pagination.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "changefeedType",
+            "description": "The type of the changefeed. DEFAULT is all.\n\n - KAFKA: Kafka changefeed type.\n - MYSQL: MySQL changefeed type.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "KAFKA",
+              "MYSQL"
+            ]
+          }
+        ],
+        "tags": [
+          "ChangefeedService"
+        ]
+      },
+      "post": {
+        "operationId": "ChangefeedService_CreateChangefeed",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Changefeed"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChangefeedService.CreateChangefeedBody"
+            }
+          }
+        ],
+        "tags": [
+          "ChangefeedService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}": {
+      "get": {
+        "operationId": "ChangefeedService_GetChangefeed",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Changefeed"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "changefeedId",
+            "description": "The ID of the changefeed.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ChangefeedService"
+        ]
+      },
+      "delete": {
+        "operationId": "ChangefeedService_DeleteChangefeed",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Changefeed"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "changefeedId",
+            "description": "The ID of the changefeed.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ChangefeedService"
+        ]
+      },
+      "patch": {
+        "operationId": "ChangefeedService_EditChangefeed",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Changefeed"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "changefeedId",
+            "description": "The ID of the changefeed.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChangefeedService.EditChangefeedBody"
+            }
+          }
+        ],
+        "tags": [
+          "ChangefeedService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:start": {
+      "post": {
+        "operationId": "ChangefeedService_StartChangefeed",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Changefeed"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "changefeedId",
+            "description": "The ID of the changefeed.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChangefeedService.StartChangefeedBody"
+            }
+          }
+        ],
+        "tags": [
+          "ChangefeedService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:stop": {
+      "post": {
+        "operationId": "ChangefeedService_StopChangefeed",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Changefeed"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "changefeedId",
+            "description": "The ID of the changefeed.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChangefeedService.StopChangefeedBody"
+            }
+          }
+        ],
+        "tags": [
+          "ChangefeedService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/changefeeds:test": {
+      "post": {
+        "operationId": "ChangefeedService_TestChangefeed",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChangefeedService.TestChangefeedBody"
+            }
+          }
+        ],
+        "tags": [
+          "ChangefeedService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/changefeeds:describeSchemaTable": {
+      "post": {
+        "operationId": "ChangefeedService_DescribeSchemaTable",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DescribeSchemaTableResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChangefeedService.DescribeSchemaTableBody"
+            }
+          }
+        ],
+        "tags": [
+          "ChangefeedService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/changefeeds/privateLinkEndpoint": {
+      "get": {
+        "operationId": "ChangefeedService_GetPrivateLinkEndpoint",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PrivateLinkEndpoint"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "privateLinkServiceName",
+            "description": "The private link service name.",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ChangefeedService"
+        ]
+      },
+      "delete": {
+        "operationId": "ChangefeedService_DeletePrivateLinkEndpoint",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PrivateLinkEndpoint"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "privateLinkServiceName",
+            "description": "The private link service name.",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "ChangefeedService"
+        ]
+      },
+      "post": {
+        "operationId": "ChangefeedService_CreatePrivateLinkEndpoint",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PrivateLinkEndpoint"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChangefeedService.CreatePrivateLinkEndpointBody"
+            }
+          }
+        ],
+        "tags": [
+          "ChangefeedService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "AvroConfig": {
+      "type": "object",
+      "properties": {
+        "decimalHandlingMode": {
+          "$ref": "#/definitions/DecimalHandlingMode.Enum"
+        },
+        "bigintUnsignedHandlingMode": {
+          "$ref": "#/definitions/BigintUnsignedHandlingMode.Enum"
+        },
+        "confluentSchemaRegistry": {
+          "description": "Confluent Schema Registry.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ConfluentSchemaRegistry"
+            }
+          ]
+        },
+        "awsGlueSchemaRegistry": {
+          "description": "AWS Glue Schema Registry.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/GlueSchemaRegistry"
+            }
+          ]
+        }
+      }
+    },
+    "BigintUnsignedHandlingMode.Enum": {
+      "type": "string",
+      "enum": [
+        "LONG",
+        "STRING"
+      ],
+      "description": " - LONG: Long handling mode for unsigned bigint.\n - STRING: String handling mode for unsigned bigint."
+    },
+    "Changefeed": {
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "type": "string",
+          "description": "The ID of the cluster."
+        },
+        "changefeedId": {
+          "type": "string",
+          "description": "The ID of the changefeed.",
+          "readOnly": true
+        },
+        "state": {
+          "description": "The state of the changefeed.\n\nThe name of the changefeed.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/ChangefeedState.Enum"
+            }
+          ]
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The name of the changefeed."
+        },
+        "sink": {
+          "description": "The sink of the changefeed.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/SinkInfo"
+            }
+          ]
+        },
+        "filter": {
+          "description": "The filter of the changefeed.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ChangefeedFilter"
+            }
+          ]
+        },
+        "startPosition": {
+          "description": "The start position of the changefeed.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/StartPosition"
+            }
+          ]
+        },
+        "checkpoint": {
+          "description": "The current checkpoint for the changefeed.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/Checkpoint"
+            }
+          ]
+        },
+        "error": {
+          "type": "string",
+          "description": "The error message.",
+          "readOnly": true
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the changefeed was created.",
+          "readOnly": true
+        },
+        "updateTime": {
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true,
+          "description": "Timestamp when the changefeed was updated.",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "clusterId",
+        "sink",
+        "filter",
+        "startPosition"
+      ]
+    },
+    "ChangefeedFilter": {
+      "type": "object",
+      "properties": {
+        "filterRule": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mode": {
+          "$ref": "#/definitions/TableMode.Enum"
+        },
+        "eventFilterRule": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/EventFilterRule"
+          }
+        }
+      }
+    },
+    "ChangefeedService.CreateChangefeedBody": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "description": "The name of the changefeed."
+        },
+        "sink": {
+          "description": "The sink of the changefeed.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/SinkInfo"
+            }
+          ]
+        },
+        "filter": {
+          "description": "The filter of the changefeed.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ChangefeedFilter"
+            }
+          ]
+        },
+        "startPosition": {
+          "description": "The start position of the changefeed.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/StartPosition"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sink",
+        "filter"
+      ]
+    },
+    "ChangefeedService.CreatePrivateLinkEndpointBody": {
+      "type": "object",
+      "properties": {
+        "endpointId": {
+          "type": "string",
+          "description": "The ID of the private link endpoint.",
+          "readOnly": true
+        },
+        "privateLinkServiceName": {
+          "type": "string",
+          "description": "The private link service name."
+        },
+        "changefeedType": {
+          "description": "The type of the sink.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ChangefeedType.Enum"
+            }
+          ]
+        },
+        "state": {
+          "description": "The state of the private link.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/PrivateLinkEndpointState.Enum"
+            }
+          ]
+        },
+        "kafka": {
+          "description": "Kafka private link endpoint information.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/KafkaEndpoint"
+            }
+          ]
+        },
+        "message": {
+          "type": "string",
+          "description": "The message.",
+          "readOnly": true
+        },
+        "endpointUrl": {
+          "type": "string",
+          "description": "The message.",
+          "readOnly": true
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the private link endpoint was created.",
+          "readOnly": true
+        },
+        "updateTime": {
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true,
+          "description": "Timestamp when the private link endpoint was updated.",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "privateLinkServiceName",
+        "changefeedType"
+      ]
+    },
+    "ChangefeedService.DescribeSchemaTableBody": {
+      "type": "object",
+      "properties": {
+        "filterRules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The filter rules for schema tables."
+        }
+      }
+    },
+    "ChangefeedService.EditChangefeedBody": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "description": "The name of the changefeed."
+        },
+        "sink": {
+          "description": "The sink of the changefeed.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/SinkInfo"
+            }
+          ]
+        },
+        "filter": {
+          "description": "The filter of the changefeed.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ChangefeedFilter"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sink",
+        "filter"
+      ]
+    },
+    "ChangefeedService.StartChangefeedBody": {
+      "type": "object"
+    },
+    "ChangefeedService.StopChangefeedBody": {
+      "type": "object"
+    },
+    "ChangefeedService.TestChangefeedBody": {
+      "type": "object",
+      "properties": {
+        "sink": {
+          "description": "The sink of the changefeed.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/SinkInfo"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sink"
+      ]
+    },
+    "ChangefeedState.Enum": {
+      "type": "string",
+      "enum": [
+        "RUNNING",
+        "CREATE_FAILED",
+        "RUNNING_FAILED",
+        "CREATING",
+        "PAUSED",
+        "DELETED",
+        "WARNING"
+      ],
+      "description": " - RUNNING: The changefeed is running.\n - CREATE_FAILED: The changefeed has failed during creation.\n - RUNNING_FAILED: The changefeed has failed during running.\n - CREATING: The changefeed is being created.\n - PAUSED: The changefeed is paused.\n - DELETED: The changefeed is deleted.\n - WARNING: The changefeed has a warning."
+    },
+    "ChangefeedType.Enum": {
+      "type": "string",
+      "enum": [
+        "KAFKA",
+        "MYSQL"
+      ],
+      "description": " - KAFKA: Kafka changefeed type.\n - MYSQL: MySQL changefeed type."
+    },
+    "Changefeeds": {
+      "type": "object",
+      "properties": {
+        "changefeeds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Changefeed"
+          },
+          "description": "The list of changefeeds."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "The token provided to retrieve the next page of results."
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The total number of changefeeds."
+        }
+      }
+    },
+    "Checkpoint": {
+      "type": "object",
+      "properties": {
+        "tso": {
+          "type": "string",
+          "format": "uint64",
+          "description": "The checkpoint TSO.",
+          "readOnly": true
+        },
+        "time": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The checkpoint in time.",
+          "readOnly": true
+        }
+      }
+    },
+    "ConfluentSchemaRegistry": {
+      "type": "object",
+      "properties": {
+        "endpoint": {
+          "type": "string",
+          "description": "The schema registry endpoint."
+        },
+        "enableHttpAuth": {
+          "type": "boolean",
+          "description": "Enable HTTP authentication."
+        },
+        "username": {
+          "type": "string",
+          "description": "The username for HTTP authentication."
+        },
+        "password": {
+          "type": "string",
+          "description": "The password for HTTP authentication."
+        }
+      },
+      "required": [
+        "endpoint"
+      ]
+    },
+    "DecimalHandlingMode.Enum": {
+      "type": "string",
+      "enum": [
+        "PRECISE",
+        "STRING"
+      ],
+      "description": " - PRECISE: Precise handling mode for decimals.\n - STRING: String handling mode for decimals."
+    },
+    "DescribeSchemaTableResp": {
+      "type": "object",
+      "properties": {
+        "clusterId": {
+          "type": "string",
+          "description": "The ID of the cluster."
+        },
+        "handleKeyTables": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The tables with handle key(pk or not null uk), up to 1000 tables will be returned."
+        },
+        "nonHandleKeyTables": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The tables without handle key(pk or not null uk), up to 1000 tables will be returned."
+        },
+        "gcSafePoint": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The GC safe point timestamp."
+        }
+      },
+      "required": [
+        "clusterId"
+      ]
+    },
+    "EventFilterRule": {
+      "type": "object",
+      "properties": {
+        "matcher": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ignoreEvent": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GlueSchemaRegistry": {
+      "type": "object",
+      "properties": {
+        "region": {
+          "type": "string",
+          "description": "The region of schema registry."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of schema registry."
+        },
+        "accessKeyId": {
+          "type": "string",
+          "description": "The AWS access key ID."
+        },
+        "secretAccessKey": {
+          "type": "string",
+          "description": "The AWS secret access key."
+        }
+      },
+      "required": [
+        "region",
+        "name",
+        "accessKeyId",
+        "secretAccessKey"
+      ]
+    },
+    "Kafka": {
+      "type": "object",
+      "properties": {
+        "network": {
+          "$ref": "#/definitions/Kafka.Network"
+        },
+        "broker": {
+          "$ref": "#/definitions/Kafka.Broker"
+        },
+        "authentication": {
+          "$ref": "#/definitions/Kafka.Authentication"
+        },
+        "dataFormat": {
+          "$ref": "#/definitions/Kafka.DataFormat"
+        },
+        "topicPartitionConfig": {
+          "$ref": "#/definitions/Kafka.TopicPartitionConfig"
+        },
+        "columnSelectors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Kafka.ColumnSelector"
+          }
+        }
+      }
+    },
+    "Kafka.Authentication": {
+      "type": "object",
+      "properties": {
+        "authType": {
+          "$ref": "#/definitions/KafkaAuthType.Enum"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "enableTls": {
+          "type": "boolean"
+        }
+      }
+    },
+    "Kafka.Broker": {
+      "type": "object",
+      "properties": {
+        "kafkaVersion": {
+          "$ref": "#/definitions/KafkaVersion.Enum"
+        },
+        "compression": {
+          "$ref": "#/definitions/KafkaCompressionType.Enum"
+        }
+      }
+    },
+    "Kafka.ColumnSelector": {
+      "type": "object",
+      "properties": {
+        "matcher": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Kafka.DataFormat": {
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "$ref": "#/definitions/KafkaProtocol.Enum"
+        },
+        "enableTidbExtension": {
+          "type": "boolean",
+          "title": "only available when protocol is CANAL_JSON and AVRO"
+        },
+        "avroConfig": {
+          "$ref": "#/definitions/AvroConfig"
+        }
+      }
+    },
+    "Kafka.Network": {
+      "type": "object",
+      "properties": {
+        "networkType": {
+          "$ref": "#/definitions/KafkaNetworkType.Enum"
+        },
+        "privateLinkServiceName": {
+          "type": "string"
+        },
+        "publicEndpoints": {
+          "type": "string"
+        }
+      }
+    },
+    "Kafka.PartitionDispatcherConfig": {
+      "type": "object",
+      "properties": {
+        "partitionType": {
+          "$ref": "#/definitions/PartitionDispatcher.Enum"
+        },
+        "matcher": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "indexName": {
+          "type": "string"
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Kafka.TopicPartitionConfig": {
+      "type": "object",
+      "properties": {
+        "dispatchType": {
+          "$ref": "#/definitions/TopicDispatchType.Enum"
+        },
+        "defaultTopic": {
+          "type": "string"
+        },
+        "topicPrefix": {
+          "type": "string"
+        },
+        "separator": {
+          "type": "string"
+        },
+        "topicSuffix": {
+          "type": "string"
+        },
+        "replicationFactor": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "partitionNum": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "partitionDispatchers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Kafka.PartitionDispatcherConfig"
+          }
+        }
+      }
+    },
+    "KafkaAuthType.Enum": {
+      "type": "string",
+      "enum": [
+        "DISABLE",
+        "SASL_PLAIN",
+        "SASL_SCRAM_SHA_256",
+        "SASL_SCRAM_SHA_512"
+      ],
+      "description": " - DISABLE: No authentication.\n - SASL_PLAIN: SASL/PLAIN authentication.\n - SASL_SCRAM_SHA_256: SASL/SCRAM-SHA-256 authentication.\n - SASL_SCRAM_SHA_512: SASL/SCRAM-SHA-512 authentication."
+    },
+    "KafkaCompressionType.Enum": {
+      "type": "string",
+      "enum": [
+        "NONE",
+        "GZIP",
+        "SNAPPY",
+        "LZ4",
+        "ZSTD"
+      ]
+    },
+    "KafkaEndpoint": {
+      "type": "object",
+      "properties": {
+        "kafkaType": {
+          "description": "The type of the Kafka instance.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/KafkaType.Enum"
+            }
+          ]
+        },
+        "advertisedListenersPattern": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "The advertised listeners pattern."
+        }
+      },
+      "required": [
+        "kafkaType",
+        "advertisedListenersPattern"
+      ]
+    },
+    "KafkaNetworkType.Enum": {
+      "type": "string",
+      "enum": [
+        "PUBLIC",
+        "PRIVATE_LINK"
+      ],
+      "description": " - PUBLIC: Public network.\n - PRIVATE_LINK: Private Link network."
+    },
+    "KafkaProtocol.Enum": {
+      "type": "string",
+      "enum": [
+        "CANAL_JSON",
+        "OPEN_PROTOCOL",
+        "AVRO"
+      ],
+      "description": " - CANAL_JSON: Canal-JSON protocol.\n - OPEN_PROTOCOL: Open Protocol.\n - AVRO: Avro protocol."
+    },
+    "KafkaType.Enum": {
+      "type": "string",
+      "enum": [
+        "SELF_HOSTED",
+        "MSK",
+        "CONFLUENT"
+      ],
+      "description": " - SELF_HOSTED: Self-hosted Kafka.\n - MSK: MSK (Managed Streaming for Kafka).\n - CONFLUENT: Confluent Kafka."
+    },
+    "KafkaVersion.Enum": {
+      "type": "string",
+      "enum": [
+        "VERSION_2XX",
+        "VERSION_3XX"
+      ],
+      "description": " - VERSION_2XX: Kafka 2.x.x version.\n - VERSION_3XX: Kafka 3.x.x version."
+    },
+    "MySQL": {
+      "type": "object",
+      "properties": {
+        "network": {
+          "description": "The network configuration for the MySQL instance.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/MySQL.Network"
+            }
+          ]
+        },
+        "authentication": {
+          "description": "The authentication information for the MySQL instance.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/MySQL.Authentication"
+            }
+          ]
+        }
+      },
+      "required": [
+        "network",
+        "authentication"
+      ]
+    },
+    "MySQL.Authentication": {
+      "type": "object",
+      "properties": {
+        "userName": {
+          "type": "string",
+          "description": "The username for the MySQL instance."
+        },
+        "password": {
+          "type": "string",
+          "description": "The password for the MySQL instance."
+        },
+        "enableTls": {
+          "type": "boolean",
+          "description": "Enable TLS for the MySQL connection."
+        }
+      },
+      "required": [
+        "userName",
+        "password"
+      ]
+    },
+    "MySQL.Network": {
+      "type": "object",
+      "properties": {
+        "networkType": {
+          "$ref": "#/definitions/MySQLNetworkType.Enum"
+        },
+        "publicEndpoint": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "networkType"
+      ]
+    },
+    "MySQLNetworkType.Enum": {
+      "type": "string",
+      "enum": [
+        "PUBLIC",
+        "PRIVATE_LINK"
+      ],
+      "description": " - PUBLIC: Public network.\n - PRIVATE_LINK: Private network."
+    },
+    "PartitionDispatcher.Enum": {
+      "type": "string",
+      "enum": [
+        "TABLE",
+        "INDEX_VALUE",
+        "TS",
+        "COLUMNS"
+      ],
+      "description": " - TABLE: Partition by table.\n - INDEX_VALUE: Partition by index value.\n - TS: Partition by timestamp.\n - COLUMNS: Partition by columns."
+    },
+    "PrivateLinkEndpoint": {
+      "type": "object",
+      "properties": {
+        "endpointId": {
+          "type": "string",
+          "description": "The ID of the private link endpoint.",
+          "readOnly": true
+        },
+        "clusterId": {
+          "type": "string",
+          "description": "The ID of the cluster."
+        },
+        "privateLinkServiceName": {
+          "type": "string",
+          "description": "The private link service name."
+        },
+        "changefeedType": {
+          "description": "The type of the sink.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ChangefeedType.Enum"
+            }
+          ]
+        },
+        "state": {
+          "description": "The state of the private link.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/PrivateLinkEndpointState.Enum"
+            }
+          ]
+        },
+        "kafka": {
+          "description": "Kafka private link endpoint information.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/KafkaEndpoint"
+            }
+          ]
+        },
+        "message": {
+          "type": "string",
+          "description": "The message.",
+          "readOnly": true
+        },
+        "endpointUrl": {
+          "type": "string",
+          "description": "The message.",
+          "readOnly": true
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the private link endpoint was created.",
+          "readOnly": true
+        },
+        "updateTime": {
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true,
+          "description": "Timestamp when the private link endpoint was updated.",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "clusterId",
+        "privateLinkServiceName",
+        "changefeedType"
+      ]
+    },
+    "PrivateLinkEndpointState.Enum": {
+      "type": "string",
+      "enum": [
+        "PENDING_ACCEPTANCE",
+        "PENDING",
+        "AVAILABLE",
+        "REJECTED",
+        "EXPIRED",
+        "FAILED",
+        "DELETING"
+      ],
+      "description": " - PENDING_ACCEPTANCE: The private link endpoint is pending acceptance.\n - PENDING: The private link endpoint is pending.\n - AVAILABLE: The private link endpoint is available.\n - REJECTED: The private link endpoint is rejected.\n - EXPIRED: The private link endpoint is Expired.\n - FAILED: The private link endpoint is failed.\n - DELETING: The private link endpoint is deleting."
+    },
+    "SinkInfo": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of the sink.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ChangefeedType.Enum"
+            }
+          ]
+        },
+        "kafka": {
+          "description": "The Kafka sink information.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Kafka"
+            }
+          ]
+        },
+        "mysql": {
+          "description": "The MySQL sink information.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/MySQL"
+            }
+          ]
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "StartMode.Enum": {
+      "type": "string",
+      "enum": [
+        "FROM_NOW",
+        "FROM_TSO",
+        "FROM_TIME"
+      ],
+      "description": " - FROM_NOW: Start from now.\n - FROM_TSO: Start from TSO.\n - FROM_TIME: Start from Time."
+    },
+    "StartPosition": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "$ref": "#/definitions/StartMode.Enum"
+        },
+        "tso": {
+          "type": "string",
+          "format": "uint64",
+          "title": "The start position in TSO"
+        },
+        "time": {
+          "type": "string",
+          "format": "date-time",
+          "title": "The start position in time"
+        }
+      }
+    },
+    "Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Any"
+          }
+        }
+      }
+    },
+    "TableMode.Enum": {
+      "type": "string",
+      "enum": [
+        "IGNORE_NOT_SUPPORT_TABLE",
+        "FORCE_SYNC"
+      ],
+      "description": " - IGNORE_NOT_SUPPORT_TABLE: Ignore tables that are not supported.\n - FORCE_SYNC: Force synchronize all tables."
+    },
+    "TopicDispatchType.Enum": {
+      "type": "string",
+      "enum": [
+        "ONE_TOPIC",
+        "BY_TABLE",
+        "BY_DATABASE"
+      ],
+      "description": " - ONE_TOPIC: One topic for all data.\n - BY_TABLE: Dispatch by table.\n - BY_DATABASE: Dispatch by database."
+    }
+  }
+}

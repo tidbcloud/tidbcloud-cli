@@ -1,0 +1,1219 @@
+openapi: 3.0.1
+info:
+  description: TiDB Cloud Serverless CDC Open API
+  title: TiDB Cloud Serverless CDC Open API
+  version: v1beta1
+servers:
+- url: https://serverless.tidbapi.com/
+tags:
+- name: ChangefeedService
+paths:
+  /v1beta1/clusters/{clusterId}/changefeeds:
+    get:
+      operationId: ChangefeedService_ListChangefeeds
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The maximum number of changefeeds to return. Default is 10.
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: The page token from the previous response for pagination.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: |-
+          The type of the changefeed. DEFAULT is all.
+
+           - KAFKA: Kafka changefeed type.
+           - MYSQL: MySQL changefeed type.
+        in: query
+        name: changefeedType
+        schema:
+          $ref: '#/components/schemas/ChangefeedService_ListChangefeeds_changefeedType_parameter'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Changefeeds'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - ChangefeedService
+    post:
+      operationId: ChangefeedService_CreateChangefeed
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangefeedService.CreateChangefeedBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Changefeed'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - ChangefeedService
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:
+    delete:
+      operationId: ChangefeedService_DeleteChangefeed
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the changefeed.
+        in: path
+        name: changefeedId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Changefeed'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - ChangefeedService
+    get:
+      operationId: ChangefeedService_GetChangefeed
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the changefeed.
+        in: path
+        name: changefeedId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Changefeed'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - ChangefeedService
+    patch:
+      operationId: ChangefeedService_EditChangefeed
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the changefeed.
+        in: path
+        name: changefeedId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangefeedService.EditChangefeedBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Changefeed'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - ChangefeedService
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:start:
+    post:
+      operationId: ChangefeedService_StartChangefeed
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the changefeed.
+        in: path
+        name: changefeedId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangefeedService.StartChangefeedBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Changefeed'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - ChangefeedService
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/changefeeds/{changefeedId}:stop:
+    post:
+      operationId: ChangefeedService_StopChangefeed
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the changefeed.
+        in: path
+        name: changefeedId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangefeedService.StopChangefeedBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Changefeed'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - ChangefeedService
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/changefeeds:test:
+    post:
+      operationId: ChangefeedService_TestChangefeed
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangefeedService.TestChangefeedBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - ChangefeedService
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/changefeeds:describeSchemaTable:
+    post:
+      operationId: ChangefeedService_DescribeSchemaTable
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangefeedService.DescribeSchemaTableBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DescribeSchemaTableResp'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - ChangefeedService
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/changefeeds/privateLinkEndpoint:
+    delete:
+      operationId: ChangefeedService_DeletePrivateLinkEndpoint
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The private link service name.
+        in: query
+        name: privateLinkServiceName
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateLinkEndpoint'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - ChangefeedService
+    get:
+      operationId: ChangefeedService_GetPrivateLinkEndpoint
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The private link service name.
+        in: query
+        name: privateLinkServiceName
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateLinkEndpoint'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - ChangefeedService
+    post:
+      operationId: ChangefeedService_CreatePrivateLinkEndpoint
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangefeedService.CreatePrivateLinkEndpointBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateLinkEndpoint'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      tags:
+      - ChangefeedService
+      x-codegen-request-body-name: body
+components:
+  schemas:
+    Any:
+      additionalProperties:
+        type: object
+      example:
+        '@type': '@type'
+      properties:
+        '@type':
+          type: string
+      type: object
+    AvroConfig:
+      properties:
+        decimalHandlingMode:
+          $ref: '#/components/schemas/DecimalHandlingMode.Enum'
+        bigintUnsignedHandlingMode:
+          $ref: '#/components/schemas/BigintUnsignedHandlingMode.Enum'
+        confluentSchemaRegistry:
+          allOf:
+          - $ref: '#/components/schemas/ConfluentSchemaRegistry'
+          description: Confluent Schema Registry.
+          type: object
+        awsGlueSchemaRegistry:
+          allOf:
+          - $ref: '#/components/schemas/GlueSchemaRegistry'
+          description: AWS Glue Schema Registry.
+          type: object
+      type: object
+    BigintUnsignedHandlingMode.Enum:
+      description: |2-
+         - LONG: Long handling mode for unsigned bigint.
+         - STRING: String handling mode for unsigned bigint.
+      enum:
+      - LONG
+      - STRING
+      type: string
+    Changefeed:
+      example:
+        filter: "{}"
+        checkpoint: "{}"
+        createTime: 2000-01-23T04:56:07.000+00:00
+        displayName: displayName
+        sink: "{}"
+        updateTime: 2000-01-23T04:56:07.000+00:00
+        clusterId: clusterId
+        changefeedId: changefeedId
+        state: "{}"
+        error: error
+        startPosition: "{}"
+      properties:
+        clusterId:
+          description: The ID of the cluster.
+          type: string
+        changefeedId:
+          description: The ID of the changefeed.
+          readOnly: true
+          type: string
+        state:
+          allOf:
+          - $ref: '#/components/schemas/ChangefeedState.Enum'
+          description: |-
+            The state of the changefeed.
+
+            The name of the changefeed.
+          type: object
+        displayName:
+          description: The name of the changefeed.
+          type: string
+        sink:
+          allOf:
+          - $ref: '#/components/schemas/SinkInfo'
+          description: The sink of the changefeed.
+          type: object
+        filter:
+          allOf:
+          - $ref: '#/components/schemas/ChangefeedFilter'
+          description: The filter of the changefeed.
+          type: object
+        startPosition:
+          allOf:
+          - $ref: '#/components/schemas/StartPosition'
+          description: The start position of the changefeed.
+          type: object
+        checkpoint:
+          allOf:
+          - $ref: '#/components/schemas/Checkpoint'
+          description: The current checkpoint for the changefeed.
+          type: object
+        error:
+          description: The error message.
+          readOnly: true
+          type: string
+        createTime:
+          description: Timestamp when the changefeed was created.
+          format: date-time
+          readOnly: true
+          type: string
+        updateTime:
+          description: Timestamp when the changefeed was updated.
+          format: date-time
+          nullable: true
+          readOnly: true
+          type: string
+      required:
+      - clusterId
+      - filter
+      - sink
+      - startPosition
+      type: object
+    ChangefeedFilter:
+      properties:
+        filterRule:
+          items:
+            type: string
+          type: array
+        mode:
+          $ref: '#/components/schemas/TableMode.Enum'
+        eventFilterRule:
+          items:
+            $ref: '#/components/schemas/EventFilterRule'
+          type: array
+      type: object
+    ChangefeedService.CreateChangefeedBody:
+      properties:
+        displayName:
+          description: The name of the changefeed.
+          type: string
+        sink:
+          allOf:
+          - $ref: '#/components/schemas/SinkInfo'
+          description: The sink of the changefeed.
+          type: object
+        filter:
+          allOf:
+          - $ref: '#/components/schemas/ChangefeedFilter'
+          description: The filter of the changefeed.
+          type: object
+        startPosition:
+          allOf:
+          - $ref: '#/components/schemas/StartPosition'
+          description: The start position of the changefeed.
+          type: object
+      required:
+      - filter
+      - sink
+      type: object
+    ChangefeedService.CreatePrivateLinkEndpointBody:
+      properties:
+        endpointId:
+          description: The ID of the private link endpoint.
+          readOnly: true
+          type: string
+        privateLinkServiceName:
+          description: The private link service name.
+          type: string
+        changefeedType:
+          allOf:
+          - $ref: '#/components/schemas/ChangefeedType.Enum'
+          description: The type of the sink.
+          type: object
+        state:
+          allOf:
+          - $ref: '#/components/schemas/PrivateLinkEndpointState.Enum'
+          description: The state of the private link.
+          type: object
+        kafka:
+          allOf:
+          - $ref: '#/components/schemas/KafkaEndpoint'
+          description: Kafka private link endpoint information.
+          type: object
+        message:
+          description: The message.
+          readOnly: true
+          type: string
+        endpointUrl:
+          description: The message.
+          readOnly: true
+          type: string
+        createTime:
+          description: Timestamp when the private link endpoint was created.
+          format: date-time
+          readOnly: true
+          type: string
+        updateTime:
+          description: Timestamp when the private link endpoint was updated.
+          format: date-time
+          nullable: true
+          readOnly: true
+          type: string
+      required:
+      - changefeedType
+      - privateLinkServiceName
+      type: object
+    ChangefeedService.DescribeSchemaTableBody:
+      properties:
+        filterRules:
+          description: The filter rules for schema tables.
+          items:
+            type: string
+          type: array
+      type: object
+    ChangefeedService.EditChangefeedBody:
+      properties:
+        displayName:
+          description: The name of the changefeed.
+          type: string
+        sink:
+          allOf:
+          - $ref: '#/components/schemas/SinkInfo'
+          description: The sink of the changefeed.
+          type: object
+        filter:
+          allOf:
+          - $ref: '#/components/schemas/ChangefeedFilter'
+          description: The filter of the changefeed.
+          type: object
+      required:
+      - filter
+      - sink
+      type: object
+    ChangefeedService.StartChangefeedBody:
+      type: object
+    ChangefeedService.StopChangefeedBody:
+      type: object
+    ChangefeedService.TestChangefeedBody:
+      properties:
+        sink:
+          allOf:
+          - $ref: '#/components/schemas/SinkInfo'
+          description: The sink of the changefeed.
+          type: object
+      required:
+      - sink
+      type: object
+    ChangefeedState.Enum:
+      description: |2-
+         - RUNNING: The changefeed is running.
+         - CREATE_FAILED: The changefeed has failed during creation.
+         - RUNNING_FAILED: The changefeed has failed during running.
+         - CREATING: The changefeed is being created.
+         - PAUSED: The changefeed is paused.
+         - DELETED: The changefeed is deleted.
+         - WARNING: The changefeed has a warning.
+      enum:
+      - RUNNING
+      - CREATE_FAILED
+      - RUNNING_FAILED
+      - CREATING
+      - PAUSED
+      - DELETED
+      - WARNING
+      type: string
+    ChangefeedType.Enum:
+      description: |2-
+         - KAFKA: Kafka changefeed type.
+         - MYSQL: MySQL changefeed type.
+      enum:
+      - KAFKA
+      - MYSQL
+      type: string
+    Changefeeds:
+      example:
+        totalSize: 0
+        nextPageToken: nextPageToken
+        changefeeds:
+        - filter: "{}"
+          checkpoint: "{}"
+          createTime: 2000-01-23T04:56:07.000+00:00
+          displayName: displayName
+          sink: "{}"
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          changefeedId: changefeedId
+          state: "{}"
+          error: error
+          startPosition: "{}"
+        - filter: "{}"
+          checkpoint: "{}"
+          createTime: 2000-01-23T04:56:07.000+00:00
+          displayName: displayName
+          sink: "{}"
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          changefeedId: changefeedId
+          state: "{}"
+          error: error
+          startPosition: "{}"
+      properties:
+        changefeeds:
+          description: The list of changefeeds.
+          items:
+            $ref: '#/components/schemas/Changefeed'
+          type: array
+        nextPageToken:
+          description: The token provided to retrieve the next page of results.
+          type: string
+        totalSize:
+          description: The total number of changefeeds.
+          format: int64
+          type: integer
+      type: object
+    Checkpoint:
+      properties:
+        tso:
+          description: The checkpoint TSO.
+          format: uint64
+          readOnly: true
+          type: string
+        time:
+          description: The checkpoint in time.
+          format: date-time
+          readOnly: true
+          type: string
+      type: object
+    ConfluentSchemaRegistry:
+      properties:
+        endpoint:
+          description: The schema registry endpoint.
+          type: string
+        enableHttpAuth:
+          description: Enable HTTP authentication.
+          type: boolean
+        username:
+          description: The username for HTTP authentication.
+          type: string
+        password:
+          description: The password for HTTP authentication.
+          type: string
+      required:
+      - endpoint
+      type: object
+    DecimalHandlingMode.Enum:
+      description: |2-
+         - PRECISE: Precise handling mode for decimals.
+         - STRING: String handling mode for decimals.
+      enum:
+      - PRECISE
+      - STRING
+      type: string
+    DescribeSchemaTableResp:
+      example:
+        nonHandleKeyTables:
+        - nonHandleKeyTables
+        - nonHandleKeyTables
+        handleKeyTables:
+        - handleKeyTables
+        - handleKeyTables
+        gcSafePoint: 2000-01-23T04:56:07.000+00:00
+        clusterId: clusterId
+      properties:
+        clusterId:
+          description: The ID of the cluster.
+          type: string
+        handleKeyTables:
+          description: "The tables with handle key(pk or not null uk), up to 1000\
+            \ tables will be returned."
+          items:
+            type: string
+          type: array
+        nonHandleKeyTables:
+          description: "The tables without handle key(pk or not null uk), up to 1000\
+            \ tables will be returned."
+          items:
+            type: string
+          type: array
+        gcSafePoint:
+          description: The GC safe point timestamp.
+          format: date-time
+          type: string
+      required:
+      - clusterId
+      type: object
+    EventFilterRule:
+      properties:
+        matcher:
+          items:
+            type: string
+          type: array
+        ignoreEvent:
+          items:
+            type: string
+          type: array
+      type: object
+    GlueSchemaRegistry:
+      properties:
+        region:
+          description: The region of schema registry.
+          type: string
+        name:
+          description: The name of schema registry.
+          type: string
+        accessKeyId:
+          description: The AWS access key ID.
+          type: string
+        secretAccessKey:
+          description: The AWS secret access key.
+          type: string
+      required:
+      - accessKeyId
+      - name
+      - region
+      - secretAccessKey
+      type: object
+    Kafka:
+      properties:
+        network:
+          $ref: '#/components/schemas/Kafka.Network'
+        broker:
+          $ref: '#/components/schemas/Kafka.Broker'
+        authentication:
+          $ref: '#/components/schemas/Kafka.Authentication'
+        dataFormat:
+          $ref: '#/components/schemas/Kafka.DataFormat'
+        topicPartitionConfig:
+          $ref: '#/components/schemas/Kafka.TopicPartitionConfig'
+        columnSelectors:
+          items:
+            $ref: '#/components/schemas/Kafka.ColumnSelector'
+          type: array
+      type: object
+    Kafka.Authentication:
+      properties:
+        authType:
+          $ref: '#/components/schemas/KafkaAuthType.Enum'
+        username:
+          type: string
+        password:
+          type: string
+        enableTls:
+          type: boolean
+      type: object
+    Kafka.Broker:
+      properties:
+        kafkaVersion:
+          $ref: '#/components/schemas/KafkaVersion.Enum'
+        compression:
+          $ref: '#/components/schemas/KafkaCompressionType.Enum'
+      type: object
+    Kafka.ColumnSelector:
+      properties:
+        matcher:
+          items:
+            type: string
+          type: array
+        columns:
+          items:
+            type: string
+          type: array
+      type: object
+    Kafka.DataFormat:
+      properties:
+        protocol:
+          $ref: '#/components/schemas/KafkaProtocol.Enum'
+        enableTidbExtension:
+          title: only available when protocol is CANAL_JSON and AVRO
+          type: boolean
+        avroConfig:
+          $ref: '#/components/schemas/AvroConfig'
+      type: object
+    Kafka.Network:
+      properties:
+        networkType:
+          $ref: '#/components/schemas/KafkaNetworkType.Enum'
+        privateLinkServiceName:
+          type: string
+        publicEndpoints:
+          type: string
+      type: object
+    Kafka.PartitionDispatcherConfig:
+      properties:
+        partitionType:
+          $ref: '#/components/schemas/PartitionDispatcher.Enum'
+        matcher:
+          items:
+            type: string
+          type: array
+        indexName:
+          type: string
+        columns:
+          items:
+            type: string
+          type: array
+      type: object
+    Kafka.TopicPartitionConfig:
+      properties:
+        dispatchType:
+          $ref: '#/components/schemas/TopicDispatchType.Enum'
+        defaultTopic:
+          type: string
+        topicPrefix:
+          type: string
+        separator:
+          type: string
+        topicSuffix:
+          type: string
+        replicationFactor:
+          format: int64
+          type: integer
+        partitionNum:
+          format: int64
+          type: integer
+        partitionDispatchers:
+          items:
+            $ref: '#/components/schemas/Kafka.PartitionDispatcherConfig'
+          type: array
+      type: object
+    KafkaAuthType.Enum:
+      description: |2-
+         - DISABLE: No authentication.
+         - SASL_PLAIN: SASL/PLAIN authentication.
+         - SASL_SCRAM_SHA_256: SASL/SCRAM-SHA-256 authentication.
+         - SASL_SCRAM_SHA_512: SASL/SCRAM-SHA-512 authentication.
+      enum:
+      - DISABLE
+      - SASL_PLAIN
+      - SASL_SCRAM_SHA_256
+      - SASL_SCRAM_SHA_512
+      type: string
+    KafkaCompressionType.Enum:
+      enum:
+      - NONE
+      - GZIP
+      - SNAPPY
+      - LZ4
+      - ZSTD
+      type: string
+    KafkaEndpoint:
+      properties:
+        kafkaType:
+          allOf:
+          - $ref: '#/components/schemas/KafkaType.Enum'
+          description: The type of the Kafka instance.
+          type: object
+        advertisedListenersPattern:
+          additionalProperties:
+            type: string
+          description: The advertised listeners pattern.
+          type: object
+      required:
+      - advertisedListenersPattern
+      - kafkaType
+      type: object
+    KafkaNetworkType.Enum:
+      description: |2-
+         - PUBLIC: Public network.
+         - PRIVATE_LINK: Private Link network.
+      enum:
+      - PUBLIC
+      - PRIVATE_LINK
+      type: string
+    KafkaProtocol.Enum:
+      description: |2-
+         - CANAL_JSON: Canal-JSON protocol.
+         - OPEN_PROTOCOL: Open Protocol.
+         - AVRO: Avro protocol.
+      enum:
+      - CANAL_JSON
+      - OPEN_PROTOCOL
+      - AVRO
+      type: string
+    KafkaType.Enum:
+      description: |2-
+         - SELF_HOSTED: Self-hosted Kafka.
+         - MSK: MSK (Managed Streaming for Kafka).
+         - CONFLUENT: Confluent Kafka.
+      enum:
+      - SELF_HOSTED
+      - MSK
+      - CONFLUENT
+      type: string
+    KafkaVersion.Enum:
+      description: |2-
+         - VERSION_2XX: Kafka 2.x.x version.
+         - VERSION_3XX: Kafka 3.x.x version.
+      enum:
+      - VERSION_2XX
+      - VERSION_3XX
+      type: string
+    MySQL:
+      properties:
+        network:
+          allOf:
+          - $ref: '#/components/schemas/MySQL.Network'
+          description: The network configuration for the MySQL instance.
+          type: object
+        authentication:
+          allOf:
+          - $ref: '#/components/schemas/MySQL.Authentication'
+          description: The authentication information for the MySQL instance.
+          type: object
+      required:
+      - authentication
+      - network
+      type: object
+    MySQL.Authentication:
+      properties:
+        userName:
+          description: The username for the MySQL instance.
+          type: string
+        password:
+          description: The password for the MySQL instance.
+          type: string
+        enableTls:
+          description: Enable TLS for the MySQL connection.
+          type: boolean
+      required:
+      - password
+      - userName
+      type: object
+    MySQL.Network:
+      properties:
+        networkType:
+          $ref: '#/components/schemas/MySQLNetworkType.Enum'
+        publicEndpoint:
+          type: string
+      required:
+      - networkType
+      type: object
+    MySQLNetworkType.Enum:
+      description: |2-
+         - PUBLIC: Public network.
+         - PRIVATE_LINK: Private network.
+      enum:
+      - PUBLIC
+      - PRIVATE_LINK
+      type: string
+    PartitionDispatcher.Enum:
+      description: |2-
+         - TABLE: Partition by table.
+         - INDEX_VALUE: Partition by index value.
+         - TS: Partition by timestamp.
+         - COLUMNS: Partition by columns.
+      enum:
+      - TABLE
+      - INDEX_VALUE
+      - TS
+      - COLUMNS
+      type: string
+    PrivateLinkEndpoint:
+      example:
+        privateLinkServiceName: privateLinkServiceName
+        createTime: 2000-01-23T04:56:07.000+00:00
+        endpointId: endpointId
+        endpointUrl: endpointUrl
+        kafka: "{}"
+        changefeedType: "{}"
+        updateTime: 2000-01-23T04:56:07.000+00:00
+        clusterId: clusterId
+        state: "{}"
+        message: message
+      properties:
+        endpointId:
+          description: The ID of the private link endpoint.
+          readOnly: true
+          type: string
+        clusterId:
+          description: The ID of the cluster.
+          type: string
+        privateLinkServiceName:
+          description: The private link service name.
+          type: string
+        changefeedType:
+          allOf:
+          - $ref: '#/components/schemas/ChangefeedType.Enum'
+          description: The type of the sink.
+          type: object
+        state:
+          allOf:
+          - $ref: '#/components/schemas/PrivateLinkEndpointState.Enum'
+          description: The state of the private link.
+          type: object
+        kafka:
+          allOf:
+          - $ref: '#/components/schemas/KafkaEndpoint'
+          description: Kafka private link endpoint information.
+          type: object
+        message:
+          description: The message.
+          readOnly: true
+          type: string
+        endpointUrl:
+          description: The message.
+          readOnly: true
+          type: string
+        createTime:
+          description: Timestamp when the private link endpoint was created.
+          format: date-time
+          readOnly: true
+          type: string
+        updateTime:
+          description: Timestamp when the private link endpoint was updated.
+          format: date-time
+          nullable: true
+          readOnly: true
+          type: string
+      required:
+      - changefeedType
+      - clusterId
+      - privateLinkServiceName
+      type: object
+    PrivateLinkEndpointState.Enum:
+      description: |2-
+         - PENDING_ACCEPTANCE: The private link endpoint is pending acceptance.
+         - PENDING: The private link endpoint is pending.
+         - AVAILABLE: The private link endpoint is available.
+         - REJECTED: The private link endpoint is rejected.
+         - EXPIRED: The private link endpoint is Expired.
+         - FAILED: The private link endpoint is failed.
+         - DELETING: The private link endpoint is deleting.
+      enum:
+      - PENDING_ACCEPTANCE
+      - PENDING
+      - AVAILABLE
+      - REJECTED
+      - EXPIRED
+      - FAILED
+      - DELETING
+      type: string
+    SinkInfo:
+      properties:
+        type:
+          allOf:
+          - $ref: '#/components/schemas/ChangefeedType.Enum'
+          description: The type of the sink.
+          type: object
+        kafka:
+          allOf:
+          - $ref: '#/components/schemas/Kafka'
+          description: The Kafka sink information.
+          type: object
+        mysql:
+          allOf:
+          - $ref: '#/components/schemas/MySQL'
+          description: The MySQL sink information.
+          type: object
+      required:
+      - type
+      type: object
+    StartMode.Enum:
+      description: |2-
+         - FROM_NOW: Start from now.
+         - FROM_TSO: Start from TSO.
+         - FROM_TIME: Start from Time.
+      enum:
+      - FROM_NOW
+      - FROM_TSO
+      - FROM_TIME
+      type: string
+    StartPosition:
+      properties:
+        mode:
+          $ref: '#/components/schemas/StartMode.Enum'
+        tso:
+          format: uint64
+          title: The start position in TSO
+          type: string
+        time:
+          format: date-time
+          title: The start position in time
+          type: string
+      type: object
+    Status:
+      example:
+        code: 6
+        details:
+        - '@type': '@type'
+        - '@type': '@type'
+        message: message
+      properties:
+        code:
+          format: int32
+          type: integer
+        message:
+          type: string
+        details:
+          items:
+            $ref: '#/components/schemas/Any'
+          type: array
+      type: object
+    TableMode.Enum:
+      description: |2-
+         - IGNORE_NOT_SUPPORT_TABLE: Ignore tables that are not supported.
+         - FORCE_SYNC: Force synchronize all tables.
+      enum:
+      - IGNORE_NOT_SUPPORT_TABLE
+      - FORCE_SYNC
+      type: string
+    TopicDispatchType.Enum:
+      description: |2-
+         - ONE_TOPIC: One topic for all data.
+         - BY_TABLE: Dispatch by table.
+         - BY_DATABASE: Dispatch by database.
+      enum:
+      - ONE_TOPIC
+      - BY_TABLE
+      - BY_DATABASE
+      type: string
+    ChangefeedService_ListChangefeeds_changefeedType_parameter:
+      enum:
+      - KAFKA
+      - MYSQL
+      type: string
+x-original-swagger-version: "2.0"
