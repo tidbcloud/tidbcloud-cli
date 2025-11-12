@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -19,7 +19,7 @@ var _ MappedNullable = &ExportOptionsParquetFormat{}
 
 // ExportOptionsParquetFormat struct for ExportOptionsParquetFormat
 type ExportOptionsParquetFormat struct {
-	// Optional. The compression of the parquet. Default is ZSTD.
+	// The Parquet compression algorithm. Default value is `ZSTD`.
 	Compression          *ExportParquetCompressionTypeEnum `json:"compression,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

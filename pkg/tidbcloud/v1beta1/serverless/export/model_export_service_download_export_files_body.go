@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -20,7 +20,7 @@ var _ MappedNullable = &ExportServiceDownloadExportFilesBody{}
 
 // ExportServiceDownloadExportFilesBody struct for ExportServiceDownloadExportFilesBody
 type ExportServiceDownloadExportFilesBody struct {
-	// Required. The name of the files to download.
+	// The names of the files to download.
 	FileNames            []string `json:"fileNames"`
 	AdditionalProperties map[string]interface{}
 }

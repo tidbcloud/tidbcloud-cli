@@ -73,6 +73,7 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 		flag.OSSURI,
 		flag.OSSAccessKeyID,
 		flag.OSSAccessKeySecret,
+		flag.Partition,
 	}
 }
 
@@ -161,6 +162,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			// oss
 			var ossURI, ossAccessKeyID, ossAccessKeySecret string
 			var displayName string
+			// partitions
+			var partitions []string
 
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
@@ -303,8 +306,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return errors.New("sql is empty")
 					}
 				case FilterTable:
-					fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following options, require at least one field"))
-					inputs := []string{flag.TableFilter, flag.TableWhere}
+					fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following options"))
+					inputs := []string{flag.TableFilter, flag.TableWhere, flag.Partition}
 					textInput, err := ui.InitialInputModel(inputs, inputDescription)
 					if err != nil {
 						return err
@@ -314,9 +317,16 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					if err != nil {
 						return err
 					}
+					if len(patterns) == 0 {
+						return errors.New("patterns are required, if want to export whole cluster, type *.* in patterns")
+					}
 					where = textInput.Inputs[1].Value()
-					if len(patterns) == 0 && where == "" {
-						return errors.New("both patterns and where are empty, require at least one field")
+					partitionString := textInput.Inputs[2].Value()
+					if partitionString != "" {
+						partitions, err = util.StringSliceConv(partitionString)
+						if err != nil {
+							return err
+						}
 					}
 				}
 
@@ -573,6 +583,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
+				partitions, err = cmd.Flags().GetStringSlice(flag.Partition)
+				if err != nil {
+					return errors.Trace(err)
+				}
 			}
 
 			if !opts.interactive && sql == "" && len(patterns) == 0 && !force {
@@ -669,11 +683,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					Sql: &sql,
 				}
 			}
-			if len(patterns) > 0 || where != "" {
+			if len(patterns) > 0 || where != "" || len(partitions) > 0 {
 				params.ExportOptions.Filter = &export.ExportOptionsFilter{
 					Table: &export.ExportOptionsFilterTable{
-						Where:    &where,
-						Patterns: patterns,
+						Where:      &where,
+						Patterns:   patterns,
+						Partitions: partitions,
 					},
 				}
 			}
@@ -729,9 +744,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.OSSAccessKeySecret, "", "The access key secret of the OSS.")
 	createCmd.Flags().String(flag.ParquetCompression, "ZSTD", fmt.Sprintf("The parquet compression algorithm. One of %q.", export.AllowedExportParquetCompressionTypeEnumEnumValues))
 	createCmd.Flags().String(flag.DisplayName, "", "The display name of the export. (default \"SNAPSHOT_<snapshot_time>\")")
+	createCmd.Flags().StringSlice(flag.Partition, nil, "Filter the exported partition table(s) with specified partition(s).")
 
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableFilter, flag.SQL)
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableWhere, flag.SQL)
+	createCmd.MarkFlagsMutuallyExclusive(flag.Partition, flag.SQL)
 	createCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3AccessKeyID)
 	createCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3SecretAccessKey)
 	return createCmd

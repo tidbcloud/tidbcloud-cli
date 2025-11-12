@@ -390,17 +390,17 @@ func (d *ClientDelegate) CancelUpload(ctx context.Context, clusterId string, upl
 }
 
 func (d *ClientDelegate) GetExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error) {
-	res, h, err := d.ec.ExportServiceAPI.ExportServiceGetExport(ctx, clusterId, exportId).Execute()
+	res, h, err := d.ec.ExportAPI.ExportServiceGetExport(ctx, clusterId, exportId).Execute()
 	return res, parseError(err, h)
 }
 
 func (d *ClientDelegate) CancelExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error) {
-	res, h, err := d.ec.ExportServiceAPI.ExportServiceCancelExport(ctx, clusterId, exportId).Execute()
+	res, h, err := d.ec.ExportAPI.ExportServiceCancelExport(ctx, clusterId, exportId).Execute()
 	return res, parseError(err, h)
 }
 
 func (d *ClientDelegate) CreateExport(ctx context.Context, clusterId string, body *export.ExportServiceCreateExportBody) (*export.Export, error) {
-	r := d.ec.ExportServiceAPI.ExportServiceCreateExport(ctx, clusterId)
+	r := d.ec.ExportAPI.ExportServiceCreateExport(ctx, clusterId)
 	if body != nil {
 		r = r.Body(*body)
 	}
@@ -409,12 +409,12 @@ func (d *ClientDelegate) CreateExport(ctx context.Context, clusterId string, bod
 }
 
 func (d *ClientDelegate) DeleteExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error) {
-	res, h, err := d.ec.ExportServiceAPI.ExportServiceDeleteExport(ctx, clusterId, exportId).Execute()
+	res, h, err := d.ec.ExportAPI.ExportServiceDeleteExport(ctx, clusterId, exportId).Execute()
 	return res, parseError(err, h)
 }
 
 func (d *ClientDelegate) ListExports(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*export.ListExportsResponse, error) {
-	r := d.ec.ExportServiceAPI.ExportServiceListExports(ctx, clusterId)
+	r := d.ec.ExportAPI.ExportServiceListExports(ctx, clusterId)
 	if pageSize != nil {
 		r = r.PageSize(*pageSize)
 	}

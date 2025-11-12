@@ -1,8 +1,8 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "TiDB Cloud Serverless Export Open API",
-    "description": "TiDB Cloud Serverless Export Open API",
+    "title": "TiDB Cloud Starter and Essential API",
+    "description": "TiDB Cloud Starter and Essential API",
     "version": "v1beta1"
   },
   "tags": [
@@ -23,7 +23,7 @@
   "paths": {
     "/v1beta1/clusters/{clusterId}/exports": {
       "get": {
-        "summary": "Provides a list of export jobs.",
+        "summary": "List export tasks on a cluster",
         "operationId": "ExportService_ListExports",
         "responses": {
           "200": {
@@ -42,40 +42,48 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required. The cluster ID to list exports for.",
+            "description": "The ID of the cluster to list export tasks for.",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "pageSize",
-            "description": "Optional. The maximum number of clusters to return. Default is 10.",
+            "description": "The maximum number of exports to return. If not specified, at most 10 exports will be returned. The maximum value is `100`. Values greater than `100` are set to `100`.",
             "in": "query",
             "required": false,
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "default": 10
           },
           {
             "name": "pageToken",
-            "description": "Optional. The page token from the previous response for pagination.",
+            "description": "The pagination token received from a previous [List export tasks](#tag/Export/operation/ExportService_ListExports) request. Use this token to retrieve the next page of results.\n\n**Note**: When paginating, all other parameters must match the original request.",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
             "name": "orderBy",
-            "description": "Optional. List exports order by, separated by comma, default is ascending. Example: \"foo, bar desc\". Supported field: create_time",
+            "description": "Specifies the sorting order of results. Use a comma-separated list of field names, optionally appending `desc` for descending order. For example, `createTime desc`. By default, fields are sorted in ascending order.\n\nSupported field: `createTime`.",
             "in": "query",
             "required": false,
             "type": "string"
           }
         ],
         "tags": [
-          "ExportService"
+          "Export"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/exports' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Content-Type: application/json' \\\n--header 'Accept: application/json' \\\n--data '{\n  \"exportOptions\": {\n    \"fileType\": \"PARQUET\",\n    \"filter\": {\n      \"table\": {\n        \"patterns\": [\n            \"test.*\"\n        ]\n      }\n    },\n    \"parquetFormat\": {\n      \"compression\": \"GZIP\"\n    }\n  },\n  \"target\": {\n    \"type\": \"LOCAL\"\n  }\n}'"
+          }
         ]
       },
       "post": {
-        "summary": "Create an export job",
+        "summary": "Create an export task",
         "operationId": "ExportService_CreateExport",
         "responses": {
           "200": {
@@ -94,7 +102,7 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required. The ID of the cluster.",
+            "description": "The ID of the cluster.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -109,13 +117,20 @@
           }
         ],
         "tags": [
-          "ExportService"
+          "Export"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/exports' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Content-Type: application/json' \\\n--header 'Accept: application/json' \\\n--data '{\n  \"exportOptions\": {\n    \"fileType\": \"PARQUET\",\n    \"filter\": {\n      \"table\": {\n        \"patterns\": [\n            \"test.*\"\n        ]\n      }\n    },\n    \"parquetFormat\": {\n      \"compression\": \"GZIP\"\n    }\n  },\n  \"target\": {\n    \"type\": \"LOCAL\"\n  }\n}'"
+          }
         ]
       }
     },
     "/v1beta1/clusters/{clusterId}/exports/{exportId}": {
       "get": {
-        "summary": "Retrieves details of an export job.",
+        "summary": "Get details of an export task",
         "operationId": "ExportService_GetExport",
         "responses": {
           "200": {
@@ -134,25 +149,32 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required. The ID of the cluster.",
+            "description": "The ID of the cluster.",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "exportId",
-            "description": "Required. The ID of the export to be retrieved.",
+            "description": "The ID of the export task to retrieve.",
             "in": "path",
             "required": true,
             "type": "string"
           }
         ],
         "tags": [
-          "ExportService"
+          "Export"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/exports/{export_id}' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Accept: application/json'"
+          }
         ]
       },
       "delete": {
-        "summary": "Delete an export job",
+        "summary": "Delete an export task",
         "operationId": "ExportService_DeleteExport",
         "responses": {
           "200": {
@@ -171,27 +193,34 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required. The ID of the cluster.",
+            "description": "The ID of the cluster.",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "exportId",
-            "description": "Required. The ID of the export to be retrieved.",
+            "description": "The ID of the export task to delete.",
             "in": "path",
             "required": true,
             "type": "string"
           }
         ],
         "tags": [
-          "ExportService"
+          "Export"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location --request DELETE 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/exports/{export_id}' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Accept: application/json'"
+          }
         ]
       }
     },
     "/v1beta1/clusters/{clusterId}/exports/{exportId}:cancel": {
       "post": {
-        "summary": "Cancel a specific export job.",
+        "summary": "Cancel an export task",
         "operationId": "ExportService_CancelExport",
         "responses": {
           "200": {
@@ -210,21 +239,28 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required. The ID of the cluster.",
+            "description": "The ID of the cluster.",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "exportId",
-            "description": "Required. The ID of the export to be retrieved.",
+            "description": "The ID of the export task to cancel.",
             "in": "path",
             "required": true,
             "type": "string"
           }
         ],
         "tags": [
-          "ExportService"
+          "Export"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location --request POST 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/exports/{export_id}:cancel' \\\n--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n--header 'Accept: application/json'"
+          }
         ]
       }
     },
@@ -249,14 +285,14 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required. The ID of the cluster.",
+            "description": "The ID of the cluster.",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "exportId",
-            "description": "Required. The ID of the export to be retrieved.",
+            "description": "The ID of the export task to download.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -297,21 +333,21 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required. The ID of the cluster.",
+            "description": "The ID of the cluster.",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "exportId",
-            "description": "Required. The ID of the export.",
+            "description": "The ID of the export task.",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "pageSize",
-            "description": "Optional. The maximum number to return.",
+            "description": "The maximum number of files to return. If not specified, at most 10 files will be returned. The maximum value is `100`. Values greater than `100` are set to `100`.",
             "in": "query",
             "required": false,
             "type": "integer",
@@ -319,14 +355,14 @@
           },
           {
             "name": "pageToken",
-            "description": "Optional. The page token from the previous response for pagination.",
+            "description": "The pagination token received from a previous [List export files](#tag/Export/operation/ExportService_ListExportFiles) request. Use this token to retrieve the next page of results.\n\n**Note**: When paginating, all other parameters must match the original request.",
             "in": "query",
             "required": false,
             "type": "string"
           },
           {
             "name": "generateUrl",
-            "description": "Optional. Whether return the file download urls, default is false",
+            "description": "Whether to generate download URLs for the files. Default value is `false`.",
             "in": "query",
             "required": false,
             "type": "boolean"
@@ -358,14 +394,14 @@
         "parameters": [
           {
             "name": "clusterId",
-            "description": "Required. The ID of the cluster.",
+            "description": "The ID of the cluster.",
             "in": "path",
             "required": true,
             "type": "string"
           },
           {
             "name": "exportId",
-            "description": "Required. The ID of the export.",
+            "description": "The ID of the export task.",
             "in": "path",
             "required": true,
             "type": "string"
@@ -399,7 +435,7 @@
       "type": "object",
       "properties": {
         "authType": {
-          "description": "The Azure Blob URI of the export target.",
+          "description": "The authentication method for accessing Azure Blob Storage.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportAzureBlobAuthType.Enum"
@@ -408,11 +444,11 @@
         },
         "sasToken": {
           "type": "string",
-          "description": "The sas token. This field is input-only."
+          "description": "The Shared Access Signature (SAS) token for accessing Azure Blob Storage."
         },
         "uri": {
           "type": "string",
-          "description": "The Azure Blob URI of the export target. For example: azure://<account>.blob.core.windows.net/<container>/<path> or https://<account>.blob.core.windows.net/<container>/<path>."
+          "description": "The Azure Blob URI of the export target, in the format of `azure://<account>.blob.core.windows.net/<container>/<path>` or `https://<account>.blob.core.windows.net/<container>/<path>`."
         }
       },
       "required": [
@@ -469,25 +505,25 @@
       "properties": {
         "exportId": {
           "type": "string",
-          "description": "Output_only. The unique ID of the export.",
+          "description": "The unique ID of the export task.",
           "readOnly": true
         },
         "name": {
           "type": "string",
-          "description": "Output_only. The unique name of the export.",
+          "description": "The unique identifier for the export task.",
           "readOnly": true
         },
         "clusterId": {
           "type": "string",
-          "description": "Required. The cluster ID that export belong to."
+          "description": "The ID of the cluster to which the export task belongs."
         },
         "createdBy": {
           "type": "string",
-          "description": "Output_only. The creator of the export.",
+          "description": "The email address of the user who create the export task.",
           "readOnly": true
         },
         "state": {
-          "description": "Output_only. The state of the export.",
+          "description": "The state of the export task.",
           "readOnly": true,
           "allOf": [
             {
@@ -496,7 +532,7 @@
           ]
         },
         "exportOptions": {
-          "description": "Optional. The options of the export.",
+          "description": "The configuration options for the export task.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportOptions"
@@ -504,7 +540,7 @@
           ]
         },
         "target": {
-          "description": "Optional. The target of the export.",
+          "description": "The destination configuration for where the exported data is stored.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportTarget"
@@ -514,49 +550,49 @@
         "reason": {
           "type": "string",
           "x-nullable": true,
-          "description": "Optional. The failed reason of the export.",
+          "description": "An error message if the export task failed. Otherwise, empty.",
           "readOnly": true
         },
         "displayName": {
           "type": "string",
-          "description": "Optional. The display name of the export. Default: SNAPSHOT_{snapshot_time}."
+          "description": "The display name of the export task. Default value is `SNAPSHOT_{snapshot_time}`."
         },
         "createTime": {
           "type": "string",
           "format": "date-time",
-          "description": "Output_only. Timestamp when the export was created.",
+          "description": "The timestamp when the export task was created, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.",
           "readOnly": true
         },
         "updateTime": {
           "type": "string",
           "format": "date-time",
           "x-nullable": true,
-          "description": "Output_only. Timestamp when the export was updated.",
+          "description": "The timestamp when the export task was last updated, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.",
           "readOnly": true
         },
         "completeTime": {
           "type": "string",
           "format": "date-time",
           "x-nullable": true,
-          "description": "Output_only. Timestamp when the export was completed.",
+          "description": "The timestamp when the export task was completed, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.",
           "readOnly": true
         },
         "snapshotTime": {
           "type": "string",
           "format": "date-time",
           "x-nullable": true,
-          "description": "Output_only. Snapshot time of the export.",
+          "description": "The timestamp when the data snapshot was captured for this export.",
           "readOnly": true
         },
         "expireTime": {
           "type": "string",
           "format": "date-time",
           "x-nullable": true,
-          "description": "Output_only. Expire time of the export.",
+          "description": "The timestamp when the export will expire and become unavailable.",
           "readOnly": true
         }
       },
-      "description": "Message for export resource.",
+      "description": "Message for export task.",
       "required": [
         "clusterId"
       ]
@@ -623,7 +659,7 @@
       "type": "object",
       "properties": {
         "fileType": {
-          "description": "Optional. The exported file type. Default: CSV.",
+          "description": "The export file type. Default value is `CSV`.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportFileType.Enum"
@@ -632,14 +668,14 @@
         },
         "database": {
           "type": "string",
-          "title": "Optional. The specify database of the export. DEPRECATED, use filter instead"
+          "description": "The database to export. DEPRECATED, use filter instead."
         },
         "table": {
           "type": "string",
-          "title": "Optional. The specify table of the export. DEPRECATED, use filter instead"
+          "description": "The table to export. DEPRECATED, use filter instead."
         },
         "compression": {
-          "description": "Optional. The compression of the export. Default is GZIP.",
+          "description": "The compression algorithm of the export file. Default value is `GZIP`.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportCompressionType.Enum"
@@ -647,7 +683,7 @@
           ]
         },
         "filter": {
-          "description": "Optional. The filter of the export. Default is whole cluster.",
+          "description": "Defines which tables to include in the export. If not specified, all tables in the cluster are exported.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportOptions.Filter"
@@ -655,7 +691,7 @@
           ]
         },
         "csvFormat": {
-          "description": "Optional. The format of the csv.",
+          "description": "The format specification for the CSV file.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportOptions.CSVFormat"
@@ -663,7 +699,7 @@
           ]
         },
         "parquetFormat": {
-          "description": "Optional. The format of the parquet.",
+          "description": "The format specification for the Parquet file.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportOptions.ParquetFormat"
@@ -677,21 +713,21 @@
       "properties": {
         "separator": {
           "type": "string",
-          "description": "Separator of each value in CSV files. It is recommended to use '|+|' or other uncommon character combinations. Default is ','."
+          "description": "The character used to separate values in the CSV file. Default value is `,`.\nIt is recommended to use uncommon separators like `|+|` to avoid conflicts."
         },
         "delimiter": {
           "type": "string",
           "x-nullable": true,
-          "description": "Delimiter of string type variables in CSV files. Default is '\"'."
+          "description": "The character used to enclose string values in the CSV file. Default value is `\"`."
         },
         "nullValue": {
           "type": "string",
           "x-nullable": true,
-          "description": "Representation of null values in CSV files. Default is \"\\N\"."
+          "description": "The string representation of NULL values in the CSV file. Default is `\\N`."
         },
         "skipHeader": {
           "type": "boolean",
-          "description": "Export CSV files of the tables without header. Default is false."
+          "description": "Indicates whether to omit the header row in exported CSV files. Default value is `false`."
         }
       }
     },
@@ -700,10 +736,10 @@
       "properties": {
         "sql": {
           "type": "string",
-          "description": "Optional. Use SQL to filter the export."
+          "description": "Filters the exported data with the SQL statement."
         },
         "table": {
-          "description": "Optional. Use table-filter to filter the export.",
+          "description": "Filters the exported data with table filter patterns.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportOptions.Filter.Table"
@@ -720,11 +756,18 @@
           "items": {
             "type": "string"
           },
-          "description": "Optional. The table-filter expressions."
+          "description": "A list of [table-filter](https://docs.pingcap.com/tidb/stable/table-filter/#syntax) patterns."
         },
         "where": {
           "type": "string",
-          "description": "Optional. Export only selected records."
+          "description": "Filters the exported tables with the `WHERE` condition."
+        },
+        "partitions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Export only selected partitions."
         }
       }
     },
@@ -732,7 +775,7 @@
       "type": "object",
       "properties": {
         "compression": {
-          "description": "Optional. The compression of the parquet. Default is ZSTD.",
+          "description": "The Parquet compression algorithm. Default value is `ZSTD`.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportParquetCompressionType.Enum"
@@ -763,7 +806,7 @@
       "type": "object",
       "properties": {
         "exportOptions": {
-          "description": "Optional. The options of the export.",
+          "description": "The configuration options for the export task.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportOptions"
@@ -771,7 +814,7 @@
           ]
         },
         "target": {
-          "description": "Optional. The target of the export.",
+          "description": "The destination configuration for where the exported data is stored.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportTarget"
@@ -780,7 +823,7 @@
         },
         "displayName": {
           "type": "string",
-          "description": "Optional. The display name of the export. Default: SNAPSHOT_{snapshot_time}."
+          "description": "The display name of the export task. Default value is `SNAPSHOT_{snapshot_time}`."
         }
       }
     },
@@ -795,7 +838,7 @@
           "items": {
             "type": "string"
           },
-          "description": "Required. The name of the files to download."
+          "description": "The names of the files to download."
         }
       },
       "required": [
@@ -812,13 +855,13 @@
         "DELETED",
         "EXPIRED"
       ],
-      "description": "Output Only. Export State.\n\n - RUNNING: The export job is being created.\n - SUCCEEDED: The export job is success.\n - FAILED: The export job is failed.\n - CANCELED: The export job is canceled.\n - DELETED: The export job is deleted.\n - EXPIRED: The export is expired, only local export will be expired."
+      "description": "Export State.\n\n - RUNNING: The export job is being created.\n - SUCCEEDED: The export job is success.\n - FAILED: The export job is failed.\n - CANCELED: The export job is canceled.\n - DELETED: The export job is deleted.\n - EXPIRED: The export is expired, only local export will be expired."
     },
     "ExportTarget": {
       "type": "object",
       "properties": {
         "type": {
-          "description": "Optional. The exported file type. Default is LOCAL.",
+          "description": "The export target. Default value is `LOCAL`.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportTargetType.Enum"
@@ -826,16 +869,36 @@
           ]
         },
         "s3": {
-          "$ref": "#/definitions/S3Target"
+          "description": "The configuration details for exporting data to Amazon S3. This is required when `type` is `S3`.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/S3Target"
+            }
+          ]
         },
         "gcs": {
-          "$ref": "#/definitions/GCSTarget"
+          "description": "The configuration details for exporting data to Google Cloud Storage. This is required when `type` is `GCS`.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/GCSTarget"
+            }
+          ]
         },
         "azureBlob": {
-          "$ref": "#/definitions/AzureBlobTarget"
+          "description": "The configuration details for exporting data to Azure Blob Storage. This is required when `type` is `AZURE_BLOB`.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/AzureBlobTarget"
+            }
+          ]
         },
         "oss": {
-          "$ref": "#/definitions/OSSTarget"
+          "description": "The configuration details for exporting data to Alibaba Cloud Object Storage Service (OSS). This is required when `type` is `OSS`.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/OSSTarget"
+            }
+          ]
         }
       }
     },
@@ -855,10 +918,10 @@
       "properties": {
         "uri": {
           "type": "string",
-          "description": "The GCS URI of the export target."
+          "description": "The Google Cloud Storage URI of the export target."
         },
         "authType": {
-          "description": "The auth method of the export target.",
+          "description": "The authentication method for accessing Google Cloud Storage.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportGcsAuthType.Enum"
@@ -867,7 +930,7 @@
         },
         "serviceAccountKey": {
           "type": "string",
-          "title": "The service account key"
+          "description": "The service account key for accessing Google Cloud Storage."
         }
       },
       "required": [
@@ -901,16 +964,16 @@
             "type": "object",
             "$ref": "#/definitions/Export"
           },
-          "description": "A list of exports."
+          "description": "A list of export tasks that match the query."
         },
         "nextPageToken": {
           "type": "string",
-          "description": "Token provided to retrieve the next page of results."
+          "description": "The token to retrieve the next page of results. Use this value as the `pageToken` parameter in the next request. This field is empty when there are no more pages."
         },
         "totalSize": {
           "type": "integer",
           "format": "int64",
-          "description": "Total number of exports."
+          "description": "The total number of exports that match the query."
         }
       }
     },
@@ -919,10 +982,10 @@
       "properties": {
         "uri": {
           "type": "string",
-          "description": "Required. The OSS URI."
+          "description": "The Alibaba Cloud OSS URI of the export target."
         },
         "authType": {
-          "description": "Required. The auth method of the export target.",
+          "description": "The authentication method for accessing Alibaba Cloud OSS.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportOSSAuthType.Enum"
@@ -930,7 +993,7 @@
           ]
         },
         "accessKey": {
-          "description": "The access key.",
+          "description": "The Alibaba Cloud OSS access key credentials used for access.",
           "allOf": [
             {
               "$ref": "#/definitions/OSSTarget.AccessKey"
@@ -948,11 +1011,11 @@
       "properties": {
         "id": {
           "type": "string",
-          "description": "The access key id."
+          "description": "The AccessKey ID for accessing Alibaba Cloud OSS."
         },
         "secret": {
           "type": "string",
-          "description": "The access key secret. This field is input-only."
+          "description": "The AccessKey secret for accessing Alibaba Cloud OSS."
         }
       },
       "required": [
@@ -965,14 +1028,14 @@
       "properties": {
         "bucketUri": {
           "type": "string",
-          "description": "Optional. The bucket URI of the s3. DEPRECATED, use uri instead."
+          "description": "The bucket URI of the s3. DEPRECATED, use uri instead."
         },
         "uri": {
           "type": "string",
-          "description": "Optional. The URI of the s3 folder."
+          "description": "The S3 URI of the export target."
         },
         "authType": {
-          "description": "Required. The auth method of the export s3.",
+          "description": "The authentication method for accessing the S3 bucket.",
           "allOf": [
             {
               "$ref": "#/definitions/ExportS3AuthType.Enum"
@@ -980,7 +1043,7 @@
           ]
         },
         "accessKey": {
-          "description": "Optional. The access key of the s3.",
+          "description": "The AWS access key credentials used for access.",
           "allOf": [
             {
               "$ref": "#/definitions/S3Target.AccessKey"
@@ -989,7 +1052,7 @@
         },
         "roleArn": {
           "type": "string",
-          "description": "Optional. The role arn of the s3."
+          "description": "The AWS IAM role ARN used for access."
         }
       },
       "required": [
@@ -1001,11 +1064,11 @@
       "properties": {
         "id": {
           "type": "string",
-          "description": "The access key id of the s3."
+          "description": "The access key ID for accessing the S3 bucket."
         },
         "secret": {
           "type": "string",
-          "description": "Input_Only. The secret access key of the s3."
+          "description": "The secret access key for accessing the S3 bucket."
         }
       },
       "required": [

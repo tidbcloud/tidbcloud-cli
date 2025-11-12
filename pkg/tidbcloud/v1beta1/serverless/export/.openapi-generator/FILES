@@ -3,6 +3,7 @@
 .travis.yml
 README.md
 api/openapi.yaml
+api_export.go
 api_export_service.go
 client.go
 configuration.go

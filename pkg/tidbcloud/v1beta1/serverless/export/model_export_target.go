@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -19,12 +19,16 @@ var _ MappedNullable = &ExportTarget{}
 
 // ExportTarget struct for ExportTarget
 type ExportTarget struct {
-	// Optional. The exported file type. Default is LOCAL.
-	Type                 *ExportTargetTypeEnum `json:"type,omitempty"`
-	S3                   *S3Target             `json:"s3,omitempty"`
-	Gcs                  *GCSTarget            `json:"gcs,omitempty"`
-	AzureBlob            *AzureBlobTarget      `json:"azureBlob,omitempty"`
-	Oss                  *OSSTarget            `json:"oss,omitempty"`
+	// The export target. Default value is `LOCAL`.
+	Type *ExportTargetTypeEnum `json:"type,omitempty"`
+	// The configuration details for exporting data to Amazon S3. This is required when `type` is `S3`.
+	S3 *S3Target `json:"s3,omitempty"`
+	// The configuration details for exporting data to Google Cloud Storage. This is required when `type` is `GCS`.
+	Gcs *GCSTarget `json:"gcs,omitempty"`
+	// The configuration details for exporting data to Azure Blob Storage. This is required when `type` is `AZURE_BLOB`.
+	AzureBlob *AzureBlobTarget `json:"azureBlob,omitempty"`
+	// The configuration details for exporting data to Alibaba Cloud Object Storage Service (OSS). This is required when `type` is `OSS`.
+	Oss                  *OSSTarget `json:"oss,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 

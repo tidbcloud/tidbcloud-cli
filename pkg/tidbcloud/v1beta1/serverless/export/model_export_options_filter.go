@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -19,9 +19,9 @@ var _ MappedNullable = &ExportOptionsFilter{}
 
 // ExportOptionsFilter struct for ExportOptionsFilter
 type ExportOptionsFilter struct {
-	// Optional. Use SQL to filter the export.
+	// Filters the exported data with the SQL statement.
 	Sql *string `json:"sql,omitempty"`
-	// Optional. Use table-filter to filter the export.
+	// Filters the exported data with table filter patterns.
 	Table                *ExportOptionsFilterTable `json:"table,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
