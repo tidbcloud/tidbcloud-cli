@@ -350,7 +350,7 @@ func (suite *CreateExportSuite) TestCreateExportWithTableFilter() {
 		Table: &export.ExportOptionsFilterTable{
 			Patterns:   []string{pattern1, pattern2},
 			Where:      &where,
-			Partitions: nil,
+			Partitions: []string{},
 		},
 	}
 
