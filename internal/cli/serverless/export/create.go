@@ -73,7 +73,7 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 		flag.OSSURI,
 		flag.OSSAccessKeyID,
 		flag.OSSAccessKeySecret,
-		flag.Partition,
+		flag.Partitions,
 	}
 }
 
@@ -307,7 +307,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					}
 				case FilterTable:
 					fmt.Fprintln(h.IOStreams.Out, color.BlueString("Please input the following options"))
-					inputs := []string{flag.TableFilter, flag.TableWhere, flag.Partition}
+					inputs := []string{flag.TableFilter, flag.TableWhere, flag.Partitions}
 					textInput, err := ui.InitialInputModel(inputs, inputDescription)
 					if err != nil {
 						return err
@@ -583,7 +583,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				partitions, err = cmd.Flags().GetStringSlice(flag.Partition)
+				partitions, err = cmd.Flags().GetStringSlice(flag.Partitions)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -744,11 +744,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.OSSAccessKeySecret, "", "The access key secret of the OSS.")
 	createCmd.Flags().String(flag.ParquetCompression, "ZSTD", fmt.Sprintf("The parquet compression algorithm. One of %q.", export.AllowedExportParquetCompressionTypeEnumEnumValues))
 	createCmd.Flags().String(flag.DisplayName, "", "The display name of the export. (default \"SNAPSHOT_<snapshot_time>\")")
-	createCmd.Flags().StringSlice(flag.Partition, nil, "Filter the exported partition table(s) with specified partition(s).")
+	createCmd.Flags().StringSlice(flag.Partitions, nil, "Filter the exported partition table(s) with specified partition(s).")
 
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableFilter, flag.SQL)
 	createCmd.MarkFlagsMutuallyExclusive(flag.TableWhere, flag.SQL)
-	createCmd.MarkFlagsMutuallyExclusive(flag.Partition, flag.SQL)
+	createCmd.MarkFlagsMutuallyExclusive(flag.Partitions, flag.SQL)
 	createCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3AccessKeyID)
 	createCmd.MarkFlagsMutuallyExclusive(flag.S3RoleArn, flag.S3SecretAccessKey)
 	return createCmd

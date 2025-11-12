@@ -46,7 +46,7 @@ var inputDescription = map[string]string{
 	flag.OSSURI:               "Input your OSS URI in oss://<bucket>/<path> format",
 	flag.OSSAccessKeyID:       "Input your OSS access key id",
 	flag.OSSAccessKeySecret:   "Input your OSS access key secret",
-	flag.Partition:            "Optional, input the partitions (comma separated) which will apply to all filtered tables. Example: p1,p2. It is useful when you want to export specific partitions from a partition table.",
+	flag.Partitions:           "Optional, input the partitions (comma separated) which will apply to all filtered tables. Example: p1,p2. It is useful when you want to export specific partitions from a partition table.",
 }
 
 func GetSelectedParquetCompression() (export.ExportParquetCompressionTypeEnum, error) {
