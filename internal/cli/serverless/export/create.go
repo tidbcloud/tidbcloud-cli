@@ -318,7 +318,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 						return err
 					}
 					if len(patterns) == 0 {
-						return errors.New("patterns are required, if want to export whole cluster, type *.* in patterns")
+						return errors.New("table filters are required, if want to export whole cluster, type *.*")
 					}
 					where = textInput.Inputs[1].Value()
 					partitionString := textInput.Inputs[2].Value()
