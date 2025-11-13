@@ -112,6 +112,7 @@ const (
 	ChangefeedMySQL        string = "mysql"
 	ChangefeedFilter       string = "filter"
 	ChangefeedStartTSO     string = "start-tso"
+	ChangefeedStartTime    string = "start-time"
 	ChangefeedID           string = "changefeed-id"
 	ChangefeedIDShort      string = "f"
 	Explain                string = "explain"

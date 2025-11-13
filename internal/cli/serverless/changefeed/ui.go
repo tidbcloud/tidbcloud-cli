@@ -49,17 +49,19 @@ func GetSelectedChangefeedType() (cdc.ChangefeedTypeEnum, error) {
 }
 
 var createKafkaInputDescription = map[string]string{
-	flag.DisplayName:        "The name of the changefeed, skip to use the default name",
-	flag.ChangefeedKafka:    "Kafka information in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
-	flag.ChangefeedFilter:   "Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
-	flag.ChangefeedStartTSO: "Start TSO (uint64) for the changefeed, skip to use the current TSO. See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.",
+	flag.DisplayName:         "The name of the changefeed, skip to use the default name",
+	flag.ChangefeedKafka:     "Kafka information in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
+	flag.ChangefeedFilter:    "Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
+	flag.ChangefeedStartTSO:  "Start TSO (uint64) for the changefeed, skip to use the current TSO. See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.",
+	flag.ChangefeedStartTime: "Start Time (RFC3339 format, e.g., 2024-01-01T00:00:00Z) for the changefeed, if both start-tso and start-time are provided, start-tso will be used.",
 }
 
 var createMySQLInputDescription = map[string]string{
-	flag.DisplayName:        "The name of the changefeed, skip to use the default name",
-	flag.ChangefeedMySQL:    "mysql information in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
-	flag.ChangefeedFilter:   "Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
-	flag.ChangefeedStartTSO: "Start TSO (uint64) for the changefeed, skip to use the current TSO. See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.",
+	flag.DisplayName:         "The name of the changefeed, skip to use the default name",
+	flag.ChangefeedMySQL:     "mysql information in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
+	flag.ChangefeedFilter:    "Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
+	flag.ChangefeedStartTSO:  "Start TSO (uint64) for the changefeed, skip to use the current TSO. See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.",
+	flag.ChangefeedStartTime: "Start Time (RFC3339 format, e.g., 2024-01-01T00:00:00Z) for the changefeed, if both start-tso and start-time are provided, start-tso will be used.",
 }
 
 var updateKafkaInputDescriptionInteractive = map[string]string{

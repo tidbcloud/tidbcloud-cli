@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/fatih/color"
@@ -44,6 +45,7 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 		flag.ChangefeedMySQL,
 		flag.ChangefeedFilter,
 		flag.ChangefeedStartTSO,
+		flag.ChangefeedStartTime,
 		flag.DisplayName,
 	}
 }
@@ -109,6 +111,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			var kafkaInfo cdc.Kafka
 			var mysqlInfo cdc.MySQL
 			var changefeedType cdc.ChangefeedTypeEnum
+			var startTimeStr string
+			var startTime *time.Time
 
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
@@ -131,7 +135,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				var startTSOStr string
 				switch changefeedType {
 				case cdc.CHANGEFEEDTYPEENUM_KAFKA:
-					inputs := []string{flag.DisplayName, flag.ChangefeedKafka, flag.ChangefeedFilter, flag.ChangefeedStartTSO}
+					inputs := []string{flag.DisplayName, flag.ChangefeedKafka, flag.ChangefeedFilter, flag.ChangefeedStartTSO, flag.ChangefeedStartTime}
 					textInput, err := ui.InitialInputModel(inputs, createKafkaInputDescription)
 					if err != nil {
 						return err
@@ -140,8 +144,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					kafkaStr = textInput.Inputs[1].Value()
 					filterStr = textInput.Inputs[2].Value()
 					startTSOStr = textInput.Inputs[3].Value()
+					startTimeStr = textInput.Inputs[4].Value()
 				case cdc.CHANGEFEEDTYPEENUM_MYSQL:
-					inputs := []string{flag.DisplayName, flag.ChangefeedMySQL, flag.ChangefeedFilter, flag.ChangefeedStartTSO}
+					inputs := []string{flag.DisplayName, flag.ChangefeedMySQL, flag.ChangefeedFilter, flag.ChangefeedStartTSO, flag.ChangefeedStartTime}
 					textInput, err := ui.InitialInputModel(inputs, createMySQLInputDescription)
 					if err != nil {
 						return err
@@ -150,6 +155,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					mysqlStr = textInput.Inputs[1].Value()
 					filterStr = textInput.Inputs[2].Value()
 					startTSOStr = textInput.Inputs[3].Value()
+					startTimeStr = textInput.Inputs[4].Value()
 				default:
 					return errors.Errorf("currently only %s and %s type is supported", cdc.CHANGEFEEDTYPEENUM_KAFKA, cdc.CHANGEFEEDTYPEENUM_MYSQL)
 				}
@@ -192,6 +198,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
+				startTimeStr, err = cmd.Flags().GetString(flag.ChangefeedStartTime)
+				if err != nil {
+					return errors.Trace(err)
+				}
 			}
 
 			// check all the parameters
@@ -220,6 +230,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if err := json.Unmarshal([]byte(filterStr), &filter); err != nil {
 				return errors.Errorf("invalid filter: %v", err)
 			}
+			if startTimeStr == "" {
+				startTime = nil
+			} else {
+				startTimePtr, err := time.Parse(time.RFC3339, startTimeStr)
+				if err != nil {
+					return errors.New("invalid start-time, must be RFC3339 format")
+				}
+				startTime = &startTimePtr
+			}
 
 			// create the changefeed
 			body := &cdc.ChangefeedServiceCreateChangefeedBody{
@@ -236,16 +255,22 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			case cdc.CHANGEFEEDTYPEENUM_MYSQL:
 				body.Sink.Mysql = &mysqlInfo
 			}
-			if startTSO == 0 {
-				mode := cdc.STARTMODEENUM_FROM_NOW
-				body.StartPosition = &cdc.StartPosition{
-					Mode: &mode,
-				}
-			} else {
+			if startTSO != 0 {
 				mode := cdc.STARTMODEENUM_FROM_TSO
 				body.StartPosition = &cdc.StartPosition{
 					Mode: &mode,
 					Tso:  aws.String(strconv.FormatUint(startTSO, 10)),
+				}
+			} else if startTime != nil {
+				mode := cdc.STARTMODEENUM_FROM_TIME
+				body.StartPosition = &cdc.StartPosition{
+					Mode: &mode,
+					Time: startTime,
+				}
+			} else {
+				mode := cdc.STARTMODEENUM_FROM_NOW
+				body.StartPosition = &cdc.StartPosition{
+					Mode: &mode,
 				}
 			}
 
@@ -268,6 +293,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.ChangefeedMySQL, "", "MySQL information in JSON format, use `ticloud serverless changefeed template` to see templates.")
 	createCmd.Flags().String(flag.ChangefeedFilter, "", "Filter in JSON format, use `ticloud serverless changefeed template` to see templates.")
 	createCmd.Flags().Uint64(flag.ChangefeedStartTSO, 0, "Start TSO for the changefeed, default to current TSO. See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.")
+	createCmd.Flags().String(flag.ChangefeedStartTime, "", "Start Time for the changefeed (RFC3339 format, e.g., 2024-01-01T00:00:00Z). If both start-tso and start-time are provided, start-tso will be used.")
+
+	createCmd.MarkFlagsMutuallyExclusive(flag.ChangefeedStartTSO, flag.ChangefeedStartTime)
 
 	return createCmd
 }
