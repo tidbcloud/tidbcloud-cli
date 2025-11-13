@@ -238,9 +238,9 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 	editCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
 	editCmd.Flags().String(flag.ChangefeedID, "", "The ID of the changefeed to be updated.")
 	editCmd.Flags().String(flag.ChangefeedName, "", "The new name of the changefeed.")
-	editCmd.Flags().String(flag.ChangefeedKafka, "", "Complete kafka information in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
-	editCmd.Flags().String(flag.ChangefeedMySQL, "", "Complete mysql information in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
-	editCmd.Flags().String(flag.ChangefeedFilter, "", "Complete filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
+	editCmd.Flags().String(flag.ChangefeedKafka, "", "Complete kafka information in JSON format, use `ticloud serverless changefeed template` to see templates.")
+	editCmd.Flags().String(flag.ChangefeedMySQL, "", "Complete mysql information in JSON format, use `ticloud serverless changefeed template` to see templates.")
+	editCmd.Flags().String(flag.ChangefeedFilter, "", "Complete filter in JSON format, use `ticloud serverless changefeed template` to see templates.")
 
 	return editCmd
 }
