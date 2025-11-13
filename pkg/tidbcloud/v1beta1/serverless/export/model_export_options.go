@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -19,17 +19,19 @@ var _ MappedNullable = &ExportOptions{}
 
 // ExportOptions struct for ExportOptions
 type ExportOptions struct {
-	// Optional. The exported file type. Default: CSV.
+	// The export file type. Default value is `CSV`.
 	FileType *ExportFileTypeEnum `json:"fileType,omitempty"`
-	Database *string             `json:"database,omitempty"`
-	Table    *string             `json:"table,omitempty"`
-	// Optional. The compression of the export. Default is GZIP.
+	// The database to export. DEPRECATED, use filter instead.
+	Database *string `json:"database,omitempty"`
+	// The table to export. DEPRECATED, use filter instead.
+	Table *string `json:"table,omitempty"`
+	// The compression algorithm of the export file. Default value is `GZIP`.
 	Compression *ExportCompressionTypeEnum `json:"compression,omitempty"`
-	// Optional. The filter of the export. Default is whole cluster.
+	// Defines which tables to include in the export. If not specified, all tables in the cluster are exported.
 	Filter *ExportOptionsFilter `json:"filter,omitempty"`
-	// Optional. The format of the csv.
+	// The format specification for the CSV file.
 	CsvFormat *ExportOptionsCSVFormat `json:"csvFormat,omitempty"`
-	// Optional. The format of the parquet.
+	// The format specification for the Parquet file.
 	ParquetFormat        *ExportOptionsParquetFormat `json:"parquetFormat,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

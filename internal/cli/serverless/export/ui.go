@@ -36,8 +36,8 @@ var inputDescription = map[string]string{
 	flag.GCSURI:               "Input your GCS URI in gs://<bucket>/<path> format",
 	flag.GCSServiceAccountKey: "Input your base64 encoded GCS service account key",
 	flag.SQL:                  "Input the SELECT SQL statement",
-	flag.TableFilter:          "Input the table filter patterns (comma separated). Example: database.table,database.*,`database-1`.`table-1`",
-	flag.TableWhere:           "Input the where clause which will apply to all filtered tables. Example: id > 10",
+	flag.TableFilter:          "Required, input the table filter patterns (comma separated). Example: database.table,database.*,`database-1`.`table-1`",
+	flag.TableWhere:           "Optional, input the where clause which will apply to all filtered tables. Example: id > 10",
 	flag.CSVSeparator:         "Input the CSV separator: separator of each value in CSV files, skip to use default value (,)",
 	flag.CSVDelimiter:         "Input the CSV delimiter: delimiter of string type variables in CSV files, skip to use default value (\"). If you want to set empty string, please use non-interactive mode",
 	flag.CSVNullValue:         "Input the CSV null value: representation of null values in CSV files, skip to use default value (\\N). If you want to set empty string, please use non-interactive mode",
@@ -46,6 +46,7 @@ var inputDescription = map[string]string{
 	flag.OSSURI:               "Input your OSS URI in oss://<bucket>/<path> format",
 	flag.OSSAccessKeyID:       "Input your OSS access key id",
 	flag.OSSAccessKeySecret:   "Input your OSS access key secret",
+	flag.Partitions:           "Optional, input the partitions (comma separated) which will apply to all filtered tables. Example: p1,p2. It is useful when you want to export specific partitions from a partition table.",
 }
 
 func GetSelectedParquetCompression() (export.ExportParquetCompressionTypeEnum, error) {

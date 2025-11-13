@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -19,11 +19,11 @@ var _ MappedNullable = &ExportServiceCreateExportBody{}
 
 // ExportServiceCreateExportBody struct for ExportServiceCreateExportBody
 type ExportServiceCreateExportBody struct {
-	// Optional. The options of the export.
+	// The configuration options for the export task.
 	ExportOptions *ExportOptions `json:"exportOptions,omitempty"`
-	// Optional. The target of the export.
+	// The destination configuration for where the exported data is stored.
 	Target *ExportTarget `json:"target,omitempty"`
-	// Optional. The display name of the export. Default: SNAPSHOT_{snapshot_time}.
+	// The display name of the export task. Default value is `SNAPSHOT_{snapshot_time}`.
 	DisplayName          *string `json:"displayName,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

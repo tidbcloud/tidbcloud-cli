@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -14,7 +14,7 @@ import (
 	"encoding/json"
 )
 
-// ExportStateEnum Output Only. Export State.   - RUNNING: The export job is being created.  - SUCCEEDED: The export job is success.  - FAILED: The export job is failed.  - CANCELED: The export job is canceled.  - DELETED: The export job is deleted.  - EXPIRED: The export is expired, only local export will be expired.
+// ExportStateEnum Export State.   - RUNNING: The export job is being created.  - SUCCEEDED: The export job is success.  - FAILED: The export job is failed.  - CANCELED: The export job is canceled.  - DELETED: The export job is deleted.  - EXPIRED: The export is expired, only local export will be expired.
 type ExportStateEnum string
 
 // List of ExportState.Enum

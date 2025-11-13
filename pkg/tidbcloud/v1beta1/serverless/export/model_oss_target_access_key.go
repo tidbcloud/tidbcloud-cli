@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -20,9 +20,9 @@ var _ MappedNullable = &OSSTargetAccessKey{}
 
 // OSSTargetAccessKey struct for OSSTargetAccessKey
 type OSSTargetAccessKey struct {
-	// The access key id.
+	// The AccessKey ID for accessing Alibaba Cloud OSS.
 	Id string `json:"id"`
-	// The access key secret. This field is input-only.
+	// The AccessKey secret for accessing Alibaba Cloud OSS.
 	Secret               string `json:"secret"`
 	AdditionalProperties map[string]interface{}
 }

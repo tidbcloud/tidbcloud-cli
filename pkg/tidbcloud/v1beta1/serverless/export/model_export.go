@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -19,35 +19,35 @@ import (
 // checks if the Export type satisfies the MappedNullable interface at compile time
 var _ MappedNullable = &Export{}
 
-// Export Message for export resource.
+// Export Message for export task.
 type Export struct {
-	// Output_only. The unique ID of the export.
+	// The unique ID of the export task.
 	ExportId *string `json:"exportId,omitempty"`
-	// Output_only. The unique name of the export.
+	// The unique identifier for the export task.
 	Name *string `json:"name,omitempty"`
-	// Required. The cluster ID that export belong to.
+	// The ID of the cluster to which the export task belongs.
 	ClusterId string `json:"clusterId"`
-	// Output_only. The creator of the export.
+	// The email address of the user who create the export task.
 	CreatedBy *string `json:"createdBy,omitempty"`
-	// Output_only. The state of the export.
+	// The state of the export task.
 	State *ExportStateEnum `json:"state,omitempty"`
-	// Optional. The options of the export.
+	// The configuration options for the export task.
 	ExportOptions *ExportOptions `json:"exportOptions,omitempty"`
-	// Optional. The target of the export.
+	// The destination configuration for where the exported data is stored.
 	Target *ExportTarget `json:"target,omitempty"`
-	// Optional. The failed reason of the export.
+	// An error message if the export task failed. Otherwise, empty.
 	Reason NullableString `json:"reason,omitempty"`
-	// Optional. The display name of the export. Default: SNAPSHOT_{snapshot_time}.
+	// The display name of the export task. Default value is `SNAPSHOT_{snapshot_time}`.
 	DisplayName *string `json:"displayName,omitempty"`
-	// Output_only. Timestamp when the export was created.
+	// The timestamp when the export task was created, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
 	CreateTime *time.Time `json:"createTime,omitempty"`
-	// Output_only. Timestamp when the export was updated.
+	// The timestamp when the export task was last updated, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
 	UpdateTime NullableTime `json:"updateTime,omitempty"`
-	// Output_only. Timestamp when the export was completed.
+	// The timestamp when the export task was completed, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
 	CompleteTime NullableTime `json:"completeTime,omitempty"`
-	// Output_only. Snapshot time of the export.
+	// The timestamp when the data snapshot was captured for this export.
 	SnapshotTime NullableTime `json:"snapshotTime,omitempty"`
-	// Output_only. Expire time of the export.
+	// The timestamp when the export will expire and become unavailable.
 	ExpireTime           NullableTime `json:"expireTime,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

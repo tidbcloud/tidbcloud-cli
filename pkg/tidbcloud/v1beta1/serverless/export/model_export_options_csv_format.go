@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -19,13 +19,13 @@ var _ MappedNullable = &ExportOptionsCSVFormat{}
 
 // ExportOptionsCSVFormat struct for ExportOptionsCSVFormat
 type ExportOptionsCSVFormat struct {
-	// Separator of each value in CSV files. It is recommended to use '|+|' or other uncommon character combinations. Default is ','.
+	// The character used to separate values in the CSV file. Default value is `,`. It is recommended to use uncommon separators like `|+|` to avoid conflicts.
 	Separator *string `json:"separator,omitempty"`
-	// Delimiter of string type variables in CSV files. Default is '\"'.
+	// The character used to enclose string values in the CSV file. Default value is `\"`.
 	Delimiter NullableString `json:"delimiter,omitempty"`
-	// Representation of null values in CSV files. Default is \"\\N\".
+	// The string representation of NULL values in the CSV file. Default is `\\N`.
 	NullValue NullableString `json:"nullValue,omitempty"`
-	// Export CSV files of the tables without header. Default is false.
+	// Indicates whether to omit the header row in exported CSV files. Default value is `false`.
 	SkipHeader           *bool `json:"skipHeader,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
