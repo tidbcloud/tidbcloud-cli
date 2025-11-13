@@ -43,33 +43,33 @@ func GetSelectedChangefeedType() (cdc.ChangefeedTypeEnum, error) {
 	}
 	changefeedType := targetTypeModel.(ui.SelectModel).GetSelectedItem()
 	if changefeedType == nil {
-		return "", errors.New("no changfeed type selected")
+		return "", errors.New("no changefeed type selected")
 	}
 	return changefeedType.(cdc.ChangefeedTypeEnum), nil
 }
 
 var createKafkaInputDescription = map[string]string{
-	flag.ChangefeedName:     "The name of the changefeed, skip to use the default name.",
-	flag.ChangefeedKafka:    "Kafka information in JSON format, use `ticloud serverless changefeed template` to see templates.",
-	flag.ChangefeedFilter:   "Filter in JSON format, use `ticloud serverless changefeed template` to see templates.",
+	flag.DisplayName:        "The name of the changefeed, skip to use the default name",
+	flag.ChangefeedKafka:    "Kafka information in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
+	flag.ChangefeedFilter:   "Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
 	flag.ChangefeedStartTSO: "Start TSO (uint64) for the changefeed, skip to use the current TSO. See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.",
 }
 
 var createMySQLInputDescription = map[string]string{
-	flag.ChangefeedName:     "The name of the changefeed, skip to use the default name.",
-	flag.ChangefeedMySQL:    "MySQL information in JSON format, use `ticloud serverless changefeed template` to see templates.",
-	flag.ChangefeedFilter:   "Filter in JSON format, use `ticloud serverless changefeed template` to see templates.",
+	flag.DisplayName:        "The name of the changefeed, skip to use the default name",
+	flag.ChangefeedMySQL:    "mysql information in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
+	flag.ChangefeedFilter:   "Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
 	flag.ChangefeedStartTSO: "Start TSO (uint64) for the changefeed, skip to use the current TSO. See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.",
 }
 
 var updateKafkaInputDescriptionInteractive = map[string]string{
-	flag.ChangefeedName:   "The new name of the changefeed, skip to keep the current name.",
-	flag.ChangefeedKafka:  "Complete Kafka information in JSON format, use `ticloud serverless changefeed template` to see templates.",
-	flag.ChangefeedFilter: "Complete Filter in JSON format, use `ticloud serverless changefeed template` to see templates.",
+	flag.DisplayName:      "The new name of the changefeed, skip to keep the current name.",
+	flag.ChangefeedKafka:  "Complete Kafka information in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
+	flag.ChangefeedFilter: "Complete Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
 }
 
 var updateMySQLInputDescriptionInteractive = map[string]string{
-	flag.ChangefeedName:   "The new name of the changefeed, skip to keep the current name.",
-	flag.ChangefeedMySQL:  "Complete MySQL information in JSON format, use `ticloud serverless changefeed template` to see templates.",
-	flag.ChangefeedFilter: "Complete Filter in JSON format, use `ticloud serverless changefeed template` to see templates.",
+	flag.DisplayName:      "The new name of the changefeed, skip to keep the current name.",
+	flag.ChangefeedMySQL:  "Complete MySQL information in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
+	flag.ChangefeedFilter: "Complete Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
 }

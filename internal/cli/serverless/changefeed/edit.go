@@ -38,7 +38,7 @@ func (c UpdateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.ChangefeedID,
-		flag.ChangefeedName,
+		flag.DisplayName,
 		flag.ChangefeedKafka,
 		flag.ChangefeedFilter,
 	}
@@ -123,7 +123,7 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 
 				switch cf.Type {
 				case string(cdc.CHANGEFEEDTYPEENUM_KAFKA):
-					inputs := []string{flag.ChangefeedName, flag.ChangefeedKafka, flag.ChangefeedFilter}
+					inputs := []string{flag.DisplayName, flag.ChangefeedKafka, flag.ChangefeedFilter}
 					textInput, err := ui.InitialInputModel(inputs, updateKafkaInputDescriptionInteractive)
 					if err != nil {
 						return err
@@ -135,13 +135,13 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 						name = &nameStr
 					}
 				case string(cdc.CHANGEFEEDTYPEENUM_MYSQL):
-					inputs := []string{flag.ChangefeedName, flag.ChangefeedMySQL, flag.ChangefeedFilter}
+					inputs := []string{flag.DisplayName, flag.ChangefeedMySQL, flag.ChangefeedFilter}
 					textInput, err := ui.InitialInputModel(inputs, updateMySQLInputDescriptionInteractive)
 					if err != nil {
 						return err
 					}
 					nameStr := textInput.Inputs[0].Value()
-					kafkaStr = textInput.Inputs[1].Value()
+					mysqlStr = textInput.Inputs[1].Value()
 					filterStr = textInput.Inputs[2].Value()
 					if nameStr != "" {
 						name = &nameStr
@@ -159,8 +159,8 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if cmd.Flags().Changed(flag.ChangefeedName) {
-					nameStr, err := cmd.Flags().GetString(flag.ChangefeedName)
+				if cmd.Flags().Changed(flag.DisplayName) {
+					nameStr, err := cmd.Flags().GetString(flag.DisplayName)
 					if err != nil {
 						return errors.Trace(err)
 					}
@@ -212,8 +212,8 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 				if mysqlStr == "" {
 					return errors.New("mysql info (--mysql) is required and must be fully specified")
 				}
-				if err := json.Unmarshal([]byte(kafkaStr), &mysqlInfo); err != nil {
-					return errors.New("invalid kafka info, please use JSON format")
+				if err := json.Unmarshal([]byte(mysqlStr), &mysqlInfo); err != nil {
+					return errors.New("invalid mysql info, please use JSON format")
 				}
 				body.Sink = cdc.SinkInfo{
 					Type:  changefeed.Sink.Type,
@@ -237,10 +237,9 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 
 	editCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
 	editCmd.Flags().String(flag.ChangefeedID, "", "The ID of the changefeed to be updated.")
-	editCmd.Flags().String(flag.ChangefeedName, "", "The new name of the changefeed.")
-	editCmd.Flags().String(flag.ChangefeedKafka, "", "Complete kafka information in JSON format, use `ticloud serverless changefeed template` to see templates.")
-	editCmd.Flags().String(flag.ChangefeedMySQL, "", "Complete mysql information in JSON format, use `ticloud serverless changefeed template` to see templates.")
-	editCmd.Flags().String(flag.ChangefeedFilter, "", "Complete filter in JSON format, use `ticloud serverless changefeed template` to see templates.")
-
+	editCmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "The name of the changefeed.")
+	editCmd.Flags().String(flag.ChangefeedKafka, "", "Complete kafka information in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
+	editCmd.Flags().String(flag.ChangefeedMySQL, "", "Complete mysql information in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
+	editCmd.Flags().String(flag.ChangefeedFilter, "", "Complete filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
 	return editCmd
 }

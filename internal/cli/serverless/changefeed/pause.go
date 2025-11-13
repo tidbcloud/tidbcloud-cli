@@ -112,14 +112,6 @@ func PauseCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			if clusterID == "" {
-				return errors.New("cluster-id is required")
-			}
-
-			if changefeedID == "" {
-				return errors.New("changefeed-id is required")
-			}
-
 			_, err = d.StopChangefeed(ctx, clusterID, changefeedID)
 			if err != nil {
 				return errors.Trace(err)

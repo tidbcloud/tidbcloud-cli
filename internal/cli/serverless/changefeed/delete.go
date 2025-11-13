@@ -120,10 +120,6 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			if changefeedID == "" {
-				return errors.New("changefeed-id is required")
-			}
-
 			if !force {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support prompt, please run with --force to delete the changefeed")

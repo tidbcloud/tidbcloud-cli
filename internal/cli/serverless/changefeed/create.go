@@ -44,7 +44,7 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 		flag.ChangefeedMySQL,
 		flag.ChangefeedFilter,
 		flag.ChangefeedStartTSO,
-		flag.ChangefeedName,
+		flag.DisplayName,
 	}
 }
 
@@ -131,7 +131,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				var startTSOStr string
 				switch changefeedType {
 				case cdc.CHANGEFEEDTYPEENUM_KAFKA:
-					inputs := []string{flag.ChangefeedName, flag.ChangefeedKafka, flag.ChangefeedFilter, flag.ChangefeedStartTSO}
+					inputs := []string{flag.DisplayName, flag.ChangefeedKafka, flag.ChangefeedFilter, flag.ChangefeedStartTSO}
 					textInput, err := ui.InitialInputModel(inputs, createKafkaInputDescription)
 					if err != nil {
 						return err
@@ -141,7 +141,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					filterStr = textInput.Inputs[2].Value()
 					startTSOStr = textInput.Inputs[3].Value()
 				case cdc.CHANGEFEEDTYPEENUM_MYSQL:
-					inputs := []string{flag.ChangefeedName, flag.ChangefeedMySQL, flag.ChangefeedFilter, flag.ChangefeedStartTSO}
+					inputs := []string{flag.DisplayName, flag.ChangefeedMySQL, flag.ChangefeedFilter, flag.ChangefeedStartTSO}
 					textInput, err := ui.InitialInputModel(inputs, createMySQLInputDescription)
 					if err != nil {
 						return err
@@ -167,7 +167,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				name, err = cmd.Flags().GetString(flag.ChangefeedName)
+				name, err = cmd.Flags().GetString(flag.DisplayName)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -262,7 +262,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
-	createCmd.Flags().String(flag.ChangefeedName, "", "The name of the changefeed.")
+	createCmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "The name of the changefeed.")
 	createCmd.Flags().String(flag.ChangefeedType, "", fmt.Sprintf("The type of the changefeed, one of %q", cdc.AllowedChangefeedTypeEnumEnumValues))
 	createCmd.Flags().String(flag.ChangefeedKafka, "", "Kafka information in JSON format, use `ticloud serverless changefeed template` to see templates.")
 	createCmd.Flags().String(flag.ChangefeedMySQL, "", "MySQL information in JSON format, use `ticloud serverless changefeed template` to see templates.")

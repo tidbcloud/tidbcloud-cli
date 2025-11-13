@@ -227,7 +227,7 @@ func TemplateCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			templateType, err := cmd.Flags().GetString(flag.ChangfeedTemplateType)
+			templateType, err := cmd.Flags().GetString(flag.ChangefeedTemplateType)
 			if err != nil {
 				return err
 			}
@@ -277,7 +277,7 @@ func TemplateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	cmd.Flags().Bool(flag.Explain, false, "show template with explanations")
-	cmd.Flags().String(flag.ChangfeedTemplateType, "", "the type of changefeed template to show (kafka, mysql, filter)")
+	cmd.Flags().String(flag.ChangefeedTemplateType, "", "the type of changefeed template to show (kafka, mysql, filter)")
 
 	return cmd
 }
