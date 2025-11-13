@@ -22,6 +22,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 )
 
@@ -214,13 +215,12 @@ const (
 func TemplateCmd(h *internal.Helper) *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "template",
-		Short: "Show changefeed KafkaInfo and CDCFilter JSON templates",
-		Example: `  Show all changefeed templates:
-  $ tidbcloud serverless changefeed template
-  
+		Short: "Show changefeed Kafka, MySQL and Filter JSON templates",
+		Example: fmt.Sprintf(`  Show all changefeed templates:
+  $ %[1]s serverless changefeed template
+
   Show Kafka JSON template:
-  $ tidbcloud serverless changefeed template --type kafka
-  `,
+  $ %[1]s serverless changefeed template --type kafka`, config.CliName),
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			explain, err := cmd.Flags().GetBool(flag.Explain)
@@ -252,19 +252,19 @@ func TemplateCmd(h *internal.Helper) *cobra.Command {
 					fmt.Fprintln(h.IOStreams.Out, MySQLTemplate)
 				}
 			default:
-				fmt.Fprintln(h.IOStreams.Out, color.GreenString("KafkaInfo JSON template:"))
+				fmt.Fprintln(h.IOStreams.Out, color.GreenString("Kafka JSON template:"))
 				if explain {
 					fmt.Fprintln(h.IOStreams.Out, KafkaInfoTemplateWithExplain)
 				} else {
 					fmt.Fprintln(h.IOStreams.Out, KafkaInfoTemplate)
 				}
-				fmt.Fprintln(h.IOStreams.Out, color.GreenString("MySQLInfo JSON template:"))
+				fmt.Fprintln(h.IOStreams.Out, color.GreenString("MySQL JSON template:"))
 				if explain {
 					fmt.Fprintln(h.IOStreams.Out, MySQLTemplateWithExplain)
 				} else {
 					fmt.Fprintln(h.IOStreams.Out, MySQLTemplate)
 				}
-				fmt.Fprintln(h.IOStreams.Out, color.GreenString("CDCFilter JSON template:"))
+				fmt.Fprintln(h.IOStreams.Out, color.GreenString("Filter JSON template:"))
 				if explain {
 					fmt.Fprintln(h.IOStreams.Out, CDCFilterTemplateWithExplain)
 				} else {
@@ -276,8 +276,8 @@ func TemplateCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().Bool(flag.Explain, false, "show template with explanations")
-	cmd.Flags().String(flag.ChangefeedTemplateType, "", "the type of changefeed template to show (kafka, mysql, filter)")
+	cmd.Flags().Bool(flag.Explain, false, "Show template with explanations.")
+	cmd.Flags().String(flag.ChangefeedTemplateType, "", "The type of changefeed template to show, one of [\"kafka\", \"mysql\", \"filter\"].")
 
 	return cmd
 }

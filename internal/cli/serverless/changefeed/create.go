@@ -289,9 +289,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
 	createCmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "The name of the changefeed.")
 	createCmd.Flags().String(flag.ChangefeedType, "", fmt.Sprintf("The type of the changefeed, one of %q", cdc.AllowedChangefeedTypeEnumEnumValues))
-	createCmd.Flags().String(flag.ChangefeedKafka, "", "Kafka information in JSON format, use `ticloud serverless changefeed template` to see templates.")
-	createCmd.Flags().String(flag.ChangefeedMySQL, "", "MySQL information in JSON format, use `ticloud serverless changefeed template` to see templates.")
-	createCmd.Flags().String(flag.ChangefeedFilter, "", "Filter in JSON format, use `ticloud serverless changefeed template` to see templates.")
+	createCmd.Flags().String(flag.ChangefeedKafka, "", "Kafka information in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
+	createCmd.Flags().String(flag.ChangefeedMySQL, "", "MySQL information in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
+	createCmd.Flags().String(flag.ChangefeedFilter, "", "Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
 	createCmd.Flags().Uint64(flag.ChangefeedStartTSO, 0, "Start TSO for the changefeed, default to current TSO. See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.")
 	createCmd.Flags().String(flag.ChangefeedStartTime, "", "Start Time for the changefeed (RFC3339 format, e.g., 2024-01-01T00:00:00Z). If both start-tso and start-time are provided, start-tso will be used.")
 
