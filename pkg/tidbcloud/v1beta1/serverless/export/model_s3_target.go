@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -20,15 +20,15 @@ var _ MappedNullable = &S3Target{}
 
 // S3Target struct for S3Target
 type S3Target struct {
-	// Optional. The bucket URI of the s3. DEPRECATED, use uri instead.
+	// The bucket URI of the s3. DEPRECATED, use uri instead.
 	BucketUri *string `json:"bucketUri,omitempty"`
-	// Optional. The URI of the s3 folder.
+	// The S3 URI of the export target.
 	Uri *string `json:"uri,omitempty"`
-	// Required. The auth method of the export s3.
+	// The authentication method for accessing the S3 bucket.
 	AuthType ExportS3AuthTypeEnum `json:"authType"`
-	// Optional. The access key of the s3.
+	// The AWS access key credentials used for access.
 	AccessKey *S3TargetAccessKey `json:"accessKey,omitempty"`
-	// Optional. The role arn of the s3.
+	// The AWS IAM role ARN used for access.
 	RoleArn              *string `json:"roleArn,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

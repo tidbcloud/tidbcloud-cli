@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -20,11 +20,11 @@ var _ MappedNullable = &OSSTarget{}
 
 // OSSTarget struct for OSSTarget
 type OSSTarget struct {
-	// Required. The OSS URI.
+	// The Alibaba Cloud OSS URI of the export target.
 	Uri string `json:"uri"`
-	// Required. The auth method of the export target.
+	// The authentication method for accessing Alibaba Cloud OSS.
 	AuthType ExportOSSAuthTypeEnum `json:"authType"`
-	// The access key.
+	// The Alibaba Cloud OSS access key credentials used for access.
 	AccessKey            *OSSTargetAccessKey `json:"accessKey,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

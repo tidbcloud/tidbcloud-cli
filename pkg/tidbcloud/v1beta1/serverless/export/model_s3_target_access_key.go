@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -20,9 +20,9 @@ var _ MappedNullable = &S3TargetAccessKey{}
 
 // S3TargetAccessKey struct for S3TargetAccessKey
 type S3TargetAccessKey struct {
-	// The access key id of the s3.
+	// The access key ID for accessing the S3 bucket.
 	Id string `json:"id"`
-	// Input_Only. The secret access key of the s3.
+	// The secret access key for accessing the S3 bucket.
 	Secret               string `json:"secret"`
 	AdditionalProperties map[string]interface{}
 }

@@ -1,7 +1,7 @@
 openapi: 3.0.1
 info:
-  description: TiDB Cloud Serverless Export Open API
-  title: TiDB Cloud Serverless Export Open API
+  description: TiDB Cloud Starter and Essential API
+  title: TiDB Cloud Starter and Essential API
   version: v1beta1
 servers:
 - url: https://serverless.tidbapi.com/
@@ -12,26 +12,33 @@ paths:
     get:
       operationId: ExportService_ListExports
       parameters:
-      - description: Required. The cluster ID to list exports for.
+      - description: The ID of the cluster to list export tasks for.
         in: path
         name: clusterId
         required: true
         schema:
           type: string
-      - description: Optional. The maximum number of clusters to return. Default is
-          10.
+      - description: "The maximum number of exports to return. If not specified, at\
+          \ most 10 exports will be returned. The maximum value is `100`. Values greater\
+          \ than `100` are set to `100`."
         in: query
         name: pageSize
         schema:
+          default: 10
           format: int32
           type: integer
-      - description: Optional. The page token from the previous response for pagination.
+      - description: |-
+          The pagination token received from a previous [List export tasks](#tag/Export/operation/ExportService_ListExports) request. Use this token to retrieve the next page of results.
+
+          **Note**: When paginating, all other parameters must match the original request.
         in: query
         name: pageToken
         schema:
           type: string
-      - description: "Optional. List exports order by, separated by comma, default\
-          \ is ascending. Example: \"foo, bar desc\". Supported field: create_time"
+      - description: |-
+          Specifies the sorting order of results. Use a comma-separated list of field names, optionally appending `desc` for descending order. For example, `createTime desc`. By default, fields are sorted in ascending order.
+
+          Supported field: `createTime`.
         in: query
         name: orderBy
         schema:
@@ -49,13 +56,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Provides a list of export jobs.
+      summary: List export tasks on a cluster
       tags:
-      - ExportService
+      - Export
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/exports' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Content-Type: application/json' \
+          --header 'Accept: application/json' \
+          --data '{
+            "exportOptions": {
+              "fileType": "PARQUET",
+              "filter": {
+                "table": {
+                  "patterns": [
+                      "test.*"
+                  ]
+                }
+              },
+              "parquetFormat": {
+                "compression": "GZIP"
+              }
+            },
+            "target": {
+              "type": "LOCAL"
+            }
+          }'
     post:
       operationId: ExportService_CreateExport
       parameters:
-      - description: Required. The ID of the cluster.
+      - description: The ID of the cluster.
         in: path
         name: clusterId
         required: true
@@ -80,21 +113,47 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Create an export job
+      summary: Create an export task
       tags:
-      - ExportService
+      - Export
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/exports' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Content-Type: application/json' \
+          --header 'Accept: application/json' \
+          --data '{
+            "exportOptions": {
+              "fileType": "PARQUET",
+              "filter": {
+                "table": {
+                  "patterns": [
+                      "test.*"
+                  ]
+                }
+              },
+              "parquetFormat": {
+                "compression": "GZIP"
+              }
+            },
+            "target": {
+              "type": "LOCAL"
+            }
+          }'
       x-codegen-request-body-name: body
   /v1beta1/clusters/{clusterId}/exports/{exportId}:
     delete:
       operationId: ExportService_DeleteExport
       parameters:
-      - description: Required. The ID of the cluster.
+      - description: The ID of the cluster.
         in: path
         name: clusterId
         required: true
         schema:
           type: string
-      - description: Required. The ID of the export to be retrieved.
+      - description: The ID of the export task to delete.
         in: path
         name: exportId
         required: true
@@ -113,19 +172,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Delete an export job
+      summary: Delete an export task
       tags:
-      - ExportService
+      - Export
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location --request DELETE 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/exports/{export_id}' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
     get:
       operationId: ExportService_GetExport
       parameters:
-      - description: Required. The ID of the cluster.
+      - description: The ID of the cluster.
         in: path
         name: clusterId
         required: true
         schema:
           type: string
-      - description: Required. The ID of the export to be retrieved.
+      - description: The ID of the export task to retrieve.
         in: path
         name: exportId
         required: true
@@ -144,20 +210,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Retrieves details of an export job.
+      summary: Get details of an export task
       tags:
-      - ExportService
+      - Export
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/exports/{export_id}' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
   /v1beta1/clusters/{clusterId}/exports/{exportId}:cancel:
     post:
       operationId: ExportService_CancelExport
       parameters:
-      - description: Required. The ID of the cluster.
+      - description: The ID of the cluster.
         in: path
         name: clusterId
         required: true
         schema:
           type: string
-      - description: Required. The ID of the export to be retrieved.
+      - description: The ID of the export task to cancel.
         in: path
         name: exportId
         required: true
@@ -176,21 +249,28 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Cancel a specific export job.
+      summary: Cancel an export task
       tags:
-      - ExportService
+      - Export
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location --request POST 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/exports/{export_id}:cancel' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
   /v1beta1/clusters/{clusterId}/exports/{exportId}:download:
     post:
       deprecated: true
       operationId: ExportService_DownloadExport
       parameters:
-      - description: Required. The ID of the cluster.
+      - description: The ID of the cluster.
         in: path
         name: clusterId
         required: true
         schema:
           type: string
-      - description: Required. The ID of the export to be retrieved.
+      - description: The ID of the export task to download.
         in: path
         name: exportId
         required: true
@@ -223,31 +303,36 @@ paths:
     get:
       operationId: ExportService_ListExportFiles
       parameters:
-      - description: Required. The ID of the cluster.
+      - description: The ID of the cluster.
         in: path
         name: clusterId
         required: true
         schema:
           type: string
-      - description: Required. The ID of the export.
+      - description: The ID of the export task.
         in: path
         name: exportId
         required: true
         schema:
           type: string
-      - description: Optional. The maximum number to return.
+      - description: "The maximum number of files to return. If not specified, at\
+          \ most 10 files will be returned. The maximum value is `100`. Values greater\
+          \ than `100` are set to `100`."
         in: query
         name: pageSize
         schema:
           format: int32
           type: integer
-      - description: Optional. The page token from the previous response for pagination.
+      - description: |-
+          The pagination token received from a previous [List export files](#tag/Export/operation/ExportService_ListExportFiles) request. Use this token to retrieve the next page of results.
+
+          **Note**: When paginating, all other parameters must match the original request.
         in: query
         name: pageToken
         schema:
           type: string
-      - description: "Optional. Whether return the file download urls, default is\
-          \ false"
+      - description: Whether to generate download URLs for the files. Default value
+          is `false`.
         in: query
         name: generateUrl
         schema:
@@ -272,13 +357,13 @@ paths:
     post:
       operationId: ExportService_DownloadExportFiles
       parameters:
-      - description: Required. The ID of the cluster.
+      - description: The ID of the cluster.
         in: path
         name: clusterId
         required: true
         schema:
           type: string
-      - description: Required. The ID of the export.
+      - description: The ID of the export task.
         in: path
         name: exportId
         required: true
@@ -323,14 +408,15 @@ components:
         authType:
           allOf:
           - $ref: '#/components/schemas/ExportAzureBlobAuthType.Enum'
-          description: The Azure Blob URI of the export target.
+          description: The authentication method for accessing Azure Blob Storage.
           type: object
         sasToken:
-          description: The sas token. This field is input-only.
+          description: The Shared Access Signature (SAS) token for accessing Azure
+            Blob Storage.
           type: string
         uri:
-          description: "The Azure Blob URI of the export target. For example: azure://<account>.blob.core.windows.net/<container>/<path>\
-            \ or https://<account>.blob.core.windows.net/<container>/<path>."
+          description: "The Azure Blob URI of the export target, in the format of\
+            \ `azure://<account>.blob.core.windows.net/<container>/<path>` or `https://<account>.blob.core.windows.net/<container>/<path>`."
           type: string
       required:
       - authType
@@ -386,7 +472,7 @@ components:
           type: integer
       type: object
     Export:
-      description: Message for export resource.
+      description: Message for export task.
       example:
         reason: reason
         displayName: displayName
@@ -404,68 +490,73 @@ components:
         exportId: exportId
       properties:
         exportId:
-          description: Output_only. The unique ID of the export.
+          description: The unique ID of the export task.
           readOnly: true
           type: string
         name:
-          description: Output_only. The unique name of the export.
+          description: The unique identifier for the export task.
           readOnly: true
           type: string
         clusterId:
-          description: Required. The cluster ID that export belong to.
+          description: The ID of the cluster to which the export task belongs.
           type: string
         createdBy:
-          description: Output_only. The creator of the export.
+          description: The email address of the user who create the export task.
           readOnly: true
           type: string
         state:
           allOf:
           - $ref: '#/components/schemas/ExportState.Enum'
-          description: Output_only. The state of the export.
+          description: The state of the export task.
           type: object
         exportOptions:
           allOf:
           - $ref: '#/components/schemas/ExportOptions'
-          description: Optional. The options of the export.
+          description: The configuration options for the export task.
           type: object
         target:
           allOf:
           - $ref: '#/components/schemas/ExportTarget'
-          description: Optional. The target of the export.
+          description: The destination configuration for where the exported data is
+            stored.
           type: object
         reason:
-          description: Optional. The failed reason of the export.
+          description: "An error message if the export task failed. Otherwise, empty."
           nullable: true
           readOnly: true
           type: string
         displayName:
-          description: "Optional. The display name of the export. Default: SNAPSHOT_{snapshot_time}."
+          description: "The display name of the export task. Default value is `SNAPSHOT_{snapshot_time}`."
           type: string
         createTime:
-          description: Output_only. Timestamp when the export was created.
+          description: "The timestamp when the export task was created, in the [ISO\
+            \ 8601](https://en.wikipedia.org/wiki/ISO_8601) format."
           format: date-time
           readOnly: true
           type: string
         updateTime:
-          description: Output_only. Timestamp when the export was updated.
+          description: "The timestamp when the export task was last updated, in the\
+            \ [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format."
           format: date-time
           nullable: true
           readOnly: true
           type: string
         completeTime:
-          description: Output_only. Timestamp when the export was completed.
+          description: "The timestamp when the export task was completed, in the [ISO\
+            \ 8601](https://en.wikipedia.org/wiki/ISO_8601) format."
           format: date-time
           nullable: true
           readOnly: true
           type: string
         snapshotTime:
-          description: Output_only. Snapshot time of the export.
+          description: The timestamp when the data snapshot was captured for this
+            export.
           format: date-time
           nullable: true
           readOnly: true
           type: string
         expireTime:
-          description: Output_only. Expire time of the export.
+          description: The timestamp when the export will expire and become unavailable.
           format: date-time
           nullable: true
           readOnly: true
@@ -532,84 +623,93 @@ components:
         fileType:
           allOf:
           - $ref: '#/components/schemas/ExportFileType.Enum'
-          description: "Optional. The exported file type. Default: CSV."
+          description: The export file type. Default value is `CSV`.
           type: object
         database:
-          title: "Optional. The specify database of the export. DEPRECATED, use filter\
-            \ instead"
+          description: "The database to export. DEPRECATED, use filter instead."
           type: string
         table:
-          title: "Optional. The specify table of the export. DEPRECATED, use filter\
-            \ instead"
+          description: "The table to export. DEPRECATED, use filter instead."
           type: string
         compression:
           allOf:
           - $ref: '#/components/schemas/ExportCompressionType.Enum'
-          description: Optional. The compression of the export. Default is GZIP.
+          description: The compression algorithm of the export file. Default value
+            is `GZIP`.
           type: object
         filter:
           allOf:
           - $ref: '#/components/schemas/ExportOptions.Filter'
-          description: Optional. The filter of the export. Default is whole cluster.
+          description: "Defines which tables to include in the export. If not specified,\
+            \ all tables in the cluster are exported."
           type: object
         csvFormat:
           allOf:
           - $ref: '#/components/schemas/ExportOptions.CSVFormat'
-          description: Optional. The format of the csv.
+          description: The format specification for the CSV file.
           type: object
         parquetFormat:
           allOf:
           - $ref: '#/components/schemas/ExportOptions.ParquetFormat'
-          description: Optional. The format of the parquet.
+          description: The format specification for the Parquet file.
           type: object
       type: object
     ExportOptions.CSVFormat:
       properties:
         separator:
-          description: "Separator of each value in CSV files. It is recommended to\
-            \ use '|+|' or other uncommon character combinations. Default is ','."
+          description: |-
+            The character used to separate values in the CSV file. Default value is `,`.
+            It is recommended to use uncommon separators like `|+|` to avoid conflicts.
           type: string
         delimiter:
-          description: Delimiter of string type variables in CSV files. Default is
-            '"'.
+          description: The character used to enclose string values in the CSV file.
+            Default value is `"`.
           nullable: true
           type: string
         nullValue:
-          description: Representation of null values in CSV files. Default is "\N".
+          description: The string representation of NULL values in the CSV file. Default
+            is `\N`.
           nullable: true
           type: string
         skipHeader:
-          description: Export CSV files of the tables without header. Default is false.
+          description: Indicates whether to omit the header row in exported CSV files.
+            Default value is `false`.
           type: boolean
       type: object
     ExportOptions.Filter:
       properties:
         sql:
-          description: Optional. Use SQL to filter the export.
+          description: Filters the exported data with the SQL statement.
           type: string
         table:
           allOf:
           - $ref: '#/components/schemas/ExportOptions.Filter.Table'
-          description: Optional. Use table-filter to filter the export.
+          description: Filters the exported data with table filter patterns.
           type: object
       type: object
     ExportOptions.Filter.Table:
       properties:
         patterns:
-          description: Optional. The table-filter expressions.
+          description: "A list of [table-filter](https://docs.pingcap.com/tidb/stable/table-filter/#syntax)\
+            \ patterns."
           items:
             type: string
           type: array
         where:
-          description: Optional. Export only selected records.
+          description: Filters the exported tables with the `WHERE` condition.
           type: string
+        partitions:
+          description: Export only selected partitions.
+          items:
+            type: string
+          type: array
       type: object
     ExportOptions.ParquetFormat:
       properties:
         compression:
           allOf:
           - $ref: '#/components/schemas/ExportParquetCompressionType.Enum'
-          description: Optional. The compression of the parquet. Default is ZSTD.
+          description: The Parquet compression algorithm. Default value is `ZSTD`.
           type: object
       type: object
     ExportParquetCompressionType.Enum:
@@ -637,15 +737,16 @@ components:
         exportOptions:
           allOf:
           - $ref: '#/components/schemas/ExportOptions'
-          description: Optional. The options of the export.
+          description: The configuration options for the export task.
           type: object
         target:
           allOf:
           - $ref: '#/components/schemas/ExportTarget'
-          description: Optional. The target of the export.
+          description: The destination configuration for where the exported data is
+            stored.
           type: object
         displayName:
-          description: "Optional. The display name of the export. Default: SNAPSHOT_{snapshot_time}."
+          description: "The display name of the export task. Default value is `SNAPSHOT_{snapshot_time}`."
           type: string
       type: object
     ExportService.DownloadExportBody:
@@ -653,7 +754,7 @@ components:
     ExportService.DownloadExportFilesBody:
       properties:
         fileNames:
-          description: Required. The name of the files to download.
+          description: The names of the files to download.
           items:
             type: string
           type: array
@@ -662,7 +763,7 @@ components:
       type: object
     ExportState.Enum:
       description: |-
-        Output Only. Export State.
+        Export State.
 
          - RUNNING: The export job is being created.
          - SUCCEEDED: The export job is success.
@@ -683,16 +784,32 @@ components:
         type:
           allOf:
           - $ref: '#/components/schemas/ExportTargetType.Enum'
-          description: Optional. The exported file type. Default is LOCAL.
+          description: The export target. Default value is `LOCAL`.
           type: object
         s3:
-          $ref: '#/components/schemas/S3Target'
+          allOf:
+          - $ref: '#/components/schemas/S3Target'
+          description: The configuration details for exporting data to Amazon S3.
+            This is required when `type` is `S3`.
+          type: object
         gcs:
-          $ref: '#/components/schemas/GCSTarget'
+          allOf:
+          - $ref: '#/components/schemas/GCSTarget'
+          description: The configuration details for exporting data to Google Cloud
+            Storage. This is required when `type` is `GCS`.
+          type: object
         azureBlob:
-          $ref: '#/components/schemas/AzureBlobTarget'
+          allOf:
+          - $ref: '#/components/schemas/AzureBlobTarget'
+          description: The configuration details for exporting data to Azure Blob
+            Storage. This is required when `type` is `AZURE_BLOB`.
+          type: object
         oss:
-          $ref: '#/components/schemas/OSSTarget'
+          allOf:
+          - $ref: '#/components/schemas/OSSTarget'
+          description: The configuration details for exporting data to Alibaba Cloud
+            Object Storage Service (OSS). This is required when `type` is `OSS`.
+          type: object
       type: object
     ExportTargetType.Enum:
       enum:
@@ -711,15 +828,15 @@ components:
     GCSTarget:
       properties:
         uri:
-          description: The GCS URI of the export target.
+          description: The Google Cloud Storage URI of the export target.
           type: string
         authType:
           allOf:
           - $ref: '#/components/schemas/ExportGcsAuthType.Enum'
-          description: The auth method of the export target.
+          description: The authentication method for accessing Google Cloud Storage.
           type: object
         serviceAccountKey:
-          title: The service account key
+          description: The service account key for accessing Google Cloud Storage.
           type: string
       required:
       - authType
@@ -780,32 +897,34 @@ components:
         nextPageToken: nextPageToken
       properties:
         exports:
-          description: A list of exports.
+          description: A list of export tasks that match the query.
           items:
             $ref: '#/components/schemas/Export'
           type: array
         nextPageToken:
-          description: Token provided to retrieve the next page of results.
+          description: The token to retrieve the next page of results. Use this value
+            as the `pageToken` parameter in the next request. This field is empty
+            when there are no more pages.
           type: string
         totalSize:
-          description: Total number of exports.
+          description: The total number of exports that match the query.
           format: int64
           type: integer
       type: object
     OSSTarget:
       properties:
         uri:
-          description: Required. The OSS URI.
+          description: The Alibaba Cloud OSS URI of the export target.
           type: string
         authType:
           allOf:
           - $ref: '#/components/schemas/ExportOSSAuthType.Enum'
-          description: Required. The auth method of the export target.
+          description: The authentication method for accessing Alibaba Cloud OSS.
           type: object
         accessKey:
           allOf:
           - $ref: '#/components/schemas/OSSTarget.AccessKey'
-          description: The access key.
+          description: The Alibaba Cloud OSS access key credentials used for access.
           type: object
       required:
       - authType
@@ -814,10 +933,10 @@ components:
     OSSTarget.AccessKey:
       properties:
         id:
-          description: The access key id.
+          description: The AccessKey ID for accessing Alibaba Cloud OSS.
           type: string
         secret:
-          description: The access key secret. This field is input-only.
+          description: The AccessKey secret for accessing Alibaba Cloud OSS.
           type: string
       required:
       - id
@@ -826,23 +945,23 @@ components:
     S3Target:
       properties:
         bucketUri:
-          description: "Optional. The bucket URI of the s3. DEPRECATED, use uri instead."
+          description: "The bucket URI of the s3. DEPRECATED, use uri instead."
           type: string
         uri:
-          description: Optional. The URI of the s3 folder.
+          description: The S3 URI of the export target.
           type: string
         authType:
           allOf:
           - $ref: '#/components/schemas/ExportS3AuthType.Enum'
-          description: Required. The auth method of the export s3.
+          description: The authentication method for accessing the S3 bucket.
           type: object
         accessKey:
           allOf:
           - $ref: '#/components/schemas/S3Target.AccessKey'
-          description: Optional. The access key of the s3.
+          description: The AWS access key credentials used for access.
           type: object
         roleArn:
-          description: Optional. The role arn of the s3.
+          description: The AWS IAM role ARN used for access.
           type: string
       required:
       - authType
@@ -850,10 +969,10 @@ components:
     S3Target.AccessKey:
       properties:
         id:
-          description: The access key id of the s3.
+          description: The access key ID for accessing the S3 bucket.
           type: string
         secret:
-          description: Input_Only. The secret access key of the s3.
+          description: The secret access key for accessing the S3 bucket.
           type: string
       required:
       - id

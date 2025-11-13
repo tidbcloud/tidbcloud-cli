@@ -348,8 +348,9 @@ func (suite *CreateExportSuite) TestCreateExportWithTableFilter() {
 	body := getDefaultCreateExportBody()
 	body.ExportOptions.Filter = &export.ExportOptionsFilter{
 		Table: &export.ExportOptionsFilterTable{
-			Patterns: []string{pattern1, pattern2},
-			Where:    &where,
+			Patterns:   []string{pattern1, pattern2},
+			Where:      &where,
+			Partitions: []string{},
 		},
 	}
 

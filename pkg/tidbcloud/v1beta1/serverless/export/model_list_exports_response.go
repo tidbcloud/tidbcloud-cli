@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -19,11 +19,11 @@ var _ MappedNullable = &ListExportsResponse{}
 
 // ListExportsResponse struct for ListExportsResponse
 type ListExportsResponse struct {
-	// A list of exports.
+	// A list of export tasks that match the query.
 	Exports []Export `json:"exports,omitempty"`
-	// Token provided to retrieve the next page of results.
+	// The token to retrieve the next page of results. Use this value as the `pageToken` parameter in the next request. This field is empty when there are no more pages.
 	NextPageToken *string `json:"nextPageToken,omitempty"`
-	// Total number of exports.
+	// The total number of exports that match the query.
 	TotalSize            *int64 `json:"totalSize,omitempty"`
 	AdditionalProperties map[string]interface{}
 }

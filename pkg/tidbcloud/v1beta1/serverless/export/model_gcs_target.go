@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -20,11 +20,12 @@ var _ MappedNullable = &GCSTarget{}
 
 // GCSTarget struct for GCSTarget
 type GCSTarget struct {
-	// The GCS URI of the export target.
+	// The Google Cloud Storage URI of the export target.
 	Uri string `json:"uri"`
-	// The auth method of the export target.
-	AuthType             ExportGcsAuthTypeEnum `json:"authType"`
-	ServiceAccountKey    *string               `json:"serviceAccountKey,omitempty"`
+	// The authentication method for accessing Google Cloud Storage.
+	AuthType ExportGcsAuthTypeEnum `json:"authType"`
+	// The service account key for accessing Google Cloud Storage.
+	ServiceAccountKey    *string `json:"serviceAccountKey,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 

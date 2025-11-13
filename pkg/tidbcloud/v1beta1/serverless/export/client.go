@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -40,13 +40,15 @@ var (
 	queryDescape    = strings.NewReplacer("%5B", "[", "%5D", "]")
 )
 
-// APIClient manages communication with the TiDB Cloud Serverless Export Open API API vv1beta1
+// APIClient manages communication with the TiDB Cloud Starter and Essential API API vv1beta1
 // In most cases there should be only one, shared, APIClient.
 type APIClient struct {
 	cfg    *Configuration
 	common service // Reuse a single struct instead of allocating one for each service on the heap.
 
 	// API Services
+
+	ExportAPI *ExportAPIService
 
 	ExportServiceAPI *ExportServiceAPIService
 }
@@ -67,6 +69,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.common.client = c
 
 	// API Services
+	c.ExportAPI = (*ExportAPIService)(&c.common)
 	c.ExportServiceAPI = (*ExportServiceAPIService)(&c.common)
 
 	return c

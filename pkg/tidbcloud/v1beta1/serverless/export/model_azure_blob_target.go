@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -20,11 +20,11 @@ var _ MappedNullable = &AzureBlobTarget{}
 
 // AzureBlobTarget struct for AzureBlobTarget
 type AzureBlobTarget struct {
-	// The Azure Blob URI of the export target.
+	// The authentication method for accessing Azure Blob Storage.
 	AuthType ExportAzureBlobAuthTypeEnum `json:"authType"`
-	// The sas token. This field is input-only.
+	// The Shared Access Signature (SAS) token for accessing Azure Blob Storage.
 	SasToken *string `json:"sasToken,omitempty"`
-	// The Azure Blob URI of the export target. For example: azure://<account>.blob.core.windows.net/<container>/<path> or https://<account>.blob.core.windows.net/<container>/<path>.
+	// The Azure Blob URI of the export target, in the format of `azure://<account>.blob.core.windows.net/<container>/<path>` or `https://<account>.blob.core.windows.net/<container>/<path>`.
 	Uri                  string `json:"uri"`
 	AdditionalProperties map[string]interface{}
 }

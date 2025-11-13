@@ -1,7 +1,7 @@
 /*
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
-TiDB Cloud Serverless Export Open API
+TiDB Cloud Starter and Essential API
 
 API version: v1beta1
 */
@@ -19,10 +19,12 @@ var _ MappedNullable = &ExportOptionsFilterTable{}
 
 // ExportOptionsFilterTable struct for ExportOptionsFilterTable
 type ExportOptionsFilterTable struct {
-	// Optional. The table-filter expressions.
+	// A list of [table-filter](https://docs.pingcap.com/tidb/stable/table-filter/#syntax) patterns.
 	Patterns []string `json:"patterns,omitempty"`
-	// Optional. Export only selected records.
-	Where                *string `json:"where,omitempty"`
+	// Filters the exported tables with the `WHERE` condition.
+	Where *string `json:"where,omitempty"`
+	// Export only selected partitions.
+	Partitions           []string `json:"partitions,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -109,6 +111,38 @@ func (o *ExportOptionsFilterTable) SetWhere(v string) {
 	o.Where = &v
 }
 
+// GetPartitions returns the Partitions field value if set, zero value otherwise.
+func (o *ExportOptionsFilterTable) GetPartitions() []string {
+	if o == nil || IsNil(o.Partitions) {
+		var ret []string
+		return ret
+	}
+	return o.Partitions
+}
+
+// GetPartitionsOk returns a tuple with the Partitions field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ExportOptionsFilterTable) GetPartitionsOk() ([]string, bool) {
+	if o == nil || IsNil(o.Partitions) {
+		return nil, false
+	}
+	return o.Partitions, true
+}
+
+// HasPartitions returns a boolean if a field has been set.
+func (o *ExportOptionsFilterTable) HasPartitions() bool {
+	if o != nil && !IsNil(o.Partitions) {
+		return true
+	}
+
+	return false
+}
+
+// SetPartitions gets a reference to the given []string and assigns it to the Partitions field.
+func (o *ExportOptionsFilterTable) SetPartitions(v []string) {
+	o.Partitions = v
+}
+
 func (o ExportOptionsFilterTable) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -124,6 +158,9 @@ func (o ExportOptionsFilterTable) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.Where) {
 		toSerialize["where"] = o.Where
+	}
+	if !IsNil(o.Partitions) {
+		toSerialize["partitions"] = o.Partitions
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -149,6 +186,7 @@ func (o *ExportOptionsFilterTable) UnmarshalJSON(data []byte) (err error) {
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "patterns")
 		delete(additionalProperties, "where")
+		delete(additionalProperties, "partitions")
 		o.AdditionalProperties = additionalProperties
 	}
 
