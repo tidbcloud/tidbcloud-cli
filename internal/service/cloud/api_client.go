@@ -30,6 +30,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/auditlog"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cdc"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
@@ -117,6 +118,17 @@ type TiDBCloudClient interface {
 
 	ListAuditLogs(ctx context.Context, clusterID string, pageSize *int32, pageToken *string, date *string) (*auditlog.ListAuditLogFilesResponse, error)
 
+	// CDC Changefeed methods
+	CreateChangefeed(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceCreateChangefeedBody) (*cdc.Changefeed, error)
+	DeleteChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error)
+	EditChangefeed(ctx context.Context, clusterId, changefeedId string, body *cdc.ChangefeedServiceEditChangefeedBody) (*cdc.Changefeed, error)
+	GetChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error)
+	ListChangefeeds(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, changefeedType *cdc.ChangefeedServiceListChangefeedsChangefeedTypeParameter) (*cdc.Changefeeds, error)
+	StartChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error)
+	StopChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error)
+	TestChangefeed(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceTestChangefeedBody) (map[string]interface{}, error)
+	DescribeSchemaTable(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceDescribeSchemaTableBody) (*cdc.DescribeSchemaTableResp, error)
+
 	CreateAuditLogFilterRule(ctx context.Context, clusterID string, body *auditlog.DatabaseAuditLogServiceCreateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error)
 
 	DeleteAuditLogFilterRule(ctx context.Context, clusterID, ruleID string) (*auditlog.AuditLogFilterRule, error)
@@ -140,11 +152,12 @@ type ClientDelegate struct {
 	sic *imp.APIClient
 	ec  *export.APIClient
 	alc *auditlog.APIClient
+	cdc *cdc.APIClient
 }
 
 func NewClientDelegateWithToken(token string, serverlessEndpoint string, iamEndpoint string) (*ClientDelegate, error) {
 	transport := NewBearTokenTransport(token)
-	bc, sc, brc, sic, ec, ic, alc, err := NewApiClient(transport, serverlessEndpoint, iamEndpoint)
+	bc, sc, brc, sic, ec, ic, alc, cdc, err := NewApiClient(transport, serverlessEndpoint, iamEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -156,12 +169,13 @@ func NewClientDelegateWithToken(token string, serverlessEndpoint string, iamEndp
 		ic:  ic,
 		sic: sic,
 		alc: alc,
+		cdc: cdc,
 	}, nil
 }
 
 func NewClientDelegateWithApiKey(publicKey string, privateKey string, serverlessEndpoint string, iamEndpoint string) (*ClientDelegate, error) {
 	transport := NewDigestTransport(publicKey, privateKey)
-	bc, sc, brc, sic, ec, ic, alc, err := NewApiClient(transport, serverlessEndpoint, iamEndpoint)
+	bc, sc, brc, sic, ec, ic, alc, cdc, err := NewApiClient(transport, serverlessEndpoint, iamEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -173,6 +187,7 @@ func NewClientDelegateWithApiKey(publicKey string, privateKey string, serverless
 		ic:  ic,
 		sic: sic,
 		alc: alc,
+		cdc: cdc,
 	}, nil
 }
 
@@ -566,7 +581,7 @@ func (d *ClientDelegate) GetAuditLogConfig(ctx context.Context, clusterID string
 	return res, parseError(err, h)
 }
 
-func NewApiClient(rt http.RoundTripper, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, *auditlog.APIClient, error) {
+func NewApiClient(rt http.RoundTripper, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, *auditlog.APIClient, *cdc.APIClient, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}
@@ -574,12 +589,12 @@ func NewApiClient(rt http.RoundTripper, serverlessEndpoint string, iamEndpoint s
 	// v1beta1 api (serverless)
 	serverlessURL, err := prop.ValidateApiUrl(serverlessEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 
 	iamURL, err := prop.ValidateApiUrl(iamEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 
 	userAgent := fmt.Sprintf("%s/%s", config.CliName, version.Version)
@@ -619,10 +634,15 @@ func NewApiClient(rt http.RoundTripper, serverlessEndpoint string, iamEndpoint s
 	auditLogCfg.Host = serverlessURL.Host
 	auditLogCfg.UserAgent = userAgent
 
+	cdcCfg := cdc.NewConfiguration()
+	cdcCfg.HTTPClient = httpclient
+	cdcCfg.Host = serverlessURL.Host
+	cdcCfg.UserAgent = userAgent
+
 	return branch.NewAPIClient(branchCfg), cluster.NewAPIClient(clusterCfg),
 		br.NewAPIClient(backupRestoreCfg),
 		imp.NewAPIClient(importCfg), export.NewAPIClient(exportCfg),
-		iam.NewAPIClient(iamCfg), auditlog.NewAPIClient(auditLogCfg), nil
+		iam.NewAPIClient(iamCfg), auditlog.NewAPIClient(auditLogCfg), cdc.NewAPIClient(cdcCfg), nil
 }
 
 func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {
@@ -714,4 +734,79 @@ func parseError(err error, resp *http.Response) error {
 		traceId = resp.Header.Get("X-Debug-Trace-Id")
 	}
 	return fmt.Errorf("%s[%s][%s] %s", path, err.Error(), traceId, body)
+}
+
+func (d *ClientDelegate) CreateChangefeed(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceCreateChangefeedBody) (*cdc.Changefeed, error) {
+	r := d.cdc.ChangefeedServiceAPI.ChangefeedServiceCreateChangefeed(ctx, clusterId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
+}
+
+func (d *ClientDelegate) DeleteChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error) {
+	resp, h, err := d.cdc.ChangefeedServiceAPI.ChangefeedServiceDeleteChangefeed(ctx, clusterId, changefeedId).Execute()
+	return resp, parseError(err, h)
+}
+
+func (d *ClientDelegate) EditChangefeed(ctx context.Context, clusterId, changefeedId string, body *cdc.ChangefeedServiceEditChangefeedBody) (*cdc.Changefeed, error) {
+	r := d.cdc.ChangefeedServiceAPI.ChangefeedServiceEditChangefeed(ctx, clusterId, changefeedId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
+}
+
+func (d *ClientDelegate) GetChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error) {
+	resp, h, err := d.cdc.ChangefeedServiceAPI.ChangefeedServiceGetChangefeed(ctx, clusterId, changefeedId).Execute()
+	return resp, parseError(err, h)
+}
+
+func (d *ClientDelegate) ListChangefeeds(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, changefeedType *cdc.ChangefeedServiceListChangefeedsChangefeedTypeParameter) (*cdc.Changefeeds, error) {
+	r := d.cdc.ChangefeedServiceAPI.ChangefeedServiceListChangefeeds(ctx, clusterId)
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	if changefeedType != nil {
+		r = r.ChangefeedType(*changefeedType)
+	}
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
+}
+
+func (d *ClientDelegate) StartChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error) {
+	r := d.cdc.ChangefeedServiceAPI.ChangefeedServiceStartChangefeed(ctx, clusterId, changefeedId)
+	r = r.Body(map[string]interface{}{})
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
+}
+
+func (d *ClientDelegate) StopChangefeed(ctx context.Context, clusterId, changefeedId string) (*cdc.Changefeed, error) {
+	r := d.cdc.ChangefeedServiceAPI.ChangefeedServiceStopChangefeed(ctx, clusterId, changefeedId)
+	r = r.Body(map[string]interface{}{})
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
+}
+
+func (d *ClientDelegate) TestChangefeed(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceTestChangefeedBody) (map[string]interface{}, error) {
+	r := d.cdc.ChangefeedServiceAPI.ChangefeedServiceTestChangefeed(ctx, clusterId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
+}
+
+func (d *ClientDelegate) DescribeSchemaTable(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceDescribeSchemaTableBody) (*cdc.DescribeSchemaTableResp, error) {
+	r := d.cdc.ChangefeedServiceAPI.ChangefeedServiceDescribeSchemaTable(ctx, clusterId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
 }

@@ -8,6 +8,8 @@ import (
 
 	branch "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/branch"
 
+	cdc "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cdc"
+
 	cluster "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 
 	context "context"
@@ -162,6 +164,36 @@ func (_m *TiDBCloudClient) CreateBranch(ctx context.Context, clusterId string, b
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, *branch.Branch) error); ok {
+		r1 = rf(ctx, clusterId, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CreateChangefeed provides a mock function with given fields: ctx, clusterId, body
+func (_m *TiDBCloudClient) CreateChangefeed(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceCreateChangefeedBody) (*cdc.Changefeed, error) {
+	ret := _m.Called(ctx, clusterId, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateChangefeed")
+	}
+
+	var r0 *cdc.Changefeed
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *cdc.ChangefeedServiceCreateChangefeedBody) (*cdc.Changefeed, error)); ok {
+		return rf(ctx, clusterId, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *cdc.ChangefeedServiceCreateChangefeedBody) *cdc.Changefeed); ok {
+		r0 = rf(ctx, clusterId, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.Changefeed)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *cdc.ChangefeedServiceCreateChangefeedBody) error); ok {
 		r1 = rf(ctx, clusterId, body)
 	} else {
 		r1 = ret.Error(1)
@@ -380,6 +412,36 @@ func (_m *TiDBCloudClient) DeleteBranch(ctx context.Context, clusterId string, b
 	return r0, r1
 }
 
+// DeleteChangefeed provides a mock function with given fields: ctx, clusterId, changefeedId
+func (_m *TiDBCloudClient) DeleteChangefeed(ctx context.Context, clusterId string, changefeedId string) (*cdc.Changefeed, error) {
+	ret := _m.Called(ctx, clusterId, changefeedId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteChangefeed")
+	}
+
+	var r0 *cdc.Changefeed
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*cdc.Changefeed, error)); ok {
+		return rf(ctx, clusterId, changefeedId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *cdc.Changefeed); ok {
+		r0 = rf(ctx, clusterId, changefeedId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.Changefeed)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, changefeedId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // DeleteCluster provides a mock function with given fields: ctx, clusterId
 func (_m *TiDBCloudClient) DeleteCluster(ctx context.Context, clusterId string) (*cluster.TidbCloudOpenApiserverlessv1beta1Cluster, error) {
 	ret := _m.Called(ctx, clusterId)
@@ -470,6 +532,36 @@ func (_m *TiDBCloudClient) DeleteSQLUser(ctx context.Context, clusterID string, 
 	return r0, r1
 }
 
+// DescribeSchemaTable provides a mock function with given fields: ctx, clusterId, body
+func (_m *TiDBCloudClient) DescribeSchemaTable(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceDescribeSchemaTableBody) (*cdc.DescribeSchemaTableResp, error) {
+	ret := _m.Called(ctx, clusterId, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DescribeSchemaTable")
+	}
+
+	var r0 *cdc.DescribeSchemaTableResp
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *cdc.ChangefeedServiceDescribeSchemaTableBody) (*cdc.DescribeSchemaTableResp, error)); ok {
+		return rf(ctx, clusterId, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *cdc.ChangefeedServiceDescribeSchemaTableBody) *cdc.DescribeSchemaTableResp); ok {
+		r0 = rf(ctx, clusterId, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.DescribeSchemaTableResp)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *cdc.ChangefeedServiceDescribeSchemaTableBody) error); ok {
+		r1 = rf(ctx, clusterId, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // DownloadAuditLogs provides a mock function with given fields: ctx, clusterID, body
 func (_m *TiDBCloudClient) DownloadAuditLogs(ctx context.Context, clusterID string, body *auditlog.DatabaseAuditLogServiceDownloadAuditLogFilesBody) (*auditlog.DownloadAuditLogFilesResponse, error) {
 	ret := _m.Called(ctx, clusterID, body)
@@ -523,6 +615,36 @@ func (_m *TiDBCloudClient) DownloadExportFiles(ctx context.Context, clusterId st
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, string, *export.ExportServiceDownloadExportFilesBody) error); ok {
 		r1 = rf(ctx, clusterId, exportId, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// EditChangefeed provides a mock function with given fields: ctx, clusterId, changefeedId, body
+func (_m *TiDBCloudClient) EditChangefeed(ctx context.Context, clusterId string, changefeedId string, body *cdc.ChangefeedServiceEditChangefeedBody) (*cdc.Changefeed, error) {
+	ret := _m.Called(ctx, clusterId, changefeedId, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for EditChangefeed")
+	}
+
+	var r0 *cdc.Changefeed
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *cdc.ChangefeedServiceEditChangefeedBody) (*cdc.Changefeed, error)); ok {
+		return rf(ctx, clusterId, changefeedId, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *cdc.ChangefeedServiceEditChangefeedBody) *cdc.Changefeed); ok {
+		r0 = rf(ctx, clusterId, changefeedId, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.Changefeed)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string, *cdc.ChangefeedServiceEditChangefeedBody) error); ok {
+		r1 = rf(ctx, clusterId, changefeedId, body)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -643,6 +765,36 @@ func (_m *TiDBCloudClient) GetBranch(ctx context.Context, clusterId string, bran
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, string, branch.BranchServiceGetBranchViewParameter) error); ok {
 		r1 = rf(ctx, clusterId, branchId, view)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetChangefeed provides a mock function with given fields: ctx, clusterId, changefeedId
+func (_m *TiDBCloudClient) GetChangefeed(ctx context.Context, clusterId string, changefeedId string) (*cdc.Changefeed, error) {
+	ret := _m.Called(ctx, clusterId, changefeedId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetChangefeed")
+	}
+
+	var r0 *cdc.Changefeed
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*cdc.Changefeed, error)); ok {
+		return rf(ctx, clusterId, changefeedId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *cdc.Changefeed); ok {
+		r0 = rf(ctx, clusterId, changefeedId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.Changefeed)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, changefeedId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -883,6 +1035,36 @@ func (_m *TiDBCloudClient) ListBranches(ctx context.Context, clusterId string, p
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, *int32, *string) error); ok {
 		r1 = rf(ctx, clusterId, pageSize, pageToken)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ListChangefeeds provides a mock function with given fields: ctx, clusterId, pageSize, pageToken, changefeedType
+func (_m *TiDBCloudClient) ListChangefeeds(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, changefeedType *cdc.ChangefeedServiceListChangefeedsChangefeedTypeParameter) (*cdc.Changefeeds, error) {
+	ret := _m.Called(ctx, clusterId, pageSize, pageToken, changefeedType)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListChangefeeds")
+	}
+
+	var r0 *cdc.Changefeeds
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string, *cdc.ChangefeedServiceListChangefeedsChangefeedTypeParameter) (*cdc.Changefeeds, error)); ok {
+		return rf(ctx, clusterId, pageSize, pageToken, changefeedType)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string, *cdc.ChangefeedServiceListChangefeedsChangefeedTypeParameter) *cdc.Changefeeds); ok {
+		r0 = rf(ctx, clusterId, pageSize, pageToken, changefeedType)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.Changefeeds)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *int32, *string, *cdc.ChangefeedServiceListChangefeedsChangefeedTypeParameter) error); ok {
+		r1 = rf(ctx, clusterId, pageSize, pageToken, changefeedType)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -1190,6 +1372,36 @@ func (_m *TiDBCloudClient) Restore(ctx context.Context, body *br.V1beta1RestoreR
 	return r0, r1
 }
 
+// StartChangefeed provides a mock function with given fields: ctx, clusterId, changefeedId
+func (_m *TiDBCloudClient) StartChangefeed(ctx context.Context, clusterId string, changefeedId string) (*cdc.Changefeed, error) {
+	ret := _m.Called(ctx, clusterId, changefeedId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for StartChangefeed")
+	}
+
+	var r0 *cdc.Changefeed
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*cdc.Changefeed, error)); ok {
+		return rf(ctx, clusterId, changefeedId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *cdc.Changefeed); ok {
+		r0 = rf(ctx, clusterId, changefeedId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.Changefeed)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, changefeedId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // StartUpload provides a mock function with given fields: ctx, clusterId, fileName, targetDatabase, targetTable, partNumber
 func (_m *TiDBCloudClient) StartUpload(ctx context.Context, clusterId string, fileName *string, targetDatabase *string, targetTable *string, partNumber *int32) (*imp.StartUploadResponse, error) {
 	ret := _m.Called(ctx, clusterId, fileName, targetDatabase, targetTable, partNumber)
@@ -1213,6 +1425,66 @@ func (_m *TiDBCloudClient) StartUpload(ctx context.Context, clusterId string, fi
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, *string, *string, *string, *int32) error); ok {
 		r1 = rf(ctx, clusterId, fileName, targetDatabase, targetTable, partNumber)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// StopChangefeed provides a mock function with given fields: ctx, clusterId, changefeedId
+func (_m *TiDBCloudClient) StopChangefeed(ctx context.Context, clusterId string, changefeedId string) (*cdc.Changefeed, error) {
+	ret := _m.Called(ctx, clusterId, changefeedId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for StopChangefeed")
+	}
+
+	var r0 *cdc.Changefeed
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*cdc.Changefeed, error)); ok {
+		return rf(ctx, clusterId, changefeedId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *cdc.Changefeed); ok {
+		r0 = rf(ctx, clusterId, changefeedId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.Changefeed)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, changefeedId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// TestChangefeed provides a mock function with given fields: ctx, clusterId, body
+func (_m *TiDBCloudClient) TestChangefeed(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceTestChangefeedBody) (map[string]interface{}, error) {
+	ret := _m.Called(ctx, clusterId, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for TestChangefeed")
+	}
+
+	var r0 map[string]interface{}
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *cdc.ChangefeedServiceTestChangefeedBody) (map[string]interface{}, error)); ok {
+		return rf(ctx, clusterId, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *cdc.ChangefeedServiceTestChangefeedBody) map[string]interface{}); ok {
+		r0 = rf(ctx, clusterId, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(map[string]interface{})
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *cdc.ChangefeedServiceTestChangefeedBody) error); ok {
+		r1 = rf(ctx, clusterId, body)
 	} else {
 		r1 = ret.Error(1)
 	}

@@ -50,6 +50,7 @@ ticloud serverless export create [flags]
       --oss.access-key-secret string     The access key secret of the OSS.
       --oss.uri string                   The OSS URI in oss://<bucket>/<path> format. Required when target type is OSS.
       --parquet.compression string       The parquet compression algorithm. One of ["GZIP" "SNAPPY" "ZSTD" "NONE"]. (default "ZSTD")
+      --partitions strings               Filter the exported partition table(s) with specified partition(s).
       --s3.access-key-id string          The access key ID of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].
       --s3.role-arn string               The role arn of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].
       --s3.secret-access-key string      The secret access key of the S3. You only need to set one of the s3.role-arn and [s3.access-key-id, s3.secret-access-key].

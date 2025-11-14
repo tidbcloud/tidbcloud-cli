@@ -179,9 +179,9 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 						color.CyanString(newRelease.Version))
 
 					if config.IsUnderTiUP {
-						fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use `tiup update cloud` to update to the latest version"))
+						fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use \"tiup update cloud\" to update to the latest version"))
 					} else {
-						fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use `ticloud upgrade` to upgrade to the latest version"))
+						fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use \"ticloud upgrade\" to upgrade to the latest version"))
 					}
 				}
 			}
