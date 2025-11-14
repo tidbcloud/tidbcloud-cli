@@ -23,6 +23,45 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cdc"
 )
 
+type startPositionMode string
+
+const (
+	startPositionFromNow  startPositionMode = "Current Time"
+	startPositionFromTSO  startPositionMode = "Input a TSO(example: 443852055297916932)"
+	startPositionFromTIME startPositionMode = "Input a TIME(example: 2024-01-01T00:00:00Z)"
+)
+
+var startPositionModes = []startPositionMode{
+	startPositionFromNow,
+	startPositionFromTSO,
+	startPositionFromTIME,
+}
+
+func GetSelectedStartPositionMode() (startPositionMode, error) {
+	modes := make([]interface{}, 0, len(startPositionModes))
+	for _, v := range startPositionModes {
+		modes = append(modes, v)
+	}
+	model, err := ui.InitialSelectModel(modes, "Input the start time:")
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+
+	p := tea.NewProgram(model)
+	targetTypeModel, err := p.Run()
+	if err != nil {
+		return "", errors.Trace(err)
+	}
+	if m, _ := targetTypeModel.(ui.SelectModel); m.Interrupted {
+		return "", util.InterruptError
+	}
+	result := targetTypeModel.(ui.SelectModel).GetSelectedItem()
+	if result == nil {
+		return "", errors.New("no start position mode selected")
+	}
+	return result.(startPositionMode), nil
+}
+
 func GetSelectedChangefeedType() (cdc.ChangefeedTypeEnum, error) {
 	changefeedTypes := make([]interface{}, 0, len(cdc.AllowedChangefeedTypeEnumEnumValues))
 	for _, v := range cdc.AllowedChangefeedTypeEnumEnumValues {
@@ -53,8 +92,8 @@ var createChangefeedInputDescription = map[string]string{
 	flag.ChangefeedMySQL:     "MySQL information in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
 	flag.ChangefeedKafka:     "Kafka information in JSON format, use \"ticloud serverless changefeed template --type kafka\" to see templates.",
 	flag.ChangefeedFilter:    "Filter in JSON format, use \"ticloud serverless changefeed template --type filter\" to see templates.",
-	flag.ChangefeedStartTSO:  "Start TSO (uint64) for the changefeed. See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.",
-	flag.ChangefeedStartTime: "Start Time (RFC3339 format, e.g., 2024-01-01T00:00:00Z) for the changefeed.",
+	flag.ChangefeedStartTSO:  "Start TSO for the changefeed (e.g., 443852055297916932). See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.",
+	flag.ChangefeedStartTime: "Start Time for the changefeed (RFC3339 format, e.g., 2024-01-01T00:00:00Z).",
 }
 
 var updateChangefeedInputDescriptionInteractive = map[string]string{

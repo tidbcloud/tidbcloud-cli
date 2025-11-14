@@ -127,15 +127,46 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				clusterID = cluster.ID
+				var startTSOStr string
+				startPosition, err := GetSelectedStartPositionMode()
+				if err != nil {
+					return err
+				}
+				switch startPosition {
+				case startPositionFromTSO:
+					inputs := []string{flag.ChangefeedStartTSO}
+					textInput, err := ui.InitialInputModel(inputs, createChangefeedInputDescription)
+					if err != nil {
+						return err
+					}
+					startTSOStr = textInput.Inputs[0].Value()
+					if startTSOStr == "" {
+						startTSO = 0
+					} else {
+						_, err = fmt.Sscanf(startTSOStr, "%d", &startTSO)
+						if err != nil {
+							return errors.New("invalid start-tso, must be uint64")
+						}
+					}
+				case startPositionFromTIME:
+					inputs := []string{flag.ChangefeedStartTime}
+					textInput, err := ui.InitialInputModel(inputs, createChangefeedInputDescription)
+					if err != nil {
+						return err
+					}
+					startTimeStr = textInput.Inputs[0].Value()
+				case startPositionFromNow:
+				default:
+					return errors.New("invalid start position mode selected")
+				}
+
 				changefeedType, err = GetSelectedChangefeedType()
 				if err != nil {
 					return err
 				}
-
-				var startTSOStr string
 				switch changefeedType {
 				case cdc.CHANGEFEEDTYPEENUM_KAFKA:
-					inputs := []string{flag.DisplayName, flag.ChangefeedKafka, flag.ChangefeedFilter, flag.ChangefeedStartTSO, flag.ChangefeedStartTime}
+					inputs := []string{flag.DisplayName, flag.ChangefeedKafka, flag.ChangefeedFilter}
 					textInput, err := ui.InitialInputModel(inputs, createChangefeedInputDescription)
 					if err != nil {
 						return err
@@ -143,10 +174,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					name = textInput.Inputs[0].Value()
 					kafkaStr = textInput.Inputs[1].Value()
 					filterStr = textInput.Inputs[2].Value()
-					startTSOStr = textInput.Inputs[3].Value()
-					startTimeStr = textInput.Inputs[4].Value()
 				case cdc.CHANGEFEEDTYPEENUM_MYSQL:
-					inputs := []string{flag.DisplayName, flag.ChangefeedMySQL, flag.ChangefeedFilter, flag.ChangefeedStartTSO, flag.ChangefeedStartTime}
+					inputs := []string{flag.DisplayName, flag.ChangefeedMySQL, flag.ChangefeedFilter}
 					textInput, err := ui.InitialInputModel(inputs, createChangefeedInputDescription)
 					if err != nil {
 						return err
@@ -154,18 +183,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					name = textInput.Inputs[0].Value()
 					mysqlStr = textInput.Inputs[1].Value()
 					filterStr = textInput.Inputs[2].Value()
-					startTSOStr = textInput.Inputs[3].Value()
-					startTimeStr = textInput.Inputs[4].Value()
 				default:
 					return errors.Errorf("currently only %s and %s type is supported", cdc.CHANGEFEEDTYPEENUM_KAFKA, cdc.CHANGEFEEDTYPEENUM_MYSQL)
-				}
-				if startTSOStr == "" {
-					startTSO = 0
-				} else {
-					_, err = fmt.Sscanf(startTSOStr, "%d", &startTSO)
-					if err != nil {
-						return errors.New("invalid start-tso, must be uint64")
-					}
 				}
 			} else {
 				var err error
