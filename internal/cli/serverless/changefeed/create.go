@@ -127,6 +127,33 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				clusterID = cluster.ID
+				changefeedType, err = GetSelectedChangefeedType()
+				if err != nil {
+					return err
+				}
+				switch changefeedType {
+				case cdc.CHANGEFEEDTYPEENUM_KAFKA:
+					inputs := []string{flag.DisplayName, flag.ChangefeedKafka, flag.ChangefeedFilter}
+					textInput, err := ui.InitialInputModel(inputs, createChangefeedInputDescription)
+					if err != nil {
+						return err
+					}
+					name = textInput.Inputs[0].Value()
+					kafkaStr = textInput.Inputs[1].Value()
+					filterStr = textInput.Inputs[2].Value()
+				case cdc.CHANGEFEEDTYPEENUM_MYSQL:
+					inputs := []string{flag.DisplayName, flag.ChangefeedMySQL, flag.ChangefeedFilter}
+					textInput, err := ui.InitialInputModel(inputs, createChangefeedInputDescription)
+					if err != nil {
+						return err
+					}
+					name = textInput.Inputs[0].Value()
+					mysqlStr = textInput.Inputs[1].Value()
+					filterStr = textInput.Inputs[2].Value()
+				default:
+					return errors.Errorf("currently only %s and %s type is supported", cdc.CHANGEFEEDTYPEENUM_KAFKA, cdc.CHANGEFEEDTYPEENUM_MYSQL)
+				}
+
 				var startTSOStr string
 				startPosition, err := GetSelectedStartPositionMode()
 				if err != nil {
@@ -158,33 +185,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				case startPositionFromNow:
 				default:
 					return errors.New("invalid start position mode selected")
-				}
-
-				changefeedType, err = GetSelectedChangefeedType()
-				if err != nil {
-					return err
-				}
-				switch changefeedType {
-				case cdc.CHANGEFEEDTYPEENUM_KAFKA:
-					inputs := []string{flag.DisplayName, flag.ChangefeedKafka, flag.ChangefeedFilter}
-					textInput, err := ui.InitialInputModel(inputs, createChangefeedInputDescription)
-					if err != nil {
-						return err
-					}
-					name = textInput.Inputs[0].Value()
-					kafkaStr = textInput.Inputs[1].Value()
-					filterStr = textInput.Inputs[2].Value()
-				case cdc.CHANGEFEEDTYPEENUM_MYSQL:
-					inputs := []string{flag.DisplayName, flag.ChangefeedMySQL, flag.ChangefeedFilter}
-					textInput, err := ui.InitialInputModel(inputs, createChangefeedInputDescription)
-					if err != nil {
-						return err
-					}
-					name = textInput.Inputs[0].Value()
-					mysqlStr = textInput.Inputs[1].Value()
-					filterStr = textInput.Inputs[2].Value()
-				default:
-					return errors.Errorf("currently only %s and %s type is supported", cdc.CHANGEFEEDTYPEENUM_KAFKA, cdc.CHANGEFEEDTYPEENUM_MYSQL)
 				}
 			} else {
 				var err error
