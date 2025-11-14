@@ -124,7 +124,7 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 				switch cf.Type {
 				case string(cdc.CHANGEFEEDTYPEENUM_KAFKA):
 					inputs := []string{flag.DisplayName, flag.ChangefeedKafka, flag.ChangefeedFilter}
-					textInput, err := ui.InitialInputModel(inputs, updateKafkaInputDescriptionInteractive)
+					textInput, err := ui.InitialInputModel(inputs, updateChangefeedInputDescriptionInteractive)
 					if err != nil {
 						return err
 					}
@@ -136,7 +136,7 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 					}
 				case string(cdc.CHANGEFEEDTYPEENUM_MYSQL):
 					inputs := []string{flag.DisplayName, flag.ChangefeedMySQL, flag.ChangefeedFilter}
-					textInput, err := ui.InitialInputModel(inputs, updateMySQLInputDescriptionInteractive)
+					textInput, err := ui.InitialInputModel(inputs, updateChangefeedInputDescriptionInteractive)
 					if err != nil {
 						return err
 					}
@@ -238,8 +238,8 @@ func EditCmd(h *internal.Helper) *cobra.Command {
 	editCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
 	editCmd.Flags().String(flag.ChangefeedID, "", "The ID of the changefeed to be updated.")
 	editCmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "The name of the changefeed.")
-	editCmd.Flags().String(flag.ChangefeedKafka, "", "Complete Kafka information in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
-	editCmd.Flags().String(flag.ChangefeedMySQL, "", "Complete MySQL information in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
-	editCmd.Flags().String(flag.ChangefeedFilter, "", "Complete filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.")
+	editCmd.Flags().String(flag.ChangefeedKafka, "", "Complete Kafka information in JSON format, use \"ticloud serverless changefeed template --type kafka\" to see templates.")
+	editCmd.Flags().String(flag.ChangefeedMySQL, "", "Complete MySQL information in JSON format, use \"ticloud serverless changefeed template --type mysql\" to see templates.")
+	editCmd.Flags().String(flag.ChangefeedFilter, "", "Complete filter in JSON format, use \"ticloud serverless changefeed template --type filter\" to see templates.")
 	return editCmd
 }

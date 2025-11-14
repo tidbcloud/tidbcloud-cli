@@ -30,7 +30,7 @@ const (
 	KafkaInfoTemplateWithExplain = `{
     "network": {
         "networkType": "PUBLIC",
-        "publicEndpoints": "broker:9092"
+        "publicEndpoints": "broker1:9092,broker2:9092"
     },
     "broker": {
         // "kafkaVersion": "VERSION_2XX", "VERSION_3XX"

@@ -25,10 +25,10 @@ ticloud serverless changefeed create [flags]
 ```
   -c, --cluster-id string     The ID of the cluster.
   -n, --display-name string   The name of the changefeed.
-      --filter string         Filter in JSON format, use "ticloud serverless changefeed template" to see templates.
+      --filter string         Filter in JSON format, use "ticloud serverless changefeed template --type filter" to see templates.
   -h, --help                  help for create
-      --kafka string          Kafka information in JSON format, use "ticloud serverless changefeed template" to see templates.
-      --mysql string          MySQL information in JSON format, use "ticloud serverless changefeed template" to see templates.
+      --kafka string          Kafka information in JSON format, use "ticloud serverless changefeed template --type kafka" to see templates.
+      --mysql string          MySQL information in JSON format, use "ticloud serverless changefeed template --type mysql" to see templates.
       --start-time string     Start Time for the changefeed (RFC3339 format, e.g., 2024-01-01T00:00:00Z). If both start-tso and start-time are provided, start-tso will be used.
       --start-tso uint        Start TSO for the changefeed, default to current TSO. See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.
       --type string           The type of the changefeed, one of ["KAFKA" "MYSQL"]

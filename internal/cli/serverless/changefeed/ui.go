@@ -48,30 +48,18 @@ func GetSelectedChangefeedType() (cdc.ChangefeedTypeEnum, error) {
 	return changefeedType.(cdc.ChangefeedTypeEnum), nil
 }
 
-var createKafkaInputDescription = map[string]string{
+var createChangefeedInputDescription = map[string]string{
 	flag.DisplayName:         "The name of the changefeed, skip to use the default name.",
-	flag.ChangefeedKafka:     "Kafka information in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
-	flag.ChangefeedFilter:    "Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
-	flag.ChangefeedStartTSO:  "Start TSO (uint64) for the changefeed, skip to use the current TSO. See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.",
-	flag.ChangefeedStartTime: "Start Time (RFC3339 format, e.g., 2024-01-01T00:00:00Z) for the changefeed, if both start-tso and start-time are provided, start-tso will be used.",
-}
-
-var createMySQLInputDescription = map[string]string{
-	flag.DisplayName:         "The name of the changefeed, skip to use the default name",
 	flag.ChangefeedMySQL:     "MySQL information in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
-	flag.ChangefeedFilter:    "Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
-	flag.ChangefeedStartTSO:  "Start TSO (uint64) for the changefeed, skip to use the current TSO. See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.",
-	flag.ChangefeedStartTime: "Start Time (RFC3339 format, e.g., 2024-01-01T00:00:00Z) for the changefeed, if both start-tso and start-time are provided, start-tso will be used.",
+	flag.ChangefeedKafka:     "Kafka information in JSON format, use \"ticloud serverless changefeed template --type kafka\" to see templates.",
+	flag.ChangefeedFilter:    "Filter in JSON format, use \"ticloud serverless changefeed template --type filter\" to see templates.",
+	flag.ChangefeedStartTSO:  "Start TSO (uint64) for the changefeed. See https://docs.pingcap.com/tidb/stable/tso/ for more information about TSO.",
+	flag.ChangefeedStartTime: "Start Time (RFC3339 format, e.g., 2024-01-01T00:00:00Z) for the changefeed.",
 }
 
-var updateKafkaInputDescriptionInteractive = map[string]string{
+var updateChangefeedInputDescriptionInteractive = map[string]string{
 	flag.DisplayName:      "The new name of the changefeed, skip to keep the current name.",
-	flag.ChangefeedKafka:  "Complete Kafka information in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
-	flag.ChangefeedFilter: "Complete Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
-}
-
-var updateMySQLInputDescriptionInteractive = map[string]string{
-	flag.DisplayName:      "The new name of the changefeed, skip to keep the current name.",
-	flag.ChangefeedMySQL:  "Complete MySQL information in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
-	flag.ChangefeedFilter: "Complete Filter in JSON format, use \"ticloud serverless changefeed template\" to see templates.",
+	flag.ChangefeedKafka:  "Complete Kafka information in JSON format, use \"ticloud serverless changefeed template --type kafka\" to see templates.",
+	flag.ChangefeedMySQL:  "Complete MySQL information in JSON format, use \"ticloud serverless changefeed template --type mysql\" to see templates.",
+	flag.ChangefeedFilter: "Complete Filter in JSON format, use \"ticloud serverless changefeed template --type filter\" to see templates.",
 }

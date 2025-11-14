@@ -23,10 +23,10 @@ ticloud serverless changefeed edit [flags]
       --changefeed-id string   The ID of the changefeed to be updated.
   -c, --cluster-id string      The ID of the cluster.
   -n, --display-name string    The name of the changefeed.
-      --filter string          Complete filter in JSON format, use "ticloud serverless changefeed template" to see templates.
+      --filter string          Complete filter in JSON format, use "ticloud serverless changefeed template --type filter" to see templates.
   -h, --help                   help for edit
-      --kafka string           Complete Kafka information in JSON format, use "ticloud serverless changefeed template" to see templates.
-      --mysql string           Complete MySQL information in JSON format, use "ticloud serverless changefeed template" to see templates.
+      --kafka string           Complete Kafka information in JSON format, use "ticloud serverless changefeed template --type kafka" to see templates.
+      --mysql string           Complete MySQL information in JSON format, use "ticloud serverless changefeed template --type mysql" to see templates.
 ```
 
 ### Options inherited from parent commands
