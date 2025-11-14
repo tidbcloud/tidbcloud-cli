@@ -145,7 +145,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					} else {
 						_, err = fmt.Sscanf(startTSOStr, "%d", &startTSO)
 						if err != nil {
-							return errors.New("invalid start-tso, must be uint64")
+							return errors.New("invalid start TSO, must be uint64")
 						}
 					}
 				case startPositionFromTIME:

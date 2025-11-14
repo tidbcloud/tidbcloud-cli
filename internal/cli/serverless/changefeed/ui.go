@@ -28,7 +28,7 @@ type startPositionMode string
 const (
 	startPositionFromNow  startPositionMode = "Current Time"
 	startPositionFromTSO  startPositionMode = "Input a TSO(example: 443852055297916932)"
-	startPositionFromTIME startPositionMode = "Input a TIME(example: 2024-01-01T00:00:00Z)"
+	startPositionFromTIME startPositionMode = "Input a Time(example: 2024-01-01T00:00:00Z)"
 )
 
 var startPositionModes = []startPositionMode{
