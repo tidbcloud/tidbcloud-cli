@@ -18,6 +18,7 @@ import (
 	"fmt"
 
 	"github.com/AlecAivazis/survey/v2"
+	"github.com/fatih/color"
 	//"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
