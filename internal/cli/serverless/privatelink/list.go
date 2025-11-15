@@ -55,7 +55,7 @@ func (o *ListOpts) MarkInteractive(cmd *cobra.Command) error {
 }
 
 func ListCmd(h *internal.Helper) *cobra.Command {
-	opts := &DescribeOpts{interactive: true}
+	opts := &ListOpts{interactive: true}
 
 	cmd := &cobra.Command{
 		Use:     "list",

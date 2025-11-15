@@ -93,6 +93,11 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				clusterID = cluster.ID
+				privatelink, err := cloud.GetSelectedPrivateLinkConnection(ctx, cluster.ID, int32(h.QueryPageSize), d)
+				if err != nil {
+					return err
+				}
+				plcID = privatelink.ID
 
 				if err := survey.AskOne(&survey.Input{Message: "Private link connection ID:"}, &plcID); err != nil {
 					return err

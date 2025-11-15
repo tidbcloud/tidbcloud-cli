@@ -97,9 +97,11 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				clusterID = cluster.ID
-				if err := survey.AskOne(&survey.Input{Message: "Private link connection ID:"}, &plcID); err != nil {
+				privatelink, err := cloud.GetSelectedPrivateLinkConnection(ctx, cluster.ID, int32(h.QueryPageSize), d)
+				if err != nil {
 					return err
 				}
+				plcID = privatelink.ID
 			} else {
 				var err error
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)

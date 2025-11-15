@@ -19,7 +19,6 @@ import (
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/fatih/color"
-	//"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 
@@ -212,7 +211,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
-			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("Private link connectio %s created", res.PrivateLinkConnectionId))
+			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("Private link connection %s created", *res.PrivateLinkConnectionId))
 			if err != nil {
 				return err
 			}
