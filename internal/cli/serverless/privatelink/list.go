@@ -17,8 +17,6 @@ package privatelink
 import (
 	"fmt"
 
-	"github.com/AlecAivazis/survey/v2"
-	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 
@@ -29,19 +27,17 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 )
 
-type DeleteOpts struct {
+type ListOpts struct {
 	interactive bool
 }
 
-func (o DeleteOpts) NonInteractiveFlags() []string {
+func (o ListOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.PrivateLinkConnectionID,
-		flag.Force,
 	}
 }
 
-func (o *DeleteOpts) MarkInteractive(cmd *cobra.Command) error {
+func (o *ListOpts) MarkInteractive(cmd *cobra.Command) error {
 	o.interactive = true
 	for _, fn := range o.NonInteractiveFlags() {
 		if f := cmd.Flags().Lookup(fn); f != nil && f.Changed {
@@ -49,8 +45,7 @@ func (o *DeleteOpts) MarkInteractive(cmd *cobra.Command) error {
 		}
 	}
 	if !o.interactive {
-		// require cluster-id and plc-id in non-interactive mode
-		for _, fn := range []string{flag.ClusterID, flag.PrivateLinkConnectionID} {
+		for _, fn := range o.NonInteractiveFlags() {
 			if err := cmd.MarkFlagRequired(fn); err != nil {
 				return err
 			}
@@ -59,20 +54,19 @@ func (o *DeleteOpts) MarkInteractive(cmd *cobra.Command) error {
 	return nil
 }
 
-func DeleteCmd(h *internal.Helper) *cobra.Command {
-	opts := &DeleteOpts{interactive: true}
-	var force bool
+func ListCmd(h *internal.Helper) *cobra.Command {
+	opts := &DescribeOpts{interactive: true}
 
 	cmd := &cobra.Command{
-		Use:     "delete",
-		Aliases: []string{"rm"},
-		Short:   "Delete a private link connection",
+		Use:     "list",
+		Aliases: []string{"list"},
+		Short:   "List private link connections",
 		Args:    cobra.NoArgs,
-		Example: fmt.Sprintf(`  Delete a private link connection (interactive):
-  $ %[1]s serverless private-link-connection delete
+		Example: fmt.Sprintf(` List private link connections (interactive):
+  $ %[1]s serverless private-link-connection list
 
-  Delete a private link connection (non-interactive):
-  $ %[1]s serverless private-link-connection delete -c <cluster-id> -p <private-link-connection-id>`, config.CliName),
+  Describe a private link connection (non-interactive):
+  $ %[1]s serverless private-link-connection list -c <cluster-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
@@ -83,7 +77,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			var clusterID, plcID string
+			var clusterID string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -97,54 +91,62 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				clusterID = cluster.ID
-				if err := survey.AskOne(&survey.Input{Message: "Private link connection ID:"}, &plcID); err != nil {
-					return err
-				}
 			} else {
 				var err error
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				plcID, err = cmd.Flags().GetString(flag.PrivateLinkConnectionID)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				force, err = cmd.Flags().GetBool(flag.Force)
-				if err != nil {
-					return errors.Trace(err)
-				}
 			}
 
-			if plcID == "" {
-				return errors.New("private link connection id is required")
-			}
-
-			if !force {
-				if !h.IOStreams.CanPrompt {
-					return errors.New("The terminal doesn't support prompt, run with --force to skip confirmation")
-				}
-				var confirm string
-				if err := survey.AskOne(&survey.Input{Message: "Type 'yes' to confirm deletion:"}, &confirm); err != nil {
-					return err
-				}
-				if confirm != "yes" {
-					return errors.New("deletion cancelled")
-				}
-			}
-
-			res, err := d.DeletePrivateLinkConnection(ctx, clusterID, plcID)
+			format, err := cmd.Flags().GetString(flag.Output)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Private link connection deleted"))
-			_ = output.PrintJson(h.IOStreams.Out, res)
+
+			pageSize := int32(h.QueryPageSize)
+			resp, err := d.ListPrivateLinkConnections(ctx, clusterID, &pageSize, nil)
+			if err != nil {
+				return errors.Trace(err)
+			}
+
+			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
+				err := output.PrintJson(h.IOStreams.Out, resp)
+				if err != nil {
+					return errors.Trace(err)
+				}
+			} else if format == output.HumanFormat {
+				columns := []output.Column{
+					"ID",
+					"Name",
+					"Type",
+					"State",
+					"CreateTime",
+				}
+				var rows []output.Row
+				for _, item := range resp.PrivateLinkConnections {
+					rows = append(rows, output.Row{
+						*item.PrivateLinkConnectionId,
+						item.DisplayName,
+						string(item.Type),
+						string(*item.State),
+						item.CreateTime.String(),
+					})
+				}
+				err := output.PrintHumanTable(h.IOStreams.Out, columns, rows)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				return nil
+			} else {
+				return fmt.Errorf("unsupported output format: %s", format)
+			}
 			return nil
 		},
 	}
 
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID.")
-	cmd.Flags().StringP(flag.PrivateLinkConnectionID, flag.PrivateLinkConnectionIDShort, "", "The private link connection ID.")
-	cmd.Flags().BoolVar(&force, flag.Force, false, "Delete without confirmation.")
+	cmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, flag.OutputHelp)
+
 	return cmd
 }

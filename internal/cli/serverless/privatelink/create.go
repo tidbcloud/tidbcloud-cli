@@ -15,21 +15,18 @@
 package privatelink
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/AlecAivazis/survey/v2/terminal"
-	"github.com/fatih/color"
+	//"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
-	"github.com/tidbcloud/tidbcloud-cli/internal/output"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
-	plapi "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/privatelink"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/privatelink"
 )
 
 type CreateOpts struct {
@@ -39,7 +36,8 @@ type CreateOpts struct {
 func (o CreateOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.Spec, // JSON body
+		flag.DisplayName,
+		flag.PrivateLinkConnectionType,
 	}
 }
 
@@ -64,8 +62,6 @@ func (o *CreateOpts) MarkInteractive(cmd *cobra.Command) error {
 func CreateCmd(h *internal.Helper) *cobra.Command {
 	opts := &CreateOpts{interactive: true}
 
-	var spec string
-
 	cmd := &cobra.Command{
 		Use:   "create",
 		Short: "Create a private link connection",
@@ -73,10 +69,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		Example: fmt.Sprintf(`  Create a private link connection (interactive):
   $ %[1]s serverless private-link-connection create
 
-  Create a private link connection (non-interactive):
-  $ %[1]s serverless private-link-connection create -c <cluster-id> \
-    --spec '<json-spec>'
-  Hint: Run "%[1]s serverless private-link-connection get-zones -c <cluster-id>" to get supported account and availability zones.`, config.CliName),
+  Create a private link connection which connect to alicloud endpoint service (non-interactive):
+  $ %[1]s serverless private-link-connection create -c <cluster-id> --display-name <name> --type ALICLOUD_ENDPOINT_SERVICE --alicloud.endpoint-service.name <name>
+
+  Create a private link connection which connect to aws endpoint service (non-interactive):
+  $ %[1]s serverless private-link-connection create -c <cluster-id> --display-name <name> --type AWS_ENDPOINT_SERVICE --aws.endpoint-service.name <name>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
@@ -87,7 +84,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			var clusterID string
+			var clusterID, displayName string
+			var connectionType privatelink.PrivateLinkConnectionTypeEnum
+			var awsEndpointServiceName, AWSEndpointServiceRegion string
+			var alicloudEndpointServiceName string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -102,17 +102,39 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				prompt := &survey.Editor{
-					Message:       "Enter the JSON spec of private link connection",
-					FileName:      "*.json",
-					HideDefault:   true,
-					AppendDefault: true,
-				}
-				if err := survey.AskOne(prompt, &spec); err != nil {
-					if err == terminal.InterruptErr {
-						return internal.InterruptError
-					}
+				if err := survey.AskOne(
+					&survey.Input{Message: DisplayNamePrompt},
+					&displayName,
+					survey.WithValidator(survey.Required),
+				); err != nil {
 					return err
+				}
+				if displayName == "" {
+					return errors.New("display name is required")
+				}
+
+				connectionType, err = GetSelectedPrivateLinkConnectionType()
+				if err != nil {
+					return err
+				}
+				switch connectionType {
+				case privatelink.PRIVATELINKCONNECTIONTYPEENUM_AWS_ENDPOINT_SERVICE:
+					if err = survey.AskOne(&survey.Input{Message: AWSEndpointServiceNamePrompt}, &awsEndpointServiceName, survey.WithValidator(survey.Required)); err != nil {
+						return err
+					}
+					crossRegion := false
+					if err = survey.AskOne(&survey.Confirm{Message: AWSEndpointServiceRegionConfirmPrompt, Default: false}, &crossRegion); err != nil {
+						return err
+					}
+					if crossRegion {
+						if err := survey.AskOne(&survey.Input{Message: AWSEndpointServiceRegionPrompt}, &AWSEndpointServiceRegion, survey.WithValidator(survey.Required)); err != nil {
+							return err
+						}
+					}
+				case privatelink.PRIVATELINKCONNECTIONTYPEENUM_ALICLOUD_ENDPOINT_SERVICE:
+					if err := survey.AskOne(&survey.Input{Message: AlicloudEndpointServiceNamePrompt}, &alicloudEndpointServiceName, survey.WithValidator(survey.Required)); err != nil {
+						return err
+					}
 				}
 			} else {
 				var err error
@@ -120,32 +142,88 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				spec, err = cmd.Flags().GetString(flag.Spec)
+				displayName, err = cmd.Flags().GetString(flag.DisplayName)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				connectionTypeStr, err := cmd.Flags().GetString(flag.PrivateLinkConnectionType)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				connectionType = privatelink.PrivateLinkConnectionTypeEnum(connectionTypeStr)
+
+				awsEndpointServiceName, err = cmd.Flags().GetString(flag.AWSEndpointServiceName)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				alicloudEndpointServiceName, err = cmd.Flags().GetString(flag.AlicloudEndpointServiceName)
+				if err != nil {
+					return errors.Trace(err)
+				}
+				AWSEndpointServiceRegion, err = cmd.Flags().GetString(flag.AWSEndpointServiceRegion)
 				if err != nil {
 					return errors.Trace(err)
 				}
 			}
 
-			if spec == "" {
-				return errors.New("spec is required")
+			// build request body
+			body := privatelink.PrivateLinkConnection{
+				ClusterId: clusterID,
 			}
 
-			var body plapi.PrivateLinkConnectionServiceCreatePrivateLinkConnectionBody
-			if err := json.Unmarshal([]byte(spec), &body); err != nil {
-				return errors.Errorf("invalid spec JSON: %v", err)
+			if displayName == "" {
+				return errors.New("display name is required")
+			}
+			body.DisplayName = displayName
+
+			switch connectionType {
+			case privatelink.PRIVATELINKCONNECTIONTYPEENUM_AWS_ENDPOINT_SERVICE:
+				if awsEndpointServiceName == "" {
+					return errors.New("aws endpoint service name is required for aws endpoint service type")
+				}
+				body.Type = privatelink.PRIVATELINKCONNECTIONTYPEENUM_AWS_ENDPOINT_SERVICE
+				var region *string
+				if AWSEndpointServiceRegion != "" {
+					region = &AWSEndpointServiceRegion
+				}
+				body.AwsEndpointService = &privatelink.AwsEndpointService{
+					Name:   awsEndpointServiceName,
+					Region: region,
+				}
+			case privatelink.PRIVATELINKCONNECTIONTYPEENUM_ALICLOUD_ENDPOINT_SERVICE:
+				if alicloudEndpointServiceName == "" {
+					return errors.New("alicloud endpoint service name is required for alicloud endpoint service type")
+				}
+				body.Type = privatelink.PRIVATELINKCONNECTIONTYPEENUM_ALICLOUD_ENDPOINT_SERVICE
+				body.AlicloudEndpointService = &privatelink.AlicloudEndpointService{
+					Name: alicloudEndpointServiceName,
+				}
+			default:
+				return errors.Errorf("unsupported private link connection type: %s", connectionType)
 			}
 
-			res, err := d.CreatePrivateLinkConnection(ctx, clusterID, &body)
+			res, err := d.CreatePrivateLinkConnection(ctx,
+				clusterID,
+				&privatelink.PrivateLinkConnectionServiceCreatePrivateLinkConnectionBody{
+					PrivateLinkConnection: body,
+				},
+			)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Private link connection created"))
-			_ = output.PrintJson(h.IOStreams.Out, res)
+			_, err = fmt.Fprintln(h.IOStreams.Out, color.GreenString("Private link connectio %s created", res.PrivateLinkConnectionId))
+			if err != nil {
+				return err
+			}
 			return nil
 		},
 	}
 
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID.")
-	cmd.Flags().String(flag.Spec, "", "The JSON spec for the private link connection.")
+	cmd.Flags().String(flag.DisplayName, "", "Display name for the private link connection.")
+	cmd.Flags().String(flag.PrivateLinkConnectionType, "", fmt.Sprintf("Type of the private link connection, one of %q", privatelink.AllowedPrivateLinkConnectionTypeEnumEnumValues))
+	cmd.Flags().String(flag.AWSEndpointServiceName, "", "AWS endpoint service name")
+	cmd.Flags().String(flag.AlicloudEndpointServiceName, "", "Alicloud endpoint service name")
+	cmd.Flags().String(flag.AWSEndpointServiceRegion, "", "AWS endpoint service region")
 	return cmd
 }

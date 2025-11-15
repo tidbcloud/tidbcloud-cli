@@ -58,15 +58,14 @@ func GetZonesCmd(h *internal.Helper) *cobra.Command {
 	opts := &GetZonesOpts{interactive: true}
 
 	cmd := &cobra.Command{
-		Use:     "get-zones",
-		Aliases: []string{"zones"},
-		Short:   "Get account and availability zones for private link connection",
-		Args:    cobra.NoArgs,
+		Use:   "zones",
+		Short: "Get account and availability zones for private link connection",
+		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Get availability zones (interactive):
   $ %[1]s serverless private-link-connection get-zones
 
   Get availability zones (non-interactive):
-  $ %[1]s serverless private-link-connection get-zones -c <cluster-id>`, config.CliName),
+  $ %[1]s serverless private-link-connection zones -c <cluster-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},

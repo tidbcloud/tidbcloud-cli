@@ -68,7 +68,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless private-link-connection describe
 
   Describe a private link connection (non-interactive):
-  $ %[1]s serverless private-link-connection describe -c <cluster-id> --plc-id <private-link-connection-id>`, config.CliName),
+  $ %[1]s serverless private-link-connection describe -c <cluster-id> -p <private-link-connection-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
@@ -122,6 +122,6 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID.")
-	cmd.Flags().String(flag.PrivateLinkConnectionID, "", "The private link connection ID.")
+	cmd.Flags().StringP(flag.PrivateLinkConnectionID, flag.PrivateLinkConnectionIDShort, "", "The private link connection ID.")
 	return cmd
 }
