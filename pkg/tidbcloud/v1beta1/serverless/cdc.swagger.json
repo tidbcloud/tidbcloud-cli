@@ -916,6 +916,15 @@
         "endpoint"
       ]
     },
+    "DebeziumConfig": {
+      "type": "object",
+      "properties": {
+        "outputOldValue": {
+          "type": "boolean",
+          "title": "whether output old value, default to false"
+        }
+      }
+    },
     "DecimalHandlingMode.Enum": {
       "type": "string",
       "enum": [
@@ -1083,6 +1092,9 @@
         },
         "avroConfig": {
           "$ref": "#/definitions/AvroConfig"
+        },
+        "debeziumConfig": {
+          "$ref": "#/definitions/DebeziumConfig"
         }
       }
     },
@@ -1215,9 +1227,10 @@
       "enum": [
         "CANAL_JSON",
         "OPEN_PROTOCOL",
-        "AVRO"
+        "AVRO",
+        "DEBEZIUM"
       ],
-      "description": " - CANAL_JSON: Canal-JSON protocol.\n - OPEN_PROTOCOL: Open Protocol.\n - AVRO: Avro protocol."
+      "description": " - CANAL_JSON: Canal-JSON protocol.\n - OPEN_PROTOCOL: Open Protocol.\n - AVRO: Avro protocol.\n - DEBEZIUM: Debezium protocol."
     },
     "KafkaType.Enum": {
       "type": "string",

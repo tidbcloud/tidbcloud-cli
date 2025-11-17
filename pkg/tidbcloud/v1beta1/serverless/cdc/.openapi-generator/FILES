@@ -23,6 +23,7 @@ model_changefeed_type_enum.go
 model_changefeeds.go
 model_checkpoint.go
 model_confluent_schema_registry.go
+model_debezium_config.go
 model_decimal_handling_mode_enum.go
 model_describe_schema_table_resp.go
 model_event_filter_rule.go

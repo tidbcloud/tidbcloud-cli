@@ -48,10 +48,14 @@ const (
         "enableTls": false
     },
     "dataFormat": {
-        // "protocol": "CANAL_JSON", "AVRO", "OPEN_PROTOCOL"
+        // "protocol": "CANAL_JSON", "AVRO", "OPEN_PROTOCOL", "DEBEZIUM"
         "protocol": "CANAL_JSON",
         // available when protocol is CANAL_JSON
         "enableTidbExtension": false,
+        // available when protocol is DEBEZIUM
+        "debeziumConfig": {
+            "outputOldValue": true
+        },
         // available when protocol is AVRO
         "avroConfig": {
             "decimalHandlingMode": "PRECISE",
@@ -122,6 +126,9 @@ const (
     "dataFormat": {
         "protocol": "CANAL_JSON",
         "enableTidbExtension": false,
+        "debeziumConfig": {
+            "outputOldValue": true
+        },
         "avroConfig": {
             "decimalHandlingMode": "PRECISE",
             "bigintUnsignedHandlingMode": "LONG",
