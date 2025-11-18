@@ -110,6 +110,7 @@ Class | Method | HTTP request | Description
  - [Changefeeds](docs/Changefeeds.md)
  - [Checkpoint](docs/Checkpoint.md)
  - [ConfluentSchemaRegistry](docs/ConfluentSchemaRegistry.md)
+ - [DebeziumConfig](docs/DebeziumConfig.md)
  - [DecimalHandlingModeEnum](docs/DecimalHandlingModeEnum.md)
  - [DescribeSchemaTableResp](docs/DescribeSchemaTableResp.md)
  - [EventFilterRule](docs/EventFilterRule.md)

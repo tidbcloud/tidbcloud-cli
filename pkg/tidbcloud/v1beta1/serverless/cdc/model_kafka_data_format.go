@@ -22,6 +22,7 @@ type KafkaDataFormat struct {
 	Protocol             *KafkaProtocolEnum `json:"protocol,omitempty"`
 	EnableTidbExtension  *bool              `json:"enableTidbExtension,omitempty"`
 	AvroConfig           *AvroConfig        `json:"avroConfig,omitempty"`
+	DebeziumConfig       *DebeziumConfig    `json:"debeziumConfig,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -140,6 +141,38 @@ func (o *KafkaDataFormat) SetAvroConfig(v AvroConfig) {
 	o.AvroConfig = &v
 }
 
+// GetDebeziumConfig returns the DebeziumConfig field value if set, zero value otherwise.
+func (o *KafkaDataFormat) GetDebeziumConfig() DebeziumConfig {
+	if o == nil || IsNil(o.DebeziumConfig) {
+		var ret DebeziumConfig
+		return ret
+	}
+	return *o.DebeziumConfig
+}
+
+// GetDebeziumConfigOk returns a tuple with the DebeziumConfig field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *KafkaDataFormat) GetDebeziumConfigOk() (*DebeziumConfig, bool) {
+	if o == nil || IsNil(o.DebeziumConfig) {
+		return nil, false
+	}
+	return o.DebeziumConfig, true
+}
+
+// HasDebeziumConfig returns a boolean if a field has been set.
+func (o *KafkaDataFormat) HasDebeziumConfig() bool {
+	if o != nil && !IsNil(o.DebeziumConfig) {
+		return true
+	}
+
+	return false
+}
+
+// SetDebeziumConfig gets a reference to the given DebeziumConfig and assigns it to the DebeziumConfig field.
+func (o *KafkaDataFormat) SetDebeziumConfig(v DebeziumConfig) {
+	o.DebeziumConfig = &v
+}
+
 func (o KafkaDataFormat) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -158,6 +191,9 @@ func (o KafkaDataFormat) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.AvroConfig) {
 		toSerialize["avroConfig"] = o.AvroConfig
+	}
+	if !IsNil(o.DebeziumConfig) {
+		toSerialize["debeziumConfig"] = o.DebeziumConfig
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -184,6 +220,7 @@ func (o *KafkaDataFormat) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "protocol")
 		delete(additionalProperties, "enableTidbExtension")
 		delete(additionalProperties, "avroConfig")
+		delete(additionalProperties, "debeziumConfig")
 		o.AdditionalProperties = additionalProperties
 	}
 

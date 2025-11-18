@@ -745,6 +745,15 @@ components:
       required:
       - endpoint
       type: object
+    DebeziumConfig:
+      properties:
+        disableOutputOldValue:
+          title: "whether disable output old value, default to false"
+          type: boolean
+        disableSchema:
+          title: "disable schema in debezium message, default to false"
+          type: boolean
+      type: object
     DecimalHandlingMode.Enum:
       description: |2-
          - PRECISE: Precise handling mode for decimals.
@@ -872,6 +881,8 @@ components:
           type: boolean
         avroConfig:
           $ref: '#/components/schemas/AvroConfig'
+        debeziumConfig:
+          $ref: '#/components/schemas/DebeziumConfig'
       type: object
     Kafka.Network:
       properties:
@@ -969,10 +980,12 @@ components:
          - CANAL_JSON: Canal-JSON protocol.
          - OPEN_PROTOCOL: Open Protocol.
          - AVRO: Avro protocol.
+         - DEBEZIUM: Debezium protocol.
       enum:
       - CANAL_JSON
       - OPEN_PROTOCOL
       - AVRO
+      - DEBEZIUM
       type: string
     KafkaType.Enum:
       description: |2-
