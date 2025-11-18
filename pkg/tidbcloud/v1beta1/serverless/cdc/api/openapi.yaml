@@ -747,8 +747,11 @@ components:
       type: object
     DebeziumConfig:
       properties:
-        outputOldValue:
-          title: "whether output old value, default to false"
+        disableOutputOldValue:
+          title: "whether disable output old value, default to false"
+          type: boolean
+        disableSchema:
+          title: "disable schema in debezium message, default to false"
           type: boolean
       type: object
     DecimalHandlingMode.Enum:

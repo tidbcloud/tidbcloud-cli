@@ -919,9 +919,13 @@
     "DebeziumConfig": {
       "type": "object",
       "properties": {
-        "outputOldValue": {
+        "disableOutputOldValue": {
           "type": "boolean",
-          "title": "whether output old value, default to false"
+          "title": "whether disable output old value, default to false"
+        },
+        "disableSchema": {
+          "type": "boolean",
+          "title": "disable schema in debezium message, default to false"
         }
       }
     },

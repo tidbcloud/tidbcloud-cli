@@ -54,7 +54,8 @@ const (
         "enableTidbExtension": false,
         // available when protocol is DEBEZIUM
         "debeziumConfig": {
-            "outputOldValue": true
+            "disableOutputOldValue": false,
+            "disableSchema": false
         },
         // available when protocol is AVRO
         "avroConfig": {
@@ -127,7 +128,8 @@ const (
         "protocol": "CANAL_JSON",
         "enableTidbExtension": false,
         "debeziumConfig": {
-            "outputOldValue": true
+            "disableOutputOldValue": false,
+            "disableSchema": false
         },
         "avroConfig": {
             "decimalHandlingMode": "PRECISE",

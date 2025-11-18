@@ -19,8 +19,9 @@ var _ MappedNullable = &DebeziumConfig{}
 
 // DebeziumConfig struct for DebeziumConfig
 type DebeziumConfig struct {
-	OutputOldValue       *bool `json:"outputOldValue,omitempty"`
-	AdditionalProperties map[string]interface{}
+	DisableOutputOldValue *bool `json:"disableOutputOldValue,omitempty"`
+	DisableSchema         *bool `json:"disableSchema,omitempty"`
+	AdditionalProperties  map[string]interface{}
 }
 
 type _DebeziumConfig DebeziumConfig
@@ -42,36 +43,68 @@ func NewDebeziumConfigWithDefaults() *DebeziumConfig {
 	return &this
 }
 
-// GetOutputOldValue returns the OutputOldValue field value if set, zero value otherwise.
-func (o *DebeziumConfig) GetOutputOldValue() bool {
-	if o == nil || IsNil(o.OutputOldValue) {
+// GetDisableOutputOldValue returns the DisableOutputOldValue field value if set, zero value otherwise.
+func (o *DebeziumConfig) GetDisableOutputOldValue() bool {
+	if o == nil || IsNil(o.DisableOutputOldValue) {
 		var ret bool
 		return ret
 	}
-	return *o.OutputOldValue
+	return *o.DisableOutputOldValue
 }
 
-// GetOutputOldValueOk returns a tuple with the OutputOldValue field value if set, nil otherwise
+// GetDisableOutputOldValueOk returns a tuple with the DisableOutputOldValue field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *DebeziumConfig) GetOutputOldValueOk() (*bool, bool) {
-	if o == nil || IsNil(o.OutputOldValue) {
+func (o *DebeziumConfig) GetDisableOutputOldValueOk() (*bool, bool) {
+	if o == nil || IsNil(o.DisableOutputOldValue) {
 		return nil, false
 	}
-	return o.OutputOldValue, true
+	return o.DisableOutputOldValue, true
 }
 
-// HasOutputOldValue returns a boolean if a field has been set.
-func (o *DebeziumConfig) HasOutputOldValue() bool {
-	if o != nil && !IsNil(o.OutputOldValue) {
+// HasDisableOutputOldValue returns a boolean if a field has been set.
+func (o *DebeziumConfig) HasDisableOutputOldValue() bool {
+	if o != nil && !IsNil(o.DisableOutputOldValue) {
 		return true
 	}
 
 	return false
 }
 
-// SetOutputOldValue gets a reference to the given bool and assigns it to the OutputOldValue field.
-func (o *DebeziumConfig) SetOutputOldValue(v bool) {
-	o.OutputOldValue = &v
+// SetDisableOutputOldValue gets a reference to the given bool and assigns it to the DisableOutputOldValue field.
+func (o *DebeziumConfig) SetDisableOutputOldValue(v bool) {
+	o.DisableOutputOldValue = &v
+}
+
+// GetDisableSchema returns the DisableSchema field value if set, zero value otherwise.
+func (o *DebeziumConfig) GetDisableSchema() bool {
+	if o == nil || IsNil(o.DisableSchema) {
+		var ret bool
+		return ret
+	}
+	return *o.DisableSchema
+}
+
+// GetDisableSchemaOk returns a tuple with the DisableSchema field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *DebeziumConfig) GetDisableSchemaOk() (*bool, bool) {
+	if o == nil || IsNil(o.DisableSchema) {
+		return nil, false
+	}
+	return o.DisableSchema, true
+}
+
+// HasDisableSchema returns a boolean if a field has been set.
+func (o *DebeziumConfig) HasDisableSchema() bool {
+	if o != nil && !IsNil(o.DisableSchema) {
+		return true
+	}
+
+	return false
+}
+
+// SetDisableSchema gets a reference to the given bool and assigns it to the DisableSchema field.
+func (o *DebeziumConfig) SetDisableSchema(v bool) {
+	o.DisableSchema = &v
 }
 
 func (o DebeziumConfig) MarshalJSON() ([]byte, error) {
@@ -84,8 +117,11 @@ func (o DebeziumConfig) MarshalJSON() ([]byte, error) {
 
 func (o DebeziumConfig) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.OutputOldValue) {
-		toSerialize["outputOldValue"] = o.OutputOldValue
+	if !IsNil(o.DisableOutputOldValue) {
+		toSerialize["disableOutputOldValue"] = o.DisableOutputOldValue
+	}
+	if !IsNil(o.DisableSchema) {
+		toSerialize["disableSchema"] = o.DisableSchema
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -109,7 +145,8 @@ func (o *DebeziumConfig) UnmarshalJSON(data []byte) (err error) {
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "outputOldValue")
+		delete(additionalProperties, "disableOutputOldValue")
+		delete(additionalProperties, "disableSchema")
 		o.AdditionalProperties = additionalProperties
 	}
 
