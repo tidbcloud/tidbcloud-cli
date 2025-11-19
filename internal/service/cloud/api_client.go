@@ -34,6 +34,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/migration"
 
 	"github.com/icholy/digest"
 )
@@ -104,6 +105,24 @@ type TiDBCloudClient interface {
 
 	DownloadExportFiles(ctx context.Context, clusterId string, exportId string, body *export.ExportServiceDownloadExportFilesBody) (*export.DownloadExportFilesResponse, error)
 
+	CancelMigrationPrecheck(ctx context.Context, clusterId string, precheckId string) (map[string]interface{}, error)
+
+	CancelMigrationTask(ctx context.Context, clusterId string, taskId string) (*migration.MigrationTask, error)
+
+	CreateMigrationPrecheck(ctx context.Context, clusterId string, body *migration.MigrationServicePrecheckBody) (*migration.CreateMigrationPrecheckResp, error)
+
+	CreateMigrationTask(ctx context.Context, clusterId string, body *migration.MigrationServiceCreateTaskBody) (*migration.MigrationTask, error)
+
+	GetMigrationPrecheck(ctx context.Context, clusterId string, precheckId string) (*migration.MigrationPrecheck, error)
+
+	GetMigrationTask(ctx context.Context, clusterId string, taskId string) (*migration.MigrationTask, error)
+
+	ListMigrationTasks(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*migration.ListMigrationTasksResp, error)
+
+	PauseMigrationTask(ctx context.Context, clusterId string, taskId string, body *map[string]interface{}) (map[string]interface{}, error)
+
+	ResumeMigrationTask(ctx context.Context, clusterId string, taskId string, body *map[string]interface{}) (map[string]interface{}, error)
+
 	ListSQLUsers(ctx context.Context, clusterID string, pageSize *int32, pageToken *string) (*iam.ApiListSqlUsersRsp, error)
 
 	CreateSQLUser(ctx context.Context, clusterID string, body *iam.ApiCreateSqlUserReq) (*iam.ApiSqlUser, error)
@@ -153,11 +172,12 @@ type ClientDelegate struct {
 	ec  *export.APIClient
 	alc *auditlog.APIClient
 	cdc *cdc.APIClient
+	mc  *migration.APIClient
 }
 
 func NewClientDelegateWithToken(token string, serverlessEndpoint string, iamEndpoint string) (*ClientDelegate, error) {
 	transport := NewBearTokenTransport(token)
-	bc, sc, brc, sic, ec, ic, alc, cdc, err := NewApiClient(transport, serverlessEndpoint, iamEndpoint)
+	bc, sc, brc, sic, ec, ic, alc, cdc, mc, err := NewApiClient(transport, serverlessEndpoint, iamEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -170,12 +190,13 @@ func NewClientDelegateWithToken(token string, serverlessEndpoint string, iamEndp
 		sic: sic,
 		alc: alc,
 		cdc: cdc,
+		mc:  mc,
 	}, nil
 }
 
 func NewClientDelegateWithApiKey(publicKey string, privateKey string, serverlessEndpoint string, iamEndpoint string) (*ClientDelegate, error) {
 	transport := NewDigestTransport(publicKey, privateKey)
-	bc, sc, brc, sic, ec, ic, alc, cdc, err := NewApiClient(transport, serverlessEndpoint, iamEndpoint)
+	bc, sc, brc, sic, ec, ic, alc, cdc, mc, err := NewApiClient(transport, serverlessEndpoint, iamEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -188,6 +209,7 @@ func NewClientDelegateWithApiKey(publicKey string, privateKey string, serverless
 		sic: sic,
 		alc: alc,
 		cdc: cdc,
+		mc:  mc,
 	}, nil
 }
 
@@ -468,6 +490,77 @@ func (d *ClientDelegate) DownloadExportFiles(ctx context.Context, clusterId stri
 	return res, parseError(err, h)
 }
 
+func (d *ClientDelegate) CancelMigrationPrecheck(ctx context.Context, clusterId string, precheckId string) (map[string]interface{}, error) {
+	res, h, err := d.mc.MigrationAPI.MigrationServiceCancelPrecheck(ctx, clusterId, precheckId).Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) CancelMigrationTask(ctx context.Context, clusterId string, taskId string) (*migration.MigrationTask, error) {
+	res, h, err := d.mc.MigrationAPI.MigrationServiceCancelTask(ctx, clusterId, taskId).Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) CreateMigrationPrecheck(ctx context.Context, clusterId string, body *migration.MigrationServicePrecheckBody) (*migration.CreateMigrationPrecheckResp, error) {
+	r := d.mc.MigrationAPI.MigrationServicePrecheck(ctx, clusterId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) CreateMigrationTask(ctx context.Context, clusterId string, body *migration.MigrationServiceCreateTaskBody) (*migration.MigrationTask, error) {
+	r := d.mc.MigrationAPI.MigrationServiceCreateTask(ctx, clusterId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) GetMigrationPrecheck(ctx context.Context, clusterId string, precheckId string) (*migration.MigrationPrecheck, error) {
+	res, h, err := d.mc.MigrationAPI.MigrationServiceGetPrecheck(ctx, clusterId, precheckId).Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) GetMigrationTask(ctx context.Context, clusterId string, taskId string) (*migration.MigrationTask, error) {
+	res, h, err := d.mc.MigrationAPI.MigrationServiceGetTask(ctx, clusterId, taskId).Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) ListMigrationTasks(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*migration.ListMigrationTasksResp, error) {
+	r := d.mc.MigrationAPI.MigrationServiceListTasks(ctx, clusterId)
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
+	}
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if orderBy != nil {
+		r = r.OrderBy(*orderBy)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) PauseMigrationTask(ctx context.Context, clusterId string, taskId string, body *map[string]interface{}) (map[string]interface{}, error) {
+	payload := map[string]interface{}{}
+	if body != nil {
+		payload = *body
+	}
+	res, h, err := d.mc.MigrationAPI.MigrationServicePauseTask(ctx, clusterId, taskId).Body(payload).Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) ResumeMigrationTask(ctx context.Context, clusterId string, taskId string, body *map[string]interface{}) (map[string]interface{}, error) {
+	payload := map[string]interface{}{}
+	if body != nil {
+		payload = *body
+	}
+	res, h, err := d.mc.MigrationAPI.MigrationServiceResumeTask(ctx, clusterId, taskId).Body(payload).Execute()
+	return res, parseError(err, h)
+}
+
 func (d *ClientDelegate) ListSQLUsers(ctx context.Context, clusterID string, pageSize *int32, pageToken *string) (*iam.ApiListSqlUsersRsp, error) {
 	r := d.ic.AccountAPI.V1beta1ClustersClusterIdSqlUsersGet(ctx, clusterID)
 	if pageSize != nil {
@@ -581,7 +674,7 @@ func (d *ClientDelegate) GetAuditLogConfig(ctx context.Context, clusterID string
 	return res, parseError(err, h)
 }
 
-func NewApiClient(rt http.RoundTripper, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, *auditlog.APIClient, *cdc.APIClient, error) {
+func NewApiClient(rt http.RoundTripper, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, *auditlog.APIClient, *cdc.APIClient, *migration.APIClient, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}
@@ -589,12 +682,12 @@ func NewApiClient(rt http.RoundTripper, serverlessEndpoint string, iamEndpoint s
 	// v1beta1 api (serverless)
 	serverlessURL, err := prop.ValidateApiUrl(serverlessEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 
 	iamURL, err := prop.ValidateApiUrl(iamEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 
 	userAgent := fmt.Sprintf("%s/%s", config.CliName, version.Version)
@@ -639,10 +732,15 @@ func NewApiClient(rt http.RoundTripper, serverlessEndpoint string, iamEndpoint s
 	cdcCfg.Host = serverlessURL.Host
 	cdcCfg.UserAgent = userAgent
 
+	migrationCfg := migration.NewConfiguration()
+	migrationCfg.HTTPClient = httpclient
+	migrationCfg.Host = serverlessURL.Host
+	migrationCfg.UserAgent = userAgent
+
 	return branch.NewAPIClient(branchCfg), cluster.NewAPIClient(clusterCfg),
 		br.NewAPIClient(backupRestoreCfg),
 		imp.NewAPIClient(importCfg), export.NewAPIClient(exportCfg),
-		iam.NewAPIClient(iamCfg), auditlog.NewAPIClient(auditLogCfg), cdc.NewAPIClient(cdcCfg), nil
+		iam.NewAPIClient(iamCfg), auditlog.NewAPIClient(auditLogCfg), cdc.NewAPIClient(cdcCfg), migration.NewAPIClient(migrationCfg), nil
 }
 
 func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {

@@ -30,6 +30,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/cluster"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/migration"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/juju/errors"
@@ -85,6 +86,12 @@ type Changefeed struct {
 	ID   string
 	Name string
 	Type string
+}
+
+type MigrationTask struct {
+	ID    string
+	Name  string
+	State string
 }
 
 type AuditLogFilterRule struct {
@@ -148,6 +155,13 @@ func (s SQLUser) String() string {
 
 func (c Changefeed) String() string {
 	return fmt.Sprintf("%s(%s)", c.Name, c.ID)
+}
+
+func (m MigrationTask) String() string {
+	if m.Name == "" || m.Name == m.ID {
+		return fmt.Sprintf("%s[%s]", m.ID, m.State)
+	}
+	return fmt.Sprintf("%s(%s)[%s]", m.Name, m.ID, m.State)
 }
 
 func GetSelectedProject(ctx context.Context, pageSize int64, client TiDBCloudClient) (*Project, error) {
@@ -1029,6 +1043,69 @@ func GetSelectedChangefeed(ctx context.Context, clusterID string, pageSize int64
 		return nil, errors.New("no changefeed selected")
 	}
 	return changefeed.(*Changefeed), nil
+}
+
+func GetSelectedMigrationTask(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*MigrationTask, error) {
+	var items = make([]interface{}, 0)
+	pageSizeInt32 := int32(pageSize)
+	resp, err := client.ListMigrationTasks(ctx, clusterID, &pageSizeInt32, nil, nil)
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	appendMigrationTaskItems := func(tasks []migration.MigrationTask) {
+		for _, item := range tasks {
+			if item.Id == nil {
+				continue
+			}
+			name := *item.Id
+			if item.Name != nil && *item.Name != "" {
+				name = *item.Name
+			}
+			state := ""
+			if item.State != nil {
+				state = string(*item.State)
+			}
+			items = append(items, &MigrationTask{
+				ID:    *item.Id,
+				Name:  name,
+				State: state,
+			})
+		}
+	}
+	appendMigrationTaskItems(resp.Tasks)
+	for resp.NextPageToken != nil && *resp.NextPageToken != "" {
+		resp, err = client.ListMigrationTasks(ctx, clusterID, &pageSizeInt32, resp.NextPageToken, nil)
+		if err != nil {
+			return nil, errors.Trace(err)
+		}
+		appendMigrationTaskItems(resp.Tasks)
+	}
+
+	if len(items) == 0 {
+		return nil, fmt.Errorf("no available migration tasks found")
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the migration task:")
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	migrationModel, err := p.Run()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if m, _ := migrationModel.(ui.SelectModel); m.Interrupted {
+		return nil, util.InterruptError
+	}
+	selected := migrationModel.(ui.SelectModel).GetSelectedItem()
+	if selected == nil {
+		return nil, errors.New("no migration task selected")
+	}
+	return selected.(*MigrationTask), nil
 }
 
 func GetSelectedFilterRule(ctx context.Context, clusterID string, client TiDBCloudClient) (*AuditLogFilterRule, error) {

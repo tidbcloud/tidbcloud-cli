@@ -1,0 +1,1088 @@
+openapi: 3.0.1
+info:
+  description: TiDB Cloud Starter and Essential API
+  title: TiDB Cloud Starter and Essential API
+  version: v1beta1
+servers:
+- url: https://serverless.tidbapi.com/
+tags:
+- name: MigrationService
+paths:
+  /v1beta1/clusters/{clusterId}/migrations:
+    get:
+      operationId: MigrationService_ListTasks
+      parameters:
+      - description: The ID of the cluster to list tasks for.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: "Optional. The page token, default is empty."
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: "Optional. The page size, default is 10."
+        in: query
+        name: pageSize
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: |-
+          Specifies the sorting order of results. Use a comma-separated list of field names, optionally appending `desc` for descending order. For example, `createTime desc`. By default, fields are sorted in ascending order.
+
+          Supported field: `createTime`.
+        in: query
+        name: orderBy
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListMigrationTasksResp'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: List migration tasks
+      tags:
+      - Migration
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrations' \
+          +--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          +--header 'Accept: application/json'
+    post:
+      operationId: MigrationService_CreateTask
+      parameters:
+      - description: The ID of the cluster to create the migration task in.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MigrationService.CreateTaskBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationTask'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Create a migration task
+      tags:
+      - Migration
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrations' \
+          +--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          +--header 'Content-Type: application/json' \
+          +--header 'Accept: application/json' \
+          +--data '{\n  "name": "my-migration",\n  "sources": [\n    {\n      "connProfile": {\n        "connType": "PUBLIC",\n        "host": "1.2.3.4",\n        "port": 3306,\n        "user": "root",\n        "password": "secret"\n      },\n      "sourceType": "SOURCE_TYPE_MYSQL"\n    }\n  ],\n  "target": {\n    "user": "tidb",\n    "password": "tidb_password"\n  },\n  "mode": "MODE_ALL",\n  "fullDataMigration": true\n}'
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/migrations/{id}:
+    delete:
+      operationId: MigrationService_CancelTask
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the migration task to cancel.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationTask'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Cancel a migration task
+      tags:
+      - Migration
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location --request DELETE 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrations/{id}' \
+          +--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          +--header 'Accept: application/json'
+    get:
+      operationId: MigrationService_GetTask
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the migration task.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationTask'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Get a migration task
+      tags:
+      - Migration
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrations/{id}' \
+          +--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          +--header 'Accept: application/json'
+  /v1beta1/clusters/{clusterId}/migrations/{id}:pause:
+    post:
+      operationId: MigrationService_PauseTask
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the migration task to pause.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MigrationService.PauseTaskBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Pause a running migration task
+      tags:
+      - Migration
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location --request POST 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrations/{id}:pause' \
+          +--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          +--header 'Content-Type: application/json' \
+          +--header 'Accept: application/json' \
+          +--data '{}'
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/migrations/{id}:resume:
+    post:
+      operationId: MigrationService_ResumeTask
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the migration task to resume.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MigrationService.ResumeTaskBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Resume a paused migration task
+      tags:
+      - Migration
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location --request POST 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrations/{id}:resume' \
+          +--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          +--header 'Content-Type: application/json' \
+          +--header 'Accept: application/json' \
+          +--data '{}'
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/migrationPrechecks:
+    post:
+      operationId: MigrationService_Precheck
+      parameters:
+      - description: The ID of the cluster to create the migration task in.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MigrationService.PrecheckBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateMigrationPrecheckResp'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Run a precheck for a migration task
+      tags:
+      - Migration
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrationPrechecks' \
+          +--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          +--header 'Content-Type: application/json' \
+          +--header 'Accept: application/json' \
+          +--data '{\n  "name": "my-migration",\n  "sources": [\n    {\n      "connProfile": {\n        "connType": "PUBLIC",\n        "host": "1.2.3.4",\n        "port": 3306,\n        "user": "root",\n        "password": "secret"\n      },\n      "sourceType": "SOURCE_TYPE_MYSQL"\n    }\n  ],\n  "target": {\n    "user": "tidb",\n    "password": "tidb_password"\n  },\n  "mode": "MODE_ALL",\n  "fullDataMigration": true\n}'
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/migrationPrechecks/{id}:
+    delete:
+      operationId: MigrationService_CancelPrecheck
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the precheck to cancel.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Cancel a migration precheck
+      tags:
+      - Migration
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location --request DELETE 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrationPrechecks/{id}' \
+          +--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          +--header 'Accept: application/json'
+    get:
+      operationId: MigrationService_GetPrecheck
+      parameters:
+      - description: The ID of the cluster.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the precheck.
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MigrationPrecheck'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Get a migration precheck
+      tags:
+      - Migration
+      x-codeSamples:
+      - label: curl
+        lang: cURL
+        source: |-
+          curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrationPrechecks/{id}' \
+          +--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          +--header 'Accept: application/json'
+components:
+  schemas:
+    Any:
+      additionalProperties:
+        type: object
+      example:
+        '@type': '@type'
+      properties:
+        '@type':
+          type: string
+      type: object
+    BlockAllowRules:
+      properties:
+        doDbs:
+          description: Database names to include in migration.
+          items:
+            type: string
+          type: array
+        doTables:
+          description: Table-level allow-list rules.
+          items:
+            $ref: '#/components/schemas/BlockAllowRules.Table'
+          type: array
+      type: object
+    BlockAllowRules.Table:
+      properties:
+        schema:
+          description: Schema name.
+          type: string
+        table:
+          description: Table name.
+          type: string
+      type: object
+    ConnProfile:
+      properties:
+        connType:
+          allOf:
+          - $ref: '#/components/schemas/ConnType'
+          description: "Connection type (e.g., PUBLIC, PRIVATE_LINK)."
+          type: object
+        endpointId:
+          description: Private link endpoint ID.
+          type: string
+        host:
+          description: Source host.
+          type: string
+        port:
+          description: Source port.
+          format: int32
+          type: integer
+        user:
+          description: Source user.
+          type: string
+        password:
+          description: Source password.
+          type: string
+        security:
+          allOf:
+          - $ref: '#/components/schemas/Security'
+          description: "TLS/SSL settings; if not set, use defaults."
+          type: object
+      required:
+      - password
+      - port
+      - user
+      type: object
+    ConnType:
+      description: |-
+        The connection type used to connect to the source database.
+
+         - PUBLIC: Connect over the public internet.
+         - PRIVATE_LINK: Connect via Private Link/Private Endpoint.
+      enum:
+      - PUBLIC
+      - PRIVATE_LINK
+      type: string
+    CreateMigrationPrecheckResp:
+      example:
+        id: id
+      properties:
+        id:
+          description: The ID of the created precheck.
+          readOnly: true
+          type: string
+      type: object
+    DumpDetail:
+      properties:
+        bps:
+          description: Bytes per second processed during dump.
+          format: int64
+          readOnly: true
+          type: string
+        progress:
+          description: Progress of dump phase (0-100).
+          format: double
+          readOnly: true
+          type: number
+        totalTables:
+          description: Total number of tables to dump.
+          format: int64
+          readOnly: true
+          type: string
+        completedTables:
+          description: Number of tables completed dumping.
+          format: int64
+          readOnly: true
+          type: string
+        finishedBytes:
+          description: Total bytes finished dumping.
+          format: int64
+          readOnly: true
+          type: string
+        finishedRows:
+          description: Total rows finished dumping.
+          format: int64
+          readOnly: true
+          type: string
+      type: object
+    ListMigrationTasksResp:
+      example:
+        totalSize: 0
+        nextPageToken: nextPageToken
+        tasks:
+        - mode: "{}"
+          createTime: 2000-01-23T04:56:07.000+00:00
+          subTasks:
+          - currentStep: "{}"
+            syncDetail: "{}"
+            stage: "{}"
+            dumpDetail: "{}"
+            source: "{}"
+            loadDetail: "{}"
+            errorMsg: errorMsg
+          - currentStep: "{}"
+            syncDetail: "{}"
+            stage: "{}"
+            dumpDetail: "{}"
+            source: "{}"
+            loadDetail: "{}"
+            errorMsg: errorMsg
+          name: name
+          id: id
+          state: "{}"
+          targetUser: targetUser
+        - mode: "{}"
+          createTime: 2000-01-23T04:56:07.000+00:00
+          subTasks:
+          - currentStep: "{}"
+            syncDetail: "{}"
+            stage: "{}"
+            dumpDetail: "{}"
+            source: "{}"
+            loadDetail: "{}"
+            errorMsg: errorMsg
+          - currentStep: "{}"
+            syncDetail: "{}"
+            stage: "{}"
+            dumpDetail: "{}"
+            source: "{}"
+            loadDetail: "{}"
+            errorMsg: errorMsg
+          name: name
+          id: id
+          state: "{}"
+          targetUser: targetUser
+      properties:
+        tasks:
+          description: The list of migration tasks.
+          items:
+            $ref: '#/components/schemas/MigrationTask'
+          readOnly: true
+          type: array
+        totalSize:
+          description: The total number of tasks matching the query.
+          format: int64
+          readOnly: true
+          type: integer
+        nextPageToken:
+          description: Token to retrieve the next page of results.
+          readOnly: true
+          type: string
+      type: object
+    LoadDetail:
+      properties:
+        bps:
+          description: Bytes per second processed during load.
+          format: int64
+          readOnly: true
+          type: string
+        progress:
+          description: Progress of load phase (0-100).
+          format: double
+          readOnly: true
+          type: number
+        finishedBytes:
+          description: Total bytes finished loading.
+          format: int64
+          readOnly: true
+          type: string
+        totalBytes:
+          description: Total bytes to load.
+          format: int64
+          readOnly: true
+          type: string
+      type: object
+    MigrationPrecheck:
+      example:
+        failedCnt: 6
+        total: 0
+        successCnt: 5
+        warnCnt: 1
+        items:
+        - reason: reason
+          solution: solution
+          solutionDocUrl: solutionDocUrl
+          type: "{}"
+          desc: desc
+          status: status
+        - reason: reason
+          solution: solution
+          solutionDocUrl: solutionDocUrl
+          type: "{}"
+          desc: desc
+          status: status
+        status: status
+      properties:
+        total:
+          description: Total number of precheck items.
+          format: int32
+          readOnly: true
+          type: integer
+        failedCnt:
+          description: Number of failed items.
+          format: int32
+          readOnly: true
+          type: integer
+        warnCnt:
+          description: Number of items with warnings.
+          format: int32
+          readOnly: true
+          type: integer
+        successCnt:
+          description: Number of successful items.
+          format: int32
+          readOnly: true
+          type: integer
+        status:
+          description: Overall status of the precheck.
+          readOnly: true
+          type: string
+        items:
+          description: Details for each precheck item.
+          items:
+            $ref: '#/components/schemas/PrecheckItem'
+          readOnly: true
+          type: array
+      type: object
+    MigrationService.CreateTaskBody:
+      properties:
+        name:
+          description: The display name of the migration task.
+          type: string
+        sources:
+          description: The data sources to migrate from.
+          items:
+            $ref: '#/components/schemas/Source'
+          type: array
+        target:
+          allOf:
+          - $ref: '#/components/schemas/Target'
+          description: The target database credentials.
+          type: object
+        mode:
+          allOf:
+          - $ref: '#/components/schemas/TaskMode'
+          description: The migration mode (full+incremental or incremental-only).
+          type: object
+        fullDataMigration:
+          description: "If true, migrate all user data (equivalent to enabling all\
+            \ non-system databases and tables)."
+          type: boolean
+      required:
+      - sources
+      type: object
+    MigrationService.PauseTaskBody:
+      title: PauseMigrationTaskReq is used to pause a migration task
+      type: object
+    MigrationService.PrecheckBody:
+      properties:
+        name:
+          description: The display name of the migration task.
+          type: string
+        sources:
+          description: The data sources to migrate from.
+          items:
+            $ref: '#/components/schemas/Source'
+          type: array
+        target:
+          allOf:
+          - $ref: '#/components/schemas/Target'
+          description: The target database credentials.
+          type: object
+        mode:
+          allOf:
+          - $ref: '#/components/schemas/TaskMode'
+          description: The migration mode (full+incremental or incremental-only).
+          type: object
+        fullDataMigration:
+          description: "If true, migrate all user data (equivalent to enabling all\
+            \ non-system databases and tables)."
+          type: boolean
+      required:
+      - sources
+      type: object
+    MigrationService.ResumeTaskBody:
+      title: ResumeMigrationTaskReq is used to resume a paused migration task
+      type: object
+    MigrationTask:
+      example:
+        mode: "{}"
+        createTime: 2000-01-23T04:56:07.000+00:00
+        subTasks:
+        - currentStep: "{}"
+          syncDetail: "{}"
+          stage: "{}"
+          dumpDetail: "{}"
+          source: "{}"
+          loadDetail: "{}"
+          errorMsg: errorMsg
+        - currentStep: "{}"
+          syncDetail: "{}"
+          stage: "{}"
+          dumpDetail: "{}"
+          source: "{}"
+          loadDetail: "{}"
+          errorMsg: errorMsg
+        name: name
+        id: id
+        state: "{}"
+        targetUser: targetUser
+      properties:
+        id:
+          description: The unique ID of the migration task.
+          readOnly: true
+          type: string
+        name:
+          description: The display name of the migration task.
+          type: string
+        subTasks:
+          description: The list of subtasks composing this migration.
+          items:
+            $ref: '#/components/schemas/SubTask'
+          readOnly: true
+          type: array
+        targetUser:
+          description: The target database username used by the task.
+          readOnly: true
+          type: string
+        createTime:
+          description: The timestamp when the task was created.
+          format: date-time
+          readOnly: true
+          type: string
+        mode:
+          allOf:
+          - $ref: '#/components/schemas/TaskMode'
+          description: The migration mode of the task.
+          type: object
+        state:
+          allOf:
+          - $ref: '#/components/schemas/MigrationTask.State'
+          description: The current state of the task.
+          type: object
+      type: object
+    MigrationTask.State:
+      description: |-
+        Overall state of a migration task.
+
+         - CREATING: Task is being created.
+         - RUNNING: Task is actively running.
+         - PAUSED: Task is paused.
+         - CANCELED: Task has been canceled.
+         - FAILED: Task failed with error.
+      enum:
+      - CREATING
+      - RUNNING
+      - PAUSED
+      - CANCELED
+      - FAILED
+      type: string
+    PrecheckItem:
+      example:
+        reason: reason
+        solution: solution
+        solutionDocUrl: solutionDocUrl
+        type: "{}"
+        desc: desc
+        status: status
+      properties:
+        desc:
+          description: Human-readable description of the check.
+          readOnly: true
+          type: string
+        status:
+          description: "Status of this check (e.g., SUCCESS, FAILED, WARN)."
+          readOnly: true
+          type: string
+        solution:
+          description: Suggested solution if the check failed or warned.
+          readOnly: true
+          type: string
+        reason:
+          description: Reason for the failure or warning.
+          readOnly: true
+          type: string
+        solutionDocUrl:
+          description: Documentation URL for the solution.
+          readOnly: true
+          type: string
+        type:
+          allOf:
+          - $ref: '#/components/schemas/PrecheckItemType'
+          description: The type of precheck.
+          type: object
+      type: object
+    PrecheckItemType:
+      description: |-
+        Types of prechecks performed before starting a migration.
+
+         - PRECHECK_ITEM_TYPE_DUMP_PRIVILEGE_CHECKING: Check source has required dump/export privileges.
+         - PRECHECK_ITEM_TYPE_REPLICATION_PRIVILEGE_CHECKING: Check source has required replication privileges.
+         - PRECHECK_ITEM_TYPE_VERSION_CHECKING: Check source database version compatibility.
+         - PRECHECK_ITEM_TYPE_SERVER_ID_CHECKING: Check source server_id configuration.
+         - PRECHECK_ITEM_TYPE_BINLOG_ENABLE_CHECKING: Check whether binlog is enabled on source.
+         - PRECHECK_ITEM_TYPE_BINLOG_FORMAT_CHECKING: Check binlog format (e.g., ROW) on source.
+         - PRECHECK_ITEM_TYPE_BINLOG_ROW_IMAGE_CHECKING: Check binlog row image setting.
+         - PRECHECK_ITEM_TYPE_TABLE_SCHEMA_CHECKING: Check table/schema compatibility with target.
+         - PRECHECK_ITEM_TYPE_BINLOG_DB_CHECKING: Check binlog database-level filtering configuration.
+         - PRECHECK_ITEM_TYPE_CONN_NUMBER_CHECKING: Check concurrent connections limit/availability.
+         - PRECHECK_ITEM_TYPE_TARGET_DB_PRIVILEGE_CHECKING: Check target database privileges.
+         - PRECHECK_ITEM_TYPE_META_POSITION_CHECKING: Check saved meta/binlog position validity.
+         - PRECHECK_ITEM_TYPE_LIGHTNING_TABLE_EMPTY_CHECKING: Check target tables are empty for Lightning load.
+         - PRECHECK_ITEM_TYPE_PRIMARY_KEY_CHECKING: Check primary key settings on source tables.
+      enum:
+      - PRECHECK_ITEM_TYPE_DUMP_PRIVILEGE_CHECKING
+      - PRECHECK_ITEM_TYPE_REPLICATION_PRIVILEGE_CHECKING
+      - PRECHECK_ITEM_TYPE_VERSION_CHECKING
+      - PRECHECK_ITEM_TYPE_SERVER_ID_CHECKING
+      - PRECHECK_ITEM_TYPE_BINLOG_ENABLE_CHECKING
+      - PRECHECK_ITEM_TYPE_BINLOG_FORMAT_CHECKING
+      - PRECHECK_ITEM_TYPE_BINLOG_ROW_IMAGE_CHECKING
+      - PRECHECK_ITEM_TYPE_TABLE_SCHEMA_CHECKING
+      - PRECHECK_ITEM_TYPE_BINLOG_DB_CHECKING
+      - PRECHECK_ITEM_TYPE_CONN_NUMBER_CHECKING
+      - PRECHECK_ITEM_TYPE_TARGET_DB_PRIVILEGE_CHECKING
+      - PRECHECK_ITEM_TYPE_META_POSITION_CHECKING
+      - PRECHECK_ITEM_TYPE_LIGHTNING_TABLE_EMPTY_CHECKING
+      - PRECHECK_ITEM_TYPE_PRIMARY_KEY_CHECKING
+      type: string
+    RouteRule:
+      properties:
+        sourceTable:
+          allOf:
+          - $ref: '#/components/schemas/RouteRule.Source'
+          description: Source table pattern to match.
+          type: object
+        targetTable:
+          allOf:
+          - $ref: '#/components/schemas/RouteRule.Target'
+          description: Target table to route to.
+          type: object
+      type: object
+    RouteRule.Source:
+      properties:
+        schemaPattern:
+          description: "Schema pattern of the source, supports wildcards."
+          type: string
+        tablePattern:
+          description: "Table pattern of the source, supports wildcards."
+          type: string
+      type: object
+    RouteRule.Target:
+      properties:
+        schema:
+          description: Target schema name.
+          type: string
+        table:
+          description: Target table name.
+          type: string
+      type: object
+    Security:
+      properties:
+        certAllowedCn:
+          description: Allowed certificate Common Names.
+          items:
+            type: string
+          type: array
+        sslCaContent:
+          description: CA certificate content in PEM.
+          format: byte
+          pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+          type: string
+        sslCertContent:
+          description: Client certificate content in PEM.
+          format: byte
+          pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+          type: string
+        sslKeyContent:
+          description: Client private key in PEM.
+          format: byte
+          pattern: "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$"
+          type: string
+      type: object
+    Source:
+      properties:
+        connProfile:
+          allOf:
+          - $ref: '#/components/schemas/ConnProfile'
+          description: Connection profile for the source database.
+          type: object
+        baRules:
+          allOf:
+          - $ref: '#/components/schemas/BlockAllowRules'
+          description: "Block/allow rules for databases and tables, which is exclusive\
+            \ with route_rules."
+          type: object
+        routeRules:
+          description: Table route rules，which is exclusive with ba_rules.
+          items:
+            $ref: '#/components/schemas/RouteRule'
+          type: array
+        binlogName:
+          description: Starting binlog file name for incremental sync.
+          nullable: true
+          type: string
+        binlogPos:
+          description: Starting binlog position for incremental sync.
+          format: int32
+          nullable: true
+          type: integer
+        binlogGtid:
+          description: Starting GTID set for incremental sync.
+          nullable: true
+          type: string
+        sourceType:
+          allOf:
+          - $ref: '#/components/schemas/Source.SourceType'
+          description: "Source type (e.g., MySQL)."
+          type: object
+      required:
+      - connProfile
+      - sourceType
+      type: object
+    Source.SourceType:
+      description: |-
+        The source database type.
+
+         - SOURCE_TYPE_MYSQL: Self-managed MySQL.
+         - SOURCE_TYPE_ALICLOUD_RDS_MYSQL: Alibaba Cloud RDS for MySQL.
+      enum:
+      - SOURCE_TYPE_MYSQL
+      - SOURCE_TYPE_ALICLOUD_RDS_MYSQL
+      type: string
+    Status:
+      example:
+        code: 6
+        details:
+        - '@type': '@type'
+        - '@type': '@type'
+        message: message
+      properties:
+        code:
+          format: int32
+          type: integer
+        message:
+          type: string
+        details:
+          items:
+            $ref: '#/components/schemas/Any'
+          type: array
+      type: object
+    SubTask:
+      example:
+        currentStep: "{}"
+        syncDetail: "{}"
+        stage: "{}"
+        dumpDetail: "{}"
+        source: "{}"
+        loadDetail: "{}"
+        errorMsg: errorMsg
+      properties:
+        source:
+          allOf:
+          - $ref: '#/components/schemas/Source'
+          description: Source configuration for this subtask.
+          type: object
+        currentStep:
+          allOf:
+          - $ref: '#/components/schemas/SubTask.Step'
+          description: Current step of the subtask.
+          type: object
+        stage:
+          allOf:
+          - $ref: '#/components/schemas/SubTask.Stage'
+          description: Current stage of the subtask.
+          type: object
+        dumpDetail:
+          allOf:
+          - $ref: '#/components/schemas/DumpDetail'
+          description: "Detail of dump phase, if applicable."
+          type: object
+        loadDetail:
+          allOf:
+          - $ref: '#/components/schemas/LoadDetail'
+          description: "Detail of load phase, if applicable."
+          type: object
+        syncDetail:
+          allOf:
+          - $ref: '#/components/schemas/SyncDetail'
+          description: "Detail of sync phase, if applicable."
+          type: object
+        errorMsg:
+          description: Error message when the subtask fails.
+          nullable: true
+          readOnly: true
+          type: string
+      type: object
+    SubTask.Stage:
+      description: |-
+        The high-level lifecycle stage of a subtask.
+
+         - STAGE_RUNNING: Subtask is running.
+         - STAGE_PAUSED: Subtask is paused.
+         - STAGE_FAILED: Subtask failed.
+         - STAGE_FINISHED: Subtask finished successfully.
+         - STAGE_UNKNOWN: Subtask stage is unknown.
+      enum:
+      - STAGE_RUNNING
+      - STAGE_PAUSED
+      - STAGE_FAILED
+      - STAGE_FINISHED
+      - STAGE_UNKNOWN
+      type: string
+    SubTask.Step:
+      description: |-
+        The current step within a subtask.
+
+         - STEP_DUMP: Dump/export data from source.
+         - STEP_LOAD: Load/import data into target.
+         - STEP_SYNC: Sync/replicate binlog changes.
+      enum:
+      - STEP_DUMP
+      - STEP_LOAD
+      - STEP_SYNC
+      type: string
+    SyncDetail:
+      properties:
+        rps:
+          description: Rows processed per second during sync.
+          format: int64
+          readOnly: true
+          type: string
+        latency:
+          description: Replication latency in seconds.
+          format: int64
+          readOnly: true
+          type: string
+        checkpoint:
+          description: Synchronization checkpoint.
+          readOnly: true
+          type: string
+      type: object
+    Target:
+      properties:
+        user:
+          description: Target database user.
+          type: string
+        password:
+          description: Target database password.
+          type: string
+      type: object
+    TaskMode:
+      description: |-
+        Migration task mode.
+
+         - MODE_ALL: Full + incremental migration (all phases).
+         - MODE_INCREMENTAL: Incremental-only migration (replication).
+      enum:
+      - MODE_ALL
+      - MODE_INCREMENTAL
+      type: string
+x-original-swagger-version: "2.0"
