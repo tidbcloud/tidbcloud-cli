@@ -21,21 +21,13 @@ import (
 
 	"github.com/juju/errors"
 
-	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	pkgmigration "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/migration"
 )
-
-var migrationInputDescription = map[string]string{
-	flag.DisplayName:      "Display name for the migration.",
-	flag.MigrationSources: "Sources definition in JSON. Use \"ticloud serverless migration template --type sources\" as a reference.",
-	flag.MigrationTarget:  "Target definition in JSON. Use \"ticloud serverless migration template --type target\" as a reference.",
-	flag.MigrationMode:    "Migration mode, one of MODE_ALL or MODE_INCREMENTAL.",
-}
 
 func parseMigrationSources(value string) ([]pkgmigration.Source, error) {
 	trimmed := strings.TrimSpace(value)
 	if trimmed == "" {
-		return nil, errors.New("sources is required, use --sources or provide it in interactive mode")
+		return nil, errors.New("sources is required; use --sources")
 	}
 	var sources []pkgmigration.Source
 	if err := json.Unmarshal([]byte(trimmed), &sources); err != nil {
@@ -50,7 +42,7 @@ func parseMigrationSources(value string) ([]pkgmigration.Source, error) {
 func parseMigrationTarget(value string) (pkgmigration.Target, error) {
 	trimmed := strings.TrimSpace(value)
 	if trimmed == "" {
-		return pkgmigration.Target{}, errors.New("target is required, use --target or provide it in interactive mode")
+		return pkgmigration.Target{}, errors.New("target is required; use --target")
 	}
 	var target pkgmigration.Target
 	if err := json.Unmarshal([]byte(trimmed), &target); err != nil {
@@ -62,7 +54,7 @@ func parseMigrationTarget(value string) (pkgmigration.Target, error) {
 func parseMigrationMode(value string) (pkgmigration.TaskMode, error) {
 	trimmed := strings.TrimSpace(value)
 	if trimmed == "" {
-		return "", errors.New("mode is required, use --mode or provide it in interactive mode")
+		return "", errors.New("mode is required; use --mode")
 	}
 	normalized := strings.ToUpper(trimmed)
 	if !strings.HasPrefix(normalized, "MODE_") {
