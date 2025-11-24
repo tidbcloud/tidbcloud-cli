@@ -14,11 +14,11 @@ import (
 	"encoding/json"
 )
 
-// checks if the BlockAllowRulesTable type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &BlockAllowRulesTable{}
+// checks if the Table type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Table{}
 
-// BlockAllowRulesTable struct for BlockAllowRulesTable
-type BlockAllowRulesTable struct {
+// Table struct for Table
+type Table struct {
 	// Schema name.
 	Schema *string `json:"schema,omitempty"`
 	// Table name.
@@ -26,27 +26,27 @@ type BlockAllowRulesTable struct {
 	AdditionalProperties map[string]interface{}
 }
 
-type _BlockAllowRulesTable BlockAllowRulesTable
+type _Table Table
 
-// NewBlockAllowRulesTable instantiates a new BlockAllowRulesTable object
+// NewTable instantiates a new Table object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewBlockAllowRulesTable() *BlockAllowRulesTable {
-	this := BlockAllowRulesTable{}
+func NewTable() *Table {
+	this := Table{}
 	return &this
 }
 
-// NewBlockAllowRulesTableWithDefaults instantiates a new BlockAllowRulesTable object
+// NewTableWithDefaults instantiates a new Table object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewBlockAllowRulesTableWithDefaults() *BlockAllowRulesTable {
-	this := BlockAllowRulesTable{}
+func NewTableWithDefaults() *Table {
+	this := Table{}
 	return &this
 }
 
 // GetSchema returns the Schema field value if set, zero value otherwise.
-func (o *BlockAllowRulesTable) GetSchema() string {
+func (o *Table) GetSchema() string {
 	if o == nil || IsNil(o.Schema) {
 		var ret string
 		return ret
@@ -56,7 +56,7 @@ func (o *BlockAllowRulesTable) GetSchema() string {
 
 // GetSchemaOk returns a tuple with the Schema field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *BlockAllowRulesTable) GetSchemaOk() (*string, bool) {
+func (o *Table) GetSchemaOk() (*string, bool) {
 	if o == nil || IsNil(o.Schema) {
 		return nil, false
 	}
@@ -64,7 +64,7 @@ func (o *BlockAllowRulesTable) GetSchemaOk() (*string, bool) {
 }
 
 // HasSchema returns a boolean if a field has been set.
-func (o *BlockAllowRulesTable) HasSchema() bool {
+func (o *Table) HasSchema() bool {
 	if o != nil && !IsNil(o.Schema) {
 		return true
 	}
@@ -73,12 +73,12 @@ func (o *BlockAllowRulesTable) HasSchema() bool {
 }
 
 // SetSchema gets a reference to the given string and assigns it to the Schema field.
-func (o *BlockAllowRulesTable) SetSchema(v string) {
+func (o *Table) SetSchema(v string) {
 	o.Schema = &v
 }
 
 // GetTable returns the Table field value if set, zero value otherwise.
-func (o *BlockAllowRulesTable) GetTable() string {
+func (o *Table) GetTable() string {
 	if o == nil || IsNil(o.Table) {
 		var ret string
 		return ret
@@ -88,7 +88,7 @@ func (o *BlockAllowRulesTable) GetTable() string {
 
 // GetTableOk returns a tuple with the Table field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *BlockAllowRulesTable) GetTableOk() (*string, bool) {
+func (o *Table) GetTableOk() (*string, bool) {
 	if o == nil || IsNil(o.Table) {
 		return nil, false
 	}
@@ -96,7 +96,7 @@ func (o *BlockAllowRulesTable) GetTableOk() (*string, bool) {
 }
 
 // HasTable returns a boolean if a field has been set.
-func (o *BlockAllowRulesTable) HasTable() bool {
+func (o *Table) HasTable() bool {
 	if o != nil && !IsNil(o.Table) {
 		return true
 	}
@@ -105,11 +105,11 @@ func (o *BlockAllowRulesTable) HasTable() bool {
 }
 
 // SetTable gets a reference to the given string and assigns it to the Table field.
-func (o *BlockAllowRulesTable) SetTable(v string) {
+func (o *Table) SetTable(v string) {
 	o.Table = &v
 }
 
-func (o BlockAllowRulesTable) MarshalJSON() ([]byte, error) {
+func (o Table) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -117,7 +117,7 @@ func (o BlockAllowRulesTable) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o BlockAllowRulesTable) ToMap() (map[string]interface{}, error) {
+func (o Table) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Schema) {
 		toSerialize["schema"] = o.Schema
@@ -133,16 +133,16 @@ func (o BlockAllowRulesTable) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *BlockAllowRulesTable) UnmarshalJSON(data []byte) (err error) {
-	varBlockAllowRulesTable := _BlockAllowRulesTable{}
+func (o *Table) UnmarshalJSON(data []byte) (err error) {
+	varTable := _Table{}
 
-	err = json.Unmarshal(data, &varBlockAllowRulesTable)
+	err = json.Unmarshal(data, &varTable)
 
 	if err != nil {
 		return err
 	}
 
-	*o = BlockAllowRulesTable(varBlockAllowRulesTable)
+	*o = Table(varTable)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -155,38 +155,38 @@ func (o *BlockAllowRulesTable) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
-type NullableBlockAllowRulesTable struct {
-	value *BlockAllowRulesTable
+type NullableTable struct {
+	value *Table
 	isSet bool
 }
 
-func (v NullableBlockAllowRulesTable) Get() *BlockAllowRulesTable {
+func (v NullableTable) Get() *Table {
 	return v.value
 }
 
-func (v *NullableBlockAllowRulesTable) Set(val *BlockAllowRulesTable) {
+func (v *NullableTable) Set(val *Table) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableBlockAllowRulesTable) IsSet() bool {
+func (v NullableTable) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableBlockAllowRulesTable) Unset() {
+func (v *NullableTable) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableBlockAllowRulesTable(val *BlockAllowRulesTable) *NullableBlockAllowRulesTable {
-	return &NullableBlockAllowRulesTable{value: val, isSet: true}
+func NewNullableTable(val *Table) *NullableTable {
+	return &NullableTable{value: val, isSet: true}
 }
 
-func (v NullableBlockAllowRulesTable) MarshalJSON() ([]byte, error) {
+func (v NullableTable) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableBlockAllowRulesTable) UnmarshalJSON(src []byte) error {
+func (v *NullableTable) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

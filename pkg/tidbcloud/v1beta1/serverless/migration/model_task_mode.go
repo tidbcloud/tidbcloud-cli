@@ -14,19 +14,19 @@ import (
 	"encoding/json"
 )
 
-// TaskMode Migration task mode.   - MODE_ALL: Full + incremental migration (all phases).  - MODE_INCREMENTAL: Incremental-only migration (replication).
+// TaskMode Migration task mode.   - ALL: Full + incremental migration (all phases).  - INCREMENTAL: Incremental-only migration (replication).
 type TaskMode string
 
 // List of TaskMode
 const (
-	TASKMODE_MODE_ALL         TaskMode = "MODE_ALL"
-	TASKMODE_MODE_INCREMENTAL TaskMode = "MODE_INCREMENTAL"
+	TASKMODE_ALL         TaskMode = "ALL"
+	TASKMODE_INCREMENTAL TaskMode = "INCREMENTAL"
 )
 
 // All allowed values of TaskMode enum
 var AllowedTaskModeEnumValues = []TaskMode{
-	"MODE_ALL",
-	"MODE_INCREMENTAL",
+	"ALL",
+	"INCREMENTAL",
 }
 
 func (v *TaskMode) UnmarshalJSON(src []byte) error {

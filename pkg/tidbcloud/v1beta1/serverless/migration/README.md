@@ -78,38 +78,36 @@ All URIs are relative to *https://serverless.tidbapi.com*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*MigrationAPI* | [**MigrationServiceCancelPrecheck**](docs/MigrationAPI.md#migrationservicecancelprecheck) | **Delete** /v1beta1/clusters/{clusterId}/migrationPrechecks/{id} | Cancel a migration precheck
-*MigrationAPI* | [**MigrationServiceCancelTask**](docs/MigrationAPI.md#migrationservicecanceltask) | **Delete** /v1beta1/clusters/{clusterId}/migrations/{id} | Cancel a migration task
-*MigrationAPI* | [**MigrationServiceCreateTask**](docs/MigrationAPI.md#migrationservicecreatetask) | **Post** /v1beta1/clusters/{clusterId}/migrations | Create a migration task
-*MigrationAPI* | [**MigrationServiceGetPrecheck**](docs/MigrationAPI.md#migrationservicegetprecheck) | **Get** /v1beta1/clusters/{clusterId}/migrationPrechecks/{id} | Get a migration precheck
-*MigrationAPI* | [**MigrationServiceGetTask**](docs/MigrationAPI.md#migrationservicegettask) | **Get** /v1beta1/clusters/{clusterId}/migrations/{id} | Get a migration task
-*MigrationAPI* | [**MigrationServiceListTasks**](docs/MigrationAPI.md#migrationservicelisttasks) | **Get** /v1beta1/clusters/{clusterId}/migrations | List migration tasks
-*MigrationAPI* | [**MigrationServicePauseTask**](docs/MigrationAPI.md#migrationservicepausetask) | **Post** /v1beta1/clusters/{clusterId}/migrations/{id}:pause | Pause a running migration task
-*MigrationAPI* | [**MigrationServicePrecheck**](docs/MigrationAPI.md#migrationserviceprecheck) | **Post** /v1beta1/clusters/{clusterId}/migrationPrechecks | Run a precheck for a migration task
-*MigrationAPI* | [**MigrationServiceResumeTask**](docs/MigrationAPI.md#migrationserviceresumetask) | **Post** /v1beta1/clusters/{clusterId}/migrations/{id}:resume | Resume a paused migration task
+*MigrationAPI* | [**MigrationServiceCancelMigration**](docs/MigrationAPI.md#migrationservicecancelmigration) | **Delete** /v1beta1/clusters/{clusterId}/migrations/{migrationId} | Cancel a migration
+*MigrationAPI* | [**MigrationServiceCancelPrecheck**](docs/MigrationAPI.md#migrationservicecancelprecheck) | **Delete** /v1beta1/clusters/{clusterId}/migrationPrechecks/{precheckId} | Cancel a migration precheck
+*MigrationAPI* | [**MigrationServiceCreateMigration**](docs/MigrationAPI.md#migrationservicecreatemigration) | **Post** /v1beta1/clusters/{clusterId}/migrations | Create a migration
+*MigrationAPI* | [**MigrationServiceGetMigration**](docs/MigrationAPI.md#migrationservicegetmigration) | **Get** /v1beta1/clusters/{clusterId}/migrations/{migrationId} | Get a migration
+*MigrationAPI* | [**MigrationServiceGetPrecheck**](docs/MigrationAPI.md#migrationservicegetprecheck) | **Get** /v1beta1/clusters/{clusterId}/migrationPrechecks/{precheckId} | Get a migration precheck
+*MigrationAPI* | [**MigrationServiceListMigrations**](docs/MigrationAPI.md#migrationservicelistmigrations) | **Get** /v1beta1/clusters/{clusterId}/migrations | List migrations
+*MigrationAPI* | [**MigrationServicePauseMigration**](docs/MigrationAPI.md#migrationservicepausemigration) | **Post** /v1beta1/clusters/{clusterId}/migrations/{migrationId}:pause | Pause a running migration
+*MigrationAPI* | [**MigrationServicePrecheck**](docs/MigrationAPI.md#migrationserviceprecheck) | **Post** /v1beta1/clusters/{clusterId}/migrationPrechecks | Run a precheck for a migration
+*MigrationAPI* | [**MigrationServiceResumeMigration**](docs/MigrationAPI.md#migrationserviceresumemigration) | **Post** /v1beta1/clusters/{clusterId}/migrations/{migrationId}:resume | Resume a paused migration
 
 
 ## Documentation For Models
 
  - [Any](docs/Any.md)
  - [BlockAllowRules](docs/BlockAllowRules.md)
- - [BlockAllowRulesTable](docs/BlockAllowRulesTable.md)
  - [ConnProfile](docs/ConnProfile.md)
  - [ConnType](docs/ConnType.md)
  - [CreateMigrationPrecheckResp](docs/CreateMigrationPrecheckResp.md)
  - [DumpDetail](docs/DumpDetail.md)
- - [ListMigrationTasksResp](docs/ListMigrationTasksResp.md)
+ - [ListMigrationsResp](docs/ListMigrationsResp.md)
  - [LoadDetail](docs/LoadDetail.md)
+ - [Migration](docs/Migration.md)
  - [MigrationPrecheck](docs/MigrationPrecheck.md)
- - [MigrationServiceCreateTaskBody](docs/MigrationServiceCreateTaskBody.md)
+ - [MigrationServiceCreateMigrationBody](docs/MigrationServiceCreateMigrationBody.md)
  - [MigrationServicePrecheckBody](docs/MigrationServicePrecheckBody.md)
- - [MigrationTask](docs/MigrationTask.md)
- - [MigrationTaskState](docs/MigrationTaskState.md)
+ - [MigrationState](docs/MigrationState.md)
  - [PrecheckItem](docs/PrecheckItem.md)
  - [PrecheckItemType](docs/PrecheckItemType.md)
  - [RouteRule](docs/RouteRule.md)
  - [RouteRuleSource](docs/RouteRuleSource.md)
- - [RouteRuleTarget](docs/RouteRuleTarget.md)
  - [Security](docs/Security.md)
  - [Source](docs/Source.md)
  - [SourceSourceType](docs/SourceSourceType.md)
@@ -118,6 +116,7 @@ Class | Method | HTTP request | Description
  - [SubTaskStage](docs/SubTaskStage.md)
  - [SubTaskStep](docs/SubTaskStep.md)
  - [SyncDetail](docs/SyncDetail.md)
+ - [Table](docs/Table.md)
  - [Target](docs/Target.md)
  - [TaskMode](docs/TaskMode.md)
 

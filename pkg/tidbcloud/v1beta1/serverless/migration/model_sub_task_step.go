@@ -14,21 +14,21 @@ import (
 	"encoding/json"
 )
 
-// SubTaskStep The current step within a subtask.   - STEP_DUMP: Dump/export data from source.  - STEP_LOAD: Load/import data into target.  - STEP_SYNC: Sync/replicate binlog changes.
+// SubTaskStep The current step within a subtask.   - DUMP: Dump/export data from source.  - LOAD: Load/import data into target.  - SYNC: Sync/replicate binlog changes.
 type SubTaskStep string
 
 // List of SubTask.Step
 const (
-	SUBTASKSTEP_STEP_DUMP SubTaskStep = "STEP_DUMP"
-	SUBTASKSTEP_STEP_LOAD SubTaskStep = "STEP_LOAD"
-	SUBTASKSTEP_STEP_SYNC SubTaskStep = "STEP_SYNC"
+	SUBTASKSTEP_DUMP SubTaskStep = "DUMP"
+	SUBTASKSTEP_LOAD SubTaskStep = "LOAD"
+	SUBTASKSTEP_SYNC SubTaskStep = "SYNC"
 )
 
 // All allowed values of SubTaskStep enum
 var AllowedSubTaskStepEnumValues = []SubTaskStep{
-	"STEP_DUMP",
-	"STEP_LOAD",
-	"STEP_SYNC",
+	"DUMP",
+	"LOAD",
+	"SYNC",
 }
 
 func (v *SubTaskStep) UnmarshalJSON(src []byte) error {

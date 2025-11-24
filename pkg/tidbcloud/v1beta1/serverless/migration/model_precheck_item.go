@@ -20,7 +20,7 @@ var _ MappedNullable = &PrecheckItem{}
 // PrecheckItem struct for PrecheckItem
 type PrecheckItem struct {
 	// Human-readable description of the check.
-	Desc *string `json:"desc,omitempty"`
+	Description *string `json:"description,omitempty"`
 	// Status of this check (e.g., SUCCESS, FAILED, WARN).
 	Status *string `json:"status,omitempty"`
 	// Suggested solution if the check failed or warned.
@@ -53,36 +53,36 @@ func NewPrecheckItemWithDefaults() *PrecheckItem {
 	return &this
 }
 
-// GetDesc returns the Desc field value if set, zero value otherwise.
-func (o *PrecheckItem) GetDesc() string {
-	if o == nil || IsNil(o.Desc) {
+// GetDescription returns the Description field value if set, zero value otherwise.
+func (o *PrecheckItem) GetDescription() string {
+	if o == nil || IsNil(o.Description) {
 		var ret string
 		return ret
 	}
-	return *o.Desc
+	return *o.Description
 }
 
-// GetDescOk returns a tuple with the Desc field value if set, nil otherwise
+// GetDescriptionOk returns a tuple with the Description field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PrecheckItem) GetDescOk() (*string, bool) {
-	if o == nil || IsNil(o.Desc) {
+func (o *PrecheckItem) GetDescriptionOk() (*string, bool) {
+	if o == nil || IsNil(o.Description) {
 		return nil, false
 	}
-	return o.Desc, true
+	return o.Description, true
 }
 
-// HasDesc returns a boolean if a field has been set.
-func (o *PrecheckItem) HasDesc() bool {
-	if o != nil && !IsNil(o.Desc) {
+// HasDescription returns a boolean if a field has been set.
+func (o *PrecheckItem) HasDescription() bool {
+	if o != nil && !IsNil(o.Description) {
 		return true
 	}
 
 	return false
 }
 
-// SetDesc gets a reference to the given string and assigns it to the Desc field.
-func (o *PrecheckItem) SetDesc(v string) {
-	o.Desc = &v
+// SetDescription gets a reference to the given string and assigns it to the Description field.
+func (o *PrecheckItem) SetDescription(v string) {
+	o.Description = &v
 }
 
 // GetStatus returns the Status field value if set, zero value otherwise.
@@ -255,8 +255,8 @@ func (o PrecheckItem) MarshalJSON() ([]byte, error) {
 
 func (o PrecheckItem) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Desc) {
-		toSerialize["desc"] = o.Desc
+	if !IsNil(o.Description) {
+		toSerialize["description"] = o.Description
 	}
 	if !IsNil(o.Status) {
 		toSerialize["status"] = o.Status
@@ -295,7 +295,7 @@ func (o *PrecheckItem) UnmarshalJSON(data []byte) (err error) {
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "desc")
+		delete(additionalProperties, "description")
 		delete(additionalProperties, "status")
 		delete(additionalProperties, "solution")
 		delete(additionalProperties, "reason")

@@ -20,7 +20,7 @@ var _ MappedNullable = &CreateMigrationPrecheckResp{}
 // CreateMigrationPrecheckResp struct for CreateMigrationPrecheckResp
 type CreateMigrationPrecheckResp struct {
 	// The ID of the created precheck.
-	Id                   *string `json:"id,omitempty"`
+	PrecheckId           *string `json:"precheckId,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -43,36 +43,36 @@ func NewCreateMigrationPrecheckRespWithDefaults() *CreateMigrationPrecheckResp {
 	return &this
 }
 
-// GetId returns the Id field value if set, zero value otherwise.
-func (o *CreateMigrationPrecheckResp) GetId() string {
-	if o == nil || IsNil(o.Id) {
+// GetPrecheckId returns the PrecheckId field value if set, zero value otherwise.
+func (o *CreateMigrationPrecheckResp) GetPrecheckId() string {
+	if o == nil || IsNil(o.PrecheckId) {
 		var ret string
 		return ret
 	}
-	return *o.Id
+	return *o.PrecheckId
 }
 
-// GetIdOk returns a tuple with the Id field value if set, nil otherwise
+// GetPrecheckIdOk returns a tuple with the PrecheckId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *CreateMigrationPrecheckResp) GetIdOk() (*string, bool) {
-	if o == nil || IsNil(o.Id) {
+func (o *CreateMigrationPrecheckResp) GetPrecheckIdOk() (*string, bool) {
+	if o == nil || IsNil(o.PrecheckId) {
 		return nil, false
 	}
-	return o.Id, true
+	return o.PrecheckId, true
 }
 
-// HasId returns a boolean if a field has been set.
-func (o *CreateMigrationPrecheckResp) HasId() bool {
-	if o != nil && !IsNil(o.Id) {
+// HasPrecheckId returns a boolean if a field has been set.
+func (o *CreateMigrationPrecheckResp) HasPrecheckId() bool {
+	if o != nil && !IsNil(o.PrecheckId) {
 		return true
 	}
 
 	return false
 }
 
-// SetId gets a reference to the given string and assigns it to the Id field.
-func (o *CreateMigrationPrecheckResp) SetId(v string) {
-	o.Id = &v
+// SetPrecheckId gets a reference to the given string and assigns it to the PrecheckId field.
+func (o *CreateMigrationPrecheckResp) SetPrecheckId(v string) {
+	o.PrecheckId = &v
 }
 
 func (o CreateMigrationPrecheckResp) MarshalJSON() ([]byte, error) {
@@ -85,8 +85,8 @@ func (o CreateMigrationPrecheckResp) MarshalJSON() ([]byte, error) {
 
 func (o CreateMigrationPrecheckResp) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Id) {
-		toSerialize["id"] = o.Id
+	if !IsNil(o.PrecheckId) {
+		toSerialize["precheckId"] = o.PrecheckId
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -110,7 +110,7 @@ func (o *CreateMigrationPrecheckResp) UnmarshalJSON(data []byte) (err error) {
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "id")
+		delete(additionalProperties, "precheckId")
 		o.AdditionalProperties = additionalProperties
 	}
 

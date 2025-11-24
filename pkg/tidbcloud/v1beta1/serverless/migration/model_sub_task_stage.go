@@ -14,25 +14,25 @@ import (
 	"encoding/json"
 )
 
-// SubTaskStage The high-level lifecycle stage of a subtask.   - STAGE_RUNNING: Subtask is running.  - STAGE_PAUSED: Subtask is paused.  - STAGE_FAILED: Subtask failed.  - STAGE_FINISHED: Subtask finished successfully.  - STAGE_UNKNOWN: Subtask stage is unknown.
+// SubTaskStage The high-level lifecycle stage of a subtask.   - RUNNING: Subtask is running.  - PAUSED: Subtask is paused.  - FAILED: Subtask failed.  - FINISHED: Subtask finished successfully.  - UNKNOWN: Subtask stage is unknown.
 type SubTaskStage string
 
 // List of SubTask.Stage
 const (
-	SUBTASKSTAGE_STAGE_RUNNING  SubTaskStage = "STAGE_RUNNING"
-	SUBTASKSTAGE_STAGE_PAUSED   SubTaskStage = "STAGE_PAUSED"
-	SUBTASKSTAGE_STAGE_FAILED   SubTaskStage = "STAGE_FAILED"
-	SUBTASKSTAGE_STAGE_FINISHED SubTaskStage = "STAGE_FINISHED"
-	SUBTASKSTAGE_STAGE_UNKNOWN  SubTaskStage = "STAGE_UNKNOWN"
+	SUBTASKSTAGE_RUNNING  SubTaskStage = "RUNNING"
+	SUBTASKSTAGE_PAUSED   SubTaskStage = "PAUSED"
+	SUBTASKSTAGE_FAILED   SubTaskStage = "FAILED"
+	SUBTASKSTAGE_FINISHED SubTaskStage = "FINISHED"
+	SUBTASKSTAGE_UNKNOWN  SubTaskStage = "UNKNOWN"
 )
 
 // All allowed values of SubTaskStage enum
 var AllowedSubTaskStageEnumValues = []SubTaskStage{
-	"STAGE_RUNNING",
-	"STAGE_PAUSED",
-	"STAGE_FAILED",
-	"STAGE_FINISHED",
-	"STAGE_UNKNOWN",
+	"RUNNING",
+	"PAUSED",
+	"FAILED",
+	"FINISHED",
+	"UNKNOWN",
 }
 
 func (v *SubTaskStage) UnmarshalJSON(src []byte) error {

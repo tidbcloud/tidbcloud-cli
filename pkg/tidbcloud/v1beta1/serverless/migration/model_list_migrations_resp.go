@@ -14,73 +14,73 @@ import (
 	"encoding/json"
 )
 
-// checks if the ListMigrationTasksResp type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &ListMigrationTasksResp{}
+// checks if the ListMigrationsResp type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ListMigrationsResp{}
 
-// ListMigrationTasksResp struct for ListMigrationTasksResp
-type ListMigrationTasksResp struct {
-	// The list of migration tasks.
-	Tasks []MigrationTask `json:"tasks,omitempty"`
-	// The total number of tasks matching the query.
+// ListMigrationsResp struct for ListMigrationsResp
+type ListMigrationsResp struct {
+	// The list of migrations.
+	Migrations []Migration `json:"migrations,omitempty"`
+	// The total number of migrations matching the query.
 	TotalSize *int64 `json:"totalSize,omitempty"`
 	// Token to retrieve the next page of results.
 	NextPageToken        *string `json:"nextPageToken,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _ListMigrationTasksResp ListMigrationTasksResp
+type _ListMigrationsResp ListMigrationsResp
 
-// NewListMigrationTasksResp instantiates a new ListMigrationTasksResp object
+// NewListMigrationsResp instantiates a new ListMigrationsResp object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewListMigrationTasksResp() *ListMigrationTasksResp {
-	this := ListMigrationTasksResp{}
+func NewListMigrationsResp() *ListMigrationsResp {
+	this := ListMigrationsResp{}
 	return &this
 }
 
-// NewListMigrationTasksRespWithDefaults instantiates a new ListMigrationTasksResp object
+// NewListMigrationsRespWithDefaults instantiates a new ListMigrationsResp object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewListMigrationTasksRespWithDefaults() *ListMigrationTasksResp {
-	this := ListMigrationTasksResp{}
+func NewListMigrationsRespWithDefaults() *ListMigrationsResp {
+	this := ListMigrationsResp{}
 	return &this
 }
 
-// GetTasks returns the Tasks field value if set, zero value otherwise.
-func (o *ListMigrationTasksResp) GetTasks() []MigrationTask {
-	if o == nil || IsNil(o.Tasks) {
-		var ret []MigrationTask
+// GetMigrations returns the Migrations field value if set, zero value otherwise.
+func (o *ListMigrationsResp) GetMigrations() []Migration {
+	if o == nil || IsNil(o.Migrations) {
+		var ret []Migration
 		return ret
 	}
-	return o.Tasks
+	return o.Migrations
 }
 
-// GetTasksOk returns a tuple with the Tasks field value if set, nil otherwise
+// GetMigrationsOk returns a tuple with the Migrations field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ListMigrationTasksResp) GetTasksOk() ([]MigrationTask, bool) {
-	if o == nil || IsNil(o.Tasks) {
+func (o *ListMigrationsResp) GetMigrationsOk() ([]Migration, bool) {
+	if o == nil || IsNil(o.Migrations) {
 		return nil, false
 	}
-	return o.Tasks, true
+	return o.Migrations, true
 }
 
-// HasTasks returns a boolean if a field has been set.
-func (o *ListMigrationTasksResp) HasTasks() bool {
-	if o != nil && !IsNil(o.Tasks) {
+// HasMigrations returns a boolean if a field has been set.
+func (o *ListMigrationsResp) HasMigrations() bool {
+	if o != nil && !IsNil(o.Migrations) {
 		return true
 	}
 
 	return false
 }
 
-// SetTasks gets a reference to the given []MigrationTask and assigns it to the Tasks field.
-func (o *ListMigrationTasksResp) SetTasks(v []MigrationTask) {
-	o.Tasks = v
+// SetMigrations gets a reference to the given []Migration and assigns it to the Migrations field.
+func (o *ListMigrationsResp) SetMigrations(v []Migration) {
+	o.Migrations = v
 }
 
 // GetTotalSize returns the TotalSize field value if set, zero value otherwise.
-func (o *ListMigrationTasksResp) GetTotalSize() int64 {
+func (o *ListMigrationsResp) GetTotalSize() int64 {
 	if o == nil || IsNil(o.TotalSize) {
 		var ret int64
 		return ret
@@ -90,7 +90,7 @@ func (o *ListMigrationTasksResp) GetTotalSize() int64 {
 
 // GetTotalSizeOk returns a tuple with the TotalSize field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ListMigrationTasksResp) GetTotalSizeOk() (*int64, bool) {
+func (o *ListMigrationsResp) GetTotalSizeOk() (*int64, bool) {
 	if o == nil || IsNil(o.TotalSize) {
 		return nil, false
 	}
@@ -98,7 +98,7 @@ func (o *ListMigrationTasksResp) GetTotalSizeOk() (*int64, bool) {
 }
 
 // HasTotalSize returns a boolean if a field has been set.
-func (o *ListMigrationTasksResp) HasTotalSize() bool {
+func (o *ListMigrationsResp) HasTotalSize() bool {
 	if o != nil && !IsNil(o.TotalSize) {
 		return true
 	}
@@ -107,12 +107,12 @@ func (o *ListMigrationTasksResp) HasTotalSize() bool {
 }
 
 // SetTotalSize gets a reference to the given int64 and assigns it to the TotalSize field.
-func (o *ListMigrationTasksResp) SetTotalSize(v int64) {
+func (o *ListMigrationsResp) SetTotalSize(v int64) {
 	o.TotalSize = &v
 }
 
 // GetNextPageToken returns the NextPageToken field value if set, zero value otherwise.
-func (o *ListMigrationTasksResp) GetNextPageToken() string {
+func (o *ListMigrationsResp) GetNextPageToken() string {
 	if o == nil || IsNil(o.NextPageToken) {
 		var ret string
 		return ret
@@ -122,7 +122,7 @@ func (o *ListMigrationTasksResp) GetNextPageToken() string {
 
 // GetNextPageTokenOk returns a tuple with the NextPageToken field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *ListMigrationTasksResp) GetNextPageTokenOk() (*string, bool) {
+func (o *ListMigrationsResp) GetNextPageTokenOk() (*string, bool) {
 	if o == nil || IsNil(o.NextPageToken) {
 		return nil, false
 	}
@@ -130,7 +130,7 @@ func (o *ListMigrationTasksResp) GetNextPageTokenOk() (*string, bool) {
 }
 
 // HasNextPageToken returns a boolean if a field has been set.
-func (o *ListMigrationTasksResp) HasNextPageToken() bool {
+func (o *ListMigrationsResp) HasNextPageToken() bool {
 	if o != nil && !IsNil(o.NextPageToken) {
 		return true
 	}
@@ -139,11 +139,11 @@ func (o *ListMigrationTasksResp) HasNextPageToken() bool {
 }
 
 // SetNextPageToken gets a reference to the given string and assigns it to the NextPageToken field.
-func (o *ListMigrationTasksResp) SetNextPageToken(v string) {
+func (o *ListMigrationsResp) SetNextPageToken(v string) {
 	o.NextPageToken = &v
 }
 
-func (o ListMigrationTasksResp) MarshalJSON() ([]byte, error) {
+func (o ListMigrationsResp) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -151,10 +151,10 @@ func (o ListMigrationTasksResp) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o ListMigrationTasksResp) ToMap() (map[string]interface{}, error) {
+func (o ListMigrationsResp) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Tasks) {
-		toSerialize["tasks"] = o.Tasks
+	if !IsNil(o.Migrations) {
+		toSerialize["migrations"] = o.Migrations
 	}
 	if !IsNil(o.TotalSize) {
 		toSerialize["totalSize"] = o.TotalSize
@@ -170,21 +170,21 @@ func (o ListMigrationTasksResp) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *ListMigrationTasksResp) UnmarshalJSON(data []byte) (err error) {
-	varListMigrationTasksResp := _ListMigrationTasksResp{}
+func (o *ListMigrationsResp) UnmarshalJSON(data []byte) (err error) {
+	varListMigrationsResp := _ListMigrationsResp{}
 
-	err = json.Unmarshal(data, &varListMigrationTasksResp)
+	err = json.Unmarshal(data, &varListMigrationsResp)
 
 	if err != nil {
 		return err
 	}
 
-	*o = ListMigrationTasksResp(varListMigrationTasksResp)
+	*o = ListMigrationsResp(varListMigrationsResp)
 
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "tasks")
+		delete(additionalProperties, "migrations")
 		delete(additionalProperties, "totalSize")
 		delete(additionalProperties, "nextPageToken")
 		o.AdditionalProperties = additionalProperties
@@ -193,38 +193,38 @@ func (o *ListMigrationTasksResp) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
-type NullableListMigrationTasksResp struct {
-	value *ListMigrationTasksResp
+type NullableListMigrationsResp struct {
+	value *ListMigrationsResp
 	isSet bool
 }
 
-func (v NullableListMigrationTasksResp) Get() *ListMigrationTasksResp {
+func (v NullableListMigrationsResp) Get() *ListMigrationsResp {
 	return v.value
 }
 
-func (v *NullableListMigrationTasksResp) Set(val *ListMigrationTasksResp) {
+func (v *NullableListMigrationsResp) Set(val *ListMigrationsResp) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableListMigrationTasksResp) IsSet() bool {
+func (v NullableListMigrationsResp) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableListMigrationTasksResp) Unset() {
+func (v *NullableListMigrationsResp) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableListMigrationTasksResp(val *ListMigrationTasksResp) *NullableListMigrationTasksResp {
-	return &NullableListMigrationTasksResp{value: val, isSet: true}
+func NewNullableListMigrationsResp(val *ListMigrationsResp) *NullableListMigrationsResp {
+	return &NullableListMigrationsResp{value: val, isSet: true}
 }
 
-func (v NullableListMigrationTasksResp) MarshalJSON() ([]byte, error) {
+func (v NullableListMigrationsResp) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableListMigrationTasksResp) UnmarshalJSON(src []byte) error {
+func (v *NullableListMigrationsResp) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

@@ -15,113 +15,113 @@ import (
 	"time"
 )
 
-// checks if the MigrationTask type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &MigrationTask{}
+// checks if the Migration type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &Migration{}
 
-// MigrationTask struct for MigrationTask
-type MigrationTask struct {
-	// The unique ID of the migration task.
-	Id *string `json:"id,omitempty"`
-	// The display name of the migration task.
-	Name *string `json:"name,omitempty"`
+// Migration struct for Migration
+type Migration struct {
+	// The unique ID of the migration.
+	MigrationId *string `json:"migrationId,omitempty"`
+	// The display name of the migration.
+	DisplayName *string `json:"displayName,omitempty"`
 	// The list of subtasks composing this migration.
 	SubTasks []SubTask `json:"subTasks,omitempty"`
-	// The target database username used by the task.
+	// The target database username used by the migration.
 	TargetUser *string `json:"targetUser,omitempty"`
-	// The timestamp when the task was created.
+	// The timestamp when the migration was created.
 	CreateTime *time.Time `json:"createTime,omitempty"`
-	// The migration mode of the task.
+	// The migration mode of the migration.
 	Mode *TaskMode `json:"mode,omitempty"`
-	// The current state of the task.
-	State                *MigrationTaskState `json:"state,omitempty"`
+	// The current state of the migration.
+	State                *MigrationState `json:"state,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _MigrationTask MigrationTask
+type _Migration Migration
 
-// NewMigrationTask instantiates a new MigrationTask object
+// NewMigration instantiates a new Migration object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMigrationTask() *MigrationTask {
-	this := MigrationTask{}
+func NewMigration() *Migration {
+	this := Migration{}
 	return &this
 }
 
-// NewMigrationTaskWithDefaults instantiates a new MigrationTask object
+// NewMigrationWithDefaults instantiates a new Migration object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewMigrationTaskWithDefaults() *MigrationTask {
-	this := MigrationTask{}
+func NewMigrationWithDefaults() *Migration {
+	this := Migration{}
 	return &this
 }
 
-// GetId returns the Id field value if set, zero value otherwise.
-func (o *MigrationTask) GetId() string {
-	if o == nil || IsNil(o.Id) {
+// GetMigrationId returns the MigrationId field value if set, zero value otherwise.
+func (o *Migration) GetMigrationId() string {
+	if o == nil || IsNil(o.MigrationId) {
 		var ret string
 		return ret
 	}
-	return *o.Id
+	return *o.MigrationId
 }
 
-// GetIdOk returns a tuple with the Id field value if set, nil otherwise
+// GetMigrationIdOk returns a tuple with the MigrationId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *MigrationTask) GetIdOk() (*string, bool) {
-	if o == nil || IsNil(o.Id) {
+func (o *Migration) GetMigrationIdOk() (*string, bool) {
+	if o == nil || IsNil(o.MigrationId) {
 		return nil, false
 	}
-	return o.Id, true
+	return o.MigrationId, true
 }
 
-// HasId returns a boolean if a field has been set.
-func (o *MigrationTask) HasId() bool {
-	if o != nil && !IsNil(o.Id) {
+// HasMigrationId returns a boolean if a field has been set.
+func (o *Migration) HasMigrationId() bool {
+	if o != nil && !IsNil(o.MigrationId) {
 		return true
 	}
 
 	return false
 }
 
-// SetId gets a reference to the given string and assigns it to the Id field.
-func (o *MigrationTask) SetId(v string) {
-	o.Id = &v
+// SetMigrationId gets a reference to the given string and assigns it to the MigrationId field.
+func (o *Migration) SetMigrationId(v string) {
+	o.MigrationId = &v
 }
 
-// GetName returns the Name field value if set, zero value otherwise.
-func (o *MigrationTask) GetName() string {
-	if o == nil || IsNil(o.Name) {
+// GetDisplayName returns the DisplayName field value if set, zero value otherwise.
+func (o *Migration) GetDisplayName() string {
+	if o == nil || IsNil(o.DisplayName) {
 		var ret string
 		return ret
 	}
-	return *o.Name
+	return *o.DisplayName
 }
 
-// GetNameOk returns a tuple with the Name field value if set, nil otherwise
+// GetDisplayNameOk returns a tuple with the DisplayName field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *MigrationTask) GetNameOk() (*string, bool) {
-	if o == nil || IsNil(o.Name) {
+func (o *Migration) GetDisplayNameOk() (*string, bool) {
+	if o == nil || IsNil(o.DisplayName) {
 		return nil, false
 	}
-	return o.Name, true
+	return o.DisplayName, true
 }
 
-// HasName returns a boolean if a field has been set.
-func (o *MigrationTask) HasName() bool {
-	if o != nil && !IsNil(o.Name) {
+// HasDisplayName returns a boolean if a field has been set.
+func (o *Migration) HasDisplayName() bool {
+	if o != nil && !IsNil(o.DisplayName) {
 		return true
 	}
 
 	return false
 }
 
-// SetName gets a reference to the given string and assigns it to the Name field.
-func (o *MigrationTask) SetName(v string) {
-	o.Name = &v
+// SetDisplayName gets a reference to the given string and assigns it to the DisplayName field.
+func (o *Migration) SetDisplayName(v string) {
+	o.DisplayName = &v
 }
 
 // GetSubTasks returns the SubTasks field value if set, zero value otherwise.
-func (o *MigrationTask) GetSubTasks() []SubTask {
+func (o *Migration) GetSubTasks() []SubTask {
 	if o == nil || IsNil(o.SubTasks) {
 		var ret []SubTask
 		return ret
@@ -131,7 +131,7 @@ func (o *MigrationTask) GetSubTasks() []SubTask {
 
 // GetSubTasksOk returns a tuple with the SubTasks field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *MigrationTask) GetSubTasksOk() ([]SubTask, bool) {
+func (o *Migration) GetSubTasksOk() ([]SubTask, bool) {
 	if o == nil || IsNil(o.SubTasks) {
 		return nil, false
 	}
@@ -139,7 +139,7 @@ func (o *MigrationTask) GetSubTasksOk() ([]SubTask, bool) {
 }
 
 // HasSubTasks returns a boolean if a field has been set.
-func (o *MigrationTask) HasSubTasks() bool {
+func (o *Migration) HasSubTasks() bool {
 	if o != nil && !IsNil(o.SubTasks) {
 		return true
 	}
@@ -148,12 +148,12 @@ func (o *MigrationTask) HasSubTasks() bool {
 }
 
 // SetSubTasks gets a reference to the given []SubTask and assigns it to the SubTasks field.
-func (o *MigrationTask) SetSubTasks(v []SubTask) {
+func (o *Migration) SetSubTasks(v []SubTask) {
 	o.SubTasks = v
 }
 
 // GetTargetUser returns the TargetUser field value if set, zero value otherwise.
-func (o *MigrationTask) GetTargetUser() string {
+func (o *Migration) GetTargetUser() string {
 	if o == nil || IsNil(o.TargetUser) {
 		var ret string
 		return ret
@@ -163,7 +163,7 @@ func (o *MigrationTask) GetTargetUser() string {
 
 // GetTargetUserOk returns a tuple with the TargetUser field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *MigrationTask) GetTargetUserOk() (*string, bool) {
+func (o *Migration) GetTargetUserOk() (*string, bool) {
 	if o == nil || IsNil(o.TargetUser) {
 		return nil, false
 	}
@@ -171,7 +171,7 @@ func (o *MigrationTask) GetTargetUserOk() (*string, bool) {
 }
 
 // HasTargetUser returns a boolean if a field has been set.
-func (o *MigrationTask) HasTargetUser() bool {
+func (o *Migration) HasTargetUser() bool {
 	if o != nil && !IsNil(o.TargetUser) {
 		return true
 	}
@@ -180,12 +180,12 @@ func (o *MigrationTask) HasTargetUser() bool {
 }
 
 // SetTargetUser gets a reference to the given string and assigns it to the TargetUser field.
-func (o *MigrationTask) SetTargetUser(v string) {
+func (o *Migration) SetTargetUser(v string) {
 	o.TargetUser = &v
 }
 
 // GetCreateTime returns the CreateTime field value if set, zero value otherwise.
-func (o *MigrationTask) GetCreateTime() time.Time {
+func (o *Migration) GetCreateTime() time.Time {
 	if o == nil || IsNil(o.CreateTime) {
 		var ret time.Time
 		return ret
@@ -195,7 +195,7 @@ func (o *MigrationTask) GetCreateTime() time.Time {
 
 // GetCreateTimeOk returns a tuple with the CreateTime field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *MigrationTask) GetCreateTimeOk() (*time.Time, bool) {
+func (o *Migration) GetCreateTimeOk() (*time.Time, bool) {
 	if o == nil || IsNil(o.CreateTime) {
 		return nil, false
 	}
@@ -203,7 +203,7 @@ func (o *MigrationTask) GetCreateTimeOk() (*time.Time, bool) {
 }
 
 // HasCreateTime returns a boolean if a field has been set.
-func (o *MigrationTask) HasCreateTime() bool {
+func (o *Migration) HasCreateTime() bool {
 	if o != nil && !IsNil(o.CreateTime) {
 		return true
 	}
@@ -212,12 +212,12 @@ func (o *MigrationTask) HasCreateTime() bool {
 }
 
 // SetCreateTime gets a reference to the given time.Time and assigns it to the CreateTime field.
-func (o *MigrationTask) SetCreateTime(v time.Time) {
+func (o *Migration) SetCreateTime(v time.Time) {
 	o.CreateTime = &v
 }
 
 // GetMode returns the Mode field value if set, zero value otherwise.
-func (o *MigrationTask) GetMode() TaskMode {
+func (o *Migration) GetMode() TaskMode {
 	if o == nil || IsNil(o.Mode) {
 		var ret TaskMode
 		return ret
@@ -227,7 +227,7 @@ func (o *MigrationTask) GetMode() TaskMode {
 
 // GetModeOk returns a tuple with the Mode field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *MigrationTask) GetModeOk() (*TaskMode, bool) {
+func (o *Migration) GetModeOk() (*TaskMode, bool) {
 	if o == nil || IsNil(o.Mode) {
 		return nil, false
 	}
@@ -235,7 +235,7 @@ func (o *MigrationTask) GetModeOk() (*TaskMode, bool) {
 }
 
 // HasMode returns a boolean if a field has been set.
-func (o *MigrationTask) HasMode() bool {
+func (o *Migration) HasMode() bool {
 	if o != nil && !IsNil(o.Mode) {
 		return true
 	}
@@ -244,14 +244,14 @@ func (o *MigrationTask) HasMode() bool {
 }
 
 // SetMode gets a reference to the given TaskMode and assigns it to the Mode field.
-func (o *MigrationTask) SetMode(v TaskMode) {
+func (o *Migration) SetMode(v TaskMode) {
 	o.Mode = &v
 }
 
 // GetState returns the State field value if set, zero value otherwise.
-func (o *MigrationTask) GetState() MigrationTaskState {
+func (o *Migration) GetState() MigrationState {
 	if o == nil || IsNil(o.State) {
-		var ret MigrationTaskState
+		var ret MigrationState
 		return ret
 	}
 	return *o.State
@@ -259,7 +259,7 @@ func (o *MigrationTask) GetState() MigrationTaskState {
 
 // GetStateOk returns a tuple with the State field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *MigrationTask) GetStateOk() (*MigrationTaskState, bool) {
+func (o *Migration) GetStateOk() (*MigrationState, bool) {
 	if o == nil || IsNil(o.State) {
 		return nil, false
 	}
@@ -267,7 +267,7 @@ func (o *MigrationTask) GetStateOk() (*MigrationTaskState, bool) {
 }
 
 // HasState returns a boolean if a field has been set.
-func (o *MigrationTask) HasState() bool {
+func (o *Migration) HasState() bool {
 	if o != nil && !IsNil(o.State) {
 		return true
 	}
@@ -275,12 +275,12 @@ func (o *MigrationTask) HasState() bool {
 	return false
 }
 
-// SetState gets a reference to the given MigrationTaskState and assigns it to the State field.
-func (o *MigrationTask) SetState(v MigrationTaskState) {
+// SetState gets a reference to the given MigrationState and assigns it to the State field.
+func (o *Migration) SetState(v MigrationState) {
 	o.State = &v
 }
 
-func (o MigrationTask) MarshalJSON() ([]byte, error) {
+func (o Migration) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -288,13 +288,13 @@ func (o MigrationTask) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o MigrationTask) ToMap() (map[string]interface{}, error) {
+func (o Migration) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Id) {
-		toSerialize["id"] = o.Id
+	if !IsNil(o.MigrationId) {
+		toSerialize["migrationId"] = o.MigrationId
 	}
-	if !IsNil(o.Name) {
-		toSerialize["name"] = o.Name
+	if !IsNil(o.DisplayName) {
+		toSerialize["displayName"] = o.DisplayName
 	}
 	if !IsNil(o.SubTasks) {
 		toSerialize["subTasks"] = o.SubTasks
@@ -319,22 +319,22 @@ func (o MigrationTask) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *MigrationTask) UnmarshalJSON(data []byte) (err error) {
-	varMigrationTask := _MigrationTask{}
+func (o *Migration) UnmarshalJSON(data []byte) (err error) {
+	varMigration := _Migration{}
 
-	err = json.Unmarshal(data, &varMigrationTask)
+	err = json.Unmarshal(data, &varMigration)
 
 	if err != nil {
 		return err
 	}
 
-	*o = MigrationTask(varMigrationTask)
+	*o = Migration(varMigration)
 
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "id")
-		delete(additionalProperties, "name")
+		delete(additionalProperties, "migrationId")
+		delete(additionalProperties, "displayName")
 		delete(additionalProperties, "subTasks")
 		delete(additionalProperties, "targetUser")
 		delete(additionalProperties, "createTime")
@@ -346,38 +346,38 @@ func (o *MigrationTask) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
-type NullableMigrationTask struct {
-	value *MigrationTask
+type NullableMigration struct {
+	value *Migration
 	isSet bool
 }
 
-func (v NullableMigrationTask) Get() *MigrationTask {
+func (v NullableMigration) Get() *Migration {
 	return v.value
 }
 
-func (v *NullableMigrationTask) Set(val *MigrationTask) {
+func (v *NullableMigration) Set(val *Migration) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableMigrationTask) IsSet() bool {
+func (v NullableMigration) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableMigrationTask) Unset() {
+func (v *NullableMigration) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableMigrationTask(val *MigrationTask) *NullableMigrationTask {
-	return &NullableMigrationTask{value: val, isSet: true}
+func NewNullableMigration(val *Migration) *NullableMigration {
+	return &NullableMigration{value: val, isSet: true}
 }
 
-func (v NullableMigrationTask) MarshalJSON() ([]byte, error) {
+func (v NullableMigration) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableMigrationTask) UnmarshalJSON(src []byte) error {
+func (v *NullableMigration) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

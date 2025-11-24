@@ -22,7 +22,7 @@ type RouteRule struct {
 	// Source table pattern to match.
 	SourceTable *RouteRuleSource `json:"sourceTable,omitempty"`
 	// Target table to route to.
-	TargetTable          *RouteRuleTarget `json:"targetTable,omitempty"`
+	TargetTable          *Table `json:"targetTable,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -78,9 +78,9 @@ func (o *RouteRule) SetSourceTable(v RouteRuleSource) {
 }
 
 // GetTargetTable returns the TargetTable field value if set, zero value otherwise.
-func (o *RouteRule) GetTargetTable() RouteRuleTarget {
+func (o *RouteRule) GetTargetTable() Table {
 	if o == nil || IsNil(o.TargetTable) {
-		var ret RouteRuleTarget
+		var ret Table
 		return ret
 	}
 	return *o.TargetTable
@@ -88,7 +88,7 @@ func (o *RouteRule) GetTargetTable() RouteRuleTarget {
 
 // GetTargetTableOk returns a tuple with the TargetTable field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *RouteRule) GetTargetTableOk() (*RouteRuleTarget, bool) {
+func (o *RouteRule) GetTargetTableOk() (*Table, bool) {
 	if o == nil || IsNil(o.TargetTable) {
 		return nil, false
 	}
@@ -104,8 +104,8 @@ func (o *RouteRule) HasTargetTable() bool {
 	return false
 }
 
-// SetTargetTable gets a reference to the given RouteRuleTarget and assigns it to the TargetTable field.
-func (o *RouteRule) SetTargetTable(v RouteRuleTarget) {
+// SetTargetTable gets a reference to the given Table and assigns it to the TargetTable field.
+func (o *RouteRule) SetTargetTable(v Table) {
 	o.TargetTable = &v
 }
 

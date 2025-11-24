@@ -22,7 +22,7 @@ type BlockAllowRules struct {
 	// Database names to include in migration.
 	DoDbs []string `json:"doDbs,omitempty"`
 	// Table-level allow-list rules.
-	DoTables             []BlockAllowRulesTable `json:"doTables,omitempty"`
+	DoTables             []Table `json:"doTables,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -78,9 +78,9 @@ func (o *BlockAllowRules) SetDoDbs(v []string) {
 }
 
 // GetDoTables returns the DoTables field value if set, zero value otherwise.
-func (o *BlockAllowRules) GetDoTables() []BlockAllowRulesTable {
+func (o *BlockAllowRules) GetDoTables() []Table {
 	if o == nil || IsNil(o.DoTables) {
-		var ret []BlockAllowRulesTable
+		var ret []Table
 		return ret
 	}
 	return o.DoTables
@@ -88,7 +88,7 @@ func (o *BlockAllowRules) GetDoTables() []BlockAllowRulesTable {
 
 // GetDoTablesOk returns a tuple with the DoTables field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *BlockAllowRules) GetDoTablesOk() ([]BlockAllowRulesTable, bool) {
+func (o *BlockAllowRules) GetDoTablesOk() ([]Table, bool) {
 	if o == nil || IsNil(o.DoTables) {
 		return nil, false
 	}
@@ -104,8 +104,8 @@ func (o *BlockAllowRules) HasDoTables() bool {
 	return false
 }
 
-// SetDoTables gets a reference to the given []BlockAllowRulesTable and assigns it to the DoTables field.
-func (o *BlockAllowRules) SetDoTables(v []BlockAllowRulesTable) {
+// SetDoTables gets a reference to the given []Table and assigns it to the DoTables field.
+func (o *BlockAllowRules) SetDoTables(v []Table) {
 	o.DoTables = v
 }
 

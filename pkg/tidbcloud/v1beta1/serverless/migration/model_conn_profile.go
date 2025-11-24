@@ -21,7 +21,7 @@ var _ MappedNullable = &ConnProfile{}
 // ConnProfile struct for ConnProfile
 type ConnProfile struct {
 	// Connection type (e.g., PUBLIC, PRIVATE_LINK).
-	ConnType *ConnType `json:"connType,omitempty"`
+	ConnType ConnType `json:"connType"`
 	// Private link endpoint ID.
 	EndpointId *string `json:"endpointId,omitempty"`
 	// Source host.
@@ -43,8 +43,9 @@ type _ConnProfile ConnProfile
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewConnProfile(port int32, user string, password string) *ConnProfile {
+func NewConnProfile(connType ConnType, port int32, user string, password string) *ConnProfile {
 	this := ConnProfile{}
+	this.ConnType = connType
 	this.Port = port
 	this.User = user
 	this.Password = password
@@ -59,36 +60,28 @@ func NewConnProfileWithDefaults() *ConnProfile {
 	return &this
 }
 
-// GetConnType returns the ConnType field value if set, zero value otherwise.
+// GetConnType returns the ConnType field value
 func (o *ConnProfile) GetConnType() ConnType {
-	if o == nil || IsNil(o.ConnType) {
+	if o == nil {
 		var ret ConnType
 		return ret
 	}
-	return *o.ConnType
+
+	return o.ConnType
 }
 
-// GetConnTypeOk returns a tuple with the ConnType field value if set, nil otherwise
+// GetConnTypeOk returns a tuple with the ConnType field value
 // and a boolean to check if the value has been set.
 func (o *ConnProfile) GetConnTypeOk() (*ConnType, bool) {
-	if o == nil || IsNil(o.ConnType) {
+	if o == nil {
 		return nil, false
 	}
-	return o.ConnType, true
+	return &o.ConnType, true
 }
 
-// HasConnType returns a boolean if a field has been set.
-func (o *ConnProfile) HasConnType() bool {
-	if o != nil && !IsNil(o.ConnType) {
-		return true
-	}
-
-	return false
-}
-
-// SetConnType gets a reference to the given ConnType and assigns it to the ConnType field.
+// SetConnType sets field value
 func (o *ConnProfile) SetConnType(v ConnType) {
-	o.ConnType = &v
+	o.ConnType = v
 }
 
 // GetEndpointId returns the EndpointId field value if set, zero value otherwise.
@@ -269,9 +262,7 @@ func (o ConnProfile) MarshalJSON() ([]byte, error) {
 
 func (o ConnProfile) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.ConnType) {
-		toSerialize["connType"] = o.ConnType
-	}
+	toSerialize["connType"] = o.ConnType
 	if !IsNil(o.EndpointId) {
 		toSerialize["endpointId"] = o.EndpointId
 	}
@@ -297,6 +288,7 @@ func (o *ConnProfile) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
+		"connType",
 		"port",
 		"user",
 		"password",

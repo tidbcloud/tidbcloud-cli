@@ -19,6 +19,8 @@ var _ MappedNullable = &MigrationPrecheck{}
 
 // MigrationPrecheck struct for MigrationPrecheck
 type MigrationPrecheck struct {
+	// The ID of the precheck.
+	PrecheckId *string `json:"precheckId,omitempty"`
 	// Total number of precheck items.
 	Total *int32 `json:"total,omitempty"`
 	// Number of failed items.
@@ -51,6 +53,38 @@ func NewMigrationPrecheck() *MigrationPrecheck {
 func NewMigrationPrecheckWithDefaults() *MigrationPrecheck {
 	this := MigrationPrecheck{}
 	return &this
+}
+
+// GetPrecheckId returns the PrecheckId field value if set, zero value otherwise.
+func (o *MigrationPrecheck) GetPrecheckId() string {
+	if o == nil || IsNil(o.PrecheckId) {
+		var ret string
+		return ret
+	}
+	return *o.PrecheckId
+}
+
+// GetPrecheckIdOk returns a tuple with the PrecheckId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *MigrationPrecheck) GetPrecheckIdOk() (*string, bool) {
+	if o == nil || IsNil(o.PrecheckId) {
+		return nil, false
+	}
+	return o.PrecheckId, true
+}
+
+// HasPrecheckId returns a boolean if a field has been set.
+func (o *MigrationPrecheck) HasPrecheckId() bool {
+	if o != nil && !IsNil(o.PrecheckId) {
+		return true
+	}
+
+	return false
+}
+
+// SetPrecheckId gets a reference to the given string and assigns it to the PrecheckId field.
+func (o *MigrationPrecheck) SetPrecheckId(v string) {
+	o.PrecheckId = &v
 }
 
 // GetTotal returns the Total field value if set, zero value otherwise.
@@ -255,6 +289,9 @@ func (o MigrationPrecheck) MarshalJSON() ([]byte, error) {
 
 func (o MigrationPrecheck) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
+	if !IsNil(o.PrecheckId) {
+		toSerialize["precheckId"] = o.PrecheckId
+	}
 	if !IsNil(o.Total) {
 		toSerialize["total"] = o.Total
 	}
@@ -295,6 +332,7 @@ func (o *MigrationPrecheck) UnmarshalJSON(data []byte) (err error) {
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "precheckId")
 		delete(additionalProperties, "total")
 		delete(additionalProperties, "failedCnt")
 		delete(additionalProperties, "warnCnt")

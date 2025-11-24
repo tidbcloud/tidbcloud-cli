@@ -15,11 +15,11 @@ import (
 	"fmt"
 )
 
-// checks if the MigrationServicePrecheckBody type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &MigrationServicePrecheckBody{}
+// checks if the MigrationServiceCreateMigrationBody type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &MigrationServiceCreateMigrationBody{}
 
-// MigrationServicePrecheckBody struct for MigrationServicePrecheckBody
-type MigrationServicePrecheckBody struct {
+// MigrationServiceCreateMigrationBody struct for MigrationServiceCreateMigrationBody
+type MigrationServiceCreateMigrationBody struct {
 	// The display name of the migration.
 	DisplayName string `json:"displayName"`
 	// The data sources to migrate from.
@@ -31,14 +31,14 @@ type MigrationServicePrecheckBody struct {
 	AdditionalProperties map[string]interface{}
 }
 
-type _MigrationServicePrecheckBody MigrationServicePrecheckBody
+type _MigrationServiceCreateMigrationBody MigrationServiceCreateMigrationBody
 
-// NewMigrationServicePrecheckBody instantiates a new MigrationServicePrecheckBody object
+// NewMigrationServiceCreateMigrationBody instantiates a new MigrationServiceCreateMigrationBody object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMigrationServicePrecheckBody(displayName string, sources []Source, target Target, mode TaskMode) *MigrationServicePrecheckBody {
-	this := MigrationServicePrecheckBody{}
+func NewMigrationServiceCreateMigrationBody(displayName string, sources []Source, target Target, mode TaskMode) *MigrationServiceCreateMigrationBody {
+	this := MigrationServiceCreateMigrationBody{}
 	this.DisplayName = displayName
 	this.Sources = sources
 	this.Target = target
@@ -46,16 +46,16 @@ func NewMigrationServicePrecheckBody(displayName string, sources []Source, targe
 	return &this
 }
 
-// NewMigrationServicePrecheckBodyWithDefaults instantiates a new MigrationServicePrecheckBody object
+// NewMigrationServiceCreateMigrationBodyWithDefaults instantiates a new MigrationServiceCreateMigrationBody object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewMigrationServicePrecheckBodyWithDefaults() *MigrationServicePrecheckBody {
-	this := MigrationServicePrecheckBody{}
+func NewMigrationServiceCreateMigrationBodyWithDefaults() *MigrationServiceCreateMigrationBody {
+	this := MigrationServiceCreateMigrationBody{}
 	return &this
 }
 
 // GetDisplayName returns the DisplayName field value
-func (o *MigrationServicePrecheckBody) GetDisplayName() string {
+func (o *MigrationServiceCreateMigrationBody) GetDisplayName() string {
 	if o == nil {
 		var ret string
 		return ret
@@ -66,7 +66,7 @@ func (o *MigrationServicePrecheckBody) GetDisplayName() string {
 
 // GetDisplayNameOk returns a tuple with the DisplayName field value
 // and a boolean to check if the value has been set.
-func (o *MigrationServicePrecheckBody) GetDisplayNameOk() (*string, bool) {
+func (o *MigrationServiceCreateMigrationBody) GetDisplayNameOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -74,12 +74,12 @@ func (o *MigrationServicePrecheckBody) GetDisplayNameOk() (*string, bool) {
 }
 
 // SetDisplayName sets field value
-func (o *MigrationServicePrecheckBody) SetDisplayName(v string) {
+func (o *MigrationServiceCreateMigrationBody) SetDisplayName(v string) {
 	o.DisplayName = v
 }
 
 // GetSources returns the Sources field value
-func (o *MigrationServicePrecheckBody) GetSources() []Source {
+func (o *MigrationServiceCreateMigrationBody) GetSources() []Source {
 	if o == nil {
 		var ret []Source
 		return ret
@@ -90,7 +90,7 @@ func (o *MigrationServicePrecheckBody) GetSources() []Source {
 
 // GetSourcesOk returns a tuple with the Sources field value
 // and a boolean to check if the value has been set.
-func (o *MigrationServicePrecheckBody) GetSourcesOk() ([]Source, bool) {
+func (o *MigrationServiceCreateMigrationBody) GetSourcesOk() ([]Source, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -98,12 +98,12 @@ func (o *MigrationServicePrecheckBody) GetSourcesOk() ([]Source, bool) {
 }
 
 // SetSources sets field value
-func (o *MigrationServicePrecheckBody) SetSources(v []Source) {
+func (o *MigrationServiceCreateMigrationBody) SetSources(v []Source) {
 	o.Sources = v
 }
 
 // GetTarget returns the Target field value
-func (o *MigrationServicePrecheckBody) GetTarget() Target {
+func (o *MigrationServiceCreateMigrationBody) GetTarget() Target {
 	if o == nil {
 		var ret Target
 		return ret
@@ -114,7 +114,7 @@ func (o *MigrationServicePrecheckBody) GetTarget() Target {
 
 // GetTargetOk returns a tuple with the Target field value
 // and a boolean to check if the value has been set.
-func (o *MigrationServicePrecheckBody) GetTargetOk() (*Target, bool) {
+func (o *MigrationServiceCreateMigrationBody) GetTargetOk() (*Target, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -122,12 +122,12 @@ func (o *MigrationServicePrecheckBody) GetTargetOk() (*Target, bool) {
 }
 
 // SetTarget sets field value
-func (o *MigrationServicePrecheckBody) SetTarget(v Target) {
+func (o *MigrationServiceCreateMigrationBody) SetTarget(v Target) {
 	o.Target = v
 }
 
 // GetMode returns the Mode field value
-func (o *MigrationServicePrecheckBody) GetMode() TaskMode {
+func (o *MigrationServiceCreateMigrationBody) GetMode() TaskMode {
 	if o == nil {
 		var ret TaskMode
 		return ret
@@ -138,7 +138,7 @@ func (o *MigrationServicePrecheckBody) GetMode() TaskMode {
 
 // GetModeOk returns a tuple with the Mode field value
 // and a boolean to check if the value has been set.
-func (o *MigrationServicePrecheckBody) GetModeOk() (*TaskMode, bool) {
+func (o *MigrationServiceCreateMigrationBody) GetModeOk() (*TaskMode, bool) {
 	if o == nil {
 		return nil, false
 	}
@@ -146,11 +146,11 @@ func (o *MigrationServicePrecheckBody) GetModeOk() (*TaskMode, bool) {
 }
 
 // SetMode sets field value
-func (o *MigrationServicePrecheckBody) SetMode(v TaskMode) {
+func (o *MigrationServiceCreateMigrationBody) SetMode(v TaskMode) {
 	o.Mode = v
 }
 
-func (o MigrationServicePrecheckBody) MarshalJSON() ([]byte, error) {
+func (o MigrationServiceCreateMigrationBody) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -158,7 +158,7 @@ func (o MigrationServicePrecheckBody) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o MigrationServicePrecheckBody) ToMap() (map[string]interface{}, error) {
+func (o MigrationServiceCreateMigrationBody) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["displayName"] = o.DisplayName
 	toSerialize["sources"] = o.Sources
@@ -172,7 +172,7 @@ func (o MigrationServicePrecheckBody) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *MigrationServicePrecheckBody) UnmarshalJSON(data []byte) (err error) {
+func (o *MigrationServiceCreateMigrationBody) UnmarshalJSON(data []byte) (err error) {
 	// This validates that all required properties are included in the JSON object
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
@@ -197,15 +197,15 @@ func (o *MigrationServicePrecheckBody) UnmarshalJSON(data []byte) (err error) {
 		}
 	}
 
-	varMigrationServicePrecheckBody := _MigrationServicePrecheckBody{}
+	varMigrationServiceCreateMigrationBody := _MigrationServiceCreateMigrationBody{}
 
-	err = json.Unmarshal(data, &varMigrationServicePrecheckBody)
+	err = json.Unmarshal(data, &varMigrationServiceCreateMigrationBody)
 
 	if err != nil {
 		return err
 	}
 
-	*o = MigrationServicePrecheckBody(varMigrationServicePrecheckBody)
+	*o = MigrationServiceCreateMigrationBody(varMigrationServiceCreateMigrationBody)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -220,38 +220,38 @@ func (o *MigrationServicePrecheckBody) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
-type NullableMigrationServicePrecheckBody struct {
-	value *MigrationServicePrecheckBody
+type NullableMigrationServiceCreateMigrationBody struct {
+	value *MigrationServiceCreateMigrationBody
 	isSet bool
 }
 
-func (v NullableMigrationServicePrecheckBody) Get() *MigrationServicePrecheckBody {
+func (v NullableMigrationServiceCreateMigrationBody) Get() *MigrationServiceCreateMigrationBody {
 	return v.value
 }
 
-func (v *NullableMigrationServicePrecheckBody) Set(val *MigrationServicePrecheckBody) {
+func (v *NullableMigrationServiceCreateMigrationBody) Set(val *MigrationServiceCreateMigrationBody) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableMigrationServicePrecheckBody) IsSet() bool {
+func (v NullableMigrationServiceCreateMigrationBody) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableMigrationServicePrecheckBody) Unset() {
+func (v *NullableMigrationServiceCreateMigrationBody) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableMigrationServicePrecheckBody(val *MigrationServicePrecheckBody) *NullableMigrationServicePrecheckBody {
-	return &NullableMigrationServicePrecheckBody{value: val, isSet: true}
+func NewNullableMigrationServiceCreateMigrationBody(val *MigrationServiceCreateMigrationBody) *NullableMigrationServiceCreateMigrationBody {
+	return &NullableMigrationServiceCreateMigrationBody{value: val, isSet: true}
 }
 
-func (v NullableMigrationServicePrecheckBody) MarshalJSON() ([]byte, error) {
+func (v NullableMigrationServiceCreateMigrationBody) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableMigrationServicePrecheckBody) UnmarshalJSON(src []byte) error {
+func (v *NullableMigrationServiceCreateMigrationBody) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

@@ -14,19 +14,19 @@ import (
 	"encoding/json"
 )
 
-// SourceSourceType The source database type.   - SOURCE_TYPE_MYSQL: Self-managed MySQL.  - SOURCE_TYPE_ALICLOUD_RDS_MYSQL: Alibaba Cloud RDS for MySQL.
+// SourceSourceType The source database type.   - MYSQL: Self-managed MySQL.  - ALICLOUD_RDS_MYSQL: Alibaba Cloud RDS for MySQL.
 type SourceSourceType string
 
 // List of Source.SourceType
 const (
-	SOURCESOURCETYPE_SOURCE_TYPE_MYSQL              SourceSourceType = "SOURCE_TYPE_MYSQL"
-	SOURCESOURCETYPE_SOURCE_TYPE_ALICLOUD_RDS_MYSQL SourceSourceType = "SOURCE_TYPE_ALICLOUD_RDS_MYSQL"
+	SOURCESOURCETYPE_MYSQL              SourceSourceType = "MYSQL"
+	SOURCESOURCETYPE_ALICLOUD_RDS_MYSQL SourceSourceType = "ALICLOUD_RDS_MYSQL"
 )
 
 // All allowed values of SourceSourceType enum
 var AllowedSourceSourceTypeEnumValues = []SourceSourceType{
-	"SOURCE_TYPE_MYSQL",
-	"SOURCE_TYPE_ALICLOUD_RDS_MYSQL",
+	"MYSQL",
+	"ALICLOUD_RDS_MYSQL",
 }
 
 func (v *SourceSourceType) UnmarshalJSON(src []byte) error {

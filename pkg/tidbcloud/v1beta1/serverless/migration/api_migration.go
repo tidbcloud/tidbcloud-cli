@@ -22,11 +22,125 @@ import (
 // MigrationAPIService MigrationAPI service
 type MigrationAPIService service
 
+type ApiMigrationServiceCancelMigrationRequest struct {
+	ctx         context.Context
+	ApiService  *MigrationAPIService
+	clusterId   string
+	migrationId string
+}
+
+func (r ApiMigrationServiceCancelMigrationRequest) Execute() (*Migration, *http.Response, error) {
+	return r.ApiService.MigrationServiceCancelMigrationExecute(r)
+}
+
+/*
+MigrationServiceCancelMigration Cancel a migration
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId The ID of the cluster.
+	@param migrationId The ID of the migration to cancel.
+	@return ApiMigrationServiceCancelMigrationRequest
+*/
+func (a *MigrationAPIService) MigrationServiceCancelMigration(ctx context.Context, clusterId string, migrationId string) ApiMigrationServiceCancelMigrationRequest {
+	return ApiMigrationServiceCancelMigrationRequest{
+		ApiService:  a,
+		ctx:         ctx,
+		clusterId:   clusterId,
+		migrationId: migrationId,
+	}
+}
+
+// Execute executes the request
+//
+//	@return Migration
+func (a *MigrationAPIService) MigrationServiceCancelMigrationExecute(r ApiMigrationServiceCancelMigrationRequest) (*Migration, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Migration
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MigrationAPIService.MigrationServiceCancelMigration")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/migrations/{migrationId}"
+	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"migrationId"+"}", url.PathEscape(parameterValueToString(r.migrationId, "migrationId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v Status
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
 type ApiMigrationServiceCancelPrecheckRequest struct {
 	ctx        context.Context
 	ApiService *MigrationAPIService
 	clusterId  string
-	id         string
+	precheckId string
 }
 
 func (r ApiMigrationServiceCancelPrecheckRequest) Execute() (map[string]interface{}, *http.Response, error) {
@@ -38,15 +152,15 @@ MigrationServiceCancelPrecheck Cancel a migration precheck
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId The ID of the cluster.
-	@param id The ID of the precheck to cancel.
+	@param precheckId The ID of the precheck to cancel.
 	@return ApiMigrationServiceCancelPrecheckRequest
 */
-func (a *MigrationAPIService) MigrationServiceCancelPrecheck(ctx context.Context, clusterId string, id string) ApiMigrationServiceCancelPrecheckRequest {
+func (a *MigrationAPIService) MigrationServiceCancelPrecheck(ctx context.Context, clusterId string, precheckId string) ApiMigrationServiceCancelPrecheckRequest {
 	return ApiMigrationServiceCancelPrecheckRequest{
 		ApiService: a,
 		ctx:        ctx,
 		clusterId:  clusterId,
-		id:         id,
+		precheckId: precheckId,
 	}
 }
 
@@ -66,9 +180,9 @@ func (a *MigrationAPIService) MigrationServiceCancelPrecheckExecute(r ApiMigrati
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/migrationPrechecks/{id}"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/migrationPrechecks/{precheckId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"precheckId"+"}", url.PathEscape(parameterValueToString(r.precheckId, "precheckId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -136,145 +250,31 @@ func (a *MigrationAPIService) MigrationServiceCancelPrecheckExecute(r ApiMigrati
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiMigrationServiceCancelTaskRequest struct {
+type ApiMigrationServiceCreateMigrationRequest struct {
 	ctx        context.Context
 	ApiService *MigrationAPIService
 	clusterId  string
-	id         string
+	body       *MigrationServiceCreateMigrationBody
 }
 
-func (r ApiMigrationServiceCancelTaskRequest) Execute() (*MigrationTask, *http.Response, error) {
-	return r.ApiService.MigrationServiceCancelTaskExecute(r)
-}
-
-/*
-MigrationServiceCancelTask Cancel a migration task
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId The ID of the cluster.
-	@param id The ID of the migration task to cancel.
-	@return ApiMigrationServiceCancelTaskRequest
-*/
-func (a *MigrationAPIService) MigrationServiceCancelTask(ctx context.Context, clusterId string, id string) ApiMigrationServiceCancelTaskRequest {
-	return ApiMigrationServiceCancelTaskRequest{
-		ApiService: a,
-		ctx:        ctx,
-		clusterId:  clusterId,
-		id:         id,
-	}
-}
-
-// Execute executes the request
-//
-//	@return MigrationTask
-func (a *MigrationAPIService) MigrationServiceCancelTaskExecute(r ApiMigrationServiceCancelTaskRequest) (*MigrationTask, *http.Response, error) {
-	var (
-		localVarHTTPMethod  = http.MethodDelete
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *MigrationTask
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MigrationAPIService.MigrationServiceCancelTask")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/migrations/{id}"
-	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		var v Status
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiMigrationServiceCreateTaskRequest struct {
-	ctx        context.Context
-	ApiService *MigrationAPIService
-	clusterId  string
-	body       *MigrationServiceCreateTaskBody
-}
-
-func (r ApiMigrationServiceCreateTaskRequest) Body(body MigrationServiceCreateTaskBody) ApiMigrationServiceCreateTaskRequest {
+func (r ApiMigrationServiceCreateMigrationRequest) Body(body MigrationServiceCreateMigrationBody) ApiMigrationServiceCreateMigrationRequest {
 	r.body = &body
 	return r
 }
 
-func (r ApiMigrationServiceCreateTaskRequest) Execute() (*MigrationTask, *http.Response, error) {
-	return r.ApiService.MigrationServiceCreateTaskExecute(r)
+func (r ApiMigrationServiceCreateMigrationRequest) Execute() (*Migration, *http.Response, error) {
+	return r.ApiService.MigrationServiceCreateMigrationExecute(r)
 }
 
 /*
-MigrationServiceCreateTask Create a migration task
+MigrationServiceCreateMigration Create a migration
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId The ID of the cluster to create the migration task in.
-	@return ApiMigrationServiceCreateTaskRequest
+	@param clusterId The ID of the cluster to create the migration in.
+	@return ApiMigrationServiceCreateMigrationRequest
 */
-func (a *MigrationAPIService) MigrationServiceCreateTask(ctx context.Context, clusterId string) ApiMigrationServiceCreateTaskRequest {
-	return ApiMigrationServiceCreateTaskRequest{
+func (a *MigrationAPIService) MigrationServiceCreateMigration(ctx context.Context, clusterId string) ApiMigrationServiceCreateMigrationRequest {
+	return ApiMigrationServiceCreateMigrationRequest{
 		ApiService: a,
 		ctx:        ctx,
 		clusterId:  clusterId,
@@ -283,16 +283,16 @@ func (a *MigrationAPIService) MigrationServiceCreateTask(ctx context.Context, cl
 
 // Execute executes the request
 //
-//	@return MigrationTask
-func (a *MigrationAPIService) MigrationServiceCreateTaskExecute(r ApiMigrationServiceCreateTaskRequest) (*MigrationTask, *http.Response, error) {
+//	@return Migration
+func (a *MigrationAPIService) MigrationServiceCreateMigrationExecute(r ApiMigrationServiceCreateMigrationRequest) (*Migration, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPost
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *MigrationTask
+		localVarReturnValue *Migration
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MigrationAPIService.MigrationServiceCreateTask")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MigrationAPIService.MigrationServiceCreateMigration")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -371,11 +371,125 @@ func (a *MigrationAPIService) MigrationServiceCreateTaskExecute(r ApiMigrationSe
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
+type ApiMigrationServiceGetMigrationRequest struct {
+	ctx         context.Context
+	ApiService  *MigrationAPIService
+	clusterId   string
+	migrationId string
+}
+
+func (r ApiMigrationServiceGetMigrationRequest) Execute() (*Migration, *http.Response, error) {
+	return r.ApiService.MigrationServiceGetMigrationExecute(r)
+}
+
+/*
+MigrationServiceGetMigration Get a migration
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId The ID of the cluster.
+	@param migrationId The ID of the migration.
+	@return ApiMigrationServiceGetMigrationRequest
+*/
+func (a *MigrationAPIService) MigrationServiceGetMigration(ctx context.Context, clusterId string, migrationId string) ApiMigrationServiceGetMigrationRequest {
+	return ApiMigrationServiceGetMigrationRequest{
+		ApiService:  a,
+		ctx:         ctx,
+		clusterId:   clusterId,
+		migrationId: migrationId,
+	}
+}
+
+// Execute executes the request
+//
+//	@return Migration
+func (a *MigrationAPIService) MigrationServiceGetMigrationExecute(r ApiMigrationServiceGetMigrationRequest) (*Migration, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodGet
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Migration
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MigrationAPIService.MigrationServiceGetMigration")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/migrations/{migrationId}"
+	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"migrationId"+"}", url.PathEscape(parameterValueToString(r.migrationId, "migrationId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v Status
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
 type ApiMigrationServiceGetPrecheckRequest struct {
 	ctx        context.Context
 	ApiService *MigrationAPIService
 	clusterId  string
-	id         string
+	precheckId string
 }
 
 func (r ApiMigrationServiceGetPrecheckRequest) Execute() (*MigrationPrecheck, *http.Response, error) {
@@ -387,15 +501,15 @@ MigrationServiceGetPrecheck Get a migration precheck
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId The ID of the cluster.
-	@param id The ID of the precheck.
+	@param precheckId The ID of the precheck.
 	@return ApiMigrationServiceGetPrecheckRequest
 */
-func (a *MigrationAPIService) MigrationServiceGetPrecheck(ctx context.Context, clusterId string, id string) ApiMigrationServiceGetPrecheckRequest {
+func (a *MigrationAPIService) MigrationServiceGetPrecheck(ctx context.Context, clusterId string, precheckId string) ApiMigrationServiceGetPrecheckRequest {
 	return ApiMigrationServiceGetPrecheckRequest{
 		ApiService: a,
 		ctx:        ctx,
 		clusterId:  clusterId,
-		id:         id,
+		precheckId: precheckId,
 	}
 }
 
@@ -415,9 +529,9 @@ func (a *MigrationAPIService) MigrationServiceGetPrecheckExecute(r ApiMigrationS
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/migrationPrechecks/{id}"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/migrationPrechecks/{precheckId}"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"precheckId"+"}", url.PathEscape(parameterValueToString(r.precheckId, "precheckId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -485,121 +599,7 @@ func (a *MigrationAPIService) MigrationServiceGetPrecheckExecute(r ApiMigrationS
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiMigrationServiceGetTaskRequest struct {
-	ctx        context.Context
-	ApiService *MigrationAPIService
-	clusterId  string
-	id         string
-}
-
-func (r ApiMigrationServiceGetTaskRequest) Execute() (*MigrationTask, *http.Response, error) {
-	return r.ApiService.MigrationServiceGetTaskExecute(r)
-}
-
-/*
-MigrationServiceGetTask Get a migration task
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId The ID of the cluster.
-	@param id The ID of the migration task.
-	@return ApiMigrationServiceGetTaskRequest
-*/
-func (a *MigrationAPIService) MigrationServiceGetTask(ctx context.Context, clusterId string, id string) ApiMigrationServiceGetTaskRequest {
-	return ApiMigrationServiceGetTaskRequest{
-		ApiService: a,
-		ctx:        ctx,
-		clusterId:  clusterId,
-		id:         id,
-	}
-}
-
-// Execute executes the request
-//
-//	@return MigrationTask
-func (a *MigrationAPIService) MigrationServiceGetTaskExecute(r ApiMigrationServiceGetTaskRequest) (*MigrationTask, *http.Response, error) {
-	var (
-		localVarHTTPMethod  = http.MethodGet
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *MigrationTask
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MigrationAPIService.MigrationServiceGetTask")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/migrations/{id}"
-	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		var v Status
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
-type ApiMigrationServiceListTasksRequest struct {
+type ApiMigrationServiceListMigrationsRequest struct {
 	ctx        context.Context
 	ApiService *MigrationAPIService
 	clusterId  string
@@ -609,36 +609,36 @@ type ApiMigrationServiceListTasksRequest struct {
 }
 
 // Optional. The page token, default is empty.
-func (r ApiMigrationServiceListTasksRequest) PageToken(pageToken string) ApiMigrationServiceListTasksRequest {
+func (r ApiMigrationServiceListMigrationsRequest) PageToken(pageToken string) ApiMigrationServiceListMigrationsRequest {
 	r.pageToken = &pageToken
 	return r
 }
 
 // Optional. The page size, default is 10.
-func (r ApiMigrationServiceListTasksRequest) PageSize(pageSize int32) ApiMigrationServiceListTasksRequest {
+func (r ApiMigrationServiceListMigrationsRequest) PageSize(pageSize int32) ApiMigrationServiceListMigrationsRequest {
 	r.pageSize = &pageSize
 	return r
 }
 
 // Specifies the sorting order of results. Use a comma-separated list of field names, optionally appending &#x60;desc&#x60; for descending order. For example, &#x60;createTime desc&#x60;. By default, fields are sorted in ascending order.  Supported field: &#x60;createTime&#x60;.
-func (r ApiMigrationServiceListTasksRequest) OrderBy(orderBy string) ApiMigrationServiceListTasksRequest {
+func (r ApiMigrationServiceListMigrationsRequest) OrderBy(orderBy string) ApiMigrationServiceListMigrationsRequest {
 	r.orderBy = &orderBy
 	return r
 }
 
-func (r ApiMigrationServiceListTasksRequest) Execute() (*ListMigrationTasksResp, *http.Response, error) {
-	return r.ApiService.MigrationServiceListTasksExecute(r)
+func (r ApiMigrationServiceListMigrationsRequest) Execute() (*ListMigrationsResp, *http.Response, error) {
+	return r.ApiService.MigrationServiceListMigrationsExecute(r)
 }
 
 /*
-MigrationServiceListTasks List migration tasks
+MigrationServiceListMigrations List migrations
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId The ID of the cluster to list tasks for.
-	@return ApiMigrationServiceListTasksRequest
+	@param clusterId The ID of the cluster to list migrations for.
+	@return ApiMigrationServiceListMigrationsRequest
 */
-func (a *MigrationAPIService) MigrationServiceListTasks(ctx context.Context, clusterId string) ApiMigrationServiceListTasksRequest {
-	return ApiMigrationServiceListTasksRequest{
+func (a *MigrationAPIService) MigrationServiceListMigrations(ctx context.Context, clusterId string) ApiMigrationServiceListMigrationsRequest {
+	return ApiMigrationServiceListMigrationsRequest{
 		ApiService: a,
 		ctx:        ctx,
 		clusterId:  clusterId,
@@ -647,16 +647,16 @@ func (a *MigrationAPIService) MigrationServiceListTasks(ctx context.Context, clu
 
 // Execute executes the request
 //
-//	@return ListMigrationTasksResp
-func (a *MigrationAPIService) MigrationServiceListTasksExecute(r ApiMigrationServiceListTasksRequest) (*ListMigrationTasksResp, *http.Response, error) {
+//	@return ListMigrationsResp
+func (a *MigrationAPIService) MigrationServiceListMigrationsExecute(r ApiMigrationServiceListMigrationsRequest) (*ListMigrationsResp, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodGet
 		localVarPostBody    interface{}
 		formFiles           []formFile
-		localVarReturnValue *ListMigrationTasksResp
+		localVarReturnValue *ListMigrationsResp
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MigrationAPIService.MigrationServiceListTasks")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MigrationAPIService.MigrationServiceListMigrations")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -742,44 +742,44 @@ func (a *MigrationAPIService) MigrationServiceListTasksExecute(r ApiMigrationSer
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiMigrationServicePauseTaskRequest struct {
-	ctx        context.Context
-	ApiService *MigrationAPIService
-	clusterId  string
-	id         string
-	body       *map[string]interface{}
+type ApiMigrationServicePauseMigrationRequest struct {
+	ctx         context.Context
+	ApiService  *MigrationAPIService
+	clusterId   string
+	migrationId string
+	body        *map[string]interface{}
 }
 
-func (r ApiMigrationServicePauseTaskRequest) Body(body map[string]interface{}) ApiMigrationServicePauseTaskRequest {
+func (r ApiMigrationServicePauseMigrationRequest) Body(body map[string]interface{}) ApiMigrationServicePauseMigrationRequest {
 	r.body = &body
 	return r
 }
 
-func (r ApiMigrationServicePauseTaskRequest) Execute() (map[string]interface{}, *http.Response, error) {
-	return r.ApiService.MigrationServicePauseTaskExecute(r)
+func (r ApiMigrationServicePauseMigrationRequest) Execute() (map[string]interface{}, *http.Response, error) {
+	return r.ApiService.MigrationServicePauseMigrationExecute(r)
 }
 
 /*
-MigrationServicePauseTask Pause a running migration task
+MigrationServicePauseMigration Pause a running migration
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId The ID of the cluster.
-	@param id The ID of the migration task to pause.
-	@return ApiMigrationServicePauseTaskRequest
+	@param migrationId The ID of the migration to pause.
+	@return ApiMigrationServicePauseMigrationRequest
 */
-func (a *MigrationAPIService) MigrationServicePauseTask(ctx context.Context, clusterId string, id string) ApiMigrationServicePauseTaskRequest {
-	return ApiMigrationServicePauseTaskRequest{
-		ApiService: a,
-		ctx:        ctx,
-		clusterId:  clusterId,
-		id:         id,
+func (a *MigrationAPIService) MigrationServicePauseMigration(ctx context.Context, clusterId string, migrationId string) ApiMigrationServicePauseMigrationRequest {
+	return ApiMigrationServicePauseMigrationRequest{
+		ApiService:  a,
+		ctx:         ctx,
+		clusterId:   clusterId,
+		migrationId: migrationId,
 	}
 }
 
 // Execute executes the request
 //
 //	@return map[string]interface{}
-func (a *MigrationAPIService) MigrationServicePauseTaskExecute(r ApiMigrationServicePauseTaskRequest) (map[string]interface{}, *http.Response, error) {
+func (a *MigrationAPIService) MigrationServicePauseMigrationExecute(r ApiMigrationServicePauseMigrationRequest) (map[string]interface{}, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPost
 		localVarPostBody    interface{}
@@ -787,14 +787,14 @@ func (a *MigrationAPIService) MigrationServicePauseTaskExecute(r ApiMigrationSer
 		localVarReturnValue map[string]interface{}
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MigrationAPIService.MigrationServicePauseTask")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MigrationAPIService.MigrationServicePauseMigration")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/migrations/{id}:pause"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/migrations/{migrationId}:pause"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"migrationId"+"}", url.PathEscape(parameterValueToString(r.migrationId, "migrationId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -884,10 +884,10 @@ func (r ApiMigrationServicePrecheckRequest) Execute() (*CreateMigrationPrecheckR
 }
 
 /*
-MigrationServicePrecheck Run a precheck for a migration task
+MigrationServicePrecheck Run a precheck for a migration
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId The ID of the cluster to create the migration task in.
+	@param clusterId The ID of the cluster to create the migration in.
 	@return ApiMigrationServicePrecheckRequest
 */
 func (a *MigrationAPIService) MigrationServicePrecheck(ctx context.Context, clusterId string) ApiMigrationServicePrecheckRequest {
@@ -988,44 +988,44 @@ func (a *MigrationAPIService) MigrationServicePrecheckExecute(r ApiMigrationServ
 	return localVarReturnValue, localVarHTTPResponse, nil
 }
 
-type ApiMigrationServiceResumeTaskRequest struct {
-	ctx        context.Context
-	ApiService *MigrationAPIService
-	clusterId  string
-	id         string
-	body       *map[string]interface{}
+type ApiMigrationServiceResumeMigrationRequest struct {
+	ctx         context.Context
+	ApiService  *MigrationAPIService
+	clusterId   string
+	migrationId string
+	body        *map[string]interface{}
 }
 
-func (r ApiMigrationServiceResumeTaskRequest) Body(body map[string]interface{}) ApiMigrationServiceResumeTaskRequest {
+func (r ApiMigrationServiceResumeMigrationRequest) Body(body map[string]interface{}) ApiMigrationServiceResumeMigrationRequest {
 	r.body = &body
 	return r
 }
 
-func (r ApiMigrationServiceResumeTaskRequest) Execute() (map[string]interface{}, *http.Response, error) {
-	return r.ApiService.MigrationServiceResumeTaskExecute(r)
+func (r ApiMigrationServiceResumeMigrationRequest) Execute() (map[string]interface{}, *http.Response, error) {
+	return r.ApiService.MigrationServiceResumeMigrationExecute(r)
 }
 
 /*
-MigrationServiceResumeTask Resume a paused migration task
+MigrationServiceResumeMigration Resume a paused migration
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@param clusterId The ID of the cluster.
-	@param id The ID of the migration task to resume.
-	@return ApiMigrationServiceResumeTaskRequest
+	@param migrationId The ID of the migration to resume.
+	@return ApiMigrationServiceResumeMigrationRequest
 */
-func (a *MigrationAPIService) MigrationServiceResumeTask(ctx context.Context, clusterId string, id string) ApiMigrationServiceResumeTaskRequest {
-	return ApiMigrationServiceResumeTaskRequest{
-		ApiService: a,
-		ctx:        ctx,
-		clusterId:  clusterId,
-		id:         id,
+func (a *MigrationAPIService) MigrationServiceResumeMigration(ctx context.Context, clusterId string, migrationId string) ApiMigrationServiceResumeMigrationRequest {
+	return ApiMigrationServiceResumeMigrationRequest{
+		ApiService:  a,
+		ctx:         ctx,
+		clusterId:   clusterId,
+		migrationId: migrationId,
 	}
 }
 
 // Execute executes the request
 //
 //	@return map[string]interface{}
-func (a *MigrationAPIService) MigrationServiceResumeTaskExecute(r ApiMigrationServiceResumeTaskRequest) (map[string]interface{}, *http.Response, error) {
+func (a *MigrationAPIService) MigrationServiceResumeMigrationExecute(r ApiMigrationServiceResumeMigrationRequest) (map[string]interface{}, *http.Response, error) {
 	var (
 		localVarHTTPMethod  = http.MethodPost
 		localVarPostBody    interface{}
@@ -1033,14 +1033,14 @@ func (a *MigrationAPIService) MigrationServiceResumeTaskExecute(r ApiMigrationSe
 		localVarReturnValue map[string]interface{}
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MigrationAPIService.MigrationServiceResumeTask")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MigrationAPIService.MigrationServiceResumeMigration")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/migrations/{id}:resume"
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/migrations/{migrationId}:resume"
 	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"id"+"}", url.PathEscape(parameterValueToString(r.id, "id")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"migrationId"+"}", url.PathEscape(parameterValueToString(r.migrationId, "migrationId")), -1)
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}

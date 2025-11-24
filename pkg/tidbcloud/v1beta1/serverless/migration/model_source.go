@@ -29,7 +29,7 @@ type Source struct {
 	// Starting binlog file name for incremental sync.
 	BinlogName NullableString `json:"binlogName,omitempty"`
 	// Starting binlog position for incremental sync.
-	BinlogPos NullableInt32 `json:"binlogPos,omitempty"`
+	BinlogPosition NullableInt32 `json:"binlogPosition,omitempty"`
 	// Starting GTID set for incremental sync.
 	BinlogGtid NullableString `json:"binlogGtid,omitempty"`
 	// Source type (e.g., MySQL).
@@ -189,47 +189,47 @@ func (o *Source) UnsetBinlogName() {
 	o.BinlogName.Unset()
 }
 
-// GetBinlogPos returns the BinlogPos field value if set, zero value otherwise (both if not set or set to explicit null).
-func (o *Source) GetBinlogPos() int32 {
-	if o == nil || IsNil(o.BinlogPos.Get()) {
+// GetBinlogPosition returns the BinlogPosition field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *Source) GetBinlogPosition() int32 {
+	if o == nil || IsNil(o.BinlogPosition.Get()) {
 		var ret int32
 		return ret
 	}
-	return *o.BinlogPos.Get()
+	return *o.BinlogPosition.Get()
 }
 
-// GetBinlogPosOk returns a tuple with the BinlogPos field value if set, nil otherwise
+// GetBinlogPositionOk returns a tuple with the BinlogPosition field value if set, nil otherwise
 // and a boolean to check if the value has been set.
 // NOTE: If the value is an explicit nil, `nil, true` will be returned
-func (o *Source) GetBinlogPosOk() (*int32, bool) {
+func (o *Source) GetBinlogPositionOk() (*int32, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return o.BinlogPos.Get(), o.BinlogPos.IsSet()
+	return o.BinlogPosition.Get(), o.BinlogPosition.IsSet()
 }
 
-// HasBinlogPos returns a boolean if a field has been set.
-func (o *Source) HasBinlogPos() bool {
-	if o != nil && o.BinlogPos.IsSet() {
+// HasBinlogPosition returns a boolean if a field has been set.
+func (o *Source) HasBinlogPosition() bool {
+	if o != nil && o.BinlogPosition.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetBinlogPos gets a reference to the given NullableInt32 and assigns it to the BinlogPos field.
-func (o *Source) SetBinlogPos(v int32) {
-	o.BinlogPos.Set(&v)
+// SetBinlogPosition gets a reference to the given NullableInt32 and assigns it to the BinlogPosition field.
+func (o *Source) SetBinlogPosition(v int32) {
+	o.BinlogPosition.Set(&v)
 }
 
-// SetBinlogPosNil sets the value for BinlogPos to be an explicit nil
-func (o *Source) SetBinlogPosNil() {
-	o.BinlogPos.Set(nil)
+// SetBinlogPositionNil sets the value for BinlogPosition to be an explicit nil
+func (o *Source) SetBinlogPositionNil() {
+	o.BinlogPosition.Set(nil)
 }
 
-// UnsetBinlogPos ensures that no value is present for BinlogPos, not even an explicit nil
-func (o *Source) UnsetBinlogPos() {
-	o.BinlogPos.Unset()
+// UnsetBinlogPosition ensures that no value is present for BinlogPosition, not even an explicit nil
+func (o *Source) UnsetBinlogPosition() {
+	o.BinlogPosition.Unset()
 }
 
 // GetBinlogGtid returns the BinlogGtid field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -319,8 +319,8 @@ func (o Source) ToMap() (map[string]interface{}, error) {
 	if o.BinlogName.IsSet() {
 		toSerialize["binlogName"] = o.BinlogName.Get()
 	}
-	if o.BinlogPos.IsSet() {
-		toSerialize["binlogPos"] = o.BinlogPos.Get()
+	if o.BinlogPosition.IsSet() {
+		toSerialize["binlogPosition"] = o.BinlogPosition.Get()
 	}
 	if o.BinlogGtid.IsSet() {
 		toSerialize["binlogGtid"] = o.BinlogGtid.Get()
@@ -374,7 +374,7 @@ func (o *Source) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "baRules")
 		delete(additionalProperties, "routeRules")
 		delete(additionalProperties, "binlogName")
-		delete(additionalProperties, "binlogPos")
+		delete(additionalProperties, "binlogPosition")
 		delete(additionalProperties, "binlogGtid")
 		delete(additionalProperties, "sourceType")
 		o.AdditionalProperties = additionalProperties
