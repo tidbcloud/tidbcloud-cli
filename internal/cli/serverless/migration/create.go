@@ -264,7 +264,7 @@ func printPrecheckSummary(id, status string, result *pkgmigration.MigrationPrech
 		return nil
 	}
 	columns := []output.Column{"Type", "Status", "Description", "Reason", "Solution"}
-	var rows []output.Row
+	rows := make([]output.Row, 0, len(result.Items))
 	for _, item := range result.Items {
 		rows = append(rows, output.Row{
 			precheckItemType(item.Type),

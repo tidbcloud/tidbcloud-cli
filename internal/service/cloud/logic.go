@@ -1054,31 +1054,31 @@ func GetSelectedMigrationTask(ctx context.Context, clusterID string, pageSize in
 	}
 	appendMigrationTaskItems := func(tasks []migration.Migration) {
 		for _, item := range tasks {
-				if item.MigrationId == nil {
+			if item.MigrationId == nil {
 				continue
 			}
-				name := *item.MigrationId
-				if item.DisplayName != nil && *item.DisplayName != "" {
-					name = *item.DisplayName
+			name := *item.MigrationId
+			if item.DisplayName != nil && *item.DisplayName != "" {
+				name = *item.DisplayName
 			}
 			state := ""
 			if item.State != nil {
 				state = string(*item.State)
 			}
 			items = append(items, &MigrationTask{
-					ID:    *item.MigrationId,
+				ID:    *item.MigrationId,
 				Name:  name,
 				State: state,
 			})
 		}
 	}
-		appendMigrationTaskItems(resp.Migrations)
+	appendMigrationTaskItems(resp.Migrations)
 	for resp.NextPageToken != nil && *resp.NextPageToken != "" {
 		resp, err = client.ListMigrationTasks(ctx, clusterID, &pageSizeInt32, resp.NextPageToken, nil)
 		if err != nil {
 			return nil, errors.Trace(err)
 		}
-			appendMigrationTaskItems(resp.Migrations)
+		appendMigrationTaskItems(resp.Migrations)
 	}
 
 	if len(items) == 0 {
