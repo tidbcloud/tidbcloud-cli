@@ -107,17 +107,17 @@ type TiDBCloudClient interface {
 
 	CancelMigrationPrecheck(ctx context.Context, clusterId string, precheckId string) (map[string]interface{}, error)
 
-	CancelMigrationTask(ctx context.Context, clusterId string, taskId string) (*migration.MigrationTask, error)
+	CancelMigrationTask(ctx context.Context, clusterId string, taskId string) (*migration.Migration, error)
 
 	CreateMigrationPrecheck(ctx context.Context, clusterId string, body *migration.MigrationServicePrecheckBody) (*migration.CreateMigrationPrecheckResp, error)
 
-	CreateMigrationTask(ctx context.Context, clusterId string, body *migration.MigrationServiceCreateTaskBody) (*migration.MigrationTask, error)
+	CreateMigrationTask(ctx context.Context, clusterId string, body *migration.MigrationServiceCreateMigrationBody) (*migration.Migration, error)
 
 	GetMigrationPrecheck(ctx context.Context, clusterId string, precheckId string) (*migration.MigrationPrecheck, error)
 
-	GetMigrationTask(ctx context.Context, clusterId string, taskId string) (*migration.MigrationTask, error)
+	GetMigrationTask(ctx context.Context, clusterId string, taskId string) (*migration.Migration, error)
 
-	ListMigrationTasks(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*migration.ListMigrationTasksResp, error)
+	ListMigrationTasks(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*migration.ListMigrationsResp, error)
 
 	PauseMigrationTask(ctx context.Context, clusterId string, taskId string, body *map[string]interface{}) (map[string]interface{}, error)
 
@@ -495,8 +495,8 @@ func (d *ClientDelegate) CancelMigrationPrecheck(ctx context.Context, clusterId 
 	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) CancelMigrationTask(ctx context.Context, clusterId string, taskId string) (*migration.MigrationTask, error) {
-	res, h, err := d.mc.MigrationAPI.MigrationServiceCancelTask(ctx, clusterId, taskId).Execute()
+func (d *ClientDelegate) CancelMigrationTask(ctx context.Context, clusterId string, taskId string) (*migration.Migration, error) {
+	res, h, err := d.mc.MigrationAPI.MigrationServiceCancelMigration(ctx, clusterId, taskId).Execute()
 	return res, parseError(err, h)
 }
 
@@ -509,8 +509,8 @@ func (d *ClientDelegate) CreateMigrationPrecheck(ctx context.Context, clusterId 
 	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) CreateMigrationTask(ctx context.Context, clusterId string, body *migration.MigrationServiceCreateTaskBody) (*migration.MigrationTask, error) {
-	r := d.mc.MigrationAPI.MigrationServiceCreateTask(ctx, clusterId)
+func (d *ClientDelegate) CreateMigrationTask(ctx context.Context, clusterId string, body *migration.MigrationServiceCreateMigrationBody) (*migration.Migration, error) {
+	r := d.mc.MigrationAPI.MigrationServiceCreateMigration(ctx, clusterId)
 	if body != nil {
 		r = r.Body(*body)
 	}
@@ -523,13 +523,13 @@ func (d *ClientDelegate) GetMigrationPrecheck(ctx context.Context, clusterId str
 	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) GetMigrationTask(ctx context.Context, clusterId string, taskId string) (*migration.MigrationTask, error) {
-	res, h, err := d.mc.MigrationAPI.MigrationServiceGetTask(ctx, clusterId, taskId).Execute()
+func (d *ClientDelegate) GetMigrationTask(ctx context.Context, clusterId string, taskId string) (*migration.Migration, error) {
+	res, h, err := d.mc.MigrationAPI.MigrationServiceGetMigration(ctx, clusterId, taskId).Execute()
 	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) ListMigrationTasks(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*migration.ListMigrationTasksResp, error) {
-	r := d.mc.MigrationAPI.MigrationServiceListTasks(ctx, clusterId)
+func (d *ClientDelegate) ListMigrationTasks(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*migration.ListMigrationsResp, error) {
+	r := d.mc.MigrationAPI.MigrationServiceListMigrations(ctx, clusterId)
 	if pageToken != nil {
 		r = r.PageToken(*pageToken)
 	}
@@ -548,7 +548,7 @@ func (d *ClientDelegate) PauseMigrationTask(ctx context.Context, clusterId strin
 	if body != nil {
 		payload = *body
 	}
-	res, h, err := d.mc.MigrationAPI.MigrationServicePauseTask(ctx, clusterId, taskId).Body(payload).Execute()
+	res, h, err := d.mc.MigrationAPI.MigrationServicePauseMigration(ctx, clusterId, taskId).Body(payload).Execute()
 	return res, parseError(err, h)
 }
 
@@ -557,7 +557,7 @@ func (d *ClientDelegate) ResumeMigrationTask(ctx context.Context, clusterId stri
 	if body != nil {
 		payload = *body
 	}
-	res, h, err := d.mc.MigrationAPI.MigrationServiceResumeTask(ctx, clusterId, taskId).Body(payload).Execute()
+	res, h, err := d.mc.MigrationAPI.MigrationServiceResumeMigration(ctx, clusterId, taskId).Body(payload).Execute()
 	return res, parseError(err, h)
 }
 

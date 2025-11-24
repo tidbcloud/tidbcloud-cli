@@ -17,7 +17,6 @@ package migration
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/juju/errors"
@@ -27,11 +26,10 @@ import (
 )
 
 var migrationInputDescription = map[string]string{
-	flag.DisplayName:       "Optional display name for the migration task/precheck.",
-	flag.MigrationSources:  "Sources definition in JSON. Use \"ticloud serverless migration template --type sources\" as a reference.",
-	flag.MigrationTarget:   "Target definition in JSON. Use \"ticloud serverless migration template --type target\" as a reference.",
-	flag.MigrationMode:     "Migration mode, one of MODE_ALL or MODE_INCREMENTAL. Leave blank to use the server default.",
-	flag.MigrationFullData: "Whether to migrate all user data. Enter true, false, or leave blank to use the server default.",
+	flag.DisplayName:      "Display name for the migration.",
+	flag.MigrationSources: "Sources definition in JSON. Use \"ticloud serverless migration template --type sources\" as a reference.",
+	flag.MigrationTarget:  "Target definition in JSON. Use \"ticloud serverless migration template --type target\" as a reference.",
+	flag.MigrationMode:    "Migration mode, one of MODE_ALL or MODE_INCREMENTAL.",
 }
 
 func parseMigrationSources(value string) ([]pkgmigration.Source, error) {
@@ -49,22 +47,22 @@ func parseMigrationSources(value string) ([]pkgmigration.Source, error) {
 	return sources, nil
 }
 
-func parseMigrationTarget(value string) (*pkgmigration.Target, error) {
+func parseMigrationTarget(value string) (pkgmigration.Target, error) {
 	trimmed := strings.TrimSpace(value)
 	if trimmed == "" {
-		return nil, nil
+		return pkgmigration.Target{}, errors.New("target is required, use --target or provide it in interactive mode")
 	}
 	var target pkgmigration.Target
 	if err := json.Unmarshal([]byte(trimmed), &target); err != nil {
-		return nil, errors.Annotate(err, "invalid target JSON")
+		return pkgmigration.Target{}, errors.Annotate(err, "invalid target JSON")
 	}
-	return &target, nil
+	return target, nil
 }
 
-func parseMigrationMode(value string) (*pkgmigration.TaskMode, error) {
+func parseMigrationMode(value string) (pkgmigration.TaskMode, error) {
 	trimmed := strings.TrimSpace(value)
 	if trimmed == "" {
-		return nil, nil
+		return "", errors.New("mode is required, use --mode or provide it in interactive mode")
 	}
 	normalized := strings.ToUpper(trimmed)
 	if !strings.HasPrefix(normalized, "MODE_") {
@@ -73,22 +71,10 @@ func parseMigrationMode(value string) (*pkgmigration.TaskMode, error) {
 	mode := pkgmigration.TaskMode(normalized)
 	for _, allowed := range pkgmigration.AllowedTaskModeEnumValues {
 		if mode == allowed {
-			return &mode, nil
+			return mode, nil
 		}
 	}
-	return nil, errors.Errorf("invalid mode %q, allowed values: %s", value, strings.Join(taskModeValues(), ", "))
-}
-
-func parseFullData(value string) (*bool, error) {
-	trimmed := strings.TrimSpace(value)
-	if trimmed == "" {
-		return nil, nil
-	}
-	boolValue, err := strconv.ParseBool(trimmed)
-	if err != nil {
-		return nil, errors.Annotate(err, "invalid boolean value for full-data")
-	}
-	return &boolValue, nil
+	return "", errors.Errorf("invalid mode %q, allowed values: %s", value, strings.Join(taskModeValues(), ", "))
 }
 
 func taskModeValues() []string {

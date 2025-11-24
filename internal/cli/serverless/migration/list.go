@@ -45,7 +45,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 	var cmd = &cobra.Command{
 		Use:     "list",
-		Short:   "List migration tasks",
+		Short:   "List migrations",
 		Aliases: []string{"ls"},
 		Args:    cobra.NoArgs,
 		Example: fmt.Sprintf(`  List migrations in interactive mode:
@@ -106,9 +106,9 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 
 			columns := []output.Column{"ID", "Name", "Mode", "State", "CreatedAt"}
 			var rows []output.Row
-			for _, task := range resp.Tasks {
-				id := safeString(task.Id)
-				name := safeString(task.Name)
+			for _, task := range resp.Migrations {
+				id := safeString(task.MigrationId)
+				name := safeString(task.DisplayName)
 				if name == "" {
 					name = id
 				}

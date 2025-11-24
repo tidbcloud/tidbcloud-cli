@@ -1052,33 +1052,33 @@ func GetSelectedMigrationTask(ctx context.Context, clusterID string, pageSize in
 	if err != nil {
 		return nil, errors.Trace(err)
 	}
-	appendMigrationTaskItems := func(tasks []migration.MigrationTask) {
+	appendMigrationTaskItems := func(tasks []migration.Migration) {
 		for _, item := range tasks {
-			if item.Id == nil {
+				if item.MigrationId == nil {
 				continue
 			}
-			name := *item.Id
-			if item.Name != nil && *item.Name != "" {
-				name = *item.Name
+				name := *item.MigrationId
+				if item.DisplayName != nil && *item.DisplayName != "" {
+					name = *item.DisplayName
 			}
 			state := ""
 			if item.State != nil {
 				state = string(*item.State)
 			}
 			items = append(items, &MigrationTask{
-				ID:    *item.Id,
+					ID:    *item.MigrationId,
 				Name:  name,
 				State: state,
 			})
 		}
 	}
-	appendMigrationTaskItems(resp.Tasks)
+		appendMigrationTaskItems(resp.Migrations)
 	for resp.NextPageToken != nil && *resp.NextPageToken != "" {
 		resp, err = client.ListMigrationTasks(ctx, clusterID, &pageSizeInt32, resp.NextPageToken, nil)
 		if err != nil {
 			return nil, errors.Trace(err)
 		}
-		appendMigrationTaskItems(resp.Tasks)
+			appendMigrationTaskItems(resp.Migrations)
 	}
 
 	if len(items) == 0 {

@@ -30,7 +30,6 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 		flag.MigrationSources,
 		flag.MigrationTarget,
 		flag.MigrationMode,
-		flag.MigrationFullData,
 	}
 }
 
@@ -38,6 +37,9 @@ func (c CreateOpts) RequiredFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.MigrationSources,
+		flag.DisplayName,
+		flag.MigrationTarget,
+		flag.MigrationMode,
 	}
 }
 
@@ -65,12 +67,12 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	var cmd = &cobra.Command{
 		Use:   "create",
-		Short: "Create a migration task",
+		Short: "Create a migration",
 		Args:  cobra.NoArgs,
-		Example: fmt.Sprintf(`  Create a migration task in interactive mode:
+		Example: fmt.Sprintf(`  Create a migration in interactive mode:
   $ %[1]s serverless migration create
 
-  Create a migration task in non-interactive mode:
+  Create a migration in non-interactive mode:
   $ %[1]s serverless migration create -c <cluster-id> --sources '<sources-json>' --target '<target-json>'
 
   Run migration precheck only with shared inputs:
@@ -85,8 +87,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			var clusterID, name, sourcesStr, targetStr, modeStr, fullDataStr string
-			var fullDataPtr *bool
+			var clusterID, name, sourcesStr, targetStr, modeStr string
 			precheckOnly, err := cmd.Flags().GetBool(flag.MigrationPrecheckOnly)
 			if err != nil {
 				return errors.Trace(err)
@@ -105,7 +106,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				inputs := []string{flag.DisplayName, flag.MigrationSources, flag.MigrationTarget, flag.MigrationMode, flag.MigrationFullData}
+				inputs := []string{flag.DisplayName, flag.MigrationSources, flag.MigrationTarget, flag.MigrationMode}
 				textInput, err := ui.InitialInputModel(inputs, migrationInputDescription)
 				if err != nil {
 					return err
@@ -114,11 +115,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				sourcesStr = textInput.Inputs[1].Value()
 				targetStr = textInput.Inputs[2].Value()
 				modeStr = textInput.Inputs[3].Value()
-				fullDataStr = textInput.Inputs[4].Value()
-				fullDataPtr, err = parseFullData(fullDataStr)
-				if err != nil {
-					return err
-				}
 			} else {
 				var err error
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
@@ -141,15 +137,11 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-				if cmd.Flags().Changed(flag.MigrationFullData) {
-					fullDataVal, err := cmd.Flags().GetBool(flag.MigrationFullData)
-					if err != nil {
-						return errors.Trace(err)
-					}
-					fullDataPtr = &fullDataVal
-				}
 			}
 
+			if strings.TrimSpace(name) == "" {
+				return errors.New("display name is required")
+			}
 			sources, err := parseMigrationSources(sourcesStr)
 			if err != nil {
 				return err
@@ -163,27 +155,17 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			createBody := &pkgmigration.MigrationServiceCreateTaskBody{
-				Sources: sources,
+			createBody := &pkgmigration.MigrationServiceCreateMigrationBody{
+				DisplayName: name,
+				Sources:     sources,
+				Target:      target,
+				Mode:        mode,
 			}
 			precheckBody := &pkgmigration.MigrationServicePrecheckBody{
-				Sources: sources,
-			}
-			if name != "" {
-				createBody.Name = &name
-				precheckBody.Name = &name
-			}
-			if target != nil {
-				createBody.Target = target
-				precheckBody.Target = target
-			}
-			if mode != nil {
-				createBody.Mode = mode
-				precheckBody.Mode = mode
-			}
-			if fullDataPtr != nil {
-				createBody.FullDataMigration = fullDataPtr
-				precheckBody.FullDataMigration = fullDataPtr
+				DisplayName: name,
+				Sources:     sources,
+				Target:      target,
+				Mode:        mode,
 			}
 
 			if precheckOnly {
@@ -195,26 +177,23 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			taskID := ""
-			if resp.Id != nil {
-				taskID = *resp.Id
-			} else if resp.Name != nil {
-				taskID = *resp.Name
+			taskID := ptrString(resp.MigrationId)
+			if taskID == "" {
+				taskID = ptrString(resp.DisplayName)
 			}
 			if taskID == "" {
 				taskID = "<unknown>"
 			}
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("migration task %s created", taskID))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("migration %s created", taskID))
 			return nil
 		},
 	}
 
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the target cluster.")
-	cmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "Display name for the migration task.")
+	cmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "Display name for the migration.")
 	cmd.Flags().String(flag.MigrationSources, "", "Sources definition in JSON. Use \"ticloud serverless migration template --type sources\" for a template.")
 	cmd.Flags().String(flag.MigrationTarget, "", "Target definition in JSON. Use \"ticloud serverless migration template --type target\" for a template.")
 	cmd.Flags().String(flag.MigrationMode, "", fmt.Sprintf("Migration mode, one of %v.", taskModeValues()))
-	cmd.Flags().Bool(flag.MigrationFullData, false, "Migrate all user data (equivalent to enabling every non-system database).")
 	cmd.Flags().Bool(flag.MigrationPrecheckOnly, false, "Run a migration precheck with the provided inputs and exit without creating a task.")
 
 	return cmd
@@ -227,10 +206,10 @@ func runMigrationPrecheck(ctx context.Context, client cloud.TiDBCloudClient, clu
 	if err != nil {
 		return errors.Trace(err)
 	}
-	if resp.Id == nil || *resp.Id == "" {
+	if resp.PrecheckId == nil || *resp.PrecheckId == "" {
 		return errors.New("precheck created but ID is empty")
 	}
-	precheckID := *resp.Id
+	precheckID := *resp.PrecheckId
 	fmt.Fprintf(h.IOStreams.Out, "migration precheck %s created, polling results...\n", precheckID)
 
 	ticker := time.NewTicker(precheckPollInterval)
@@ -290,7 +269,7 @@ func printPrecheckSummary(id, status string, result *pkgmigration.MigrationPrech
 		rows = append(rows, output.Row{
 			precheckItemType(item.Type),
 			ptrString(item.Status),
-			ptrString(item.Desc),
+			ptrString(item.Description),
 			ptrString(item.Reason),
 			ptrString(item.Solution),
 		})
