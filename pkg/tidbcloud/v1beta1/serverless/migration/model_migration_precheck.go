@@ -30,7 +30,7 @@ type MigrationPrecheck struct {
 	// Number of successful items.
 	SuccessCnt *int32 `json:"successCnt,omitempty"`
 	// Overall status of the precheck.
-	Status *string `json:"status,omitempty"`
+	Status *MigrationPrecheckStatus `json:"status,omitempty"`
 	// Details for each precheck item.
 	Items                []PrecheckItem `json:"items,omitempty"`
 	AdditionalProperties map[string]interface{}
@@ -216,9 +216,9 @@ func (o *MigrationPrecheck) SetSuccessCnt(v int32) {
 }
 
 // GetStatus returns the Status field value if set, zero value otherwise.
-func (o *MigrationPrecheck) GetStatus() string {
+func (o *MigrationPrecheck) GetStatus() MigrationPrecheckStatus {
 	if o == nil || IsNil(o.Status) {
-		var ret string
+		var ret MigrationPrecheckStatus
 		return ret
 	}
 	return *o.Status
@@ -226,7 +226,7 @@ func (o *MigrationPrecheck) GetStatus() string {
 
 // GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *MigrationPrecheck) GetStatusOk() (*string, bool) {
+func (o *MigrationPrecheck) GetStatusOk() (*MigrationPrecheckStatus, bool) {
 	if o == nil || IsNil(o.Status) {
 		return nil, false
 	}
@@ -242,8 +242,8 @@ func (o *MigrationPrecheck) HasStatus() bool {
 	return false
 }
 
-// SetStatus gets a reference to the given string and assigns it to the Status field.
-func (o *MigrationPrecheck) SetStatus(v string) {
+// SetStatus gets a reference to the given MigrationPrecheckStatus and assigns it to the Status field.
+func (o *MigrationPrecheck) SetStatus(v MigrationPrecheckStatus) {
 	o.Status = &v
 }
 

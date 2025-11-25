@@ -124,7 +124,6 @@ const (
 	MigrationSources       string = "sources"
 	MigrationTarget        string = "target"
 	MigrationMode          string = "mode"
-	MigrationFullData      string = "full-data"
 	MigrationTemplateType  string = "type"
 	MigrationPrecheckOnly  string = "precheck-only"
 )

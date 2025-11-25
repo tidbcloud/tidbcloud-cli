@@ -676,14 +676,14 @@ components:
           solutionDocUrl: solutionDocUrl
           description: description
           type: "{}"
-          status: status
+          status: "{}"
         - reason: reason
           solution: solution
           solutionDocUrl: solutionDocUrl
           description: description
           type: "{}"
-          status: status
-        status: status
+          status: "{}"
+        status: "{}"
       properties:
         precheckId:
           description: The ID of the precheck.
@@ -710,9 +710,10 @@ components:
           readOnly: true
           type: integer
         status:
+          allOf:
+          - $ref: '#/components/schemas/MigrationPrecheck.Status'
           description: Overall status of the precheck.
-          readOnly: true
-          type: string
+          type: object
         items:
           description: Details for each precheck item.
           items:
@@ -720,6 +721,20 @@ components:
           readOnly: true
           type: array
       type: object
+    MigrationPrecheck.Status:
+      description: |2-
+         - RUNNING: Precheck is in progress.
+         - FINISHED: Precheck finished successfully.
+         - PENDING: Precheck is pending.
+         - FAILED: Precheck failed.
+         - CANCELED: Precheck is canceled.
+      enum:
+      - RUNNING
+      - FINISHED
+      - PENDING
+      - FAILED
+      - CANCELED
+      type: string
     MigrationService.CreateMigrationBody:
       properties:
         displayName:
@@ -785,16 +800,17 @@ components:
         solutionDocUrl: solutionDocUrl
         description: description
         type: "{}"
-        status: status
+        status: "{}"
       properties:
         description:
           description: Human-readable description of the check.
           readOnly: true
           type: string
         status:
-          description: "Status of this check (e.g., SUCCESS, FAILED, WARN)."
-          readOnly: true
-          type: string
+          allOf:
+          - $ref: '#/components/schemas/PrecheckItem.Status'
+          description: Status of this check.
+          type: object
         solution:
           description: Suggested solution if the check failed or warned.
           readOnly: true
@@ -813,6 +829,16 @@ components:
           description: The type of precheck.
           type: object
       type: object
+    PrecheckItem.Status:
+      description: |2-
+         - SUCCESS: Check passed successfully.
+         - WARNING: Check resulted in a warning.
+         - FAILED: Check failed.
+      enum:
+      - SUCCESS
+      - WARNING
+      - FAILED
+      type: string
     PrecheckItemType:
       description: |-
         Types of prechecks performed before starting a migration.

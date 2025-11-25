@@ -17,10 +17,12 @@ model_list_migrations_resp.go
 model_load_detail.go
 model_migration.go
 model_migration_precheck.go
+model_migration_precheck_status.go
 model_migration_service_create_migration_body.go
 model_migration_service_precheck_body.go
 model_migration_state.go
 model_precheck_item.go
+model_precheck_item_status.go
 model_precheck_item_type.go
 model_route_rule.go
 model_route_rule_source.go

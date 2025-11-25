@@ -21,8 +21,8 @@ var _ MappedNullable = &PrecheckItem{}
 type PrecheckItem struct {
 	// Human-readable description of the check.
 	Description *string `json:"description,omitempty"`
-	// Status of this check (e.g., SUCCESS, FAILED, WARN).
-	Status *string `json:"status,omitempty"`
+	// Status of this check.
+	Status *PrecheckItemStatus `json:"status,omitempty"`
 	// Suggested solution if the check failed or warned.
 	Solution *string `json:"solution,omitempty"`
 	// Reason for the failure or warning.
@@ -86,9 +86,9 @@ func (o *PrecheckItem) SetDescription(v string) {
 }
 
 // GetStatus returns the Status field value if set, zero value otherwise.
-func (o *PrecheckItem) GetStatus() string {
+func (o *PrecheckItem) GetStatus() PrecheckItemStatus {
 	if o == nil || IsNil(o.Status) {
-		var ret string
+		var ret PrecheckItemStatus
 		return ret
 	}
 	return *o.Status
@@ -96,7 +96,7 @@ func (o *PrecheckItem) GetStatus() string {
 
 // GetStatusOk returns a tuple with the Status field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PrecheckItem) GetStatusOk() (*string, bool) {
+func (o *PrecheckItem) GetStatusOk() (*PrecheckItemStatus, bool) {
 	if o == nil || IsNil(o.Status) {
 		return nil, false
 	}
@@ -112,8 +112,8 @@ func (o *PrecheckItem) HasStatus() bool {
 	return false
 }
 
-// SetStatus gets a reference to the given string and assigns it to the Status field.
-func (o *PrecheckItem) SetStatus(v string) {
+// SetStatus gets a reference to the given PrecheckItemStatus and assigns it to the Status field.
+func (o *PrecheckItem) SetStatus(v PrecheckItemStatus) {
 	o.Status = &v
 }
 

@@ -717,9 +717,13 @@
           "readOnly": true
         },
         "status": {
-          "type": "string",
           "description": "Overall status of the precheck.",
-          "readOnly": true
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/MigrationPrecheck.Status"
+            }
+          ]
         },
         "items": {
           "type": "array",
@@ -731,6 +735,11 @@
           "readOnly": true
         }
       }
+    },
+    "MigrationPrecheck.Status": {
+      "type": "string",
+      "enum": ["RUNNING", "FINISHED", "PENDING", "FAILED", "CANCELED"],
+      "description": " - RUNNING: Precheck is in progress.\n - FINISHED: Precheck finished successfully.\n - PENDING: Precheck is pending.\n - FAILED: Precheck failed.\n - CANCELED: Precheck is canceled."
     },
     "MigrationService.CreateMigrationBody": {
       "type": "object",
@@ -817,9 +826,13 @@
           "readOnly": true
         },
         "status": {
-          "type": "string",
-          "description": "Status of this check (e.g., SUCCESS, FAILED, WARN).",
-          "readOnly": true
+          "description": "Status of this check.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/PrecheckItem.Status"
+            }
+          ]
         },
         "solution": {
           "type": "string",
@@ -846,6 +859,11 @@
           ]
         }
       }
+    },
+    "PrecheckItem.Status": {
+      "type": "string",
+      "enum": ["SUCCESS", "WARNING", "FAILED"],
+      "description": " - SUCCESS: Check passed successfully.\n - WARNING: Check resulted in a warning.\n - FAILED: Check failed."
     },
     "PrecheckItemType": {
       "type": "string",

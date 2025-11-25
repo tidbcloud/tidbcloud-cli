@@ -148,7 +148,7 @@ func runMigrationPrecheck(ctx context.Context, client cloud.TiDBCloudClient, clu
 
 	ticker := time.NewTicker(precheckPollInterval)
 	defer ticker.Stop()
-	var lastStatus string
+	var lastStatus pkgmigration.MigrationPrecheckStatus
 	for {
 		select {
 		case <-ctx.Done():
@@ -158,21 +158,19 @@ func runMigrationPrecheck(ctx context.Context, client cloud.TiDBCloudClient, clu
 			if err != nil {
 				return errors.Trace(err)
 			}
-			status := strings.ToUpper(aws.ToString(result.Status))
-			if status == "" {
-				status = "PENDING"
-			}
+			status := precheckStatusOrDefault(result.Status)
 			if status != lastStatus {
 				fmt.Fprintf(h.IOStreams.Out, "precheck %s status: %s\n", precheckID, status)
 				lastStatus = status
 			}
-			if isPrecheckPending(status) {
+			if isPrecheckUnfinished(status) {
 				continue
 			}
 			if err := printPrecheckSummary(precheckID, status, result, h); err != nil {
 				return err
 			}
-			if strings.EqualFold(status, "FAILED") || aws.ToInt32(result.FailedCnt) > 0 {
+			if status == pkgmigration.MIGRATIONPRECHECKSTATUS_FAILED {
+				fmt.Fprintln(h.IOStreams.Out, color.RedString("migration precheck %s failed", precheckID))
 				return errors.New("migration precheck failed")
 			}
 			fmt.Fprintln(h.IOStreams.Out, color.GreenString("migration precheck %s passed", precheckID))
@@ -181,16 +179,24 @@ func runMigrationPrecheck(ctx context.Context, client cloud.TiDBCloudClient, clu
 	}
 }
 
-func isPrecheckPending(status string) bool {
+func precheckStatusOrDefault(value *pkgmigration.MigrationPrecheckStatus) pkgmigration.MigrationPrecheckStatus {
+	if value == nil || *value == "" {
+		return pkgmigration.MIGRATIONPRECHECKSTATUS_PENDING
+	}
+	return *value
+}
+
+func isPrecheckUnfinished(status pkgmigration.MigrationPrecheckStatus) bool {
 	switch status {
-	case "PENDING", "RUNNING", "PROCESSING", "IN_PROGRESS", "":
+	case pkgmigration.MIGRATIONPRECHECKSTATUS_PENDING,
+		pkgmigration.MIGRATIONPRECHECKSTATUS_RUNNING:
 		return true
 	default:
 		return false
 	}
 }
 
-func printPrecheckSummary(id, status string, result *pkgmigration.MigrationPrecheck, h *internal.Helper) error {
+func printPrecheckSummary(id string, status pkgmigration.MigrationPrecheckStatus, result *pkgmigration.MigrationPrecheck, h *internal.Helper) error {
 	fmt.Fprintf(h.IOStreams.Out, "precheck %s finished with status %s\n", id, status)
 	fmt.Fprintf(h.IOStreams.Out, "Total: %d, Success: %d, Warn: %d, Failed: %d\n",
 		aws.ToInt32(result.Total), aws.ToInt32(result.SuccessCnt), aws.ToInt32(result.WarnCnt), aws.ToInt32(result.FailedCnt))
@@ -200,13 +206,24 @@ func printPrecheckSummary(id, status string, result *pkgmigration.MigrationPrech
 	columns := []output.Column{"Type", "Status", "Description", "Reason", "Solution"}
 	rows := make([]output.Row, 0, len(result.Items))
 	for _, item := range result.Items {
+		if !shouldPrintPrecheckItem(item.Status) {
+			continue
+		}
+		var status string
+		if item.Status != nil {
+			status = string(*item.Status)
+		}
 		rows = append(rows, output.Row{
 			precheckItemType(item.Type),
-			aws.ToString(item.Status),
+			status,
 			aws.ToString(item.Description),
 			aws.ToString(item.Reason),
 			aws.ToString(item.Solution),
 		})
+	}
+	if len(rows) == 0 {
+		fmt.Fprintln(h.IOStreams.Out, "No warning or failure details returned.")
+		return nil
 	}
 	return output.PrintHumanTable(h.IOStreams.Out, columns, rows)
 }
@@ -216,4 +233,20 @@ func precheckItemType(value *pkgmigration.PrecheckItemType) string {
 		return ""
 	}
 	return string(*value)
+}
+
+// shouldPrintPrecheckItem reports whether a precheck item should be shown to users.
+// Currently only WARNING and FAILED statuses surface because SUCCESS does not
+// provide actionable information.
+func shouldPrintPrecheckItem(status *pkgmigration.PrecheckItemStatus) bool {
+	if status == nil {
+		return false
+	}
+	switch *status {
+	case pkgmigration.PRECHECKITEMSTATUS_WARNING,
+		pkgmigration.PRECHECKITEMSTATUS_FAILED:
+		return true
+	default:
+		return false
+	}
 }
