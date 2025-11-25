@@ -13,149 +13,138 @@ import (
 )
 
 const (
-	migrationSourcesTemplateWithExplain = `[
-    {
-        // Required: source database type. Supported: SOURCE_TYPE_MYSQL, SOURCE_TYPE_ALICLOUD_RDS_MYSQL
-        "sourceType": "SOURCE_TYPE_MYSQL",
-        "connProfile": {
-            // Optional connection type, PUBLIC or PRIVATE_LINK
-            "connType": "PUBLIC",
-            "host": "10.0.0.2",
-            "port": 3306,
-            "user": "dm_sync_user",
-            "password": "Passw0rd!",
-            // Optional when using private link
-            "endpointId": "pl-xxxxxxxx",
-            "security": {
-                // Optional TLS materials encoded in Base64
-                "sslCaContent": "<base64-of-ca.pem>",
-                "sslCertContent": "<base64-of-client-cert.pem>",
-                "sslKeyContent": "<base64-of-client-key.pem>",
-                "certAllowedCn": ["client-cn"]
-            }
-        },
-        // Optional block/allow rules to whitelist schemas/tables
-        "baRules": {
-            "doDbs": ["app_db"],
-            "doTables": [
-                {"schema": "app_db", "table": "orders"},
-                {"schema": "app_db", "table": "customers"}
-            ]
-        },
-        // Optional route rules for renaming schemas/tables
-        "routeRules": [
-            {
-                "sourceTable": {
-                    "schemaPattern": "app_db",
-                    "tablePattern": "orders"
-                },
-                "targetTable": {
-                    "schema": "app_db",
-                    "table": "orders_copy"
+	migrationDefinitionAllTemplate = `{
+    // Required migration mode. Use "ALL" for full + incremental.
+    "mode": "ALL",
+    // Target TiDB Cloud user credentials used by the migration task
+    "target": {
+        "user": "migration_user",
+        "password": "Passw0rd!"
+    },
+    // List at least one migration source
+    "sources": [
+        {
+            // Required: source database type
+            "sourceType": "SOURCE_TYPE_MYSQL",
+            "connProfile": {
+                // Optional connection type, PUBLIC or PRIVATE_LINK
+                "connType": "PUBLIC",
+                "host": "10.0.0.2",
+                "port": 3306,
+                "user": "dm_sync_user",
+                "password": "Passw0rd!",
+                // Optional fields below are needed only for private link or TLS
+                "endpointId": "pl-xxxxxxxx",
+                "security": {
+                    // TLS materials must be Base64 encoded
+                    "sslCaContent": "<base64-of-ca.pem>",
+                    "sslCertContent": "<base64-of-client-cert.pem>",
+                    "sslKeyContent": "<base64-of-client-key.pem>",
+                    "certAllowedCn": ["client-cn"]
                 }
-            }
-        ],
-        // Optional start position for incremental sync. Provide binlogName+binlogPos or binlogGtid
-        "binlogName": "mysql-bin.000001",
-        "binlogPos": 4,
-        "binlogGtid": "3E11FA47-71CA-11E1-9E33-C80AA9429562:1-12345"
-    }
- ]`
-
-	migrationSourcesTemplate = `[
-    {
-        "sourceType": "SOURCE_TYPE_MYSQL",
-        "connProfile": {
-            "connType": "PUBLIC",
-            "host": "10.0.0.2",
-            "port": 3306,
-            "user": "dm_sync_user",
-            "password": "Passw0rd!"
-        },
-        "baRules": {
-            "doDbs": ["app_db"],
-            "doTables": [{"schema": "app_db", "table": "orders"}]
-        },
-        "routeRules": [
-            {
-                "sourceTable": {"schemaPattern": "app_db", "tablePattern": "orders"},
-                "targetTable": {"schema": "app_db", "table": "orders_copy"}
-            }
-        ]
-    }
- ]`
-
-	migrationTargetTemplateWithExplain = `{
-    // Target TiDB Cloud user used by the migration task
-    "user": "migration_user",
-    // Password corresponding to the target user
-    "password": "Passw0rd!"
+            },
+            // Optional block/allow rules to control synced schemas/tables
+            "baRules": {
+                "doDbs": ["app_db"],
+                "doTables": [
+                    {"schema": "app_db", "table": "orders"},
+                    {"schema": "app_db", "table": "customers"}
+                ]
+            },
+            // Optional route rules to rename objects during migration
+            "routeRules": [
+                {
+                    "sourceTable": {
+                        "schemaPattern": "app_db",
+                        "tablePattern": "orders"
+                    },
+                    "targetTable": {
+                        "schema": "app_db",
+                        "table": "orders_copy"
+                    }
+                }
+            ],
+            // Optional start position for incremental sync (binlog position or GTID)
+            "binlogName": "mysql-bin.000001",
+            "binlogPos": 4,
+            "binlogGtid": "3E11FA47-71CA-11E1-9E33-C80AA9429562:1-12345"
+        }
+    ]
 }`
 
-	migrationTargetTemplate = `{
-    "user": "migration_user",
-    "password": "Passw0rd!"
+	migrationDefinitionIncrementalTemplate = `{
+    // Incremental-only mode keeps the source and target in sync
+    "mode": "INCREMENTAL",
+    "target": {
+        "user": "migration_user",
+        "password": "Passw0rd!"
+    },
+    "sources": [
+        {
+            "sourceType": "SOURCE_TYPE_MYSQL",
+            "connProfile": {
+                "connType": "PUBLIC",
+                "host": "10.0.0.2",
+                "port": 3306,
+                "user": "dm_sync_user",
+                "password": "Passw0rd!"
+            },
+            // Binlog coordinates are usually required when starting from existing data
+            "binlogName": "mysql-bin.000777",
+            "binlogPos": 12345,
+            "binlogGtid": "3E11FA47-71CA-11E1-9E33-C80AA9429562:1-12345"
+        }
+    ]
 }`
 )
 
+type templateVariant struct {
+	heading string
+	body    string
+}
+
+var allowedTemplateModes = []string{"all", "incremental"}
+
+var definitionTemplates = map[string]templateVariant{
+	"all": {
+		heading: "Definition template (mode = ALL)",
+		body:    migrationDefinitionAllTemplate,
+	},
+	"incremental": {
+		heading: "Definition template (mode = INCREMENTAL)",
+		body:    migrationDefinitionIncrementalTemplate,
+	},
+}
+
 func TemplateCmd(h *internal.Helper) *cobra.Command {
-	var cmd = &cobra.Command{
-		Use:   "template",
-		Short: "Show migration JSON templates",
-		Args:  cobra.NoArgs,
-		Example: fmt.Sprintf(`  Show all migration templates:
-  $ %[1]s serverless migration template
-
-  Show the sources template with explanations:
-  $ %[1]s serverless migration template --type sources --explain`, config.CliName),
+	cmd := &cobra.Command{
+		Use:     "template",
+		Short:   "Show migration JSON templates",
+		Args:    cobra.NoArgs,
+		Example: fmt.Sprintf("  Show the ALL mode migration template:\n  $ %[1]s serverless migration template --modetype all\n\n  Show the INCREMENTAL migration template:\n  $ %[1]s serverless migration template --modetype incremental\n", config.CliName),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			explain, err := cmd.Flags().GetBool(flag.Explain)
+			mode, err := cmd.Flags().GetString(flag.MigrationModeType)
 			if err != nil {
 				return err
 			}
-			templateType, err := cmd.Flags().GetString(flag.MigrationTemplateType)
-			if err != nil {
-				return err
-			}
-
-			return renderMigrationTemplate(h, strings.ToLower(templateType), explain)
+			return renderMigrationTemplate(h, strings.ToLower(mode))
 		},
 	}
 
-	cmd.Flags().Bool(flag.Explain, false, "Show template with inline explanations.")
-	cmd.Flags().String(flag.MigrationTemplateType, "", "Template type to show, one of [\"sources\", \"target\"]. Default prints both.")
+	cmd.Flags().String(flag.MigrationModeType, "", "Migration mode template to show, one of [\"all\", \"incremental\"].")
+	if err := cmd.MarkFlagRequired(flag.MigrationModeType); err != nil {
+		panic(err)
+	}
 	return cmd
 }
 
-func renderMigrationTemplate(h *internal.Helper, templateType string, explain bool) error {
-	switch templateType {
-	case "sources":
-		if explain {
-			fmt.Fprintln(h.IOStreams.Out, migrationSourcesTemplateWithExplain)
-		} else {
-			fmt.Fprintln(h.IOStreams.Out, migrationSourcesTemplate)
-		}
-	case "target":
-		if explain {
-			fmt.Fprintln(h.IOStreams.Out, migrationTargetTemplateWithExplain)
-		} else {
-			fmt.Fprintln(h.IOStreams.Out, migrationTargetTemplate)
-		}
-	case "":
-		fmt.Fprintln(h.IOStreams.Out, color.GreenString("Sources template:"))
-		if explain {
-			fmt.Fprintln(h.IOStreams.Out, migrationSourcesTemplateWithExplain)
-		} else {
-			fmt.Fprintln(h.IOStreams.Out, migrationSourcesTemplate)
-		}
-		fmt.Fprintln(h.IOStreams.Out, color.GreenString("Target template:"))
-		if explain {
-			fmt.Fprintln(h.IOStreams.Out, migrationTargetTemplateWithExplain)
-		} else {
-			fmt.Fprintln(h.IOStreams.Out, migrationTargetTemplate)
-		}
-	default:
-		return fmt.Errorf("unknown template type %q", templateType)
+func renderMigrationTemplate(h *internal.Helper, mode string) error {
+	variant, ok := definitionTemplates[mode]
+	if !ok {
+		return fmt.Errorf("unknown mode %q, allowed values: %s", mode, strings.Join(allowedTemplateModes, ", "))
 	}
+
+	fmt.Fprintln(h.IOStreams.Out, color.GreenString(variant.heading))
+	fmt.Fprintln(h.IOStreams.Out, variant.body)
 	return nil
 }

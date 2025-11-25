@@ -24,37 +24,36 @@ import (
 	pkgmigration "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/migration"
 )
 
-func parseMigrationSources(value string) ([]pkgmigration.Source, error) {
+func parseMigrationDefinition(value string) ([]pkgmigration.Source, pkgmigration.Target, pkgmigration.TaskMode, error) {
 	trimmed := strings.TrimSpace(value)
 	if trimmed == "" {
-		return nil, errors.New("sources is required; use --sources")
+		return nil, pkgmigration.Target{}, "", errors.New("migration definition is required; use --definition")
 	}
-	var sources []pkgmigration.Source
-	if err := json.Unmarshal([]byte(trimmed), &sources); err != nil {
-		return nil, errors.Annotate(err, "invalid sources JSON")
+	var payload struct {
+		Sources []pkgmigration.Source `json:"sources"`
+		Target  *pkgmigration.Target  `json:"target"`
+		Mode    string                `json:"mode"`
 	}
-	if len(sources) == 0 {
-		return nil, errors.New("sources must contain at least one entry")
+	if err := json.Unmarshal([]byte(trimmed), &payload); err != nil {
+		return nil, pkgmigration.Target{}, "", errors.Annotate(err, "invalid migration definition JSON")
 	}
-	return sources, nil
-}
-
-func parseMigrationTarget(value string) (pkgmigration.Target, error) {
-	trimmed := strings.TrimSpace(value)
-	if trimmed == "" {
-		return pkgmigration.Target{}, errors.New("target is required; use --target")
+	if len(payload.Sources) == 0 {
+		return nil, pkgmigration.Target{}, "", errors.New("migration definition must include at least one source")
 	}
-	var target pkgmigration.Target
-	if err := json.Unmarshal([]byte(trimmed), &target); err != nil {
-		return pkgmigration.Target{}, errors.Annotate(err, "invalid target JSON")
+	if payload.Target == nil {
+		return nil, pkgmigration.Target{}, "", errors.New("migration definition must include the target block")
 	}
-	return target, nil
+	mode, err := parseMigrationMode(payload.Mode)
+	if err != nil {
+		return nil, pkgmigration.Target{}, "", err
+	}
+	return payload.Sources, *payload.Target, mode, nil
 }
 
 func parseMigrationMode(value string) (pkgmigration.TaskMode, error) {
 	trimmed := strings.TrimSpace(value)
 	if trimmed == "" {
-		return "", errors.New("mode is required; use --mode")
+		return "", errors.New("mode is required in the migration definition")
 	}
 	normalized := strings.ToUpper(trimmed)
 	if !strings.HasPrefix(normalized, "MODE_") {

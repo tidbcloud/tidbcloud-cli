@@ -25,7 +25,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		Short: "Create a migration",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Create a migration:
-	  $ %[1]s serverless migration create -c <cluster-id> --display-name <name> --sources '<sources-json>' --target '<target-json>' --mode <mode>
+	  $ %[1]s serverless migration create -c <cluster-id> --display-name <name> --definition '<definition-json>'
 
 	  Run migration precheck only with shared inputs:
   $ %[1]s serverless migration create --precheck-only`, config.CliName),
@@ -51,15 +51,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
-			sourcesStr, err := cmd.Flags().GetString(flag.MigrationSources)
-			if err != nil {
-				return errors.Trace(err)
-			}
-			targetStr, err := cmd.Flags().GetString(flag.MigrationTarget)
-			if err != nil {
-				return errors.Trace(err)
-			}
-			modeStr, err := cmd.Flags().GetString(flag.MigrationMode)
+			definitionStr, err := cmd.Flags().GetString(flag.MigrationDefinition)
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -67,15 +59,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if strings.TrimSpace(name) == "" {
 				return errors.New("display name is required")
 			}
-			sources, err := parseMigrationSources(sourcesStr)
-			if err != nil {
-				return err
-			}
-			target, err := parseMigrationTarget(targetStr)
-			if err != nil {
-				return err
-			}
-			mode, err := parseMigrationMode(modeStr)
+			sources, target, mode, err := parseMigrationDefinition(definitionStr)
 			if err != nil {
 				return err
 			}
@@ -116,16 +100,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the target cluster.")
 	cmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "Display name for the migration.")
-	cmd.Flags().String(flag.MigrationSources, "", "Sources definition in JSON. Use \"ticloud serverless migration template --type sources\" for a template.")
-	cmd.Flags().String(flag.MigrationTarget, "", "Target definition in JSON. Use \"ticloud serverless migration template --type target\" for a template.")
-	cmd.Flags().String(flag.MigrationMode, "", fmt.Sprintf("Migration mode, one of %v.", taskModeValues()))
+	cmd.Flags().String(flag.MigrationDefinition, "", "Migration definition in JSON. Use \"ticloud serverless migration template --type definition\" for a template.")
 	cmd.Flags().Bool(flag.MigrationPrecheckOnly, false, "Run a migration precheck with the provided inputs and exit without creating a task.")
 
 	return cmd
 }
 
 func markCreateMigrationRequiredFlags(cmd *cobra.Command) error {
-	for _, fn := range []string{flag.ClusterID, flag.DisplayName, flag.MigrationSources, flag.MigrationTarget, flag.MigrationMode} {
+	for _, fn := range []string{flag.ClusterID, flag.DisplayName, flag.MigrationDefinition} {
 		if err := cmd.MarkFlagRequired(fn); err != nil {
 			return err
 		}
