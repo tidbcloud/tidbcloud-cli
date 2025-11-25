@@ -3,6 +3,7 @@ package migration
 import (
 	"context"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -25,7 +26,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		Short: "Create a migration",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Create a migration:
-	  $ %[1]s serverless migration create -c <cluster-id> --display-name <name> --definition '<definition-json>'
+	  $ %[1]s serverless migration create -c <cluster-id> --display-name <name> --config-file /path/to/config.json
 
 	  Run migration precheck only with shared inputs:
   $ %[1]s serverless migration create --precheck-only`, config.CliName),
@@ -51,10 +52,19 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
-			definitionStr, err := cmd.Flags().GetString(flag.MigrationDefinition)
+			configPath, err := cmd.Flags().GetString(flag.MigrationConfigFile)
 			if err != nil {
 				return errors.Trace(err)
 			}
+			configPath = strings.TrimSpace(configPath)
+			if configPath == "" {
+				return errors.New("config file path is required")
+			}
+			definitionBytes, err := os.ReadFile(configPath)
+			if err != nil {
+				return errors.Annotatef(err, "failed to read config file %q", configPath)
+			}
+			definitionStr := string(definitionBytes)
 
 			if strings.TrimSpace(name) == "" {
 				return errors.New("display name is required")
@@ -100,14 +110,14 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the target cluster.")
 	cmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "Display name for the migration.")
-	cmd.Flags().String(flag.MigrationDefinition, "", "Migration definition in JSON. Use \"ticloud serverless migration template --type definition\" for a template.")
+	cmd.Flags().String(flag.MigrationConfigFile, "", "Path to a migration config JSON file. Use \"ticloud serverless migration template --modetype <mode>\" to print templates.")
 	cmd.Flags().Bool(flag.MigrationPrecheckOnly, false, "Run a migration precheck with the provided inputs and exit without creating a task.")
 
 	return cmd
 }
 
 func markCreateMigrationRequiredFlags(cmd *cobra.Command) error {
-	for _, fn := range []string{flag.ClusterID, flag.DisplayName, flag.MigrationDefinition} {
+	for _, fn := range []string{flag.ClusterID, flag.DisplayName, flag.MigrationConfigFile} {
 		if err := cmd.MarkFlagRequired(fn); err != nil {
 			return err
 		}

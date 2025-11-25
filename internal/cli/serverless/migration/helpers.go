@@ -27,7 +27,7 @@ import (
 func parseMigrationDefinition(value string) ([]pkgmigration.Source, pkgmigration.Target, pkgmigration.TaskMode, error) {
 	trimmed := strings.TrimSpace(value)
 	if trimmed == "" {
-		return nil, pkgmigration.Target{}, "", errors.New("migration definition is required; use --definition")
+		return nil, pkgmigration.Target{}, "", errors.New("migration config is required; use --config-file")
 	}
 	var payload struct {
 		Sources []pkgmigration.Source `json:"sources"`

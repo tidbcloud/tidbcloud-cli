@@ -10,6 +10,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	pkgmigration "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/migration"
 )
 
 const (
@@ -24,10 +25,10 @@ const (
     // List at least one migration source
     "sources": [
         {
-            // Required: source database type
+            // Required: source database type. Supported values: SOURCE_TYPE_MYSQL, SOURCE_TYPE_ALICLOUD_RDS_MYSQL
             "sourceType": "SOURCE_TYPE_MYSQL",
             "connProfile": {
-                // Optional connection type, PUBLIC or PRIVATE_LINK
+                // Optional connection type. Supported values: PUBLIC, PRIVATE_LINK
                 "connType": "PUBLIC",
                 "host": "10.0.0.2",
                 "port": 3306,
@@ -35,6 +36,7 @@ const (
                 "password": "Passw0rd!",
                 // Optional fields below are needed only for private link or TLS
                 "endpointId": "pl-xxxxxxxx",
+                // optional TLS settings
                 "security": {
                     // TLS materials must be Base64 encoded
                     "sslCaContent": "<base64-of-ca.pem>",
@@ -43,7 +45,7 @@ const (
                     "certAllowedCn": ["client-cn"]
                 }
             },
-            // Optional block/allow rules to control synced schemas/tables
+            // Optional block/allow rules to control synced schemas/tables (mutually exclusive with routeRules)
             "baRules": {
                 "doDbs": ["app_db"],
                 "doTables": [
@@ -51,7 +53,59 @@ const (
                     {"schema": "app_db", "table": "customers"}
                 ]
             },
-            // Optional route rules to rename objects during migration
+            // Optional route rules to rename objects during migration (mutually exclusive with baRules)
+            "routeRules": [
+                {
+                    "sourceTable": {
+                        "schemaPattern": "app_db",
+                        "tablePattern": "orders"
+                    },
+                    "targetTable": {
+                        "schema": "app_db",
+                        "table": "orders_copy"
+                    }
+                }
+            ],
+        }
+    ]
+}`
+
+	migrationDefinitionIncrementalTemplate = `{
+    // Incremental-only mode keeps the source and target in sync
+    "mode": "INCREMENTAL",
+    "target": {
+        "user": "migration_user",
+        "password": "Passw0rd!"
+    },
+    "sources": [
+        {
+            // Required: source database type. Supported values: SOURCE_TYPE_MYSQL, SOURCE_TYPE_ALICLOUD_RDS_MYSQL
+            "sourceType": "SOURCE_TYPE_MYSQL",
+            "connProfile": {
+                // Optional connection type. Supported values: PUBLIC, PRIVATE_LINK
+                "connType": "PUBLIC",
+                "host": "10.0.0.2",
+                "port": 3306,
+                "user": "dm_sync_user",
+                "password": "Passw0rd!",
+                "endpointId": "pl-xxxxxxxx",
+                // optional TLS settings
+                "security": {
+                    // TLS materials must be Base64 encoded
+                    "sslCaContent": "<base64-of-ca.pem>",
+                    "sslCertContent": "<base64-of-client-cert.pem>",
+                    "sslKeyContent": "<base64-of-client-key.pem>",
+                    "certAllowedCn": ["client-cn"]
+                }
+            },
+            // Optional block/allow rules when only part of the data should be replicated (mutually exclusive with routeRules)
+            "baRules": {
+                "doDbs": ["app_db"],
+                "doTables": [
+                    {"schema": "app_db", "table": "orders"}
+                ]
+            },
+            // Optional route rule sample for remapping objects during incremental sync (mutually exclusive with baRules)
             "routeRules": [
                 {
                     "sourceTable": {
@@ -71,80 +125,87 @@ const (
         }
     ]
 }`
-
-	migrationDefinitionIncrementalTemplate = `{
-    // Incremental-only mode keeps the source and target in sync
-    "mode": "INCREMENTAL",
-    "target": {
-        "user": "migration_user",
-        "password": "Passw0rd!"
-    },
-    "sources": [
-        {
-            "sourceType": "SOURCE_TYPE_MYSQL",
-            "connProfile": {
-                "connType": "PUBLIC",
-                "host": "10.0.0.2",
-                "port": 3306,
-                "user": "dm_sync_user",
-                "password": "Passw0rd!"
-            },
-            // Binlog coordinates are usually required when starting from existing data
-            "binlogName": "mysql-bin.000777",
-            "binlogPos": 12345,
-            "binlogGtid": "3E11FA47-71CA-11E1-9E33-C80AA9429562:1-12345"
-        }
-    ]
-}`
 )
 
 type templateVariant struct {
-	heading string
-	body    string
+    heading string
+    body    string
 }
 
-var allowedTemplateModes = []string{"all", "incremental"}
+var allowedTemplateModes = []pkgmigration.TaskMode{pkgmigration.TASKMODE_ALL, pkgmigration.TASKMODE_INCREMENTAL}
 
-var definitionTemplates = map[string]templateVariant{
-	"all": {
+var definitionTemplates = map[pkgmigration.TaskMode]templateVariant{
+    pkgmigration.TASKMODE_ALL: {
 		heading: "Definition template (mode = ALL)",
 		body:    migrationDefinitionAllTemplate,
 	},
-	"incremental": {
+    pkgmigration.TASKMODE_INCREMENTAL: {
 		heading: "Definition template (mode = INCREMENTAL)",
 		body:    migrationDefinitionIncrementalTemplate,
 	},
 }
 
 func TemplateCmd(h *internal.Helper) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:     "template",
-		Short:   "Show migration JSON templates",
-		Args:    cobra.NoArgs,
-		Example: fmt.Sprintf("  Show the ALL mode migration template:\n  $ %[1]s serverless migration template --modetype all\n\n  Show the INCREMENTAL migration template:\n  $ %[1]s serverless migration template --modetype incremental\n", config.CliName),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			mode, err := cmd.Flags().GetString(flag.MigrationModeType)
+    cmd := &cobra.Command{
+        Use:     "template",
+        Short:   "Show migration JSON templates",
+        Args:    cobra.NoArgs,
+        Example: fmt.Sprintf("  Show the ALL mode migration template:\n  $ %[1]s serverless migration template --modetype all\n\n  Show the INCREMENTAL migration template:\n  $ %[1]s serverless migration template --modetype incremental\n", config.CliName),
+        PreRunE: func(cmd *cobra.Command, args []string) error {
+            return cmd.MarkFlagRequired(flag.MigrationModeType)
+        },
+        RunE: func(cmd *cobra.Command, args []string) error {
+            modeValue, err := cmd.Flags().GetString(flag.MigrationModeType)
 			if err != nil {
 				return err
 			}
-			return renderMigrationTemplate(h, strings.ToLower(mode))
+            mode, err := parseTemplateMode(modeValue)
+            if err != nil {
+                return err
+            }
+            return renderMigrationTemplate(h, mode)
 		},
 	}
 
-	cmd.Flags().String(flag.MigrationModeType, "", "Migration mode template to show, one of [\"all\", \"incremental\"].")
-	if err := cmd.MarkFlagRequired(flag.MigrationModeType); err != nil {
-		panic(err)
-	}
+    cmd.Flags().String(
+        flag.MigrationModeType,
+        "",
+        fmt.Sprintf(
+            "Migration mode template to show, one of [%s].",
+            strings.Join(allowedTemplateModeStrings(), ", "),
+        ),
+    )
 	return cmd
 }
 
-func renderMigrationTemplate(h *internal.Helper, mode string) error {
+func renderMigrationTemplate(h *internal.Helper, mode pkgmigration.TaskMode) error {
 	variant, ok := definitionTemplates[mode]
 	if !ok {
-		return fmt.Errorf("unknown mode %q, allowed values: %s", mode, strings.Join(allowedTemplateModes, ", "))
+        return fmt.Errorf("unknown mode %q, allowed values: %s", mode, strings.Join(allowedTemplateModeStrings(), ", "))
 	}
 
 	fmt.Fprintln(h.IOStreams.Out, color.GreenString(variant.heading))
 	fmt.Fprintln(h.IOStreams.Out, variant.body)
 	return nil
+}
+
+func parseTemplateMode(raw string) (pkgmigration.TaskMode, error) {
+    trimmed := strings.TrimSpace(raw)
+    if trimmed == "" {
+        return "", fmt.Errorf("mode is required; use --%s", flag.MigrationModeType)
+    }
+    normalized := strings.ToUpper(trimmed)
+    mode := pkgmigration.TaskMode(normalized)
+    if _, ok := definitionTemplates[mode]; ok {
+        return mode, nil
+    }
+    return "", fmt.Errorf("unknown mode %q, allowed values: %s", trimmed, strings.Join(allowedTemplateModeStrings(), ", "))
+}
+
+func allowedTemplateModeStrings() []string {
+    values := make([]string, 0, len(allowedTemplateModes))
+    for _, mode := range allowedTemplateModes {
+        values = append(values, strings.ToLower(string(mode)))
+    }
+    return values
 }

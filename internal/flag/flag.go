@@ -121,7 +121,7 @@ const (
 	MigrationTaskID        string = "migration-id"
 	MigrationTaskIDShort   string = "m"
 	MigrationPrecheckID    string = "precheck-id"
-	MigrationDefinition    string = "definition"
+	MigrationConfigFile    string = "config-file"
 	MigrationModeType      string = "modetype"
 	MigrationPrecheckOnly  string = "precheck-only"
 )
