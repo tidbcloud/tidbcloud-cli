@@ -30,7 +30,7 @@ func MigrationCmd(h *internal.Helper) *cobra.Command {
 	cmd.AddCommand(CreateCmd(h))
 	cmd.AddCommand(DescribeCmd(h))
 	cmd.AddCommand(ListCmd(h))
-	cmd.AddCommand(DeleteCmd(h))
+	cmd.AddCommand(CancelCmd(h))
 	cmd.AddCommand(TemplateCmd(h))
 	cmd.AddCommand(PauseCmd(h))
 	cmd.AddCommand(ResumeCmd(h))

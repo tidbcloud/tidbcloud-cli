@@ -16,6 +16,7 @@ package migration
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -40,10 +41,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		Short: "Create a migration",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Create a migration:
-	  $ %[1]s serverless migration create -c <cluster-id> --display-name <name> --config-file /path/to/config.json
-
-	  Run migration precheck only with shared inputs:
-  $ %[1]s serverless migration create --precheck-only`, config.CliName),
+	$ %[1]s serverless migration create -c <cluster-id> --display-name <name> --config-file <file-path> --dryrun
+	$ %[1]s serverless migration create -c <cluster-id> --display-name <name> --config-file <file-path>
+`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return markCreateMigrationRequiredFlags(cmd)
 		},
@@ -54,7 +54,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			precheckOnly, err := cmd.Flags().GetBool(flag.MigrationPrecheckOnly)
+			dryRun, err := cmd.Flags().GetBool(flag.MigrationDryRun)
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -88,21 +88,21 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
+			if dryRun {
+				precheckBody := &pkgmigration.MigrationServicePrecheckBody{
+					DisplayName: name,
+					Sources:     sources,
+					Target:      target,
+					Mode:        mode,
+				}
+				return runMigrationPrecheck(ctx, d, clusterID, precheckBody, h)
+			}
+
 			createBody := &pkgmigration.MigrationServiceCreateMigrationBody{
 				DisplayName: name,
 				Sources:     sources,
 				Target:      target,
 				Mode:        mode,
-			}
-			precheckBody := &pkgmigration.MigrationServicePrecheckBody{
-				DisplayName: name,
-				Sources:     sources,
-				Target:      target,
-				Mode:        mode,
-			}
-
-			if precheckOnly {
-				return runMigrationPrecheck(ctx, d, clusterID, precheckBody, h)
 			}
 
 			resp, err := d.CreateMigrationTask(ctx, clusterID, createBody)
@@ -111,21 +111,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			taskID := aws.ToString(resp.MigrationId)
-			if taskID == "" {
-				taskID = aws.ToString(resp.DisplayName)
-			}
-			if taskID == "" {
-				taskID = "<unknown>"
-			}
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("migration %s created", taskID))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("migration %s(%s) created", name, taskID))
 			return nil
 		},
 	}
 
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the target cluster.")
-	cmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "Display name for the migration.")
+	cmd.Flags().String(flag.DisplayName, "", "Display name for the migration.")
 	cmd.Flags().String(flag.MigrationConfigFile, "", "Path to a migration config JSON file. Use \"ticloud serverless migration template --modetype <mode>\" to print templates.")
-	cmd.Flags().Bool(flag.MigrationPrecheckOnly, false, "Run a migration precheck with the provided inputs and exit without creating a task.")
+	cmd.Flags().Bool(flag.MigrationDryRun, false, "Run a migration precheck (dry run) with the provided inputs without creating a task.")
 
 	return cmd
 }
@@ -139,7 +133,10 @@ func markCreateMigrationRequiredFlags(cmd *cobra.Command) error {
 	return nil
 }
 
-const precheckPollInterval = 5 * time.Second
+const (
+	precheckPollInterval = 5 * time.Second
+	precheckPollTimeout  = time.Minute
+)
 
 func runMigrationPrecheck(ctx context.Context, client cloud.TiDBCloudClient, clusterID string, body *pkgmigration.MigrationServicePrecheckBody, h *internal.Helper) error {
 	resp, err := client.CreateMigrationPrecheck(ctx, clusterID, body)
@@ -154,28 +151,29 @@ func runMigrationPrecheck(ctx context.Context, client cloud.TiDBCloudClient, clu
 
 	ticker := time.NewTicker(precheckPollInterval)
 	defer ticker.Stop()
-	var lastStatus pkgmigration.MigrationPrecheckStatus
+	pollCtx, cancel := context.WithTimeout(ctx, precheckPollTimeout)
+	defer cancel()
+	
 	for {
 		select {
-		case <-ctx.Done():
-			return ctx.Err()
+		case <-pollCtx.Done():
+			if pollCtx.Err() == context.DeadlineExceeded {
+				return errors.Errorf("migration precheck polling timed out after %s", precheckPollTimeout)
+			}
+			return pollCtx.Err()
 		case <-ticker.C:
-			result, err := client.GetMigrationPrecheck(ctx, clusterID, precheckID)
+			result, err := client.GetMigrationPrecheck(pollCtx, clusterID, precheckID)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			status := precheckStatusOrDefault(result.Status)
-			if status != lastStatus {
-				fmt.Fprintf(h.IOStreams.Out, "precheck %s status: %s\n", precheckID, status)
-				lastStatus = status
-			}
-			if isPrecheckUnfinished(status) {
-				continue
-			}
-			if err := printPrecheckSummary(precheckID, status, result, h); err != nil {
+			finished, err := printPrecheckSummary(precheckID, result.GetStatus(), result, h)
+			if err != nil {
 				return err
 			}
-			if status == pkgmigration.MIGRATIONPRECHECKSTATUS_FAILED {
+			if !finished {
+				continue
+			}
+			if result.GetStatus() == pkgmigration.MIGRATIONPRECHECKSTATUS_FAILED {
 				fmt.Fprintln(h.IOStreams.Out, color.RedString("migration precheck %s failed", precheckID))
 				return errors.New("migration precheck failed")
 			}
@@ -183,13 +181,6 @@ func runMigrationPrecheck(ctx context.Context, client cloud.TiDBCloudClient, clu
 			return nil
 		}
 	}
-}
-
-func precheckStatusOrDefault(value *pkgmigration.MigrationPrecheckStatus) pkgmigration.MigrationPrecheckStatus {
-	if value == nil || *value == "" {
-		return pkgmigration.MIGRATIONPRECHECKSTATUS_PENDING
-	}
-	return *value
 }
 
 func isPrecheckUnfinished(status pkgmigration.MigrationPrecheckStatus) bool {
@@ -202,12 +193,19 @@ func isPrecheckUnfinished(status pkgmigration.MigrationPrecheckStatus) bool {
 	}
 }
 
-func printPrecheckSummary(id string, status pkgmigration.MigrationPrecheckStatus, result *pkgmigration.MigrationPrecheck, h *internal.Helper) error {
+func printPrecheckSummary(id string, status pkgmigration.MigrationPrecheckStatus, result *pkgmigration.MigrationPrecheck, h *internal.Helper) (bool, error) {
+	if isPrecheckUnfinished(status) {
+		fmt.Fprintf(h.IOStreams.Out, "precheck %s summary (status %s)\n", id, status)
+		fmt.Fprintf(h.IOStreams.Out, "Total: %d, Success: %d, Warn: %d, Failed: %d\n",
+			aws.ToInt32(result.Total), aws.ToInt32(result.SuccessCnt), aws.ToInt32(result.WarnCnt), aws.ToInt32(result.FailedCnt))
+		return false, nil
+	}
+
 	fmt.Fprintf(h.IOStreams.Out, "precheck %s finished with status %s\n", id, status)
 	fmt.Fprintf(h.IOStreams.Out, "Total: %d, Success: %d, Warn: %d, Failed: %d\n",
 		aws.ToInt32(result.Total), aws.ToInt32(result.SuccessCnt), aws.ToInt32(result.WarnCnt), aws.ToInt32(result.FailedCnt))
 	if len(result.Items) == 0 {
-		return nil
+		return true, nil
 	}
 	columns := []output.Column{"Type", "Status", "Description", "Reason", "Solution"}
 	rows := make([]output.Row, 0, len(result.Items))
@@ -228,10 +226,9 @@ func printPrecheckSummary(id string, status pkgmigration.MigrationPrecheckStatus
 		})
 	}
 	if len(rows) == 0 {
-		fmt.Fprintln(h.IOStreams.Out, "No warning or failure details returned.")
-		return nil
+		return true, nil
 	}
-	return output.PrintHumanTable(h.IOStreams.Out, columns, rows)
+	return true, output.PrintHumanTable(h.IOStreams.Out, columns, rows)
 }
 
 func precheckItemType(value *pkgmigration.PrecheckItemType) string {
@@ -255,4 +252,53 @@ func shouldPrintPrecheckItem(status *pkgmigration.PrecheckItemStatus) bool {
 	default:
 		return false
 	}
+}
+
+func parseMigrationDefinition(value string) ([]pkgmigration.Source, pkgmigration.Target, pkgmigration.TaskMode, error) {
+	trimmed := strings.TrimSpace(value)
+	if trimmed == "" {
+		return nil, pkgmigration.Target{}, "", errors.New("migration config is required; use --config-file")
+	}
+	var payload struct {
+		Sources []pkgmigration.Source `json:"sources"`
+		Target  *pkgmigration.Target  `json:"target"`
+		Mode    string                `json:"mode"`
+	}
+	if err := json.Unmarshal([]byte(trimmed), &payload); err != nil {
+		return nil, pkgmigration.Target{}, "", errors.Annotate(err, "invalid migration definition JSON")
+	}
+	if len(payload.Sources) == 0 {
+		return nil, pkgmigration.Target{}, "", errors.New("migration definition must include at least one source")
+	}
+	if payload.Target == nil {
+		return nil, pkgmigration.Target{}, "", errors.New("migration definition must include the target block")
+	}
+	mode, err := parseMigrationMode(payload.Mode)
+	if err != nil {
+		return nil, pkgmigration.Target{}, "", err
+	}
+	return payload.Sources, *payload.Target, mode, nil
+}
+
+func parseMigrationMode(value string) (pkgmigration.TaskMode, error) {
+	trimmed := strings.TrimSpace(value)
+	if trimmed == "" {
+		return "", errors.New("mode is required in the migration definition")
+	}
+	normalized := strings.ToUpper(trimmed)
+	mode := pkgmigration.TaskMode(normalized)
+	for _, allowed := range pkgmigration.AllowedTaskModeEnumValues {
+		if mode == allowed {
+			return mode, nil
+		}
+	}
+	return "", errors.Errorf("invalid mode %q, allowed values: %s", value, strings.Join(taskModeValues(), ", "))
+}
+
+func taskModeValues() []string {
+	values := make([]string, 0, len(pkgmigration.AllowedTaskModeEnumValues))
+	for _, mode := range pkgmigration.AllowedTaskModeEnumValues {
+		values = append(values, string(mode))
+	}
+	return values
 }
