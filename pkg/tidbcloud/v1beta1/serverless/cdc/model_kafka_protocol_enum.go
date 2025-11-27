@@ -14,7 +14,7 @@ import (
 	"encoding/json"
 )
 
-// KafkaProtocolEnum  - CANAL_JSON: Canal-JSON protocol.  - OPEN_PROTOCOL: Open Protocol.  - AVRO: Avro protocol.
+// KafkaProtocolEnum  - CANAL_JSON: Canal-JSON protocol.  - OPEN_PROTOCOL: Open Protocol.  - AVRO: Avro protocol.  - DEBEZIUM: Debezium protocol.
 type KafkaProtocolEnum string
 
 // List of KafkaProtocol.Enum
@@ -22,6 +22,7 @@ const (
 	KAFKAPROTOCOLENUM_CANAL_JSON    KafkaProtocolEnum = "CANAL_JSON"
 	KAFKAPROTOCOLENUM_OPEN_PROTOCOL KafkaProtocolEnum = "OPEN_PROTOCOL"
 	KAFKAPROTOCOLENUM_AVRO          KafkaProtocolEnum = "AVRO"
+	KAFKAPROTOCOLENUM_DEBEZIUM      KafkaProtocolEnum = "DEBEZIUM"
 )
 
 // All allowed values of KafkaProtocolEnum enum
@@ -29,6 +30,7 @@ var AllowedKafkaProtocolEnumEnumValues = []KafkaProtocolEnum{
 	"CANAL_JSON",
 	"OPEN_PROTOCOL",
 	"AVRO",
+	"DEBEZIUM",
 }
 
 func (v *KafkaProtocolEnum) UnmarshalJSON(src []byte) error {
