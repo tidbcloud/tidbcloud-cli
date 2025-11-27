@@ -22,6 +22,7 @@ type ChangefeedFilter struct {
 	FilterRule           []string          `json:"filterRule,omitempty"`
 	Mode                 *TableModeEnum    `json:"mode,omitempty"`
 	EventFilterRule      []EventFilterRule `json:"eventFilterRule,omitempty"`
+	CaseSensitive        *bool             `json:"caseSensitive,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -140,6 +141,38 @@ func (o *ChangefeedFilter) SetEventFilterRule(v []EventFilterRule) {
 	o.EventFilterRule = v
 }
 
+// GetCaseSensitive returns the CaseSensitive field value if set, zero value otherwise.
+func (o *ChangefeedFilter) GetCaseSensitive() bool {
+	if o == nil || IsNil(o.CaseSensitive) {
+		var ret bool
+		return ret
+	}
+	return *o.CaseSensitive
+}
+
+// GetCaseSensitiveOk returns a tuple with the CaseSensitive field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *ChangefeedFilter) GetCaseSensitiveOk() (*bool, bool) {
+	if o == nil || IsNil(o.CaseSensitive) {
+		return nil, false
+	}
+	return o.CaseSensitive, true
+}
+
+// HasCaseSensitive returns a boolean if a field has been set.
+func (o *ChangefeedFilter) HasCaseSensitive() bool {
+	if o != nil && !IsNil(o.CaseSensitive) {
+		return true
+	}
+
+	return false
+}
+
+// SetCaseSensitive gets a reference to the given bool and assigns it to the CaseSensitive field.
+func (o *ChangefeedFilter) SetCaseSensitive(v bool) {
+	o.CaseSensitive = &v
+}
+
 func (o ChangefeedFilter) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -158,6 +191,9 @@ func (o ChangefeedFilter) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.EventFilterRule) {
 		toSerialize["eventFilterRule"] = o.EventFilterRule
+	}
+	if !IsNil(o.CaseSensitive) {
+		toSerialize["caseSensitive"] = o.CaseSensitive
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -184,6 +220,7 @@ func (o *ChangefeedFilter) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "filterRule")
 		delete(additionalProperties, "mode")
 		delete(additionalProperties, "eventFilterRule")
+		delete(additionalProperties, "caseSensitive")
 		o.AdditionalProperties = additionalProperties
 	}
 

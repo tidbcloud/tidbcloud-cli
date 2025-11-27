@@ -19,10 +19,10 @@ var _ MappedNullable = &KafkaNetwork{}
 
 // KafkaNetwork struct for KafkaNetwork
 type KafkaNetwork struct {
-	NetworkType            *KafkaNetworkTypeEnum `json:"networkType,omitempty"`
-	PrivateLinkServiceName *string               `json:"privateLinkServiceName,omitempty"`
-	PublicEndpoints        *string               `json:"publicEndpoints,omitempty"`
-	AdditionalProperties   map[string]interface{}
+	NetworkType          *KafkaNetworkTypeEnum `json:"networkType,omitempty"`
+	PrivateLink          *KafkaPrivateLink     `json:"privateLink,omitempty"`
+	PublicEndpoints      *string               `json:"publicEndpoints,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _KafkaNetwork KafkaNetwork
@@ -76,36 +76,36 @@ func (o *KafkaNetwork) SetNetworkType(v KafkaNetworkTypeEnum) {
 	o.NetworkType = &v
 }
 
-// GetPrivateLinkServiceName returns the PrivateLinkServiceName field value if set, zero value otherwise.
-func (o *KafkaNetwork) GetPrivateLinkServiceName() string {
-	if o == nil || IsNil(o.PrivateLinkServiceName) {
-		var ret string
+// GetPrivateLink returns the PrivateLink field value if set, zero value otherwise.
+func (o *KafkaNetwork) GetPrivateLink() KafkaPrivateLink {
+	if o == nil || IsNil(o.PrivateLink) {
+		var ret KafkaPrivateLink
 		return ret
 	}
-	return *o.PrivateLinkServiceName
+	return *o.PrivateLink
 }
 
-// GetPrivateLinkServiceNameOk returns a tuple with the PrivateLinkServiceName field value if set, nil otherwise
+// GetPrivateLinkOk returns a tuple with the PrivateLink field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *KafkaNetwork) GetPrivateLinkServiceNameOk() (*string, bool) {
-	if o == nil || IsNil(o.PrivateLinkServiceName) {
+func (o *KafkaNetwork) GetPrivateLinkOk() (*KafkaPrivateLink, bool) {
+	if o == nil || IsNil(o.PrivateLink) {
 		return nil, false
 	}
-	return o.PrivateLinkServiceName, true
+	return o.PrivateLink, true
 }
 
-// HasPrivateLinkServiceName returns a boolean if a field has been set.
-func (o *KafkaNetwork) HasPrivateLinkServiceName() bool {
-	if o != nil && !IsNil(o.PrivateLinkServiceName) {
+// HasPrivateLink returns a boolean if a field has been set.
+func (o *KafkaNetwork) HasPrivateLink() bool {
+	if o != nil && !IsNil(o.PrivateLink) {
 		return true
 	}
 
 	return false
 }
 
-// SetPrivateLinkServiceName gets a reference to the given string and assigns it to the PrivateLinkServiceName field.
-func (o *KafkaNetwork) SetPrivateLinkServiceName(v string) {
-	o.PrivateLinkServiceName = &v
+// SetPrivateLink gets a reference to the given KafkaPrivateLink and assigns it to the PrivateLink field.
+func (o *KafkaNetwork) SetPrivateLink(v KafkaPrivateLink) {
+	o.PrivateLink = &v
 }
 
 // GetPublicEndpoints returns the PublicEndpoints field value if set, zero value otherwise.
@@ -153,8 +153,8 @@ func (o KafkaNetwork) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.NetworkType) {
 		toSerialize["networkType"] = o.NetworkType
 	}
-	if !IsNil(o.PrivateLinkServiceName) {
-		toSerialize["privateLinkServiceName"] = o.PrivateLinkServiceName
+	if !IsNil(o.PrivateLink) {
+		toSerialize["privateLink"] = o.PrivateLink
 	}
 	if !IsNil(o.PublicEndpoints) {
 		toSerialize["publicEndpoints"] = o.PublicEndpoints
@@ -182,7 +182,7 @@ func (o *KafkaNetwork) UnmarshalJSON(data []byte) (err error) {
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "networkType")
-		delete(additionalProperties, "privateLinkServiceName")
+		delete(additionalProperties, "privateLink")
 		delete(additionalProperties, "publicEndpoints")
 		o.AdditionalProperties = additionalProperties
 	}

@@ -29,8 +29,13 @@ import (
 const (
 	KafkaInfoTemplateWithExplain = `{
     "network": {
+         // networkType: "PUBLIC", "PRIVATE"
         "networkType": "PUBLIC",
         "publicEndpoints": "broker1:9092,broker2:9092"
+        "privateLink":{
+            "id": "plc-xxx",
+            "port": 9092
+        }
     },
     "broker": {
         // "kafkaVersion": "VERSION_2XX", "VERSION_3XX"
@@ -47,6 +52,7 @@ const (
         "password": "",
         "enableTls": false
     },
+    "outputRawChangeEvent": false,
     "dataFormat": {
         // "protocol": "CANAL_JSON", "AVRO", "OPEN_PROTOCOL", "DEBEZIUM"
         "protocol": "CANAL_JSON",
@@ -112,7 +118,11 @@ const (
 	KafkaInfoTemplate = `{
     "network": {
         "networkType": "PUBLIC",
-        "publicEndpoints": "broker1:9092,broker2:9092"
+        "publicEndpoints": "broker1:9092,broker2:9092",
+        "privateLink":{
+            "id": "plc-xxx",
+            "port": 9092
+        }
     },
     "broker": {
         "kafkaVersion": "VERSION_2XX",
@@ -124,6 +134,7 @@ const (
         "password": "",
         "enableTls": false
     },
+    "outputRawChangeEvent": false,
     "dataFormat": {
         "protocol": "CANAL_JSON",
         "enableTidbExtension": false,
@@ -178,7 +189,8 @@ const (
             "matcher": ["test.t1", "test.t2"],
             "ignoreEvent": ["all dml", "all ddl"]
         }
-    ]
+    ],
+    "caseSensitive": false
 }`
 
 	CDCFilterTemplate = `{
@@ -189,14 +201,19 @@ const (
             "matcher": ["test.t1", "test.t2"],
             "ignoreEvent": ["all dml", "all ddl"]
         }
-    ]
+    ],
+    "caseSensitive": false
 }`
 
 	MySQLTemplateWithExplain = `{
     "network": {
         // required "PUBLIC", "PRIVATE"
         "networkType": "PUBLIC",
-        "publicEndpoint": "127.0.0.1:3306"
+        "publicEndpoint": "127.0.0.1:3306",
+        "privateLink":{
+            "id": "plc-xxx",
+            "port": 3306
+        }
     },
     "authentication": {
         // required the user name for MySQL
@@ -211,7 +228,11 @@ const (
 	MySQLTemplate = `{
     "network": {
         "networkType": "PUBLIC",
-        "publicEndpoint": "127.0.0.1:3306"
+        "publicEndpoint": "127.0.0.1:3306",
+        "privateLink":{
+            "id": "plc-xxx",
+            "port": 3306
+        }
     },
     "authentication": {
         "userName": "",
