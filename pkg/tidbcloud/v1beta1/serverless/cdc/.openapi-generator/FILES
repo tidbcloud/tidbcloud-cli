@@ -39,6 +39,7 @@ model_kafka_endpoint.go
 model_kafka_network.go
 model_kafka_network_type_enum.go
 model_kafka_partition_dispatcher_config.go
+model_kafka_private_link.go
 model_kafka_protocol_enum.go
 model_kafka_topic_partition_config.go
 model_kafka_type_enum.go
@@ -47,6 +48,7 @@ model_my_sql.go
 model_my_sql_authentication.go
 model_my_sql_network.go
 model_my_sql_network_type_enum.go
+model_my_sql_private_link.go
 model_partition_dispatcher_enum.go
 model_private_link_endpoint.go
 model_private_link_endpoint_state_enum.go

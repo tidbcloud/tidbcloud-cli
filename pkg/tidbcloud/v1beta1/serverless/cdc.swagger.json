@@ -663,6 +663,9 @@
             "type": "object",
             "$ref": "#/definitions/EventFilterRule"
           }
+        },
+        "caseSensitive": {
+          "type": "boolean"
         }
       }
     },
@@ -1036,6 +1039,9 @@
             "type": "object",
             "$ref": "#/definitions/Kafka.ColumnSelector"
           }
+        },
+        "outputRawChangeEvent": {
+          "type": "boolean"
         }
       }
     },
@@ -1108,8 +1114,8 @@
         "networkType": {
           "$ref": "#/definitions/KafkaNetworkType.Enum"
         },
-        "privateLinkServiceName": {
-          "type": "string"
+        "privateLink": {
+          "$ref": "#/definitions/Kafka.PrivateLink"
         },
         "publicEndpoints": {
           "type": "string"
@@ -1136,6 +1142,18 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "Kafka.PrivateLink": {
+      "type": "object",
+      "properties": {
+        "privateLinkConnectionId": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1307,10 +1325,29 @@
         },
         "publicEndpoint": {
           "type": "string"
+        },
+        "privateLink": {
+          "$ref": "#/definitions/MySQL.PrivateLink"
         }
       },
       "required": [
         "networkType"
+      ]
+    },
+    "MySQL.PrivateLink": {
+      "type": "object",
+      "properties": {
+        "privateLinkConnectionId": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "required": [
+        "privateLinkConnectionId",
+        "port"
       ]
     },
     "MySQLNetworkType.Enum": {
