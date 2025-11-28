@@ -25,7 +25,6 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
-	"github.com/tidbcloud/tidbcloud-cli/internal/output"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 )
 
@@ -135,18 +134,17 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			res, err := d.DeletePrivateLinkConnection(ctx, clusterID, plcID)
+			_, err = d.DeletePrivateLinkConnection(ctx, clusterID, plcID)
 			if err != nil {
 				return errors.Trace(err)
 			}
 			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Private link connection deleted"))
-			_ = output.PrintJson(h.IOStreams.Out, res)
 			return nil
 		},
 	}
 
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID.")
-	cmd.Flags().StringP(flag.PrivateLinkConnectionID, flag.PrivateLinkConnectionIDShort, "", "The private link connection ID.")
+	cmd.Flags().String(flag.PrivateLinkConnectionID, "", "The private link connection ID.")
 	cmd.Flags().BoolVar(&force, flag.Force, false, "Delete without confirmation.")
 	return cmd
 }

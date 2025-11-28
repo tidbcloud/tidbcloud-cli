@@ -127,6 +127,6 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID.")
-	cmd.Flags().StringP(flag.PrivateLinkConnectionID, flag.PrivateLinkConnectionIDShort, "", "The private link connection ID.")
+	cmd.Flags().String(flag.PrivateLinkConnectionID, "", "The private link connection ID.")
 	return cmd
 }

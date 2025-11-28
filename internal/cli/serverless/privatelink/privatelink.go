@@ -24,7 +24,7 @@ func PrivateLinkConnectionCmd(h *internal.Helper) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "private-link-connection",
 		Aliases: []string{"plc", "private-link"},
-		Short:   "Manage private link connections",
+		Short:   "Manage private link connections for dataflow",
 	}
 
 	cmd.AddCommand(

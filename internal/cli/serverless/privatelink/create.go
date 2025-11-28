@@ -70,10 +70,10 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless private-link-connection create
 
   Create a private link connection which connect to alicloud endpoint service (non-interactive):
-  $ %[1]s serverless private-link-connection create -c <cluster-id> --display-name <name> --type ALICLOUD_ENDPOINT_SERVICE --alicloud.endpoint-service.name <name>
+  $ %[1]s serverless private-link-connection create -c <cluster-id> --display-name <name> --type ALICLOUD_ENDPOINT_SERVICE --alicloud.endpoint-service-name <name>
 
   Create a private link connection which connect to aws endpoint service (non-interactive):
-  $ %[1]s serverless private-link-connection create -c <cluster-id> --display-name <name> --type AWS_ENDPOINT_SERVICE --aws.endpoint-service.name <name>`, config.CliName),
+  $ %[1]s serverless private-link-connection create -c <cluster-id> --display-name <name> --type AWS_ENDPOINT_SERVICE --aws.endpoint-service-name <name>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
