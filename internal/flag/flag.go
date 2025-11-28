@@ -118,6 +118,12 @@ const (
 	ChangefeedIDShort      string = "f"
 	Explain                string = "explain"
 	ChangefeedTemplateType string = "type"
+	MigrationTaskID        string = "migration-id"
+	MigrationTaskIDShort   string = "m"
+	MigrationPrecheckID    string = "precheck-id"
+	MigrationConfigFile    string = "config-file"
+	MigrationModeType      string = "modetype"
+	MigrationDryRun        string = "dryrun"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."
