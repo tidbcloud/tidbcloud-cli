@@ -118,6 +118,12 @@ const (
 	ChangefeedIDShort      string = "f"
 	Explain                string = "explain"
 	ChangefeedTemplateType string = "type"
+
+	PrivateLinkConnectionID     string = "private-link-connection-id"
+	PrivateLinkConnectionType   string = "type"
+	AWSEndpointServiceName      string = "aws.endpoint-service-name"
+	AWSEndpointServiceRegion    string = "aws.endpoint-service-region"
+	AlicloudEndpointServiceName string = "alicloud.endpoint-servicename"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."
