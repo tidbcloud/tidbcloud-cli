@@ -222,8 +222,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID.")
 	cmd.Flags().String(flag.DisplayName, "", "Display name for the private link connection.")
 	cmd.Flags().String(flag.PrivateLinkConnectionType, "", fmt.Sprintf("Type of the private link connection, one of %q", privatelink.AllowedPrivateLinkConnectionTypeEnumEnumValues))
-	cmd.Flags().String(flag.AWSEndpointServiceName, "", "AWS endpoint service name")
-	cmd.Flags().String(flag.AlicloudEndpointServiceName, "", "Alicloud endpoint service name")
-	cmd.Flags().String(flag.AWSEndpointServiceRegion, "", "AWS endpoint service region")
+	cmd.Flags().String(flag.AWSEndpointServiceName, "", "AWS endpoint service name.")
+	cmd.Flags().String(flag.AlicloudEndpointServiceName, "", "Alicloud endpoint service name.")
+	cmd.Flags().String(flag.AWSEndpointServiceRegion, "", "AWS endpoint service region.")
 	return cmd
 }
