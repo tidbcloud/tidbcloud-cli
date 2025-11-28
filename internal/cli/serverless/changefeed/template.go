@@ -211,7 +211,7 @@ const (
         "networkType": "PUBLIC",
         "publicEndpoint": "127.0.0.1:3306",
         "privateLink":{
-            "id": "plc-xxx",
+            "privateLinkConnectionId": "plc-xxx",
             "port": 3306
         }
     },
@@ -230,7 +230,7 @@ const (
         "networkType": "PUBLIC",
         "publicEndpoint": "127.0.0.1:3306",
         "privateLink":{
-            "id": "plc-xxx",
+            "privateLinkConnectionId": "plc-xxx",
             "port": 3306
         }
     },

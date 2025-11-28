@@ -20,9 +20,9 @@ var _ MappedNullable = &MySQLPrivateLink{}
 
 // MySQLPrivateLink struct for MySQLPrivateLink
 type MySQLPrivateLink struct {
-	Id                   string `json:"id"`
-	Port                 int32  `json:"port"`
-	AdditionalProperties map[string]interface{}
+	PrivateLinkConnectionId string `json:"privateLinkConnectionId"`
+	Port                    int32  `json:"port"`
+	AdditionalProperties    map[string]interface{}
 }
 
 type _MySQLPrivateLink MySQLPrivateLink
@@ -31,9 +31,9 @@ type _MySQLPrivateLink MySQLPrivateLink
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewMySQLPrivateLink(id string, port int32) *MySQLPrivateLink {
+func NewMySQLPrivateLink(privateLinkConnectionId string, port int32) *MySQLPrivateLink {
 	this := MySQLPrivateLink{}
-	this.Id = id
+	this.PrivateLinkConnectionId = privateLinkConnectionId
 	this.Port = port
 	return &this
 }
@@ -46,28 +46,28 @@ func NewMySQLPrivateLinkWithDefaults() *MySQLPrivateLink {
 	return &this
 }
 
-// GetId returns the Id field value
-func (o *MySQLPrivateLink) GetId() string {
+// GetPrivateLinkConnectionId returns the PrivateLinkConnectionId field value
+func (o *MySQLPrivateLink) GetPrivateLinkConnectionId() string {
 	if o == nil {
 		var ret string
 		return ret
 	}
 
-	return o.Id
+	return o.PrivateLinkConnectionId
 }
 
-// GetIdOk returns a tuple with the Id field value
+// GetPrivateLinkConnectionIdOk returns a tuple with the PrivateLinkConnectionId field value
 // and a boolean to check if the value has been set.
-func (o *MySQLPrivateLink) GetIdOk() (*string, bool) {
+func (o *MySQLPrivateLink) GetPrivateLinkConnectionIdOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.Id, true
+	return &o.PrivateLinkConnectionId, true
 }
 
-// SetId sets field value
-func (o *MySQLPrivateLink) SetId(v string) {
-	o.Id = v
+// SetPrivateLinkConnectionId sets field value
+func (o *MySQLPrivateLink) SetPrivateLinkConnectionId(v string) {
+	o.PrivateLinkConnectionId = v
 }
 
 // GetPort returns the Port field value
@@ -104,7 +104,7 @@ func (o MySQLPrivateLink) MarshalJSON() ([]byte, error) {
 
 func (o MySQLPrivateLink) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	toSerialize["id"] = o.Id
+	toSerialize["privateLinkConnectionId"] = o.PrivateLinkConnectionId
 	toSerialize["port"] = o.Port
 
 	for key, value := range o.AdditionalProperties {
@@ -119,7 +119,7 @@ func (o *MySQLPrivateLink) UnmarshalJSON(data []byte) (err error) {
 	// by unmarshalling the object into a generic map with string keys and checking
 	// that every required field exists as a key in the generic map.
 	requiredProperties := []string{
-		"id",
+		"privateLinkConnectionId",
 		"port",
 	}
 
@@ -150,7 +150,7 @@ func (o *MySQLPrivateLink) UnmarshalJSON(data []byte) (err error) {
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "id")
+		delete(additionalProperties, "privateLinkConnectionId")
 		delete(additionalProperties, "port")
 		o.AdditionalProperties = additionalProperties
 	}

@@ -19,9 +19,9 @@ var _ MappedNullable = &KafkaPrivateLink{}
 
 // KafkaPrivateLink struct for KafkaPrivateLink
 type KafkaPrivateLink struct {
-	Id                   *string `json:"id,omitempty"`
-	Port                 *int32  `json:"port,omitempty"`
-	AdditionalProperties map[string]interface{}
+	PrivateLinkConnectionId *string `json:"privateLinkConnectionId,omitempty"`
+	Port                    *int32  `json:"port,omitempty"`
+	AdditionalProperties    map[string]interface{}
 }
 
 type _KafkaPrivateLink KafkaPrivateLink
@@ -43,36 +43,36 @@ func NewKafkaPrivateLinkWithDefaults() *KafkaPrivateLink {
 	return &this
 }
 
-// GetId returns the Id field value if set, zero value otherwise.
-func (o *KafkaPrivateLink) GetId() string {
-	if o == nil || IsNil(o.Id) {
+// GetPrivateLinkConnectionId returns the PrivateLinkConnectionId field value if set, zero value otherwise.
+func (o *KafkaPrivateLink) GetPrivateLinkConnectionId() string {
+	if o == nil || IsNil(o.PrivateLinkConnectionId) {
 		var ret string
 		return ret
 	}
-	return *o.Id
+	return *o.PrivateLinkConnectionId
 }
 
-// GetIdOk returns a tuple with the Id field value if set, nil otherwise
+// GetPrivateLinkConnectionIdOk returns a tuple with the PrivateLinkConnectionId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *KafkaPrivateLink) GetIdOk() (*string, bool) {
-	if o == nil || IsNil(o.Id) {
+func (o *KafkaPrivateLink) GetPrivateLinkConnectionIdOk() (*string, bool) {
+	if o == nil || IsNil(o.PrivateLinkConnectionId) {
 		return nil, false
 	}
-	return o.Id, true
+	return o.PrivateLinkConnectionId, true
 }
 
-// HasId returns a boolean if a field has been set.
-func (o *KafkaPrivateLink) HasId() bool {
-	if o != nil && !IsNil(o.Id) {
+// HasPrivateLinkConnectionId returns a boolean if a field has been set.
+func (o *KafkaPrivateLink) HasPrivateLinkConnectionId() bool {
+	if o != nil && !IsNil(o.PrivateLinkConnectionId) {
 		return true
 	}
 
 	return false
 }
 
-// SetId gets a reference to the given string and assigns it to the Id field.
-func (o *KafkaPrivateLink) SetId(v string) {
-	o.Id = &v
+// SetPrivateLinkConnectionId gets a reference to the given string and assigns it to the PrivateLinkConnectionId field.
+func (o *KafkaPrivateLink) SetPrivateLinkConnectionId(v string) {
+	o.PrivateLinkConnectionId = &v
 }
 
 // GetPort returns the Port field value if set, zero value otherwise.
@@ -117,8 +117,8 @@ func (o KafkaPrivateLink) MarshalJSON() ([]byte, error) {
 
 func (o KafkaPrivateLink) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Id) {
-		toSerialize["id"] = o.Id
+	if !IsNil(o.PrivateLinkConnectionId) {
+		toSerialize["privateLinkConnectionId"] = o.PrivateLinkConnectionId
 	}
 	if !IsNil(o.Port) {
 		toSerialize["port"] = o.Port
@@ -145,7 +145,7 @@ func (o *KafkaPrivateLink) UnmarshalJSON(data []byte) (err error) {
 	additionalProperties := make(map[string]interface{})
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
-		delete(additionalProperties, "id")
+		delete(additionalProperties, "privateLinkConnectionId")
 		delete(additionalProperties, "port")
 		o.AdditionalProperties = additionalProperties
 	}

@@ -914,7 +914,7 @@ components:
       type: object
     Kafka.PrivateLink:
       properties:
-        id:
+        privateLinkConnectionId:
           type: string
         port:
           format: int32
@@ -1061,14 +1061,14 @@ components:
       type: object
     MySQL.PrivateLink:
       properties:
-        id:
+        privateLinkConnectionId:
           type: string
         port:
           format: int32
           type: integer
       required:
-      - id
       - port
+      - privateLinkConnectionId
       type: object
     MySQLNetworkType.Enum:
       description: |2-

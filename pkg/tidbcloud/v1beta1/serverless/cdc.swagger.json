@@ -1148,7 +1148,7 @@
     "Kafka.PrivateLink": {
       "type": "object",
       "properties": {
-        "id": {
+        "privateLinkConnectionId": {
           "type": "string"
         },
         "port": {
@@ -1337,7 +1337,7 @@
     "MySQL.PrivateLink": {
       "type": "object",
       "properties": {
-        "id": {
+        "privateLinkConnectionId": {
           "type": "string"
         },
         "port": {
@@ -1346,7 +1346,7 @@
         }
       },
       "required": [
-        "id",
+        "privateLinkConnectionId",
         "port"
       ]
     },
