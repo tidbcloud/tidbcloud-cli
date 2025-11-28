@@ -1,6 +1,6 @@
 ## ticloud serverless private-link-connection delete
 
-Delete a private link connection
+Delete a private link connection for dataflow
 
 ```
 ticloud serverless private-link-connection delete [flags]
@@ -22,7 +22,7 @@ ticloud serverless private-link-connection delete [flags]
   -c, --cluster-id string                   The cluster ID.
       --force                               Delete without confirmation.
   -h, --help                                help for delete
-  -p, --private-link-connection-id string   The private link connection ID.
+      --private-link-connection-id string   The private link connection ID.
 ```
 
 ### Options inherited from parent commands
@@ -35,5 +35,5 @@ ticloud serverless private-link-connection delete [flags]
 
 ### SEE ALSO
 
-* [ticloud serverless private-link-connection](ticloud_serverless_private-link-connection.md)	 - Manage private link connections
+* [ticloud serverless private-link-connection](ticloud_serverless_private-link-connection.md)	 - Manage private link connections for dataflow
 

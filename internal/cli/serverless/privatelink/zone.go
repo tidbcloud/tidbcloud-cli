@@ -59,7 +59,7 @@ func GetZonesCmd(h *internal.Helper) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "zones",
-		Short: "Get account and availability zones for private link connection",
+		Short: "Get account and availability zones",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Get availability zones (interactive):
   $ %[1]s serverless private-link-connection get-zones

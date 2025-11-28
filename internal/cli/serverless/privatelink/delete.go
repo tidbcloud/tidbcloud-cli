@@ -65,7 +65,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "delete",
 		Aliases: []string{"rm"},
-		Short:   "Delete a private link connection",
+		Short:   "Delete a private link connection for dataflow",
 		Args:    cobra.NoArgs,
 		Example: fmt.Sprintf(`  Delete a private link connection (interactive):
   $ %[1]s serverless private-link-connection delete

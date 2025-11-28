@@ -1,6 +1,6 @@
 ## ticloud serverless private-link-connection list
 
-List private link connections
+List private link connections for dataflow
 
 ```
 ticloud serverless private-link-connection list [flags]
@@ -34,5 +34,5 @@ ticloud serverless private-link-connection list [flags]
 
 ### SEE ALSO
 
-* [ticloud serverless private-link-connection](ticloud_serverless_private-link-connection.md)	 - Manage private link connections
+* [ticloud serverless private-link-connection](ticloud_serverless_private-link-connection.md)	 - Manage private link connections for dataflow
 

@@ -64,7 +64,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "create",
-		Short: "Create a private link connection",
+		Short: "Create a private link connection for dataflow",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Create a private link connection (interactive):
   $ %[1]s serverless private-link-connection create

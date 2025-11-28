@@ -1,6 +1,6 @@
 ## ticloud serverless private-link-connection zones
 
-Get account and availability zones for private link connection
+Get account and availability zones
 
 ```
 ticloud serverless private-link-connection zones [flags]
@@ -33,5 +33,5 @@ ticloud serverless private-link-connection zones [flags]
 
 ### SEE ALSO
 
-* [ticloud serverless private-link-connection](ticloud_serverless_private-link-connection.md)	 - Manage private link connections
+* [ticloud serverless private-link-connection](ticloud_serverless_private-link-connection.md)	 - Manage private link connections for dataflow
 

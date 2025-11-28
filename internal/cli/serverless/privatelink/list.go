@@ -60,7 +60,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "list",
 		Aliases: []string{"list"},
-		Short:   "List private link connections",
+		Short:   "List private link connections for dataflow",
 		Args:    cobra.NoArgs,
 		Example: fmt.Sprintf(` List private link connections (interactive):
   $ %[1]s serverless private-link-connection list

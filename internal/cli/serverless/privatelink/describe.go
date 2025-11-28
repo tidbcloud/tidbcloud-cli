@@ -62,7 +62,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "describe",
 		Aliases: []string{"get"},
-		Short:   "Describe a private link connection",
+		Short:   "Describe a private link connection for dataflow",
 		Args:    cobra.NoArgs,
 		Example: fmt.Sprintf(`  Describe a private link connection (interactive):
   $ %[1]s serverless private-link-connection describe
