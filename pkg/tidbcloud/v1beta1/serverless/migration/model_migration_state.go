@@ -14,7 +14,7 @@ import (
 	"encoding/json"
 )
 
-// MigrationState Overall state of a migration.   - CREATING: Task is being created.  - RUNNING: Task is actively running.  - PAUSED: Task is paused.  - CANCELED: Task has been canceled.  - FAILED: Task failed with error.
+// MigrationState Overall state of a migration.   - CREATING: Task is being created.  - RUNNING: Task is actively running.  - PAUSED: Task is paused.  - FAILED: Task failed with error.  - DELETING: Task is being deleted.
 type MigrationState string
 
 // List of Migration.State
@@ -22,8 +22,8 @@ const (
 	MIGRATIONSTATE_CREATING MigrationState = "CREATING"
 	MIGRATIONSTATE_RUNNING  MigrationState = "RUNNING"
 	MIGRATIONSTATE_PAUSED   MigrationState = "PAUSED"
-	MIGRATIONSTATE_CANCELED MigrationState = "CANCELED"
 	MIGRATIONSTATE_FAILED   MigrationState = "FAILED"
+	MIGRATIONSTATE_DELETING MigrationState = "DELETING"
 )
 
 // All allowed values of MigrationState enum
@@ -31,8 +31,8 @@ var AllowedMigrationStateEnumValues = []MigrationState{
 	"CREATING",
 	"RUNNING",
 	"PAUSED",
-	"CANCELED",
 	"FAILED",
+	"DELETING",
 }
 
 func (v *MigrationState) UnmarshalJSON(src []byte) error {

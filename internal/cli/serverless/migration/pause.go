@@ -109,7 +109,7 @@ func PauseCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			emptyBody := map[string]interface{}{}
-			if _, err := d.PauseMigrationTask(ctx, clusterID, taskID, &emptyBody); err != nil {
+			if _, err := d.PauseMigration(ctx, clusterID, taskID, &emptyBody); err != nil {
 				return errors.Trace(err)
 			}
 

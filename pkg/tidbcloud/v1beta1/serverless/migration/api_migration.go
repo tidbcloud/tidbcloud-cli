@@ -22,120 +22,6 @@ import (
 // MigrationAPIService MigrationAPI service
 type MigrationAPIService service
 
-type ApiMigrationServiceCancelMigrationRequest struct {
-	ctx         context.Context
-	ApiService  *MigrationAPIService
-	clusterId   string
-	migrationId string
-}
-
-func (r ApiMigrationServiceCancelMigrationRequest) Execute() (*Migration, *http.Response, error) {
-	return r.ApiService.MigrationServiceCancelMigrationExecute(r)
-}
-
-/*
-MigrationServiceCancelMigration Cancel a migration
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param clusterId The ID of the cluster.
-	@param migrationId The ID of the migration to cancel.
-	@return ApiMigrationServiceCancelMigrationRequest
-*/
-func (a *MigrationAPIService) MigrationServiceCancelMigration(ctx context.Context, clusterId string, migrationId string) ApiMigrationServiceCancelMigrationRequest {
-	return ApiMigrationServiceCancelMigrationRequest{
-		ApiService:  a,
-		ctx:         ctx,
-		clusterId:   clusterId,
-		migrationId: migrationId,
-	}
-}
-
-// Execute executes the request
-//
-//	@return Migration
-func (a *MigrationAPIService) MigrationServiceCancelMigrationExecute(r ApiMigrationServiceCancelMigrationRequest) (*Migration, *http.Response, error) {
-	var (
-		localVarHTTPMethod  = http.MethodDelete
-		localVarPostBody    interface{}
-		formFiles           []formFile
-		localVarReturnValue *Migration
-	)
-
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MigrationAPIService.MigrationServiceCancelMigration")
-	if err != nil {
-		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
-	}
-
-	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/migrations/{migrationId}"
-	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
-	localVarPath = strings.Replace(localVarPath, "{"+"migrationId"+"}", url.PathEscape(parameterValueToString(r.migrationId, "migrationId")), -1)
-
-	localVarHeaderParams := make(map[string]string)
-	localVarQueryParams := url.Values{}
-	localVarFormParams := url.Values{}
-
-	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
-
-	// set Content-Type header
-	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
-	if localVarHTTPContentType != "" {
-		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
-	}
-
-	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"application/json"}
-
-	// set Accept header
-	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
-	if localVarHTTPHeaderAccept != "" {
-		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
-	}
-	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
-	if err != nil {
-		return localVarReturnValue, nil, err
-	}
-
-	localVarHTTPResponse, err := a.client.callAPI(req)
-	if err != nil || localVarHTTPResponse == nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
-	localVarHTTPResponse.Body.Close()
-	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
-	if err != nil {
-		return localVarReturnValue, localVarHTTPResponse, err
-	}
-
-	if localVarHTTPResponse.StatusCode >= 300 {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: localVarHTTPResponse.Status,
-		}
-		var v Status
-		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-		if err != nil {
-			newErr.error = err.Error()
-			return localVarReturnValue, localVarHTTPResponse, newErr
-		}
-		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
-		newErr.model = v
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
-	if err != nil {
-		newErr := &GenericOpenAPIError{
-			body:  localVarBody,
-			error: err.Error(),
-		}
-		return localVarReturnValue, localVarHTTPResponse, newErr
-	}
-
-	return localVarReturnValue, localVarHTTPResponse, nil
-}
-
 type ApiMigrationServiceCancelPrecheckRequest struct {
 	ctx        context.Context
 	ApiService *MigrationAPIService
@@ -326,6 +212,120 @@ func (a *MigrationAPIService) MigrationServiceCreateMigrationExecute(r ApiMigrat
 	}
 	// body params
 	localVarPostBody = r.body
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return localVarReturnValue, nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	localVarBody, err := io.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = io.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarReturnValue, localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		var v Status
+		err = a.client.decode(&v, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+		if err != nil {
+			newErr.error = err.Error()
+			return localVarReturnValue, localVarHTTPResponse, newErr
+		}
+		newErr.error = formatErrorMessage(localVarHTTPResponse.Status, &v)
+		newErr.model = v
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type ApiMigrationServiceDeleteMigrationRequest struct {
+	ctx         context.Context
+	ApiService  *MigrationAPIService
+	clusterId   string
+	migrationId string
+}
+
+func (r ApiMigrationServiceDeleteMigrationRequest) Execute() (*Migration, *http.Response, error) {
+	return r.ApiService.MigrationServiceDeleteMigrationExecute(r)
+}
+
+/*
+MigrationServiceDeleteMigration Delete a migration
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@param clusterId The ID of the cluster.
+	@param migrationId The ID of the migration to delete.
+	@return ApiMigrationServiceDeleteMigrationRequest
+*/
+func (a *MigrationAPIService) MigrationServiceDeleteMigration(ctx context.Context, clusterId string, migrationId string) ApiMigrationServiceDeleteMigrationRequest {
+	return ApiMigrationServiceDeleteMigrationRequest{
+		ApiService:  a,
+		ctx:         ctx,
+		clusterId:   clusterId,
+		migrationId: migrationId,
+	}
+}
+
+// Execute executes the request
+//
+//	@return Migration
+func (a *MigrationAPIService) MigrationServiceDeleteMigrationExecute(r ApiMigrationServiceDeleteMigrationRequest) (*Migration, *http.Response, error) {
+	var (
+		localVarHTTPMethod  = http.MethodDelete
+		localVarPostBody    interface{}
+		formFiles           []formFile
+		localVarReturnValue *Migration
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "MigrationAPIService.MigrationServiceDeleteMigration")
+	if err != nil {
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/v1beta1/clusters/{clusterId}/migrations/{migrationId}"
+	localVarPath = strings.Replace(localVarPath, "{"+"clusterId"+"}", url.PathEscape(parameterValueToString(r.clusterId, "clusterId")), -1)
+	localVarPath = strings.Replace(localVarPath, "{"+"migrationId"+"}", url.PathEscape(parameterValueToString(r.migrationId, "migrationId")), -1)
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{"application/json"}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err

@@ -65,14 +65,14 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 
 	var cmd = &cobra.Command{
 		Use:     "delete",
-		Short:   "Cancel a migration task",
+		Short:   "Delete a migration task",
 		Aliases: []string{"rm"},
 		Args:    cobra.NoArgs,
-		Example: fmt.Sprintf(`  Cancel a migration task in interactive mode:
-  $ %[1]s serverless migration delete
+		Example: fmt.Sprintf(`  Delete a migration task in interactive mode:
+	  $ %[1]s serverless migration delete
 
-  Cancel a migration task in non-interactive mode:
-  $ %[1]s serverless migration delete -c <cluster-id> --migration-id <task-id>`, config.CliName),
+	  Delete a migration task in non-interactive mode:
+	  $ %[1]s serverless migration delete -c <cluster-id> --migration-id <task-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
@@ -116,7 +116,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 
 			if !force {
 				if !h.IOStreams.CanPrompt {
-					return errors.New("The terminal doesn't support prompt, please run with --force to cancel the migration task")
+					return errors.New("The terminal doesn't support prompt, please run with --force to delete the migration task")
 				}
 				prompt := &survey.Input{
 					Message: fmt.Sprintf("%s %s %s", color.BlueString("Please type"), color.HiBlueString("yes"), color.BlueString("to confirm:")),
@@ -129,21 +129,21 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				if confirmation != "yes" {
-					return errors.New("Incorrect confirm string entered, skipping migration task cancellation")
+					return errors.New("Incorrect confirm string entered, skipping migration task deletion")
 				}
 			}
 
-			if _, err := d.CancelMigrationTask(ctx, clusterID, taskID); err != nil {
+			if _, err := d.DeleteMigration(ctx, clusterID, taskID); err != nil {
 				return errors.Trace(err)
 			}
 
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("migration task %s canceled", taskID))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("migration task %s deleted", taskID))
 			return nil
 		},
 	}
 
-	cmd.Flags().BoolVar(&force, flag.Force, false, "Cancel without confirmation.")
+	cmd.Flags().BoolVar(&force, flag.Force, false, "Delete without confirmation.")
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID that owns the migration task.")
-	cmd.Flags().StringP(flag.MigrationTaskID, flag.MigrationTaskIDShort, "", "ID of the migration task to cancel.")
+	cmd.Flags().StringP(flag.MigrationTaskID, flag.MigrationTaskIDShort, "", "ID of the migration task to delete.")
 	return cmd
 }

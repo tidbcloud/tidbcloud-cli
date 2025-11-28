@@ -104,7 +104,7 @@ paths:
       x-codegen-request-body-name: body
   /v1beta1/clusters/{clusterId}/migrations/{migrationId}:
     delete:
-      operationId: MigrationService_CancelMigration
+      operationId: MigrationService_DeleteMigration
       parameters:
       - description: The ID of the cluster.
         in: path
@@ -112,7 +112,7 @@ paths:
         required: true
         schema:
           type: string
-      - description: The ID of the migration to cancel.
+      - description: The ID of the migration to delete.
         in: path
         name: migrationId
         required: true
@@ -131,7 +131,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Status'
           description: An unexpected error response.
-      summary: Cancel a migration
+      summary: Delete a migration
       tags:
       - Migration
       x-codeSamples:
@@ -654,14 +654,14 @@ components:
          - CREATING: Task is being created.
          - RUNNING: Task is actively running.
          - PAUSED: Task is paused.
-         - CANCELED: Task has been canceled.
          - FAILED: Task failed with error.
+         - DELETING: Task is being deleted.
       enum:
       - CREATING
       - RUNNING
       - PAUSED
-      - CANCELED
       - FAILED
+      - DELETING
       type: string
     MigrationPrecheck:
       example:

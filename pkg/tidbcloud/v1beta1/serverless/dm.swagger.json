@@ -11,9 +11,15 @@
     }
   ],
   "host": "serverless.tidbapi.com",
-  "schemes": ["https"],
-  "consumes": ["application/json"],
-  "produces": ["application/json"],
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
   "paths": {
     "/v1beta1/clusters/{clusterId}/migrations": {
       "get": {
@@ -65,7 +71,9 @@
             "type": "string"
           }
         ],
-        "tags": ["Migration"],
+        "tags": [
+          "Migration"
+        ],
         "x-codeSamples": [
           {
             "label": "curl",
@@ -108,7 +116,9 @@
             }
           }
         ],
-        "tags": ["Migration"],
+        "tags": [
+          "Migration"
+        ],
         "x-codeSamples": [
           {
             "label": "curl",
@@ -152,7 +162,9 @@
             "type": "string"
           }
         ],
-        "tags": ["Migration"],
+        "tags": [
+          "Migration"
+        ],
         "x-codeSamples": [
           {
             "label": "curl",
@@ -162,8 +174,8 @@
         ]
       },
       "delete": {
-        "summary": "Cancel a migration",
-        "operationId": "MigrationService_CancelMigration",
+        "summary": "Delete a migration",
+        "operationId": "MigrationService_DeleteMigration",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -188,13 +200,15 @@
           },
           {
             "name": "migrationId",
-            "description": "The ID of the migration to cancel.",
+            "description": "The ID of the migration to delete.",
             "in": "path",
             "required": true,
             "type": "string"
           }
         ],
-        "tags": ["Migration"],
+        "tags": [
+          "Migration"
+        ],
         "x-codeSamples": [
           {
             "label": "curl",
@@ -247,7 +261,9 @@
             }
           }
         ],
-        "tags": ["Migration"],
+        "tags": [
+          "Migration"
+        ],
         "x-codeSamples": [
           {
             "label": "curl",
@@ -300,7 +316,9 @@
             }
           }
         ],
-        "tags": ["Migration"],
+        "tags": [
+          "Migration"
+        ],
         "x-codeSamples": [
           {
             "label": "curl",
@@ -345,7 +363,9 @@
             }
           }
         ],
-        "tags": ["Migration"],
+        "tags": [
+          "Migration"
+        ],
         "x-codeSamples": [
           {
             "label": "curl",
@@ -389,7 +409,9 @@
             "type": "string"
           }
         ],
-        "tags": ["Migration"],
+        "tags": [
+          "Migration"
+        ],
         "x-codeSamples": [
           {
             "label": "curl",
@@ -432,7 +454,9 @@
             "type": "string"
           }
         ],
-        "tags": ["Migration"],
+        "tags": [
+          "Migration"
+        ],
         "x-codeSamples": [
           {
             "label": "curl",
@@ -514,11 +538,19 @@
           ]
         }
       },
-      "required": ["connType", "port", "user", "password"]
+      "required": [
+        "connType",
+        "port",
+        "user",
+        "password"
+      ]
     },
     "ConnType": {
       "type": "string",
-      "enum": ["PUBLIC", "PRIVATE_LINK"],
+      "enum": [
+        "PUBLIC",
+        "PRIVATE_LINK"
+      ],
       "description": "The connection type used to connect to the source database.\n\n - PUBLIC: Connect over the public internet.\n - PRIVATE_LINK: Connect via Private Link/Private Endpoint."
     },
     "CreateMigrationPrecheckResp": {
@@ -681,8 +713,14 @@
     },
     "Migration.State": {
       "type": "string",
-      "enum": ["CREATING", "RUNNING", "PAUSED", "CANCELED", "FAILED"],
-      "description": "Overall state of a migration.\n\n - CREATING: Task is being created.\n - RUNNING: Task is actively running.\n - PAUSED: Task is paused.\n - CANCELED: Task has been canceled.\n - FAILED: Task failed with error."
+      "enum": [
+        "CREATING",
+        "RUNNING",
+        "PAUSED",
+        "FAILED",
+        "DELETING"
+      ],
+      "description": "Overall state of a migration.\n\n - CREATING: Task is being created.\n - RUNNING: Task is actively running.\n - PAUSED: Task is paused.\n - FAILED: Task failed with error.\n - DELETING: Task is being deleted."
     },
     "MigrationPrecheck": {
       "type": "object",
@@ -738,7 +776,13 @@
     },
     "MigrationPrecheck.Status": {
       "type": "string",
-      "enum": ["RUNNING", "FINISHED", "PENDING", "FAILED", "CANCELED"],
+      "enum": [
+        "RUNNING",
+        "FINISHED",
+        "PENDING",
+        "FAILED",
+        "CANCELED"
+      ],
       "description": " - RUNNING: Precheck is in progress.\n - FINISHED: Precheck finished successfully.\n - PENDING: Precheck is pending.\n - FAILED: Precheck failed.\n - CANCELED: Precheck is canceled."
     },
     "MigrationService.CreateMigrationBody": {
@@ -773,7 +817,12 @@
           ]
         }
       },
-      "required": ["displayName", "sources", "target", "mode"]
+      "required": [
+        "displayName",
+        "sources",
+        "target",
+        "mode"
+      ]
     },
     "MigrationService.PauseMigrationBody": {
       "type": "object",
@@ -811,7 +860,12 @@
           ]
         }
       },
-      "required": ["displayName", "sources", "target", "mode"]
+      "required": [
+        "displayName",
+        "sources",
+        "target",
+        "mode"
+      ]
     },
     "MigrationService.ResumeMigrationBody": {
       "type": "object",
@@ -862,7 +916,11 @@
     },
     "PrecheckItem.Status": {
       "type": "string",
-      "enum": ["SUCCESS", "WARNING", "FAILED"],
+      "enum": [
+        "SUCCESS",
+        "WARNING",
+        "FAILED"
+      ],
       "description": " - SUCCESS: Check passed successfully.\n - WARNING: Check resulted in a warning.\n - FAILED: Check failed."
     },
     "PrecheckItemType": {
@@ -998,11 +1056,17 @@
           ]
         }
       },
-      "required": ["connProfile", "sourceType"]
+      "required": [
+        "connProfile",
+        "sourceType"
+      ]
     },
     "Source.SourceType": {
       "type": "string",
-      "enum": ["MYSQL", "ALICLOUD_RDS_MYSQL"],
+      "enum": [
+        "MYSQL",
+        "ALICLOUD_RDS_MYSQL"
+      ],
       "description": "The source database type.\n\n - MYSQL: Self-managed MySQL.\n - ALICLOUD_RDS_MYSQL: Alibaba Cloud RDS for MySQL."
     },
     "Status": {
@@ -1091,12 +1155,22 @@
     },
     "SubTask.Stage": {
       "type": "string",
-      "enum": ["RUNNING", "PAUSED", "FAILED", "FINISHED", "UNKNOWN"],
+      "enum": [
+        "RUNNING",
+        "PAUSED",
+        "FAILED",
+        "FINISHED",
+        "UNKNOWN"
+      ],
       "description": "The high-level lifecycle stage of a subtask.\n\n - RUNNING: Subtask is running.\n - PAUSED: Subtask is paused.\n - FAILED: Subtask failed.\n - FINISHED: Subtask finished successfully.\n - UNKNOWN: Subtask stage is unknown."
     },
     "SubTask.Step": {
       "type": "string",
-      "enum": ["DUMP", "LOAD", "SYNC"],
+      "enum": [
+        "DUMP",
+        "LOAD",
+        "SYNC"
+      ],
       "description": "The current step within a subtask.\n\n - DUMP: Dump/export data from source.\n - LOAD: Load/import data into target.\n - SYNC: Sync/replicate binlog changes."
     },
     "SyncDetail": {
@@ -1146,11 +1220,17 @@
           "description": "Target database password."
         }
       },
-      "required": ["user", "password"]
+      "required": [
+        "user",
+        "password"
+      ]
     },
     "TaskMode": {
       "type": "string",
-      "enum": ["ALL", "INCREMENTAL"],
+      "enum": [
+        "ALL",
+        "INCREMENTAL"
+      ],
       "description": "Migration task mode.\n\n - ALL: Full + incremental migration (all phases).\n - INCREMENTAL: Incremental-only migration (replication)."
     }
   }

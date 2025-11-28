@@ -100,7 +100,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			pageSize := int32(h.QueryPageSize)
-			resp, err := d.ListMigrationTasks(ctx, clusterID, &pageSize, nil, nil)
+			resp, err := d.ListMigrations(ctx, clusterID, &pageSize, nil, nil)
 			if err != nil {
 				return errors.Trace(err)
 			}

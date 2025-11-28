@@ -105,7 +105,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				Mode:        mode,
 			}
 
-			resp, err := d.CreateMigrationTask(ctx, clusterID, createBody)
+			resp, err := d.CreateMigration(ctx, clusterID, createBody)
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -117,7 +117,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the target cluster.")
-	cmd.Flags().String(flag.DisplayName, "", "Display name for the migration.")
+	cmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "Display name for the migration.")
 	cmd.Flags().String(flag.MigrationConfigFile, "", "Path to a migration config JSON file. Use \"ticloud serverless migration template --modetype <mode>\" to print templates.")
 	cmd.Flags().Bool(flag.MigrationDryRun, false, "Run a migration precheck (dry run) with the provided inputs without creating a task.")
 
@@ -153,7 +153,7 @@ func runMigrationPrecheck(ctx context.Context, client cloud.TiDBCloudClient, clu
 	defer ticker.Stop()
 	pollCtx, cancel := context.WithTimeout(ctx, precheckPollTimeout)
 	defer cancel()
-	
+
 	for {
 		select {
 		case <-pollCtx.Done():

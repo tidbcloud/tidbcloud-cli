@@ -26,6 +26,7 @@ const (
 	CSVSkipHeader        string = "csv.skip-header"
 	CSVNotNull           string = "csv.not-null"
 	DisplayName          string = "display-name"
+	DisplayNameShort     string = "n"
 	BranchID             string = "branch-id"
 	BranchIDShort        string = "b"
 	Debug                string = "debug"

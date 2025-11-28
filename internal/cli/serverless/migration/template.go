@@ -142,60 +142,60 @@ const (
 )
 
 type templateVariant struct {
-    heading string
-    body    string
+	heading string
+	body    string
 }
 
 var allowedTemplateModes = []pkgmigration.TaskMode{pkgmigration.TASKMODE_ALL, pkgmigration.TASKMODE_INCREMENTAL}
 
 var definitionTemplates = map[pkgmigration.TaskMode]templateVariant{
-    pkgmigration.TASKMODE_ALL: {
+	pkgmigration.TASKMODE_ALL: {
 		heading: "Definition template (mode = ALL)",
 		body:    migrationDefinitionAllTemplate,
 	},
-    pkgmigration.TASKMODE_INCREMENTAL: {
+	pkgmigration.TASKMODE_INCREMENTAL: {
 		heading: "Definition template (mode = INCREMENTAL)",
 		body:    migrationDefinitionIncrementalTemplate,
 	},
 }
 
 func TemplateCmd(h *internal.Helper) *cobra.Command {
-    cmd := &cobra.Command{
-        Use:     "template",
-        Short:   "Show migration JSON templates",
-        Args:    cobra.NoArgs,
-        Example: fmt.Sprintf("  Show the ALL mode migration template:\n  $ %[1]s serverless migration template --modetype all\n\n  Show the INCREMENTAL migration template:\n  $ %[1]s serverless migration template --modetype incremental\n", config.CliName),
-        PreRunE: func(cmd *cobra.Command, args []string) error {
-            return cmd.MarkFlagRequired(flag.MigrationModeType)
-        },
-        RunE: func(cmd *cobra.Command, args []string) error {
-            modeValue, err := cmd.Flags().GetString(flag.MigrationModeType)
+	cmd := &cobra.Command{
+		Use:     "template",
+		Short:   "Show migration JSON templates",
+		Args:    cobra.NoArgs,
+		Example: fmt.Sprintf("  Show the ALL mode migration template:\n  $ %[1]s serverless migration template --modetype all\n\n  Show the INCREMENTAL migration template:\n  $ %[1]s serverless migration template --modetype incremental\n", config.CliName),
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return cmd.MarkFlagRequired(flag.MigrationModeType)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			modeValue, err := cmd.Flags().GetString(flag.MigrationModeType)
 			if err != nil {
 				return err
 			}
-            mode, err := parseTemplateMode(modeValue)
-            if err != nil {
-                return err
-            }
-            return renderMigrationTemplate(h, mode)
+			mode, err := parseTemplateMode(modeValue)
+			if err != nil {
+				return err
+			}
+			return renderMigrationTemplate(h, mode)
 		},
 	}
 
-    cmd.Flags().String(
-        flag.MigrationModeType,
-        "",
-        fmt.Sprintf(
-            "Migration mode template to show, one of [%s].",
-            strings.Join(allowedTemplateModeStrings(), ", "),
-        ),
-    )
+	cmd.Flags().String(
+		flag.MigrationModeType,
+		"",
+		fmt.Sprintf(
+			"Migration mode template to show, one of [%s].",
+			strings.Join(allowedTemplateModeStrings(), ", "),
+		),
+	)
 	return cmd
 }
 
 func renderMigrationTemplate(h *internal.Helper, mode pkgmigration.TaskMode) error {
 	variant, ok := definitionTemplates[mode]
 	if !ok {
-        return fmt.Errorf("unknown mode %q, allowed values: %s", mode, strings.Join(allowedTemplateModeStrings(), ", "))
+		return fmt.Errorf("unknown mode %q, allowed values: %s", mode, strings.Join(allowedTemplateModeStrings(), ", "))
 	}
 
 	fmt.Fprintln(h.IOStreams.Out, color.GreenString(variant.heading))
@@ -204,22 +204,22 @@ func renderMigrationTemplate(h *internal.Helper, mode pkgmigration.TaskMode) err
 }
 
 func parseTemplateMode(raw string) (pkgmigration.TaskMode, error) {
-    trimmed := strings.TrimSpace(raw)
-    if trimmed == "" {
-        return "", fmt.Errorf("mode is required; use --%s", flag.MigrationModeType)
-    }
-    normalized := strings.ToUpper(trimmed)
-    mode := pkgmigration.TaskMode(normalized)
-    if _, ok := definitionTemplates[mode]; ok {
-        return mode, nil
-    }
-    return "", fmt.Errorf("unknown mode %q, allowed values: %s", trimmed, strings.Join(allowedTemplateModeStrings(), ", "))
+	trimmed := strings.TrimSpace(raw)
+	if trimmed == "" {
+		return "", fmt.Errorf("mode is required; use --%s", flag.MigrationModeType)
+	}
+	normalized := strings.ToUpper(trimmed)
+	mode := pkgmigration.TaskMode(normalized)
+	if _, ok := definitionTemplates[mode]; ok {
+		return mode, nil
+	}
+	return "", fmt.Errorf("unknown mode %q, allowed values: %s", trimmed, strings.Join(allowedTemplateModeStrings(), ", "))
 }
 
 func allowedTemplateModeStrings() []string {
-    values := make([]string, 0, len(allowedTemplateModes))
-    for _, mode := range allowedTemplateModes {
-        values = append(values, strings.ToLower(string(mode)))
-    }
-    return values
+	values := make([]string, 0, len(allowedTemplateModes))
+	for _, mode := range allowedTemplateModes {
+		values = append(values, strings.ToLower(string(mode)))
+	}
+	return values
 }

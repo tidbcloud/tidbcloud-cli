@@ -109,7 +109,7 @@ func ResumeCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			emptyBody := map[string]interface{}{}
-			if _, err := d.ResumeMigrationTask(ctx, clusterID, taskID, &emptyBody); err != nil {
+			if _, err := d.ResumeMigration(ctx, clusterID, taskID, &emptyBody); err != nil {
 				return errors.Trace(err)
 			}
 

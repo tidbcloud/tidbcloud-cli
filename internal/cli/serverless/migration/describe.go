@@ -111,7 +111,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 			}
 
-			resp, err := d.GetMigrationTask(ctx, clusterID, taskID)
+			resp, err := d.GetMigration(ctx, clusterID, taskID)
 			if err != nil {
 				return errors.Trace(err)
 			}

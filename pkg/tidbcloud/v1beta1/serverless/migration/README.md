@@ -78,9 +78,9 @@ All URIs are relative to *https://serverless.tidbapi.com*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*MigrationAPI* | [**MigrationServiceCancelMigration**](docs/MigrationAPI.md#migrationservicecancelmigration) | **Delete** /v1beta1/clusters/{clusterId}/migrations/{migrationId} | Cancel a migration
 *MigrationAPI* | [**MigrationServiceCancelPrecheck**](docs/MigrationAPI.md#migrationservicecancelprecheck) | **Delete** /v1beta1/clusters/{clusterId}/migrationPrechecks/{precheckId} | Cancel a migration precheck
 *MigrationAPI* | [**MigrationServiceCreateMigration**](docs/MigrationAPI.md#migrationservicecreatemigration) | **Post** /v1beta1/clusters/{clusterId}/migrations | Create a migration
+*MigrationAPI* | [**MigrationServiceDeleteMigration**](docs/MigrationAPI.md#migrationservicedeletemigration) | **Delete** /v1beta1/clusters/{clusterId}/migrations/{migrationId} | Delete a migration
 *MigrationAPI* | [**MigrationServiceGetMigration**](docs/MigrationAPI.md#migrationservicegetmigration) | **Get** /v1beta1/clusters/{clusterId}/migrations/{migrationId} | Get a migration
 *MigrationAPI* | [**MigrationServiceGetPrecheck**](docs/MigrationAPI.md#migrationservicegetprecheck) | **Get** /v1beta1/clusters/{clusterId}/migrationPrechecks/{precheckId} | Get a migration precheck
 *MigrationAPI* | [**MigrationServiceListMigrations**](docs/MigrationAPI.md#migrationservicelistmigrations) | **Get** /v1beta1/clusters/{clusterId}/migrations | List migrations
