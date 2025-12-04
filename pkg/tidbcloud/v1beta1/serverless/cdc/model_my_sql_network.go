@@ -22,6 +22,7 @@ var _ MappedNullable = &MySQLNetwork{}
 type MySQLNetwork struct {
 	NetworkType          MySQLNetworkTypeEnum `json:"networkType"`
 	PublicEndpoint       *string              `json:"publicEndpoint,omitempty"`
+	PrivateLink          *MySQLPrivateLink    `json:"privateLink,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -101,6 +102,38 @@ func (o *MySQLNetwork) SetPublicEndpoint(v string) {
 	o.PublicEndpoint = &v
 }
 
+// GetPrivateLink returns the PrivateLink field value if set, zero value otherwise.
+func (o *MySQLNetwork) GetPrivateLink() MySQLPrivateLink {
+	if o == nil || IsNil(o.PrivateLink) {
+		var ret MySQLPrivateLink
+		return ret
+	}
+	return *o.PrivateLink
+}
+
+// GetPrivateLinkOk returns a tuple with the PrivateLink field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *MySQLNetwork) GetPrivateLinkOk() (*MySQLPrivateLink, bool) {
+	if o == nil || IsNil(o.PrivateLink) {
+		return nil, false
+	}
+	return o.PrivateLink, true
+}
+
+// HasPrivateLink returns a boolean if a field has been set.
+func (o *MySQLNetwork) HasPrivateLink() bool {
+	if o != nil && !IsNil(o.PrivateLink) {
+		return true
+	}
+
+	return false
+}
+
+// SetPrivateLink gets a reference to the given MySQLPrivateLink and assigns it to the PrivateLink field.
+func (o *MySQLNetwork) SetPrivateLink(v MySQLPrivateLink) {
+	o.PrivateLink = &v
+}
+
 func (o MySQLNetwork) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -114,6 +147,9 @@ func (o MySQLNetwork) ToMap() (map[string]interface{}, error) {
 	toSerialize["networkType"] = o.NetworkType
 	if !IsNil(o.PublicEndpoint) {
 		toSerialize["publicEndpoint"] = o.PublicEndpoint
+	}
+	if !IsNil(o.PrivateLink) {
+		toSerialize["privateLink"] = o.PrivateLink
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -160,6 +196,7 @@ func (o *MySQLNetwork) UnmarshalJSON(data []byte) (err error) {
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "networkType")
 		delete(additionalProperties, "publicEndpoint")
+		delete(additionalProperties, "privateLink")
 		o.AdditionalProperties = additionalProperties
 	}
 

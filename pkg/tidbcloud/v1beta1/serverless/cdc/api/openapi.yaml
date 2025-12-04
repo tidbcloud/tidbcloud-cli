@@ -535,6 +535,8 @@ components:
           items:
             $ref: '#/components/schemas/EventFilterRule'
           type: array
+        caseSensitive:
+          type: boolean
       type: object
     ChangefeedService.CreateChangefeedBody:
       properties:
@@ -842,6 +844,8 @@ components:
           items:
             $ref: '#/components/schemas/Kafka.ColumnSelector'
           type: array
+        outputRawChangeEvent:
+          type: boolean
       type: object
     Kafka.Authentication:
       properties:
@@ -888,8 +892,8 @@ components:
       properties:
         networkType:
           $ref: '#/components/schemas/KafkaNetworkType.Enum'
-        privateLinkServiceName:
-          type: string
+        privateLink:
+          $ref: '#/components/schemas/Kafka.PrivateLink'
         publicEndpoints:
           type: string
       type: object
@@ -907,6 +911,14 @@ components:
           items:
             type: string
           type: array
+      type: object
+    Kafka.PrivateLink:
+      properties:
+        privateLinkConnectionId:
+          type: string
+        port:
+          format: int32
+          type: integer
       type: object
     Kafka.TopicPartitionConfig:
       properties:
@@ -1042,8 +1054,21 @@ components:
           $ref: '#/components/schemas/MySQLNetworkType.Enum'
         publicEndpoint:
           type: string
+        privateLink:
+          $ref: '#/components/schemas/MySQL.PrivateLink'
       required:
       - networkType
+      type: object
+    MySQL.PrivateLink:
+      properties:
+        privateLinkConnectionId:
+          type: string
+        port:
+          format: int32
+          type: integer
+      required:
+      - port
+      - privateLinkConnectionId
       type: object
     MySQLNetworkType.Enum:
       description: |2-

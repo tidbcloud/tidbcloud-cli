@@ -25,6 +25,7 @@ type Kafka struct {
 	DataFormat           *KafkaDataFormat           `json:"dataFormat,omitempty"`
 	TopicPartitionConfig *KafkaTopicPartitionConfig `json:"topicPartitionConfig,omitempty"`
 	ColumnSelectors      []KafkaColumnSelector      `json:"columnSelectors,omitempty"`
+	OutputRawChangeEvent *bool                      `json:"outputRawChangeEvent,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -239,6 +240,38 @@ func (o *Kafka) SetColumnSelectors(v []KafkaColumnSelector) {
 	o.ColumnSelectors = v
 }
 
+// GetOutputRawChangeEvent returns the OutputRawChangeEvent field value if set, zero value otherwise.
+func (o *Kafka) GetOutputRawChangeEvent() bool {
+	if o == nil || IsNil(o.OutputRawChangeEvent) {
+		var ret bool
+		return ret
+	}
+	return *o.OutputRawChangeEvent
+}
+
+// GetOutputRawChangeEventOk returns a tuple with the OutputRawChangeEvent field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Kafka) GetOutputRawChangeEventOk() (*bool, bool) {
+	if o == nil || IsNil(o.OutputRawChangeEvent) {
+		return nil, false
+	}
+	return o.OutputRawChangeEvent, true
+}
+
+// HasOutputRawChangeEvent returns a boolean if a field has been set.
+func (o *Kafka) HasOutputRawChangeEvent() bool {
+	if o != nil && !IsNil(o.OutputRawChangeEvent) {
+		return true
+	}
+
+	return false
+}
+
+// SetOutputRawChangeEvent gets a reference to the given bool and assigns it to the OutputRawChangeEvent field.
+func (o *Kafka) SetOutputRawChangeEvent(v bool) {
+	o.OutputRawChangeEvent = &v
+}
+
 func (o Kafka) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -266,6 +299,9 @@ func (o Kafka) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.ColumnSelectors) {
 		toSerialize["columnSelectors"] = o.ColumnSelectors
+	}
+	if !IsNil(o.OutputRawChangeEvent) {
+		toSerialize["outputRawChangeEvent"] = o.OutputRawChangeEvent
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -295,6 +331,7 @@ func (o *Kafka) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "dataFormat")
 		delete(additionalProperties, "topicPartitionConfig")
 		delete(additionalProperties, "columnSelectors")
+		delete(additionalProperties, "outputRawChangeEvent")
 		o.AdditionalProperties = additionalProperties
 	}
 
