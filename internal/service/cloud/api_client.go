@@ -793,12 +793,10 @@ func NewApiClient(rt http.RoundTripper, serverlessEndpoint string, iamEndpoint s
 	migrationCfg.UserAgent = userAgent
 
 	return branch.NewAPIClient(branchCfg), cluster.NewAPIClient(clusterCfg),
-		br.NewAPIClient(backupRestoreCfg),
-		imp.NewAPIClient(importCfg), export.NewAPIClient(exportCfg),
-		iam.NewAPIClient(iamCfg), auditlog.NewAPIClient(auditLogCfg),
-		cdc.NewAPIClient(cdcCfg), privatelink.NewAPIClient(privateLinkCfg),
-		migration.NewAPIClient(migrationCfg), nil
-
+		br.NewAPIClient(backupRestoreCfg), imp.NewAPIClient(importCfg),
+		export.NewAPIClient(exportCfg), iam.NewAPIClient(iamCfg),
+		auditlog.NewAPIClient(auditLogCfg), cdc.NewAPIClient(cdcCfg),
+		privatelink.NewAPIClient(privateLinkCfg), migration.NewAPIClient(migrationCfg), nil
 }
 
 func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {
