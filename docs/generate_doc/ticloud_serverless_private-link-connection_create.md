@@ -22,13 +22,13 @@ ticloud serverless private-link-connection create [flags]
 ### Options
 
 ```
-      --alicloud.endpoint-servicename string   Alicloud endpoint service name.
-      --aws.endpoint-service-name string       AWS endpoint service name.
-      --aws.endpoint-service-region string     AWS endpoint service region.
-  -c, --cluster-id string                      The cluster ID.
-      --display-name string                    Display name for the private link connection.
-  -h, --help                                   help for create
-      --type string                            Type of the private link connection, one of ["AWS_ENDPOINT_SERVICE" "ALICLOUD_ENDPOINT_SERVICE"]
+      --alicloud.endpoint-service-name string   Alicloud endpoint service name.
+      --aws.endpoint-service-name string        AWS endpoint service name.
+      --aws.endpoint-service-region string      AWS endpoint service region.
+  -c, --cluster-id string                       The cluster ID.
+      --display-name string                     Display name for the private link connection.
+  -h, --help                                    help for create
+      --type string                             Type of the private link connection, one of ["AWS_ENDPOINT_SERVICE" "ALICLOUD_ENDPOINT_SERVICE"]
 ```
 
 ### Options inherited from parent commands
