@@ -309,7 +309,7 @@ func taskModeValues() []string {
 	return values
 }
 
-// standardizeJSON accepts JSON With Commas and Comments(JWCC) see 
+// standardizeJSON accepts JSON With Commas and Comments(JWCC) see
 // https://nigeltao.github.io/blog/2021/json-with-commas-comments.html) and
 // returns a standard JSON byte slice ready for json.Unmarshal.
 func standardizeJSON(b []byte) ([]byte, error) {
