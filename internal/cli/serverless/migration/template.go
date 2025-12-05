@@ -39,17 +39,20 @@ const (
     // List at least one migration source
     "sources": [
         {
-            // Required: source database type. Supported values: SOURCE_TYPE_MYSQL, SOURCE_TYPE_ALICLOUD_RDS_MYSQL
-            "sourceType": "SOURCE_TYPE_MYSQL",
+            // Required: source database type. Supported values: MYSQL, ALICLOUD_RDS_MYSQL, AWS_RDS_MYSQL
+            "sourceType": "MYSQL",
             "connProfile": {
-                // Optional connection type. Supported values: PUBLIC, PRIVATE_LINK
+                // Required connection type. Supported values: PUBLIC, PRIVATE_LINK
+                // PUBLIC connections require host
                 "connType": "PUBLIC",
+                "host": "10.0.0.8",
+                // PRIVATE_LINK connections use endpointId. Get endpointId by 'ticloud plc' commands.
+                "connType": "PRIVATE_LINK",
+                "endpointId": "pl-xxxxxxxx",
                 "host": "10.0.0.2",
                 "port": 3306,
                 "user": "dm_sync_user",
                 "password": "Passw0rd!",
-                // Optional fields below are needed only for private link or TLS
-                "endpointId": "pl-xxxxxxxx",
                 // optional TLS settings
                 "security": {
                     // TLS materials must be Base64 encoded
@@ -93,16 +96,19 @@ const (
     },
     "sources": [
         {
-            // Required: source database type. Supported values: SOURCE_TYPE_MYSQL, SOURCE_TYPE_ALICLOUD_RDS_MYSQL
-            "sourceType": "SOURCE_TYPE_MYSQL",
+            // Required: source database type. Supported values: MYSQL, ALICLOUD_RDS_MYSQL, AWS_RDS_MYSQL
+            "sourceType": "MYSQL",
             "connProfile": {
-                // Optional connection type. Supported values: PUBLIC, PRIVATE_LINK
+                // Required connection type. Supported values: PUBLIC, PRIVATE_LINK
+                // PUBLIC connections require host
                 "connType": "PUBLIC",
-                "host": "10.0.0.2",
+                "host": "10.0.0.8",
+                // PRIVATE_LINK connections use endpointId. Get endpointId by 'ticloud plc' commands.
+                "connType": "PRIVATE_LINK",
+                "endpointId": "pl-xxxxxxxx",
                 "port": 3306,
                 "user": "dm_sync_user",
                 "password": "Passw0rd!",
-                "endpointId": "pl-xxxxxxxx",
                 // optional TLS settings
                 "security": {
                     // TLS materials must be Base64 encoded
@@ -164,12 +170,12 @@ func TemplateCmd(h *internal.Helper) *cobra.Command {
 		Use:     "template",
 		Short:   "Show migration JSON templates",
 		Args:    cobra.NoArgs,
-		Example: fmt.Sprintf("  Show the ALL mode migration template:\n  $ %[1]s serverless migration template --modetype all\n\n  Show the INCREMENTAL migration template:\n  $ %[1]s serverless migration template --modetype incremental\n", config.CliName),
+		Example: fmt.Sprintf("  Show the ALL mode migration template:\n  $ %[1]s serverless migration template --mode all\n\n  Show the INCREMENTAL migration template:\n  $ %[1]s serverless migration template --mode incremental\n", config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return cmd.MarkFlagRequired(flag.MigrationModeType)
+			return cmd.MarkFlagRequired(flag.MigrationMode)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			modeValue, err := cmd.Flags().GetString(flag.MigrationModeType)
+			modeValue, err := cmd.Flags().GetString(flag.MigrationMode)
 			if err != nil {
 				return err
 			}
@@ -182,7 +188,7 @@ func TemplateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	cmd.Flags().String(
-		flag.MigrationModeType,
+		flag.MigrationMode,
 		"",
 		fmt.Sprintf(
 			"Migration mode template to show, one of [%s].",
@@ -206,7 +212,7 @@ func renderMigrationTemplate(h *internal.Helper, mode pkgmigration.TaskMode) err
 func parseTemplateMode(raw string) (pkgmigration.TaskMode, error) {
 	trimmed := strings.TrimSpace(raw)
 	if trimmed == "" {
-		return "", fmt.Errorf("mode is required; use --%s", flag.MigrationModeType)
+		return "", fmt.Errorf("mode is required; use --%s", flag.MigrationMode)
 	}
 	normalized := strings.ToUpper(trimmed)
 	mode := pkgmigration.TaskMode(normalized)

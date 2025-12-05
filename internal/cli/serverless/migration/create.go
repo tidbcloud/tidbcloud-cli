@@ -26,6 +26,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
+	"github.com/tailscale/hujson"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
@@ -41,7 +42,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		Short: "Create a migration",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Create a migration:
-	$ %[1]s serverless migration create -c <cluster-id> --display-name <name> --config-file <file-path> --dryrun
+	$ %[1]s serverless migration create -c <cluster-id> --display-name <name> --config-file <file-path> --dry-run
 	$ %[1]s serverless migration create -c <cluster-id> --display-name <name> --config-file <file-path>
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -118,7 +119,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the target cluster.")
 	cmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "Display name for the migration.")
-	cmd.Flags().String(flag.MigrationConfigFile, "", "Path to a migration config JSON file. Use \"ticloud serverless migration template --modetype <mode>\" to print templates.")
+	cmd.Flags().String(flag.MigrationConfigFile, "", "Path to a migration config JSON file. Use \"ticloud serverless migration template --mode <mode>\" to print templates.")
 	cmd.Flags().Bool(flag.MigrationDryRun, false, "Run a migration precheck (dry run) with the provided inputs without creating a task.")
 
 	return cmd
@@ -154,6 +155,7 @@ func runMigrationPrecheck(ctx context.Context, client cloud.TiDBCloudClient, clu
 	pollCtx, cancel := context.WithTimeout(ctx, precheckPollTimeout)
 	defer cancel()
 
+	// Poll precheck status until it finishes or the overall timeout is hit.
 	for {
 		select {
 		case <-pollCtx.Done():
@@ -264,7 +266,11 @@ func parseMigrationDefinition(value string) ([]pkgmigration.Source, pkgmigration
 		Target  *pkgmigration.Target  `json:"target"`
 		Mode    string                `json:"mode"`
 	}
-	if err := json.Unmarshal([]byte(trimmed), &payload); err != nil {
+	stdJson, err := standardizeJSON([]byte(trimmed))
+	if err != nil {
+		return nil, pkgmigration.Target{}, "", errors.Annotate(err, "invalid migration definition JSON")
+	}
+	if err := json.Unmarshal(stdJson, &payload); err != nil {
 		return nil, pkgmigration.Target{}, "", errors.Annotate(err, "invalid migration definition JSON")
 	}
 	if len(payload.Sources) == 0 {
@@ -301,4 +307,16 @@ func taskModeValues() []string {
 		values = append(values, string(mode))
 	}
 	return values
+}
+
+// standardizeJSON accepts JSON With Commas and Comments(JWCC) see 
+// https://nigeltao.github.io/blog/2021/json-with-commas-comments.html) and
+// returns a standard JSON byte slice ready for json.Unmarshal.
+func standardizeJSON(b []byte) ([]byte, error) {
+	ast, err := hujson.Parse(b)
+	if err != nil {
+		return b, err
+	}
+	ast.Standardize()
+	return ast.Pack(), nil
 }

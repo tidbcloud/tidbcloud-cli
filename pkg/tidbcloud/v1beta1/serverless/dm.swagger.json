@@ -1065,9 +1065,10 @@
       "type": "string",
       "enum": [
         "MYSQL",
-        "ALICLOUD_RDS_MYSQL"
+        "ALICLOUD_RDS_MYSQL",
+        "AWS_RDS_MYSQL"
       ],
-      "description": "The source database type.\n\n - MYSQL: Self-managed MySQL.\n - ALICLOUD_RDS_MYSQL: Alibaba Cloud RDS for MySQL."
+      "description": "The source database type.\n\n - MYSQL: Self-managed MySQL.\n - ALICLOUD_RDS_MYSQL: Alibaba Cloud RDS for MySQL.\n - AWS_RDS_MYSQL: Amazon RDS for MySQL."
     },
     "Status": {
       "type": "object",

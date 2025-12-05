@@ -964,9 +964,11 @@ components:
 
          - MYSQL: Self-managed MySQL.
          - ALICLOUD_RDS_MYSQL: Alibaba Cloud RDS for MySQL.
+         - AWS_RDS_MYSQL: Amazon RDS for MySQL.
       enum:
       - MYSQL
       - ALICLOUD_RDS_MYSQL
+      - AWS_RDS_MYSQL
       type: string
     Status:
       example:
