@@ -1,0 +1,1238 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "TiDB Cloud Starter and Essential API",
+    "description": "TiDB Cloud Starter and Essential API",
+    "version": "v1beta1"
+  },
+  "tags": [
+    {
+      "name": "MigrationService"
+    }
+  ],
+  "host": "serverless.tidbapi.com",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1beta1/clusters/{clusterId}/migrations": {
+      "get": {
+        "summary": "List migrations",
+        "operationId": "MigrationService_ListMigrations",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListMigrationsResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster to list migrations for.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageToken",
+            "description": "Optional. The page token, default is empty.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "Optional. The page size, default is 10.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "default": 10
+          },
+          {
+            "name": "orderBy",
+            "description": "Specifies the sorting order of results. Use a comma-separated list of field names, optionally appending `desc` for descending order. For example, `createTime desc`. By default, fields are sorted in ascending order.\n\nSupported field: `createTime`.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Migration"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrations' \\\n+--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n+--header 'Accept: application/json'"
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create a migration",
+        "operationId": "MigrationService_CreateMigration",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Migration"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster to create the migration in.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MigrationService.CreateMigrationBody"
+            }
+          }
+        ],
+        "tags": [
+          "Migration"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrations' \\\n+--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n+--header 'Content-Type: application/json' \\\n+--header 'Accept: application/json' \\\n+--data '{\\n  \"name\": \"my-migration\",\\n  \"sources\": [\\n    {\\n      \"connProfile\": {\\n        \"connType\": \"PUBLIC\",\\n        \"host\": \"1.2.3.4\",\\n        \"port\": 3306,\\n        \"user\": \"root\",\\n        \"password\": \"secret\"\\n      },\\n      \"sourceType\": \"MYSQL\"\\n    }\\n  ],\\n  \"target\": {\\n    \"user\": \"tidb\",\\n    \"password\": \"tidb_password\"\\n  },\\n  \"mode\": \"ALL\"\\n}'"
+          }
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/migrations/{migrationId}": {
+      "get": {
+        "summary": "Get a migration",
+        "operationId": "MigrationService_GetMigration",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Migration"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "migrationId",
+            "description": "The ID of the migration.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Migration"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrations/{migration_id}' \\\n+--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n+--header 'Accept: application/json'"
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Delete a migration",
+        "operationId": "MigrationService_DeleteMigration",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/Migration"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "migrationId",
+            "description": "The ID of the migration to delete.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Migration"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location --request DELETE 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrations/{migration_id}' \\\n+--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n+--header 'Accept: application/json'"
+          }
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/migrations/{migrationId}:pause": {
+      "post": {
+        "summary": "Pause a running migration",
+        "operationId": "MigrationService_PauseMigration",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "migrationId",
+            "description": "The ID of the migration to pause.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MigrationService.PauseMigrationBody"
+            }
+          }
+        ],
+        "tags": [
+          "Migration"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location --request POST 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrations/{migration_id}:pause' \\\n+--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n+--header 'Content-Type: application/json' \\\n+--header 'Accept: application/json'"
+          }
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/migrations/{migrationId}:resume": {
+      "post": {
+        "summary": "Resume a paused migration",
+        "operationId": "MigrationService_ResumeMigration",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "migrationId",
+            "description": "The ID of the migration to resume.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MigrationService.ResumeMigrationBody"
+            }
+          }
+        ],
+        "tags": [
+          "Migration"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location --request POST 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrations/{migration_id}:resume' \\\n+--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n+--header 'Content-Type: application/json' \\\n+--header 'Accept: application/json'"
+          }
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/migrationPrechecks": {
+      "post": {
+        "summary": "Run a precheck for a migration",
+        "operationId": "MigrationService_Precheck",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateMigrationPrecheckResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster to create the migration in.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MigrationService.PrecheckBody"
+            }
+          }
+        ],
+        "tags": [
+          "Migration"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrationPrechecks' \\\n+--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n+--header 'Content-Type: application/json' \\\n+--header 'Accept: application/json' \\\n+--data '{\\n  \"name\": \"my-migration\",\\n  \"sources\": [\\n    {\\n      \"connProfile\": {\\n        \"connType\": \"PUBLIC\",\\n        \"host\": \"1.2.3.4\",\\n        \"port\": 3306,\\n        \"user\": \"root\",\\n        \"password\": \"secret\"\\n      },\\n      \"sourceType\": \"MYSQL\"\\n    }\\n  ],\\n  \"target\": {\\n    \"user\": \"tidb\",\\n    \"password\": \"tidb_password\"\\n  },\\n  \"mode\": \"ALL\"\\n}'"
+          }
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/migrationPrechecks/{precheckId}": {
+      "get": {
+        "summary": "Get a migration precheck",
+        "operationId": "MigrationService_GetPrecheck",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/MigrationPrecheck"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "precheckId",
+            "description": "The ID of the precheck.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Migration"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrationPrechecks/{precheck_id}' \\\n+--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n+--header 'Accept: application/json'"
+          }
+        ]
+      },
+      "delete": {
+        "summary": "Cancel a migration precheck",
+        "operationId": "MigrationService_CancelPrecheck",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The ID of the cluster.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "precheckId",
+            "description": "The ID of the precheck to cancel.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "Migration"
+        ],
+        "x-codeSamples": [
+          {
+            "label": "curl",
+            "lang": "cURL",
+            "source": "curl --location --request DELETE 'https://serverless.tidbapi.com/v1beta1/clusters/{cluster_id}/migrationPrechecks/{precheck_id}' \\\n+--digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \\\n+--header 'Accept: application/json'"
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "BlockAllowRules": {
+      "type": "object",
+      "properties": {
+        "doDbs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Database names to include in migration."
+        },
+        "doTables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Table"
+          },
+          "description": "Table-level allow-list rules."
+        }
+      }
+    },
+    "ConnProfile": {
+      "type": "object",
+      "properties": {
+        "connType": {
+          "description": "Connection type (e.g., PUBLIC, PRIVATE_LINK).",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ConnType"
+            }
+          ]
+        },
+        "endpointId": {
+          "type": "string",
+          "description": "Private link endpoint ID."
+        },
+        "host": {
+          "type": "string",
+          "description": "Source host."
+        },
+        "port": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Source port."
+        },
+        "user": {
+          "type": "string",
+          "description": "Source user."
+        },
+        "password": {
+          "type": "string",
+          "description": "Source password."
+        },
+        "security": {
+          "description": "TLS/SSL settings; if not set, use defaults.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Security"
+            }
+          ]
+        }
+      },
+      "required": [
+        "connType",
+        "port",
+        "user",
+        "password"
+      ]
+    },
+    "ConnType": {
+      "type": "string",
+      "enum": [
+        "PUBLIC",
+        "PRIVATE_LINK"
+      ],
+      "description": "The connection type used to connect to the source database.\n\n - PUBLIC: Connect over the public internet.\n - PRIVATE_LINK: Connect via Private Link/Private Endpoint."
+    },
+    "CreateMigrationPrecheckResp": {
+      "type": "object",
+      "properties": {
+        "precheckId": {
+          "type": "string",
+          "description": "The ID of the created precheck.",
+          "readOnly": true
+        }
+      }
+    },
+    "DumpDetail": {
+      "type": "object",
+      "properties": {
+        "bps": {
+          "type": "string",
+          "format": "int64",
+          "description": "Bytes per second processed during dump.",
+          "readOnly": true
+        },
+        "progress": {
+          "type": "number",
+          "format": "double",
+          "description": "Progress of dump phase (0-100).",
+          "readOnly": true
+        },
+        "totalTables": {
+          "type": "string",
+          "format": "int64",
+          "description": "Total number of tables to dump.",
+          "readOnly": true
+        },
+        "completedTables": {
+          "type": "string",
+          "format": "int64",
+          "description": "Number of tables completed dumping.",
+          "readOnly": true
+        },
+        "finishedBytes": {
+          "type": "string",
+          "format": "int64",
+          "description": "Total bytes finished dumping.",
+          "readOnly": true
+        },
+        "finishedRows": {
+          "type": "string",
+          "format": "int64",
+          "description": "Total rows finished dumping.",
+          "readOnly": true
+        }
+      }
+    },
+    "ListMigrationsResp": {
+      "type": "object",
+      "properties": {
+        "migrations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Migration"
+          },
+          "description": "The list of migrations.",
+          "readOnly": true
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int64",
+          "description": "The total number of migrations matching the query.",
+          "readOnly": true
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "Token to retrieve the next page of results.",
+          "readOnly": true
+        }
+      }
+    },
+    "LoadDetail": {
+      "type": "object",
+      "properties": {
+        "bps": {
+          "type": "string",
+          "format": "int64",
+          "description": "Bytes per second processed during load.",
+          "readOnly": true
+        },
+        "progress": {
+          "type": "number",
+          "format": "double",
+          "description": "Progress of load phase (0-100).",
+          "readOnly": true
+        },
+        "finishedBytes": {
+          "type": "string",
+          "format": "int64",
+          "description": "Total bytes finished loading.",
+          "readOnly": true
+        },
+        "totalBytes": {
+          "type": "string",
+          "format": "int64",
+          "description": "Total bytes to load.",
+          "readOnly": true
+        }
+      }
+    },
+    "Migration": {
+      "type": "object",
+      "properties": {
+        "migrationId": {
+          "type": "string",
+          "description": "The unique ID of the migration.",
+          "readOnly": true
+        },
+        "displayName": {
+          "type": "string",
+          "description": "The display name of the migration.",
+          "readOnly": true
+        },
+        "subTasks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/SubTask"
+          },
+          "description": "The list of subtasks composing this migration.",
+          "readOnly": true
+        },
+        "targetUser": {
+          "type": "string",
+          "description": "The target database username used by the migration.",
+          "readOnly": true
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the migration was created.",
+          "readOnly": true
+        },
+        "mode": {
+          "description": "The migration mode of the migration.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/TaskMode"
+            }
+          ]
+        },
+        "state": {
+          "description": "The current state of the migration.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/Migration.State"
+            }
+          ]
+        }
+      }
+    },
+    "Migration.State": {
+      "type": "string",
+      "enum": [
+        "CREATING",
+        "RUNNING",
+        "PAUSED",
+        "FAILED",
+        "DELETING"
+      ],
+      "description": "Overall state of a migration.\n\n - CREATING: Task is being created.\n - RUNNING: Task is actively running.\n - PAUSED: Task is paused.\n - FAILED: Task failed with error.\n - DELETING: Task is being deleted."
+    },
+    "MigrationPrecheck": {
+      "type": "object",
+      "properties": {
+        "precheckId": {
+          "type": "string",
+          "description": "The ID of the precheck.",
+          "readOnly": true
+        },
+        "total": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Total number of precheck items.",
+          "readOnly": true
+        },
+        "failedCnt": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Number of failed items.",
+          "readOnly": true
+        },
+        "warnCnt": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Number of items with warnings.",
+          "readOnly": true
+        },
+        "successCnt": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Number of successful items.",
+          "readOnly": true
+        },
+        "status": {
+          "description": "Overall status of the precheck.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/MigrationPrecheck.Status"
+            }
+          ]
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/PrecheckItem"
+          },
+          "description": "Details for each precheck item.",
+          "readOnly": true
+        }
+      }
+    },
+    "MigrationPrecheck.Status": {
+      "type": "string",
+      "enum": [
+        "RUNNING",
+        "FINISHED",
+        "PENDING",
+        "FAILED",
+        "CANCELED"
+      ],
+      "description": " - RUNNING: Precheck is in progress.\n - FINISHED: Precheck finished successfully.\n - PENDING: Precheck is pending.\n - FAILED: Precheck failed.\n - CANCELED: Precheck is canceled."
+    },
+    "MigrationService.CreateMigrationBody": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "description": "The display name of the migration."
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Source"
+          },
+          "description": "The data sources to migrate from."
+        },
+        "target": {
+          "description": "The target database credentials.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Target"
+            }
+          ]
+        },
+        "mode": {
+          "description": "The migration mode (full+incremental or incremental-only).",
+          "allOf": [
+            {
+              "$ref": "#/definitions/TaskMode"
+            }
+          ]
+        }
+      },
+      "required": [
+        "displayName",
+        "sources",
+        "target",
+        "mode"
+      ]
+    },
+    "MigrationService.PauseMigrationBody": {
+      "type": "object",
+      "title": "PauseMigrationReq is used to pause a migration"
+    },
+    "MigrationService.PrecheckBody": {
+      "type": "object",
+      "properties": {
+        "displayName": {
+          "type": "string",
+          "description": "The display name of the migration."
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Source"
+          },
+          "description": "The data sources to migrate from."
+        },
+        "target": {
+          "description": "The target database credentials.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Target"
+            }
+          ]
+        },
+        "mode": {
+          "description": "The migration mode (full+incremental or incremental-only).",
+          "allOf": [
+            {
+              "$ref": "#/definitions/TaskMode"
+            }
+          ]
+        }
+      },
+      "required": [
+        "displayName",
+        "sources",
+        "target",
+        "mode"
+      ]
+    },
+    "MigrationService.ResumeMigrationBody": {
+      "type": "object",
+      "title": "ResumeMigrationReq is used to resume a paused migration"
+    },
+    "PrecheckItem": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of the check.",
+          "readOnly": true
+        },
+        "status": {
+          "description": "Status of this check.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/PrecheckItem.Status"
+            }
+          ]
+        },
+        "solution": {
+          "type": "string",
+          "description": "Suggested solution if the check failed or warned.",
+          "readOnly": true
+        },
+        "reason": {
+          "type": "string",
+          "description": "Reason for the failure or warning.",
+          "readOnly": true
+        },
+        "solutionDocUrl": {
+          "type": "string",
+          "description": "Documentation URL for the solution.",
+          "readOnly": true
+        },
+        "type": {
+          "description": "The type of precheck.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/PrecheckItemType"
+            }
+          ]
+        }
+      }
+    },
+    "PrecheckItem.Status": {
+      "type": "string",
+      "enum": [
+        "SUCCESS",
+        "WARNING",
+        "FAILED"
+      ],
+      "description": " - SUCCESS: Check passed successfully.\n - WARNING: Check resulted in a warning.\n - FAILED: Check failed."
+    },
+    "PrecheckItemType": {
+      "type": "string",
+      "enum": [
+        "DUMP_PRIVILEGE_CHECKING",
+        "REPLICATION_PRIVILEGE_CHECKING",
+        "VERSION_CHECKING",
+        "SERVER_ID_CHECKING",
+        "BINLOG_ENABLE_CHECKING",
+        "BINLOG_FORMAT_CHECKING",
+        "BINLOG_ROW_IMAGE_CHECKING",
+        "TABLE_SCHEMA_CHECKING",
+        "BINLOG_DB_CHECKING",
+        "CONN_NUMBER_CHECKING",
+        "TARGET_DB_PRIVILEGE_CHECKING",
+        "META_POSITION_CHECKING",
+        "LIGHTNING_TABLE_EMPTY_CHECKING",
+        "PRIMARY_KEY_CHECKING"
+      ],
+      "description": "Types of prechecks performed before starting a migration.\n\n - DUMP_PRIVILEGE_CHECKING: Check source has required dump/export privileges.\n - REPLICATION_PRIVILEGE_CHECKING: Check source has required replication privileges.\n - VERSION_CHECKING: Check source database version compatibility.\n - SERVER_ID_CHECKING: Check source server_id configuration.\n - BINLOG_ENABLE_CHECKING: Check whether binlog is enabled on source.\n - BINLOG_FORMAT_CHECKING: Check binlog format (e.g., ROW) on source.\n - BINLOG_ROW_IMAGE_CHECKING: Check binlog row image setting.\n - TABLE_SCHEMA_CHECKING: Check table/schema compatibility with target.\n - BINLOG_DB_CHECKING: Check binlog database-level filtering configuration.\n - CONN_NUMBER_CHECKING: Check concurrent connections limit/availability.\n - TARGET_DB_PRIVILEGE_CHECKING: Check target database privileges.\n - META_POSITION_CHECKING: Check saved meta/binlog position validity.\n - LIGHTNING_TABLE_EMPTY_CHECKING: Check target tables are empty for Lightning load.\n - PRIMARY_KEY_CHECKING: Check primary key settings on source tables."
+    },
+    "RouteRule": {
+      "type": "object",
+      "properties": {
+        "sourceTable": {
+          "description": "Source table pattern to match.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/RouteRule.Source"
+            }
+          ]
+        },
+        "targetTable": {
+          "description": "Target table to route to.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Table"
+            }
+          ]
+        }
+      }
+    },
+    "RouteRule.Source": {
+      "type": "object",
+      "properties": {
+        "schemaPattern": {
+          "type": "string",
+          "description": "Schema pattern of the source, supports wildcards."
+        },
+        "tablePattern": {
+          "type": "string",
+          "description": "Table pattern of the source, supports wildcards."
+        }
+      }
+    },
+    "Security": {
+      "type": "object",
+      "properties": {
+        "certAllowedCn": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Allowed certificate Common Names."
+        },
+        "sslCaContent": {
+          "type": "string",
+          "format": "byte",
+          "description": "CA certificate content in PEM."
+        },
+        "sslCertContent": {
+          "type": "string",
+          "format": "byte",
+          "description": "Client certificate content in PEM."
+        },
+        "sslKeyContent": {
+          "type": "string",
+          "format": "byte",
+          "description": "Client private key in PEM."
+        }
+      }
+    },
+    "Source": {
+      "type": "object",
+      "properties": {
+        "connProfile": {
+          "description": "Connection profile for the source database.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/ConnProfile"
+            }
+          ]
+        },
+        "baRules": {
+          "description": "Block/allow rules for databases and tables, which is exclusive with route_rules.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/BlockAllowRules"
+            }
+          ]
+        },
+        "routeRules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/RouteRule"
+          },
+          "description": "Table route rules\uff0cwhich is exclusive with ba_rules."
+        },
+        "binlogName": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "Starting binlog file name for incremental sync."
+        },
+        "binlogPosition": {
+          "type": "integer",
+          "format": "int32",
+          "x-nullable": true,
+          "description": "Starting binlog position for incremental sync."
+        },
+        "binlogGtid": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "Starting GTID set for incremental sync."
+        },
+        "sourceType": {
+          "description": "Source type (e.g., MySQL).",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Source.SourceType"
+            }
+          ]
+        }
+      },
+      "required": [
+        "connProfile",
+        "sourceType"
+      ]
+    },
+    "Source.SourceType": {
+      "type": "string",
+      "enum": [
+        "MYSQL",
+        "ALICLOUD_RDS_MYSQL",
+        "AWS_RDS_MYSQL"
+      ],
+      "description": "The source database type.\n\n - MYSQL: Self-managed MySQL.\n - ALICLOUD_RDS_MYSQL: Alibaba Cloud RDS for MySQL.\n - AWS_RDS_MYSQL: Amazon RDS for MySQL."
+    },
+    "Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Any"
+          }
+        }
+      }
+    },
+    "SubTask": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "description": "Source configuration for this subtask.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/Source"
+            }
+          ]
+        },
+        "currentStep": {
+          "description": "Current step of the subtask.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/SubTask.Step"
+            }
+          ]
+        },
+        "stage": {
+          "description": "Current stage of the subtask.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/SubTask.Stage"
+            }
+          ]
+        },
+        "dumpDetail": {
+          "description": "Detail of dump phase, if applicable.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/DumpDetail"
+            }
+          ]
+        },
+        "loadDetail": {
+          "description": "Detail of load phase, if applicable.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/LoadDetail"
+            }
+          ]
+        },
+        "syncDetail": {
+          "description": "Detail of sync phase, if applicable.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/SyncDetail"
+            }
+          ]
+        },
+        "errorMsg": {
+          "type": "string",
+          "x-nullable": true,
+          "description": "Error message when the subtask fails.",
+          "readOnly": true
+        }
+      }
+    },
+    "SubTask.Stage": {
+      "type": "string",
+      "enum": [
+        "RUNNING",
+        "PAUSED",
+        "FAILED",
+        "FINISHED",
+        "UNKNOWN"
+      ],
+      "description": "The high-level lifecycle stage of a subtask.\n\n - RUNNING: Subtask is running.\n - PAUSED: Subtask is paused.\n - FAILED: Subtask failed.\n - FINISHED: Subtask finished successfully.\n - UNKNOWN: Subtask stage is unknown."
+    },
+    "SubTask.Step": {
+      "type": "string",
+      "enum": [
+        "DUMP",
+        "LOAD",
+        "SYNC"
+      ],
+      "description": "The current step within a subtask.\n\n - DUMP: Dump/export data from source.\n - LOAD: Load/import data into target.\n - SYNC: Sync/replicate binlog changes."
+    },
+    "SyncDetail": {
+      "type": "object",
+      "properties": {
+        "rps": {
+          "type": "string",
+          "format": "int64",
+          "description": "Rows processed per second during sync.",
+          "readOnly": true
+        },
+        "latency": {
+          "type": "string",
+          "format": "int64",
+          "description": "Replication latency in seconds.",
+          "readOnly": true
+        },
+        "checkpoint": {
+          "type": "string",
+          "description": "Synchronization checkpoint.",
+          "readOnly": true
+        }
+      }
+    },
+    "Table": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string",
+          "description": "Schema name."
+        },
+        "table": {
+          "type": "string",
+          "description": "Table name."
+        }
+      }
+    },
+    "Target": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string",
+          "description": "Target database user."
+        },
+        "password": {
+          "type": "string",
+          "description": "Target database password."
+        }
+      },
+      "required": [
+        "user",
+        "password"
+      ]
+    },
+    "TaskMode": {
+      "type": "string",
+      "enum": [
+        "ALL",
+        "INCREMENTAL"
+      ],
+      "description": "Migration task mode.\n\n - ALL: Full + incremental migration (all phases).\n - INCREMENTAL: Incremental-only migration (replication)."
+    }
+  }
+}
