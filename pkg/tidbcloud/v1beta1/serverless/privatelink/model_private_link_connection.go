@@ -37,6 +37,7 @@ type PrivateLinkConnection struct {
 	// Timestamp when the private link connection was updated.
 	UpdateTime              NullableTime                  `json:"updateTime,omitempty"`
 	Type                    PrivateLinkConnectionTypeEnum `json:"type"`
+	AttachedDomains         []AttachDomain                `json:"attachedDomains,omitempty"`
 	AwsEndpointService      *AwsEndpointService           `json:"awsEndpointService,omitempty"`
 	AlicloudEndpointService *AlicloudEndpointService      `json:"alicloudEndpointService,omitempty"`
 	AdditionalProperties    map[string]interface{}
@@ -339,6 +340,38 @@ func (o *PrivateLinkConnection) SetType(v PrivateLinkConnectionTypeEnum) {
 	o.Type = v
 }
 
+// GetAttachedDomains returns the AttachedDomains field value if set, zero value otherwise.
+func (o *PrivateLinkConnection) GetAttachedDomains() []AttachDomain {
+	if o == nil || IsNil(o.AttachedDomains) {
+		var ret []AttachDomain
+		return ret
+	}
+	return o.AttachedDomains
+}
+
+// GetAttachedDomainsOk returns a tuple with the AttachedDomains field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *PrivateLinkConnection) GetAttachedDomainsOk() ([]AttachDomain, bool) {
+	if o == nil || IsNil(o.AttachedDomains) {
+		return nil, false
+	}
+	return o.AttachedDomains, true
+}
+
+// HasAttachedDomains returns a boolean if a field has been set.
+func (o *PrivateLinkConnection) HasAttachedDomains() bool {
+	if o != nil && !IsNil(o.AttachedDomains) {
+		return true
+	}
+
+	return false
+}
+
+// SetAttachedDomains gets a reference to the given []AttachDomain and assigns it to the AttachedDomains field.
+func (o *PrivateLinkConnection) SetAttachedDomains(v []AttachDomain) {
+	o.AttachedDomains = v
+}
+
 // GetAwsEndpointService returns the AwsEndpointService field value if set, zero value otherwise.
 func (o *PrivateLinkConnection) GetAwsEndpointService() AwsEndpointService {
 	if o == nil || IsNil(o.AwsEndpointService) {
@@ -434,6 +467,9 @@ func (o PrivateLinkConnection) ToMap() (map[string]interface{}, error) {
 		toSerialize["updateTime"] = o.UpdateTime.Get()
 	}
 	toSerialize["type"] = o.Type
+	if !IsNil(o.AttachedDomains) {
+		toSerialize["attachedDomains"] = o.AttachedDomains
+	}
 	if !IsNil(o.AwsEndpointService) {
 		toSerialize["awsEndpointService"] = o.AwsEndpointService
 	}
@@ -494,6 +530,7 @@ func (o *PrivateLinkConnection) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "createTime")
 		delete(additionalProperties, "updateTime")
 		delete(additionalProperties, "type")
+		delete(additionalProperties, "attachedDomains")
 		delete(additionalProperties, "awsEndpointService")
 		delete(additionalProperties, "alicloudEndpointService")
 		o.AdditionalProperties = additionalProperties

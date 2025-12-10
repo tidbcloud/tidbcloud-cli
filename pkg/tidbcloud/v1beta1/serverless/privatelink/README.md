@@ -78,8 +78,10 @@ All URIs are relative to *https://serverless.tidbapi.com*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*PrivateLinkConnectionServiceAPI* | [**PrivateLinkConnectionServiceAttachDomains**](docs/PrivateLinkConnectionServiceAPI.md#privatelinkconnectionserviceattachdomains) | **Post** /v1beta1/clusters/{clusterId}/privateLinkConnections/{privateLinkConnectionId}:attachDomains | Attach domains for private link connection.
 *PrivateLinkConnectionServiceAPI* | [**PrivateLinkConnectionServiceCreatePrivateLinkConnection**](docs/PrivateLinkConnectionServiceAPI.md#privatelinkconnectionservicecreateprivatelinkconnection) | **Post** /v1beta1/clusters/{clusterId}/privateLinkConnections | Create a private link connection.
 *PrivateLinkConnectionServiceAPI* | [**PrivateLinkConnectionServiceDeletePrivateLinkConnection**](docs/PrivateLinkConnectionServiceAPI.md#privatelinkconnectionservicedeleteprivatelinkconnection) | **Delete** /v1beta1/clusters/{clusterId}/privateLinkConnections/{privateLinkConnectionId} | Delete a private link connection.
+*PrivateLinkConnectionServiceAPI* | [**PrivateLinkConnectionServiceDetachDomains**](docs/PrivateLinkConnectionServiceAPI.md#privatelinkconnectionservicedetachdomains) | **Post** /v1beta1/clusters/{clusterId}/privateLinkConnections/{privateLinkConnectionId}:detachDomains | Detach domains for private link connection.
 *PrivateLinkConnectionServiceAPI* | [**PrivateLinkConnectionServiceGetAvailabilityZones**](docs/PrivateLinkConnectionServiceAPI.md#privatelinkconnectionservicegetavailabilityzones) | **Get** /v1beta1/clusters/{clusterId}/privateLinkConnections:getAvailabilityZones | Get account and availability zones information for private link connection.
 *PrivateLinkConnectionServiceAPI* | [**PrivateLinkConnectionServiceGetPrivateLinkConnection**](docs/PrivateLinkConnectionServiceAPI.md#privatelinkconnectionservicegetprivatelinkconnection) | **Get** /v1beta1/clusters/{clusterId}/privateLinkConnections/{privateLinkConnectionId} | Get a private link connection.
 *PrivateLinkConnectionServiceAPI* | [**PrivateLinkConnectionServiceListPrivateLinkConnections**](docs/PrivateLinkConnectionServiceAPI.md#privatelinkconnectionservicelistprivatelinkconnections) | **Get** /v1beta1/clusters/{clusterId}/privateLinkConnections | List private link connections.
@@ -89,11 +91,17 @@ Class | Method | HTTP request | Description
 
  - [AlicloudEndpointService](docs/AlicloudEndpointService.md)
  - [Any](docs/Any.md)
+ - [AttachDomain](docs/AttachDomain.md)
  - [AwsEndpointService](docs/AwsEndpointService.md)
+ - [Domain](docs/Domain.md)
  - [GetAvailabilityZonesResponse](docs/GetAvailabilityZonesResponse.md)
  - [ListPrivateLinkConnectionsResponse](docs/ListPrivateLinkConnectionsResponse.md)
  - [PrivateLinkConnection](docs/PrivateLinkConnection.md)
+ - [PrivateLinkConnectionDomainTypeEnum](docs/PrivateLinkConnectionDomainTypeEnum.md)
+ - [PrivateLinkConnectionServiceAttachDomainsBody](docs/PrivateLinkConnectionServiceAttachDomainsBody.md)
  - [PrivateLinkConnectionServiceCreatePrivateLinkConnectionBody](docs/PrivateLinkConnectionServiceCreatePrivateLinkConnectionBody.md)
+ - [PrivateLinkConnectionServiceDetachDomainsBody](docs/PrivateLinkConnectionServiceDetachDomainsBody.md)
+ - [PrivateLinkConnectionServiceListPrivateLinkConnectionsStateParameter](docs/PrivateLinkConnectionServiceListPrivateLinkConnectionsStateParameter.md)
  - [PrivateLinkConnectionStateEnum](docs/PrivateLinkConnectionStateEnum.md)
  - [PrivateLinkConnectionTypeEnum](docs/PrivateLinkConnectionTypeEnum.md)
  - [Status](docs/Status.md)

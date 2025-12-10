@@ -13,7 +13,7 @@ ticloud serverless private-link-connection delete [flags]
   $ ticloud serverless private-link-connection delete
 
   Delete a private link connection (non-interactive):
-  $ ticloud serverless private-link-connection delete -c <cluster-id> -p <private-link-connection-id>
+  $ ticloud serverless private-link-connection delete -c <cluster-id> --private-link-connection-id <private-link-connection-id>
 ```
 
 ### Options

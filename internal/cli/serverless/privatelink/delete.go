@@ -71,7 +71,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
   $ %[1]s serverless private-link-connection delete
 
   Delete a private link connection (non-interactive):
-  $ %[1]s serverless private-link-connection delete -c <cluster-id> -p <private-link-connection-id>`, config.CliName),
+  $ %[1]s serverless private-link-connection delete -c <cluster-id> --private-link-connection-id <private-link-connection-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},

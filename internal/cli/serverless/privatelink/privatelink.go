@@ -33,6 +33,8 @@ func PrivateLinkConnectionCmd(h *internal.Helper) *cobra.Command {
 		DeleteCmd(h),
 		ListCmd(h),
 		GetZonesCmd(h),
+		AttachDomainCmd(h),
+		DetachDomainCmd(h),
 	)
 
 	return cmd

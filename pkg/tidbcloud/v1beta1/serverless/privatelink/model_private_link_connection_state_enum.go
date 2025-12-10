@@ -14,7 +14,7 @@ import (
 	"encoding/json"
 )
 
-// PrivateLinkConnectionStateEnum the model 'PrivateLinkConnectionStateEnum'
+// PrivateLinkConnectionStateEnum  - CREATING: The private link connection is being created.  - ACTIVE: The private link connection is active.  - FAILED: The private link connection is in failed state.  - PENDING_ACCEPTANCE: The private link connection is pending acceptance. only for AWS endpoint service and Alicloud endpoint service.  - DELETING: The private link connection is being deleted.
 type PrivateLinkConnectionStateEnum string
 
 // List of PrivateLinkConnectionState.Enum
@@ -24,7 +24,6 @@ const (
 	PRIVATELINKCONNECTIONSTATEENUM_FAILED             PrivateLinkConnectionStateEnum = "FAILED"
 	PRIVATELINKCONNECTIONSTATEENUM_PENDING_ACCEPTANCE PrivateLinkConnectionStateEnum = "PENDING_ACCEPTANCE"
 	PRIVATELINKCONNECTIONSTATEENUM_DELETING           PrivateLinkConnectionStateEnum = "DELETING"
-	PRIVATELINKCONNECTIONSTATEENUM_CONNECTING         PrivateLinkConnectionStateEnum = "CONNECTING"
 )
 
 // All allowed values of PrivateLinkConnectionStateEnum enum
@@ -34,7 +33,6 @@ var AllowedPrivateLinkConnectionStateEnumEnumValues = []PrivateLinkConnectionSta
 	"FAILED",
 	"PENDING_ACCEPTANCE",
 	"DELETING",
-	"CONNECTING",
 }
 
 func (v *PrivateLinkConnectionStateEnum) UnmarshalJSON(src []byte) error {

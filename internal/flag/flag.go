@@ -124,6 +124,10 @@ const (
 	AWSEndpointServiceName      string = "aws.endpoint-service-name"
 	AWSEndpointServiceRegion    string = "aws.endpoint-service-region"
 	AlicloudEndpointServiceName string = "alicloud.endpoint-service-name"
+	PLCAttachDomainType         string = "type"
+	PLCAttachDomainUniqueName   string = "unique-name"
+	PLCAttachDomainID           string = "plc-attach-domain-id"
+	PLCAttachDomainDryRun       string = "dry-run"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."
