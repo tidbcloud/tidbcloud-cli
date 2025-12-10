@@ -421,7 +421,7 @@
           "description": "The endpoint ID.",
           "readOnly": true
         },
-        "azs": {
+        "availabilityZoneIds": {
           "type": "array",
           "items": {
             "type": "string"

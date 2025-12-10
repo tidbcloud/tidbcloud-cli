@@ -338,11 +338,11 @@ components:
       type: object
     AwsEndpointService:
       example:
+        availabilityZoneIds:
+        - availabilityZoneIds
+        - availabilityZoneIds
         endpointId: endpointId
         name: name
-        azs:
-        - azs
-        - azs
         region: region
       properties:
         name:
@@ -355,7 +355,7 @@ components:
           description: The endpoint ID.
           readOnly: true
           type: string
-        azs:
+        availabilityZoneIds:
           description: The availability zones of the endpoint.
           items:
             type: string
@@ -405,11 +405,11 @@ components:
         nextPageToken: nextPageToken
         privateLinkConnections:
         - awsEndpointService:
+            availabilityZoneIds:
+            - availabilityZoneIds
+            - availabilityZoneIds
             endpointId: endpointId
             name: name
-            azs:
-            - azs
-            - azs
             region: region
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
@@ -453,11 +453,11 @@ components:
             endpointId: endpointId
             name: name
         - awsEndpointService:
+            availabilityZoneIds:
+            - availabilityZoneIds
+            - availabilityZoneIds
             endpointId: endpointId
             name: name
-            azs:
-            - azs
-            - azs
             region: region
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
@@ -514,11 +514,11 @@ components:
     PrivateLinkConnection:
       example:
         awsEndpointService:
+          availabilityZoneIds:
+          - availabilityZoneIds
+          - availabilityZoneIds
           endpointId: endpointId
           name: name
-          azs:
-          - azs
-          - azs
           region: region
         createdBy: createdBy
         createTime: 2000-01-23T04:56:07.000+00:00

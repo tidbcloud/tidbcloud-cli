@@ -26,7 +26,7 @@ type AwsEndpointService struct {
 	// The endpoint ID.
 	EndpointId *string `json:"endpointId,omitempty"`
 	// The availability zones of the endpoint.
-	Azs                  []string `json:"azs,omitempty"`
+	AvailabilityZoneIds  []string `json:"availabilityZoneIds,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -138,36 +138,36 @@ func (o *AwsEndpointService) SetEndpointId(v string) {
 	o.EndpointId = &v
 }
 
-// GetAzs returns the Azs field value if set, zero value otherwise.
-func (o *AwsEndpointService) GetAzs() []string {
-	if o == nil || IsNil(o.Azs) {
+// GetAvailabilityZoneIds returns the AvailabilityZoneIds field value if set, zero value otherwise.
+func (o *AwsEndpointService) GetAvailabilityZoneIds() []string {
+	if o == nil || IsNil(o.AvailabilityZoneIds) {
 		var ret []string
 		return ret
 	}
-	return o.Azs
+	return o.AvailabilityZoneIds
 }
 
-// GetAzsOk returns a tuple with the Azs field value if set, nil otherwise
+// GetAvailabilityZoneIdsOk returns a tuple with the AvailabilityZoneIds field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *AwsEndpointService) GetAzsOk() ([]string, bool) {
-	if o == nil || IsNil(o.Azs) {
+func (o *AwsEndpointService) GetAvailabilityZoneIdsOk() ([]string, bool) {
+	if o == nil || IsNil(o.AvailabilityZoneIds) {
 		return nil, false
 	}
-	return o.Azs, true
+	return o.AvailabilityZoneIds, true
 }
 
-// HasAzs returns a boolean if a field has been set.
-func (o *AwsEndpointService) HasAzs() bool {
-	if o != nil && !IsNil(o.Azs) {
+// HasAvailabilityZoneIds returns a boolean if a field has been set.
+func (o *AwsEndpointService) HasAvailabilityZoneIds() bool {
+	if o != nil && !IsNil(o.AvailabilityZoneIds) {
 		return true
 	}
 
 	return false
 }
 
-// SetAzs gets a reference to the given []string and assigns it to the Azs field.
-func (o *AwsEndpointService) SetAzs(v []string) {
-	o.Azs = v
+// SetAvailabilityZoneIds gets a reference to the given []string and assigns it to the AvailabilityZoneIds field.
+func (o *AwsEndpointService) SetAvailabilityZoneIds(v []string) {
+	o.AvailabilityZoneIds = v
 }
 
 func (o AwsEndpointService) MarshalJSON() ([]byte, error) {
@@ -187,8 +187,8 @@ func (o AwsEndpointService) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.EndpointId) {
 		toSerialize["endpointId"] = o.EndpointId
 	}
-	if !IsNil(o.Azs) {
-		toSerialize["azs"] = o.Azs
+	if !IsNil(o.AvailabilityZoneIds) {
+		toSerialize["availabilityZoneIds"] = o.AvailabilityZoneIds
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -236,7 +236,7 @@ func (o *AwsEndpointService) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "name")
 		delete(additionalProperties, "region")
 		delete(additionalProperties, "endpointId")
-		delete(additionalProperties, "azs")
+		delete(additionalProperties, "availabilityZoneIds")
 		o.AdditionalProperties = additionalProperties
 	}
 
