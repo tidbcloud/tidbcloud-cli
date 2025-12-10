@@ -1,45 +1,33 @@
-// Copyright 2025 PingCAP, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 package privatelink
 
 import (
 	"fmt"
+	"strings"
 
-	"github.com/AlecAivazis/survey/v2"
+	"github.com/fatih/color"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
-	"github.com/tidbcloud/tidbcloud-cli/internal/output"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	plapi "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/privatelink"
 )
 
-type DescribeOpts struct {
+type DetachDomainOpts struct {
 	interactive bool
 }
 
-func (o DescribeOpts) NonInteractiveFlags() []string {
+func (o DetachDomainOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
 		flag.PrivateLinkConnectionID,
+		flag.PLCAttachDomainID,
 	}
 }
 
-func (o *DescribeOpts) MarkInteractive(cmd *cobra.Command) error {
+func (o *DetachDomainOpts) MarkInteractive(cmd *cobra.Command) error {
 	o.interactive = true
 	for _, fn := range o.NonInteractiveFlags() {
 		if f := cmd.Flags().Lookup(fn); f != nil && f.Changed {
@@ -56,19 +44,18 @@ func (o *DescribeOpts) MarkInteractive(cmd *cobra.Command) error {
 	return nil
 }
 
-func DescribeCmd(h *internal.Helper) *cobra.Command {
-	opts := &DescribeOpts{interactive: true}
+func DetachDomainCmd(h *internal.Helper) *cobra.Command {
+	opts := &DetachDomainOpts{interactive: true}
 
 	cmd := &cobra.Command{
-		Use:     "describe",
-		Aliases: []string{"get"},
-		Short:   "Describe a private link connection for dataflow",
-		Args:    cobra.NoArgs,
-		Example: fmt.Sprintf(`  Describe a private link connection (interactive):
-  $ %[1]s serverless private-link-connection describe
+		Use:   "detach",
+		Short: "Detach domains from a private link connection",
+		Args:  cobra.NoArgs,
+		Example: fmt.Sprintf(`  Detach domains (interactive):
+  $ %[1]s serverless private-link-connection detach
 
-  Describe a private link connection (non-interactive):
-  $ %[1]s serverless private-link-connection describe -c <cluster-id> --private-link-connection-id <private-link-connection-id>`, config.CliName),
+  Detach domains (non-interactive):
+  $ %[1]s serverless private-link-connection detach -c <cluster-id> --private-link-connection-id <plc-id> --plc-attach-domain-id <attach-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
@@ -79,7 +66,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			var clusterID, plcID string
+			var clusterID, plcID, attachID string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -98,10 +85,11 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				plcID = privatelink.ID
-
-				if err := survey.AskOne(&survey.Input{Message: "Private link connection ID:"}, &plcID); err != nil {
+				attach, err := cloud.GetSelectedAttachDomain(ctx, cluster.ID, privatelink.ID, d)
+				if err != nil {
 					return err
 				}
+				attachID = attach.ID
 			} else {
 				var err error
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
@@ -112,21 +100,30 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
+				attachID, err = cmd.Flags().GetString(flag.PLCAttachDomainID)
+				if err != nil {
+					return errors.Trace(err)
+				}
 			}
 
-			if plcID == "" {
-				return errors.New("private link connection id is required")
+			body := &plapi.PrivateLinkConnectionServiceDetachDomainsBody{
+				AttachDomainId: attachID,
 			}
-
-			res, err := d.GetPrivateLinkConnection(ctx, clusterID, plcID)
+			resp, err := d.DetachPrivateLinkDomains(ctx, clusterID, plcID, body)
 			if err != nil {
 				return errors.Trace(err)
 			}
-			return output.PrintJson(h.IOStreams.Out, res)
+			domains := make([]string, 0, len(resp.Domains))
+			for _, domain := range resp.Domains {
+				domains = append(domains, *domain.Name)
+			}
+			fmt.Fprintf(h.IOStreams.Out, "Successfully detached domains:\n%s\n", color.GreenString("%v", strings.Join(domains, "\n")))
+			return nil
 		},
 	}
 
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID.")
 	cmd.Flags().String(flag.PrivateLinkConnectionID, "", "The private link connection ID.")
+	cmd.Flags().String(flag.PLCAttachDomainID, "", "The private link connection attach domain ID.")
 	return cmd
 }

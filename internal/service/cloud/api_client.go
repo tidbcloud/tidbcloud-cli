@@ -149,6 +149,8 @@ type TiDBCloudClient interface {
 	GetPrivateLinkConnection(ctx context.Context, clusterId string, privateLinkConnectionId string) (*privatelink.PrivateLinkConnection, error)
 	ListPrivateLinkConnections(ctx context.Context, clusterId string, pageSize *int32, pageToken *string) (*privatelink.ListPrivateLinkConnectionsResponse, error)
 	GetPrivateLinkAvailabilityZones(ctx context.Context, clusterId string) (*privatelink.GetAvailabilityZonesResponse, error)
+	AttachPrivateLinkDomains(ctx context.Context, clusterId string, privateLinkConnectionId string, body *privatelink.PrivateLinkConnectionServiceAttachDomainsBody) (*privatelink.AttachDomain, error)
+	DetachPrivateLinkDomains(ctx context.Context, clusterId string, privateLinkConnectionId string, body *privatelink.PrivateLinkConnectionServiceDetachDomainsBody) (*privatelink.AttachDomain, error)
 	// ===== Private Link Connection =====
 }
 
@@ -626,6 +628,24 @@ func (d *ClientDelegate) ListPrivateLinkConnections(ctx context.Context, cluster
 
 func (d *ClientDelegate) GetPrivateLinkAvailabilityZones(ctx context.Context, clusterId string) (*privatelink.GetAvailabilityZonesResponse, error) {
 	res, h, err := d.plc.PrivateLinkConnectionServiceAPI.PrivateLinkConnectionServiceGetAvailabilityZones(ctx, clusterId).Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) AttachPrivateLinkDomains(ctx context.Context, clusterId string, privateLinkConnectionId string, body *privatelink.PrivateLinkConnectionServiceAttachDomainsBody) (*privatelink.AttachDomain, error) {
+	r := d.plc.PrivateLinkConnectionServiceAPI.PrivateLinkConnectionServiceAttachDomains(ctx, clusterId, privateLinkConnectionId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	res, h, err := r.Execute()
+	return res, parseError(err, h)
+}
+
+func (d *ClientDelegate) DetachPrivateLinkDomains(ctx context.Context, clusterId string, privateLinkConnectionId string, body *privatelink.PrivateLinkConnectionServiceDetachDomainsBody) (*privatelink.AttachDomain, error) {
+	r := d.plc.PrivateLinkConnectionServiceAPI.PrivateLinkConnectionServiceDetachDomains(ctx, clusterId, privateLinkConnectionId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	res, h, err := r.Execute()
 	return res, parseError(err, h)
 }
 
