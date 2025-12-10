@@ -13,7 +13,7 @@ ticloud serverless private-link-connection describe [flags]
   $ ticloud serverless private-link-connection describe
 
   Describe a private link connection (non-interactive):
-  $ ticloud serverless private-link-connection describe -c <cluster-id> -p <private-link-connection-id>
+  $ ticloud serverless private-link-connection describe -c <cluster-id> --private-link-connection-id <private-link-connection-id>
 ```
 
 ### Options
