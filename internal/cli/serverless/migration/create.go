@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"slices"
 	"strings"
 	"time"
 
@@ -42,8 +43,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 		Short: "Create a migration",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Create a migration:
-	$ %[1]s serverless migration create -c <cluster-id> --display-name <name> --config-file <file-path> --dry-run
-	$ %[1]s serverless migration create -c <cluster-id> --display-name <name> --config-file <file-path>
+  $ %[1]s serverless migration create -c <cluster-id> --display-name <name> --config-file <file-path> --dry-run
+  $ %[1]s serverless migration create -c <cluster-id> --display-name <name> --config-file <file-path>
 `, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return markCreateMigrationRequiredFlags(cmd)
@@ -67,6 +68,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return errors.Trace(err)
 			}
+			if strings.TrimSpace(name) == "" {
+				return errors.New("display name is required")
+			}
 			configPath, err := cmd.Flags().GetString(flag.MigrationConfigFile)
 			if err != nil {
 				return errors.Trace(err)
@@ -81,9 +85,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 			definitionStr := string(definitionBytes)
 
-			if strings.TrimSpace(name) == "" {
-				return errors.New("display name is required")
-			}
 			sources, target, mode, err := parseMigrationDefinition(definitionStr)
 			if err != nil {
 				return err
@@ -111,8 +112,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
-			taskID := aws.ToString(resp.MigrationId)
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("migration %s(%s) created", name, taskID))
+			migrationID := aws.ToString(resp.MigrationId)
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("migration %s(%s) created", name, migrationID))
 			return nil
 		},
 	}
@@ -120,7 +121,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the target cluster.")
 	cmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "Display name for the migration.")
 	cmd.Flags().String(flag.MigrationConfigFile, "", "Path to a migration config JSON file. Use \"ticloud serverless migration template --mode <mode>\" to print templates.")
-	cmd.Flags().Bool(flag.MigrationDryRun, false, "Run a migration precheck (dry run) with the provided inputs without creating a task.")
+	cmd.Flags().Bool(flag.MigrationDryRun, false, "Run a migration precheck (dry run) with the provided inputs without creating a migration.")
 
 	return cmd
 }
@@ -168,7 +169,7 @@ func runMigrationPrecheck(ctx context.Context, client cloud.TiDBCloudClient, clu
 			if err != nil {
 				return errors.Trace(err)
 			}
-			finished, err := printPrecheckSummary(precheckID, result.GetStatus(), result, h)
+			finished, err := printPrecheckSummary(result, h)
 			if err != nil {
 				return err
 			}
@@ -195,15 +196,15 @@ func isPrecheckUnfinished(status pkgmigration.MigrationPrecheckStatus) bool {
 	}
 }
 
-func printPrecheckSummary(id string, status pkgmigration.MigrationPrecheckStatus, result *pkgmigration.MigrationPrecheck, h *internal.Helper) (bool, error) {
-	if isPrecheckUnfinished(status) {
-		fmt.Fprintf(h.IOStreams.Out, "precheck %s summary (status %s)\n", id, status)
+func printPrecheckSummary(result *pkgmigration.MigrationPrecheck, h *internal.Helper) (bool, error) {
+	if isPrecheckUnfinished(result.GetStatus()) {
+		fmt.Fprintf(h.IOStreams.Out, "precheck %s summary (status %s)\n", result.GetPrecheckId(), result.GetStatus())
 		fmt.Fprintf(h.IOStreams.Out, "Total: %d, Success: %d, Warn: %d, Failed: %d\n",
 			aws.ToInt32(result.Total), aws.ToInt32(result.SuccessCnt), aws.ToInt32(result.WarnCnt), aws.ToInt32(result.FailedCnt))
 		return false, nil
 	}
 
-	fmt.Fprintf(h.IOStreams.Out, "precheck %s finished with status %s\n", id, status)
+	fmt.Fprintf(h.IOStreams.Out, "precheck %s finished with status %s\n", result.GetPrecheckId(), result.GetStatus())
 	fmt.Fprintf(h.IOStreams.Out, "Total: %d, Success: %d, Warn: %d, Failed: %d\n",
 		aws.ToInt32(result.Total), aws.ToInt32(result.SuccessCnt), aws.ToInt32(result.WarnCnt), aws.ToInt32(result.FailedCnt))
 	if len(result.Items) == 0 {
@@ -289,24 +290,14 @@ func parseMigrationDefinition(value string) ([]pkgmigration.Source, pkgmigration
 func parseMigrationMode(value string) (pkgmigration.TaskMode, error) {
 	trimmed := strings.TrimSpace(value)
 	if trimmed == "" {
-		return "", errors.New("mode is required in the migration definition")
+		return "", errors.New("empty config file")
 	}
 	normalized := strings.ToUpper(trimmed)
 	mode := pkgmigration.TaskMode(normalized)
-	for _, allowed := range pkgmigration.AllowedTaskModeEnumValues {
-		if mode == allowed {
-			return mode, nil
-		}
+	if slices.Contains(pkgmigration.AllowedTaskModeEnumValues, mode) {
+		return mode, nil
 	}
-	return "", errors.Errorf("invalid mode %q, allowed values: %s", value, strings.Join(taskModeValues(), ", "))
-}
-
-func taskModeValues() []string {
-	values := make([]string, 0, len(pkgmigration.AllowedTaskModeEnumValues))
-	for _, mode := range pkgmigration.AllowedTaskModeEnumValues {
-		values = append(values, string(mode))
-	}
-	return values
+	return "", errors.Errorf("invalid mode %q, allowed values: %s", value, pkgmigration.AllowedTaskModeEnumValues)
 }
 
 // standardizeJSON accepts JSON With Commas and Comments(JWCC) see

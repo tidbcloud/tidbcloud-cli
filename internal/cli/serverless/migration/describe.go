@@ -34,7 +34,7 @@ type DescribeOpts struct {
 func (c DescribeOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.MigrationTaskID,
+		flag.MigrationID,
 	}
 }
 
@@ -61,14 +61,14 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 
 	var cmd = &cobra.Command{
 		Use:     "describe",
-		Short:   "Describe a migration task",
+		Short:   "Describe a migration",
 		Aliases: []string{"get"},
 		Args:    cobra.NoArgs,
-		Example: fmt.Sprintf(`  Describe a migration task in interactive mode:
+		Example: fmt.Sprintf(`  Describe a migration in interactive mode:
   $ %[1]s serverless migration describe
 
-  Describe a migration task in non-interactive mode:
-  $ %[1]s serverless migration describe -c <cluster-id> --migration-id <task-id>`, config.CliName),
+  Describe a migration in non-interactive mode:
+  $ %[1]s serverless migration describe -c <cluster-id> --migration-id <migration-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
@@ -79,7 +79,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			var clusterID, taskID string
+			var clusterID, migrationID string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -94,24 +94,24 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 
-				task, err := cloud.GetSelectedMigrationTask(ctx, clusterID, h.QueryPageSize, d)
+				migration, err := cloud.GetSelectedMigration(ctx, clusterID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				taskID = task.ID
+				migrationID = migration.ID
 			} else {
 				var err error
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				taskID, err = cmd.Flags().GetString(flag.MigrationTaskID)
+				migrationID, err = cmd.Flags().GetString(flag.MigrationID)
 				if err != nil {
 					return errors.Trace(err)
 				}
 			}
 
-			resp, err := d.GetMigration(ctx, clusterID, taskID)
+			resp, err := d.GetMigration(ctx, clusterID, migrationID)
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -120,7 +120,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID that owns the migration task.")
-	cmd.Flags().StringP(flag.MigrationTaskID, flag.MigrationTaskIDShort, "", "ID of the migration task to describe.")
+	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID that owns the migration.")
+	cmd.Flags().StringP(flag.MigrationID, flag.MigrationIDShort, "", "ID of the migration to describe.")
 	return cmd
 }

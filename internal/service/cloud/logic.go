@@ -1055,7 +1055,7 @@ func GetSelectedChangefeed(ctx context.Context, clusterID string, pageSize int64
 	return changefeed.(*Changefeed), nil
 }
 
-func GetSelectedMigrationTask(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*MigrationTask, error) {
+func GetSelectedMigration(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*MigrationTask, error) {
 	var items = make([]interface{}, 0)
 	pageSizeInt32 := int32(pageSize)
 	resp, err := client.ListMigrations(ctx, clusterID, &pageSizeInt32, nil, nil)

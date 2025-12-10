@@ -16,8 +16,8 @@ package migration
 
 import (
 	"fmt"
-	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 
@@ -121,21 +121,11 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			columns := []output.Column{"ID", "Name", "Mode", "State", "CreatedAt"}
 			var rows []output.Row
 			for _, task := range resp.Migrations {
-				id := safeString(task.MigrationId)
-				name := safeString(task.DisplayName)
-				if name == "" {
-					name = id
-				}
-				mode := ""
-				if task.Mode != nil {
-					mode = string(*task.Mode)
-				}
-				state := ""
-				if task.State != nil {
-					state = string(*task.State)
-				}
-				created := formatTime(task.CreateTime)
-				rows = append(rows, output.Row{id, name, mode, state, created})
+				id := pointer.Get(task.MigrationId)
+				name := pointer.Get(task.DisplayName)
+				mode := string(pointer.Get(task.Mode))
+				state := string(pointer.Get(task.State))
+				rows = append(rows, output.Row{id, name, mode, state, task.CreateTime.String()})
 			}
 			return errors.Trace(output.PrintHumanTable(h.IOStreams.Out, columns, rows))
 		},
@@ -144,18 +134,4 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the migration tasks to list.")
 	cmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, flag.OutputHelp)
 	return cmd
-}
-
-func safeString(value *string) string {
-	if value == nil {
-		return ""
-	}
-	return *value
-}
-
-func formatTime(value *time.Time) string {
-	if value == nil {
-		return ""
-	}
-	return value.Format(time.RFC3339)
 }

@@ -31,7 +31,7 @@ const (
 	migrationDefinitionAllTemplate = `{
     // Required migration mode. Use "ALL" for full + incremental.
     "mode": "ALL",
-    // Target TiDB Cloud user credentials used by the migration task
+    // Target TiDB Cloud user credentials used by the migration
     "target": {
         "user": "migration_user",
         "password": "Passw0rd!"
@@ -90,6 +90,7 @@ const (
 	migrationDefinitionIncrementalTemplate = `{
     // Incremental-only mode keeps the source and target in sync
     "mode": "INCREMENTAL",
+    // Target TiDB Cloud user credentials used by the migration
     "target": {
         "user": "migration_user",
         "password": "Passw0rd!"
@@ -167,10 +168,14 @@ var definitionTemplates = map[pkgmigration.TaskMode]templateVariant{
 
 func TemplateCmd(h *internal.Helper) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "template",
-		Short:   "Show migration JSON templates",
-		Args:    cobra.NoArgs,
-		Example: fmt.Sprintf("  Show the ALL mode migration template:\n  $ %[1]s serverless migration template --mode all\n\n  Show the INCREMENTAL migration template:\n  $ %[1]s serverless migration template --mode incremental\n", config.CliName),
+		Use:   "template",
+		Short: "Show migration JSON templates",
+		Args:  cobra.NoArgs,
+		Example: fmt.Sprintf(`  Show the ALL mode migration template:
+  $ %[1]s serverless migration template --mode all
+
+  Show the INCREMENTAL migration template:
+  $ %[1]s serverless migration template --mode incremental`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return cmd.MarkFlagRequired(flag.MigrationMode)
 		},

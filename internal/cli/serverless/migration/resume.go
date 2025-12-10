@@ -33,7 +33,7 @@ type ResumeOpts struct {
 func (c ResumeOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.MigrationTaskID,
+		flag.MigrationID,
 	}
 }
 
@@ -60,13 +60,13 @@ func ResumeCmd(h *internal.Helper) *cobra.Command {
 
 	var cmd = &cobra.Command{
 		Use:   "resume",
-		Short: "Resume a paused migration task",
+		Short: "Resume a paused migration",
 		Args:  cobra.NoArgs,
-		Example: fmt.Sprintf(`  Resume a migration task in interactive mode:
+		Example: fmt.Sprintf(`  Resume a migration in interactive mode:
   $ %[1]s serverless migration resume
 
-  Resume a migration task in non-interactive mode:
-  $ %[1]s serverless migration resume -c <cluster-id> --migration-id <task-id>`, config.CliName),
+  Resume a migration in non-interactive mode:
+  $ %[1]s serverless migration resume -c <cluster-id> --migration-id <migration-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
@@ -77,7 +77,7 @@ func ResumeCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			var clusterID, taskID string
+			var clusterID, migrationID string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -91,34 +91,33 @@ func ResumeCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				clusterID = cluster.ID
-				task, err := cloud.GetSelectedMigrationTask(ctx, clusterID, h.QueryPageSize, d)
+				migration, err := cloud.GetSelectedMigration(ctx, clusterID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				taskID = task.ID
+				migrationID = migration.ID
 			} else {
 				var err error
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				taskID, err = cmd.Flags().GetString(flag.MigrationTaskID)
+				migrationID, err = cmd.Flags().GetString(flag.MigrationID)
 				if err != nil {
 					return errors.Trace(err)
 				}
 			}
 
-			emptyBody := map[string]interface{}{}
-			if _, err := d.ResumeMigration(ctx, clusterID, taskID, &emptyBody); err != nil {
+			if err := d.ResumeMigration(ctx, clusterID, migrationID); err != nil {
 				return errors.Trace(err)
 			}
 
-			fmt.Fprintf(h.IOStreams.Out, "migration task %s resumed\n", taskID)
+			fmt.Fprintf(h.IOStreams.Out, "migration %s resumed\n", migrationID)
 			return nil
 		},
 	}
 
-	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID that owns the migration task.")
-	cmd.Flags().StringP(flag.MigrationTaskID, flag.MigrationTaskIDShort, "", "ID of the migration task to resume.")
+	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID that owns the migration.")
+	cmd.Flags().StringP(flag.MigrationID, flag.MigrationIDShort, "", "ID of the migration to resume.")
 	return cmd
 }

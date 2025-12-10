@@ -106,7 +106,7 @@ type TiDBCloudClient interface {
 
 	DownloadExportFiles(ctx context.Context, clusterId string, exportId string, body *export.ExportServiceDownloadExportFilesBody) (*export.DownloadExportFilesResponse, error)
 
-	CancelMigrationPrecheck(ctx context.Context, clusterId string, precheckId string) (map[string]interface{}, error)
+	CancelMigrationPrecheck(ctx context.Context, clusterId string, precheckId string) error
 
 	DeleteMigration(ctx context.Context, clusterId string, taskId string) (*migration.Migration, error)
 
@@ -120,9 +120,9 @@ type TiDBCloudClient interface {
 
 	ListMigrations(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*migration.ListMigrationsResp, error)
 
-	PauseMigration(ctx context.Context, clusterId string, taskId string, body *map[string]interface{}) (map[string]interface{}, error)
+	PauseMigration(ctx context.Context, clusterId string, taskId string) error
 
-	ResumeMigration(ctx context.Context, clusterId string, taskId string, body *map[string]interface{}) (map[string]interface{}, error)
+	ResumeMigration(ctx context.Context, clusterId string, taskId string) error
 
 	ListSQLUsers(ctx context.Context, clusterID string, pageSize *int32, pageToken *string) (*iam.ApiListSqlUsersRsp, error)
 
@@ -501,9 +501,9 @@ func (d *ClientDelegate) DownloadExportFiles(ctx context.Context, clusterId stri
 	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) CancelMigrationPrecheck(ctx context.Context, clusterId string, precheckId string) (map[string]interface{}, error) {
-	res, h, err := d.mc.MigrationAPI.MigrationServiceCancelPrecheck(ctx, clusterId, precheckId).Execute()
-	return res, parseError(err, h)
+func (d *ClientDelegate) CancelMigrationPrecheck(ctx context.Context, clusterId string, precheckId string) error {
+	_, h, err := d.mc.MigrationAPI.MigrationServiceCancelPrecheck(ctx, clusterId, precheckId).Execute()
+	return parseError(err, h)
 }
 
 func (d *ClientDelegate) DeleteMigration(ctx context.Context, clusterId string, taskId string) (*migration.Migration, error) {
@@ -554,22 +554,16 @@ func (d *ClientDelegate) ListMigrations(ctx context.Context, clusterId string, p
 	return res, parseError(err, h)
 }
 
-func (d *ClientDelegate) PauseMigration(ctx context.Context, clusterId string, taskId string, body *map[string]interface{}) (map[string]interface{}, error) {
+func (d *ClientDelegate) PauseMigration(ctx context.Context, clusterId string, taskId string) error {
 	payload := map[string]interface{}{}
-	if body != nil {
-		payload = *body
-	}
-	res, h, err := d.mc.MigrationAPI.MigrationServicePauseMigration(ctx, clusterId, taskId).Body(payload).Execute()
-	return res, parseError(err, h)
+	_, h, err := d.mc.MigrationAPI.MigrationServicePauseMigration(ctx, clusterId, taskId).Body(payload).Execute()
+	return parseError(err, h)
 }
 
-func (d *ClientDelegate) ResumeMigration(ctx context.Context, clusterId string, taskId string, body *map[string]interface{}) (map[string]interface{}, error) {
+func (d *ClientDelegate) ResumeMigration(ctx context.Context, clusterId string, taskId string) error {
 	payload := map[string]interface{}{}
-	if body != nil {
-		payload = *body
-	}
-	res, h, err := d.mc.MigrationAPI.MigrationServiceResumeMigration(ctx, clusterId, taskId).Body(payload).Execute()
-	return res, parseError(err, h)
+	_, h, err := d.mc.MigrationAPI.MigrationServiceResumeMigration(ctx, clusterId, taskId).Body(payload).Execute()
+	return parseError(err, h)
 }
 
 func (d *ClientDelegate) ListSQLUsers(ctx context.Context, clusterID string, pageSize *int32, pageToken *string) (*iam.ApiListSqlUsersRsp, error) {

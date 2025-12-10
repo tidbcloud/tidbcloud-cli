@@ -37,7 +37,7 @@ type DeleteOpts struct {
 func (c DeleteOpts) NonInteractiveFlags() []string {
 	return []string{
 		flag.ClusterID,
-		flag.MigrationTaskID,
+		flag.MigrationID,
 	}
 }
 
@@ -65,14 +65,14 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 
 	var cmd = &cobra.Command{
 		Use:     "delete",
-		Short:   "Delete a migration task",
+		Short:   "Delete a migration",
 		Aliases: []string{"rm"},
 		Args:    cobra.NoArgs,
-		Example: fmt.Sprintf(`  Delete a migration task in interactive mode:
-	  $ %[1]s serverless migration delete
+		Example: fmt.Sprintf(`  Delete a migration in interactive mode:
+  $ %[1]s serverless migration delete
 
-	  Delete a migration task in non-interactive mode:
-	  $ %[1]s serverless migration delete -c <cluster-id> --migration-id <task-id>`, config.CliName),
+  Delete a migration in non-interactive mode:
+  $ %[1]s serverless migration delete -c <cluster-id> --migration-id <migration-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
@@ -83,7 +83,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			var clusterID, taskID string
+			var clusterID, migrationID string
 			if opts.interactive {
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
@@ -97,18 +97,18 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				clusterID = cluster.ID
-				task, err := cloud.GetSelectedMigrationTask(ctx, clusterID, h.QueryPageSize, d)
+				migration, err := cloud.GetSelectedMigration(ctx, clusterID, h.QueryPageSize, d)
 				if err != nil {
 					return err
 				}
-				taskID = task.ID
+				migrationID = migration.ID
 			} else {
 				var err error
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
 				}
-				taskID, err = cmd.Flags().GetString(flag.MigrationTaskID)
+				migrationID, err = cmd.Flags().GetString(flag.MigrationID)
 				if err != nil {
 					return errors.Trace(err)
 				}
@@ -116,7 +116,7 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 
 			if !force {
 				if !h.IOStreams.CanPrompt {
-					return errors.New("The terminal doesn't support prompt, please run with --force to delete the migration task")
+					return errors.New("The terminal doesn't support prompt, please run with --force to delete the migration")
 				}
 				prompt := &survey.Input{
 					Message: fmt.Sprintf("%s %s %s", color.BlueString("Please type"), color.HiBlueString("yes"), color.BlueString("to confirm:")),
@@ -129,21 +129,21 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				if confirmation != "yes" {
-					return errors.New("Incorrect confirm string entered, skipping migration task deletion")
+					return errors.New("Incorrect confirm string entered, skipping migration deletion")
 				}
 			}
 
-			if _, err := d.DeleteMigration(ctx, clusterID, taskID); err != nil {
+			if _, err := d.DeleteMigration(ctx, clusterID, migrationID); err != nil {
 				return errors.Trace(err)
 			}
 
-			fmt.Fprintln(h.IOStreams.Out, color.GreenString("migration task %s deleted", taskID))
+			fmt.Fprintln(h.IOStreams.Out, color.GreenString("migration %s deleted", migrationID))
 			return nil
 		},
 	}
 
 	cmd.Flags().BoolVar(&force, flag.Force, false, "Delete without confirmation.")
-	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID that owns the migration task.")
-	cmd.Flags().StringP(flag.MigrationTaskID, flag.MigrationTaskIDShort, "", "ID of the migration task to delete.")
+	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "Cluster ID that owns the migration.")
+	cmd.Flags().StringP(flag.MigrationID, flag.MigrationIDShort, "", "ID of the migration to delete.")
 	return cmd
 }
