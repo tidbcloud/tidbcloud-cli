@@ -81,33 +81,21 @@ func (_m *TiDBCloudClient) CancelImport(ctx context.Context, clusterId string, i
 }
 
 // CancelMigrationPrecheck provides a mock function with given fields: ctx, clusterId, precheckId
-func (_m *TiDBCloudClient) CancelMigrationPrecheck(ctx context.Context, clusterId string, precheckId string) (map[string]interface{}, error) {
+func (_m *TiDBCloudClient) CancelMigrationPrecheck(ctx context.Context, clusterId string, precheckId string) error {
 	ret := _m.Called(ctx, clusterId, precheckId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CancelMigrationPrecheck")
 	}
 
-	var r0 map[string]interface{}
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string) (map[string]interface{}, error)); ok {
-		return rf(ctx, clusterId, precheckId)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, string, string) map[string]interface{}); ok {
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) error); ok {
 		r0 = rf(ctx, clusterId, precheckId)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(map[string]interface{})
-		}
+		r0 = ret.Error(0)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
-		r1 = rf(ctx, clusterId, precheckId)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // CancelUpload provides a mock function with given fields: ctx, clusterId, uploadId
@@ -1676,34 +1664,22 @@ func (_m *TiDBCloudClient) PartialUpdateCluster(ctx context.Context, clusterId s
 	return r0, r1
 }
 
-// PauseMigration provides a mock function with given fields: ctx, clusterId, taskId, body
-func (_m *TiDBCloudClient) PauseMigration(ctx context.Context, clusterId string, taskId string, body *map[string]interface{}) (map[string]interface{}, error) {
-	ret := _m.Called(ctx, clusterId, taskId, body)
+// PauseMigration provides a mock function with given fields: ctx, clusterId, taskId
+func (_m *TiDBCloudClient) PauseMigration(ctx context.Context, clusterId string, taskId string) error {
+	ret := _m.Called(ctx, clusterId, taskId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for PauseMigration")
 	}
 
-	var r0 map[string]interface{}
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, *map[string]interface{}) (map[string]interface{}, error)); ok {
-		return rf(ctx, clusterId, taskId, body)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, *map[string]interface{}) map[string]interface{}); ok {
-		r0 = rf(ctx, clusterId, taskId, body)
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) error); ok {
+		r0 = rf(ctx, clusterId, taskId)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(map[string]interface{})
-		}
+		r0 = ret.Error(0)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string, string, *map[string]interface{}) error); ok {
-		r1 = rf(ctx, clusterId, taskId, body)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // ResetBranch provides a mock function with given fields: ctx, clusterId, branchId
@@ -1766,34 +1742,22 @@ func (_m *TiDBCloudClient) Restore(ctx context.Context, body *br.V1beta1RestoreR
 	return r0, r1
 }
 
-// ResumeMigration provides a mock function with given fields: ctx, clusterId, taskId, body
-func (_m *TiDBCloudClient) ResumeMigration(ctx context.Context, clusterId string, taskId string, body *map[string]interface{}) (map[string]interface{}, error) {
-	ret := _m.Called(ctx, clusterId, taskId, body)
+// ResumeMigration provides a mock function with given fields: ctx, clusterId, taskId
+func (_m *TiDBCloudClient) ResumeMigration(ctx context.Context, clusterId string, taskId string) error {
+	ret := _m.Called(ctx, clusterId, taskId)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ResumeMigration")
 	}
 
-	var r0 map[string]interface{}
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, *map[string]interface{}) (map[string]interface{}, error)); ok {
-		return rf(ctx, clusterId, taskId, body)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, *map[string]interface{}) map[string]interface{}); ok {
-		r0 = rf(ctx, clusterId, taskId, body)
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) error); ok {
+		r0 = rf(ctx, clusterId, taskId)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(map[string]interface{})
-		}
+		r0 = ret.Error(0)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, string, string, *map[string]interface{}) error); ok {
-		r1 = rf(ctx, clusterId, taskId, body)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // StartChangefeed provides a mock function with given fields: ctx, clusterId, changefeedId

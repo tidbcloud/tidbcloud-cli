@@ -23,6 +23,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	aws "github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/fatih/color"
 	"github.com/juju/errors"
@@ -56,7 +57,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 			ctx := cmd.Context()
 
-			dryRun, err := cmd.Flags().GetBool(flag.MigrationDryRun)
+			dryRun, err := cmd.Flags().GetBool(flag.DryRun)
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -121,7 +122,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the target cluster.")
 	cmd.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "Display name for the migration.")
 	cmd.Flags().String(flag.MigrationConfigFile, "", "Path to a migration config JSON file. Use \"ticloud serverless migration template --mode <mode>\" to print templates.")
-	cmd.Flags().Bool(flag.MigrationDryRun, false, "Run a migration precheck (dry run) with the provided inputs without creating a migration.")
+	cmd.Flags().Bool(flag.DryRun, false, "Run a migration precheck (dry run) with the provided inputs without creating a migration.")
 
 	return cmd
 }
@@ -216,29 +217,18 @@ func printPrecheckSummary(result *pkgmigration.MigrationPrecheck, h *internal.He
 		if !shouldPrintPrecheckItem(item.Status) {
 			continue
 		}
-		var status string
-		if item.Status != nil {
-			status = string(*item.Status)
-		}
 		rows = append(rows, output.Row{
-			precheckItemType(item.Type),
-			status,
-			aws.ToString(item.Description),
-			aws.ToString(item.Reason),
-			aws.ToString(item.Solution),
+			string(pointer.Get(item.Type)),
+			string(pointer.Get(item.Status)),
+			pointer.Get(item.Description),
+			pointer.Get(item.Reason),
+			pointer.Get(item.Solution),
 		})
 	}
 	if len(rows) == 0 {
 		return true, nil
 	}
 	return true, output.PrintHumanTable(h.IOStreams.Out, columns, rows)
-}
-
-func precheckItemType(value *pkgmigration.PrecheckItemType) string {
-	if value == nil {
-		return ""
-	}
-	return string(*value)
 }
 
 // shouldPrintPrecheckItem reports whether a precheck item should be shown to users.

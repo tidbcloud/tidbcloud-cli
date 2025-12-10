@@ -119,16 +119,16 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 					return errors.New("The terminal doesn't support prompt, please run with --force to delete the migration")
 				}
 				prompt := &survey.Input{
-					Message: fmt.Sprintf("%s %s %s", color.BlueString("Please type"), color.HiBlueString("yes"), color.BlueString("to confirm:")),
+					Message: fmt.Sprintf("%s %s %s", color.BlueString("Please type"), color.HiBlueString(config.Confirmed), color.BlueString("to confirm:")),
 				}
 				var confirmation string
 				if err := survey.AskOne(prompt, &confirmation); err != nil {
-					if err == terminal.InterruptErr {
+					if errors.Is(err, terminal.InterruptErr) {
 						return util.InterruptError
 					}
 					return err
 				}
-				if confirmation != "yes" {
+				if confirmation != config.Confirmed {
 					return errors.New("Incorrect confirm string entered, skipping migration deletion")
 				}
 			}

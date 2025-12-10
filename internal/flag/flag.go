@@ -129,7 +129,7 @@ const (
 	MigrationIDShort    string = "m"
 	MigrationConfigFile string = "config-file"
 	MigrationMode       string = "mode"
-	MigrationDryRun     string = "dry-run"
+	DryRun              string = "dry-run"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."
