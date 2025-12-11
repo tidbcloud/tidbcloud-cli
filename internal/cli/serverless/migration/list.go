@@ -16,6 +16,7 @@ package migration
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/AlekSi/pointer"
 	"github.com/juju/errors"
@@ -125,7 +126,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				name := pointer.Get(task.DisplayName)
 				mode := string(pointer.Get(task.Mode))
 				state := string(pointer.Get(task.State))
-				rows = append(rows, output.Row{id, name, mode, state, task.CreateTime.String()})
+				rows = append(rows, output.Row{id, name, mode, state, task.CreateTime.Format(time.RFC3339)})
 			}
 			return errors.Trace(output.PrintHumanTable(h.IOStreams.Out, columns, rows))
 		},

@@ -16,6 +16,7 @@ package privatelink
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -130,7 +131,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 						item.DisplayName,
 						string(item.Type),
 						string(*item.State),
-						item.CreateTime.String(),
+						item.CreateTime.Format(time.RFC3339),
 					})
 				}
 				err := output.PrintHumanTable(h.IOStreams.Out, columns, rows)
