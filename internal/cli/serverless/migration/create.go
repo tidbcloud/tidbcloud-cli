@@ -138,7 +138,7 @@ func markCreateMigrationRequiredFlags(cmd *cobra.Command) error {
 
 const (
 	precheckPollInterval = 5 * time.Second
-	precheckPollTimeout  = time.Minute
+	precheckPollTimeout  = 2 * time.Minute
 )
 
 func runMigrationPrecheck(ctx context.Context, client cloud.TiDBCloudClient, clusterID string, body *pkgmigration.MigrationServicePrecheckBody, h *internal.Helper) error {
