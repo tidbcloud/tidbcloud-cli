@@ -50,7 +50,9 @@ const (
         "userName": "",
         // required when authType is SASL_PLAIN, SASL_SCRAM_SHA_256, or SASL_SCRAM_SHA_512
         "password": "",
-        "enableTls": false
+        "enableTls": false,
+        // Specify this field when your server rely on TLS SNI, for example, Confluent Cloud Dedicated clusters.
+        "serverName": "",
     },
     "outputRawChangeEvent": false,
     "dataFormat": {
@@ -132,7 +134,8 @@ const (
         "authType": "DISABLE",
         "userName": "",
         "password": "",
-        "enableTls": false
+        "enableTls": false,
+        "serverName": ""
     },
     "outputRawChangeEvent": false,
     "dataFormat": {
