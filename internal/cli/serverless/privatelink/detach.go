@@ -62,14 +62,14 @@ func DetachDomainCmd(h *internal.Helper) *cobra.Command {
 	opts := &DetachDomainOpts{interactive: true}
 
 	cmd := &cobra.Command{
-		Use:   "detach",
+		Use:   "detach-domains",
 		Short: "Detach domains from a private link connection",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Detach domains (interactive):
   $ %[1]s serverless private-link-connection detach
 
   Detach domains (non-interactive):
-  $ %[1]s serverless private-link-connection detach -c <cluster-id> --private-link-connection-id <plc-id> --plc-attach-domain-id <attach-id>`, config.CliName),
+  $ %[1]s serverless private-link-connection detach-domains -c <cluster-id> --private-link-connection-id <plc-id> --attach-domain-id <attach-id>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},

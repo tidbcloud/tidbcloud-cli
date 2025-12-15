@@ -72,14 +72,14 @@ func (o *AttachDomainOpts) MarkInteractive(cmd *cobra.Command) error {
 func AttachDomainCmd(h *internal.Helper) *cobra.Command {
 	opts := &AttachDomainOpts{interactive: true}
 	cmd := &cobra.Command{
-		Use:   "attach",
+		Use:   "attach-domains",
 		Short: "Attach domains to a private link connection",
 		Args:  cobra.NoArgs,
 		Example: fmt.Sprintf(`  Attach domain (interactive):
-  $ %[1]s serverless private-link-connection attach
+  $ %[1]s serverless private-link-connection attach-domains
 
   Attach domain (non-interactive):
-  $ %[1]s serverless private-link-connection attach -c <cluster-id> --private-link-connection-id <plc-id> --type <type> --unique-name <unique-name>`, config.CliName),
+  $ %[1]s serverless private-link-connection attach-domains -c <cluster-id> --private-link-connection-id <plc-id> --type <type> --unique-name <unique-name>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
@@ -94,7 +94,7 @@ func AttachDomainCmd(h *internal.Helper) *cobra.Command {
 			var domainType plapi.PrivateLinkConnectionDomainTypeEnum
 			var uniqueName string
 			var dryRun bool
-			dryRun, err = cmd.Flags().GetBool(flag.PLCAttachDomainDryRun)
+			dryRun, err = cmd.Flags().GetBool(flag.DryRun)
 			if err != nil {
 				return errors.Trace(err)
 			}
@@ -157,10 +157,10 @@ func AttachDomainCmd(h *internal.Helper) *cobra.Command {
 				if err != nil {
 					return errors.Trace(err)
 				}
-			}
 
-			if domainType == "" {
-				return errors.New("domain type is required")
+				if domainType == "" {
+					return errors.New("domain type is required")
+				}
 			}
 
 			body := &plapi.PrivateLinkConnectionServiceAttachDomainsBody{
@@ -193,7 +193,7 @@ func AttachDomainCmd(h *internal.Helper) *cobra.Command {
 	cmd.Flags().String(flag.PrivateLinkConnectionID, "", "The private link connection ID.")
 	cmd.Flags().String(flag.PLCAttachDomainType, "", fmt.Sprintf("The type of domain to attach, one of: %v", plapi.AllowedPrivateLinkConnectionDomainTypeEnumEnumValues))
 	cmd.Flags().String(flag.PLCAttachDomainUniqueName, "", "The unique name of the domain to attach, you can use --dry-run to generate the unique name when attaching a TiDB Cloud managed domain.")
-	cmd.Flags().Bool(flag.PLCAttachDomainDryRun, false, "set dry run mode to only show generated domains without attaching them.")
+	cmd.Flags().Bool(flag.DryRun, false, "Set dry run mode to only show generated domains without attaching them.")
 
 	return cmd
 }

@@ -126,8 +126,7 @@ const (
 	AlicloudEndpointServiceName string = "alicloud.endpoint-service-name"
 	PLCAttachDomainType         string = "type"
 	PLCAttachDomainUniqueName   string = "unique-name"
-	PLCAttachDomainID           string = "plc-attach-domain-id"
-	PLCAttachDomainDryRun       string = "dry-run"
+	PLCAttachDomainID           string = "attach-domain-id"
 
 	MigrationID         string = "migration-id"
 	MigrationIDShort    string = "m"
