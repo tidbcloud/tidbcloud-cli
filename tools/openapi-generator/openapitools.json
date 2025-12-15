@@ -2,6 +2,9 @@
   "$schema": "./node_modules/@openapitools/openapi-generator-cli/config.schema.json",
   "spaces": 2,
   "generator-cli": {
-    "version": "7.12.0"
+    "version": "7.12.0",
+    "repository": {
+      "downloadUrl": "https://maven.aliyun.com/repository/public/org/openapitools/openapi-generator-cli/7.12.0/openapi-generator-cli-7.12.0.jar"
+    }
   }
 }

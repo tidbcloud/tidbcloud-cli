@@ -4,6 +4,7 @@ go 1.24.0
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6
+	github.com/AlekSi/pointer v1.2.0
 	github.com/aws/aws-sdk-go-v2 v1.27.1
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.16.23
 	github.com/charmbracelet/bubbles v0.17.1
@@ -31,6 +32,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.9.0
+	github.com/tailscale/hujson v0.0.0-20250605163823-992244df8c5a
 	github.com/tidbcloud/tidbcloud-cli/pkg v0.0.1
 	github.com/xo/usql v0.19.2
 	github.com/zalando/go-keyring v0.2.3

@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//     http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package changefeed
+package migration
 
 import (
 	"fmt"
 	"time"
 
+	"github.com/AlekSi/pointer"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 
@@ -33,25 +34,20 @@ type ListOpts struct {
 }
 
 func (c ListOpts) NonInteractiveFlags() []string {
-	return []string{
-		flag.ClusterID,
-	}
+	return []string{flag.ClusterID}
 }
 
 func (c *ListOpts) MarkInteractive(cmd *cobra.Command) error {
-	flags := c.NonInteractiveFlags()
-	for _, fn := range flags {
+	for _, fn := range c.NonInteractiveFlags() {
 		f := cmd.Flags().Lookup(fn)
 		if f != nil && f.Changed {
 			c.interactive = false
 			break
 		}
 	}
-	// Mark required flags
 	if !c.interactive {
-		for _, fn := range flags {
-			err := cmd.MarkFlagRequired(fn)
-			if err != nil {
+		for _, fn := range c.NonInteractiveFlags() {
+			if err := cmd.MarkFlagRequired(fn); err != nil {
 				return err
 			}
 		}
@@ -60,23 +56,18 @@ func (c *ListOpts) MarkInteractive(cmd *cobra.Command) error {
 }
 
 func ListCmd(h *internal.Helper) *cobra.Command {
-	opts := ListOpts{
-		interactive: true,
-	}
+	opts := ListOpts{interactive: true}
 
-	var listCmd = &cobra.Command{
-		Use:   "list",
-		Short: "List changefeeds",
-		Args:  cobra.NoArgs,
-		Example: fmt.Sprintf(`  List all changefeeds in interactive mode:
-  $ %[1]s serverless changefeed list
-
-  List all changefeeds in non-interactive mode:
-  $ %[1]s serverless changefeed list -c <cluster-id>
-
-  List all changefeeds with json format in non-interactive mode:
-  $ %[1]s serverless changefeed list -c <cluster-id> -o json`, config.CliName),
+	var cmd = &cobra.Command{
+		Use:     "list",
+		Short:   "List migrations",
 		Aliases: []string{"ls"},
+		Args:    cobra.NoArgs,
+		Example: fmt.Sprintf(`  List migrations in interactive mode:
+  $ %[1]s serverless migration list
+
+  List migrations in non-interactive mode with JSON output:
+  $ %[1]s serverless migration list -c <cluster-id> -o json`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return opts.MarkInteractive(cmd)
 		},
@@ -102,6 +93,7 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 				}
 				clusterID = cluster.ID
 			} else {
+				var err error
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return errors.Trace(err)
@@ -109,9 +101,9 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			pageSize := int32(h.QueryPageSize)
-			resp, err := d.ListChangefeeds(ctx, clusterID, &pageSize, nil, nil)
+			resp, err := d.ListMigrations(ctx, clusterID, &pageSize, nil, nil)
 			if err != nil {
-				return err
+				return errors.Trace(err)
 			}
 
 			format, err := cmd.Flags().GetString(flag.Output)
@@ -120,41 +112,27 @@ func ListCmd(h *internal.Helper) *cobra.Command {
 			}
 
 			if format == output.JsonFormat || !h.IOStreams.CanPrompt {
-				err := output.PrintJson(h.IOStreams.Out, resp)
-				if err != nil {
-					return errors.Trace(err)
-				}
-			} else if format == output.HumanFormat {
-				columns := []output.Column{
-					"ID",
-					"Name",
-					"Type",
-					"State",
-					"CreateTime",
-				}
-				var rows []output.Row
-				for _, item := range resp.Changefeeds {
-					rows = append(rows, output.Row{
-						*item.ChangefeedId,
-						*item.DisplayName,
-						string(item.Sink.Type),
-						string(*item.State),
-						item.CreateTime.Format(time.RFC3339),
-					})
-				}
-				err := output.PrintHumanTable(h.IOStreams.Out, columns, rows)
-				if err != nil {
-					return errors.Trace(err)
-				}
-				return nil
-			} else {
+				return errors.Trace(output.PrintJson(h.IOStreams.Out, resp))
+			}
+
+			if format != output.HumanFormat {
 				return fmt.Errorf("unsupported output format: %s", format)
 			}
-			return nil
+
+			columns := []output.Column{"ID", "Name", "Mode", "State", "CreatedAt"}
+			var rows []output.Row
+			for _, task := range resp.Migrations {
+				id := pointer.Get(task.MigrationId)
+				name := pointer.Get(task.DisplayName)
+				mode := string(pointer.Get(task.Mode))
+				state := string(pointer.Get(task.State))
+				rows = append(rows, output.Row{id, name, mode, state, task.CreateTime.Format(time.RFC3339)})
+			}
+			return errors.Trace(output.PrintHumanTable(h.IOStreams.Out, columns, rows))
 		},
 	}
 
-	listCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the changefeeds to be listed.")
-	listCmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, flag.OutputHelp)
-	return listCmd
+	cmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The cluster ID of the migration tasks to list.")
+	cmd.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, flag.OutputHelp)
+	return cmd
 }

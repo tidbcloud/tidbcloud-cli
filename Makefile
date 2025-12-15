@@ -56,6 +56,9 @@ generate-v1beta1-serverless-client: install-openapi-generator ## Generate server
 	@echo "==> Generating serverless cdc client"
 	rm -rf pkg/tidbcloud/v1beta1/serverless/cdc
 	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/cdc.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/cdc --package-name cdc -c go/config.yaml
+	@echo "==> Generating serverless cdc client"
+	rm -rf pkg/tidbcloud/v1beta1/serverless/migration
+	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta1/serverless/dm.swagger.json -g go -o ../../pkg/tidbcloud/v1beta1/serverless/migration --package-name migration -c go/config.yaml
 	cd pkg && go fmt ./tidbcloud/v1beta1/serverless/... && goimports -w .
 	@echo "==> Generating serverless privatelink client"
 	rm -rf pkg/tidbcloud/v1beta1/serverless/privatelink

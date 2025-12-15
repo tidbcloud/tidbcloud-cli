@@ -128,6 +128,12 @@ const (
 	PLCAttachDomainUniqueName   string = "unique-name"
 	PLCAttachDomainID           string = "plc-attach-domain-id"
 	PLCAttachDomainDryRun       string = "dry-run"
+
+	MigrationID         string = "migration-id"
+	MigrationIDShort    string = "m"
+	MigrationConfigFile string = "config-file"
+	MigrationMode       string = "mode"
+	DryRun              string = "dry-run"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."

@@ -20,6 +20,8 @@ import (
 
 	imp "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 
+	migration "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/migration"
+
 	mock "github.com/stretchr/testify/mock"
 
 	privatelink "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/privatelink"
@@ -101,6 +103,24 @@ func (_m *TiDBCloudClient) CancelImport(ctx context.Context, clusterId string, i
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, string, string) error); ok {
 		r0 = rf(ctx, clusterId, id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// CancelMigrationPrecheck provides a mock function with given fields: ctx, clusterId, precheckId
+func (_m *TiDBCloudClient) CancelMigrationPrecheck(ctx context.Context, clusterId string, precheckId string) error {
+	ret := _m.Called(ctx, clusterId, precheckId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CancelMigrationPrecheck")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) error); ok {
+		r0 = rf(ctx, clusterId, precheckId)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -316,6 +336,66 @@ func (_m *TiDBCloudClient) CreateImport(ctx context.Context, clusterId string, b
 	}
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, *imp.ImportServiceCreateImportBody) error); ok {
+		r1 = rf(ctx, clusterId, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CreateMigration provides a mock function with given fields: ctx, clusterId, body
+func (_m *TiDBCloudClient) CreateMigration(ctx context.Context, clusterId string, body *migration.MigrationServiceCreateMigrationBody) (*migration.Migration, error) {
+	ret := _m.Called(ctx, clusterId, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateMigration")
+	}
+
+	var r0 *migration.Migration
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *migration.MigrationServiceCreateMigrationBody) (*migration.Migration, error)); ok {
+		return rf(ctx, clusterId, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *migration.MigrationServiceCreateMigrationBody) *migration.Migration); ok {
+		r0 = rf(ctx, clusterId, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*migration.Migration)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *migration.MigrationServiceCreateMigrationBody) error); ok {
+		r1 = rf(ctx, clusterId, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CreateMigrationPrecheck provides a mock function with given fields: ctx, clusterId, body
+func (_m *TiDBCloudClient) CreateMigrationPrecheck(ctx context.Context, clusterId string, body *migration.MigrationServicePrecheckBody) (*migration.CreateMigrationPrecheckResp, error) {
+	ret := _m.Called(ctx, clusterId, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreateMigrationPrecheck")
+	}
+
+	var r0 *migration.CreateMigrationPrecheckResp
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *migration.MigrationServicePrecheckBody) (*migration.CreateMigrationPrecheckResp, error)); ok {
+		return rf(ctx, clusterId, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *migration.MigrationServicePrecheckBody) *migration.CreateMigrationPrecheckResp); ok {
+		r0 = rf(ctx, clusterId, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*migration.CreateMigrationPrecheckResp)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *migration.MigrationServicePrecheckBody) error); ok {
 		r1 = rf(ctx, clusterId, body)
 	} else {
 		r1 = ret.Error(1)
@@ -557,6 +637,36 @@ func (_m *TiDBCloudClient) DeleteExport(ctx context.Context, clusterId string, e
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
 		r1 = rf(ctx, clusterId, exportId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// DeleteMigration provides a mock function with given fields: ctx, clusterId, taskId
+func (_m *TiDBCloudClient) DeleteMigration(ctx context.Context, clusterId string, taskId string) (*migration.Migration, error) {
+	ret := _m.Called(ctx, clusterId, taskId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeleteMigration")
+	}
+
+	var r0 *migration.Migration
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*migration.Migration, error)); ok {
+		return rf(ctx, clusterId, taskId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *migration.Migration); ok {
+		r0 = rf(ctx, clusterId, taskId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*migration.Migration)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, taskId)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -1014,6 +1124,66 @@ func (_m *TiDBCloudClient) GetImport(ctx context.Context, clusterId string, id s
 	return r0, r1
 }
 
+// GetMigration provides a mock function with given fields: ctx, clusterId, taskId
+func (_m *TiDBCloudClient) GetMigration(ctx context.Context, clusterId string, taskId string) (*migration.Migration, error) {
+	ret := _m.Called(ctx, clusterId, taskId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetMigration")
+	}
+
+	var r0 *migration.Migration
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*migration.Migration, error)); ok {
+		return rf(ctx, clusterId, taskId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *migration.Migration); ok {
+		r0 = rf(ctx, clusterId, taskId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*migration.Migration)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, taskId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetMigrationPrecheck provides a mock function with given fields: ctx, clusterId, precheckId
+func (_m *TiDBCloudClient) GetMigrationPrecheck(ctx context.Context, clusterId string, precheckId string) (*migration.MigrationPrecheck, error) {
+	ret := _m.Called(ctx, clusterId, precheckId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetMigrationPrecheck")
+	}
+
+	var r0 *migration.MigrationPrecheck
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*migration.MigrationPrecheck, error)); ok {
+		return rf(ctx, clusterId, precheckId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *migration.MigrationPrecheck); ok {
+		r0 = rf(ctx, clusterId, precheckId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*migration.MigrationPrecheck)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, precheckId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetPrivateLinkAvailabilityZones provides a mock function with given fields: ctx, clusterId
 func (_m *TiDBCloudClient) GetPrivateLinkAvailabilityZones(ctx context.Context, clusterId string) (*privatelink.GetAvailabilityZonesResponse, error) {
 	ret := _m.Called(ctx, clusterId)
@@ -1374,6 +1544,36 @@ func (_m *TiDBCloudClient) ListImports(ctx context.Context, clusterId string, pa
 	return r0, r1
 }
 
+// ListMigrations provides a mock function with given fields: ctx, clusterId, pageSize, pageToken, orderBy
+func (_m *TiDBCloudClient) ListMigrations(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, orderBy *string) (*migration.ListMigrationsResp, error) {
+	ret := _m.Called(ctx, clusterId, pageSize, pageToken, orderBy)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListMigrations")
+	}
+
+	var r0 *migration.ListMigrationsResp
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string, *string) (*migration.ListMigrationsResp, error)); ok {
+		return rf(ctx, clusterId, pageSize, pageToken, orderBy)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string, *string) *migration.ListMigrationsResp); ok {
+		r0 = rf(ctx, clusterId, pageSize, pageToken, orderBy)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*migration.ListMigrationsResp)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *int32, *string, *string) error); ok {
+		r1 = rf(ctx, clusterId, pageSize, pageToken, orderBy)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // ListPrivateLinkConnections provides a mock function with given fields: ctx, clusterId, pageSize, pageToken
 func (_m *TiDBCloudClient) ListPrivateLinkConnections(ctx context.Context, clusterId string, pageSize *int32, pageToken *string) (*privatelink.ListPrivateLinkConnectionsResponse, error) {
 	ret := _m.Called(ctx, clusterId, pageSize, pageToken)
@@ -1524,6 +1724,24 @@ func (_m *TiDBCloudClient) PartialUpdateCluster(ctx context.Context, clusterId s
 	return r0, r1
 }
 
+// PauseMigration provides a mock function with given fields: ctx, clusterId, taskId
+func (_m *TiDBCloudClient) PauseMigration(ctx context.Context, clusterId string, taskId string) error {
+	ret := _m.Called(ctx, clusterId, taskId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for PauseMigration")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) error); ok {
+		r0 = rf(ctx, clusterId, taskId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // ResetBranch provides a mock function with given fields: ctx, clusterId, branchId
 func (_m *TiDBCloudClient) ResetBranch(ctx context.Context, clusterId string, branchId string) (*branch.Branch, error) {
 	ret := _m.Called(ctx, clusterId, branchId)
@@ -1582,6 +1800,24 @@ func (_m *TiDBCloudClient) Restore(ctx context.Context, body *br.V1beta1RestoreR
 	}
 
 	return r0, r1
+}
+
+// ResumeMigration provides a mock function with given fields: ctx, clusterId, taskId
+func (_m *TiDBCloudClient) ResumeMigration(ctx context.Context, clusterId string, taskId string) error {
+	ret := _m.Called(ctx, clusterId, taskId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ResumeMigration")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) error); ok {
+		r0 = rf(ctx, clusterId, taskId)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // StartChangefeed provides a mock function with given fields: ctx, clusterId, changefeedId
