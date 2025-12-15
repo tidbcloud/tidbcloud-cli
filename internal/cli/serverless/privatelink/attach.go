@@ -168,7 +168,7 @@ func AttachDomainCmd(h *internal.Helper) *cobra.Command {
 					Type:       domainType,
 					UniqueName: &uniqueName,
 				},
-				DryRun: &dryRun,
+				ValidateOnly: &dryRun,
 			}
 
 			resp, err := d.AttachPrivateLinkDomains(ctx, clusterID, plcID, body)

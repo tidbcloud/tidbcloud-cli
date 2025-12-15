@@ -258,6 +258,9 @@ components:
   schemas:
     AlicloudEndpointService:
       example:
+        availabilityZoneIds:
+        - availabilityZoneIds
+        - availabilityZoneIds
         endpointId: endpointId
         name: name
       properties:
@@ -268,6 +271,12 @@ components:
           description: The endpoint ID.
           readOnly: true
           type: string
+        availabilityZoneIds:
+          description: The availability zones of the endpoint.
+          items:
+            type: string
+          readOnly: true
+          type: array
       required:
       - name
       type: object
@@ -316,7 +325,7 @@ components:
           type: object
         uniqueName:
           description: "The unique name of the domain to attach, it can be empty only\
-            \ when type is TIDBCLOUD_MANAGED and dry_run is true."
+            \ when type is TIDBCLOUD_MANAGED and validate_only is true."
           type: string
         domains:
           description: The domains attached.
@@ -450,6 +459,9 @@ components:
           message: message
           type: "{}"
           alicloudEndpointService:
+            availabilityZoneIds:
+            - availabilityZoneIds
+            - availabilityZoneIds
             endpointId: endpointId
             name: name
         - awsEndpointService:
@@ -498,6 +510,9 @@ components:
           message: message
           type: "{}"
           alicloudEndpointService:
+            availabilityZoneIds:
+            - availabilityZoneIds
+            - availabilityZoneIds
             endpointId: endpointId
             name: name
       properties:
@@ -559,6 +574,9 @@ components:
         message: message
         type: "{}"
         alicloudEndpointService:
+          availabilityZoneIds:
+          - availabilityZoneIds
+          - availabilityZoneIds
           endpointId: endpointId
           name: name
       properties:
@@ -632,7 +650,7 @@ components:
           - $ref: '#/components/schemas/AttachDomain'
           description: The domain to attach.
           type: object
-        dryRun:
+        validateOnly:
           description: Only validate the request and return the domains without attaching
             them.
           type: boolean

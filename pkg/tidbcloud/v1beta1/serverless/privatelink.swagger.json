@@ -335,6 +335,14 @@
           "type": "string",
           "description": "The endpoint ID.",
           "readOnly": true
+        },
+        "availabilityZoneIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The availability zones of the endpoint.",
+          "readOnly": true
         }
       },
       "required": [
@@ -378,7 +386,7 @@
         },
         "uniqueName": {
           "type": "string",
-          "description": "The unique name of the domain to attach, it can be empty only when type is TIDBCLOUD_MANAGED and dry_run is true."
+          "description": "The unique name of the domain to attach, it can be empty only when type is TIDBCLOUD_MANAGED and validate_only is true."
         },
         "domains": {
           "type": "array",
@@ -586,7 +594,7 @@
             }
           ]
         },
-        "dryRun": {
+        "validateOnly": {
           "type": "boolean",
           "description": "Only validate the request and return the domains without attaching them."
         }

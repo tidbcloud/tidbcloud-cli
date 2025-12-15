@@ -29,7 +29,7 @@ type AttachDomain struct {
 	PrivateLinkConnectionId *string `json:"privateLinkConnectionId,omitempty"`
 	// The domain type to attach.
 	Type PrivateLinkConnectionDomainTypeEnum `json:"type"`
-	// The unique name of the domain to attach, it can be empty only when type is TIDBCLOUD_MANAGED and dry_run is true.
+	// The unique name of the domain to attach, it can be empty only when type is TIDBCLOUD_MANAGED and validate_only is true.
 	UniqueName *string `json:"uniqueName,omitempty"`
 	// The domains attached.
 	Domains []Domain `json:"domains,omitempty"`

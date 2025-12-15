@@ -23,7 +23,7 @@ type PrivateLinkConnectionServiceAttachDomainsBody struct {
 	// The domain to attach.
 	AttachDomain AttachDomain `json:"attachDomain"`
 	// Only validate the request and return the domains without attaching them.
-	DryRun               *bool `json:"dryRun,omitempty"`
+	ValidateOnly         *bool `json:"validateOnly,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -71,36 +71,36 @@ func (o *PrivateLinkConnectionServiceAttachDomainsBody) SetAttachDomain(v Attach
 	o.AttachDomain = v
 }
 
-// GetDryRun returns the DryRun field value if set, zero value otherwise.
-func (o *PrivateLinkConnectionServiceAttachDomainsBody) GetDryRun() bool {
-	if o == nil || IsNil(o.DryRun) {
+// GetValidateOnly returns the ValidateOnly field value if set, zero value otherwise.
+func (o *PrivateLinkConnectionServiceAttachDomainsBody) GetValidateOnly() bool {
+	if o == nil || IsNil(o.ValidateOnly) {
 		var ret bool
 		return ret
 	}
-	return *o.DryRun
+	return *o.ValidateOnly
 }
 
-// GetDryRunOk returns a tuple with the DryRun field value if set, nil otherwise
+// GetValidateOnlyOk returns a tuple with the ValidateOnly field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *PrivateLinkConnectionServiceAttachDomainsBody) GetDryRunOk() (*bool, bool) {
-	if o == nil || IsNil(o.DryRun) {
+func (o *PrivateLinkConnectionServiceAttachDomainsBody) GetValidateOnlyOk() (*bool, bool) {
+	if o == nil || IsNil(o.ValidateOnly) {
 		return nil, false
 	}
-	return o.DryRun, true
+	return o.ValidateOnly, true
 }
 
-// HasDryRun returns a boolean if a field has been set.
-func (o *PrivateLinkConnectionServiceAttachDomainsBody) HasDryRun() bool {
-	if o != nil && !IsNil(o.DryRun) {
+// HasValidateOnly returns a boolean if a field has been set.
+func (o *PrivateLinkConnectionServiceAttachDomainsBody) HasValidateOnly() bool {
+	if o != nil && !IsNil(o.ValidateOnly) {
 		return true
 	}
 
 	return false
 }
 
-// SetDryRun gets a reference to the given bool and assigns it to the DryRun field.
-func (o *PrivateLinkConnectionServiceAttachDomainsBody) SetDryRun(v bool) {
-	o.DryRun = &v
+// SetValidateOnly gets a reference to the given bool and assigns it to the ValidateOnly field.
+func (o *PrivateLinkConnectionServiceAttachDomainsBody) SetValidateOnly(v bool) {
+	o.ValidateOnly = &v
 }
 
 func (o PrivateLinkConnectionServiceAttachDomainsBody) MarshalJSON() ([]byte, error) {
@@ -114,8 +114,8 @@ func (o PrivateLinkConnectionServiceAttachDomainsBody) MarshalJSON() ([]byte, er
 func (o PrivateLinkConnectionServiceAttachDomainsBody) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["attachDomain"] = o.AttachDomain
-	if !IsNil(o.DryRun) {
-		toSerialize["dryRun"] = o.DryRun
+	if !IsNil(o.ValidateOnly) {
+		toSerialize["validateOnly"] = o.ValidateOnly
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -161,7 +161,7 @@ func (o *PrivateLinkConnectionServiceAttachDomainsBody) UnmarshalJSON(data []byt
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "attachDomain")
-		delete(additionalProperties, "dryRun")
+		delete(additionalProperties, "validateOnly")
 		o.AdditionalProperties = additionalProperties
 	}
 
