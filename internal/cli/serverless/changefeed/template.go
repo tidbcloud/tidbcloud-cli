@@ -29,11 +29,11 @@ import (
 const (
 	KafkaInfoTemplateWithExplain = `{
     "network": {
-         // networkType: "PUBLIC", "PRIVATE"
+         // networkType: "PUBLIC", "PRIVATE_LINK"
         "networkType": "PUBLIC",
         "publicEndpoints": "broker1:9092,broker2:9092"
         "privateLink":{
-            "id": "plc-xxx",
+            "privateLinkConnectionId": "plc-xxx",
             "port": 9092
         }
     },
@@ -52,6 +52,7 @@ const (
         "password": "",
         "enableTls": false,
         // Specify this field when your server rely on TLS SNI, for example, Confluent Cloud Dedicated clusters.
+        // If you use private link network, you must attach related domain for the server name to work properly.
         "serverName": "",
     },
     "outputRawChangeEvent": false,
@@ -122,7 +123,7 @@ const (
         "networkType": "PUBLIC",
         "publicEndpoints": "broker1:9092,broker2:9092",
         "privateLink":{
-            "id": "plc-xxx",
+            "privateLinkConnectionId": "plc-xxx",
             "port": 9092
         }
     },
@@ -210,7 +211,7 @@ const (
 
 	MySQLTemplateWithExplain = `{
     "network": {
-        // required "PUBLIC", "PRIVATE"
+        // required "PUBLIC", "PRIVATE_LINK"
         "networkType": "PUBLIC",
         "publicEndpoint": "127.0.0.1:3306",
         "privateLink":{
