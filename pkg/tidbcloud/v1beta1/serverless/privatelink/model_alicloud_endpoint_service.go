@@ -21,7 +21,11 @@ var _ MappedNullable = &AlicloudEndpointService{}
 // AlicloudEndpointService struct for AlicloudEndpointService
 type AlicloudEndpointService struct {
 	// The endpoint service name.
-	Name                 string `json:"name"`
+	Name string `json:"name"`
+	// The endpoint ID.
+	EndpointId *string `json:"endpointId,omitempty"`
+	// The availability zones of the endpoint.
+	AvailabilityZoneIds  []string `json:"availabilityZoneIds,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -69,6 +73,70 @@ func (o *AlicloudEndpointService) SetName(v string) {
 	o.Name = v
 }
 
+// GetEndpointId returns the EndpointId field value if set, zero value otherwise.
+func (o *AlicloudEndpointService) GetEndpointId() string {
+	if o == nil || IsNil(o.EndpointId) {
+		var ret string
+		return ret
+	}
+	return *o.EndpointId
+}
+
+// GetEndpointIdOk returns a tuple with the EndpointId field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *AlicloudEndpointService) GetEndpointIdOk() (*string, bool) {
+	if o == nil || IsNil(o.EndpointId) {
+		return nil, false
+	}
+	return o.EndpointId, true
+}
+
+// HasEndpointId returns a boolean if a field has been set.
+func (o *AlicloudEndpointService) HasEndpointId() bool {
+	if o != nil && !IsNil(o.EndpointId) {
+		return true
+	}
+
+	return false
+}
+
+// SetEndpointId gets a reference to the given string and assigns it to the EndpointId field.
+func (o *AlicloudEndpointService) SetEndpointId(v string) {
+	o.EndpointId = &v
+}
+
+// GetAvailabilityZoneIds returns the AvailabilityZoneIds field value if set, zero value otherwise.
+func (o *AlicloudEndpointService) GetAvailabilityZoneIds() []string {
+	if o == nil || IsNil(o.AvailabilityZoneIds) {
+		var ret []string
+		return ret
+	}
+	return o.AvailabilityZoneIds
+}
+
+// GetAvailabilityZoneIdsOk returns a tuple with the AvailabilityZoneIds field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *AlicloudEndpointService) GetAvailabilityZoneIdsOk() ([]string, bool) {
+	if o == nil || IsNil(o.AvailabilityZoneIds) {
+		return nil, false
+	}
+	return o.AvailabilityZoneIds, true
+}
+
+// HasAvailabilityZoneIds returns a boolean if a field has been set.
+func (o *AlicloudEndpointService) HasAvailabilityZoneIds() bool {
+	if o != nil && !IsNil(o.AvailabilityZoneIds) {
+		return true
+	}
+
+	return false
+}
+
+// SetAvailabilityZoneIds gets a reference to the given []string and assigns it to the AvailabilityZoneIds field.
+func (o *AlicloudEndpointService) SetAvailabilityZoneIds(v []string) {
+	o.AvailabilityZoneIds = v
+}
+
 func (o AlicloudEndpointService) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -80,6 +148,12 @@ func (o AlicloudEndpointService) MarshalJSON() ([]byte, error) {
 func (o AlicloudEndpointService) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["name"] = o.Name
+	if !IsNil(o.EndpointId) {
+		toSerialize["endpointId"] = o.EndpointId
+	}
+	if !IsNil(o.AvailabilityZoneIds) {
+		toSerialize["availabilityZoneIds"] = o.AvailabilityZoneIds
+	}
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -124,6 +198,8 @@ func (o *AlicloudEndpointService) UnmarshalJSON(data []byte) (err error) {
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "name")
+		delete(additionalProperties, "endpointId")
+		delete(additionalProperties, "availabilityZoneIds")
 		o.AdditionalProperties = additionalProperties
 	}
 

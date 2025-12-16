@@ -1059,6 +1059,10 @@
         },
         "enableTls": {
           "type": "boolean"
+        },
+        "serverName": {
+          "type": "string",
+          "description": "server name for tls verification. Specify this field when your server rely on TLS SNI, for example, Confluent Cloud Dedicated clusters."
         }
       }
     },

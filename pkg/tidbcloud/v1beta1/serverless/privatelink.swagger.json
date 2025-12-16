@@ -137,6 +137,20 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "state",
+            "description": " - CREATING: The private link connection is being created.\n - ACTIVE: The private link connection is active.\n - FAILED: The private link connection is in failed state.\n - PENDING_ACCEPTANCE: The private link connection is pending acceptance. only for AWS endpoint service and Alicloud endpoint service.\n - DELETING: The private link connection is being deleted.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "CREATING",
+              "ACTIVE",
+              "FAILED",
+              "PENDING_ACCEPTANCE",
+              "DELETING"
+            ]
           }
         ],
         "tags": [
@@ -213,6 +227,100 @@
           "PrivateLinkConnectionService"
         ]
       }
+    },
+    "/v1beta1/clusters/{clusterId}/privateLinkConnections/{privateLinkConnectionId}:attachDomains": {
+      "post": {
+        "summary": "Attach domains for private link connection.",
+        "operationId": "PrivateLinkConnectionService_AttachDomains",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/AttachDomain"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The cluster ID.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "privateLinkConnectionId",
+            "description": "The private link connection ID.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PrivateLinkConnectionService.AttachDomainsBody"
+            }
+          }
+        ],
+        "tags": [
+          "PrivateLinkConnectionService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/privateLinkConnections/{privateLinkConnectionId}:detachDomains": {
+      "post": {
+        "summary": "Detach domains for private link connection.",
+        "operationId": "PrivateLinkConnectionService_DetachDomains",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/AttachDomain"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The cluster ID.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "privateLinkConnectionId",
+            "description": "The private link connection ID.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PrivateLinkConnectionService.DetachDomainsBody"
+            }
+          }
+        ],
+        "tags": [
+          "PrivateLinkConnectionService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -222,6 +330,19 @@
         "name": {
           "type": "string",
           "description": "The endpoint service name."
+        },
+        "endpointId": {
+          "type": "string",
+          "description": "The endpoint ID.",
+          "readOnly": true
+        },
+        "availabilityZoneIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The availability zones of the endpoint.",
+          "readOnly": true
         }
       },
       "required": [
@@ -237,6 +358,61 @@
       },
       "additionalProperties": {}
     },
+    "AttachDomain": {
+      "type": "object",
+      "properties": {
+        "attachDomainId": {
+          "type": "string",
+          "description": "The attach domain ID.",
+          "readOnly": true
+        },
+        "clusterId": {
+          "type": "string",
+          "description": "The cluster ID.",
+          "readOnly": true
+        },
+        "privateLinkConnectionId": {
+          "type": "string",
+          "description": "The private link connection ID.",
+          "readOnly": true
+        },
+        "type": {
+          "description": "The domain type to attach.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PrivateLinkConnectionDomainType.Enum"
+            }
+          ]
+        },
+        "uniqueName": {
+          "type": "string",
+          "description": "The unique name of the domain to attach, it can be empty only when type is TIDBCLOUD_MANAGED and validate_only is true."
+        },
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Domain"
+          },
+          "description": "The domains attached.",
+          "readOnly": true
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "The user who attach the domain.",
+          "readOnly": true
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "title": "create time",
+          "readOnly": true
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
     "AwsEndpointService": {
       "type": "object",
       "properties": {
@@ -247,11 +423,44 @@
         "region": {
           "type": "string",
           "title": "The region of endpoint service name, default to cluster's region"
+        },
+        "endpointId": {
+          "type": "string",
+          "description": "The endpoint ID.",
+          "readOnly": true
+        },
+        "availabilityZoneIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "The availability zones of the endpoint.",
+          "readOnly": true
         }
       },
       "required": [
         "name"
       ]
+    },
+    "Domain": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The domain name.",
+          "readOnly": true
+        },
+        "state": {
+          "type": "string",
+          "title": "The domain state",
+          "readOnly": true
+        },
+        "message": {
+          "type": "string",
+          "description": "Fail message if the domain is in failed state.",
+          "readOnly": true
+        }
+      }
     },
     "GetAvailabilityZonesResponse": {
       "type": "object",
@@ -293,7 +502,7 @@
       "properties": {
         "privateLinkConnectionId": {
           "type": "string",
-          "title": "The private link connection ID, format: pl-xxx",
+          "title": "The private link connection ID, format: plc-xxx",
           "readOnly": true
         },
         "clusterId": {
@@ -344,6 +553,15 @@
             }
           ]
         },
+        "attachedDomains": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/AttachDomain"
+          },
+          "title": "The attached domains for the private link connection, only display in Get API",
+          "readOnly": true
+        },
         "awsEndpointService": {
           "$ref": "#/definitions/AwsEndpointService"
         },
@@ -355,6 +573,34 @@
         "clusterId",
         "displayName",
         "type"
+      ]
+    },
+    "PrivateLinkConnectionDomainType.Enum": {
+      "type": "string",
+      "enum": [
+        "TIDBCLOUD_MANAGED",
+        "CONFLUENT"
+      ],
+      "description": " - TIDBCLOUD_MANAGED: The domain pattern is <provider>.plc.tidbcloud.com.\n - CONFLUENT: The domain pattern is <provider>.confluent.cloud."
+    },
+    "PrivateLinkConnectionService.AttachDomainsBody": {
+      "type": "object",
+      "properties": {
+        "attachDomain": {
+          "description": "The domain to attach.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/AttachDomain"
+            }
+          ]
+        },
+        "validateOnly": {
+          "type": "boolean",
+          "description": "Only validate the request and return the domains without attaching them."
+        }
+      },
+      "required": [
+        "attachDomain"
       ]
     },
     "PrivateLinkConnectionService.CreatePrivateLinkConnectionBody": {
@@ -373,6 +619,18 @@
         "privateLinkConnection"
       ]
     },
+    "PrivateLinkConnectionService.DetachDomainsBody": {
+      "type": "object",
+      "properties": {
+        "attachDomainId": {
+          "type": "string",
+          "description": "The attached domain ID to detach."
+        }
+      },
+      "required": [
+        "attachDomainId"
+      ]
+    },
     "PrivateLinkConnectionState.Enum": {
       "type": "string",
       "enum": [
@@ -380,10 +638,9 @@
         "ACTIVE",
         "FAILED",
         "PENDING_ACCEPTANCE",
-        "DELETING",
-        "CONNECTING"
+        "DELETING"
       ],
-      "title": "- CREATING: The private link connection is being created.\n - ACTIVE: The private link connection is active.\n - FAILED: The private link connection is in failed state.\n - PENDING_ACCEPTANCE: The private link connection is pending acceptance. only for AWS endpoint service and Alicloud endpoint service.\n - DELETING: The private link connection is being deleted.\n - CONNECTING: The private link connection is connecting"
+      "description": " - CREATING: The private link connection is being created.\n - ACTIVE: The private link connection is active.\n - FAILED: The private link connection is in failed state.\n - PENDING_ACCEPTANCE: The private link connection is pending acceptance. only for AWS endpoint service and Alicloud endpoint service.\n - DELETING: The private link connection is being deleted."
     },
     "PrivateLinkConnectionType.Enum": {
       "type": "string",

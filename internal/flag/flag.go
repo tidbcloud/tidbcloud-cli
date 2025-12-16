@@ -124,6 +124,9 @@ const (
 	AWSEndpointServiceName      string = "aws.endpoint-service-name"
 	AWSEndpointServiceRegion    string = "aws.endpoint-service-region"
 	AlicloudEndpointServiceName string = "alicloud.endpoint-service-name"
+	PLCAttachDomainType         string = "type"
+	PLCAttachDomainUniqueName   string = "unique-name"
+	PLCAttachDomainID           string = "attach-domain-id"
 
 	MigrationID         string = "migration-id"
 	MigrationIDShort    string = "m"

@@ -19,10 +19,12 @@ var _ MappedNullable = &KafkaAuthentication{}
 
 // KafkaAuthentication struct for KafkaAuthentication
 type KafkaAuthentication struct {
-	AuthType             *KafkaAuthTypeEnum `json:"authType,omitempty"`
-	Username             *string            `json:"username,omitempty"`
-	Password             *string            `json:"password,omitempty"`
-	EnableTls            *bool              `json:"enableTls,omitempty"`
+	AuthType  *KafkaAuthTypeEnum `json:"authType,omitempty"`
+	Username  *string            `json:"username,omitempty"`
+	Password  *string            `json:"password,omitempty"`
+	EnableTls *bool              `json:"enableTls,omitempty"`
+	// server name for tls verification. Specify this field when your server rely on TLS SNI, for example, Confluent Cloud Dedicated clusters.
+	ServerName           *string `json:"serverName,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -173,6 +175,38 @@ func (o *KafkaAuthentication) SetEnableTls(v bool) {
 	o.EnableTls = &v
 }
 
+// GetServerName returns the ServerName field value if set, zero value otherwise.
+func (o *KafkaAuthentication) GetServerName() string {
+	if o == nil || IsNil(o.ServerName) {
+		var ret string
+		return ret
+	}
+	return *o.ServerName
+}
+
+// GetServerNameOk returns a tuple with the ServerName field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *KafkaAuthentication) GetServerNameOk() (*string, bool) {
+	if o == nil || IsNil(o.ServerName) {
+		return nil, false
+	}
+	return o.ServerName, true
+}
+
+// HasServerName returns a boolean if a field has been set.
+func (o *KafkaAuthentication) HasServerName() bool {
+	if o != nil && !IsNil(o.ServerName) {
+		return true
+	}
+
+	return false
+}
+
+// SetServerName gets a reference to the given string and assigns it to the ServerName field.
+func (o *KafkaAuthentication) SetServerName(v string) {
+	o.ServerName = &v
+}
+
 func (o KafkaAuthentication) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -194,6 +228,9 @@ func (o KafkaAuthentication) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.EnableTls) {
 		toSerialize["enableTls"] = o.EnableTls
+	}
+	if !IsNil(o.ServerName) {
+		toSerialize["serverName"] = o.ServerName
 	}
 
 	for key, value := range o.AdditionalProperties {
@@ -221,6 +258,7 @@ func (o *KafkaAuthentication) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "username")
 		delete(additionalProperties, "password")
 		delete(additionalProperties, "enableTls")
+		delete(additionalProperties, "serverName")
 		o.AdditionalProperties = additionalProperties
 	}
 

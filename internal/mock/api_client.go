@@ -32,6 +32,36 @@ type TiDBCloudClient struct {
 	mock.Mock
 }
 
+// AttachPrivateLinkDomains provides a mock function with given fields: ctx, clusterId, privateLinkConnectionId, body
+func (_m *TiDBCloudClient) AttachPrivateLinkDomains(ctx context.Context, clusterId string, privateLinkConnectionId string, body *privatelink.PrivateLinkConnectionServiceAttachDomainsBody) (*privatelink.AttachDomain, error) {
+	ret := _m.Called(ctx, clusterId, privateLinkConnectionId, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for AttachPrivateLinkDomains")
+	}
+
+	var r0 *privatelink.AttachDomain
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *privatelink.PrivateLinkConnectionServiceAttachDomainsBody) (*privatelink.AttachDomain, error)); ok {
+		return rf(ctx, clusterId, privateLinkConnectionId, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *privatelink.PrivateLinkConnectionServiceAttachDomainsBody) *privatelink.AttachDomain); ok {
+		r0 = rf(ctx, clusterId, privateLinkConnectionId, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*privatelink.AttachDomain)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string, *privatelink.PrivateLinkConnectionServiceAttachDomainsBody) error); ok {
+		r1 = rf(ctx, clusterId, privateLinkConnectionId, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // CancelExport provides a mock function with given fields: ctx, clusterId, exportId
 func (_m *TiDBCloudClient) CancelExport(ctx context.Context, clusterId string, exportId string) (*export.Export, error) {
 	ret := _m.Called(ctx, clusterId, exportId)
@@ -727,6 +757,36 @@ func (_m *TiDBCloudClient) DescribeSchemaTable(ctx context.Context, clusterId st
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, *cdc.ChangefeedServiceDescribeSchemaTableBody) error); ok {
 		r1 = rf(ctx, clusterId, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// DetachPrivateLinkDomains provides a mock function with given fields: ctx, clusterId, privateLinkConnectionId, body
+func (_m *TiDBCloudClient) DetachPrivateLinkDomains(ctx context.Context, clusterId string, privateLinkConnectionId string, body *privatelink.PrivateLinkConnectionServiceDetachDomainsBody) (*privatelink.AttachDomain, error) {
+	ret := _m.Called(ctx, clusterId, privateLinkConnectionId, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DetachPrivateLinkDomains")
+	}
+
+	var r0 *privatelink.AttachDomain
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *privatelink.PrivateLinkConnectionServiceDetachDomainsBody) (*privatelink.AttachDomain, error)); ok {
+		return rf(ctx, clusterId, privateLinkConnectionId, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string, *privatelink.PrivateLinkConnectionServiceDetachDomainsBody) *privatelink.AttachDomain); ok {
+		r0 = rf(ctx, clusterId, privateLinkConnectionId, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*privatelink.AttachDomain)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string, *privatelink.PrivateLinkConnectionServiceDetachDomainsBody) error); ok {
+		r1 = rf(ctx, clusterId, privateLinkConnectionId, body)
 	} else {
 		r1 = ret.Error(1)
 	}

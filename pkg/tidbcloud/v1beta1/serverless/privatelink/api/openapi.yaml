@@ -92,6 +92,16 @@ paths:
         name: pageToken
         schema:
           type: string
+      - description: |2-
+           - CREATING: The private link connection is being created.
+           - ACTIVE: The private link connection is active.
+           - FAILED: The private link connection is in failed state.
+           - PENDING_ACCEPTANCE: The private link connection is pending acceptance. only for AWS endpoint service and Alicloud endpoint service.
+           - DELETING: The private link connection is being deleted.
+        in: query
+        name: state
+        schema:
+          $ref: '#/components/schemas/PrivateLinkConnectionService_ListPrivateLinkConnections_state_parameter'
       responses:
         "200":
           content:
@@ -166,15 +176,107 @@ paths:
       summary: Get account and availability zones information for private link connection.
       tags:
       - PrivateLinkConnectionService
+  /v1beta1/clusters/{clusterId}/privateLinkConnections/{privateLinkConnectionId}:attachDomains:
+    post:
+      operationId: PrivateLinkConnectionService_AttachDomains
+      parameters:
+      - description: The cluster ID.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The private link connection ID.
+        in: path
+        name: privateLinkConnectionId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivateLinkConnectionService.AttachDomainsBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachDomain'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Attach domains for private link connection.
+      tags:
+      - PrivateLinkConnectionService
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/privateLinkConnections/{privateLinkConnectionId}:detachDomains:
+    post:
+      operationId: PrivateLinkConnectionService_DetachDomains
+      parameters:
+      - description: The cluster ID.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The private link connection ID.
+        in: path
+        name: privateLinkConnectionId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivateLinkConnectionService.DetachDomainsBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachDomain'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Detach domains for private link connection.
+      tags:
+      - PrivateLinkConnectionService
+      x-codegen-request-body-name: body
 components:
   schemas:
     AlicloudEndpointService:
       example:
+        availabilityZoneIds:
+        - availabilityZoneIds
+        - availabilityZoneIds
+        endpointId: endpointId
         name: name
       properties:
         name:
           description: The endpoint service name.
           type: string
+        endpointId:
+          description: The endpoint ID.
+          readOnly: true
+          type: string
+        availabilityZoneIds:
+          description: The availability zones of the endpoint.
+          items:
+            type: string
+          readOnly: true
+          type: array
       required:
       - name
       type: object
@@ -187,8 +289,68 @@ components:
         '@type':
           type: string
       type: object
+    AttachDomain:
+      example:
+        uniqueName: uniqueName
+        createdBy: createdBy
+        createTime: 2000-01-23T04:56:07.000+00:00
+        domains:
+        - name: name
+          state: state
+          message: message
+        - name: name
+          state: state
+          message: message
+        attachDomainId: attachDomainId
+        privateLinkConnectionId: privateLinkConnectionId
+        clusterId: clusterId
+        type: "{}"
+      properties:
+        attachDomainId:
+          description: The attach domain ID.
+          readOnly: true
+          type: string
+        clusterId:
+          description: The cluster ID.
+          readOnly: true
+          type: string
+        privateLinkConnectionId:
+          description: The private link connection ID.
+          readOnly: true
+          type: string
+        type:
+          allOf:
+          - $ref: '#/components/schemas/PrivateLinkConnectionDomainType.Enum'
+          description: The domain type to attach.
+          type: object
+        uniqueName:
+          description: "The unique name of the domain to attach, it can be empty only\
+            \ when type is TIDBCLOUD_MANAGED and validate_only is true."
+          type: string
+        domains:
+          description: The domains attached.
+          items:
+            $ref: '#/components/schemas/Domain'
+          readOnly: true
+          type: array
+        createdBy:
+          description: The user who attach the domain.
+          readOnly: true
+          type: string
+        createTime:
+          format: date-time
+          readOnly: true
+          title: create time
+          type: string
+      required:
+      - type
+      type: object
     AwsEndpointService:
       example:
+        availabilityZoneIds:
+        - availabilityZoneIds
+        - availabilityZoneIds
+        endpointId: endpointId
         name: name
         region: region
       properties:
@@ -198,8 +360,37 @@ components:
         region:
           title: "The region of endpoint service name, default to cluster's region"
           type: string
+        endpointId:
+          description: The endpoint ID.
+          readOnly: true
+          type: string
+        availabilityZoneIds:
+          description: The availability zones of the endpoint.
+          items:
+            type: string
+          readOnly: true
+          type: array
       required:
       - name
+      type: object
+    Domain:
+      example:
+        name: name
+        state: state
+        message: message
+      properties:
+        name:
+          description: The domain name.
+          readOnly: true
+          type: string
+        state:
+          readOnly: true
+          title: The domain state
+          type: string
+        message:
+          description: Fail message if the domain is in failed state.
+          readOnly: true
+          type: string
       type: object
     GetAvailabilityZonesResponse:
       example:
@@ -223,11 +414,44 @@ components:
         nextPageToken: nextPageToken
         privateLinkConnections:
         - awsEndpointService:
+            availabilityZoneIds:
+            - availabilityZoneIds
+            - availabilityZoneIds
+            endpointId: endpointId
             name: name
             region: region
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           displayName: displayName
+          attachedDomains:
+          - uniqueName: uniqueName
+            createdBy: createdBy
+            createTime: 2000-01-23T04:56:07.000+00:00
+            domains:
+            - name: name
+              state: state
+              message: message
+            - name: name
+              state: state
+              message: message
+            attachDomainId: attachDomainId
+            privateLinkConnectionId: privateLinkConnectionId
+            clusterId: clusterId
+            type: "{}"
+          - uniqueName: uniqueName
+            createdBy: createdBy
+            createTime: 2000-01-23T04:56:07.000+00:00
+            domains:
+            - name: name
+              state: state
+              message: message
+            - name: name
+              state: state
+              message: message
+            attachDomainId: attachDomainId
+            privateLinkConnectionId: privateLinkConnectionId
+            clusterId: clusterId
+            type: "{}"
           privateLinkConnectionId: privateLinkConnectionId
           updateTime: 2000-01-23T04:56:07.000+00:00
           clusterId: clusterId
@@ -235,13 +459,50 @@ components:
           message: message
           type: "{}"
           alicloudEndpointService:
+            availabilityZoneIds:
+            - availabilityZoneIds
+            - availabilityZoneIds
+            endpointId: endpointId
             name: name
         - awsEndpointService:
+            availabilityZoneIds:
+            - availabilityZoneIds
+            - availabilityZoneIds
+            endpointId: endpointId
             name: name
             region: region
           createdBy: createdBy
           createTime: 2000-01-23T04:56:07.000+00:00
           displayName: displayName
+          attachedDomains:
+          - uniqueName: uniqueName
+            createdBy: createdBy
+            createTime: 2000-01-23T04:56:07.000+00:00
+            domains:
+            - name: name
+              state: state
+              message: message
+            - name: name
+              state: state
+              message: message
+            attachDomainId: attachDomainId
+            privateLinkConnectionId: privateLinkConnectionId
+            clusterId: clusterId
+            type: "{}"
+          - uniqueName: uniqueName
+            createdBy: createdBy
+            createTime: 2000-01-23T04:56:07.000+00:00
+            domains:
+            - name: name
+              state: state
+              message: message
+            - name: name
+              state: state
+              message: message
+            attachDomainId: attachDomainId
+            privateLinkConnectionId: privateLinkConnectionId
+            clusterId: clusterId
+            type: "{}"
           privateLinkConnectionId: privateLinkConnectionId
           updateTime: 2000-01-23T04:56:07.000+00:00
           clusterId: clusterId
@@ -249,6 +510,10 @@ components:
           message: message
           type: "{}"
           alicloudEndpointService:
+            availabilityZoneIds:
+            - availabilityZoneIds
+            - availabilityZoneIds
+            endpointId: endpointId
             name: name
       properties:
         privateLinkConnections:
@@ -264,11 +529,44 @@ components:
     PrivateLinkConnection:
       example:
         awsEndpointService:
+          availabilityZoneIds:
+          - availabilityZoneIds
+          - availabilityZoneIds
+          endpointId: endpointId
           name: name
           region: region
         createdBy: createdBy
         createTime: 2000-01-23T04:56:07.000+00:00
         displayName: displayName
+        attachedDomains:
+        - uniqueName: uniqueName
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          domains:
+          - name: name
+            state: state
+            message: message
+          - name: name
+            state: state
+            message: message
+          attachDomainId: attachDomainId
+          privateLinkConnectionId: privateLinkConnectionId
+          clusterId: clusterId
+          type: "{}"
+        - uniqueName: uniqueName
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          domains:
+          - name: name
+            state: state
+            message: message
+          - name: name
+            state: state
+            message: message
+          attachDomainId: attachDomainId
+          privateLinkConnectionId: privateLinkConnectionId
+          clusterId: clusterId
+          type: "{}"
         privateLinkConnectionId: privateLinkConnectionId
         updateTime: 2000-01-23T04:56:07.000+00:00
         clusterId: clusterId
@@ -276,11 +574,15 @@ components:
         message: message
         type: "{}"
         alicloudEndpointService:
+          availabilityZoneIds:
+          - availabilityZoneIds
+          - availabilityZoneIds
+          endpointId: endpointId
           name: name
       properties:
         privateLinkConnectionId:
           readOnly: true
-          title: "The private link connection ID, format: pl-xxx"
+          title: "The private link connection ID, format: plc-xxx"
           type: string
         clusterId:
           description: The ID of the cluster.
@@ -317,6 +619,13 @@ components:
           - $ref: '#/components/schemas/PrivateLinkConnectionType.Enum'
           title: The type of the private link connection
           type: object
+        attachedDomains:
+          items:
+            $ref: '#/components/schemas/AttachDomain'
+          readOnly: true
+          title: "The attached domains for the private link connection, only display\
+            \ in Get API"
+          type: array
         awsEndpointService:
           $ref: '#/components/schemas/AwsEndpointService'
         alicloudEndpointService:
@@ -325,6 +634,28 @@ components:
       - clusterId
       - displayName
       - type
+      type: object
+    PrivateLinkConnectionDomainType.Enum:
+      description: |2-
+         - TIDBCLOUD_MANAGED: The domain pattern is <provider>.plc.tidbcloud.com.
+         - CONFLUENT: The domain pattern is <provider>.confluent.cloud.
+      enum:
+      - TIDBCLOUD_MANAGED
+      - CONFLUENT
+      type: string
+    PrivateLinkConnectionService.AttachDomainsBody:
+      properties:
+        attachDomain:
+          allOf:
+          - $ref: '#/components/schemas/AttachDomain'
+          description: The domain to attach.
+          type: object
+        validateOnly:
+          description: Only validate the request and return the domains without attaching
+            them.
+          type: boolean
+      required:
+      - attachDomain
       type: object
     PrivateLinkConnectionService.CreatePrivateLinkConnectionBody:
       properties:
@@ -336,21 +667,27 @@ components:
       required:
       - privateLinkConnection
       type: object
+    PrivateLinkConnectionService.DetachDomainsBody:
+      properties:
+        attachDomainId:
+          description: The attached domain ID to detach.
+          type: string
+      required:
+      - attachDomainId
+      type: object
     PrivateLinkConnectionState.Enum:
+      description: |2-
+         - CREATING: The private link connection is being created.
+         - ACTIVE: The private link connection is active.
+         - FAILED: The private link connection is in failed state.
+         - PENDING_ACCEPTANCE: The private link connection is pending acceptance. only for AWS endpoint service and Alicloud endpoint service.
+         - DELETING: The private link connection is being deleted.
       enum:
       - CREATING
       - ACTIVE
       - FAILED
       - PENDING_ACCEPTANCE
       - DELETING
-      - CONNECTING
-      title: |-
-        - CREATING: The private link connection is being created.
-         - ACTIVE: The private link connection is active.
-         - FAILED: The private link connection is in failed state.
-         - PENDING_ACCEPTANCE: The private link connection is pending acceptance. only for AWS endpoint service and Alicloud endpoint service.
-         - DELETING: The private link connection is being deleted.
-         - CONNECTING: The private link connection is connecting
       type: string
     PrivateLinkConnectionType.Enum:
       description: |2-
@@ -378,4 +715,12 @@ components:
             $ref: '#/components/schemas/Any'
           type: array
       type: object
+    PrivateLinkConnectionService_ListPrivateLinkConnections_state_parameter:
+      enum:
+      - CREATING
+      - ACTIVE
+      - FAILED
+      - PENDING_ACCEPTANCE
+      - DELETING
+      type: string
 x-original-swagger-version: "2.0"

@@ -105,6 +105,16 @@ type PrivateLinkConnection struct {
 	DisplayName string
 }
 
+type AttachDomain struct {
+	ID         string
+	UniqueName string
+	Type       string
+}
+
+func (a AttachDomain) String() string {
+	return fmt.Sprintf("%s-%s(%s)", a.Type, a.UniqueName, a.ID)
+}
+
 func (p PrivateLinkConnection) String() string {
 	return fmt.Sprintf("%s(%s)", p.DisplayName, p.ID)
 }
@@ -1197,6 +1207,48 @@ func GetSelectedPrivateLinkConnection(ctx context.Context, clusterID string, pag
 		return nil, errors.New("no private link connection")
 	}
 	return resp.(*PrivateLinkConnection), nil
+}
+
+func GetSelectedAttachDomain(ctx context.Context, clusterID, plcId string, client TiDBCloudClient) (*AttachDomain, error) {
+	plc, err := client.GetPrivateLinkConnection(ctx, clusterID, plcId)
+	if err != nil {
+		return nil, err
+	}
+
+	var items = make([]interface{}, 0)
+	for _, item := range plc.AttachedDomains {
+		items = append(items, &AttachDomain{
+			ID:         *item.AttachDomainId,
+			UniqueName: *item.UniqueName,
+			Type:       string(item.Type),
+		})
+	}
+
+	if len(items) == 0 {
+		return nil, fmt.Errorf("no available private link connection attach domain found")
+	}
+
+	selectModel, err := ui.InitialSelectModel(items, "Choose the attached domain:")
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	itemsPerPage := 6
+	selectModel.EnablePagination(itemsPerPage)
+	selectModel.EnableFilter()
+
+	p := tea.NewProgram(selectModel)
+	model, err := p.Run()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if m, _ := model.(ui.SelectModel); m.Interrupted {
+		return nil, util.InterruptError
+	}
+	resp := model.(ui.SelectModel).GetSelectedItem()
+	if resp == nil {
+		return nil, errors.New("no attach domain")
+	}
+	return resp.(*AttachDomain), nil
 }
 
 func RetrievePrivateLinkConnections(ctx context.Context, clusterID string, pageSize int32, d TiDBCloudClient) ([]privatelink.PrivateLinkConnection, error) {
