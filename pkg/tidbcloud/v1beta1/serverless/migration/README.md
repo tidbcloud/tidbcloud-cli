@@ -92,7 +92,6 @@ Class | Method | HTTP request | Description
 ## Documentation For Models
 
  - [Any](docs/Any.md)
- - [BlockAllowRules](docs/BlockAllowRules.md)
  - [ConnProfile](docs/ConnProfile.md)
  - [ConnType](docs/ConnType.md)
  - [CreateMigrationPrecheckResp](docs/CreateMigrationPrecheckResp.md)
@@ -102,14 +101,15 @@ Class | Method | HTTP request | Description
  - [Migration](docs/Migration.md)
  - [MigrationPrecheck](docs/MigrationPrecheck.md)
  - [MigrationPrecheckStatus](docs/MigrationPrecheckStatus.md)
+ - [MigrationRule](docs/MigrationRule.md)
+ - [MigrationRuleSource](docs/MigrationRuleSource.md)
+ - [MigrationRuleTable](docs/MigrationRuleTable.md)
  - [MigrationServiceCreateMigrationBody](docs/MigrationServiceCreateMigrationBody.md)
  - [MigrationServicePrecheckBody](docs/MigrationServicePrecheckBody.md)
  - [MigrationState](docs/MigrationState.md)
  - [PrecheckItem](docs/PrecheckItem.md)
  - [PrecheckItemStatus](docs/PrecheckItemStatus.md)
  - [PrecheckItemType](docs/PrecheckItemType.md)
- - [RouteRule](docs/RouteRule.md)
- - [RouteRuleSource](docs/RouteRuleSource.md)
  - [Security](docs/Security.md)
  - [Source](docs/Source.md)
  - [SourceSourceType](docs/SourceSourceType.md)
@@ -118,7 +118,6 @@ Class | Method | HTTP request | Description
  - [SubTaskStage](docs/SubTaskStage.md)
  - [SubTaskStep](docs/SubTaskStep.md)
  - [SyncDetail](docs/SyncDetail.md)
- - [Table](docs/Table.md)
  - [Target](docs/Target.md)
  - [TaskMode](docs/TaskMode.md)
 

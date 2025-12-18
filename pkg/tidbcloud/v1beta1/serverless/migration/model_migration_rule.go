@@ -14,41 +14,41 @@ import (
 	"encoding/json"
 )
 
-// checks if the RouteRule type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &RouteRule{}
+// checks if the MigrationRule type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &MigrationRule{}
 
-// RouteRule struct for RouteRule
-type RouteRule struct {
+// MigrationRule struct for MigrationRule
+type MigrationRule struct {
 	// Source table pattern to match.
-	SourceTable *RouteRuleSource `json:"sourceTable,omitempty"`
-	// Target table to route to.
-	TargetTable          *Table `json:"targetTable,omitempty"`
+	SourceTable *MigrationRuleSource `json:"sourceTable,omitempty"`
+	// Target table to migrate to.
+	TargetTable          *MigrationRuleTable `json:"targetTable,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
-type _RouteRule RouteRule
+type _MigrationRule MigrationRule
 
-// NewRouteRule instantiates a new RouteRule object
+// NewMigrationRule instantiates a new MigrationRule object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewRouteRule() *RouteRule {
-	this := RouteRule{}
+func NewMigrationRule() *MigrationRule {
+	this := MigrationRule{}
 	return &this
 }
 
-// NewRouteRuleWithDefaults instantiates a new RouteRule object
+// NewMigrationRuleWithDefaults instantiates a new MigrationRule object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewRouteRuleWithDefaults() *RouteRule {
-	this := RouteRule{}
+func NewMigrationRuleWithDefaults() *MigrationRule {
+	this := MigrationRule{}
 	return &this
 }
 
 // GetSourceTable returns the SourceTable field value if set, zero value otherwise.
-func (o *RouteRule) GetSourceTable() RouteRuleSource {
+func (o *MigrationRule) GetSourceTable() MigrationRuleSource {
 	if o == nil || IsNil(o.SourceTable) {
-		var ret RouteRuleSource
+		var ret MigrationRuleSource
 		return ret
 	}
 	return *o.SourceTable
@@ -56,7 +56,7 @@ func (o *RouteRule) GetSourceTable() RouteRuleSource {
 
 // GetSourceTableOk returns a tuple with the SourceTable field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *RouteRule) GetSourceTableOk() (*RouteRuleSource, bool) {
+func (o *MigrationRule) GetSourceTableOk() (*MigrationRuleSource, bool) {
 	if o == nil || IsNil(o.SourceTable) {
 		return nil, false
 	}
@@ -64,7 +64,7 @@ func (o *RouteRule) GetSourceTableOk() (*RouteRuleSource, bool) {
 }
 
 // HasSourceTable returns a boolean if a field has been set.
-func (o *RouteRule) HasSourceTable() bool {
+func (o *MigrationRule) HasSourceTable() bool {
 	if o != nil && !IsNil(o.SourceTable) {
 		return true
 	}
@@ -72,15 +72,15 @@ func (o *RouteRule) HasSourceTable() bool {
 	return false
 }
 
-// SetSourceTable gets a reference to the given RouteRuleSource and assigns it to the SourceTable field.
-func (o *RouteRule) SetSourceTable(v RouteRuleSource) {
+// SetSourceTable gets a reference to the given MigrationRuleSource and assigns it to the SourceTable field.
+func (o *MigrationRule) SetSourceTable(v MigrationRuleSource) {
 	o.SourceTable = &v
 }
 
 // GetTargetTable returns the TargetTable field value if set, zero value otherwise.
-func (o *RouteRule) GetTargetTable() Table {
+func (o *MigrationRule) GetTargetTable() MigrationRuleTable {
 	if o == nil || IsNil(o.TargetTable) {
-		var ret Table
+		var ret MigrationRuleTable
 		return ret
 	}
 	return *o.TargetTable
@@ -88,7 +88,7 @@ func (o *RouteRule) GetTargetTable() Table {
 
 // GetTargetTableOk returns a tuple with the TargetTable field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *RouteRule) GetTargetTableOk() (*Table, bool) {
+func (o *MigrationRule) GetTargetTableOk() (*MigrationRuleTable, bool) {
 	if o == nil || IsNil(o.TargetTable) {
 		return nil, false
 	}
@@ -96,7 +96,7 @@ func (o *RouteRule) GetTargetTableOk() (*Table, bool) {
 }
 
 // HasTargetTable returns a boolean if a field has been set.
-func (o *RouteRule) HasTargetTable() bool {
+func (o *MigrationRule) HasTargetTable() bool {
 	if o != nil && !IsNil(o.TargetTable) {
 		return true
 	}
@@ -104,12 +104,12 @@ func (o *RouteRule) HasTargetTable() bool {
 	return false
 }
 
-// SetTargetTable gets a reference to the given Table and assigns it to the TargetTable field.
-func (o *RouteRule) SetTargetTable(v Table) {
+// SetTargetTable gets a reference to the given MigrationRuleTable and assigns it to the TargetTable field.
+func (o *MigrationRule) SetTargetTable(v MigrationRuleTable) {
 	o.TargetTable = &v
 }
 
-func (o RouteRule) MarshalJSON() ([]byte, error) {
+func (o MigrationRule) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -117,7 +117,7 @@ func (o RouteRule) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o RouteRule) ToMap() (map[string]interface{}, error) {
+func (o MigrationRule) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.SourceTable) {
 		toSerialize["sourceTable"] = o.SourceTable
@@ -133,16 +133,16 @@ func (o RouteRule) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-func (o *RouteRule) UnmarshalJSON(data []byte) (err error) {
-	varRouteRule := _RouteRule{}
+func (o *MigrationRule) UnmarshalJSON(data []byte) (err error) {
+	varMigrationRule := _MigrationRule{}
 
-	err = json.Unmarshal(data, &varRouteRule)
+	err = json.Unmarshal(data, &varMigrationRule)
 
 	if err != nil {
 		return err
 	}
 
-	*o = RouteRule(varRouteRule)
+	*o = MigrationRule(varMigrationRule)
 
 	additionalProperties := make(map[string]interface{})
 
@@ -155,38 +155,38 @@ func (o *RouteRule) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
-type NullableRouteRule struct {
-	value *RouteRule
+type NullableMigrationRule struct {
+	value *MigrationRule
 	isSet bool
 }
 
-func (v NullableRouteRule) Get() *RouteRule {
+func (v NullableMigrationRule) Get() *MigrationRule {
 	return v.value
 }
 
-func (v *NullableRouteRule) Set(val *RouteRule) {
+func (v *NullableMigrationRule) Set(val *MigrationRule) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableRouteRule) IsSet() bool {
+func (v NullableMigrationRule) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableRouteRule) Unset() {
+func (v *NullableMigrationRule) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableRouteRule(val *RouteRule) *NullableRouteRule {
-	return &NullableRouteRule{value: val, isSet: true}
+func NewNullableMigrationRule(val *MigrationRule) *NullableMigrationRule {
+	return &NullableMigrationRule{value: val, isSet: true}
 }
 
-func (v NullableRouteRule) MarshalJSON() ([]byte, error) {
+func (v NullableMigrationRule) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableRouteRule) UnmarshalJSON(src []byte) error {
+func (v *NullableMigrationRule) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

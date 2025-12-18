@@ -22,10 +22,8 @@ var _ MappedNullable = &Source{}
 type Source struct {
 	// Connection profile for the source database.
 	ConnProfile ConnProfile `json:"connProfile"`
-	// Block/allow rules for databases and tables, which is exclusive with route_rules.
-	BaRules *BlockAllowRules `json:"baRules,omitempty"`
-	// Table route rules，which is exclusive with ba_rules.
-	RouteRules []RouteRule `json:"routeRules,omitempty"`
+	// Migration rules that specify which tables should be migrated. Each `MigrationRule` maps source schema/table patterns to a target schema/table. If this field is omitted or the list is empty, import all non-system tables from the source.
+	MigrationRules []MigrationRule `json:"migrationRules,omitempty"`
 	// Starting binlog file name for incremental sync.
 	BinlogName NullableString `json:"binlogName,omitempty"`
 	// Starting binlog position for incremental sync.
@@ -82,68 +80,36 @@ func (o *Source) SetConnProfile(v ConnProfile) {
 	o.ConnProfile = v
 }
 
-// GetBaRules returns the BaRules field value if set, zero value otherwise.
-func (o *Source) GetBaRules() BlockAllowRules {
-	if o == nil || IsNil(o.BaRules) {
-		var ret BlockAllowRules
+// GetMigrationRules returns the MigrationRules field value if set, zero value otherwise.
+func (o *Source) GetMigrationRules() []MigrationRule {
+	if o == nil || IsNil(o.MigrationRules) {
+		var ret []MigrationRule
 		return ret
 	}
-	return *o.BaRules
+	return o.MigrationRules
 }
 
-// GetBaRulesOk returns a tuple with the BaRules field value if set, nil otherwise
+// GetMigrationRulesOk returns a tuple with the MigrationRules field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *Source) GetBaRulesOk() (*BlockAllowRules, bool) {
-	if o == nil || IsNil(o.BaRules) {
+func (o *Source) GetMigrationRulesOk() ([]MigrationRule, bool) {
+	if o == nil || IsNil(o.MigrationRules) {
 		return nil, false
 	}
-	return o.BaRules, true
+	return o.MigrationRules, true
 }
 
-// HasBaRules returns a boolean if a field has been set.
-func (o *Source) HasBaRules() bool {
-	if o != nil && !IsNil(o.BaRules) {
+// HasMigrationRules returns a boolean if a field has been set.
+func (o *Source) HasMigrationRules() bool {
+	if o != nil && !IsNil(o.MigrationRules) {
 		return true
 	}
 
 	return false
 }
 
-// SetBaRules gets a reference to the given BlockAllowRules and assigns it to the BaRules field.
-func (o *Source) SetBaRules(v BlockAllowRules) {
-	o.BaRules = &v
-}
-
-// GetRouteRules returns the RouteRules field value if set, zero value otherwise.
-func (o *Source) GetRouteRules() []RouteRule {
-	if o == nil || IsNil(o.RouteRules) {
-		var ret []RouteRule
-		return ret
-	}
-	return o.RouteRules
-}
-
-// GetRouteRulesOk returns a tuple with the RouteRules field value if set, nil otherwise
-// and a boolean to check if the value has been set.
-func (o *Source) GetRouteRulesOk() ([]RouteRule, bool) {
-	if o == nil || IsNil(o.RouteRules) {
-		return nil, false
-	}
-	return o.RouteRules, true
-}
-
-// HasRouteRules returns a boolean if a field has been set.
-func (o *Source) HasRouteRules() bool {
-	if o != nil && !IsNil(o.RouteRules) {
-		return true
-	}
-
-	return false
-}
-
-// SetRouteRules gets a reference to the given []RouteRule and assigns it to the RouteRules field.
-func (o *Source) SetRouteRules(v []RouteRule) {
-	o.RouteRules = v
+// SetMigrationRules gets a reference to the given []MigrationRule and assigns it to the MigrationRules field.
+func (o *Source) SetMigrationRules(v []MigrationRule) {
+	o.MigrationRules = v
 }
 
 // GetBinlogName returns the BinlogName field value if set, zero value otherwise (both if not set or set to explicit null).
@@ -310,11 +276,8 @@ func (o Source) MarshalJSON() ([]byte, error) {
 func (o Source) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["connProfile"] = o.ConnProfile
-	if !IsNil(o.BaRules) {
-		toSerialize["baRules"] = o.BaRules
-	}
-	if !IsNil(o.RouteRules) {
-		toSerialize["routeRules"] = o.RouteRules
+	if !IsNil(o.MigrationRules) {
+		toSerialize["migrationRules"] = o.MigrationRules
 	}
 	if o.BinlogName.IsSet() {
 		toSerialize["binlogName"] = o.BinlogName.Get()
@@ -371,8 +334,7 @@ func (o *Source) UnmarshalJSON(data []byte) (err error) {
 
 	if err = json.Unmarshal(data, &additionalProperties); err == nil {
 		delete(additionalProperties, "connProfile")
-		delete(additionalProperties, "baRules")
-		delete(additionalProperties, "routeRules")
+		delete(additionalProperties, "migrationRules")
 		delete(additionalProperties, "binlogName")
 		delete(additionalProperties, "binlogPosition")
 		delete(additionalProperties, "binlogGtid")
