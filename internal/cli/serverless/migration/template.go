@@ -62,16 +62,9 @@ const (
                     "certAllowedCn": ["client-cn"]
                 }
             },
-            // Optional block/allow rules to control synced schemas/tables (mutually exclusive with routeRules)
-            "baRules": {
-                "doDbs": ["app_db"],
-                "doTables": [
-                    {"schema": "app_db", "table": "orders"},
-                    {"schema": "app_db", "table": "customers"}
-                ]
-            },
-            // Optional route rules to rename objects during migration (mutually exclusive with baRules)
-            "routeRules": [
+            // Optional migration rule sample
+            "migrationRules": [
+                // Example of migrating a specific table
                 {
                     "sourceTable": {
                         "schemaPattern": "app_db",
@@ -81,7 +74,30 @@ const (
                         "schema": "app_db",
                         "table": "orders_copy"
                     }
-                }
+                },
+                // Example of migrating all tables in a schema
+                {
+                    "sourceTable": {
+                        "schemaPattern": "use_db",
+                        "tablePattern": "*"
+                    },
+                    "targetTable": {
+                        "schema": "use_db",
+                        // set empty to use the source table name
+                        "table": ""
+                    }
+                },
+                // Example of migrating all tables with a prefix to a single table
+                {
+                    "sourceTable": {
+                        "schemaPattern": "use_db",
+                        "tablePattern": "user_*"
+                    },
+                    "targetTable": {
+                        "schema": "use_db",
+                        "table": "user"
+                    }
+                } 
             ],
         }
     ]
@@ -119,15 +135,9 @@ const (
                     "certAllowedCn": ["client-cn"]
                 }
             },
-            // Optional block/allow rules when only part of the data should be replicated (mutually exclusive with routeRules)
-            "baRules": {
-                "doDbs": ["app_db"],
-                "doTables": [
-                    {"schema": "app_db", "table": "orders"}
-                ]
-            },
-            // Optional route rule sample for remapping objects during incremental sync (mutually exclusive with baRules)
-            "routeRules": [
+            // Optional migration rule sample
+            "migrationRules": [
+                // Example of migrating a specific table
                 {
                     "sourceTable": {
                         "schemaPattern": "app_db",
@@ -137,7 +147,30 @@ const (
                         "schema": "app_db",
                         "table": "orders_copy"
                     }
-                }
+                },
+                // Example of migrating all tables in a schema
+                {
+                    "sourceTable": {
+                        "schemaPattern": "use_db",
+                        "tablePattern": "*"
+                    },
+                    "targetTable": {
+                        "schema": "use_db",
+                        // set empty to use the source table name
+                        "table": ""
+                    }
+                },
+                // Example of migrating all tables with a prefix to a single table
+                {
+                    "sourceTable": {
+                        "schemaPattern": "use_db",
+                        "tablePattern": "user_*"
+                    },
+                    "targetTable": {
+                        "schema": "use_db",
+                        "table": "user"
+                    }
+                } 
             ],
             // Optional start position for incremental sync (binlog position or GTID)
             "binlogName": "mysql-bin.000001",

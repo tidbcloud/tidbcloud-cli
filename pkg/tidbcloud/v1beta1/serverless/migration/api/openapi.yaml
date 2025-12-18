@@ -403,19 +403,6 @@ components:
         '@type':
           type: string
       type: object
-    BlockAllowRules:
-      properties:
-        doDbs:
-          description: Database names to include in migration.
-          items:
-            type: string
-          type: array
-        doTables:
-          description: Table-level allow-list rules.
-          items:
-            $ref: '#/components/schemas/Table'
-          type: array
-      type: object
     ConnProfile:
       properties:
         connType:
@@ -735,6 +722,42 @@ components:
       - FAILED
       - CANCELED
       type: string
+    MigrationRule:
+      properties:
+        sourceTable:
+          allOf:
+          - $ref: '#/components/schemas/MigrationRule.Source'
+          description: Source table pattern to match.
+          type: object
+        targetTable:
+          allOf:
+          - $ref: '#/components/schemas/MigrationRule.Table'
+          description: Target table to migrate to.
+          type: object
+      type: object
+    MigrationRule.Source:
+      properties:
+        schemaPattern:
+          description: "Schema pattern of the source, supports wildcards."
+          type: string
+        tablePattern:
+          description: "Table pattern of the source, supports wildcards."
+          type: string
+      required:
+      - schemaPattern
+      type: object
+    MigrationRule.Table:
+      properties:
+        schema:
+          description: Schema name. Wildcards are not supported. Must not be empty.
+          type: string
+        table:
+          description: Table name. Wildcards are not supported. Set empty to use the
+            source table name.
+          type: string
+      required:
+      - schema
+      type: object
     MigrationService.CreateMigrationBody:
       properties:
         displayName:
@@ -873,28 +896,6 @@ components:
       - LIGHTNING_TABLE_EMPTY_CHECKING
       - PRIMARY_KEY_CHECKING
       type: string
-    RouteRule:
-      properties:
-        sourceTable:
-          allOf:
-          - $ref: '#/components/schemas/RouteRule.Source'
-          description: Source table pattern to match.
-          type: object
-        targetTable:
-          allOf:
-          - $ref: '#/components/schemas/Table'
-          description: Target table to route to.
-          type: object
-      type: object
-    RouteRule.Source:
-      properties:
-        schemaPattern:
-          description: "Schema pattern of the source, supports wildcards."
-          type: string
-        tablePattern:
-          description: "Table pattern of the source, supports wildcards."
-          type: string
-      type: object
     Security:
       properties:
         certAllowedCn:
@@ -925,16 +926,13 @@ components:
           - $ref: '#/components/schemas/ConnProfile'
           description: Connection profile for the source database.
           type: object
-        baRules:
-          allOf:
-          - $ref: '#/components/schemas/BlockAllowRules'
-          description: "Block/allow rules for databases and tables, which is exclusive\
-            \ with route_rules."
-          type: object
-        routeRules:
-          description: Table route rules，which is exclusive with ba_rules.
+        migrationRules:
+          description: |-
+            Migration rules that specify which tables should be migrated. Each `MigrationRule` maps
+            source schema/table patterns to a target schema/table. If this field is omitted
+            or the list is empty, import all non-system tables from the source.
           items:
-            $ref: '#/components/schemas/RouteRule'
+            $ref: '#/components/schemas/MigrationRule'
           type: array
         binlogName:
           description: Starting binlog file name for incremental sync.
@@ -1077,15 +1075,6 @@ components:
         checkpoint:
           description: Synchronization checkpoint.
           readOnly: true
-          type: string
-      type: object
-    Table:
-      properties:
-        schema:
-          description: Schema name.
-          type: string
-        table:
-          description: Table name.
           type: string
       type: object
     Target:

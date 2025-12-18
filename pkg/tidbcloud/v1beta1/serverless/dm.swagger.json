@@ -477,26 +477,6 @@
       },
       "additionalProperties": {}
     },
-    "BlockAllowRules": {
-      "type": "object",
-      "properties": {
-        "doDbs": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Database names to include in migration."
-        },
-        "doTables": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/Table"
-          },
-          "description": "Table-level allow-list rules."
-        }
-      }
-    },
     "ConnProfile": {
       "type": "object",
       "properties": {
@@ -538,19 +518,11 @@
           ]
         }
       },
-      "required": [
-        "connType",
-        "port",
-        "user",
-        "password"
-      ]
+      "required": ["connType", "port", "user", "password"]
     },
     "ConnType": {
       "type": "string",
-      "enum": [
-        "PUBLIC",
-        "PRIVATE_LINK"
-      ],
+      "enum": ["PUBLIC", "PRIVATE_LINK"],
       "description": "The connection type used to connect to the source database.\n\n - PUBLIC: Connect over the public internet.\n - PRIVATE_LINK: Connect via Private Link/Private Endpoint."
     },
     "CreateMigrationPrecheckResp": {
@@ -713,13 +685,7 @@
     },
     "Migration.State": {
       "type": "string",
-      "enum": [
-        "CREATING",
-        "RUNNING",
-        "PAUSED",
-        "FAILED",
-        "DELETING"
-      ],
+      "enum": ["CREATING", "RUNNING", "PAUSED", "FAILED", "DELETING"],
       "description": "Overall state of a migration.\n\n - CREATING: Task is being created.\n - RUNNING: Task is actively running.\n - PAUSED: Task is paused.\n - FAILED: Task failed with error.\n - DELETING: Task is being deleted."
     },
     "MigrationPrecheck": {
@@ -776,14 +742,57 @@
     },
     "MigrationPrecheck.Status": {
       "type": "string",
-      "enum": [
-        "RUNNING",
-        "FINISHED",
-        "PENDING",
-        "FAILED",
-        "CANCELED"
-      ],
+      "enum": ["RUNNING", "FINISHED", "PENDING", "FAILED", "CANCELED"],
       "description": " - RUNNING: Precheck is in progress.\n - FINISHED: Precheck finished successfully.\n - PENDING: Precheck is pending.\n - FAILED: Precheck failed.\n - CANCELED: Precheck is canceled."
+    },
+    "MigrationRule": {
+      "type": "object",
+      "properties": {
+        "sourceTable": {
+          "description": "Source table pattern to match.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/MigrationRule.Source"
+            }
+          ]
+        },
+        "targetTable": {
+          "description": "Target table to migrate to.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/MigrationRule.Table"
+            }
+          ]
+        }
+      }
+    },
+    "MigrationRule.Source": {
+      "type": "object",
+      "properties": {
+        "schemaPattern": {
+          "type": "string",
+          "description": "Schema pattern of the source, supports wildcards."
+        },
+        "tablePattern": {
+          "type": "string",
+          "description": "Table pattern of the source, supports wildcards."
+        }
+      },
+      "required": ["schemaPattern"]
+    },
+    "MigrationRule.Table": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "type": "string",
+          "description": "Schema name. Wildcards are not supported. Must not be empty."
+        },
+        "table": {
+          "type": "string",
+          "description": "Table name. Wildcards are not supported. Set empty to use the source table name."
+        }
+      },
+      "required": ["schema"]
     },
     "MigrationService.CreateMigrationBody": {
       "type": "object",
@@ -817,12 +826,7 @@
           ]
         }
       },
-      "required": [
-        "displayName",
-        "sources",
-        "target",
-        "mode"
-      ]
+      "required": ["displayName", "sources", "target", "mode"]
     },
     "MigrationService.PauseMigrationBody": {
       "type": "object",
@@ -860,12 +864,7 @@
           ]
         }
       },
-      "required": [
-        "displayName",
-        "sources",
-        "target",
-        "mode"
-      ]
+      "required": ["displayName", "sources", "target", "mode"]
     },
     "MigrationService.ResumeMigrationBody": {
       "type": "object",
@@ -916,11 +915,7 @@
     },
     "PrecheckItem.Status": {
       "type": "string",
-      "enum": [
-        "SUCCESS",
-        "WARNING",
-        "FAILED"
-      ],
+      "enum": ["SUCCESS", "WARNING", "FAILED"],
       "description": " - SUCCESS: Check passed successfully.\n - WARNING: Check resulted in a warning.\n - FAILED: Check failed."
     },
     "PrecheckItemType": {
@@ -942,40 +937,6 @@
         "PRIMARY_KEY_CHECKING"
       ],
       "description": "Types of prechecks performed before starting a migration.\n\n - DUMP_PRIVILEGE_CHECKING: Check source has required dump/export privileges.\n - REPLICATION_PRIVILEGE_CHECKING: Check source has required replication privileges.\n - VERSION_CHECKING: Check source database version compatibility.\n - SERVER_ID_CHECKING: Check source server_id configuration.\n - BINLOG_ENABLE_CHECKING: Check whether binlog is enabled on source.\n - BINLOG_FORMAT_CHECKING: Check binlog format (e.g., ROW) on source.\n - BINLOG_ROW_IMAGE_CHECKING: Check binlog row image setting.\n - TABLE_SCHEMA_CHECKING: Check table/schema compatibility with target.\n - BINLOG_DB_CHECKING: Check binlog database-level filtering configuration.\n - CONN_NUMBER_CHECKING: Check concurrent connections limit/availability.\n - TARGET_DB_PRIVILEGE_CHECKING: Check target database privileges.\n - META_POSITION_CHECKING: Check saved meta/binlog position validity.\n - LIGHTNING_TABLE_EMPTY_CHECKING: Check target tables are empty for Lightning load.\n - PRIMARY_KEY_CHECKING: Check primary key settings on source tables."
-    },
-    "RouteRule": {
-      "type": "object",
-      "properties": {
-        "sourceTable": {
-          "description": "Source table pattern to match.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/RouteRule.Source"
-            }
-          ]
-        },
-        "targetTable": {
-          "description": "Target table to route to.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/Table"
-            }
-          ]
-        }
-      }
-    },
-    "RouteRule.Source": {
-      "type": "object",
-      "properties": {
-        "schemaPattern": {
-          "type": "string",
-          "description": "Schema pattern of the source, supports wildcards."
-        },
-        "tablePattern": {
-          "type": "string",
-          "description": "Table pattern of the source, supports wildcards."
-        }
-      }
     },
     "Security": {
       "type": "object",
@@ -1015,21 +976,13 @@
             }
           ]
         },
-        "baRules": {
-          "description": "Block/allow rules for databases and tables, which is exclusive with route_rules.",
-          "allOf": [
-            {
-              "$ref": "#/definitions/BlockAllowRules"
-            }
-          ]
-        },
-        "routeRules": {
+        "migrationRules": {
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/RouteRule"
+            "$ref": "#/definitions/MigrationRule"
           },
-          "description": "Table route rules\uff0cwhich is exclusive with ba_rules."
+          "description": "Migration rules that specify which tables should be migrated. Each `MigrationRule` maps\nsource schema/table patterns to a target schema/table. If this field is omitted\nor the list is empty, import all non-system tables from the source."
         },
         "binlogName": {
           "type": "string",
@@ -1056,18 +1009,11 @@
           ]
         }
       },
-      "required": [
-        "connProfile",
-        "sourceType"
-      ]
+      "required": ["connProfile", "sourceType"]
     },
     "Source.SourceType": {
       "type": "string",
-      "enum": [
-        "MYSQL",
-        "ALICLOUD_RDS_MYSQL",
-        "AWS_RDS_MYSQL"
-      ],
+      "enum": ["MYSQL", "ALICLOUD_RDS_MYSQL", "AWS_RDS_MYSQL"],
       "description": "The source database type.\n\n - MYSQL: Self-managed MySQL.\n - ALICLOUD_RDS_MYSQL: Alibaba Cloud RDS for MySQL.\n - AWS_RDS_MYSQL: Amazon RDS for MySQL."
     },
     "Status": {
@@ -1156,22 +1102,12 @@
     },
     "SubTask.Stage": {
       "type": "string",
-      "enum": [
-        "RUNNING",
-        "PAUSED",
-        "FAILED",
-        "FINISHED",
-        "UNKNOWN"
-      ],
+      "enum": ["RUNNING", "PAUSED", "FAILED", "FINISHED", "UNKNOWN"],
       "description": "The high-level lifecycle stage of a subtask.\n\n - RUNNING: Subtask is running.\n - PAUSED: Subtask is paused.\n - FAILED: Subtask failed.\n - FINISHED: Subtask finished successfully.\n - UNKNOWN: Subtask stage is unknown."
     },
     "SubTask.Step": {
       "type": "string",
-      "enum": [
-        "DUMP",
-        "LOAD",
-        "SYNC"
-      ],
+      "enum": ["DUMP", "LOAD", "SYNC"],
       "description": "The current step within a subtask.\n\n - DUMP: Dump/export data from source.\n - LOAD: Load/import data into target.\n - SYNC: Sync/replicate binlog changes."
     },
     "SyncDetail": {
@@ -1196,19 +1132,6 @@
         }
       }
     },
-    "Table": {
-      "type": "object",
-      "properties": {
-        "schema": {
-          "type": "string",
-          "description": "Schema name."
-        },
-        "table": {
-          "type": "string",
-          "description": "Table name."
-        }
-      }
-    },
     "Target": {
       "type": "object",
       "properties": {
@@ -1221,17 +1144,11 @@
           "description": "Target database password."
         }
       },
-      "required": [
-        "user",
-        "password"
-      ]
+      "required": ["user", "password"]
     },
     "TaskMode": {
       "type": "string",
-      "enum": [
-        "ALL",
-        "INCREMENTAL"
-      ],
+      "enum": ["ALL", "INCREMENTAL"],
       "description": "Migration task mode.\n\n - ALL: Full + incremental migration (all phases).\n - INCREMENTAL: Incremental-only migration (replication)."
     }
   }
