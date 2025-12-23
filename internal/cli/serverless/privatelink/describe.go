@@ -17,7 +17,6 @@ package privatelink
 import (
 	"fmt"
 
-	"github.com/AlecAivazis/survey/v2"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 
