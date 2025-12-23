@@ -17,7 +17,6 @@ package privatelink
 import (
 	"fmt"
 
-	"github.com/AlecAivazis/survey/v2"
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
 
@@ -98,10 +97,6 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 					return err
 				}
 				plcID = privatelink.ID
-
-				if err := survey.AskOne(&survey.Input{Message: "Private link connection ID:"}, &plcID); err != nil {
-					return err
-				}
 			} else {
 				var err error
 				clusterID, err = cmd.Flags().GetString(flag.ClusterID)
