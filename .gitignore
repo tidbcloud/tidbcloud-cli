@@ -12,3 +12,5 @@ dist/
 .tidbcloud-cli.toml
 .CHANGELOG.md
 node_modules/
+.gomodcache/
+.gocache/

@@ -8,6 +8,7 @@ client.go
 configuration.go
 git_push.sh
 model_any.go
+model_binlog_filter_rule.go
 model_conn_profile.go
 model_conn_type.go
 model_create_migration_precheck_resp.go
