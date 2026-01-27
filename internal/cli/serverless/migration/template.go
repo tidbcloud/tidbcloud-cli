@@ -31,6 +31,10 @@ const (
 	migrationDefinitionAllTemplate = `{
     // Required migration mode. Use "ALL" for full + incremental.
     "mode": "ALL",
+    // Optional import mode for full migration phase.
+    // Supported values: IMPORT_MODE_LOGICAL, IMPORT_MODE_PHYSICAL
+    // Note: Not applicable for mode = INCREMENTAL.
+    "importMode": "IMPORT_MODE_LOGICAL",
     // Target TiDB Cloud user credentials used by the migration
     "target": {
         "user": "migration_user",
