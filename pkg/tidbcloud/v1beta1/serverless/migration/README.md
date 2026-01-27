@@ -96,6 +96,7 @@ Class | Method | HTTP request | Description
  - [ConnType](docs/ConnType.md)
  - [CreateMigrationPrecheckResp](docs/CreateMigrationPrecheckResp.md)
  - [DumpDetail](docs/DumpDetail.md)
+ - [ImportMode](docs/ImportMode.md)
  - [ListMigrationsResp](docs/ListMigrationsResp.md)
  - [LoadDetail](docs/LoadDetail.md)
  - [Migration](docs/Migration.md)
