@@ -34,10 +34,10 @@ const (
 	defaultRegion        = "regions/aws-us-east-1"
 	defaultNamePrefix    = "keep--1h"
 	defaultSpendingLimit = 10
-	defaultConcurrency   = 5
-	defaultTotal         = 100
-	defaultRPS           = 2.0
-	waitInterval         = 2 * time.Second
+	defaultConcurrency   = 160
+	defaultTotal         = 500
+	defaultRPS           = 1000.0
+	waitInterval         = 5 * time.Second
 	waitTimeout          = 10 * time.Minute
 )
 
@@ -186,10 +186,21 @@ func runBench(ctx context.Context, client cloud.TiDBCloudClient, cfg benchConfig
 
 	var success int64
 	var failed int64
+	var totalCreateReq int64
+	var totalGetReq int64
+
+	type clusterDuration struct {
+		duration  time.Duration
+		clusterID string
+	}
+
+	var durationsMu sync.Mutex
+	var clusterDurations []clusterDuration
 
 	var wg sync.WaitGroup
 
 	timestamp := time.Now().Unix()
+	startAt := time.Now()
 	for i := 0; i < cfg.concurrency; i++ {
 		wg.Add(1)
 		go func(worker int) {
@@ -201,6 +212,7 @@ func runBench(ctx context.Context, client cloud.TiDBCloudClient, cfg benchConfig
 				}
 				name := fmt.Sprintf("%s-%d-%d", cfg.namePrefix, timestamp, idx)
 				start := time.Now()
+				atomic.AddInt64(&totalCreateReq, 1)
 				id, err := createOnce(ctx, client, cfg, name)
 				if err != nil {
 					atomic.AddInt64(&failed, 1)
@@ -209,15 +221,22 @@ func runBench(ctx context.Context, client cloud.TiDBCloudClient, cfg benchConfig
 				}
 
 				if cfg.waitReady {
-					if err := waitClusterReady(ctx, client, id); err != nil {
+					if err := waitClusterReady(ctx, client, id, &totalGetReq); err != nil {
 						atomic.AddInt64(&failed, 1)
 						log.Printf("worker %d wait %s failed: %v", worker, id, err)
 						continue
 					}
 				}
 
+				duration := time.Since(start)
 				atomic.AddInt64(&success, 1)
-				log.Printf("worker %d create %s (id=%s) ok in %s", worker, name, id, time.Since(start))
+				durationsMu.Lock()
+				clusterDurations = append(clusterDurations, clusterDuration{
+					duration:  duration,
+					clusterID: id,
+				})
+				durationsMu.Unlock()
+				log.Printf("worker %d create %s (id=%s) ok in %s", worker, name, id, duration)
 			}
 		}(i)
 	}
@@ -228,7 +247,44 @@ func runBench(ctx context.Context, client cloud.TiDBCloudClient, cfg benchConfig
 	close(jobs)
 
 	wg.Wait()
-	log.Printf("bench done: success=%d failed=%d", success, failed)
+	elapsed := time.Since(startAt)
+	minutes := elapsed.Minutes()
+	if minutes == 0 {
+		minutes = 1.0
+	}
+	totalReq := atomic.LoadInt64(&totalCreateReq) + atomic.LoadInt64(&totalGetReq)
+	avgReqPerMinute := float64(totalReq) / minutes
+	avgClusterPerMinute := float64(atomic.LoadInt64(&success)) / minutes
+
+	// Calculate average and max cluster creation duration
+	var avgDuration, maxDuration time.Duration
+	var maxDurationClusterID string
+	var durationsCopy []time.Duration
+	durationsMu.Lock()
+	if len(clusterDurations) > 0 {
+		durationsCopy = make([]time.Duration, len(clusterDurations))
+		var totalDuration time.Duration
+		for i, cd := range clusterDurations {
+			durationsCopy[i] = cd.duration
+			totalDuration += cd.duration
+			if cd.duration > maxDuration {
+				maxDuration = cd.duration
+				maxDurationClusterID = cd.clusterID
+			}
+		}
+		avgDuration = totalDuration / time.Duration(len(clusterDurations))
+	}
+	durationsMu.Unlock()
+
+	log.Printf("bench done: success=%d failed=%d totalReq=%d avg_req_per_min=%.2f (create=%d get=%d) avg_cluster_per_min=%.2f duration=%s",
+		success, failed, totalReq, avgReqPerMinute, totalCreateReq, totalGetReq, avgClusterPerMinute, elapsed)
+	log.Printf("cluster creation time: avg=%s max=%s (cluster_id=%s)",
+		avgDuration, maxDuration, maxDurationClusterID)
+
+	// Print histogram
+	if len(durationsCopy) > 0 {
+		printHistogram(durationsCopy)
+	}
 }
 
 func createOnce(ctx context.Context, client cloud.TiDBCloudClient, cfg benchConfig, name string) (string, error) {
@@ -266,17 +322,30 @@ func createOnce(ctx context.Context, client cloud.TiDBCloudClient, cfg benchConf
 		}
 	}
 
-	resp, err := client.CreateCluster(ctx, payload)
-	if err != nil {
-		return "", err
+	for {
+		select {
+		case <-ctx.Done():
+			return "", ctx.Err()
+		default:
+		}
+		resp, err := client.CreateCluster(ctx, payload)
+		if err != nil {
+			log.Printf("CreateCluster error: %v, retrying...", err)
+			select {
+			case <-ctx.Done():
+				return "", ctx.Err()
+			case <-time.After(1 * time.Second):
+			}
+			continue
+		}
+		if resp.ClusterId == nil {
+			return "", fmt.Errorf("empty cluster id")
+		}
+		return *resp.ClusterId, nil
 	}
-	if resp.ClusterId == nil {
-		return "", fmt.Errorf("empty cluster id")
-	}
-	return *resp.ClusterId, nil
 }
 
-func waitClusterReady(ctx context.Context, client cloud.TiDBCloudClient, clusterID string) error {
+func waitClusterReady(ctx context.Context, client cloud.TiDBCloudClient, clusterID string, getReqCounter *int64) error {
 	ticker := time.NewTicker(waitInterval)
 	defer ticker.Stop()
 	timer := time.After(waitTimeout)
@@ -288,15 +357,94 @@ func waitClusterReady(ctx context.Context, client cloud.TiDBCloudClient, cluster
 		case <-timer:
 			return fmt.Errorf("timeout waiting for cluster %s ready", clusterID)
 		case <-ticker.C:
+			atomic.AddInt64(getReqCounter, 1)
 			c, err := client.GetCluster(ctx, clusterID, cluster.CLUSTERSERVICEGETCLUSTERVIEWPARAMETER_BASIC)
 			if err != nil {
-				return err
+				log.Printf("GetCluster error for %s: %v, retrying...", clusterID, err)
+				continue
 			}
 			if c.State != nil && *c.State == cluster.COMMONV1BETA1CLUSTERSTATE_ACTIVE {
 				return nil
 			}
 		}
 	}
+}
+
+func printHistogram(durations []time.Duration) {
+	if len(durations) == 0 {
+		return
+	}
+
+	// Find min and max
+	minDuration := durations[0]
+	maxDuration := durations[0]
+	for _, d := range durations {
+		if d < minDuration {
+			minDuration = d
+		}
+		if d > maxDuration {
+			maxDuration = d
+		}
+	}
+
+	// Determine bucket size based on range
+	rangeDuration := maxDuration - minDuration
+	numBuckets := 20
+	var bucketSize time.Duration
+	if rangeDuration == 0 {
+		// All durations are the same
+		bucketSize = 1 * time.Second
+		numBuckets = 1
+	} else {
+		bucketSize = rangeDuration / time.Duration(numBuckets)
+		if bucketSize < 10*time.Second {
+			bucketSize = 10 * time.Second
+			numBuckets = int(rangeDuration/bucketSize) + 1
+			if numBuckets > 50 {
+				numBuckets = 50
+			}
+		}
+	}
+
+	// Count durations in each bucket
+	buckets := make([]int, numBuckets+1)
+	for _, d := range durations {
+		bucketIdx := int((d - minDuration) / bucketSize)
+		if bucketIdx > numBuckets {
+			bucketIdx = numBuckets
+		}
+		buckets[bucketIdx]++
+	}
+
+	// Find max count for scaling
+	maxCount := 0
+	for _, count := range buckets {
+		if count > maxCount {
+			maxCount = count
+		}
+	}
+
+	// Print histogram
+	log.Printf("\nCluster Creation Time Histogram:")
+	log.Printf("Range: %s to %s", minDuration, maxDuration)
+	log.Printf("Bucket size: %s", bucketSize)
+	log.Printf("")
+
+	barWidth := 50
+	for i := 0; i <= numBuckets; i++ {
+		if buckets[i] == 0 {
+			continue
+		}
+		startTime := minDuration + time.Duration(i)*bucketSize
+		endTime := minDuration + time.Duration(i+1)*bucketSize
+		barLength := int(float64(buckets[i]) / float64(maxCount) * float64(barWidth))
+		bar := ""
+		for j := 0; j < barLength; j++ {
+			bar += "█"
+		}
+		log.Printf("%8s - %8s | %s %d", startTime, endTime, bar, buckets[i])
+	}
+	log.Printf("")
 }
 
 func toInt32Ptr(v int32) *int32 {
