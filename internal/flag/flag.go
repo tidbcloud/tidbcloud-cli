@@ -15,6 +15,7 @@
 package flag
 
 const (
+	ExampleID            string = "example-id"
 	ClusterID            string = "cluster-id"
 	ClusterIDShort       string = "c"
 	LocalConcurrency     string = "local.concurrency"
