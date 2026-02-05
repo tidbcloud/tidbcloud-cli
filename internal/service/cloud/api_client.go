@@ -35,6 +35,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/migration"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/privatelink"
 
 	"github.com/icholy/digest"
 )
@@ -148,6 +149,11 @@ type TiDBCloudClient interface {
 	TestChangefeed(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceTestChangefeedBody) (map[string]interface{}, error)
 	DescribeSchemaTable(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceDescribeSchemaTableBody) (*cdc.DescribeSchemaTableResp, error)
 
+	CreatePrivateLinkConnection(ctx context.Context, clusterId string, body *privatelink.PrivateLinkConnectionServiceCreatePrivateLinkConnectionBody) (*privatelink.PrivateLinkConnection, error)
+	DeletePrivateLinkConnection(ctx context.Context, clusterId, privateLinkConnectionId string) (*privatelink.PrivateLinkConnection, error)
+	GetPrivateLinkConnection(ctx context.Context, clusterId, privateLinkConnectionId string) (*privatelink.PrivateLinkConnection, error)
+	ListPrivateLinkConnections(ctx context.Context, clusterId string, pageSize *int32, pageToken *string) (*privatelink.ListPrivateLinkConnectionsResponse, error)
+
 	CreateAuditLogFilterRule(ctx context.Context, clusterID string, body *auditlog.DatabaseAuditLogServiceCreateAuditLogFilterRuleBody) (*auditlog.AuditLogFilterRule, error)
 
 	DeleteAuditLogFilterRule(ctx context.Context, clusterID, ruleID string) (*auditlog.AuditLogFilterRule, error)
@@ -173,11 +179,12 @@ type ClientDelegate struct {
 	alc *auditlog.APIClient
 	cdc *cdc.APIClient
 	mc  *migration.APIClient
+	plc *privatelink.APIClient
 }
 
 func NewClientDelegateWithToken(token string, serverlessEndpoint string, iamEndpoint string) (*ClientDelegate, error) {
 	transport := NewBearTokenTransport(token)
-	bc, sc, brc, sic, ec, ic, alc, cdc, mc, err := NewApiClient(transport, serverlessEndpoint, iamEndpoint)
+	bc, sc, brc, sic, ec, ic, alc, cdc, mc, plc, err := NewApiClient(transport, serverlessEndpoint, iamEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -191,12 +198,13 @@ func NewClientDelegateWithToken(token string, serverlessEndpoint string, iamEndp
 		alc: alc,
 		cdc: cdc,
 		mc:  mc,
+		plc: plc,
 	}, nil
 }
 
 func NewClientDelegateWithApiKey(publicKey string, privateKey string, serverlessEndpoint string, iamEndpoint string) (*ClientDelegate, error) {
 	transport := NewDigestTransport(publicKey, privateKey)
-	bc, sc, brc, sic, ec, ic, alc, cdc, mc, err := NewApiClient(transport, serverlessEndpoint, iamEndpoint)
+	bc, sc, brc, sic, ec, ic, alc, cdc, mc, plc, err := NewApiClient(transport, serverlessEndpoint, iamEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -210,6 +218,7 @@ func NewClientDelegateWithApiKey(publicKey string, privateKey string, serverless
 		alc: alc,
 		cdc: cdc,
 		mc:  mc,
+		plc: plc,
 	}, nil
 }
 
@@ -668,7 +677,7 @@ func (d *ClientDelegate) GetAuditLogConfig(ctx context.Context, clusterID string
 	return res, parseError(err, h)
 }
 
-func NewApiClient(rt http.RoundTripper, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, *auditlog.APIClient, *cdc.APIClient, *migration.APIClient, error) {
+func NewApiClient(rt http.RoundTripper, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, *auditlog.APIClient, *cdc.APIClient, *migration.APIClient, *privatelink.APIClient, error) {
 	httpclient := &http.Client{
 		Transport: rt,
 	}
@@ -676,12 +685,12 @@ func NewApiClient(rt http.RoundTripper, serverlessEndpoint string, iamEndpoint s
 	// v1beta1 api (serverless)
 	serverlessURL, err := prop.ValidateApiUrl(serverlessEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 
 	iamURL, err := prop.ValidateApiUrl(iamEndpoint)
 	if err != nil {
-		return nil, nil, nil, nil, nil, nil, nil, nil, nil, err
+		return nil, nil, nil, nil, nil, nil, nil, nil, nil, nil, err
 	}
 
 	userAgent := fmt.Sprintf("%s/%s", config.CliName, version.Version)
@@ -731,11 +740,16 @@ func NewApiClient(rt http.RoundTripper, serverlessEndpoint string, iamEndpoint s
 	migrationCfg.Host = serverlessURL.Host
 	migrationCfg.UserAgent = userAgent
 
+	privatelinkCfg := privatelink.NewConfiguration()
+	privatelinkCfg.HTTPClient = httpclient
+	privatelinkCfg.Host = serverlessURL.Host
+	privatelinkCfg.UserAgent = userAgent
+
 	return branch.NewAPIClient(branchCfg), cluster.NewAPIClient(clusterCfg),
 		br.NewAPIClient(backupRestoreCfg), imp.NewAPIClient(importCfg),
 		export.NewAPIClient(exportCfg), iam.NewAPIClient(iamCfg),
 		auditlog.NewAPIClient(auditLogCfg), cdc.NewAPIClient(cdcCfg),
-		migration.NewAPIClient(migrationCfg), nil
+		migration.NewAPIClient(migrationCfg), privatelink.NewAPIClient(privatelinkCfg), nil
 }
 
 func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {
@@ -899,6 +913,37 @@ func (d *ClientDelegate) DescribeSchemaTable(ctx context.Context, clusterId stri
 	r := d.cdc.ChangefeedServiceAPI.ChangefeedServiceDescribeSchemaTable(ctx, clusterId)
 	if body != nil {
 		r = r.Body(*body)
+	}
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
+}
+
+func (d *ClientDelegate) CreatePrivateLinkConnection(ctx context.Context, clusterId string, body *privatelink.PrivateLinkConnectionServiceCreatePrivateLinkConnectionBody) (*privatelink.PrivateLinkConnection, error) {
+	r := d.plc.PrivateLinkConnectionServiceAPI.PrivateLinkConnectionServiceCreatePrivateLinkConnection(ctx, clusterId)
+	if body != nil {
+		r = r.Body(*body)
+	}
+	resp, h, err := r.Execute()
+	return resp, parseError(err, h)
+}
+
+func (d *ClientDelegate) DeletePrivateLinkConnection(ctx context.Context, clusterId, privateLinkConnectionId string) (*privatelink.PrivateLinkConnection, error) {
+	resp, h, err := d.plc.PrivateLinkConnectionServiceAPI.PrivateLinkConnectionServiceDeletePrivateLinkConnection(ctx, clusterId, privateLinkConnectionId).Execute()
+	return resp, parseError(err, h)
+}
+
+func (d *ClientDelegate) GetPrivateLinkConnection(ctx context.Context, clusterId, privateLinkConnectionId string) (*privatelink.PrivateLinkConnection, error) {
+	resp, h, err := d.plc.PrivateLinkConnectionServiceAPI.PrivateLinkConnectionServiceGetPrivateLinkConnection(ctx, clusterId, privateLinkConnectionId).Execute()
+	return resp, parseError(err, h)
+}
+
+func (d *ClientDelegate) ListPrivateLinkConnections(ctx context.Context, clusterId string, pageSize *int32, pageToken *string) (*privatelink.ListPrivateLinkConnectionsResponse, error) {
+	r := d.plc.PrivateLinkConnectionServiceAPI.PrivateLinkConnectionServiceListPrivateLinkConnections(ctx, clusterId)
+	if pageSize != nil {
+		r = r.PageSize(*pageSize)
+	}
+	if pageToken != nil {
+		r = r.PageToken(*pageToken)
 	}
 	resp, h, err := r.Execute()
 	return resp, parseError(err, h)

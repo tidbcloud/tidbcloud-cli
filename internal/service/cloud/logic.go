@@ -31,6 +31,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/migration"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/privatelink"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/juju/errors"
@@ -363,6 +364,50 @@ func GetSelectedBranch(ctx context.Context, clusterID string, pageSize int64, cl
 		return nil, errors.New("no branch selected")
 	}
 	return branch.(*Branch), nil
+}
+
+func GetSelectedPrivateLinkConnection(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*PrivateLinkConnection, error) {
+	_, plcItems, err := RetrievePrivateLinkConnections(ctx, clusterID, pageSize, client)
+	if err != nil {
+		return nil, err
+	}
+
+	var items = make([]interface{}, 0, len(plcItems))
+	for _, item := range plcItems {
+		var id string
+		if item.PrivateLinkConnectionId != nil {
+			id = *item.PrivateLinkConnectionId
+		}
+		items = append(items, &PrivateLinkConnection{
+			ID:          id,
+			DisplayName: item.DisplayName,
+		})
+	}
+	if len(items) == 0 {
+		return nil, fmt.Errorf("no available private link connections found")
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the private link connection:")
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	plcModel, err := p.Run()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if m, _ := plcModel.(ui.SelectModel); m.Interrupted {
+		return nil, util.InterruptError
+	}
+	plc := plcModel.(ui.SelectModel).GetSelectedItem()
+	if plc == nil {
+		return nil, errors.New("no private link connection selected")
+	}
+	return plc.(*PrivateLinkConnection), nil
 }
 
 func GetSelectedExport(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*Export, error) {
@@ -743,6 +788,30 @@ func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBClo
 			return 0, nil, errors.Trace(err)
 		}
 		items = append(items, branches.Branches...)
+	}
+	return int64(len(items)), items, nil
+}
+
+func RetrievePrivateLinkConnections(ctx context.Context, clusterID string, pageSize int64, d TiDBCloudClient) (int64, []privatelink.PrivateLinkConnection, error) {
+	var items []privatelink.PrivateLinkConnection
+	pageSizeInt32 := int32(pageSize)
+	var pageToken *string
+
+	resp, err := d.ListPrivateLinkConnections(ctx, clusterID, &pageSizeInt32, nil)
+	if err != nil {
+		return 0, nil, errors.Trace(err)
+	}
+	items = append(items, resp.PrivateLinkConnections...)
+	for {
+		pageToken = resp.NextPageToken
+		if util.IsNilOrEmpty(pageToken) {
+			break
+		}
+		resp, err = d.ListPrivateLinkConnections(ctx, clusterID, &pageSizeInt32, pageToken)
+		if err != nil {
+			return 0, nil, errors.Trace(err)
+		}
+		items = append(items, resp.PrivateLinkConnections...)
 	}
 	return int64(len(items)), items, nil
 }

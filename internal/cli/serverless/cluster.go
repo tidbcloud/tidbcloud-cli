@@ -23,6 +23,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/dataimport"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/export"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/migration"
+	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/private_link_connection"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless/sqluser"
 
 	"github.com/spf13/cobra"
@@ -54,6 +55,7 @@ func Cmd(h *internal.Helper) *cobra.Command {
 	serverlessCmd.AddCommand(authorizednetwork.AuthorizedNetworkCmd(h))
 	serverlessCmd.AddCommand(changefeed.ChangefeedCmd(h))
 	serverlessCmd.AddCommand(migration.MigrationCmd(h))
+	serverlessCmd.AddCommand(private_link_connection.Cmd(h))
 
 	return serverlessCmd
 }

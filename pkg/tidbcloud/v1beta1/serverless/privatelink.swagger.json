@@ -1,0 +1,429 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "TiDB Cloud Serverless Private Link Connection Open API",
+    "description": "TiDB Cloud Serverless Private Link Connection Open API",
+    "version": "v1beta1"
+  },
+  "tags": [
+    {
+      "name": "PrivateLinkConnectionService"
+    }
+  ],
+  "host": "serverless.tidbapi.com",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1beta1/clusters/{clusterId}/privateLinkConnections/{privateLinkConnectionId}": {
+      "get": {
+        "summary": "Get a private link connection.",
+        "operationId": "PrivateLinkConnectionService_GetPrivateLinkConnection",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PrivateLinkConnection"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The cluster ID.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "privateLinkConnectionId",
+            "description": "The private link connection ID.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PrivateLinkConnectionService"
+        ]
+      },
+      "delete": {
+        "summary": "Delete a private link connection.",
+        "operationId": "PrivateLinkConnectionService_DeletePrivateLinkConnection",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PrivateLinkConnection"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The cluster ID.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "privateLinkConnectionId",
+            "description": "The private link connection ID.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PrivateLinkConnectionService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/privateLinkConnections": {
+      "get": {
+        "summary": "List private link connections.",
+        "operationId": "PrivateLinkConnectionService_ListPrivateLinkConnections",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListPrivateLinkConnectionsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The cluster ID.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "The maximum number to return.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "The page token for pagination.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "state",
+            "description": " - CREATING: The private link connection is being created.\n - ACTIVE: The private link connection is active.\n - FAILED: The private link connection is in failed state.\n - PENDING_ACCEPTANCE: The private link connection is pending acceptance. only for AWS endpoint service and Alicloud endpoint service.\n - DELETING: The private link connection is being deleted.",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "CREATING",
+              "ACTIVE",
+              "FAILED",
+              "PENDING_ACCEPTANCE",
+              "DELETING"
+            ]
+          }
+        ],
+        "tags": [
+          "PrivateLinkConnectionService"
+        ]
+      },
+      "post": {
+        "summary": "Create a private link connection.",
+        "operationId": "PrivateLinkConnectionService_CreatePrivateLinkConnection",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/PrivateLinkConnection"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The cluster ID.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PrivateLinkConnectionService.CreatePrivateLinkConnectionBody"
+            }
+          }
+        ],
+        "tags": [
+          "PrivateLinkConnectionService"
+        ]
+      }
+    },
+    "/v1beta1/clusters/{clusterId}/privateLinkConnections:getAvailabilityZones": {
+      "get": {
+        "summary": "Get account and availability zones information for private link connection.",
+        "operationId": "PrivateLinkConnectionService_GetAvailabilityZones",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetAvailabilityZonesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/Status"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "clusterId",
+            "description": "The cluster ID.",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PrivateLinkConnectionService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "AlicloudEndpointService": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The endpoint service name."
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "Any": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "AwsEndpointService": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The endpoint service name."
+        },
+        "region": {
+          "type": "string",
+          "title": "The region of endpoint service name, default to cluster's region"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "GetAvailabilityZonesResponse": {
+      "type": "object",
+      "properties": {
+        "accountId": {
+          "type": "string",
+          "description": "The account ID."
+        },
+        "azIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Availability zone ids."
+        }
+      }
+    },
+    "ListPrivateLinkConnectionsResponse": {
+      "type": "object",
+      "properties": {
+        "privateLinkConnections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/PrivateLinkConnection"
+          }
+        },
+        "nextPageToken": {
+          "type": "string"
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "PrivateLinkConnection": {
+      "type": "object",
+      "properties": {
+        "privateLinkConnectionId": {
+          "type": "string",
+          "title": "The private link connection ID, format: plc-xxx",
+          "readOnly": true
+        },
+        "clusterId": {
+          "type": "string",
+          "description": "The ID of the cluster."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Display name for the private link connection."
+        },
+        "state": {
+          "description": "The state of the private link connection.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/PrivateLinkConnectionState.Enum"
+            }
+          ]
+        },
+        "message": {
+          "type": "string",
+          "description": "The message describing fail reason.",
+          "readOnly": true
+        },
+        "createdBy": {
+          "type": "string",
+          "description": "The user who created the private link connection.",
+          "readOnly": true
+        },
+        "createTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the private link connection was created.",
+          "readOnly": true
+        },
+        "updateTime": {
+          "type": "string",
+          "format": "date-time",
+          "x-nullable": true,
+          "description": "Timestamp when the private link connection was updated.",
+          "readOnly": true
+        },
+        "type": {
+          "title": "The type of the private link connection",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PrivateLinkConnectionType.Enum"
+            }
+          ]
+        },
+        "awsEndpointService": {
+          "$ref": "#/definitions/AwsEndpointService"
+        },
+        "alicloudEndpointService": {
+          "$ref": "#/definitions/AlicloudEndpointService"
+        }
+      },
+      "required": [
+        "clusterId",
+        "displayName",
+        "type"
+      ]
+    },
+    "PrivateLinkConnectionService.CreatePrivateLinkConnectionBody": {
+      "type": "object",
+      "properties": {
+        "privateLinkConnection": {
+          "description": "The private link connection to create.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/PrivateLinkConnection"
+            }
+          ]
+        }
+      },
+      "required": [
+        "privateLinkConnection"
+      ]
+    },
+    "PrivateLinkConnectionState.Enum": {
+      "type": "string",
+      "enum": [
+        "CREATING",
+        "ACTIVE",
+        "FAILED",
+        "PENDING_ACCEPTANCE",
+        "DELETING"
+      ],
+      "description": " - CREATING: The private link connection is being created.\n - ACTIVE: The private link connection is active.\n - FAILED: The private link connection is in failed state.\n - PENDING_ACCEPTANCE: The private link connection is pending acceptance. only for AWS endpoint service and Alicloud endpoint service.\n - DELETING: The private link connection is being deleted."
+    },
+    "PrivateLinkConnectionType.Enum": {
+      "type": "string",
+      "enum": [
+        "AWS_ENDPOINT_SERVICE",
+        "ALICLOUD_ENDPOINT_SERVICE"
+      ],
+      "description": " - AWS_ENDPOINT_SERVICE: AWS endpoint service type.\n - ALICLOUD_ENDPOINT_SERVICE: Alicloud endpoint service type."
+    },
+    "Status": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/Any"
+          }
+        }
+      }
+    }
+  }
+}
