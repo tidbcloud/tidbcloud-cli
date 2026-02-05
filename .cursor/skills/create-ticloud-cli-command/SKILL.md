@@ -107,7 +107,7 @@ Skip this step if the user does not need tests.
 
 Run tests with: `go test -race -cover -count=1 path -v`
 
-For example, to run tests under `internal/cli/serverless/branch`: `go test -race -cover -count=1 ./internal/cli/serverless/branch -v`
+For example, to run tests under `internal/cli/serverless/branch`: `go test -race -cover -count=1 ./internal/cli/serverless/branch -v`. 
 
 Ensure all tests pass. If they do not pass, fix the implementation or the tests.
 
