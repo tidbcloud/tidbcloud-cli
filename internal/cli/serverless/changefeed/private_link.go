@@ -16,25 +16,17 @@ package changefeed
 
 import (
 	"github.com/spf13/cobra"
-
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 )
 
-func ChangefeedCmd(h *internal.Helper) *cobra.Command {
-	var changefeedCmd = &cobra.Command{
-		Use:     "changefeed",
-		Short:   "Manage TiDB Cloud Serverless changefeeds",
-		Aliases: []string{"cdc"},
+func PrivateLinkCmd(h *internal.Helper) *cobra.Command {
+	var privateLinkCmd = &cobra.Command{
+		Use:   "private-link",
+		Short: "Manage TiDB Cloud Serverless changefeed private link endpoints",
 	}
 
-	changefeedCmd.AddCommand(CreateCmd(h))
-	changefeedCmd.AddCommand(DescribeCmd(h))
-	changefeedCmd.AddCommand(ListCmd(h))
-	changefeedCmd.AddCommand(EditCmd(h))
-	changefeedCmd.AddCommand(DeleteCmd(h))
-	changefeedCmd.AddCommand(TemplateCmd(h))
-	changefeedCmd.AddCommand(PauseCmd(h))
-	changefeedCmd.AddCommand(ResumeCmd(h))
-	changefeedCmd.AddCommand(PrivateLinkCmd(h))
-	return changefeedCmd
+	privateLinkCmd.AddCommand(PrivateLinkCreateCmd(h))
+	privateLinkCmd.AddCommand(PrivateLinkDescribeCmd(h))
+	privateLinkCmd.AddCommand(PrivateLinkDeleteCmd(h))
+	return privateLinkCmd
 }

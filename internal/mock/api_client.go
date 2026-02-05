@@ -22,6 +22,8 @@ import (
 
 	migration "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/migration"
 
+	privatelink "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/privatelink"
+
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -215,6 +217,246 @@ func (_m *TiDBCloudClient) CreateChangefeed(ctx context.Context, clusterId strin
 
 	if rf, ok := ret.Get(1).(func(context.Context, string, *cdc.ChangefeedServiceCreateChangefeedBody) error); ok {
 		r1 = rf(ctx, clusterId, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CreatePrivateLinkEndpoint provides a mock function with given fields: ctx, clusterId, body
+func (_m *TiDBCloudClient) CreatePrivateLinkEndpoint(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceCreatePrivateLinkEndpointBody) (*cdc.PrivateLinkEndpoint, error) {
+	ret := _m.Called(ctx, clusterId, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreatePrivateLinkEndpoint")
+	}
+
+	var r0 *cdc.PrivateLinkEndpoint
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *cdc.ChangefeedServiceCreatePrivateLinkEndpointBody) (*cdc.PrivateLinkEndpoint, error)); ok {
+		return rf(ctx, clusterId, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *cdc.ChangefeedServiceCreatePrivateLinkEndpointBody) *cdc.PrivateLinkEndpoint); ok {
+		r0 = rf(ctx, clusterId, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.PrivateLinkEndpoint)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *cdc.ChangefeedServiceCreatePrivateLinkEndpointBody) error); ok {
+		r1 = rf(ctx, clusterId, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// DeletePrivateLinkEndpoint provides a mock function with given fields: ctx, clusterId, privateLinkServiceName
+func (_m *TiDBCloudClient) DeletePrivateLinkEndpoint(ctx context.Context, clusterId string, privateLinkServiceName string) (*cdc.PrivateLinkEndpoint, error) {
+	ret := _m.Called(ctx, clusterId, privateLinkServiceName)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeletePrivateLinkEndpoint")
+	}
+
+	var r0 *cdc.PrivateLinkEndpoint
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*cdc.PrivateLinkEndpoint, error)); ok {
+		return rf(ctx, clusterId, privateLinkServiceName)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *cdc.PrivateLinkEndpoint); ok {
+		r0 = rf(ctx, clusterId, privateLinkServiceName)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.PrivateLinkEndpoint)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, privateLinkServiceName)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetPrivateLinkEndpoint provides a mock function with given fields: ctx, clusterId, privateLinkServiceName
+func (_m *TiDBCloudClient) GetPrivateLinkEndpoint(ctx context.Context, clusterId string, privateLinkServiceName string) (*cdc.PrivateLinkEndpoint, error) {
+	ret := _m.Called(ctx, clusterId, privateLinkServiceName)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetPrivateLinkEndpoint")
+	}
+
+	var r0 *cdc.PrivateLinkEndpoint
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*cdc.PrivateLinkEndpoint, error)); ok {
+		return rf(ctx, clusterId, privateLinkServiceName)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *cdc.PrivateLinkEndpoint); ok {
+		r0 = rf(ctx, clusterId, privateLinkServiceName)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*cdc.PrivateLinkEndpoint)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, privateLinkServiceName)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CreatePrivateLinkConnection provides a mock function with given fields: ctx, clusterId, body
+func (_m *TiDBCloudClient) CreatePrivateLinkConnection(ctx context.Context, clusterId string, body *privatelink.PrivateLinkConnectionServiceCreatePrivateLinkConnectionBody) (*privatelink.PrivateLinkConnection, error) {
+	ret := _m.Called(ctx, clusterId, body)
+
+	if len(ret) == 0 {
+		panic("no return value specified for CreatePrivateLinkConnection")
+	}
+
+	var r0 *privatelink.PrivateLinkConnection
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *privatelink.PrivateLinkConnectionServiceCreatePrivateLinkConnectionBody) (*privatelink.PrivateLinkConnection, error)); ok {
+		return rf(ctx, clusterId, body)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *privatelink.PrivateLinkConnectionServiceCreatePrivateLinkConnectionBody) *privatelink.PrivateLinkConnection); ok {
+		r0 = rf(ctx, clusterId, body)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*privatelink.PrivateLinkConnection)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *privatelink.PrivateLinkConnectionServiceCreatePrivateLinkConnectionBody) error); ok {
+		r1 = rf(ctx, clusterId, body)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// DeletePrivateLinkConnection provides a mock function with given fields: ctx, clusterId, privateLinkConnectionId
+func (_m *TiDBCloudClient) DeletePrivateLinkConnection(ctx context.Context, clusterId string, privateLinkConnectionId string) (*privatelink.PrivateLinkConnection, error) {
+	ret := _m.Called(ctx, clusterId, privateLinkConnectionId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DeletePrivateLinkConnection")
+	}
+
+	var r0 *privatelink.PrivateLinkConnection
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*privatelink.PrivateLinkConnection, error)); ok {
+		return rf(ctx, clusterId, privateLinkConnectionId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *privatelink.PrivateLinkConnection); ok {
+		r0 = rf(ctx, clusterId, privateLinkConnectionId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*privatelink.PrivateLinkConnection)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, privateLinkConnectionId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetPrivateLinkConnection provides a mock function with given fields: ctx, clusterId, privateLinkConnectionId
+func (_m *TiDBCloudClient) GetPrivateLinkConnection(ctx context.Context, clusterId string, privateLinkConnectionId string) (*privatelink.PrivateLinkConnection, error) {
+	ret := _m.Called(ctx, clusterId, privateLinkConnectionId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetPrivateLinkConnection")
+	}
+
+	var r0 *privatelink.PrivateLinkConnection
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) (*privatelink.PrivateLinkConnection, error)); ok {
+		return rf(ctx, clusterId, privateLinkConnectionId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, string) *privatelink.PrivateLinkConnection); ok {
+		r0 = rf(ctx, clusterId, privateLinkConnectionId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*privatelink.PrivateLinkConnection)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
+		r1 = rf(ctx, clusterId, privateLinkConnectionId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetPrivateLinkConnectionAvailabilityZones provides a mock function with given fields: ctx, clusterId
+func (_m *TiDBCloudClient) GetPrivateLinkConnectionAvailabilityZones(ctx context.Context, clusterId string) (*privatelink.GetAvailabilityZonesResponse, error) {
+	ret := _m.Called(ctx, clusterId)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetPrivateLinkConnectionAvailabilityZones")
+	}
+
+	var r0 *privatelink.GetAvailabilityZonesResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string) (*privatelink.GetAvailabilityZonesResponse, error)); ok {
+		return rf(ctx, clusterId)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string) *privatelink.GetAvailabilityZonesResponse); ok {
+		r0 = rf(ctx, clusterId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*privatelink.GetAvailabilityZonesResponse)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, clusterId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// ListPrivateLinkConnections provides a mock function with given fields: ctx, clusterId, pageSize, pageToken, state
+func (_m *TiDBCloudClient) ListPrivateLinkConnections(ctx context.Context, clusterId string, pageSize *int32, pageToken *string, state *privatelink.PrivateLinkConnectionServiceListPrivateLinkConnectionsStateParameter) (*privatelink.ListPrivateLinkConnectionsResponse, error) {
+	ret := _m.Called(ctx, clusterId, pageSize, pageToken, state)
+
+	if len(ret) == 0 {
+		panic("no return value specified for ListPrivateLinkConnections")
+	}
+
+	var r0 *privatelink.ListPrivateLinkConnectionsResponse
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string, *privatelink.PrivateLinkConnectionServiceListPrivateLinkConnectionsStateParameter) (*privatelink.ListPrivateLinkConnectionsResponse, error)); ok {
+		return rf(ctx, clusterId, pageSize, pageToken, state)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, string, *int32, *string, *privatelink.PrivateLinkConnectionServiceListPrivateLinkConnectionsStateParameter) *privatelink.ListPrivateLinkConnectionsResponse); ok {
+		r0 = rf(ctx, clusterId, pageSize, pageToken, state)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*privatelink.ListPrivateLinkConnectionsResponse)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, string, *int32, *string, *privatelink.PrivateLinkConnectionServiceListPrivateLinkConnectionsStateParameter) error); ok {
+		r1 = rf(ctx, clusterId, pageSize, pageToken, state)
 	} else {
 		r1 = ret.Error(1)
 	}

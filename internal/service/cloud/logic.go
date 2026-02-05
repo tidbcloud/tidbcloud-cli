@@ -31,6 +31,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/export"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/migration"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/privatelink"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/juju/errors"
@@ -1062,6 +1063,75 @@ func GetSelectedChangefeed(ctx context.Context, clusterID string, pageSize int64
 		return nil, errors.New("no changefeed selected")
 	}
 	return changefeed.(*Changefeed), nil
+}
+
+func RetrievePrivateLinkConnections(ctx context.Context, clusterID string, pageSize int64, state *privatelink.PrivateLinkConnectionServiceListPrivateLinkConnectionsStateParameter, d TiDBCloudClient) (int64, []privatelink.PrivateLinkConnection, error) {
+	var items []privatelink.PrivateLinkConnection
+	pageSizeInt32 := int32(pageSize)
+	resp, err := d.ListPrivateLinkConnections(ctx, clusterID, &pageSizeInt32, nil, state)
+	if err != nil {
+		return 0, nil, errors.Trace(err)
+	}
+	items = append(items, resp.PrivateLinkConnections...)
+	total := resp.TotalSize
+	for resp.NextPageToken != nil && *resp.NextPageToken != "" {
+		resp, err = d.ListPrivateLinkConnections(ctx, clusterID, &pageSizeInt32, resp.NextPageToken, state)
+		if err != nil {
+			return 0, nil, errors.Trace(err)
+		}
+		items = append(items, resp.PrivateLinkConnections...)
+	}
+	if total != nil {
+		return *total, items, nil
+	}
+	return int64(len(items)), items, nil
+}
+
+func GetSelectedPrivateLinkConnection(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*PrivateLinkConnection, error) {
+	_, connections, err := RetrievePrivateLinkConnections(ctx, clusterID, pageSize, nil, client)
+	if err != nil {
+		return nil, err
+	}
+
+	var items = make([]interface{}, 0, len(connections))
+	for _, item := range connections {
+		if item.PrivateLinkConnectionId == nil || *item.PrivateLinkConnectionId == "" {
+			continue
+		}
+		displayName := item.DisplayName
+		if displayName == "" {
+			displayName = *item.PrivateLinkConnectionId
+		}
+		items = append(items, &PrivateLinkConnection{
+			ID:          *item.PrivateLinkConnectionId,
+			DisplayName: displayName,
+		})
+	}
+	if len(items) == 0 {
+		return nil, fmt.Errorf("no available private link connections found")
+	}
+
+	model, err := ui.InitialSelectModel(items, "Choose the private link connection:")
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	itemsPerPage := 6
+	model.EnablePagination(itemsPerPage)
+	model.EnableFilter()
+
+	p := tea.NewProgram(model)
+	connectionModel, err := p.Run()
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+	if m, _ := connectionModel.(ui.SelectModel); m.Interrupted {
+		return nil, util.InterruptError
+	}
+	selected := connectionModel.(ui.SelectModel).GetSelectedItem()
+	if selected == nil {
+		return nil, errors.New("no private link connection selected")
+	}
+	return selected.(*PrivateLinkConnection), nil
 }
 
 func GetSelectedMigration(ctx context.Context, clusterID string, pageSize int64, client TiDBCloudClient) (*MigrationTask, error) {
