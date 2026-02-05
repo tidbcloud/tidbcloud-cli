@@ -1,0 +1,397 @@
+openapi: 3.0.1
+info:
+  description: TiDB Cloud Serverless Private Link Connection Open API
+  title: TiDB Cloud Serverless Private Link Connection Open API
+  version: v1beta1
+servers:
+- url: https://serverless.tidbapi.com/
+tags:
+- name: PrivateLinkConnectionService
+paths:
+  /v1beta1/clusters/{clusterId}/privateLinkConnections/{privateLinkConnectionId}:
+    delete:
+      operationId: PrivateLinkConnectionService_DeletePrivateLinkConnection
+      parameters:
+      - description: The cluster ID.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The private link connection ID.
+        in: path
+        name: privateLinkConnectionId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateLinkConnection'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Delete a private link connection.
+      tags:
+      - PrivateLinkConnectionService
+    get:
+      operationId: PrivateLinkConnectionService_GetPrivateLinkConnection
+      parameters:
+      - description: The cluster ID.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The private link connection ID.
+        in: path
+        name: privateLinkConnectionId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateLinkConnection'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Get a private link connection.
+      tags:
+      - PrivateLinkConnectionService
+  /v1beta1/clusters/{clusterId}/privateLinkConnections:
+    get:
+      operationId: PrivateLinkConnectionService_ListPrivateLinkConnections
+      parameters:
+      - description: The cluster ID.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      - description: The maximum number to return.
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: The page token for pagination.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: |2-
+           - CREATING: The private link connection is being created.
+           - ACTIVE: The private link connection is active.
+           - FAILED: The private link connection is in failed state.
+           - PENDING_ACCEPTANCE: The private link connection is pending acceptance. only for AWS endpoint service and Alicloud endpoint service.
+           - DELETING: The private link connection is being deleted.
+        in: query
+        name: state
+        schema:
+          $ref: '#/components/schemas/PrivateLinkConnectionService_ListPrivateLinkConnections_state_parameter'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListPrivateLinkConnectionsResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: List private link connections.
+      tags:
+      - PrivateLinkConnectionService
+    post:
+      operationId: PrivateLinkConnectionService_CreatePrivateLinkConnection
+      parameters:
+      - description: The cluster ID.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrivateLinkConnectionService.CreatePrivateLinkConnectionBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivateLinkConnection'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Create a private link connection.
+      tags:
+      - PrivateLinkConnectionService
+      x-codegen-request-body-name: body
+  /v1beta1/clusters/{clusterId}/privateLinkConnections:getAvailabilityZones:
+    get:
+      operationId: PrivateLinkConnectionService_GetAvailabilityZones
+      parameters:
+      - description: The cluster ID.
+        in: path
+        name: clusterId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAvailabilityZonesResponse'
+          description: A successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
+          description: An unexpected error response.
+      summary: Get account and availability zones information for private link connection.
+      tags:
+      - PrivateLinkConnectionService
+components:
+  schemas:
+    AlicloudEndpointService:
+      example:
+        name: name
+      properties:
+        name:
+          description: The endpoint service name.
+          type: string
+      required:
+      - name
+      type: object
+    Any:
+      additionalProperties:
+        type: object
+      example:
+        '@type': '@type'
+      properties:
+        '@type':
+          type: string
+      type: object
+    AwsEndpointService:
+      example:
+        name: name
+        region: region
+      properties:
+        name:
+          description: The endpoint service name.
+          type: string
+        region:
+          title: "The region of endpoint service name, default to cluster's region"
+          type: string
+      required:
+      - name
+      type: object
+    GetAvailabilityZonesResponse:
+      example:
+        azIds:
+        - azIds
+        - azIds
+        accountId: accountId
+      properties:
+        accountId:
+          description: The account ID.
+          type: string
+        azIds:
+          description: Availability zone ids.
+          items:
+            type: string
+          type: array
+      type: object
+    ListPrivateLinkConnectionsResponse:
+      example:
+        totalSize: 0
+        nextPageToken: nextPageToken
+        privateLinkConnections:
+        - awsEndpointService:
+            name: name
+            region: region
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          displayName: displayName
+          privateLinkConnectionId: privateLinkConnectionId
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          state: "{}"
+          message: message
+          type: "{}"
+          alicloudEndpointService:
+            name: name
+        - awsEndpointService:
+            name: name
+            region: region
+          createdBy: createdBy
+          createTime: 2000-01-23T04:56:07.000+00:00
+          displayName: displayName
+          privateLinkConnectionId: privateLinkConnectionId
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          clusterId: clusterId
+          state: "{}"
+          message: message
+          type: "{}"
+          alicloudEndpointService:
+            name: name
+      properties:
+        privateLinkConnections:
+          items:
+            $ref: '#/components/schemas/PrivateLinkConnection'
+          type: array
+        nextPageToken:
+          type: string
+        totalSize:
+          format: int64
+          type: integer
+      type: object
+    PrivateLinkConnection:
+      example:
+        awsEndpointService:
+          name: name
+          region: region
+        createdBy: createdBy
+        createTime: 2000-01-23T04:56:07.000+00:00
+        displayName: displayName
+        privateLinkConnectionId: privateLinkConnectionId
+        updateTime: 2000-01-23T04:56:07.000+00:00
+        clusterId: clusterId
+        state: "{}"
+        message: message
+        type: "{}"
+        alicloudEndpointService:
+          name: name
+      properties:
+        privateLinkConnectionId:
+          readOnly: true
+          title: "The private link connection ID, format: plc-xxx"
+          type: string
+        clusterId:
+          description: The ID of the cluster.
+          type: string
+        displayName:
+          description: Display name for the private link connection.
+          type: string
+        state:
+          allOf:
+          - $ref: '#/components/schemas/PrivateLinkConnectionState.Enum'
+          description: The state of the private link connection.
+          type: object
+        message:
+          description: The message describing fail reason.
+          readOnly: true
+          type: string
+        createdBy:
+          description: The user who created the private link connection.
+          readOnly: true
+          type: string
+        createTime:
+          description: Timestamp when the private link connection was created.
+          format: date-time
+          readOnly: true
+          type: string
+        updateTime:
+          description: Timestamp when the private link connection was updated.
+          format: date-time
+          nullable: true
+          readOnly: true
+          type: string
+        type:
+          allOf:
+          - $ref: '#/components/schemas/PrivateLinkConnectionType.Enum'
+          title: The type of the private link connection
+          type: object
+        awsEndpointService:
+          $ref: '#/components/schemas/AwsEndpointService'
+        alicloudEndpointService:
+          $ref: '#/components/schemas/AlicloudEndpointService'
+      required:
+      - clusterId
+      - displayName
+      - type
+      type: object
+    PrivateLinkConnectionService.CreatePrivateLinkConnectionBody:
+      properties:
+        privateLinkConnection:
+          allOf:
+          - $ref: '#/components/schemas/PrivateLinkConnection'
+          description: The private link connection to create.
+          type: object
+      required:
+      - privateLinkConnection
+      type: object
+    PrivateLinkConnectionState.Enum:
+      description: |2-
+         - CREATING: The private link connection is being created.
+         - ACTIVE: The private link connection is active.
+         - FAILED: The private link connection is in failed state.
+         - PENDING_ACCEPTANCE: The private link connection is pending acceptance. only for AWS endpoint service and Alicloud endpoint service.
+         - DELETING: The private link connection is being deleted.
+      enum:
+      - CREATING
+      - ACTIVE
+      - FAILED
+      - PENDING_ACCEPTANCE
+      - DELETING
+      type: string
+    PrivateLinkConnectionType.Enum:
+      description: |2-
+         - AWS_ENDPOINT_SERVICE: AWS endpoint service type.
+         - ALICLOUD_ENDPOINT_SERVICE: Alicloud endpoint service type.
+      enum:
+      - AWS_ENDPOINT_SERVICE
+      - ALICLOUD_ENDPOINT_SERVICE
+      type: string
+    Status:
+      example:
+        code: 0
+        details:
+        - '@type': '@type'
+        - '@type': '@type'
+        message: message
+      properties:
+        code:
+          format: int32
+          type: integer
+        message:
+          type: string
+        details:
+          items:
+            $ref: '#/components/schemas/Any'
+          type: array
+      type: object
+    PrivateLinkConnectionService_ListPrivateLinkConnections_state_parameter:
+      enum:
+      - CREATING
+      - ACTIVE
+      - FAILED
+      - PENDING_ACCEPTANCE
+      - DELETING
+      type: string
+x-original-swagger-version: "2.0"
