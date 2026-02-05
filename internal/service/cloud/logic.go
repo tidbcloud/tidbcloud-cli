@@ -22,7 +22,6 @@ import (
 
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/auditlog"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
-	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/privatelink"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
@@ -1166,110 +1165,4 @@ func GetSelectedFilterRule(ctx context.Context, clusterID string, client TiDBClo
 		return nil, errors.New("no filter rule selected")
 	}
 	return selected.(*AuditLogFilterRule), nil
-}
-
-func GetSelectedPrivateLinkConnection(ctx context.Context, clusterID string, pageSize int32, client TiDBCloudClient) (*PrivateLinkConnection, error) {
-	privateLinkConnections, err := RetrievePrivateLinkConnections(ctx, clusterID, pageSize, client)
-	if err != nil {
-		return nil, err
-	}
-
-	var items = make([]interface{}, 0)
-	for _, item := range privateLinkConnections {
-		items = append(items, &PrivateLinkConnection{
-			ID:          *item.PrivateLinkConnectionId,
-			DisplayName: item.DisplayName,
-		})
-	}
-
-	if len(items) == 0 {
-		return nil, fmt.Errorf("no available private link connection found")
-	}
-
-	selectModel, err := ui.InitialSelectModel(items, "Choose the private link connection:")
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-	itemsPerPage := 6
-	selectModel.EnablePagination(itemsPerPage)
-	selectModel.EnableFilter()
-
-	p := tea.NewProgram(selectModel)
-	model, err := p.Run()
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-	if m, _ := model.(ui.SelectModel); m.Interrupted {
-		return nil, util.InterruptError
-	}
-	resp := model.(ui.SelectModel).GetSelectedItem()
-	if resp == nil {
-		return nil, errors.New("no private link connection")
-	}
-	return resp.(*PrivateLinkConnection), nil
-}
-
-func GetSelectedAttachDomain(ctx context.Context, clusterID, plcId string, client TiDBCloudClient) (*AttachDomain, error) {
-	plc, err := client.GetPrivateLinkConnection(ctx, clusterID, plcId)
-	if err != nil {
-		return nil, err
-	}
-
-	var items = make([]interface{}, 0)
-	for _, item := range plc.AttachedDomains {
-		items = append(items, &AttachDomain{
-			ID:         *item.AttachDomainId,
-			UniqueName: *item.UniqueName,
-			Type:       string(item.Type),
-		})
-	}
-
-	if len(items) == 0 {
-		return nil, fmt.Errorf("no available private link connection attach domain found")
-	}
-
-	selectModel, err := ui.InitialSelectModel(items, "Choose the attached domain:")
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-	itemsPerPage := 6
-	selectModel.EnablePagination(itemsPerPage)
-	selectModel.EnableFilter()
-
-	p := tea.NewProgram(selectModel)
-	model, err := p.Run()
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-	if m, _ := model.(ui.SelectModel); m.Interrupted {
-		return nil, util.InterruptError
-	}
-	resp := model.(ui.SelectModel).GetSelectedItem()
-	if resp == nil {
-		return nil, errors.New("no attach domain")
-	}
-	return resp.(*AttachDomain), nil
-}
-
-func RetrievePrivateLinkConnections(ctx context.Context, clusterID string, pageSize int32, d TiDBCloudClient) ([]privatelink.PrivateLinkConnection, error) {
-	var pageToken *string
-	resp, err := d.ListPrivateLinkConnections(ctx, clusterID, &pageSize, nil)
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-
-	items := make([]privatelink.PrivateLinkConnection, 0)
-	items = append(items, resp.PrivateLinkConnections...)
-	for {
-		pageToken = resp.NextPageToken
-		if pageToken == nil || *pageToken == "" {
-			break
-		}
-		resp, err := d.ListPrivateLinkConnections(ctx, clusterID, &pageSize, pageToken)
-		if err != nil {
-			return nil, errors.Trace(err)
-		}
-		items = append(items, resp.PrivateLinkConnections...)
-	}
-	return items, nil
 }
