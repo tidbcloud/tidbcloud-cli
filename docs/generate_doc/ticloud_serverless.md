@@ -31,7 +31,6 @@ Manage TiDB Cloud Serverless clusters
 * [ticloud serverless import](ticloud_serverless_import.md)	 - Manage TiDB Cloud Serverless data imports
 * [ticloud serverless list](ticloud_serverless_list.md)	 - List all TiDB Cloud Serverless clusters
 * [ticloud serverless migration](ticloud_serverless_migration.md)	 - Manage TiDB Cloud Serverless migrations
-* [ticloud serverless private-link-connection](ticloud_serverless_private-link-connection.md)	 - Manage private link connections for dataflow
 * [ticloud serverless region](ticloud_serverless_region.md)	 - List all available regions for TiDB Cloud Serverless
 * [ticloud serverless shell](ticloud_serverless_shell.md)	 - Connect to a TiDB Cloud Serverless cluster
 * [ticloud serverless spending-limit](ticloud_serverless_spending-limit.md)	 - Set spending limit for a TiDB Cloud Serverless cluster
