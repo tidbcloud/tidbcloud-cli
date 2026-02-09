@@ -55,6 +55,8 @@ If detection fails, prompt the user: "Do you need to update swagger and generate
 
 Once in this phase, follow the guide in `references/sdk.md` to generate the SDK.
 
+After SDK is generated, ask user to use go>=1.24 to run `make generate-mocks` manually!
+
 ### Plan phase
 
 The agent must switch to plan mode in this phase.
