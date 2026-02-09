@@ -33,11 +33,13 @@ Must follow the workflow below:
 
 ### Generate SDK phase
 
-Detect whether there are new or modified Swagger files under `/pkg/tidbcloud`. Skip this phase if none are found.
+Always prompt the user: "Do you need to add or update swagger? Please provide the swagger path if you need."
 
-If detection fails, prompt the user: "Do you need to update swagger and generate SDK?" Skip this phase if the user does not need it.
+Skip this phase if user does not need.
 
 Once in this phase, follow the guide in `references/sdk.md` to generate the SDK.
+
+After SDK is generated, ask user to use go>=1.24 to run `make generate-mocks` manually!
 
 ### Plan phase
 
