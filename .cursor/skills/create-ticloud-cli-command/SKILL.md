@@ -49,9 +49,9 @@ Must follow the workflow below:
 
 ### Generate SDK phase
 
-Detect whether there are new or modified Swagger files under `/pkg/tidbcloud`. Skip this phase if none are found.
+Always prompt the user: "Do you need to add or update swagger? Please provide the swagger path if you need."
 
-If detection fails, prompt the user: "Do you need to update swagger and generate SDK?" Skip this phase if the user does not need it.
+Skip this phase if user does not need.
 
 Once in this phase, follow the guide in `references/sdk.md` to generate the SDK.
 
@@ -62,7 +62,7 @@ After SDK is generated, ask user to use go>=1.24 to run `make generate-mocks` ma
 The agent must switch to plan mode in this phase.
 
 The agent must ask the user for the following information during the plan phase:
-1. **Command format**: If the user does not provide the command format, ask them to provide it first. See `assets/command.md` for the command format template.
+1. **Command format**: If the user does not provide the command format, ask them to provide it first. See `assets/command.md` for the command format template. The commnad flags can be omitted as it can be inferred from swagger.
 2. **Tests**: Ask whether the user needs tests. Tests are recommended.
 3. **Other necessary information**
 
@@ -72,9 +72,14 @@ Generate the plan after the user confirms all the information.
 
 The agent must switch to agent mode in this phase. Follow the workflow below:
 
-1. **Write unit tests**
-2. **Implement command**
-3. **Run tests**
+1. **Ensure the generate SDK phase**
+2. **Write unit tests**
+3. **Implement command**
+4. **Run tests**
+
+#### Ensure the sdk
+
+Ensure generate SDK phase has been done.
 
 #### Write unit tests
 
@@ -90,7 +95,7 @@ The implementation must meet the following requirements:
 
 1. **Command definition**: Include name, aliases, example, and other necessary attributes.
 
-2. **Flags definition**: Include flag type, description, default value, etc. Infer flag information from the Swagger spec and SDK client parameters. See `references/flag.md` for more details.
+2. **Flags definition**: Include flag type, description, default value, etc. Infer flag information from the Swagger spec and SDK client parameters. See `references/flag.md` for more details. Please get customer confirmation once the flags are set.
 
 3. **Flags retrieval**: Implement retrieval logic for both interactive and non-interactive modes. For interactive mode, UI is required. The UI is based on the Bubbletea library. See `references/ui.md` for more details.
 
