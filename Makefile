@@ -22,9 +22,9 @@ setup: deps devtools ## Set up dev env
 generate-mocks: ## Generate mock objects
 	@echo "==> Generating mock objects"
 	go install github.com/vektra/mockery/v2@v2.53.5
-	mockery --name TiDBCloudClient --recursive --output=internal/mock --outpkg mock --filename api_client.go
-	mockery --name EventsSender --recursive --output=internal/mock --outpkg mock --filename sender.go
-	mockery --name Uploader --recursive --output=internal/mock --outpkg mock --filename uploader.go
+	mockery --name TiDBCloudClient --recursive --dir=internal/service/cloud --output=internal/mock --outpkg mock --filename api_client.go
+	mockery --name EventsSender --recursive --dir=internal/telemetry --output=internal/mock --outpkg mock --filename sender.go
+	mockery --name Uploader --recursive --dir=internal/service/aws/s3 --output=internal/mock --outpkg mock --filename uploader.go
 
 .PHONY: addcopy
 addcopy: ## Add copyright to all files
