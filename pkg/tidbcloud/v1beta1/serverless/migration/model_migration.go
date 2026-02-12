@@ -33,7 +33,9 @@ type Migration struct {
 	// The migration mode of the migration.
 	Mode *TaskMode `json:"mode,omitempty"`
 	// The current state of the migration.
-	State                *MigrationState `json:"state,omitempty"`
+	State *MigrationState `json:"state,omitempty"`
+	// Import mode for full migration phase.
+	ImportMode           *ImportMode `json:"importMode,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -280,6 +282,38 @@ func (o *Migration) SetState(v MigrationState) {
 	o.State = &v
 }
 
+// GetImportMode returns the ImportMode field value if set, zero value otherwise.
+func (o *Migration) GetImportMode() ImportMode {
+	if o == nil || IsNil(o.ImportMode) {
+		var ret ImportMode
+		return ret
+	}
+	return *o.ImportMode
+}
+
+// GetImportModeOk returns a tuple with the ImportMode field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Migration) GetImportModeOk() (*ImportMode, bool) {
+	if o == nil || IsNil(o.ImportMode) {
+		return nil, false
+	}
+	return o.ImportMode, true
+}
+
+// HasImportMode returns a boolean if a field has been set.
+func (o *Migration) HasImportMode() bool {
+	if o != nil && !IsNil(o.ImportMode) {
+		return true
+	}
+
+	return false
+}
+
+// SetImportMode gets a reference to the given ImportMode and assigns it to the ImportMode field.
+func (o *Migration) SetImportMode(v ImportMode) {
+	o.ImportMode = &v
+}
+
 func (o Migration) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -311,6 +345,9 @@ func (o Migration) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.State) {
 		toSerialize["state"] = o.State
 	}
+	if !IsNil(o.ImportMode) {
+		toSerialize["importMode"] = o.ImportMode
+	}
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -340,6 +377,7 @@ func (o *Migration) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "createTime")
 		delete(additionalProperties, "mode")
 		delete(additionalProperties, "state")
+		delete(additionalProperties, "importMode")
 		o.AdditionalProperties = additionalProperties
 	}
 

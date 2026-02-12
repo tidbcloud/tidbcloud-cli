@@ -86,7 +86,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 			definitionStr := string(definitionBytes)
 
-			sources, target, mode, err := parseMigrationDefinition(definitionStr)
+			sources, target, mode, importMode, err := parseMigrationDefinition(definitionStr)
 			if err != nil {
 				return err
 			}
@@ -97,6 +97,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					Sources:     sources,
 					Target:      target,
 					Mode:        mode,
+					ImportMode:  importMode,
 				}
 				return runMigrationPrecheck(ctx, d, clusterID, precheckBody, h)
 			}
@@ -106,6 +107,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				Sources:     sources,
 				Target:      target,
 				Mode:        mode,
+				ImportMode:  importMode,
 			}
 
 			resp, err := d.CreateMigration(ctx, clusterID, createBody)
@@ -247,34 +249,44 @@ func shouldPrintPrecheckItem(status *pkgmigration.PrecheckItemStatus) bool {
 	}
 }
 
-func parseMigrationDefinition(value string) ([]pkgmigration.Source, pkgmigration.Target, pkgmigration.TaskMode, error) {
+func parseMigrationDefinition(value string) ([]pkgmigration.Source, pkgmigration.Target, pkgmigration.TaskMode, *pkgmigration.ImportMode, error) {
 	trimmed := strings.TrimSpace(value)
 	if trimmed == "" {
-		return nil, pkgmigration.Target{}, "", errors.New("migration config is required; use --config-file")
+		return nil, pkgmigration.Target{}, "", nil, errors.New("migration config is required; use --config-file")
 	}
 	var payload struct {
-		Sources []pkgmigration.Source `json:"sources"`
-		Target  *pkgmigration.Target  `json:"target"`
-		Mode    string                `json:"mode"`
+		Sources    []pkgmigration.Source `json:"sources"`
+		Target     *pkgmigration.Target  `json:"target"`
+		Mode       string                `json:"mode"`
+		ImportMode *string               `json:"importMode"`
 	}
 	stdJson, err := standardizeJSON([]byte(trimmed))
 	if err != nil {
-		return nil, pkgmigration.Target{}, "", errors.Annotate(err, "invalid migration definition JSON")
+		return nil, pkgmigration.Target{}, "", nil, errors.Annotate(err, "invalid migration definition JSON")
 	}
 	if err := json.Unmarshal(stdJson, &payload); err != nil {
-		return nil, pkgmigration.Target{}, "", errors.Annotate(err, "invalid migration definition JSON")
+		return nil, pkgmigration.Target{}, "", nil, errors.Annotate(err, "invalid migration definition JSON")
 	}
 	if len(payload.Sources) == 0 {
-		return nil, pkgmigration.Target{}, "", errors.New("migration definition must include at least one source")
+		return nil, pkgmigration.Target{}, "", nil, errors.New("migration definition must include at least one source")
 	}
 	if payload.Target == nil {
-		return nil, pkgmigration.Target{}, "", errors.New("migration definition must include the target block")
+		return nil, pkgmigration.Target{}, "", nil, errors.New("migration definition must include the target block")
 	}
 	mode, err := parseMigrationMode(payload.Mode)
 	if err != nil {
-		return nil, pkgmigration.Target{}, "", err
+		return nil, pkgmigration.Target{}, "", nil, err
 	}
-	return payload.Sources, *payload.Target, mode, nil
+
+	importMode, err := parseImportMode(payload.ImportMode)
+	if err != nil {
+		return nil, pkgmigration.Target{}, "", nil, err
+	}
+	if mode == pkgmigration.TASKMODE_INCREMENTAL && importMode != nil {
+		return nil, pkgmigration.Target{}, "", nil, errors.New("importMode is only applicable for mode=ALL; remove importMode or switch to mode=ALL")
+	}
+
+	return payload.Sources, *payload.Target, mode, importMode, nil
 }
 
 func parseMigrationMode(value string) (pkgmigration.TaskMode, error) {
@@ -288,6 +300,30 @@ func parseMigrationMode(value string) (pkgmigration.TaskMode, error) {
 		return mode, nil
 	}
 	return "", errors.Errorf("invalid mode %q, allowed values: %s", value, pkgmigration.AllowedTaskModeEnumValues)
+}
+
+func parseImportMode(raw *string) (*pkgmigration.ImportMode, error) {
+	if raw == nil {
+		return nil, nil
+	}
+	trimmed := strings.TrimSpace(*raw)
+	if trimmed == "" {
+		return nil, nil
+	}
+
+	normalized := strings.ToUpper(trimmed)
+	switch normalized {
+	case "LOGICAL":
+		normalized = "IMPORT_MODE_LOGICAL"
+	case "PHYSICAL":
+		normalized = "IMPORT_MODE_PHYSICAL"
+	}
+
+	mode := pkgmigration.ImportMode(normalized)
+	if slices.Contains(pkgmigration.AllowedImportModeEnumValues, mode) {
+		return &mode, nil
+	}
+	return nil, errors.Errorf("invalid importMode %q, allowed values: %s", trimmed, pkgmigration.AllowedImportModeEnumValues)
 }
 
 // standardizeJSON accepts JSON With Commas and Comments(JWCC) see

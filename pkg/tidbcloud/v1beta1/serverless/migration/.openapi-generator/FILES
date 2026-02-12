@@ -12,6 +12,7 @@ model_conn_profile.go
 model_conn_type.go
 model_create_migration_precheck_resp.go
 model_dump_detail.go
+model_import_mode.go
 model_list_migrations_resp.go
 model_load_detail.go
 model_migration.go

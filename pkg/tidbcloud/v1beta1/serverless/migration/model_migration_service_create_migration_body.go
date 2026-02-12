@@ -27,7 +27,9 @@ type MigrationServiceCreateMigrationBody struct {
 	// The target database credentials.
 	Target Target `json:"target"`
 	// The migration mode (full+incremental or incremental-only).
-	Mode                 TaskMode `json:"mode"`
+	Mode TaskMode `json:"mode"`
+	// Import mode for full migration phase.
+	ImportMode           *ImportMode `json:"importMode,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -150,6 +152,38 @@ func (o *MigrationServiceCreateMigrationBody) SetMode(v TaskMode) {
 	o.Mode = v
 }
 
+// GetImportMode returns the ImportMode field value if set, zero value otherwise.
+func (o *MigrationServiceCreateMigrationBody) GetImportMode() ImportMode {
+	if o == nil || IsNil(o.ImportMode) {
+		var ret ImportMode
+		return ret
+	}
+	return *o.ImportMode
+}
+
+// GetImportModeOk returns a tuple with the ImportMode field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *MigrationServiceCreateMigrationBody) GetImportModeOk() (*ImportMode, bool) {
+	if o == nil || IsNil(o.ImportMode) {
+		return nil, false
+	}
+	return o.ImportMode, true
+}
+
+// HasImportMode returns a boolean if a field has been set.
+func (o *MigrationServiceCreateMigrationBody) HasImportMode() bool {
+	if o != nil && !IsNil(o.ImportMode) {
+		return true
+	}
+
+	return false
+}
+
+// SetImportMode gets a reference to the given ImportMode and assigns it to the ImportMode field.
+func (o *MigrationServiceCreateMigrationBody) SetImportMode(v ImportMode) {
+	o.ImportMode = &v
+}
+
 func (o MigrationServiceCreateMigrationBody) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -164,6 +198,9 @@ func (o MigrationServiceCreateMigrationBody) ToMap() (map[string]interface{}, er
 	toSerialize["sources"] = o.Sources
 	toSerialize["target"] = o.Target
 	toSerialize["mode"] = o.Mode
+	if !IsNil(o.ImportMode) {
+		toSerialize["importMode"] = o.ImportMode
+	}
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -214,6 +251,7 @@ func (o *MigrationServiceCreateMigrationBody) UnmarshalJSON(data []byte) (err er
 		delete(additionalProperties, "sources")
 		delete(additionalProperties, "target")
 		delete(additionalProperties, "mode")
+		delete(additionalProperties, "importMode")
 		o.AdditionalProperties = additionalProperties
 	}
 
