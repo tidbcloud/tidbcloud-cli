@@ -33,7 +33,9 @@ type Migration struct {
 	// The migration mode of the migration.
 	Mode *TaskMode `json:"mode,omitempty"`
 	// The current state of the migration.
-	State                *MigrationState `json:"state,omitempty"`
+	State *MigrationState `json:"state,omitempty"`
+	// Global binlog filter rule applied to the migration.
+	BinlogFilterRule     *BinlogFilterRule `json:"binlogFilterRule,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -280,6 +282,38 @@ func (o *Migration) SetState(v MigrationState) {
 	o.State = &v
 }
 
+// GetBinlogFilterRule returns the BinlogFilterRule field value if set, zero value otherwise.
+func (o *Migration) GetBinlogFilterRule() BinlogFilterRule {
+	if o == nil || IsNil(o.BinlogFilterRule) {
+		var ret BinlogFilterRule
+		return ret
+	}
+	return *o.BinlogFilterRule
+}
+
+// GetBinlogFilterRuleOk returns a tuple with the BinlogFilterRule field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Migration) GetBinlogFilterRuleOk() (*BinlogFilterRule, bool) {
+	if o == nil || IsNil(o.BinlogFilterRule) {
+		return nil, false
+	}
+	return o.BinlogFilterRule, true
+}
+
+// HasBinlogFilterRule returns a boolean if a field has been set.
+func (o *Migration) HasBinlogFilterRule() bool {
+	if o != nil && !IsNil(o.BinlogFilterRule) {
+		return true
+	}
+
+	return false
+}
+
+// SetBinlogFilterRule gets a reference to the given BinlogFilterRule and assigns it to the BinlogFilterRule field.
+func (o *Migration) SetBinlogFilterRule(v BinlogFilterRule) {
+	o.BinlogFilterRule = &v
+}
+
 func (o Migration) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -311,6 +345,9 @@ func (o Migration) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.State) {
 		toSerialize["state"] = o.State
 	}
+	if !IsNil(o.BinlogFilterRule) {
+		toSerialize["binlogFilterRule"] = o.BinlogFilterRule
+	}
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -340,6 +377,7 @@ func (o *Migration) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "createTime")
 		delete(additionalProperties, "mode")
 		delete(additionalProperties, "state")
+		delete(additionalProperties, "binlogFilterRule")
 		o.AdditionalProperties = additionalProperties
 	}
 

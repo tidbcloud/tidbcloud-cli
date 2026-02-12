@@ -86,26 +86,28 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 			definitionStr := string(definitionBytes)
 
-			sources, target, mode, err := parseMigrationDefinition(definitionStr)
+			sources, target, mode, binlogFilterRule, err := parseMigrationDefinition(definitionStr)
 			if err != nil {
 				return err
 			}
 
 			if dryRun {
 				precheckBody := &pkgmigration.MigrationServicePrecheckBody{
-					DisplayName: name,
-					Sources:     sources,
-					Target:      target,
-					Mode:        mode,
+					DisplayName:      name,
+					Sources:          sources,
+					Target:           target,
+					Mode:             mode,
+					BinlogFilterRule: binlogFilterRule,
 				}
 				return runMigrationPrecheck(ctx, d, clusterID, precheckBody, h)
 			}
 
 			createBody := &pkgmigration.MigrationServiceCreateMigrationBody{
-				DisplayName: name,
-				Sources:     sources,
-				Target:      target,
-				Mode:        mode,
+				DisplayName:      name,
+				Sources:          sources,
+				Target:           target,
+				Mode:             mode,
+				BinlogFilterRule: binlogFilterRule,
 			}
 
 			resp, err := d.CreateMigration(ctx, clusterID, createBody)
@@ -247,34 +249,35 @@ func shouldPrintPrecheckItem(status *pkgmigration.PrecheckItemStatus) bool {
 	}
 }
 
-func parseMigrationDefinition(value string) ([]pkgmigration.Source, pkgmigration.Target, pkgmigration.TaskMode, error) {
+func parseMigrationDefinition(value string) ([]pkgmigration.Source, pkgmigration.Target, pkgmigration.TaskMode, *pkgmigration.BinlogFilterRule, error) {
 	trimmed := strings.TrimSpace(value)
 	if trimmed == "" {
-		return nil, pkgmigration.Target{}, "", errors.New("migration config is required; use --config-file")
+		return nil, pkgmigration.Target{}, "", nil, errors.New("migration config is required; use --config-file")
 	}
 	var payload struct {
-		Sources []pkgmigration.Source `json:"sources"`
-		Target  *pkgmigration.Target  `json:"target"`
-		Mode    string                `json:"mode"`
+		Sources          []pkgmigration.Source          `json:"sources"`
+		Target           *pkgmigration.Target           `json:"target"`
+		Mode             string                         `json:"mode"`
+		BinlogFilterRule *pkgmigration.BinlogFilterRule `json:"binlogFilterRule"`
 	}
 	stdJson, err := standardizeJSON([]byte(trimmed))
 	if err != nil {
-		return nil, pkgmigration.Target{}, "", errors.Annotate(err, "invalid migration definition JSON")
+		return nil, pkgmigration.Target{}, "", nil, errors.Annotate(err, "invalid migration definition JSON")
 	}
 	if err := json.Unmarshal(stdJson, &payload); err != nil {
-		return nil, pkgmigration.Target{}, "", errors.Annotate(err, "invalid migration definition JSON")
+		return nil, pkgmigration.Target{}, "", nil, errors.Annotate(err, "invalid migration definition JSON")
 	}
 	if len(payload.Sources) == 0 {
-		return nil, pkgmigration.Target{}, "", errors.New("migration definition must include at least one source")
+		return nil, pkgmigration.Target{}, "", nil, errors.New("migration definition must include at least one source")
 	}
 	if payload.Target == nil {
-		return nil, pkgmigration.Target{}, "", errors.New("migration definition must include the target block")
+		return nil, pkgmigration.Target{}, "", nil, errors.New("migration definition must include the target block")
 	}
 	mode, err := parseMigrationMode(payload.Mode)
 	if err != nil {
-		return nil, pkgmigration.Target{}, "", err
+		return nil, pkgmigration.Target{}, "", nil, err
 	}
-	return payload.Sources, *payload.Target, mode, nil
+	return payload.Sources, *payload.Target, mode, payload.BinlogFilterRule, nil
 }
 
 func parseMigrationMode(value string) (pkgmigration.TaskMode, error) {
