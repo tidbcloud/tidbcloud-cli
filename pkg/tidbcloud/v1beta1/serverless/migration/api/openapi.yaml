@@ -403,6 +403,21 @@ components:
         '@type':
           type: string
       type: object
+    BinlogFilterRule:
+      description: Binlog filter rules applied during incremental replication.
+      properties:
+        ignoreEvent:
+          description: "Event types to ignore (e.g., \"truncate table\", \"drop database\"\
+            )."
+          items:
+            type: string
+          type: array
+        ignoreSql:
+          description: SQL patterns to ignore.
+          items:
+            type: string
+          type: array
+      type: object
     ConnProfile:
       properties:
         connType:
@@ -495,6 +510,7 @@ components:
         migrations:
         - mode: "{}"
           migrationId: migrationId
+          binlogFilterRule: "{}"
           createTime: 2000-01-23T04:56:07.000+00:00
           displayName: displayName
           subTasks:
@@ -516,6 +532,7 @@ components:
           targetUser: targetUser
         - mode: "{}"
           migrationId: migrationId
+          binlogFilterRule: "{}"
           createTime: 2000-01-23T04:56:07.000+00:00
           displayName: displayName
           subTasks:
@@ -580,6 +597,7 @@ components:
       example:
         mode: "{}"
         migrationId: migrationId
+        binlogFilterRule: "{}"
         createTime: 2000-01-23T04:56:07.000+00:00
         displayName: displayName
         subTasks:
@@ -632,6 +650,11 @@ components:
           allOf:
           - $ref: '#/components/schemas/Migration.State'
           description: The current state of the migration.
+          type: object
+        binlogFilterRule:
+          allOf:
+          - $ref: '#/components/schemas/BinlogFilterRule'
+          description: Global binlog filter rule applied to the migration.
           type: object
       type: object
     Migration.State:
@@ -778,6 +801,11 @@ components:
           - $ref: '#/components/schemas/TaskMode'
           description: The migration mode (full+incremental or incremental-only).
           type: object
+        binlogFilterRule:
+          allOf:
+          - $ref: '#/components/schemas/BinlogFilterRule'
+          description: Global binlog filter rule applied to all migrated tables.
+          type: object
       required:
       - displayName
       - mode
@@ -806,6 +834,11 @@ components:
           allOf:
           - $ref: '#/components/schemas/TaskMode'
           description: The migration mode (full+incremental or incremental-only).
+          type: object
+        binlogFilterRule:
+          allOf:
+          - $ref: '#/components/schemas/BinlogFilterRule'
+          description: Global binlog filter rule applied to all migrated tables.
           type: object
       required:
       - displayName
