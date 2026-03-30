@@ -69,11 +69,13 @@ func (suite *CreateMigrationSuite) TestCreateMigration() {
 		ctx,
 		clusterID,
 		mockTool.MatchedBy(func(body *pkgmigration.MigrationServiceCreateMigrationBody) bool {
+			hasImportMode := body != nil && body.ImportMode != nil && *body.ImportMode == pkgmigration.IMPORTMODE_IMPORT_MODE_LOGICAL
 			return body != nil &&
 				body.DisplayName == displayName &&
 				body.Mode == pkgmigration.TASKMODE_ALL &&
 				len(body.Sources) == 1 &&
-				body.Target.User == "migration_user"
+				body.Target.User == "migration_user" &&
+				hasImportMode
 		}),
 	).Return(&pkgmigration.Migration{MigrationId: aws.String(migrationID)}, nil)
 
@@ -98,6 +100,8 @@ func (suite *CreateMigrationSuite) TestCreateMigrationInvalidInputs() {
 	blankPath := suite.writeTempConfig(" ")
 	invalidJSONPath := suite.writeTempConfig("{invalid")
 	invalidModePath := suite.writeTempConfig(`{ "mode": "invalid", "target": {"user":"u","password":"p"}, "sources": [{"sourceType":"MYSQL","connProfile":{"connType":"PUBLIC","host":"h","port":3306,"user":"u","password":"p"}}] }`)
+	invalidImportModePath := suite.writeTempConfig(`{ "mode": "ALL", "importMode": "nope", "target": {"user":"u","password":"p"}, "sources": [{"sourceType":"MYSQL","connProfile":{"connType":"PUBLIC","host":"h","port":3306,"user":"u","password":"p"}}] }`)
+	importModeWithIncrementalPath := suite.writeTempConfig(`{ "mode": "INCREMENTAL", "importMode": "logical", "target": {"user":"u","password":"p"}, "sources": [{"sourceType":"MYSQL","connProfile":{"connType":"PUBLIC","host":"h","port":3306,"user":"u","password":"p"}}] }`)
 
 	tests := []struct {
 		name        string
@@ -123,6 +127,16 @@ func (suite *CreateMigrationSuite) TestCreateMigrationInvalidInputs() {
 			name:        "invalid mode",
 			args:        []string{"--cluster-id", "c1", "--display-name", "name", "--config-file", invalidModePath},
 			errContains: "invalid mode",
+		},
+		{
+			name:        "invalid importMode",
+			args:        []string{"--cluster-id", "c1", "--display-name", "name", "--config-file", invalidImportModePath},
+			errContains: "invalid importMode",
+		},
+		{
+			name:        "importMode with incremental mode",
+			args:        []string{"--cluster-id", "c1", "--display-name", "name", "--config-file", importModeWithIncrementalPath},
+			errContains: "importMode is only applicable for mode=ALL",
 		},
 	}
 
@@ -152,6 +166,7 @@ func (suite *CreateMigrationSuite) writeTempConfig(content string) string {
 func validMigrationConfig() string {
 	return `{
   "mode": "ALL",
+  "importMode": "IMPORT_MODE_LOGICAL",
   "target": {
     "user": "migration_user",
     "password": "Passw0rd!"
