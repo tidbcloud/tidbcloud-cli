@@ -152,6 +152,10 @@ func (suite *CreateMigrationSuite) writeTempConfig(content string) string {
 func validMigrationConfig() string {
 	return `{
   "mode": "ALL",
+  "binlogFilterRule": {
+    "ignoreEvent": ["truncate table", "drop database"],
+    "ignoreSql": ["^DROP\\s+TABLE.*", "^TRUNCATE\\s+TABLE.*"]
+  },
   "target": {
     "user": "migration_user",
     "password": "Passw0rd!"
@@ -169,6 +173,19 @@ func validMigrationConfig() string {
     }
   ]
 }`
+}
+
+func TestParseMigrationDefinition_BinlogFilterRule(t *testing.T) {
+	assert := require.New(t)
+
+	sources, target, mode, binlogFilterRule, err := parseMigrationDefinition(validMigrationConfig())
+	assert.NoError(err)
+	assert.Equal(pkgmigration.TASKMODE_ALL, mode)
+	assert.NotNil(binlogFilterRule)
+	assert.Equal([]string{"truncate table", "drop database"}, binlogFilterRule.IgnoreEvent)
+	assert.Equal([]string{`^DROP\s+TABLE.*`, `^TRUNCATE\s+TABLE.*`}, binlogFilterRule.IgnoreSql)
+	assert.NotEmpty(sources)
+	assert.Equal("migration_user", target.User)
 }
 
 func TestCreateMigrationSuite(t *testing.T) {
