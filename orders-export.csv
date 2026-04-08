@@ -1,9 +1,0 @@
-order_no,customer_name,product_name,quantity,unit_price,order_status,created_at
-ORD-1001,Alice,Mechanical Keyboard,1,89.99,paid,2026-03-12 06:21:27
-ORD-1002,Bob,Wireless Mouse,2,29.50,paid,2026-03-12 06:21:27
-ORD-1003,Carol,USB-C Dock,1,119.00,shipped,2026-03-12 06:21:27
-ORD-1004,David,27-inch Monitor,1,249.00,pending,2026-03-12 06:21:27
-ORD-1005,Eve,Laptop Stand,3,35.00,paid,2026-03-12 06:21:27
-ORD-1006,Frank,Webcam,1,59.90,cancelled,2026-03-12 06:21:27
-ORD-1007,Grace,Noise Cancelling Headphones,1,199.00,shipped,2026-03-12 06:21:27
-ORD-1008,Helen,External SSD 1TB,2,129.00,paid,2026-03-12 06:21:27
