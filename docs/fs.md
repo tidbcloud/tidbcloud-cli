@@ -1,114 +1,114 @@
-# TiDB Cloud FS (ticloud fs) 使用指南
+# TiDB Cloud FS (ticloud fs) User Guide
 
-**TiDB Cloud FS** 是 TiDB Cloud 提供的托管文件存储服务，为 TiDB 实例提供统一的文件系统抽象。你可以像操作本地文件系统一样在 TiDB Cloud 中存储、读取和管理文件，同时支持 SQL 查询、密钥保险箱（Vault）以及 FUSE 挂载等高级能力。
+**TiDB Cloud FS** is a managed file storage service provided by TiDB Cloud that offers a unified filesystem abstraction for TiDB instances. You can store, read, and manage files in TiDB Cloud just like a local filesystem, with advanced capabilities such as SQL queries, a secret vault, and FUSE mount support.
 
-**`ticloud fs`** 是 TiDB Cloud CLI 中用于操作 TiDB Cloud FS 的命令组，支持上传下载、目录浏览、SQL 执行、密钥管理以及 FUSE 挂载等功能。
+**`ticloud fs`** is the command group in the TiDB Cloud CLI for operating TiDB Cloud FS, supporting upload/download, directory browsing, SQL execution, secret management, and FUSE mount.
 
 ---
 
-## 前置依赖：关联一个 TiDB 实例
+## Prerequisites: Associate a TiDB Instance
 
-FS 的数据存储依赖于一个具体的 TiDB 实例。根据你拥有的实例类型，需要将其 ID 绑定到 CLI 配置中，并完成一次性的 FS 初始化（`init`）。
+FS data storage depends on a specific TiDB instance. Depending on the type of instance you have, you need to bind its ID to the CLI configuration and complete a one-time FS initialization (`init`).
 
-### 使用 Serverless TiDB
+### Using Serverless TiDB
 
-如果你已经有一个 **TiDB Cloud Serverless** 集群（可以通过 [TiDB Cloud Web Console](https://tidbcloud.com/) 创建，也可以使用 `ticloud serverless create` 命令创建），请按以下步骤配置：
+If you already have a **TiDB Cloud Serverless** cluster (created via the [TiDB Cloud Web Console](https://tidbcloud.com/) or the `ticloud serverless create` command), configure it as follows:
 
-1. **配置鉴权**
+1. **Configure Authentication**
 
-   Serverless 集群受 TiDB Cloud 平台统一管控，访问其 FS 服务时必须提供有效的平台鉴权信息。你可以选择以下任一方式：
+   Serverless clusters are managed by the TiDB Cloud platform, so you must provide valid platform credentials to access their FS service. Choose one of the following methods:
 
-   - **OAuth 登录（推荐）**
+   - **OAuth Login (Recommended)**
 
      ```bash
      ticloud auth login
      ```
 
-   - **API Key 鉴权**
+   - **API Key Authentication**
 
      ```bash
      ticloud config set public-key <your-public-key>
      ticloud config set private-key <your-private-key>
      ```
 
-2. **配置 cluster-id**
+2. **Configure cluster-id**
 
    ```bash
    ticloud config set fs.cluster-id <your-serverless-cluster-id>
    ```
 
-3. **初始化 FS**
+3. **Initialize FS**
 
    ```bash
    ticloud fs init --user admin --password <your-password>
    ```
 
-   > 每个新的 Serverless 集群在首次使用 FS 前，都必须执行 `init` 来为其开通 FS 租户。
+   > Every new Serverless cluster must run `init` before using FS for the first time to provision the FS tenant.
 
-### 使用 Zero TiDB
+### Using Zero TiDB
 
-如果你使用的是 **TiDB Zero** 实例，配置方式如下。如果你还不了解 TiDB Zero，可以访问 [https://zero.tidbcloud.com/](https://zero.tidbcloud.com/) 了解更多。
+If you are using a **TiDB Zero** instance, configure it as follows. If you are not familiar with TiDB Zero, visit [https://zero.tidbcloud.com/](https://zero.tidbcloud.com/) to learn more.
 
-1. **配置 zero-instance-id**
+1. **Configure zero-instance-id**
 
    ```bash
    ticloud config set fs.zero-instance-id <your-zero-instance-id>
    ```
 
-   TiDB Zero 采用独立的部署与访问模型，**不需要**执行 `ticloud auth login`，也**不需要**配置 `public-key` / `private-key`。
+   TiDB Zero uses an independent deployment and access model. You **do not** need to run `ticloud auth login` or configure `public-key` / `private-key`.
 
-2. **初始化 FS**
+2. **Initialize FS**
 
    ```bash
    ticloud fs init --user admin --password <your-password>
    ```
 
-   > 与 Serverless 相同，新的 Zero 实例也需要执行一次 `init` 来开通 FS 租户。
+   > Like Serverless, every new Zero instance must run `init` once to provision the FS tenant.
 
 ---
 
-## 路径格式说明
+## Path Format
 
-FS 使用 `:/` 前缀表示远程路径：
+FS uses the `:/` prefix to denote remote paths:
 
-- `:/` — 远程根目录
-- `:/path/to/file.txt` — 远程文件路径
+- `:/` — Remote root directory
+- `:/path/to/file.txt` — Remote file path
 
 ---
 
-## 子命令手册
+## Subcommand Manual
 
-### 初始化与配置
+### Initialization and Configuration
 
-在使用任何文件操作之前，必须先为关联的数据库创建 FS 租户。这一步只需要执行一次。
+Before performing any file operations, you must create an FS tenant for the associated database. This step only needs to be performed once.
 
 #### `ticloud fs init`
 
-为当前关联的数据库初始化 FS 租户，每个新数据库在首次使用 FS 前必须执行一次。
+Initialize the FS tenant for the currently associated database. This must be run before using FS for the first time on a new database.
 
 ```bash
 ticloud fs init --user admin --password secret
 ```
 
-### 基础文件操作
+### Basic File Operations
 
-`ticloud fs` 提供了一组类似 Unix 文件系统的命令，用于管理远程文件和目录。你可以像操作本地文件一样进行上传、下载、浏览和删除。
+`ticloud fs` provides a set of Unix-like filesystem commands for managing remote files and directories. You can upload, download, browse, and delete files as if they were local.
 
 #### `ticloud fs ls`
 
-列出远程目录内容。支持 `-l` 查看详情。
+List remote directory contents. Supports `-l` for detailed view.
 
 ```bash
-# 查看根目录
+# List root directory
 ticloud fs ls :/
 
-# 查看某个文件夹，并显示文件大小等详细信息
+# List a folder with size details
 ticloud fs ls -l :/myfolder
 ```
 
 #### `ticloud fs cat`
 
-显示远程文件内容，类似于 Unix 的 `cat` 命令，适合快速查看文本文件。
+Display remote file contents, similar to the Unix `cat` command. Useful for quickly viewing text files.
 
 ```bash
 ticloud fs cat :/readme.txt
@@ -116,25 +116,25 @@ ticloud fs cat :/readme.txt
 
 #### `ticloud fs cp`
 
-复制文件。支持本地↔远程、远程↔远程、从标准输入上传，以及断点续传大文件。
+Copy files. Supports local↔remote, remote↔remote, stdin upload, and resuming large file transfers.
 
 ```bash
-# 上传本地文件到远程目录
+# Upload a local file to remote
 ticloud fs cp local.txt :/remote/
 
-# 从远程下载文件到当前目录
+# Download a remote file to current directory
 ticloud fs cp :/remote/file.txt .
 
-# 通过管道将标准输入内容写入远程文件
+# Upload from stdin via pipe
 echo "hello" | ticloud fs cp - :/file.txt
 
-# 断点续传大文件，适合网络不稳定场景
+# Resume a large file upload (useful for unstable networks)
 ticloud fs cp --resume large.zip :/remote/
 ```
 
 #### `ticloud fs mkdir`
 
-创建远程目录，支持多级路径。
+Create a remote directory. Supports nested paths.
 
 ```bash
 ticloud fs mkdir :/mydir
@@ -142,7 +142,7 @@ ticloud fs mkdir :/mydir
 
 #### `ticloud fs mv`
 
-移动或重命名远程文件/目录。
+Move or rename remote files/directories.
 
 ```bash
 ticloud fs mv :/oldname :/newname
@@ -150,7 +150,7 @@ ticloud fs mv :/oldname :/newname
 
 #### `ticloud fs rm`
 
-删除远程文件或空目录。
+Delete remote files or empty directories.
 
 ```bash
 ticloud fs rm :/file.txt
@@ -158,19 +158,19 @@ ticloud fs rm :/file.txt
 
 #### `ticloud fs stat`
 
-查看远程文件或目录的元数据，例如大小、修改时间等。
+View remote file or directory metadata, such as size and modification time.
 
 ```bash
 ticloud fs stat :/file.txt
 ```
 
-### 搜索与查询
+### Search and Query
 
-除了基础文件操作，`ticloud fs` 还支持直接在远程存储中搜索文件内容和执行 SQL 查询，方便你快速定位信息或进行数据分析。
+In addition to basic file operations, `ticloud fs` supports searching file contents and executing SQL queries directly on remote storage, making it easy to locate information or perform data analysis.
 
 #### `ticloud fs grep`
 
-在远程文件中搜索匹配内容。支持 `--limit` 限制结果数量。
+Search for matching content in remote files. Supports `--limit` to restrict the number of results.
 
 ```bash
 ticloud fs grep "TODO" :/project --limit 20
@@ -178,55 +178,55 @@ ticloud fs grep "TODO" :/project --limit 20
 
 #### `ticloud fs find`
 
-按条件查找远程文件。支持 `-name`、`-size`、`-newer` 等过滤条件，类似 Unix 的 `find` 命令。
+Find remote files by criteria. Supports `-name`, `-size`, `-newer` filters, similar to the Unix `find` command.
 
 ```bash
-# 按文件名后缀查找
+# Find by file extension
 ticloud fs find :/ -name "*.go"
 
-# 查找大于 1MB 的文件
+# Find files larger than 1MB
 ticloud fs find :/ -size +1M
 ```
 
 #### `ticloud fs sql`
 
-在 FS 后端执行 SQL 查询，可以直接对存储的数据进行结构化查询。
+Execute SQL queries against the FS backend for structured queries on stored data.
 
 ```bash
 ticloud fs sql -q "SELECT 1"
 ```
 
-### Secret 管理
+### Secret Management
 
-TiDB Cloud FS 内置了一个密钥保险箱（Vault），用于安全地存储敏感信息，例如数据库连接串、API Key 等。你可以通过子命令对这些密钥进行增删改查，还可以为第三方 Agent 颁发受限访问令牌。
+TiDB Cloud FS includes a built-in secret vault for securely storing sensitive information such as database connection strings and API keys. You can manage these secrets via subcommands, and issue scoped capability tokens for third-party agents.
 
 #### `ticloud fs secret set`
 
-创建或更新密钥。字段值可以直接赋值、从文件读取（`@file`）或从标准输入读取（`-`）。
+Create or update a secret. Field values can be set directly, read from a file (`@file`), or read from stdin (`-`).
 
 ```bash
-# 直接设置字段
+# Set fields directly
 ticloud fs secret set myapp DATABASE_URL=mysql://...
 
-# 从文件读取字段值，并从标准输入读取密码
+# Read a field from file and password from stdin
 ticloud fs secret set myapp key=@secret.txt password=-
 ```
 
 #### `ticloud fs secret get`
 
-读取密钥或指定字段。支持 `--json` 和 `--env` 输出格式。
+Read a secret or a specific field. Supports `--json` and `--env` output formats.
 
 ```bash
-# 读取整个密钥
+# Read the entire secret
 ticloud fs secret get myapp
 
-# 读取指定字段，并以 JSON 格式输出
+# Read a specific field and output as JSON
 ticloud fs secret get myapp/password --json
 ```
 
 #### `ticloud fs secret exec`
 
-将密钥字段作为环境变量注入后执行指定命令，常用于在本地脚本或 CI 流程中安全地使用密钥。
+Execute a command with secret fields injected as environment variables. Commonly used in local scripts or CI pipelines to securely use secrets.
 
 ```bash
 ticloud fs secret exec myapp -- ./run.sh
@@ -234,7 +234,7 @@ ticloud fs secret exec myapp -- ./run.sh
 
 #### `ticloud fs secret ls`
 
-列出所有密钥。支持 `--json` 输出。
+List all secrets. Supports `--json` output.
 
 ```bash
 ticloud fs secret ls
@@ -242,7 +242,7 @@ ticloud fs secret ls
 
 #### `ticloud fs secret rm`
 
-删除指定密钥。
+Delete a specific secret.
 
 ```bash
 ticloud fs secret rm myapp
@@ -250,7 +250,7 @@ ticloud fs secret rm myapp
 
 #### `ticloud fs secret grant`
 
-为指定 Agent 颁发受限能力令牌，限制其只能访问特定的密钥范围。需要指定 `--agent` 和 `--ttl`。
+Issue a scoped capability token for a specific agent, restricting access to certain secrets. Requires `--agent` and `--ttl`.
 
 ```bash
 ticloud fs secret grant --agent myagent --ttl 1h myapp/password
@@ -258,7 +258,7 @@ ticloud fs secret grant --agent myagent --ttl 1h myapp/password
 
 #### `ticloud fs secret revoke`
 
-撤销一个已颁发的能力令牌，使其立即失效。
+Revoke an issued capability token, invalidating it immediately.
 
 ```bash
 ticloud fs secret revoke tok_abc123
@@ -266,35 +266,35 @@ ticloud fs secret revoke tok_abc123
 
 #### `ticloud fs secret audit`
 
-查询密钥审计日志，追踪谁在什么时间访问了哪些密钥。支持按 `--secret`、`--agent`、`--since` 过滤，以及 `--limit` 限制条数。
+Query the secret audit log to track who accessed which secrets and when. Supports filtering by `--secret`, `--agent`, `--since`, and limiting results with `--limit`.
 
 ```bash
-# 查看最近的 50 条审计记录
+# View the latest 50 audit events
 ticloud fs secret audit --limit 50
 
-# 查看某个密钥最近 24 小时内的访问记录
+# View audit events for a secret in the last 24 hours
 ticloud fs secret audit --secret myapp --since 24h
 ```
 
-### 交互式 Shell
+### Interactive Shell
 
-如果你需要频繁执行多条 FS 命令，可以使用交互式 Shell，避免每次都要输入完整命令前缀。
+If you need to execute multiple FS commands frequently, you can use the interactive shell to avoid typing the full command prefix each time.
 
 #### `ticloud fs shell`
 
-启动交互式 FS Shell。支持 `cd`、`pwd`、`ls`、`cat`、`cp`、`mkdir`、`mv`、`rm`、`sql`、`stat`、`help`、`exit` 等命令。提示符为 `ticloud:fs>`。
+Launch the interactive FS Shell. Supports commands such as `cd`, `pwd`, `ls`, `cat`, `cp`, `mkdir`, `mv`, `rm`, `sql`, `stat`, `help`, `exit`. The prompt is `ticloud:fs>`.
 
 ```bash
 ticloud fs shell
 ```
 
-### FUSE 挂载
+### FUSE Mount
 
-通过 FUSE 挂载，你可以将远程 FS 映射为本地目录，直接使用系统自带的文件管理器或命令行工具访问。
+Via FUSE mount, you can map the remote FS to a local directory and access it using the system file manager or standard command-line tools.
 
 #### `ticloud fs mount`
 
-将远程 FS 挂载到本地目录。当前版本默认只读。支持 `--debug`（开启调试日志）和 `--allow-other`（允许其他用户访问）。
+Mount the remote FS to a local directory. The current version defaults to read-only. Supports `--debug` (enable debug logging) and `--allow-other` (allow other users to access).
 
 ```bash
 ticloud fs mount /mnt/tidbcloud
@@ -302,7 +302,7 @@ ticloud fs mount /mnt/tidbcloud
 
 #### `ticloud fs umount`
 
-卸载本地挂载点，安全断开与远程 FS 的连接。
+Unmount the local mount point, safely disconnecting from the remote FS.
 
 ```bash
 ticloud fs umount /mnt/tidbcloud
@@ -310,29 +310,29 @@ ticloud fs umount /mnt/tidbcloud
 
 ---
 
-## 配置项速查
+## Configuration Quick Reference
 
-| 配置项 | 说明 | 默认值 |
-|--------|------|--------|
-| `fs.cluster-id` | 关联的 Serverless 集群 ID | — |
-| `fs.zero-instance-id` | 关联的 Zero 实例 ID | — |
-| `fs-endpoint` | FS 服务端点地址 | `https://fs.tidbapi.com/` |
-| `public-key` / `private-key` | Serverless 场景下的 API Key 鉴权 | — |
+| Property | Description | Default |
+|----------|-------------|---------|
+| `fs.cluster-id` | Associated Serverless cluster ID | — |
+| `fs.zero-instance-id` | Associated Zero instance ID | — |
+| `fs-endpoint` | FS server endpoint | `https://fs.tidbapi.com/` |
+| `public-key` / `private-key` | API Key authentication for Serverless | — |
 
-也支持通过环境变量覆盖：
+You can also override these via environment variables:
 
-- `TICLOUD_FS_ENDPOINT` — 覆盖 `fs-endpoint`
-- `TICLOUD_FS_CLUSTER_ID` — 覆盖 `fs.cluster-id`
-- `TICLOUD_FS_ZERO_INSTANCE_ID` — 覆盖 `fs.zero-instance-id`
+- `TICLOUD_FS_ENDPOINT` — overrides `fs-endpoint`
+- `TICLOUD_FS_CLUSTER_ID` — overrides `fs.cluster-id`
+- `TICLOUD_FS_ZERO_INSTANCE_ID` — overrides `fs.zero-instance-id`
 
 ---
 
-## 常见问题
+## FAQ
 
-**Q: 执行 `ticloud fs ls :/` 时提示 `tenant not found`？**
+**Q: Running `ticloud fs ls :/` returns `tenant not found`?**
 
-A: 说明当前关联的数据库尚未初始化 FS。请运行 `ticloud fs init --user <user> --password <password>` 完成初始化。
+A: The associated database has not been initialized for FS yet. Please run `ticloud fs init --user <user> --password <password>` to complete initialization.
 
-**Q: Serverless 集群报 401 Unauthorized？**
+**Q: Serverless cluster returns 401 Unauthorized?**
 
-A: 请确认已完成 `ticloud auth login` 或正确配置了 `public-key` / `private-key`。
+A: Please confirm you have completed `ticloud auth login` or correctly configured `public-key` / `private-key`.
