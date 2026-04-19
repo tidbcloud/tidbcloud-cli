@@ -30,6 +30,9 @@ const (
 	OAuthClientID      string = "oauth-client-id"
 	OAuthClientSecret  string = "oauth-client-secret"
 	TelemetryEnabled   string = "telemetry-enabled"
+	FSEndpoint         string = "fs-endpoint"
+	FSClusterID        string = "fs.cluster-id"
+	FSZeroInstanceID   string = "fs.zero-instance-id"
 
 	// shall not be set by user
 	TokenExpiredAt string = "token-expired-at"
@@ -42,7 +45,7 @@ func GlobalProperties() []string {
 }
 
 func ProfileProperties() []string {
-	return []string{PublicKey, PrivateKey, ServerlessEndpoint, IAMEndpoint, OAuthEndpoint, OAuthClientID, OAuthClientSecret, TelemetryEnabled}
+	return []string{PublicKey, PrivateKey, ServerlessEndpoint, IAMEndpoint, OAuthEndpoint, OAuthClientID, OAuthClientSecret, TelemetryEnabled, FSEndpoint, FSClusterID, FSZeroInstanceID}
 }
 
 func ValidateApiUrl(value string) (*url.URL, error) {

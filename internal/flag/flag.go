@@ -134,6 +134,11 @@ const (
 	MigrationConfigFile string = "config-file"
 	MigrationMode       string = "mode"
 	DryRun              string = "dry-run"
+
+	// FS flags
+	FSEndpoint       string = "fs-endpoint"
+	FSClusterID      string = "fs.cluster-id"
+	FSZeroInstanceID string = "fs.zero-instance-id"
 )
 
 const OutputHelp = "Output format, one of [\"human\" \"json\"]. For the complete result, please use json format."
