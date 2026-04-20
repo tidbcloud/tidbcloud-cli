@@ -156,8 +156,8 @@ func secretGetCmd(h *internal.Helper) *cobra.Command {
 
 func secretExecCmd(h *internal.Helper) *cobra.Command {
 	return &cobra.Command{
-		Use:   "exec <name> -- <command...>",
-		Short: "Run a command with secret fields injected as env vars",
+		Use:     "exec <name> -- <command...>",
+		Short:   "Run a command with secret fields injected as env vars",
 		Example: `  ticloud fs secret exec myapp -- ./run.sh`,
 		Args:    cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -271,8 +271,8 @@ func secretGrantCmd(h *internal.Helper) *cobra.Command {
 		tokenOnly bool
 	)
 	var cmd = &cobra.Command{
-		Use:   "grant --agent <id> --ttl <duration> [--task <id>] <scope...>",
-		Short: "Issue a scoped capability token",
+		Use:     "grant --agent <id> --ttl <duration> [--task <id>] <scope...>",
+		Short:   "Issue a scoped capability token",
 		Example: `  ticloud fs secret grant --agent myagent --ttl 1h myapp/password`,
 		Args:    cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

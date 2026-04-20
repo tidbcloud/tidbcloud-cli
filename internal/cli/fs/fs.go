@@ -217,4 +217,3 @@ func (rp RemotePath) String() string {
 func IsRemote(s string) bool {
 	return strings.HasPrefix(s, ":")
 }
-
