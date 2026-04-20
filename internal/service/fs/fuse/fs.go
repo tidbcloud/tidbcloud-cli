@@ -1,3 +1,5 @@
+//go:build !windows
+
 // Copyright 2026 PingCAP, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -251,7 +253,9 @@ func (f *ReadOnlyFS) ReadDir(cancel <-chan struct{}, in *gofuse.ReadIn, out *gof
 		mode uint32
 	}
 
-	var items []dirItem
+	items := make([]dirItem, 0, 2+len(realEntries))
+	items = append(items, dirItem{".", in.NodeId, syscall.S_IFDIR | 0o555})
+	items = append(items, dirItem{"..", dotdotIno, syscall.S_IFDIR | 0o555})
 	for _, e := range realEntries {
 		if e.Name == "" || e.Name == ":" {
 			continue
@@ -316,7 +320,9 @@ func (f *ReadOnlyFS) ReadDirPlus(cancel <-chan struct{}, in *gofuse.ReadIn, out 
 		mode uint32
 	}
 
-	var items []dirItem
+	items := make([]dirItem, 0, 2+len(realEntries))
+	items = append(items, dirItem{".", in.NodeId, syscall.S_IFDIR | 0o555})
+	items = append(items, dirItem{"..", dotdotIno, syscall.S_IFDIR | 0o555})
 	for _, e := range realEntries {
 		if e.Name == "" || e.Name == ":" {
 			continue

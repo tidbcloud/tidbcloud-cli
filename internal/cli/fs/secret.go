@@ -188,6 +188,7 @@ func secretExecCmd(h *internal.Helper) *cobra.Command {
 				return suggestInitIfTenantNotFound(fmt.Errorf("get secret: %w", err))
 			}
 
+			//nolint:gosec // user-provided command execution is intentional
 			c := exec.Command(cmdArgs[0], cmdArgs[1:]...)
 			c.Stdin = os.Stdin
 			c.Stdout = h.IOStreams.Out
