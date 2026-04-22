@@ -134,22 +134,27 @@ func newClient(cmd *cobra.Command) (*fs.Client, error) {
 	}
 
 	// Build HTTP transport using the same auth logic as the root CLI.
+	// For Zero instances, skip auth entirely.
 	var transport http.RoundTripper
-	publicKey, privateKey := config.GetPublicKey(), config.GetPrivateKey()
-	if publicKey != "" && privateKey != "" {
-		transport = cloud.NewDigestTransport(publicKey, privateKey)
+	if clusterID == "" && zeroInstanceID != "" {
+		transport = http.DefaultTransport
 	} else {
-		if err := config.ValidateToken(); err != nil {
-			return nil, errors.New("no valid auth found: please login with 'ticloud auth login' or configure API keys with 'ticloud config set public-key <key>' and 'ticloud config set private-key <key>'")
-		}
-		token, err := config.GetAccessToken()
-		if err != nil {
-			if errors.Is(err, keyring.ErrNotFound) || errors.Is(err, store.ErrNotSupported) {
-				return nil, errors.New("no valid auth found: please login with 'ticloud auth login' or configure API keys")
+		publicKey, privateKey := config.GetPublicKey(), config.GetPrivateKey()
+		if publicKey != "" && privateKey != "" {
+			transport = cloud.NewDigestTransport(publicKey, privateKey)
+		} else {
+			if err := config.ValidateToken(); err != nil {
+				return nil, errors.New("no valid auth found: please login with 'ticloud auth login' or configure API keys with 'ticloud config set public-key <key>' and 'ticloud config set private-key <key>'")
 			}
-			return nil, errors.Trace(err)
+			token, err := config.GetAccessToken()
+			if err != nil {
+				if errors.Is(err, keyring.ErrNotFound) || errors.Is(err, store.ErrNotSupported) {
+					return nil, errors.New("no valid auth found: please login with 'ticloud auth login' or configure API keys")
+				}
+				return nil, errors.Trace(err)
+			}
+			transport = cloud.NewBearTokenTransport(token)
 		}
-		transport = cloud.NewBearTokenTransport(token)
 	}
 
 	httpClient := &http.Client{
