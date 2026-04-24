@@ -63,23 +63,31 @@ func GetResponse(url string, debug bool) (*http.Response, error) {
 
 // CreateFile creates a file if it does not exist
 func CreateFile(path, fileName string) (*os.File, error) {
-	filePath, err := safeDownloadPath(path, fileName)
+	filePath, err := safeDownloadPath(fileName)
 	if err != nil {
 		return nil, err
 	}
-	if _, err := os.Lstat(filePath); err == nil {
-		return nil, fmt.Errorf("file already exists")
-	} else if !os.IsNotExist(err) {
-		return nil, err
+
+	if path == "" {
+		path = "."
 	}
-	file, err := os.Create(filePath)
+	root, err := os.OpenRoot(path)
 	if err != nil {
 		return nil, err
+	}
+	defer root.Close()
+
+	file, err := root.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
+	if err != nil {
+		if os.IsExist(err) {
+			return nil, fmt.Errorf("file already exists")
+		}
+		return nil, fmt.Errorf("download destination %q cannot be created: %w", fileName, err)
 	}
 	return file, nil
 }
 
-func safeDownloadPath(basePath, fileName string) (string, error) {
+func safeDownloadPath(fileName string) (string, error) {
 	if fileName == "" {
 		return "", downloadDestinationError(fileName, "cannot be empty")
 	}
@@ -93,38 +101,12 @@ func safeDownloadPath(basePath, fileName string) (string, error) {
 		return "", downloadDestinationError(fileName, "contains unsupported characters")
 	}
 
-	baseAbs, err := filepath.Abs(basePath)
-	if err != nil {
-		return "", err
-	}
-	baseClean := filepath.Clean(baseAbs)
-	baseReal, err := filepath.EvalSymlinks(baseClean)
-	if err != nil {
-		return "", err
-	}
-
-	candidate := filepath.Clean(filepath.Join(baseClean, fileName))
-	rel, err := filepath.Rel(baseClean, candidate)
-	if err != nil {
-		return "", err
-	}
-	if rel == ".." || strings.HasPrefix(rel, ".."+string(os.PathSeparator)) || filepath.IsAbs(rel) {
+	clean := filepath.Clean(fileName)
+	if clean == ".." || strings.HasPrefix(clean, ".."+string(os.PathSeparator)) || filepath.IsAbs(clean) {
 		return "", downloadDestinationError(fileName, "is outside the output path")
 	}
 
-	parentReal, err := filepath.EvalSymlinks(filepath.Dir(candidate))
-	if err != nil {
-		return "", err
-	}
-	parentRel, err := filepath.Rel(baseReal, parentReal)
-	if err != nil {
-		return "", err
-	}
-	if parentRel == ".." || strings.HasPrefix(parentRel, ".."+string(os.PathSeparator)) || filepath.IsAbs(parentRel) {
-		return "", downloadDestinationError(fileName, "is outside the output path")
-	}
-
-	return candidate, nil
+	return clean, nil
 }
 
 func downloadDestinationError(fileName, reason string) error {

@@ -101,6 +101,54 @@ func TestCreateFileRejectsUnsupportedDestinations(t *testing.T) {
 	}
 }
 
+func TestCreateFileDoesNotOverwriteExistingDestination(t *testing.T) {
+	base := t.TempDir()
+	path := filepath.Join(base, "a.sql.gz")
+	if err := os.WriteFile(path, []byte("existing"), 0644); err != nil {
+		t.Fatalf("WriteFile() error = %v", err)
+	}
+
+	file, err := CreateFile(base, "a.sql.gz")
+	if err == nil {
+		file.Close()
+		t.Fatalf("CreateFile() succeeded for existing destination")
+	}
+
+	content, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("ReadFile() error = %v", err)
+	}
+	if string(content) != "existing" {
+		t.Fatalf("existing destination was overwritten: %q", string(content))
+	}
+}
+
+func TestCreateFileUsesCurrentDirectoryWhenBaseIsEmpty(t *testing.T) {
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Getwd() error = %v", err)
+	}
+	base := t.TempDir()
+	if err := os.Chdir(base); err != nil {
+		t.Fatalf("Chdir() error = %v", err)
+	}
+	t.Cleanup(func() {
+		if err := os.Chdir(wd); err != nil {
+			t.Fatalf("restore working directory: %v", err)
+		}
+	})
+
+	file, err := CreateFile("", "a.sql.gz")
+	if err != nil {
+		t.Fatalf("CreateFile() error = %v", err)
+	}
+	file.Close()
+
+	if _, err := os.Stat(filepath.Join(base, "a.sql.gz")); err != nil {
+		t.Fatalf("expected file in current directory: %v", err)
+	}
+}
+
 func TestCreateFileRejectsSymlinkedParentOutsideBase(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("symlink behavior requires additional privileges on Windows")
