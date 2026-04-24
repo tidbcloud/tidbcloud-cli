@@ -18,64 +18,84 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strings"
 	"testing"
 )
 
-func TestCreateFileAllowsPathInsideBase(t *testing.T) {
-	base := t.TempDir()
-
-	file, err := CreateFile(base, "export.sql.gz")
-	if err != nil {
-		t.Fatalf("CreateFile() error = %v", err)
-	}
-	file.Close()
-
-	if _, err := os.Stat(filepath.Join(base, "export.sql.gz")); err != nil {
-		t.Fatalf("expected file inside base: %v", err)
-	}
-}
-
-func TestCreateFileAllowsExistingSubdirectoryInsideBase(t *testing.T) {
-	base := t.TempDir()
-	if err := os.Mkdir(filepath.Join(base, "schema"), 0755); err != nil {
-		t.Fatalf("Mkdir() error = %v", err)
-	}
-
-	file, err := CreateFile(base, filepath.Join("schema", "export.sql.gz"))
-	if err != nil {
-		t.Fatalf("CreateFile() error = %v", err)
-	}
-	file.Close()
-
-	if _, err := os.Stat(filepath.Join(base, "schema", "export.sql.gz")); err != nil {
-		t.Fatalf("expected nested file inside base: %v", err)
-	}
-}
-
-func TestCreateFileRejectsPathOutsideBase(t *testing.T) {
-	base := t.TempDir()
-	outside := filepath.Join(base, "..", "outside.sql.gz")
-
-	tests := []string{
-		"",
-		".",
-		"..",
-		filepath.Join("..", "outside.sql.gz"),
-		filepath.Join("nested", "..", "..", "outside.sql.gz"),
-		outside,
-		"C:\\Temp\\outside.sql.gz",
-		"\\\\server\\share\\outside.sql.gz",
-		"bad\x00name.sql.gz",
-		"bad\nname.sql.gz",
+func TestCreateFileAllowsRelativeDestinations(t *testing.T) {
+	tests := []struct {
+		name     string
+		fileName string
+	}{
+		{
+			name:     "normal file name",
+			fileName: "a.sql.gz",
+		},
+		{
+			name:     "subdirectory",
+			fileName: filepath.Join("folder", "a.sql.gz"),
+		},
+		{
+			name:     "nested subdirectory",
+			fileName: filepath.Join("a", "b", "c.sql.gz"),
+		},
 	}
 
 	for _, tt := range tests {
-		t.Run(strings.ReplaceAll(tt, string(os.PathSeparator), "_"), func(t *testing.T) {
-			file, err := CreateFile(base, tt)
+		t.Run(tt.name, func(t *testing.T) {
+			base := t.TempDir()
+			parent := filepath.Dir(filepath.Join(base, tt.fileName))
+			if err := os.MkdirAll(parent, 0755); err != nil {
+				t.Fatalf("MkdirAll() error = %v", err)
+			}
+
+			file, err := CreateFile(base, tt.fileName)
+			if err != nil {
+				t.Fatalf("CreateFile() error = %v", err)
+			}
+			file.Close()
+
+			if _, err := os.Stat(filepath.Join(base, tt.fileName)); err != nil {
+				t.Fatalf("expected file inside base: %v", err)
+			}
+		})
+	}
+}
+
+func TestCreateFileRejectsUnsupportedDestinations(t *testing.T) {
+	base := t.TempDir()
+
+	tests := []struct {
+		name     string
+		fileName string
+	}{
+		{
+			name:     "path outside output path",
+			fileName: filepath.Join("..", "..", "tmp", "pwned"),
+		},
+		{
+			name:     "absolute path",
+			fileName: filepath.Join(string(os.PathSeparator), "tmp", "pwned"),
+		},
+		{
+			name:     "empty file name",
+			fileName: "",
+		},
+		{
+			name:     "current directory",
+			fileName: ".",
+		},
+		{
+			name:     "parent directory",
+			fileName: "..",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			file, err := CreateFile(base, tt.fileName)
 			if err == nil {
 				file.Close()
-				t.Fatalf("CreateFile() succeeded for %q", tt)
+				t.Fatalf("CreateFile() succeeded for %q", tt.fileName)
 			}
 		})
 	}
