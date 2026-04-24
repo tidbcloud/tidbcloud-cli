@@ -21,6 +21,9 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strings"
+	"unicode"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -60,15 +63,87 @@ func GetResponse(url string, debug bool) (*http.Response, error) {
 
 // CreateFile creates a file if it does not exist
 func CreateFile(path, fileName string) (*os.File, error) {
-	filePath := filepath.Join(path, fileName)
-	if _, err := os.Stat(filePath); err == nil {
+	filePath, err := safeDownloadPath(path, fileName)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := os.Lstat(filePath); err == nil {
 		return nil, fmt.Errorf("file already exists")
+	} else if !os.IsNotExist(err) {
+		return nil, err
 	}
 	file, err := os.Create(filePath)
 	if err != nil {
 		return nil, err
 	}
 	return file, nil
+}
+
+func safeDownloadPath(basePath, fileName string) (string, error) {
+	if fileName == "" {
+		return "", downloadDestinationError(fileName, "cannot be empty")
+	}
+	if fileName == "." || fileName == ".." {
+		return "", downloadDestinationError(fileName, "must refer to a file")
+	}
+	if filepath.IsAbs(fileName) || isWindowsAbs(fileName) {
+		return "", downloadDestinationError(fileName, "must be relative to the output path")
+	}
+	if containsControlCharacter(fileName) {
+		return "", downloadDestinationError(fileName, "contains unsupported characters")
+	}
+
+	baseAbs, err := filepath.Abs(basePath)
+	if err != nil {
+		return "", err
+	}
+	baseClean := filepath.Clean(baseAbs)
+	baseReal, err := filepath.EvalSymlinks(baseClean)
+	if err != nil {
+		return "", err
+	}
+
+	candidate := filepath.Clean(filepath.Join(baseClean, fileName))
+	rel, err := filepath.Rel(baseClean, candidate)
+	if err != nil {
+		return "", err
+	}
+	if rel == ".." || strings.HasPrefix(rel, ".."+string(os.PathSeparator)) || filepath.IsAbs(rel) {
+		return "", downloadDestinationError(fileName, "is outside the output path")
+	}
+
+	parentReal, err := filepath.EvalSymlinks(filepath.Dir(candidate))
+	if err != nil {
+		return "", err
+	}
+	parentRel, err := filepath.Rel(baseReal, parentReal)
+	if err != nil {
+		return "", err
+	}
+	if parentRel == ".." || strings.HasPrefix(parentRel, ".."+string(os.PathSeparator)) || filepath.IsAbs(parentRel) {
+		return "", downloadDestinationError(fileName, "is outside the output path")
+	}
+
+	return candidate, nil
+}
+
+func downloadDestinationError(fileName, reason string) error {
+	return fmt.Errorf("download destination %q %s", fileName, reason)
+}
+
+func containsControlCharacter(s string) bool {
+	return strings.ContainsRune(s, 0) || strings.IndexFunc(s, unicode.IsControl) >= 0
+}
+
+func isWindowsAbs(path string) bool {
+	if runtime.GOOS == "windows" {
+		return false
+	}
+	if len(path) >= 3 && path[1] == ':' && (path[2] == '\\' || path[2] == '/') {
+		c := path[0]
+		return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')
+	}
+	return strings.HasPrefix(path, `\\`)
 }
 
 // CreateFolder creates a folder if it does not exist
