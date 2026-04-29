@@ -88,6 +88,10 @@ func TestCreateFileRejectsUnsupportedDestinations(t *testing.T) {
 			name:     "parent directory",
 			fileName: "..",
 		},
+		{
+			name:     "cleans to current directory",
+			fileName: filepath.Join("a", ".."),
+		},
 	}
 
 	for _, tt := range tests {

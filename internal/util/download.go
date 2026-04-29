@@ -102,7 +102,10 @@ func safeDownloadPath(fileName string) (string, error) {
 	}
 
 	clean := filepath.Clean(fileName)
-	if clean == ".." || strings.HasPrefix(clean, ".."+string(os.PathSeparator)) || filepath.IsAbs(clean) {
+	if clean == "." || clean == ".." {
+		return "", downloadDestinationError(fileName, "must refer to a file")
+	}
+	if strings.HasPrefix(clean, ".."+string(os.PathSeparator)) || filepath.IsAbs(clean) {
 		return "", downloadDestinationError(fileName, "is outside the output path")
 	}
 
