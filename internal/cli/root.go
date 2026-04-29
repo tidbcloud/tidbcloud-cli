@@ -24,6 +24,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/auth"
 	configCmd "github.com/tidbcloud/tidbcloud-cli/internal/cli/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/cli/fs"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/project"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/upgrade"
@@ -194,6 +195,7 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 
 	rootCmd.AddCommand(auth.AuthCmd(h))
 	rootCmd.AddCommand(configCmd.ConfigCmd(h))
+	rootCmd.AddCommand(fs.FSCmd(h))
 	rootCmd.AddCommand(serverless.Cmd(h))
 	rootCmd.AddCommand(project.ProjectCmd(h))
 	rootCmd.AddCommand(version.VersionCmd(h))
