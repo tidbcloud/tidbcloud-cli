@@ -40,7 +40,7 @@ If you already have a **TiDB Cloud Serverless** cluster (created via the [TiDB C
 3. **Initialize FS**
 
    ```bash
-   ticloud fs init --user admin --password <your-password>
+   ticloud fs init --user root --password <your-password>
    ```
 
    > Every new Serverless cluster must run `init` before using FS for the first time to provision the FS tenant.
@@ -60,7 +60,7 @@ If you are using a **TiDB Zero** instance, configure it as follows. If you are n
 2. **Initialize FS**
 
    ```bash
-   ticloud fs init --user admin --password <your-password>
+   ticloud fs init --user root --password <your-password>
    ```
 
    > Like Serverless, every new Zero instance must run `init` once to provision the FS tenant.
@@ -87,7 +87,7 @@ Before performing any file operations, you must create an FS tenant for the asso
 Initialize the FS tenant for the currently associated database. This must be run before using FS for the first time on a new database.
 
 ```bash
-ticloud fs init --user admin --password secret
+ticloud fs init --user root --password secret
 ```
 
 ### Basic File Operations
