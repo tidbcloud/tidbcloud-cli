@@ -489,12 +489,19 @@ components:
           readOnly: true
           type: string
       type: object
+    ImportMode:
+      description: Import mode for full migration phase.
+      enum:
+      - IMPORT_MODE_LOGICAL
+      - IMPORT_MODE_PHYSICAL
+      type: string
     ListMigrationsResp:
       example:
         totalSize: 0
         migrations:
         - mode: "{}"
           migrationId: migrationId
+          importMode: "{}"
           createTime: 2000-01-23T04:56:07.000+00:00
           displayName: displayName
           subTasks:
@@ -516,6 +523,7 @@ components:
           targetUser: targetUser
         - mode: "{}"
           migrationId: migrationId
+          importMode: "{}"
           createTime: 2000-01-23T04:56:07.000+00:00
           displayName: displayName
           subTasks:
@@ -580,6 +588,7 @@ components:
       example:
         mode: "{}"
         migrationId: migrationId
+        importMode: "{}"
         createTime: 2000-01-23T04:56:07.000+00:00
         displayName: displayName
         subTasks:
@@ -632,6 +641,11 @@ components:
           allOf:
           - $ref: '#/components/schemas/Migration.State'
           description: The current state of the migration.
+          type: object
+        importMode:
+          allOf:
+          - $ref: '#/components/schemas/ImportMode'
+          description: Import mode for full migration phase.
           type: object
       type: object
     Migration.State:
@@ -778,6 +792,11 @@ components:
           - $ref: '#/components/schemas/TaskMode'
           description: The migration mode (full+incremental or incremental-only).
           type: object
+        importMode:
+          allOf:
+          - $ref: '#/components/schemas/ImportMode'
+          description: Import mode for full migration phase.
+          type: object
       required:
       - displayName
       - mode
@@ -806,6 +825,11 @@ components:
           allOf:
           - $ref: '#/components/schemas/TaskMode'
           description: The migration mode (full+incremental or incremental-only).
+          type: object
+        importMode:
+          allOf:
+          - $ref: '#/components/schemas/ImportMode'
+          description: Import mode for full migration phase.
           type: object
       required:
       - displayName
