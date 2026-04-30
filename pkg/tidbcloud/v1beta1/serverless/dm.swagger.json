@@ -477,6 +477,26 @@
       },
       "additionalProperties": {}
     },
+    "BinlogFilterRule": {
+      "type": "object",
+      "properties": {
+        "ignoreEvent": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Event types to ignore (e.g., \"truncate table\", \"drop database\")."
+        },
+        "ignoreSql": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "SQL patterns to ignore."
+        }
+      },
+      "description": "Binlog filter rules applied during incremental replication."
+    },
     "ConnProfile": {
       "type": "object",
       "properties": {
@@ -518,11 +538,19 @@
           ]
         }
       },
-      "required": ["connType", "port", "user", "password"]
+      "required": [
+        "connType",
+        "port",
+        "user",
+        "password"
+      ]
     },
     "ConnType": {
       "type": "string",
-      "enum": ["PUBLIC", "PRIVATE_LINK"],
+      "enum": [
+        "PUBLIC",
+        "PRIVATE_LINK"
+      ],
       "description": "The connection type used to connect to the source database.\n\n - PUBLIC: Connect over the public internet.\n - PRIVATE_LINK: Connect via Private Link/Private Endpoint."
     },
     "CreateMigrationPrecheckResp": {
@@ -680,12 +708,27 @@
               "$ref": "#/definitions/Migration.State"
             }
           ]
+        },
+        "binlogFilterRule": {
+          "description": "Global binlog filter rule applied to the migration.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/BinlogFilterRule"
+            }
+          ]
         }
       }
     },
     "Migration.State": {
       "type": "string",
-      "enum": ["CREATING", "RUNNING", "PAUSED", "FAILED", "DELETING"],
+      "enum": [
+        "CREATING",
+        "RUNNING",
+        "PAUSED",
+        "FAILED",
+        "DELETING"
+      ],
       "description": "Overall state of a migration.\n\n - CREATING: Task is being created.\n - RUNNING: Task is actively running.\n - PAUSED: Task is paused.\n - FAILED: Task failed with error.\n - DELETING: Task is being deleted."
     },
     "MigrationPrecheck": {
@@ -742,7 +785,13 @@
     },
     "MigrationPrecheck.Status": {
       "type": "string",
-      "enum": ["RUNNING", "FINISHED", "PENDING", "FAILED", "CANCELED"],
+      "enum": [
+        "RUNNING",
+        "FINISHED",
+        "PENDING",
+        "FAILED",
+        "CANCELED"
+      ],
       "description": " - RUNNING: Precheck is in progress.\n - FINISHED: Precheck finished successfully.\n - PENDING: Precheck is pending.\n - FAILED: Precheck failed.\n - CANCELED: Precheck is canceled."
     },
     "MigrationRule": {
@@ -778,7 +827,9 @@
           "description": "Table pattern of the source, supports wildcards."
         }
       },
-      "required": ["schemaPattern"]
+      "required": [
+        "schemaPattern"
+      ]
     },
     "MigrationRule.Table": {
       "type": "object",
@@ -792,7 +843,9 @@
           "description": "Table name. Wildcards are not supported. Set empty to use the source table name."
         }
       },
-      "required": ["schema"]
+      "required": [
+        "schema"
+      ]
     },
     "MigrationService.CreateMigrationBody": {
       "type": "object",
@@ -824,9 +877,22 @@
               "$ref": "#/definitions/TaskMode"
             }
           ]
+        },
+        "binlogFilterRule": {
+          "description": "Global binlog filter rule applied to all migrated tables.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/BinlogFilterRule"
+            }
+          ]
         }
       },
-      "required": ["displayName", "sources", "target", "mode"]
+      "required": [
+        "displayName",
+        "sources",
+        "target",
+        "mode"
+      ]
     },
     "MigrationService.PauseMigrationBody": {
       "type": "object",
@@ -862,9 +928,22 @@
               "$ref": "#/definitions/TaskMode"
             }
           ]
+        },
+        "binlogFilterRule": {
+          "description": "Global binlog filter rule applied to all migrated tables.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/BinlogFilterRule"
+            }
+          ]
         }
       },
-      "required": ["displayName", "sources", "target", "mode"]
+      "required": [
+        "displayName",
+        "sources",
+        "target",
+        "mode"
+      ]
     },
     "MigrationService.ResumeMigrationBody": {
       "type": "object",
@@ -915,7 +994,11 @@
     },
     "PrecheckItem.Status": {
       "type": "string",
-      "enum": ["SUCCESS", "WARNING", "FAILED"],
+      "enum": [
+        "SUCCESS",
+        "WARNING",
+        "FAILED"
+      ],
       "description": " - SUCCESS: Check passed successfully.\n - WARNING: Check resulted in a warning.\n - FAILED: Check failed."
     },
     "PrecheckItemType": {
@@ -1009,11 +1092,18 @@
           ]
         }
       },
-      "required": ["connProfile", "sourceType"]
+      "required": [
+        "connProfile",
+        "sourceType"
+      ]
     },
     "Source.SourceType": {
       "type": "string",
-      "enum": ["MYSQL", "ALICLOUD_RDS_MYSQL", "AWS_RDS_MYSQL"],
+      "enum": [
+        "MYSQL",
+        "ALICLOUD_RDS_MYSQL",
+        "AWS_RDS_MYSQL"
+      ],
       "description": "The source database type.\n\n - MYSQL: Self-managed MySQL.\n - ALICLOUD_RDS_MYSQL: Alibaba Cloud RDS for MySQL.\n - AWS_RDS_MYSQL: Amazon RDS for MySQL."
     },
     "Status": {
@@ -1102,12 +1192,22 @@
     },
     "SubTask.Stage": {
       "type": "string",
-      "enum": ["RUNNING", "PAUSED", "FAILED", "FINISHED", "UNKNOWN"],
+      "enum": [
+        "RUNNING",
+        "PAUSED",
+        "FAILED",
+        "FINISHED",
+        "UNKNOWN"
+      ],
       "description": "The high-level lifecycle stage of a subtask.\n\n - RUNNING: Subtask is running.\n - PAUSED: Subtask is paused.\n - FAILED: Subtask failed.\n - FINISHED: Subtask finished successfully.\n - UNKNOWN: Subtask stage is unknown."
     },
     "SubTask.Step": {
       "type": "string",
-      "enum": ["DUMP", "LOAD", "SYNC"],
+      "enum": [
+        "DUMP",
+        "LOAD",
+        "SYNC"
+      ],
       "description": "The current step within a subtask.\n\n - DUMP: Dump/export data from source.\n - LOAD: Load/import data into target.\n - SYNC: Sync/replicate binlog changes."
     },
     "SyncDetail": {
@@ -1144,11 +1244,17 @@
           "description": "Target database password."
         }
       },
-      "required": ["user", "password"]
+      "required": [
+        "user",
+        "password"
+      ]
     },
     "TaskMode": {
       "type": "string",
-      "enum": ["ALL", "INCREMENTAL"],
+      "enum": [
+        "ALL",
+        "INCREMENTAL"
+      ],
       "description": "Migration task mode.\n\n - ALL: Full + incremental migration (all phases).\n - INCREMENTAL: Incremental-only migration (replication)."
     }
   }

@@ -92,6 +92,7 @@ Class | Method | HTTP request | Description
 ## Documentation For Models
 
  - [Any](docs/Any.md)
+ - [BinlogFilterRule](docs/BinlogFilterRule.md)
  - [ConnProfile](docs/ConnProfile.md)
  - [ConnType](docs/ConnType.md)
  - [CreateMigrationPrecheckResp](docs/CreateMigrationPrecheckResp.md)

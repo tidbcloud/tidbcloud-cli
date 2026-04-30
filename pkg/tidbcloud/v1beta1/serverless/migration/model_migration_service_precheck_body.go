@@ -27,7 +27,9 @@ type MigrationServicePrecheckBody struct {
 	// The target database credentials.
 	Target Target `json:"target"`
 	// The migration mode (full+incremental or incremental-only).
-	Mode                 TaskMode `json:"mode"`
+	Mode TaskMode `json:"mode"`
+	// Global binlog filter rule applied to all migrated tables.
+	BinlogFilterRule     *BinlogFilterRule `json:"binlogFilterRule,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -150,6 +152,38 @@ func (o *MigrationServicePrecheckBody) SetMode(v TaskMode) {
 	o.Mode = v
 }
 
+// GetBinlogFilterRule returns the BinlogFilterRule field value if set, zero value otherwise.
+func (o *MigrationServicePrecheckBody) GetBinlogFilterRule() BinlogFilterRule {
+	if o == nil || IsNil(o.BinlogFilterRule) {
+		var ret BinlogFilterRule
+		return ret
+	}
+	return *o.BinlogFilterRule
+}
+
+// GetBinlogFilterRuleOk returns a tuple with the BinlogFilterRule field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *MigrationServicePrecheckBody) GetBinlogFilterRuleOk() (*BinlogFilterRule, bool) {
+	if o == nil || IsNil(o.BinlogFilterRule) {
+		return nil, false
+	}
+	return o.BinlogFilterRule, true
+}
+
+// HasBinlogFilterRule returns a boolean if a field has been set.
+func (o *MigrationServicePrecheckBody) HasBinlogFilterRule() bool {
+	if o != nil && !IsNil(o.BinlogFilterRule) {
+		return true
+	}
+
+	return false
+}
+
+// SetBinlogFilterRule gets a reference to the given BinlogFilterRule and assigns it to the BinlogFilterRule field.
+func (o *MigrationServicePrecheckBody) SetBinlogFilterRule(v BinlogFilterRule) {
+	o.BinlogFilterRule = &v
+}
+
 func (o MigrationServicePrecheckBody) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -164,6 +198,9 @@ func (o MigrationServicePrecheckBody) ToMap() (map[string]interface{}, error) {
 	toSerialize["sources"] = o.Sources
 	toSerialize["target"] = o.Target
 	toSerialize["mode"] = o.Mode
+	if !IsNil(o.BinlogFilterRule) {
+		toSerialize["binlogFilterRule"] = o.BinlogFilterRule
+	}
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -214,6 +251,7 @@ func (o *MigrationServicePrecheckBody) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "sources")
 		delete(additionalProperties, "target")
 		delete(additionalProperties, "mode")
+		delete(additionalProperties, "binlogFilterRule")
 		o.AdditionalProperties = additionalProperties
 	}
 

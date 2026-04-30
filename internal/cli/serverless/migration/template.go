@@ -36,6 +36,13 @@ const (
         "user": "migration_user",
         "password": "Passw0rd!"
     },
+    // Optional global binlog filter rules applied during incremental replication.
+    "binlogFilterRule": {
+        // Event types to ignore, see https://docs.pingcap.com/tidb/stable/dm-binlog-event-filter/#parameter-descriptions .
+        "ignoreEvent": ["truncate table", "drop database"],
+        // SQL patterns to ignore.
+        "ignoreSql": ["^DROP\\s+TABLE.*", "^TRUNCATE\\s+TABLE.*"]
+    },
     // List at least one migration source
     "sources": [
         {
@@ -110,6 +117,13 @@ const (
     "target": {
         "user": "migration_user",
         "password": "Passw0rd!"
+    },
+    // Optional global binlog filter rules applied during incremental replication.
+    "binlogFilterRule": {
+        // Event types to ignore, see https://docs.pingcap.com/tidb/stable/dm-binlog-event-filter/#parameter-descriptions .
+        "ignoreEvent": ["truncate table", "drop database"],
+        // SQL patterns to ignore.
+        "ignoreSql": ["^DROP\\s+TABLE.*", "^TRUNCATE\\s+TABLE.*"]
     },
     "sources": [
         {
