@@ -778,6 +778,11 @@ components:
           - $ref: '#/components/schemas/TaskMode'
           description: The migration mode (full+incremental or incremental-only).
           type: object
+        shardMode:
+          allOf:
+          - $ref: '#/components/schemas/TaskShardMode'
+          description: Optional shard mode for shard DDL coordination.
+          type: object
       required:
       - displayName
       - mode
@@ -806,6 +811,11 @@ components:
           allOf:
           - $ref: '#/components/schemas/TaskMode'
           description: The migration mode (full+incremental or incremental-only).
+          type: object
+        shardMode:
+          allOf:
+          - $ref: '#/components/schemas/TaskShardMode'
+          description: Optional shard mode for shard DDL coordination.
           type: object
       required:
       - displayName
@@ -1098,5 +1108,15 @@ components:
       enum:
       - ALL
       - INCREMENTAL
+      type: string
+    TaskShardMode:
+      description: |-
+        Migration shard mode.
+
+         - PESSIMISTIC: Use pessimistic shard DDL coordination.
+         - OPTIMISTIC: Use optimistic shard DDL coordination.
+      enum:
+      - PESSIMISTIC
+      - OPTIMISTIC
       type: string
 x-original-swagger-version: "2.0"

@@ -824,6 +824,14 @@
               "$ref": "#/definitions/TaskMode"
             }
           ]
+        },
+        "shardMode": {
+          "description": "Optional shard mode for shard DDL coordination.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/TaskShardMode"
+            }
+          ]
         }
       },
       "required": ["displayName", "sources", "target", "mode"]
@@ -860,6 +868,14 @@
           "allOf": [
             {
               "$ref": "#/definitions/TaskMode"
+            }
+          ]
+        },
+        "shardMode": {
+          "description": "Optional shard mode for shard DDL coordination.",
+          "allOf": [
+            {
+              "$ref": "#/definitions/TaskShardMode"
             }
           ]
         }
@@ -1150,6 +1166,11 @@
       "type": "string",
       "enum": ["ALL", "INCREMENTAL"],
       "description": "Migration task mode.\n\n - ALL: Full + incremental migration (all phases).\n - INCREMENTAL: Incremental-only migration (replication)."
+    },
+    "TaskShardMode": {
+      "type": "string",
+      "enum": ["PESSIMISTIC", "OPTIMISTIC"],
+      "description": "Migration shard mode.\n\n - PESSIMISTIC: Use pessimistic shard DDL coordination.\n - OPTIMISTIC: Use optimistic shard DDL coordination."
     }
   }
 }

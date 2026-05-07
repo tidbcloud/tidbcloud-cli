@@ -120,6 +120,7 @@ Class | Method | HTTP request | Description
  - [SyncDetail](docs/SyncDetail.md)
  - [Target](docs/Target.md)
  - [TaskMode](docs/TaskMode.md)
+ - [TaskShardMode](docs/TaskShardMode.md)
 
 
 ## Documentation For Authorization

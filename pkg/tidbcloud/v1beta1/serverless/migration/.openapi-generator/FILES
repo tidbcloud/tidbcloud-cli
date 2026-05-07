@@ -36,5 +36,6 @@ model_sub_task_step.go
 model_sync_detail.go
 model_target.go
 model_task_mode.go
+model_task_shard_mode.go
 response.go
 utils.go

@@ -86,7 +86,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			}
 			definitionStr := string(definitionBytes)
 
-			sources, target, mode, err := parseMigrationDefinition(definitionStr)
+			sources, target, mode, shardMode, err := parseMigrationDefinition(definitionStr)
 			if err != nil {
 				return err
 			}
@@ -97,6 +97,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 					Sources:     sources,
 					Target:      target,
 					Mode:        mode,
+					ShardMode:   shardMode,
 				}
 				return runMigrationPrecheck(ctx, d, clusterID, precheckBody, h)
 			}
@@ -106,6 +107,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				Sources:     sources,
 				Target:      target,
 				Mode:        mode,
+				ShardMode:   shardMode,
 			}
 
 			resp, err := d.CreateMigration(ctx, clusterID, createBody)
@@ -247,34 +249,39 @@ func shouldPrintPrecheckItem(status *pkgmigration.PrecheckItemStatus) bool {
 	}
 }
 
-func parseMigrationDefinition(value string) ([]pkgmigration.Source, pkgmigration.Target, pkgmigration.TaskMode, error) {
+func parseMigrationDefinition(value string) ([]pkgmigration.Source, pkgmigration.Target, pkgmigration.TaskMode, *pkgmigration.TaskShardMode, error) {
 	trimmed := strings.TrimSpace(value)
 	if trimmed == "" {
-		return nil, pkgmigration.Target{}, "", errors.New("migration config is required; use --config-file")
+		return nil, pkgmigration.Target{}, "", nil, errors.New("migration config is required; use --config-file")
 	}
 	var payload struct {
-		Sources []pkgmigration.Source `json:"sources"`
-		Target  *pkgmigration.Target  `json:"target"`
-		Mode    string                `json:"mode"`
+		Sources   []pkgmigration.Source `json:"sources"`
+		Target    *pkgmigration.Target  `json:"target"`
+		Mode      string                `json:"mode"`
+		ShardMode *string               `json:"shardMode,omitempty"`
 	}
 	stdJson, err := standardizeJSON([]byte(trimmed))
 	if err != nil {
-		return nil, pkgmigration.Target{}, "", errors.Annotate(err, "invalid migration definition JSON")
+		return nil, pkgmigration.Target{}, "", nil, errors.Annotate(err, "invalid migration definition JSON")
 	}
 	if err := json.Unmarshal(stdJson, &payload); err != nil {
-		return nil, pkgmigration.Target{}, "", errors.Annotate(err, "invalid migration definition JSON")
+		return nil, pkgmigration.Target{}, "", nil, errors.Annotate(err, "invalid migration definition JSON")
 	}
 	if len(payload.Sources) == 0 {
-		return nil, pkgmigration.Target{}, "", errors.New("migration definition must include at least one source")
+		return nil, pkgmigration.Target{}, "", nil, errors.New("migration definition must include at least one source")
 	}
 	if payload.Target == nil {
-		return nil, pkgmigration.Target{}, "", errors.New("migration definition must include the target block")
+		return nil, pkgmigration.Target{}, "", nil, errors.New("migration definition must include the target block")
 	}
 	mode, err := parseMigrationMode(payload.Mode)
 	if err != nil {
-		return nil, pkgmigration.Target{}, "", err
+		return nil, pkgmigration.Target{}, "", nil, err
 	}
-	return payload.Sources, *payload.Target, mode, nil
+	shardMode, err := parseMigrationShardMode(payload.ShardMode)
+	if err != nil {
+		return nil, pkgmigration.Target{}, "", nil, err
+	}
+	return payload.Sources, *payload.Target, mode, shardMode, nil
 }
 
 func parseMigrationMode(value string) (pkgmigration.TaskMode, error) {
@@ -288,6 +295,22 @@ func parseMigrationMode(value string) (pkgmigration.TaskMode, error) {
 		return mode, nil
 	}
 	return "", errors.Errorf("invalid mode %q, allowed values: %s", value, pkgmigration.AllowedTaskModeEnumValues)
+}
+
+func parseMigrationShardMode(value *string) (*pkgmigration.TaskShardMode, error) {
+	if value == nil {
+		return nil, nil
+	}
+	trimmed := strings.TrimSpace(*value)
+	if trimmed == "" {
+		return nil, errors.Errorf("invalid shardMode %q, allowed values: %s", *value, pkgmigration.AllowedTaskShardModeEnumValues)
+	}
+	normalized := strings.ToUpper(trimmed)
+	mode := pkgmigration.TaskShardMode(normalized)
+	if slices.Contains(pkgmigration.AllowedTaskShardModeEnumValues, mode) {
+		return &mode, nil
+	}
+	return nil, errors.Errorf("invalid shardMode %q, allowed values: %s", *value, pkgmigration.AllowedTaskShardModeEnumValues)
 }
 
 // standardizeJSON accepts JSON With Commas and Comments(JWCC) see
