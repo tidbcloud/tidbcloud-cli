@@ -21,6 +21,9 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
+	"strings"
+	"unicode"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -60,15 +63,72 @@ func GetResponse(url string, debug bool) (*http.Response, error) {
 
 // CreateFile creates a file if it does not exist
 func CreateFile(path, fileName string) (*os.File, error) {
-	filePath := filepath.Join(path, fileName)
-	if _, err := os.Stat(filePath); err == nil {
-		return nil, fmt.Errorf("file already exists")
-	}
-	file, err := os.Create(filePath)
+	filePath, err := safeDownloadPath(fileName)
 	if err != nil {
 		return nil, err
 	}
+
+	if path == "" {
+		path = "."
+	}
+	root, err := os.OpenRoot(path)
+	if err != nil {
+		return nil, err
+	}
+	defer root.Close()
+
+	file, err := root.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0644)
+	if err != nil {
+		if os.IsExist(err) {
+			return nil, fmt.Errorf("file already exists")
+		}
+		return nil, fmt.Errorf("download destination %q cannot be created: %w", fileName, err)
+	}
 	return file, nil
+}
+
+func safeDownloadPath(fileName string) (string, error) {
+	if fileName == "" {
+		return "", downloadDestinationError(fileName, "cannot be empty")
+	}
+	if fileName == "." || fileName == ".." {
+		return "", downloadDestinationError(fileName, "must refer to a file")
+	}
+	if filepath.IsAbs(fileName) || isWindowsAbs(fileName) {
+		return "", downloadDestinationError(fileName, "must be relative to the output path")
+	}
+	if containsControlCharacter(fileName) {
+		return "", downloadDestinationError(fileName, "contains unsupported characters")
+	}
+
+	clean := filepath.Clean(fileName)
+	if clean == "." || clean == ".." {
+		return "", downloadDestinationError(fileName, "must refer to a file")
+	}
+	if strings.HasPrefix(clean, ".."+string(os.PathSeparator)) || filepath.IsAbs(clean) {
+		return "", downloadDestinationError(fileName, "is outside the output path")
+	}
+
+	return clean, nil
+}
+
+func downloadDestinationError(fileName, reason string) error {
+	return fmt.Errorf("download destination %q %s", fileName, reason)
+}
+
+func containsControlCharacter(s string) bool {
+	return strings.ContainsRune(s, 0) || strings.IndexFunc(s, unicode.IsControl) >= 0
+}
+
+func isWindowsAbs(path string) bool {
+	if runtime.GOOS == "windows" {
+		return false
+	}
+	if len(path) >= 3 && path[1] == ':' && (path[2] == '\\' || path[2] == '/') {
+		c := path[0]
+		return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')
+	}
+	return strings.HasPrefix(path, `\\`)
 }
 
 // CreateFolder creates a folder if it does not exist
