@@ -72,6 +72,8 @@ func (suite *CreateMigrationSuite) TestCreateMigration() {
 			return body != nil &&
 				body.DisplayName == displayName &&
 				body.Mode == pkgmigration.TASKMODE_ALL &&
+				body.ShardMode != nil &&
+				*body.ShardMode == pkgmigration.TASKSHARDMODE_PESSIMISTIC &&
 				len(body.Sources) == 1 &&
 				body.Target.User == "migration_user"
 		}),
@@ -98,6 +100,7 @@ func (suite *CreateMigrationSuite) TestCreateMigrationInvalidInputs() {
 	blankPath := suite.writeTempConfig(" ")
 	invalidJSONPath := suite.writeTempConfig("{invalid")
 	invalidModePath := suite.writeTempConfig(`{ "mode": "invalid", "target": {"user":"u","password":"p"}, "sources": [{"sourceType":"MYSQL","connProfile":{"connType":"PUBLIC","host":"h","port":3306,"user":"u","password":"p"}}] }`)
+	invalidShardModePath := suite.writeTempConfig(`{ "mode": "ALL", "shardMode": "invalid", "target": {"user":"u","password":"p"}, "sources": [{"sourceType":"MYSQL","connProfile":{"connType":"PUBLIC","host":"h","port":3306,"user":"u","password":"p"}}] }`)
 
 	tests := []struct {
 		name        string
@@ -123,6 +126,11 @@ func (suite *CreateMigrationSuite) TestCreateMigrationInvalidInputs() {
 			name:        "invalid mode",
 			args:        []string{"--cluster-id", "c1", "--display-name", "name", "--config-file", invalidModePath},
 			errContains: "invalid mode",
+		},
+		{
+			name:        "invalid shard mode",
+			args:        []string{"--cluster-id", "c1", "--display-name", "name", "--config-file", invalidShardModePath},
+			errContains: "invalid shardMode",
 		},
 	}
 
@@ -152,6 +160,7 @@ func (suite *CreateMigrationSuite) writeTempConfig(content string) string {
 func validMigrationConfig() string {
 	return `{
   "mode": "ALL",
+  "shardMode": "PESSIMISTIC",
   "target": {
     "user": "migration_user",
     "password": "Passw0rd!"

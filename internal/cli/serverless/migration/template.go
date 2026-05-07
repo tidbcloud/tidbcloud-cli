@@ -31,6 +31,10 @@ const (
 	migrationDefinitionAllTemplate = `{
     // Required migration mode. Use "ALL" for full + incremental.
     "mode": "ALL",
+    // Optional shard DDL coordination mode. Only set this for shard merge
+    // (sharded database/table) scenarios. See:
+    // https://docs.pingcap.com/tidb/stable/dm-shard-merge/
+    // "shardMode": "PESSIMISTIC",
     // Target TiDB Cloud user credentials used by the migration
     "target": {
         "user": "migration_user",
@@ -106,6 +110,10 @@ const (
 	migrationDefinitionIncrementalTemplate = `{
     // Incremental-only mode keeps the source and target in sync
     "mode": "INCREMENTAL",
+    // Optional shard DDL coordination mode. Only set this for shard merge
+    // (sharded database/table) scenarios. See:
+    // https://docs.pingcap.com/tidb/stable/dm-shard-merge/
+    // "shardMode": "PESSIMISTIC",
     // Target TiDB Cloud user credentials used by the migration
     "target": {
         "user": "migration_user",

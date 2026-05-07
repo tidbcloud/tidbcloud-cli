@@ -27,7 +27,9 @@ type MigrationServicePrecheckBody struct {
 	// The target database credentials.
 	Target Target `json:"target"`
 	// The migration mode (full+incremental or incremental-only).
-	Mode                 TaskMode `json:"mode"`
+	Mode TaskMode `json:"mode"`
+	// Optional shard mode for shard DDL coordination.
+	ShardMode            *TaskShardMode `json:"shardMode,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -150,6 +152,38 @@ func (o *MigrationServicePrecheckBody) SetMode(v TaskMode) {
 	o.Mode = v
 }
 
+// GetShardMode returns the ShardMode field value if set, zero value otherwise.
+func (o *MigrationServicePrecheckBody) GetShardMode() TaskShardMode {
+	if o == nil || IsNil(o.ShardMode) {
+		var ret TaskShardMode
+		return ret
+	}
+	return *o.ShardMode
+}
+
+// GetShardModeOk returns a tuple with the ShardMode field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *MigrationServicePrecheckBody) GetShardModeOk() (*TaskShardMode, bool) {
+	if o == nil || IsNil(o.ShardMode) {
+		return nil, false
+	}
+	return o.ShardMode, true
+}
+
+// HasShardMode returns a boolean if a field has been set.
+func (o *MigrationServicePrecheckBody) HasShardMode() bool {
+	if o != nil && !IsNil(o.ShardMode) {
+		return true
+	}
+
+	return false
+}
+
+// SetShardMode gets a reference to the given TaskShardMode and assigns it to the ShardMode field.
+func (o *MigrationServicePrecheckBody) SetShardMode(v TaskShardMode) {
+	o.ShardMode = &v
+}
+
 func (o MigrationServicePrecheckBody) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -164,6 +198,9 @@ func (o MigrationServicePrecheckBody) ToMap() (map[string]interface{}, error) {
 	toSerialize["sources"] = o.Sources
 	toSerialize["target"] = o.Target
 	toSerialize["mode"] = o.Mode
+	if !IsNil(o.ShardMode) {
+		toSerialize["shardMode"] = o.ShardMode
+	}
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -214,6 +251,7 @@ func (o *MigrationServicePrecheckBody) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "sources")
 		delete(additionalProperties, "target")
 		delete(additionalProperties, "mode")
+		delete(additionalProperties, "shardMode")
 		o.AdditionalProperties = additionalProperties
 	}
 
