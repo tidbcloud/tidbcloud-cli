@@ -124,6 +124,25 @@ func (p *Profile) GetIAMEndpoint() string {
 	return viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.IAMEndpoint))
 }
 
+func GetFSEndpoint() string { return activeProfile.GetFSEndpoint() }
+func (p *Profile) GetFSEndpoint() string {
+	endpoint := viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.FSEndpoint))
+	if endpoint == "" {
+		return DefaultFSEndpoint
+	}
+	return endpoint
+}
+
+func GetFSClusterID() string { return activeProfile.GetFSClusterID() }
+func (p *Profile) GetFSClusterID() string {
+	return viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.FSClusterID))
+}
+
+func GetFSZeroInstanceID() string { return activeProfile.GetFSZeroInstanceID() }
+func (p *Profile) GetFSZeroInstanceID() string {
+	return viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.FSZeroInstanceID))
+}
+
 func GetOAuthEndpoint() (apiUrl string) { return activeProfile.GetOAuthEndpoint() }
 func (p *Profile) GetOAuthEndpoint() (newApiUrl string) {
 	newApiUrl = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.OAuthEndpoint))

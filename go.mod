@@ -17,6 +17,7 @@ require (
 	github.com/go-resty/resty/v2 v2.11.0
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/google/go-github/v49 v49.0.0
+	github.com/hanwen/go-fuse/v2 v2.9.0
 	github.com/hashicorp/go-version v1.6.0
 	github.com/icholy/digest v0.1.22
 	github.com/juju/errors v1.0.0
@@ -124,3 +125,5 @@ require (
 )
 
 replace github.com/tidbcloud/tidbcloud-cli/pkg => ./pkg
+
+replace github.com/golang-module/carbon/v2 => github.com/dromara/carbon/v2 v2.3.12

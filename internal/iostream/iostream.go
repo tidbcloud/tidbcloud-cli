@@ -23,6 +23,7 @@ import (
 )
 
 type IOStreams struct {
+	In        io.Reader
 	Out       io.Writer
 	Err       io.Writer
 	CanPrompt bool
@@ -32,6 +33,7 @@ func System() *IOStreams {
 	canPrompt := isatty.IsTerminal(os.Stdout.Fd()) || isatty.IsCygwinTerminal(os.Stdout.Fd())
 
 	return &IOStreams{
+		In:        os.Stdin,
 		Out:       os.Stdout,
 		Err:       os.Stderr,
 		CanPrompt: canPrompt,
@@ -40,6 +42,7 @@ func System() *IOStreams {
 
 func Test() *IOStreams {
 	return &IOStreams{
+		In:        &bytes.Buffer{},
 		Out:       &bytes.Buffer{},
 		Err:       &bytes.Buffer{},
 		CanPrompt: false,
