@@ -21,7 +21,6 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -31,6 +30,8 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
+
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/redact"
 )
 
 var (
@@ -249,7 +250,7 @@ func parameterToJson(obj interface{}) (string, error) {
 // callAPI do the request.
 func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 	if c.cfg.Debug {
-		dump, err := httputil.DumpRequestOut(request, true)
+		dump, err := redact.DumpRequestOut(request, true)
 		if err != nil {
 			return nil, err
 		}
@@ -262,7 +263,7 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 	}
 
 	if c.cfg.Debug {
-		dump, err := httputil.DumpResponse(resp, true)
+		dump, err := redact.DumpResponse(resp, true)
 		if err != nil {
 			return resp, err
 		}

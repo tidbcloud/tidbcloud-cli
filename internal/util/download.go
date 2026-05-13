@@ -24,15 +24,14 @@ import (
 	"runtime"
 	"strings"
 	"unicode"
-
-	"github.com/go-resty/resty/v2"
 )
 
 // GetResponse returns the response of a given AWS per-signed URL
 func GetResponse(url string, debug bool) (*http.Response, error) {
-	httpClient := resty.New()
-	httpClient.SetDebug(debug)
-	resp, err := httpClient.GetClient().Get(url) // nolint:gosec
+	// Do not enable raw HTTP debug for pre-signed URLs. Their query string can
+	// contain credentials such as signatures and security tokens.
+	_ = debug
+	resp, err := http.Get(url) // nolint:gosec
 	if err != nil {
 		return nil, err
 	}

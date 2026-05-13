@@ -54,6 +54,7 @@ func (suite *DescribeConfigSuite) SetupTest() {
 
 	viper.Set("test.public-key", publicKey)
 	viper.Set("test.private-key", privateKey)
+	viper.Set("test.access-token", "raw-access-token")
 	viper.Set("current-profile", profile)
 	err := viper.WriteConfig()
 	if err != nil {
@@ -81,12 +82,12 @@ func (suite *DescribeConfigSuite) TestDescribeConfigArgs() {
 		{
 			name:         "describe config",
 			args:         []string{"test"},
-			stdoutString: "{\n  \"private-key\": \"SDWIOUEOSDSDC\",\n  \"public-key\": \"SDIWODIJQNDKJQW\"\n}\n",
+			stdoutString: "{\n  \"access-token\": \"******\",\n  \"private-key\": \"******\",\n  \"public-key\": \"SDIWODIJQNDKJQW\"\n}\n",
 		},
 		{
 			name:         "describe config case-insensitive",
 			args:         []string{"teSt"},
-			stdoutString: "{\n  \"private-key\": \"SDWIOUEOSDSDC\",\n  \"public-key\": \"SDIWODIJQNDKJQW\"\n}\n",
+			stdoutString: "{\n  \"access-token\": \"******\",\n  \"private-key\": \"******\",\n  \"public-key\": \"SDIWODIJQNDKJQW\"\n}\n",
 		},
 		{
 			name: "describe config with no args",
@@ -126,6 +127,7 @@ func (suite *DescribeConfigSuite) TestDescribeConfigWithSpecialCharacters() {
 
 	viper.Set("~`!@#$%^&*()_+-={}[]\\|;:,<>/?.public-key", publicKey)
 	viper.Set("~`!@#$%^&*()_+-={}[]\\|;:,<>/?.private-key", privateKey)
+	viper.Set("~`!@#$%^&*()_+-={}[]\\|;:,<>/?.access-token", "raw-access-token")
 	viper.Set("current-profile", newProfile)
 
 	err := viper.WriteConfig()
@@ -143,7 +145,7 @@ func (suite *DescribeConfigSuite) TestDescribeConfigWithSpecialCharacters() {
 		{
 			name:         "describe active profile",
 			args:         []string{"~`!@#$%^&*()_+-={}[]\\|;:,<>/?"},
-			stdoutString: "{\n  \"private-key\": \"SDWIOUEOSDSDC\",\n  \"public-key\": \"SDIWODIJQNDKJQW\"\n}\n",
+			stdoutString: "{\n  \"access-token\": \"******\",\n  \"private-key\": \"******\",\n  \"public-key\": \"SDIWODIJQNDKJQW\"\n}\n",
 		},
 	}
 

@@ -20,11 +20,9 @@ import (
 	"fmt"
 	"io"
 	"math"
-	"os"
 	"sort"
 	"sync"
 
-	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/imp"
@@ -163,8 +161,6 @@ type UploaderImpl struct {
 // cloud.TiDBCloudClient.
 func NewUploader(client cloud.TiDBCloudClient) Uploader {
 	httpClient := resty.New()
-	debug := os.Getenv(config.DebugEnv) != ""
-	httpClient.SetDebug(debug)
 	u := &UploaderImpl{
 		PartSize:          DefaultUploadPartSize,
 		Concurrency:       DefaultUploadConcurrency,

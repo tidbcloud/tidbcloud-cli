@@ -20,12 +20,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/http/httputil"
 	"os"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/prop"
 	"github.com/tidbcloud/tidbcloud-cli/internal/version"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/redact"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/auditlog"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/br"
@@ -854,7 +854,7 @@ func (dt *DebugTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	debug := os.Getenv(config.DebugEnv) == "true" || os.Getenv(config.DebugEnv) == "1"
 
 	if debug {
-		dump, err := httputil.DumpRequestOut(r, true)
+		dump, err := redact.DumpRequestOut(r, true)
 		if err != nil {
 			return nil, err
 		}
@@ -867,7 +867,7 @@ func (dt *DebugTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	}
 
 	if debug {
-		dump, err := httputil.DumpResponse(resp, true)
+		dump, err := redact.DumpResponse(resp, true)
 		if err != nil {
 			return resp, err
 		}

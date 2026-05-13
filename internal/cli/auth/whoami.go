@@ -26,6 +26,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/config/store"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
+	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 	ver "github.com/tidbcloud/tidbcloud-cli/internal/version"
 
 	"github.com/fatih/color"
@@ -56,7 +57,7 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			opts.client.SetDebug(debug)
+			util.ConfigureRestyDebug(opts.client, debug)
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {

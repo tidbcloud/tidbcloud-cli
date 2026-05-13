@@ -58,7 +58,7 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			opts.client.SetDebug(debug)
+			util.ConfigureRestyDebug(opts.client, debug)
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
