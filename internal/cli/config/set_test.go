@@ -86,7 +86,7 @@ func (suite *SetConfigSuite) TestSetConfigArgs() {
 		{
 			name:         "set config",
 			args:         []string{"private-key", newPrivateKey},
-			stdoutString: "Set profile `test` property `private-key` to value `TYTYTYYTYT` successfully\n",
+			stdoutString: "Set profile `test` property `private-key` to value `******` successfully\n",
 		},
 		{
 			name: "set config with no args",
@@ -158,7 +158,7 @@ func (suite *SetConfigSuite) TestSetConfigWhenNoActiveProfile() {
 		{
 			name:         "set config",
 			args:         []string{"private-key", "value"},
-			stdoutString: "Set profile `default` property `private-key` to value `value` successfully\n",
+			stdoutString: "Set profile `default` property `private-key` to value `******` successfully\n",
 		},
 	}
 

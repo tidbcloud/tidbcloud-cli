@@ -21,6 +21,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/prop"
+	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/redact"
 
 	"github.com/fatih/color"
 	"github.com/juju/errors"
@@ -61,7 +62,7 @@ If not, the config in the active profile will be set`, prop.ProfileProperties())
 					}
 				}
 				viper.Set(fmt.Sprintf("%s.%s", curP, propertyName), value)
-				res = fmt.Sprintf("Set profile `%s` property `%s` to value `%s` successfully", curP, propertyName, value)
+				res = fmt.Sprintf("Set profile `%s` property `%s` to value `%s` successfully", curP, propertyName, redact.MaskValue(propertyName, value))
 			} else {
 				return fmt.Errorf("unrecognized property `%s`, use `config set --help` to find available properties", propertyName)
 			}
