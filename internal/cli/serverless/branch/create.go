@@ -187,16 +187,9 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 			if !parentTimestamp.IsZero() {
 				body.SetParentTimestamp(parentTimestamp)
 			}
-			if h.IOStreams.CanPrompt {
-				err := CreateAndSpinnerWait(ctx, h, d, clusterId, body)
-				if err != nil {
-					return errors.Trace(err)
-				}
-			} else {
-				err := CreateAndWaitReady(ctx, h, d, clusterId, body)
-				if err != nil {
-					return err
-				}
+			_, err = d.CreateBranch(ctx, clusterId, body)
+			if err != nil {
+				return errors.Trace(err)
 			}
 
 			return nil
