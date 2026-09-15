@@ -21,6 +21,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config/store"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
+	"github.com/tidbcloud/tidbcloud-cli/internal/redact"
 	ver "github.com/tidbcloud/tidbcloud-cli/internal/version"
 
 	"github.com/fatih/color"
@@ -50,7 +51,7 @@ func LogoutCmd(h *internal.Helper) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			opts.client.SetDebug(debug)
+			opts.client.SetTransport(redact.NewDebugTransport(opts.client.GetClient().Transport, debug))
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {

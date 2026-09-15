@@ -249,7 +249,7 @@ func parameterToJson(obj interface{}) (string, error) {
 // callAPI do the request.
 func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 	if c.cfg.Debug {
-		dump, err := httputil.DumpRequestOut(request, true)
+		dump, err := httputil.DumpRequestOut(request, false)
 		if err != nil {
 			return nil, err
 		}
@@ -262,7 +262,7 @@ func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
 	}
 
 	if c.cfg.Debug {
-		dump, err := httputil.DumpResponse(resp, true)
+		dump, err := httputil.DumpResponse(resp, false)
 		if err != nil {
 			return resp, err
 		}
