@@ -54,6 +54,7 @@ func TestDumpMasksCredentials(t *testing.T) {
 	out.WriteString(DumpRequest(req))
 	resp, err := http.DefaultTransport.RoundTrip(req)
 	assert.NoError(err)
+	defer resp.Body.Close()
 	out.WriteString(DumpResponse(resp))
 
 	dump := out.String()
