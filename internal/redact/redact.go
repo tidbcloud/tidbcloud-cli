@@ -45,6 +45,7 @@ var sensitiveKeys = map[string]struct{}{
 	"oauthclientsecret": {},
 	"clientsecret":      {},
 	"accesstoken":       {},
+	"devicecode":        {},
 	"refreshtoken":      {},
 	"token":             {},
 	"password":          {},
@@ -142,18 +143,18 @@ func URL(u *url.URL) string {
 	if u == nil {
 		return ""
 	}
-	if u.RawQuery == "" {
-		return u.String()
-	}
-	q := u.Query()
-	for k := range q {
-		if isSensitiveQueryParam(k) {
-			q[k] = []string{Mask}
-		}
-	}
 	c := *u
-	c.RawQuery = q.Encode()
-	return c.String()
+	if c.RawQuery != "" {
+		q := c.Query()
+		for k := range q {
+			if isSensitiveQueryParam(k) {
+				q[k] = []string{Mask}
+			}
+		}
+		c.RawQuery = q.Encode()
+	}
+	// Redacted replaces a userinfo password with "xxxxx".
+	return c.Redacted()
 }
 
 // body echoes a JSON body (masked) and replaces *rc so it can still be read.

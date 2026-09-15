@@ -40,12 +40,12 @@ func TestDumpMasksCredentials(t *testing.T) {
 		received, _ = io.ReadAll(r.Body)
 		w.Header().Set("Set-Cookie", "s="+cookie)
 		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"access_token":"` + bearer + `","refresh_token":"` + bearer + `","name":"me"}`))
+		_, _ = w.Write([]byte(`{"access_token":"` + bearer + `","refresh_token":"` + bearer + `","device_code":"` + bearer + `","user_code":"ABCD-EFGH","name":"me"}`))
 	}))
 	defer srv.Close()
 
 	var out bytes.Buffer
-	body := `{"target":{"s3":{"uri":"s3://b","accessKey":{"id":"AKIA","secret":"` + aksk + `"}}},"password":"` + aksk + `","sasToken":"` + aksk + `"}`
+	body := `{"target":{"s3":{"uri":"s3://b","accessKey":{"id":"AKIA","secret":"` + aksk + `"}}},"password":"` + aksk + `","sasToken":"` + aksk + `","device_code":"` + aksk + `"}`
 	req, err := http.NewRequest(http.MethodPost, srv.URL+"/v1?X-Amz-Signature="+sig+"&X-Amz-Credential="+sig+"&sig="+sig+"&plain=1", strings.NewReader(body))
 	assert.NoError(err)
 	req.Header.Set("Authorization", "Bearer "+bearer)
@@ -64,6 +64,7 @@ func TestDumpMasksCredentials(t *testing.T) {
 	assert.Contains(dump, `"id":"AKIA"`)
 	assert.Contains(dump, "plain=1")
 	assert.Contains(dump, `"name":"me"`)
+	assert.Contains(dump, `"user_code":"ABCD-EFGH"`)
 
 	// bodies must still be readable by the caller after dumping
 	assert.Equal(body, string(received))
@@ -91,4 +92,8 @@ func TestValueAndAny(t *testing.T) {
 	assert.Equal(map[string]interface{}{"public-key": "pk", "private-key": Mask, "access-token": Mask, "token-type": "Bearer"}, got)
 	u, _ := url.Parse("https://h/p?a=1")
 	assert.Equal("https://h/p?a=1", URL(u))
+	u, _ = url.Parse("https://alice:USERINFO_PASS@h/p")
+	assert.Equal("https://alice:xxxxx@h/p", URL(u))
+	u, _ = url.Parse("https://alice@h/p?a=1")
+	assert.Equal("https://alice@h/p?a=1", URL(u))
 }
