@@ -25,13 +25,15 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/tidbcloud/tidbcloud-cli/internal/redact"
+
 	"github.com/go-resty/resty/v2"
 )
 
 // GetResponse returns the response of a given AWS per-signed URL
 func GetResponse(url string, debug bool) (*http.Response, error) {
 	httpClient := resty.New()
-	httpClient.SetDebug(debug)
+	httpClient.SetTransport(redact.NewDebugTransport(httpClient.GetClient().Transport, debug))
 	resp, err := httpClient.GetClient().Get(url) // nolint:gosec
 	if err != nil {
 		return nil, err

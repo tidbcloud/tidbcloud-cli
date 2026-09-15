@@ -21,6 +21,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/output"
+	"github.com/tidbcloud/tidbcloud-cli/internal/redact"
 
 	"github.com/juju/errors"
 	"github.com/spf13/cobra"
@@ -42,7 +43,7 @@ func DescribeCmd(h *internal.Helper) *cobra.Command {
 				return err
 			}
 
-			value := viper.Get(name)
+			value := redact.Any(viper.Get(name))
 			err = output.PrintJson(h.IOStreams.Out, value)
 			return errors.Trace(err)
 
