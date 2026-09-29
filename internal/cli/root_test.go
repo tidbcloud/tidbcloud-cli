@@ -20,6 +20,7 @@ import (
 	"testing"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
+	nextgenCmd "github.com/tidbcloud/tidbcloud-cli/internal/cli/nextgen"
 	"github.com/tidbcloud/tidbcloud-cli/internal/iostream"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 
@@ -137,6 +138,17 @@ func (suite *RootCmdSuite) TestFlagProfile() {
 			assert.Equal(tt.propertyValue, viper.GetString(tt.propertyKey))
 		})
 	}
+}
+
+func (suite *RootCmdSuite) TestNextGenActionFlagRoutesAfterInheritedFlags() {
+	root := RootCmd(suite.h)
+	args, err := nextgenCmd.NormalizeActionArgs([]string{"premium", "--profile", "prod", "--list=true"})
+	require.NoError(suite.T(), err)
+
+	command, remaining, err := root.Find(args)
+	require.NoError(suite.T(), err)
+	require.Equal(suite.T(), "ticloud premium list", command.CommandPath())
+	require.Equal(suite.T(), []string{"--profile", "prod"}, remaining)
 }
 
 func TestRootCmdSuite(t *testing.T) {

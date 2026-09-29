@@ -26,6 +26,7 @@ const (
 
 type Helper struct {
 	Client        func() (cloud.TiDBCloudClient, error)
+	NextGenClient func() (cloud.NextGenClient, error)
 	Uploader      func(client cloud.TiDBCloudClient) s3.Uploader
 	QueryPageSize int64
 	IOStreams     *iostream.IOStreams

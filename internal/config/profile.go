@@ -119,6 +119,16 @@ func (p *Profile) GetServerlessEndpoint() (newApiUrl string) {
 	return
 }
 
+func GetNextGenEndpoint() (apiUrl string) { return activeProfile.GetNextGenEndpoint() }
+func (p *Profile) GetNextGenEndpoint() string {
+	return viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.NextGenEndpoint))
+}
+
+func GetNextGenCACertPath() string { return activeProfile.GetNextGenCACertPath() }
+func (p *Profile) GetNextGenCACertPath() string {
+	return viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.NextGenCACertPath))
+}
+
 func GetIAMEndpoint() (apiUrl string) { return activeProfile.GetIAMEndpoint() }
 func (p *Profile) GetIAMEndpoint() string {
 	return viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.IAMEndpoint))
