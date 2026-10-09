@@ -107,6 +107,9 @@ tags:
   name: Backup
 - description: Retrieve available regions for deploying TiDB Cloud Premium instances.
   name: Region
+- description: Retrieve existing private connection addresses for Premium and Essential
+    V2 instances.
+  name: PrivateEndpointConnectionService
 paths:
   /cmeks:principal:
     get:
@@ -1834,6 +1837,147 @@ paths:
           curl --location 'https://cloud.tidbapi.com/v1beta2/regions' \
           --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
           --header 'Accept: application/json'
+  /tidbs/{tidbId}/privateEndpointConnections:
+    get:
+      description: Lists all private endpoint connections for a specific TiDB Cloud
+        Premium instance.
+      operationId: PrivateEndpointConnectionService_ListPrivateEndpointConnections
+      parameters:
+      - in: path
+        name: tidbId
+        required: true
+        schema:
+          type: string
+      - description: |-
+          The maximum number of private link connections to return. The service may return fewer than this value.
+          If unspecified, at most X private link connections will be returned.
+          The maximum value is X; values above X will be coerced to X.
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: |-
+          A page token, received from a previous `ListPrivateLinkConnections` call.
+          Provide this to retrieve the subsequent page.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: |-
+          The number of individual resources to skip before starting to return results.
+          If the skip value causes the cursor to move past the end of the collection,
+          the response will be 200 OK with an empty result set and no next_page_token.
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/nextgenv1beta2ListPrivateEndpointConnectionsResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List private endpoint connections
+      tags:
+      - PrivateEndpointConnectionService
+  /tidbs/{tidbId}/privateLinkService:
+    get:
+      description: Retrieves the private link service details for a specific TiDB
+        Cloud Premium instance.
+      operationId: PrivateEndpointConnectionService_GetPrivateLinkService
+      parameters:
+      - in: path
+        name: tidbId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/nextgenv1beta2PrivateLinkService'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get private link service
+      tags:
+      - PrivateEndpointConnectionService
 components:
   schemas:
     BackupTriggerType:
@@ -2042,11 +2186,13 @@ components:
         annotations:
           key: annotations
         automaticResumeAt: 2000-01-23T04:56:07.000+00:00
+        capacityMode: "{}"
         capacityUpdateTime: 2000-01-23T04:56:07.000+00:00
         cloudProvider: "{}"
         state: "{}"
         dualLayerDataEncryption: "{}"
         rootPassword: my-shining-password
+        baselineRcu: baselineRcu
         reservedCapacity: "{}"
         reservedCapacityTemplateId: reservedCapacityTemplateId
         creator: creator
@@ -2148,14 +2294,23 @@ components:
           description: |-
             The minimum number of Request Capacity Units (RCUs) for the TiDB Cloud Premium instance.
 
-            This field is read-only and is automatically calculated as `max(5000, maxRcu / 4)`.
+            This field is read-only and is calculated by the service. It is omitted in Elastic Mode,
+            where Baseline RCU is the provisioning and billing floor.
           format: int64
+          nullable: true
           readOnly: true
           type: string
         maxRcu:
-          description: The maximum number of Request Capacity Units (RCUs) for the
-            TiDB Cloud Premium instance.
+          description: |-
+            The customer-defined maximum number of Request Capacity Units (RCUs). Requirements depend on service_plan:
+            - Premium and Essential_V2: optional. A positive value selects Max RCU Compatibility Mode. Omitting both
+              max_rcu and baseline_rcu selects Elastic Mode with the plan default Baseline RCU: 5,000 for Premium and
+              2,000 for Essential_V2.
+            - BYOC: required and must be greater than zero.
+            - Premium_Reserved: must be omitted.
+            Zero and JSON null are treated as omission and are not clear operations.
           format: int64
+          nullable: true
           type: string
         servicePlan:
           allOf:
@@ -2271,9 +2426,26 @@ components:
           format: date-time
           readOnly: true
           type: string
+        baselineRcu:
+          description: |-
+            The optional guaranteed provisioning commitment in Elastic Mode. Premium accepts
+            5,000, 12,500, or 50,000 RCU. Essential_V2 uses a fixed 2,000 RCU baseline.
+            When neither max_rcu nor baseline_rcu is positive during creation, the service uses the
+            plan default. Zero and JSON null are treated as omission. This field cannot be configured
+            to a positive value together with a positive max_rcu.
+          format: int64
+          nullable: true
+          type: string
+        capacityMode:
+          allOf:
+          - $ref: '#/components/schemas/TidbCapacityMode'
+          description: |-
+            The effective customer-facing capacity mode for Premium and Essential_V2.
+            Other service plans, or capacity records that do not identify exactly one supported mode,
+            return CAPACITY_MODE_UNSPECIFIED.
+          type: object
       required:
       - displayName
-      - maxRcu
       - regionId
       - servicePlan
       type: object
@@ -3084,11 +3256,13 @@ components:
           annotations:
             key: annotations
           automaticResumeAt: 2000-01-23T04:56:07.000+00:00
+          capacityMode: "{}"
           capacityUpdateTime: 2000-01-23T04:56:07.000+00:00
           cloudProvider: "{}"
           state: "{}"
           dualLayerDataEncryption: "{}"
           rootPassword: my-shining-password
+          baselineRcu: baselineRcu
           reservedCapacity: "{}"
           reservedCapacityTemplateId: reservedCapacityTemplateId
           creator: creator
@@ -3129,11 +3303,13 @@ components:
           annotations:
             key: annotations
           automaticResumeAt: 2000-01-23T04:56:07.000+00:00
+          capacityMode: "{}"
           capacityUpdateTime: 2000-01-23T04:56:07.000+00:00
           cloudProvider: "{}"
           state: "{}"
           dualLayerDataEncryption: "{}"
           rootPassword: my-shining-password
+          baselineRcu: baselineRcu
           reservedCapacity: "{}"
           reservedCapacityTemplateId: reservedCapacityTemplateId
           creator: creator
@@ -3383,6 +3559,239 @@ components:
           type: boolean
         failReason:
           type: string
+      type: object
+    TidbCapacityMode:
+      description: |2-
+         - ELASTIC: Elastic Mode with a guaranteed Baseline RCU.
+         - MAX_RCU: Max RCU Compatibility Mode with a customer-defined maximum RCU.
+      enum:
+      - ELASTIC
+      - MAX_RCU
+      type: string
+    nextgenv1beta2ListPrivateEndpointConnectionsResponse:
+      example:
+        privateEndpointConnections:
+        - privateLinkServiceState: "{}"
+          tidbId: tidbId
+          endpointId: endpointId
+          privateEndpointConnectionId: privateEndpointConnectionId
+          privateLinkService: privateLinkService
+          message: message
+          privateIpAddress: privateIpAddress
+          endpointState: "{}"
+          regionDisplayName: regionDisplayName
+          regionId: regionId
+          port: port
+          cloudProvider: "{}"
+          name: name
+          host: host
+          privateDomainName: privateDomainName
+          id: id
+        - privateLinkServiceState: "{}"
+          tidbId: tidbId
+          endpointId: endpointId
+          privateEndpointConnectionId: privateEndpointConnectionId
+          privateLinkService: privateLinkService
+          message: message
+          privateIpAddress: privateIpAddress
+          endpointState: "{}"
+          regionDisplayName: regionDisplayName
+          regionId: regionId
+          port: port
+          cloudProvider: "{}"
+          name: name
+          host: host
+          privateDomainName: privateDomainName
+          id: id
+        totalSize: 0
+        nextPageToken: nextPageToken
+      properties:
+        privateEndpointConnections:
+          items:
+            $ref: '#/components/schemas/nextgenv1beta2PrivateEndpointConnection'
+          type: array
+        totalSize:
+          description: The total number of private link connections that match the
+            query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: |-
+            A token, which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
+    nextgenv1beta2PrivateEndpointConnection:
+      example:
+        privateLinkServiceState: "{}"
+        tidbId: tidbId
+        endpointId: endpointId
+        privateEndpointConnectionId: privateEndpointConnectionId
+        privateLinkService: privateLinkService
+        message: message
+        privateIpAddress: privateIpAddress
+        endpointState: "{}"
+        regionDisplayName: regionDisplayName
+        regionId: regionId
+        port: port
+        cloudProvider: "{}"
+        name: name
+        host: host
+        privateDomainName: privateDomainName
+        id: id
+      properties:
+        name:
+          readOnly: true
+          title: "Format: tidbs/{tidb_id}/privateEndpointConnections/{private_endpoint_connection_id}"
+          type: string
+        id:
+          readOnly: true
+          type: string
+        tidbId:
+          readOnly: true
+          type: string
+        privateEndpointConnectionId:
+          readOnly: true
+          type: string
+        regionId:
+          description: The region where the private endpoint connection is created.
+          type: string
+        regionDisplayName:
+          readOnly: true
+          type: string
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/RegionCloudProvider'
+          description: The cloud provider for the region.
+          type: object
+        endpointId:
+          description: |-
+            The endpoint ID of the private link connection.
+            For AWS, it's VPC endpoint ID.
+            For GCP, it's private service connect endpoint ID.
+            For Azure, it's private endpoint resource ID.
+            For AliCloud, it's endpoint ID.
+          type: string
+        endpointState:
+          allOf:
+          - $ref: '#/components/schemas/nextgenv1beta2PrivateEndpointConnectionEndpointState'
+          type: object
+        message:
+          readOnly: true
+          type: string
+        privateLinkService:
+          description: The private link service name.
+          readOnly: true
+          type: string
+        privateLinkServiceState:
+          allOf:
+          - $ref: '#/components/schemas/nextgenv1beta2PrivateLinkServiceState'
+          description: The private link service state.
+          type: object
+        host:
+          readOnly: true
+          type: string
+        port:
+          readOnly: true
+          type: string
+        privateDomainName:
+          description: |-
+            Only for AliCloud.
+            Use private endpoint's Domain name to generate new TiDB DNS name.
+          type: string
+        privateIpAddress:
+          description: |-
+            Only for Azure.
+            The private IP address of the private endpoint in the user's vNet.
+          type: string
+      required:
+      - endpointId
+      - regionId
+      type: object
+    nextgenv1beta2PrivateEndpointConnectionEndpointState:
+      description: |2-
+         - PENDING: Customer has posted to TiDB cloud API,
+        but endpoint connection has not been accepted **asynchronously** by TiDB Cloud.
+         - DISCOVERED: Customer has created the endpoint in their vpc, but has not posted to TiDB Cloud API.
+      enum:
+      - PENDING
+      - ACTIVE
+      - DELETING
+      - FAILED
+      - DISCOVERED
+      type: string
+    nextgenv1beta2PrivateLinkServiceState:
+      enum:
+      - CREATING
+      - ACTIVE
+      - DELETING
+      type: string
+    nextgenv1beta2PrivateLinkService:
+      example:
+        regionDisplayName: regionDisplayName
+        serviceDnsName: serviceDnsName
+        regionId: regionId
+        availableZones:
+        - availableZones
+        - availableZones
+        tidbId: tidbId
+        cloudProvider: "{}"
+        name: name
+        servicePort: 0
+        state: "{}"
+        serviceName: serviceName
+      properties:
+        name:
+          title: "Format: tidbs/{tidb_id}/privateLinkService"
+          type: string
+        tidbId:
+          readOnly: true
+          type: string
+        regionId:
+          readOnly: true
+          title: "Format: {cloud_provider}-{region_code}"
+          type: string
+        regionDisplayName:
+          readOnly: true
+          type: string
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/RegionCloudProvider'
+          type: object
+        serviceName:
+          description: |-
+            For AWS, it's the service name of the Private Link Service.
+            For GCP, it's the resource name of the service attachment.
+            For Azure, it's service resource ID of the Private Link Service.
+            For AliCloud, it's the service name of the Private Link Service.
+          readOnly: true
+          type: string
+        serviceDnsName:
+          description: |-
+            For AWS, it's the fully qualified domain name (FQDN) shared for all private endpoints, despite which VPC the endpoint located in.
+            For GCP, it's the zone name (suffix of FQDN) shared for all private endpoints located in a single VPC network. The format of FQDN is `<endpoint_name>.<service_dns_name>`.
+            For Azure, it's the zone name shared across public internet. The format of FQDN is `<endpoint_name>-<random_hash>.<service_dns_name>`.
+            For AliCloud, it's the endpoint domain name shared for all private endpoints. The format of FQDN is `<endpoint_name>.<service_dns_name>`.
+          readOnly: true
+          type: string
+        availableZones:
+          description: |-
+            Only available for AWS.
+            Same as the `AvailabilityZones` field in response body of
+            `github.com/aws/aws-sdk-go-v2/service/ec2.DescribeVpcEndpointServices` method.
+          items:
+            type: string
+          readOnly: true
+          type: array
+        servicePort:
+          description: The port of the private link service.
+          format: int32
+          readOnly: true
+          type: integer
+        state:
+          allOf:
+          - $ref: '#/components/schemas/nextgenv1beta2PrivateLinkServiceState'
+          type: object
       type: object
     TidbService_ListTidbs_servicePlan_parameter:
       enum:

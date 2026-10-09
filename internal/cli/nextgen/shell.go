@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"strconv"
 	"time"
@@ -46,6 +47,8 @@ const maxCACertificateSize = 1 << 20
 
 const privateEndpointConnectTimeout = 30 * time.Second
 
+const publicDNSConnectTimeout = 30 * time.Second
+
 func shellCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 	return shellCmdWithSelector(h, plan, selectInstance)
 }
@@ -59,8 +62,11 @@ func shellCmdWithSelector(h *internal.Helper, plan planSpec, selectInstance inst
 		Use:   "shell",
 		Short: fmt.Sprintf("Connect to a %s instance through a public or private endpoint", plan.displayName),
 		Long: "Connect through a public endpoint by default, or an existing private endpoint with --connection-type private-endpoint. " +
+			"With --endpoint host:port, connect directly without discovering or checking the address against API results. " +
+			"Otherwise, discovering private addresses requires private endpoint read permissions and has a 30-second total timeout. " +
 			"Private networking and DNS must already be configured. This command does not create network resources. " +
-			"Private connections have a 30-second initial connection timeout and retain TLS certificate verification; there is no fallback to public connections.",
+			"Private connections have a 30-second initial connection timeout and retain TLS certificate verification; there is no fallback to public connections. " +
+			"For a known public DNS probe failure, the CLI checks that public access is enabled, then warns and attempts a TLS-verified connection with a 30-second initial timeout after password entry.",
 		Args: cobra.NoArgs,
 		Example: fmt.Sprintf(`  $ %[1]s %[2]s shell
   $ %[1]s %[2]s shell -c <instance-id>
@@ -137,18 +143,30 @@ func shellCmdWithSelector(h *internal.Helper, plan planSpec, selectInstance inst
 
 			var endpoint *api.TidbEndpoint
 			var connectTimeout time.Duration
+			var dnsWarning bool
 			if connectionType == api.ENDPOINTCONNECTIONTYPE_PRIVATE_ENDPOINT {
+				var endpoints []api.TidbEndpoint
+				if address == "" {
+					endpoints, err = loadPrivateEndpoints(cmd.Context(), client, id, instance.GetCloudProvider(), int32(h.QueryPageSize))
+					if err != nil {
+						return err
+					}
+				}
 				var selectEndpoint func([]string) (int, error)
 				if interactive {
 					selectEndpoint = promptPrivateEndpoint
 				}
-				endpoint, err = resolvePrivateEndpoint(instance, address, selectEndpoint)
+				endpoint, err = resolvePrivateEndpoint(endpoints, address, selectEndpoint)
 				connectTimeout = privateEndpointConnectTimeout
 			} else {
-				endpoint, err = resolveEndpoint(instance, connectionType)
+				endpoint, dnsWarning, err = resolvePublicEndpoint(cmd.Context(), client, id, instance)
 			}
 			if err != nil {
 				return err
+			}
+			if dnsWarning {
+				fmt.Fprintf(h.IOStreams.Err, "Warning: the API reports %s for PUBLIC endpoint %q; public access is enabled. Attempting a TLS-verified connection with a 30-second initial timeout after password entry.\n", endpoint.ConnectionReachability.Detail.GetMessage(), endpoint.GetHost())
+				connectTimeout = publicDNSConnectTimeout
 			}
 			caURL, err := client.GetCACertificateDownloadURL(cmd.Context(), id)
 			if err != nil {
@@ -199,7 +217,7 @@ func shellCmdWithSelector(h *internal.Helper, plan planSpec, selectInstance inst
 	command.Flags().StringP(flag.User, flag.UserShort, "", "The SQL user name. The default is root.")
 	command.Flags().String(flag.Password, "", "The password of the SQL user.")
 	command.Flags().StringVar(&connection, "connection-type", "public", "The connection type: public or private-endpoint. Does not configure networking.")
-	command.Flags().StringVar(&address, "endpoint", "", "Select an API-returned private endpoint by host:port. Requires --connection-type private-endpoint; required with -c when multiple private endpoints exist.")
+	command.Flags().StringVar(&address, "endpoint", "", "Connect directly to host:port without private endpoint discovery or existence checks. Requires --connection-type private-endpoint; TLS certificate verification remains enabled.")
 	return command
 }
 
@@ -293,15 +311,55 @@ func promptShellUser() (string, error) {
 	return userName, nil
 }
 
-func resolveEndpoint(instance *api.Nextgenv1beta2Tidb, connectionType api.EndpointConnectionType) (*api.TidbEndpoint, error) {
+// resolvePublicEndpoint permits only known DNS probe failures to reach the SQL
+// driver. The setting is a configuration snapshot, not proof of connectivity.
+func resolvePublicEndpoint(ctx context.Context, client cloud.NextGenClient, id string, instance *api.Nextgenv1beta2Tidb) (*api.TidbEndpoint, bool, error) {
 	for i := range instance.Endpoints {
 		endpoint := &instance.Endpoints[i]
-		if endpoint.GetConnectionType() != connectionType {
+		if endpoint.GetConnectionType() != api.ENDPOINTCONNECTIONTYPE_PUBLIC {
 			continue
 		}
-		return validateEndpoint(endpoint)
+		if !isKnownPublicDNSProbeFailure(endpoint) {
+			selected, err := validateEndpoint(endpoint)
+			return selected, false, err
+		}
+		address := net.JoinHostPort(endpoint.GetHost(), strconv.Itoa(int(endpoint.GetPort())))
+		if _, err := parseEndpointAddress(address); err != nil {
+			return nil, false, fmt.Errorf("PUBLIC endpoint is not ready: the API has not returned a usable host and port")
+		}
+		settingCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+		defer cancel()
+		setting, err := client.GetPublicConnectionSetting(settingCtx, id)
+		if err != nil {
+			return nil, false, fmt.Errorf("cannot confirm PUBLIC access is enabled: %w", err)
+		}
+		enabled, _ := setting.GetEnabledOk()
+		if enabled == nil {
+			return nil, false, fmt.Errorf("cannot confirm PUBLIC access is enabled: the API returned no enabled value")
+		}
+		if !*enabled {
+			return nil, false, fmt.Errorf("PUBLIC access is disabled")
+		}
+		return endpoint, true, nil
 	}
-	return nil, fmt.Errorf("instance has no %s endpoint", connectionType)
+	return nil, false, fmt.Errorf("instance has no PUBLIC endpoint")
+}
+
+func isKnownPublicDNSProbeFailure(endpoint *api.TidbEndpoint) bool {
+	if endpoint.GetConnectionType() != api.ENDPOINTCONNECTIONTYPE_PUBLIC {
+		return false
+	}
+	r := endpoint.ConnectionReachability
+	if r == nil || r.Reachable == nil || r.GetReachable() || r.Detail == nil {
+		return false
+	}
+	d := r.Detail
+	if !d.GetServiceActive() || !d.GetEndpointActive() || d.DnsReachable == nil || d.GetDnsReachable() {
+		return false
+	}
+	// Message is human-readable in the API schema. Match only these established
+	// server values; new or absent reasons must retain the existing rejection.
+	return d.GetMessage() == "DNS_NOT_REACHABLE" || d.GetMessage() == "DNS_PROBE_FAILED"
 }
 
 func validateEndpoint(endpoint *api.TidbEndpoint) (*api.TidbEndpoint, error) {

@@ -27,7 +27,7 @@ import (
 )
 
 func TestPasswordCommandResetsPremiumRootPassword(t *testing.T) {
-	instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", "10000", api.V1BETA1SERVICEPLAN_PREMIUM)
+	instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", api.V1BETA1SERVICEPLAN_PREMIUM)
 	id := "tidb-1"
 	instance.TidbId = &id
 	var captured *api.TidbServiceResetRootPasswordBody
@@ -48,7 +48,7 @@ func TestPasswordCommandResetsPremiumRootPassword(t *testing.T) {
 }
 
 func TestPasswordCommandSupportsInteractivePasswordWithExplicitInstance(t *testing.T) {
-	instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", "10000", api.V1BETA1SERVICEPLAN_ESSENTIAL_V2)
+	instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", api.V1BETA1SERVICEPLAN_ESSENTIAL_V2)
 	id := "tidb-1"
 	instance.TidbId = &id
 	client := &fakeNextGenClient{
@@ -76,6 +76,29 @@ func TestPasswordCommandSupportsInteractivePasswordWithExplicitInstance(t *testi
 	require.Equal(t, "true", command.Annotations[telemetry.InteractiveMode])
 }
 
+func TestPasswordCommandPreservesLineBreaks(t *testing.T) {
+	for _, plan := range []planSpec{premiumPlan, essentialV2Plan} {
+		t.Run(plan.commandName, func(t *testing.T) {
+			instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", plan.servicePlan)
+			password := "1234\r\n5678"
+			calls := 0
+			client := &fakeNextGenClient{
+				get: func(context.Context, string) (*api.Nextgenv1beta2Tidb, error) { return instance, nil },
+				password: func(_ context.Context, id string, body *api.TidbServiceResetRootPasswordBody) error {
+					calls++
+					require.Equal(t, "tidb-1", id)
+					require.Equal(t, password, body.GetRootPassword())
+					return nil
+				},
+			}
+			command := passwordCmd(helperWithNextGenClient(client), plan)
+			command.SetArgs([]string{"-c", "tidb-1", "--password", password})
+			require.NoError(t, command.ExecuteContext(context.Background()))
+			require.Equal(t, 1, calls)
+		})
+	}
+}
+
 func TestPasswordCommandRejectsInvalidPasswordBeforeRequest(t *testing.T) {
 	clientCalls := 0
 	h := helperWithNextGenClient(&fakeNextGenClient{})
@@ -87,7 +110,7 @@ func TestPasswordCommandRejectsInvalidPasswordBeforeRequest(t *testing.T) {
 	command.SetArgs([]string{"--cluster-id", "tidb-1", "--password", "short"})
 
 	err := command.ExecuteContext(context.Background())
-	require.ErrorContains(t, err, "root password must be between 8 and 64 characters")
+	require.ErrorContains(t, err, "root password must be between 8 and 64 bytes")
 	require.Zero(t, clientCalls)
 }
 
@@ -118,7 +141,7 @@ func TestPasswordCommandRequiresInstanceForNonInteractiveUse(t *testing.T) {
 }
 
 func TestPasswordCommandRejectsCrossPlanInstance(t *testing.T) {
-	instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", "10000", api.V1BETA1SERVICEPLAN_ESSENTIAL_V2)
+	instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", api.V1BETA1SERVICEPLAN_ESSENTIAL_V2)
 	id := "tidb-1"
 	instance.TidbId = &id
 	resetCalls := 0
@@ -155,6 +178,8 @@ func TestValidateRootPasswordMatchesBackendByteLimit(t *testing.T) {
 		{name: "multibyte below eight runes", password: "测试密码", valid: true},
 		{name: "multibyte maximum", password: strings.Repeat("密", 21) + "a", valid: true},
 		{name: "multibyte above maximum", password: strings.Repeat("密", 30)},
+		{name: "line feed", password: "1234\n5678", valid: true},
+		{name: "carriage return", password: "1234\r5678", valid: true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			err := validateRootPassword(tc.password)

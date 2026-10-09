@@ -37,7 +37,7 @@ func TestPublicEndpointEnableAndDisable(t *testing.T) {
 			}
 			t.Run(plan.commandName+"/"+action, func(t *testing.T) {
 				id := "tidb-1"
-				instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", "5000", plan.servicePlan)
+				instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", plan.servicePlan)
 				instance.TidbId = &id
 				calls := 0
 				client := &fakeNextGenClient{
@@ -72,7 +72,7 @@ func TestPublicEndpointEnableAndDisable(t *testing.T) {
 						args[0] = "essential" // Preserve the existing alias.
 					}
 				}
-				args, err := NormalizeActionArgs(args)
+				args, err := NormalizeActionArgs(command, args)
 				require.NoError(t, err)
 				command.SetArgs(args)
 
@@ -97,7 +97,7 @@ func TestPublicEndpointInteractiveSelectionReadsCurrentInstance(t *testing.T) {
 				name = plan.commandName + "/changed plan"
 			}
 			t.Run(name, func(t *testing.T) {
-				instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", "5000", plan.servicePlan)
+				instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", plan.servicePlan)
 				instance.SetTidbId("tidb-1")
 				var calls []string
 				client := &fakeNextGenClient{
@@ -185,7 +185,7 @@ func TestPublicEndpointDisableConfirmation(t *testing.T) {
 			t.Run(plan.commandName+"/"+tc.name, func(t *testing.T) {
 				client := &fakeNextGenClient{
 					get: func(context.Context, string) (*api.Nextgenv1beta2Tidb, error) {
-						return api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", "5000", plan.servicePlan), nil
+						return api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", plan.servicePlan), nil
 					},
 				}
 				patches, confirmations := 0, 0
@@ -231,7 +231,7 @@ func TestPublicEndpointStopsOnErrors(t *testing.T) {
 	for _, stage := range []string{"selection", "get", "update", "nil response"} {
 		t.Run(stage, func(t *testing.T) {
 			patches := 0
-			instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", "5000", premiumPlan.servicePlan)
+			instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", premiumPlan.servicePlan)
 			instance.SetTidbId("tidb-1")
 			client := &fakeNextGenClient{
 				get: func(context.Context, string) (*api.Nextgenv1beta2Tidb, error) {

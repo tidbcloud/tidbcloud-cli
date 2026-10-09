@@ -19,6 +19,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"encoding/pem"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -139,6 +140,54 @@ func TestNextGenClientUpdatesPublicConnectionSetting(t *testing.T) {
 					require.Equal(t, 2, calls)
 				} else {
 					require.Equal(t, 1, calls)
+				}
+			})
+		}
+	}
+}
+
+func TestNextGenClientGetsPublicConnectionSetting(t *testing.T) {
+	for _, auth := range []string{"bearer", "digest"} {
+		for _, status := range []int{http.StatusOK, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound} {
+			t.Run(fmt.Sprintf("%s/%d", auth, status), func(t *testing.T) {
+				calls := 0
+				transport := roundTripFunc(func(r *http.Request) (*http.Response, error) {
+					calls++
+					require.Equal(t, http.MethodGet, r.Method)
+					require.Equal(t, "/v1beta2/tidbs/tidb-1/publicConnectionSetting", r.URL.Path)
+					require.Empty(t, r.URL.RawQuery)
+					require.Zero(t, r.ContentLength)
+					response := &http.Response{StatusCode: status, Status: fmt.Sprintf("%d %s", status, http.StatusText(status)),
+						Header: http.Header{"Content-Type": []string{"application/json"}}, Request: r,
+						Body: io.NopCloser(strings.NewReader(`{"enabled":true}`))}
+					if auth == "digest" && calls == 1 {
+						response.StatusCode, response.Status = http.StatusUnauthorized, "401 Unauthorized"
+						response.Header.Set("WWW-Authenticate", `Digest realm="test", nonce="nonce", algorithm=MD5, qop="auth"`)
+						return response, nil
+					}
+					if auth == "bearer" {
+						require.Equal(t, "Bearer test-token", r.Header.Get("Authorization"))
+					} else {
+						require.True(t, strings.HasPrefix(r.Header.Get("Authorization"), "Digest "))
+					}
+					return response, nil
+				})
+				var authenticated http.RoundTripper = NewTransportWithBearToken(transport, "test-token")
+				wantCalls := 1
+				if auth == "digest" {
+					authenticated = NewTransportWithDigest(transport, "test-public-key", "test-private-key")
+					wantCalls = 2
+				}
+				client, err := newNextGenClientDelegate(authenticated, "https://example.test")
+				require.NoError(t, err)
+				result, err := client.GetPublicConnectionSetting(context.Background(), "tidb-1")
+				require.Equal(t, wantCalls, calls)
+				if status == http.StatusOK {
+					require.NoError(t, err)
+					require.True(t, result.GetEnabled())
+				} else {
+					require.ErrorContains(t, err, fmt.Sprint(status))
+					require.ErrorContains(t, err, "GET /v1beta2/tidbs/tidb-1/publicConnectionSetting")
 				}
 			})
 		}
@@ -303,4 +352,79 @@ func TestNextGenClientCustomCAPreservesStricterTLSMinimum(t *testing.T) {
 	require.True(t, ok)
 	require.NotNil(t, transport.TLSClientConfig)
 	require.Equal(t, uint16(tls.VersionTLS13), transport.TLSClientConfig.MinVersion)
+}
+
+func TestNextGenPrivateEndpointReadContract(t *testing.T) {
+	for _, auth := range []string{"bearer", "digest"} {
+		for _, endpoint := range []string{"privateEndpointConnections", "privateLinkService"} {
+			for _, status := range []int{http.StatusOK, http.StatusUnauthorized, http.StatusForbidden} {
+				t.Run(fmt.Sprintf("%s/%s/%d", auth, endpoint, status), func(t *testing.T) {
+					calls := 0
+					transport := roundTripFunc(func(r *http.Request) (*http.Response, error) {
+						calls++
+						require.Equal(t, http.MethodGet, r.Method)
+						require.Equal(t, "/v1beta2/tidbs/tidb-1/"+endpoint, r.URL.Path)
+						if endpoint == "privateEndpointConnections" {
+							require.Equal(t, "20", r.URL.Query().Get("pageSize"))
+							require.Equal(t, "page-2", r.URL.Query().Get("pageToken"))
+						} else {
+							require.Empty(t, r.URL.RawQuery)
+						}
+						payload := `{"cloudProvider":"AWS","state":"ACTIVE","serviceDnsName":"sql.example.com","servicePort":4000}`
+						if endpoint == "privateEndpointConnections" {
+							payload = `{"privateEndpointConnections":[{"regionId":"aws-us-west-2","endpointId":"vpce-test","host":"sql.example.com","port":"4000","endpointState":"ACTIVE","privateLinkServiceState":"ACTIVE"}],"nextPageToken":"page-3"}`
+						}
+						if status != http.StatusOK {
+							payload = `{"code":7,"message":"access denied"}`
+						}
+						response := &http.Response{StatusCode: status, Status: fmt.Sprintf("%d %s", status, http.StatusText(status)),
+							Header: http.Header{"Content-Type": []string{"application/json"}}, Request: r,
+							Body: io.NopCloser(strings.NewReader(payload))}
+						if auth == "digest" && calls == 1 {
+							response.StatusCode, response.Status = http.StatusUnauthorized, "401 Unauthorized"
+							response.Header.Set("WWW-Authenticate", `Digest realm="test", nonce="nonce", algorithm=MD5, qop="auth"`)
+							return response, nil
+						}
+						if auth == "bearer" {
+							require.Equal(t, "Bearer test-token", r.Header.Get("Authorization"))
+						} else {
+							require.True(t, strings.HasPrefix(r.Header.Get("Authorization"), "Digest "))
+						}
+						return response, nil
+					})
+					var authenticated http.RoundTripper = NewTransportWithBearToken(transport, "test-token")
+					wantCalls := 1
+					if auth == "digest" {
+						authenticated = NewTransportWithDigest(transport, "test-public-key", "test-private-key")
+						wantCalls = 2
+					}
+					client, err := newNextGenClientDelegate(authenticated, "https://example.test")
+					require.NoError(t, err)
+					if endpoint == "privateEndpointConnections" {
+						var result *api.Nextgenv1beta2ListPrivateEndpointConnectionsResponse
+						result, err = client.ListPrivateEndpointConnections(context.Background(), "tidb-1", 20, "page-2")
+						if status == http.StatusOK {
+							require.NoError(t, err)
+							require.Len(t, result.GetPrivateEndpointConnections(), 1)
+							require.Equal(t, "4000", result.PrivateEndpointConnections[0].GetPort())
+							require.Equal(t, "page-3", result.GetNextPageToken())
+						}
+					} else {
+						var result *api.Nextgenv1beta2PrivateLinkService
+						result, err = client.GetPrivateLinkService(context.Background(), "tidb-1")
+						if status == http.StatusOK {
+							require.NoError(t, err)
+							require.Equal(t, "sql.example.com", result.GetServiceDnsName())
+							require.EqualValues(t, 4000, result.GetServicePort())
+						}
+					}
+					require.Equal(t, wantCalls, calls)
+					if status != http.StatusOK {
+						require.ErrorContains(t, err, fmt.Sprint(status))
+						require.ErrorContains(t, err, "GET /v1beta2/tidbs/tidb-1/"+endpoint)
+					}
+				})
+			}
+		}
+	}
 }

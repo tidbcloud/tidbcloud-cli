@@ -52,6 +52,8 @@ type APIClient struct {
 
 	CustomerManagedEncryptionKeyServiceAPI *CustomerManagedEncryptionKeyServiceAPIService
 
+	PrivateEndpointConnectionServiceAPI *PrivateEndpointConnectionServiceAPIService
+
 	PublicConnectionSettingServiceAPI *PublicConnectionSettingServiceAPIService
 
 	RegionAPI *RegionAPIService
@@ -77,6 +79,7 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	// API Services
 	c.BackupAPI = (*BackupAPIService)(&c.common)
 	c.CustomerManagedEncryptionKeyServiceAPI = (*CustomerManagedEncryptionKeyServiceAPIService)(&c.common)
+	c.PrivateEndpointConnectionServiceAPI = (*PrivateEndpointConnectionServiceAPIService)(&c.common)
 	c.PublicConnectionSettingServiceAPI = (*PublicConnectionSettingServiceAPIService)(&c.common)
 	c.RegionAPI = (*RegionAPIService)(&c.common)
 	c.TiDBCloudPremiumInstanceAPI = (*TiDBCloudPremiumInstanceAPIService)(&c.common)

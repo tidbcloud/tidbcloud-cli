@@ -92,7 +92,8 @@ func createCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 				}
 			}
 
-			body := api.NewNextgenv1beta2Tidb(displayName, regionID, strconv.FormatInt(maxRCU, 10), plan.servicePlan)
+			body := api.NewNextgenv1beta2Tidb(displayName, regionID, plan.servicePlan)
+			body.SetMaxRcu(strconv.FormatInt(maxRCU, 10))
 			if projectID != "" {
 				body.Labels = &map[string]string{projectIDLabel: projectID}
 				cmd.Annotations[telemetry.ProjectID] = projectID

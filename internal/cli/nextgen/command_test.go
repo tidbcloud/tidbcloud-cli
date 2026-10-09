@@ -30,21 +30,25 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/telemetry"
 	api "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta2/nextgen"
 
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
 )
 
 type fakeNextGenClient struct {
-	create      func(context.Context, *api.Nextgenv1beta2Tidb) (*api.Nextgenv1beta2Tidb, error)
-	list        func(context.Context, api.TidbServiceListTidbsServicePlanParameter, *int32, *string) (*api.V1beta2ListTidbsResponse, error)
-	get         func(context.Context, string) (*api.Nextgenv1beta2Tidb, error)
-	update      func(context.Context, string, *api.TheTiDBCloudPremiumInstanceToUpdate) (*api.Nextgenv1beta2Tidb, error)
-	delete      func(context.Context, string) (*api.Nextgenv1beta2Tidb, error)
-	password    func(context.Context, string, *api.TidbServiceResetRootPasswordBody) error
-	regions     func(context.Context, api.TidbServiceListTidbsServicePlanParameter, *int32, *string) (*api.V1beta2ListRegionsResponse, error)
-	certificate func(context.Context, string) (*api.V1beta2CaCertificateDownloadUrl, error)
-	public      func(context.Context, string, *api.V1beta2PublicConnectionSetting) (*api.V1beta2PublicConnectionSetting, error)
-	principal   func(context.Context, string) (*api.V1beta2CmekAccessIamPrincipal, error)
-	verifyCMEK  func(context.Context, *api.V1beta2CustomerManagedEncryptionKey) (*api.V1beta2VerifyCmekAccessIamPrincipalResponse, error)
+	listPrivate    func(context.Context, string, int32, string) (*api.Nextgenv1beta2ListPrivateEndpointConnectionsResponse, error)
+	privateService func(context.Context, string) (*api.Nextgenv1beta2PrivateLinkService, error)
+	create         func(context.Context, *api.Nextgenv1beta2Tidb) (*api.Nextgenv1beta2Tidb, error)
+	list           func(context.Context, api.TidbServiceListTidbsServicePlanParameter, *int32, *string) (*api.V1beta2ListTidbsResponse, error)
+	get            func(context.Context, string) (*api.Nextgenv1beta2Tidb, error)
+	update         func(context.Context, string, *api.TheTiDBCloudPremiumInstanceToUpdate) (*api.Nextgenv1beta2Tidb, error)
+	delete         func(context.Context, string) (*api.Nextgenv1beta2Tidb, error)
+	password       func(context.Context, string, *api.TidbServiceResetRootPasswordBody) error
+	regions        func(context.Context, api.TidbServiceListTidbsServicePlanParameter, *int32, *string) (*api.V1beta2ListRegionsResponse, error)
+	certificate    func(context.Context, string) (*api.V1beta2CaCertificateDownloadUrl, error)
+	getPublic      func(context.Context, string) (*api.V1beta2PublicConnectionSetting, error)
+	public         func(context.Context, string, *api.V1beta2PublicConnectionSetting) (*api.V1beta2PublicConnectionSetting, error)
+	principal      func(context.Context, string) (*api.V1beta2CmekAccessIamPrincipal, error)
+	verifyCMEK     func(context.Context, *api.V1beta2CustomerManagedEncryptionKey) (*api.V1beta2VerifyCmekAccessIamPrincipalResponse, error)
 }
 
 func (f *fakeNextGenClient) CreateTiDB(ctx context.Context, body *api.Nextgenv1beta2Tidb) (*api.Nextgenv1beta2Tidb, error) {
@@ -77,6 +81,10 @@ func (f *fakeNextGenClient) ListRegions(ctx context.Context, plan api.TidbServic
 
 func (f *fakeNextGenClient) GetCACertificateDownloadURL(ctx context.Context, id string) (*api.V1beta2CaCertificateDownloadUrl, error) {
 	return f.certificate(ctx, id)
+}
+
+func (f *fakeNextGenClient) GetPublicConnectionSetting(ctx context.Context, id string) (*api.V1beta2PublicConnectionSetting, error) {
+	return f.getPublic(ctx, id)
 }
 
 func (f *fakeNextGenClient) UpdatePublicConnectionSetting(ctx context.Context, id string, body *api.V1beta2PublicConnectionSetting) (*api.V1beta2PublicConnectionSetting, error) {
@@ -129,7 +137,7 @@ func TestCreateBindsPlanEncryptionAndProject(t *testing.T) {
 			command.SetArgs([]string{"--project-id", projectID, "--display-name", "test-instance", "--region", "aws-us-west-2", "--max-rcu", "10000", "--encryption", "default-key", "--output", "json"})
 			require.NoError(t, command.ExecuteContext(context.Background()))
 			require.Equal(t, tt.plan.servicePlan, captured.ServicePlan)
-			require.Equal(t, "10000", captured.MaxRcu)
+			require.Equal(t, "10000", captured.GetMaxRcu())
 			require.NotNil(t, captured.Labels)
 			require.Equal(t, projectID, (*captured.Labels)[projectIDLabel])
 			require.Equal(t, projectID, command.Annotations[telemetry.ProjectID])
@@ -139,6 +147,8 @@ func TestCreateBindsPlanEncryptionAndProject(t *testing.T) {
 			payload, err := json.Marshal(captured)
 			require.NoError(t, err)
 			require.Contains(t, string(payload), `"defaultKey":{}`)
+			require.Contains(t, string(payload), `"maxRcu":"10000"`)
+			require.NotContains(t, string(payload), `"baselineRcu"`)
 			require.NotContains(t, string(payload), `"cmek"`)
 		})
 	}
@@ -177,8 +187,9 @@ func TestCreateRejectsInvalidOutputBeforeRequest(t *testing.T) {
 
 func TestUpdateSendsOnlyChangedFields(t *testing.T) {
 	id := "tidb-1"
-	current := api.NewNextgenv1beta2Tidb("old-name", "aws-us-west-2", "10000", api.V1BETA1SERVICEPLAN_PREMIUM)
+	current := api.NewNextgenv1beta2Tidb("old-name", "aws-us-west-2", api.V1BETA1SERVICEPLAN_PREMIUM)
 	current.TidbId = &id
+	current.SetMaxRcu("10000")
 	var captured *api.TheTiDBCloudPremiumInstanceToUpdate
 	client := &fakeNextGenClient{
 		get: func(context.Context, string) (*api.Nextgenv1beta2Tidb, error) { return current, nil },
@@ -253,7 +264,7 @@ func TestPlanGuardRejectsCrossPlanOperation(t *testing.T) {
 			{"public-endpoint", "disable", "-c", "tidb-1", "--force"},
 		} {
 			t.Run(plan.commandName+"/"+args[0], func(t *testing.T) {
-				instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", "10000", otherPlan.servicePlan)
+				instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", otherPlan.servicePlan)
 				instance.TidbId = api.PtrString("tidb-1")
 				client := &fakeNextGenClient{get: func(context.Context, string) (*api.Nextgenv1beta2Tidb, error) { return instance, nil }}
 				h := helperWithNextGenClient(client)
@@ -274,7 +285,7 @@ func TestDeleteRequiresConfirmationOrForce(t *testing.T) {
 				deletes := 0
 				client := &fakeNextGenClient{
 					get: func(context.Context, string) (*api.Nextgenv1beta2Tidb, error) {
-						return api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", "5000", plan.servicePlan), nil
+						return api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", plan.servicePlan), nil
 					},
 					delete: func(_ context.Context, id string) (*api.Nextgenv1beta2Tidb, error) {
 						require.Equal(t, "tidb-1", id)
@@ -307,7 +318,7 @@ func TestRetrieveTiDBsUsesPlanAndPaginates(t *testing.T) {
 		require.Equal(t, essentialV2Plan.queryPlan, plan)
 		require.Equal(t, int32(10), *size)
 		calls++
-		instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", "10000", api.V1BETA1SERVICEPLAN_ESSENTIAL_V2)
+		instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", api.V1BETA1SERVICEPLAN_ESSENTIAL_V2)
 		if calls == 1 {
 			next := "page-2"
 			return &api.V1beta2ListTidbsResponse{Tidbs: []api.Nextgenv1beta2Tidb{*instance}, NextPageToken: &next}, nil
@@ -391,7 +402,7 @@ func TestShellRequiresClusterIDForNonInteractiveMode(t *testing.T) {
 
 func TestShellInteractiveModeSelectsInstance(t *testing.T) {
 	id := "tidb-1"
-	instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", "10000", api.V1BETA1SERVICEPLAN_PREMIUM)
+	instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", api.V1BETA1SERVICEPLAN_PREMIUM)
 	instance.TidbId = &id
 	state := api.V1BETA1CLUSTERSTATE_CREATING
 	instance.State = &state
@@ -417,7 +428,7 @@ func TestShellInteractiveModeSelectsInstance(t *testing.T) {
 
 func TestShellClusterIDSkipsInteractiveSelection(t *testing.T) {
 	id := "tidb-1"
-	instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", "10000", api.V1BETA1SERVICEPLAN_PREMIUM)
+	instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", api.V1BETA1SERVICEPLAN_PREMIUM)
 	instance.TidbId = &id
 	state := api.V1BETA1CLUSTERSTATE_CREATING
 	instance.State = &state
@@ -451,7 +462,7 @@ func TestSelectShellInstanceRejectsEmptyList(t *testing.T) {
 
 func TestShellInstanceChoiceIncludesProject(t *testing.T) {
 	id := "tidb-1"
-	instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", "10000", api.V1BETA1SERVICEPLAN_PREMIUM)
+	instance := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", api.V1BETA1SERVICEPLAN_PREMIUM)
 	instance.TidbId = &id
 	state := api.V1BETA1CLUSTERSTATE_ACTIVE
 	instance.State = &state
@@ -461,7 +472,7 @@ func TestShellInstanceChoiceIncludesProject(t *testing.T) {
 	require.Equal(t, "test-instance(tidb-1)[ACTIVE][aws-us-west-2][project:project-1]", instanceChoice{instance: instance}.String())
 }
 
-func TestResolveEndpointSelectsRequestedType(t *testing.T) {
+func TestResolvePublicEndpointSelectsPublicType(t *testing.T) {
 	privateType := api.ENDPOINTCONNECTIONTYPE_PRIVATE_ENDPOINT
 	publicType := api.ENDPOINTCONNECTIONTYPE_PUBLIC
 	privateHost, publicHost := "private.example.com", "public.example.com"
@@ -470,8 +481,9 @@ func TestResolveEndpointSelectsRequestedType(t *testing.T) {
 		{Host: &privateHost, Port: &privatePort, ConnectionType: &privateType},
 		{Host: &publicHost, Port: &publicPort, ConnectionType: &publicType},
 	}}
-	endpoint, err := resolveEndpoint(instance, api.ENDPOINTCONNECTIONTYPE_PUBLIC)
+	endpoint, warning, err := resolvePublicEndpoint(context.Background(), nil, "tidb-1", instance)
 	require.NoError(t, err)
+	require.False(t, warning)
 	require.Equal(t, publicHost, endpoint.GetHost())
 	require.Equal(t, publicPort, endpoint.GetPort())
 }
@@ -493,7 +505,7 @@ func TestResolveEndpointReportsReachabilityMessage(t *testing.T) {
 		},
 	}}}
 
-	_, err := resolveEndpoint(instance, api.ENDPOINTCONNECTIONTYPE_PUBLIC)
+	_, _, err := resolvePublicEndpoint(context.Background(), nil, "tidb-1", instance)
 	require.EqualError(t, err, "PUBLIC endpoint is not reachable: allowlist required")
 }
 
@@ -513,6 +525,15 @@ func TestAnnotateShellTLSError(t *testing.T) {
 	require.Same(t, other, annotateShellTLSError(api.ENDPOINTCONNECTIONTYPE_PUBLIC, "sql.example.com", other))
 }
 
+func actionTestRoot() *cobra.Command {
+	root := &cobra.Command{Use: "ticloud"}
+	root.PersistentFlags().BoolP("debug", "D", false, "")
+	root.PersistentFlags().Bool("no-color", false, "")
+	root.PersistentFlags().StringP("profile", "P", "", "")
+	root.AddCommand(PremiumCmd(&internal.Helper{}), EssentialCmd(&internal.Helper{}))
+	return root
+}
+
 func TestNormalizeActionArgs(t *testing.T) {
 	tests := []struct {
 		name string
@@ -530,22 +551,46 @@ func TestNormalizeActionArgs(t *testing.T) {
 		{name: "project before create action", args: []string{"premium", "--project-id", "12345", "--create", "--display-name", "test-instance"}, want: []string{"premium", "create", "--project-id", "12345", "--display-name", "test-instance"}},
 		{name: "debug before action", args: []string{"premium", "--debug", "--list"}, want: []string{"premium", "list", "--debug"}},
 		{name: "short debug before command", args: []string{"-D=true", "premium", "--list"}, want: []string{"-D=true", "premium", "list"}},
+		{name: "grouped root flags", args: []string{"-DPprod", "premium", "--list"}, want: []string{"-DPprod", "premium", "list"}},
+		{name: "grouped inherited flags", args: []string{"essential-v2", "-DPprod", "--list"}, want: []string{"essential-v2", "list", "-DPprod"}},
+		{name: "action name as profile value", args: []string{"premium", "-P", "--delete", "--list"}, want: []string{"premium", "list", "-P", "--delete"}},
+		{name: "action name as display name value", args: []string{"premium", "--display-name", "--delete", "--create"}, want: []string{"premium", "create", "--display-name", "--delete"}},
+		{name: "subcommand name as display name value", args: []string{"premium", "-n", "shell", "--create"}, want: []string{"premium", "create", "-n", "shell"}},
+		{name: "help before action", args: []string{"premium", "-h", "--create"}, want: []string{"premium", "create", "-h"}},
 		{name: "completion", args: []string{"__complete", "premium", "--create", "--"}, want: []string{"__complete", "premium", "create", "--"}},
+		{name: "completion after grouped flags", args: []string{"__complete", "-DPprod", "essential", "--create", "--reg"}, want: []string{"__complete", "-DPprod", "essential", "create", "--reg"}},
 		{name: "completion without descriptions", args: []string{"__completeNoDesc", "essential", "--list", "--o"}, want: []string{"__completeNoDesc", "essential", "list", "--o"}},
+		{name: "missing value left for completion", args: []string{"__complete", "premium", "--create", "--region"}, want: []string{"__complete", "premium", "create", "--region"}},
 		{name: "subcommand unchanged", args: []string{"premium", "shell", "-c", "tidb-1"}, want: []string{"premium", "shell", "-c", "tidb-1"}},
 		{name: "profile before subcommand unchanged", args: []string{"premium", "--profile", "prod", "shell", "-c", "tidb-1"}, want: []string{"premium", "--profile", "prod", "shell", "-c", "tidb-1"}},
 		{name: "short debug before subcommand unchanged", args: []string{"premium", "-D=true", "shell", "-c", "tidb-1", "--password", "--create"}, want: []string{"premium", "-D=true", "shell", "-c", "tidb-1", "--password", "--create"}},
 		{name: "attached profile before subcommand unchanged", args: []string{"premium", "-Pprod", "shell", "-c", "tidb-1", "--password", "--create"}, want: []string{"premium", "-Pprod", "shell", "-c", "tidb-1", "--password", "--create"}},
 		{name: "password value unchanged", args: []string{"premium", "shell", "-c", "tidb-1", "--password", "--create"}, want: []string{"premium", "shell", "-c", "tidb-1", "--password", "--create"}},
+		{name: "password before subcommand unchanged", args: []string{"premium", "--password", "--delete", "shell", "-c", "tidb-1"}, want: []string{"premium", "--password", "--delete", "shell", "-c", "tidb-1"}},
+		{name: "terminator used as password value", args: []string{"essential", "--password", "--", "shell", "-c", "tidb-1"}, want: []string{"essential", "--password", "--", "shell", "-c", "tidb-1"}},
 		{name: "action after flag terminator unchanged", args: []string{"premium", "-c", "tidb-1", "--force", "--", "--delete"}, want: []string{"premium", "-c", "tidb-1", "--force", "--", "--delete"}},
+		{name: "root flag terminator unchanged", args: []string{"--", "premium", "--list"}, want: []string{"--", "premium", "--list"}},
+		{name: "unknown flag retained for Cobra", args: []string{"premium", "--list", "--unknown"}, want: []string{"premium", "list", "--unknown"}},
+		{name: "unknown flag value not treated as action", args: []string{"premium", "--unknown", "--delete"}, want: []string{"premium", "--unknown", "--delete"}},
+		{name: "empty args"},
 		{name: "unrelated command values unchanged", args: []string{"serverless", "shell", "-c", "cluster-1", "--user", "premium", "--password", "--list"}, want: []string{"serverless", "shell", "-c", "cluster-1", "--user", "premium", "--password", "--list"}},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actual, err := NormalizeActionArgs(tt.args)
+			root := actionTestRoot()
+			original := append([]string(nil), tt.args...)
+			actual, err := NormalizeActionArgs(root, tt.args)
 			require.NoError(t, err)
 			require.Equal(t, tt.want, actual)
+			require.Equal(t, original, tt.args)
+			require.Zero(t, root.PersistentFlags().NFlag())
+			debug, err := root.PersistentFlags().GetBool("debug")
+			require.NoError(t, err)
+			require.False(t, debug)
+			profile, err := root.PersistentFlags().GetString("profile")
+			require.NoError(t, err)
+			require.Empty(t, profile)
 		})
 	}
 }
@@ -563,7 +608,7 @@ func TestNormalizeActionArgsRejectsInvalidSelections(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := NormalizeActionArgs(tt.args)
+			_, err := NormalizeActionArgs(actionTestRoot(), tt.args)
 			require.ErrorContains(t, err, tt.want)
 		})
 	}
@@ -591,4 +636,12 @@ func TestActionHelpUsesPublicFlagSyntax(t *testing.T) {
 	require.NotContains(t, output.String(), "ticloud premium create [flags]")
 	require.Contains(t, command.Long, "--display-name")
 	require.Contains(t, command.Long, "--cluster-id")
+}
+
+func (f *fakeNextGenClient) ListPrivateEndpointConnections(ctx context.Context, id string, size int32, token string) (*api.Nextgenv1beta2ListPrivateEndpointConnectionsResponse, error) {
+	return f.listPrivate(ctx, id, size, token)
+}
+
+func (f *fakeNextGenClient) GetPrivateLinkService(ctx context.Context, id string) (*api.Nextgenv1beta2PrivateLinkService, error) {
+	return f.privateService(ctx, id)
 }

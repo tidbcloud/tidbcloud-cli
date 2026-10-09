@@ -215,6 +215,8 @@ Class | Method | HTTP request | Description
 *BackupAPI* | [**TidbServiceRestoreTidb**](docs/BackupAPI.md#tidbservicerestoretidb) | **Post** /tidbs:restore | Restore a TiDB Cloud Premium instance from a backup
 *CustomerManagedEncryptionKeyServiceAPI* | [**CustomerManagedEncryptionKeyServiceGetCmekAccessIamPrincipal**](docs/CustomerManagedEncryptionKeyServiceAPI.md#customermanagedencryptionkeyservicegetcmekaccessiamprincipal) | **Get** /cmeks:principal | Get CMEK IAM principal
 *CustomerManagedEncryptionKeyServiceAPI* | [**CustomerManagedEncryptionKeyServiceVerifyCmekAccessIamPrincipal**](docs/CustomerManagedEncryptionKeyServiceAPI.md#customermanagedencryptionkeyserviceverifycmekaccessiamprincipal) | **Post** /cmeks:verifyPrincipal | Verify CMEK IAM principal
+*PrivateEndpointConnectionServiceAPI* | [**PrivateEndpointConnectionServiceGetPrivateLinkService**](docs/PrivateEndpointConnectionServiceAPI.md#privateendpointconnectionservicegetprivatelinkservice) | **Get** /tidbs/{tidbId}/privateLinkService | Get private link service
+*PrivateEndpointConnectionServiceAPI* | [**PrivateEndpointConnectionServiceListPrivateEndpointConnections**](docs/PrivateEndpointConnectionServiceAPI.md#privateendpointconnectionservicelistprivateendpointconnections) | **Get** /tidbs/{tidbId}/privateEndpointConnections | List private endpoint connections
 *PublicConnectionSettingServiceAPI* | [**PublicConnectionSettingServiceGetPublicConnectionSetting**](docs/PublicConnectionSettingServiceAPI.md#publicconnectionsettingservicegetpublicconnectionsetting) | **Get** /tidbs/{tidbId}/publicConnectionSetting | Get public connection setting
 *PublicConnectionSettingServiceAPI* | [**PublicConnectionSettingServiceUpdatePublicConnectionSetting**](docs/PublicConnectionSettingServiceAPI.md#publicconnectionsettingserviceupdatepublicconnectionsetting) | **Patch** /tidbs/{tidbId}/publicConnectionSetting | Update public connection setting
 *RegionAPI* | [**RegionServiceListRegions**](docs/RegionAPI.md#regionservicelistregions) | **Get** /regions | List regions
@@ -239,12 +241,18 @@ Class | Method | HTTP request | Description
  - [CustomerManagedEncryptionKeyAliyunKms](docs/CustomerManagedEncryptionKeyAliyunKms.md)
  - [CustomerManagedEncryptionKeyAwsKms](docs/CustomerManagedEncryptionKeyAwsKms.md)
  - [EndpointConnectionType](docs/EndpointConnectionType.md)
+ - [Nextgenv1beta2ListPrivateEndpointConnectionsResponse](docs/Nextgenv1beta2ListPrivateEndpointConnectionsResponse.md)
+ - [Nextgenv1beta2PrivateEndpointConnection](docs/Nextgenv1beta2PrivateEndpointConnection.md)
+ - [Nextgenv1beta2PrivateEndpointConnectionEndpointState](docs/Nextgenv1beta2PrivateEndpointConnectionEndpointState.md)
+ - [Nextgenv1beta2PrivateLinkService](docs/Nextgenv1beta2PrivateLinkService.md)
+ - [Nextgenv1beta2PrivateLinkServiceState](docs/Nextgenv1beta2PrivateLinkServiceState.md)
  - [Nextgenv1beta2Tidb](docs/Nextgenv1beta2Tidb.md)
  - [ProtobufAny](docs/ProtobufAny.md)
  - [RegionCloudProvider](docs/RegionCloudProvider.md)
  - [ReservedCapacityScope](docs/ReservedCapacityScope.md)
  - [RpcStatus](docs/RpcStatus.md)
  - [TheTiDBCloudPremiumInstanceToUpdate](docs/TheTiDBCloudPremiumInstanceToUpdate.md)
+ - [TidbCapacityMode](docs/TidbCapacityMode.md)
  - [TidbDualLayerDataEncryption](docs/TidbDualLayerDataEncryption.md)
  - [TidbEndpoint](docs/TidbEndpoint.md)
  - [TidbServiceListTidbBackupsStatesParameterInner](docs/TidbServiceListTidbBackupsStatesParameterInner.md)

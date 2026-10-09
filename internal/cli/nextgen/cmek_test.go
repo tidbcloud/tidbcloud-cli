@@ -64,7 +64,7 @@ func TestCreateCMEK(t *testing.T) {
 				},
 			}
 			cmd := PremiumCmd(helperWithNextGenClient(client))
-			args, err := NormalizeActionArgs([]string{"premium", "--create", "--display-name", "cmek-test", "--region", tc.region, "--max-rcu", "5000", "--project-id", "4078", "--encryption", "cmek", "--cmek-key-arn", tc.arn, "-o", "json"})
+			args, err := NormalizeActionArgs(actionTestRoot(), []string{"premium", "--create", "--display-name", "cmek-test", "--region", tc.region, "--max-rcu", "5000", "--project-id", "4078", "--encryption", "cmek", "--cmek-key-arn", tc.arn, "-o", "json"})
 			require.NoError(t, err)
 			cmd.SetArgs(args[1:])
 			require.NoError(t, cmd.Execute())

@@ -25,6 +25,10 @@
     {
       "name": "Region",
       "description": "Retrieve available regions for deploying TiDB Cloud Premium instances."
+    },
+    {
+      "name": "PrivateEndpointConnectionService",
+      "description": "Retrieve existing private connection addresses for Premium and Essential V2 instances."
     }
   ],
   "host": "cloud.tidbapi.com",
@@ -1856,6 +1860,153 @@
           }
         ]
       }
+    },
+    "/tidbs/{tidbId}/privateEndpointConnections": {
+      "get": {
+        "summary": "List private endpoint connections",
+        "description": "Lists all private endpoint connections for a specific TiDB Cloud Premium instance.",
+        "operationId": "PrivateEndpointConnectionService_ListPrivateEndpointConnections",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/nextgenv1beta2ListPrivateEndpointConnectionsResponse"
+            }
+          },
+          "400": {
+            "description": "A request field is invalid.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          },
+          "401": {
+            "description": "The credentials cannot be authenticated.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          },
+          "403": {
+            "description": "The authenticated identity does not have permission to access the resource.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          },
+          "429": {
+            "description": "You have exceeded the rate limit.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "tidbId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "pageSize",
+            "description": "The maximum number of private link connections to return. The service may return fewer than this value.\nIf unspecified, at most X private link connections will be returned.\nThe maximum value is X; values above X will be coerced to X.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "pageToken",
+            "description": "A page token, received from a previous `ListPrivateLinkConnections` call.\nProvide this to retrieve the subsequent page.",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "skip",
+            "description": "The number of individual resources to skip before starting to return results.\nIf the skip value causes the cursor to move past the end of the collection,\nthe response will be 200 OK with an empty result set and no next_page_token.",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int32"
+          }
+        ],
+        "tags": [
+          "PrivateEndpointConnectionService"
+        ]
+      }
+    },
+    "/tidbs/{tidbId}/privateLinkService": {
+      "get": {
+        "summary": "Get private link service",
+        "description": "Retrieves the private link service details for a specific TiDB Cloud Premium instance.",
+        "operationId": "PrivateEndpointConnectionService_GetPrivateLinkService",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/nextgenv1beta2PrivateLinkService"
+            }
+          },
+          "400": {
+            "description": "A request field is invalid.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          },
+          "401": {
+            "description": "The credentials cannot be authenticated.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          },
+          "403": {
+            "description": "The authenticated identity does not have permission to access the resource.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          },
+          "429": {
+            "description": "You have exceeded the rate limit.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "tidbId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "PrivateEndpointConnectionService"
+        ]
+      }
     }
   },
   "definitions": {
@@ -2103,13 +2254,15 @@
         "minRcu": {
           "type": "string",
           "format": "int64",
-          "description": "The minimum number of Request Capacity Units (RCUs) for the TiDB Cloud Premium instance.\n\nThis field is read-only and is automatically calculated as `max(5000, maxRcu / 4)`.",
+          "x-nullable": true,
+          "description": "The minimum number of Request Capacity Units (RCUs) for the TiDB Cloud Premium instance.\n\nThis field is read-only and is calculated by the service. It is omitted in Elastic Mode,\nwhere Baseline RCU is the provisioning and billing floor.",
           "readOnly": true
         },
         "maxRcu": {
           "type": "string",
           "format": "int64",
-          "description": "The maximum number of Request Capacity Units (RCUs) for the TiDB Cloud Premium instance."
+          "x-nullable": true,
+          "description": "The customer-defined maximum number of Request Capacity Units (RCUs). Requirements depend on service_plan:\n- Premium and Essential_V2: optional. A positive value selects Max RCU Compatibility Mode. Omitting both\n  max_rcu and baseline_rcu selects Elastic Mode with the plan default Baseline RCU: 5,000 for Premium and\n  2,000 for Essential_V2.\n- BYOC: required and must be greater than zero.\n- Premium_Reserved: must be omitted.\nZero and JSON null are treated as omission and are not clear operations."
         },
         "servicePlan": {
           "description": "The plan of the service.\n\n- `Premium`: [TiDB Cloud Premium](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#tidb-cloud-premium)\n\n- `Premium_Reserved`: TiDB Cloud Premium Reserved",
@@ -2222,12 +2375,26 @@
           "format": "date-time",
           "description": "The timestamp when the capacity of the TiDB Cloud Premium instance was last updated, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.",
           "readOnly": true
+        },
+        "baselineRcu": {
+          "type": "string",
+          "format": "int64",
+          "x-nullable": true,
+          "description": "The optional guaranteed provisioning commitment in Elastic Mode. Premium accepts\n5,000, 12,500, or 50,000 RCU. Essential_V2 uses a fixed 2,000 RCU baseline.\nWhen neither max_rcu nor baseline_rcu is positive during creation, the service uses the\nplan default. Zero and JSON null are treated as omission. This field cannot be configured\nto a positive value together with a positive max_rcu."
+        },
+        "capacityMode": {
+          "description": "The effective customer-facing capacity mode for Premium and Essential_V2.\nOther service plans, or capacity records that do not identify exactly one supported mode,\nreturn CAPACITY_MODE_UNSPECIFIED.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/TidbCapacityMode"
+            }
+          ]
         }
       },
       "required": [
         "displayName",
         "regionId",
-        "maxRcu",
         "servicePlan"
       ]
     },
@@ -3033,6 +3200,205 @@
         },
         "failReason": {
           "type": "string"
+        }
+      }
+    },
+    "TidbCapacityMode": {
+      "type": "string",
+      "enum": [
+        "ELASTIC",
+        "MAX_RCU"
+      ],
+      "description": " - ELASTIC: Elastic Mode with a guaranteed Baseline RCU.\n - MAX_RCU: Max RCU Compatibility Mode with a customer-defined maximum RCU."
+    },
+    "nextgenv1beta2ListPrivateEndpointConnectionsResponse": {
+      "type": "object",
+      "properties": {
+        "privateEndpointConnections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/nextgenv1beta2PrivateEndpointConnection"
+          }
+        },
+        "totalSize": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The total number of private link connections that match the query."
+        },
+        "nextPageToken": {
+          "type": "string",
+          "description": "A token, which can be sent as `page_token` to retrieve the next page.\nIf this field is omitted, there are no subsequent pages."
+        }
+      }
+    },
+    "nextgenv1beta2PrivateEndpointConnection": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Format: tidbs/{tidb_id}/privateEndpointConnections/{private_endpoint_connection_id}",
+          "readOnly": true
+        },
+        "id": {
+          "type": "string",
+          "readOnly": true
+        },
+        "tidbId": {
+          "type": "string",
+          "readOnly": true
+        },
+        "privateEndpointConnectionId": {
+          "type": "string",
+          "readOnly": true
+        },
+        "regionId": {
+          "type": "string",
+          "description": "The region where the private endpoint connection is created."
+        },
+        "regionDisplayName": {
+          "type": "string",
+          "readOnly": true
+        },
+        "cloudProvider": {
+          "description": "The cloud provider for the region.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/RegionCloudProvider"
+            }
+          ]
+        },
+        "endpointId": {
+          "type": "string",
+          "description": "The endpoint ID of the private link connection.\nFor AWS, it's VPC endpoint ID.\nFor GCP, it's private service connect endpoint ID.\nFor Azure, it's private endpoint resource ID.\nFor AliCloud, it's endpoint ID."
+        },
+        "endpointState": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/nextgenv1beta2PrivateEndpointConnectionEndpointState"
+            }
+          ]
+        },
+        "message": {
+          "type": "string",
+          "readOnly": true
+        },
+        "privateLinkService": {
+          "type": "string",
+          "description": "The private link service name.",
+          "readOnly": true
+        },
+        "privateLinkServiceState": {
+          "description": "The private link service state.",
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/nextgenv1beta2PrivateLinkServiceState"
+            }
+          ]
+        },
+        "host": {
+          "type": "string",
+          "readOnly": true
+        },
+        "port": {
+          "type": "string",
+          "readOnly": true
+        },
+        "privateDomainName": {
+          "type": "string",
+          "description": "Only for AliCloud.\nUse private endpoint's Domain name to generate new TiDB DNS name."
+        },
+        "privateIpAddress": {
+          "type": "string",
+          "description": "Only for Azure.\nThe private IP address of the private endpoint in the user's vNet."
+        }
+      },
+      "required": [
+        "regionId",
+        "endpointId"
+      ]
+    },
+    "nextgenv1beta2PrivateEndpointConnectionEndpointState": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "ACTIVE",
+        "DELETING",
+        "FAILED",
+        "DISCOVERED"
+      ],
+      "description": " - PENDING: Customer has posted to TiDB cloud API,\nbut endpoint connection has not been accepted **asynchronously** by TiDB Cloud.\n - DISCOVERED: Customer has created the endpoint in their vpc, but has not posted to TiDB Cloud API."
+    },
+    "nextgenv1beta2PrivateLinkServiceState": {
+      "type": "string",
+      "enum": [
+        "CREATING",
+        "ACTIVE",
+        "DELETING"
+      ]
+    },
+    "nextgenv1beta2PrivateLinkService": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Format: tidbs/{tidb_id}/privateLinkService"
+        },
+        "tidbId": {
+          "type": "string",
+          "readOnly": true
+        },
+        "regionId": {
+          "type": "string",
+          "title": "Format: {cloud_provider}-{region_code}",
+          "readOnly": true
+        },
+        "regionDisplayName": {
+          "type": "string",
+          "readOnly": true
+        },
+        "cloudProvider": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/RegionCloudProvider"
+            }
+          ]
+        },
+        "serviceName": {
+          "type": "string",
+          "description": "For AWS, it's the service name of the Private Link Service.\nFor GCP, it's the resource name of the service attachment.\nFor Azure, it's service resource ID of the Private Link Service.\nFor AliCloud, it's the service name of the Private Link Service.",
+          "readOnly": true
+        },
+        "serviceDnsName": {
+          "type": "string",
+          "description": "For AWS, it's the fully qualified domain name (FQDN) shared for all private endpoints, despite which VPC the endpoint located in.\nFor GCP, it's the zone name (suffix of FQDN) shared for all private endpoints located in a single VPC network. The format of FQDN is `<endpoint_name>.<service_dns_name>`.\nFor Azure, it's the zone name shared across public internet. The format of FQDN is `<endpoint_name>-<random_hash>.<service_dns_name>`.\nFor AliCloud, it's the endpoint domain name shared for all private endpoints. The format of FQDN is `<endpoint_name>.<service_dns_name>`.",
+          "readOnly": true
+        },
+        "availableZones": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Only available for AWS.\nSame as the `AvailabilityZones` field in response body of\n`github.com/aws/aws-sdk-go-v2/service/ec2.DescribeVpcEndpointServices` method.",
+          "readOnly": true
+        },
+        "servicePort": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The port of the private link service.",
+          "readOnly": true
+        },
+        "state": {
+          "readOnly": true,
+          "allOf": [
+            {
+              "$ref": "#/definitions/nextgenv1beta2PrivateLinkServiceState"
+            }
+          ]
         }
       }
     }

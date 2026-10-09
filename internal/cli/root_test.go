@@ -17,6 +17,7 @@ package cli
 import (
 	"bytes"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
@@ -141,14 +142,32 @@ func (suite *RootCmdSuite) TestFlagProfile() {
 }
 
 func (suite *RootCmdSuite) TestNextGenActionFlagRoutesAfterInheritedFlags() {
-	root := RootCmd(suite.h)
-	args, err := nextgenCmd.NormalizeActionArgs([]string{"premium", "--profile", "prod", "--list=true"})
-	require.NoError(suite.T(), err)
-
-	command, remaining, err := root.Find(args)
-	require.NoError(suite.T(), err)
-	require.Equal(suite.T(), "ticloud premium list", command.CommandPath())
-	require.Equal(suite.T(), []string{"--profile", "prod"}, remaining)
+	for _, plan := range []string{"premium", "essential-v2", "essential"} {
+		for _, tc := range []struct {
+			args    []string
+			command string
+			flag    string
+			value   string
+		}{
+			{[]string{plan, "--profile", "prod", "--list=true"}, "list", "profile", "prod"},
+			{[]string{"-DPprod", plan, "--list"}, "list", "profile", "prod"},
+			{[]string{plan, "-DPprod", "--list"}, "list", "profile", "prod"},
+			{[]string{plan, "--password", "--delete", "shell", "-c", "tidb-1"}, "shell", "password", "--delete"},
+		} {
+			suite.T().Run(strings.Join(tc.args, " "), func(t *testing.T) {
+				root := RootCmd(suite.h)
+				normalized, err := nextgenCmd.NormalizeActionArgs(root, tc.args)
+				require.NoError(t, err)
+				command, remaining, err := root.Find(normalized)
+				require.NoError(t, err)
+				require.NoError(t, command.ParseFlags(remaining))
+				require.Equal(t, tc.command, command.Name())
+				value, err := command.Flags().GetString(tc.flag)
+				require.NoError(t, err)
+				require.Equal(t, tc.value, value)
+			})
+		}
+	}
 }
 
 func TestRootCmdSuite(t *testing.T) {

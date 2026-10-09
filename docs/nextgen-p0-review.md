@@ -67,6 +67,8 @@
 
 ## 2026-09-26 已有 Private Endpoint 连接扩展
 
+> 历史实现记录：地址必须匹配 API 列表的约束，已由 2026-10-08 的手动连接方案替代。
+
 - 方案 review 后明确：仅消费当前实例 API 返回的 `PRIVATE_ENDPOINT` 地址，不创建、授权或配置网络；mgmt 的 `reachable=true` 不等于客户端私网可达。
 - Premium / Essential V2 Shell 新增 `--connection-type private-endpoint`，默认仍为 `public`。`--endpoint host:port` 只能匹配当前实例返回的私网地址；无地址报错，多地址在交互模式中选择，显式 `-c` 时要求指定地址。不支持 `VPC_PEERING`，不自动回退公网。
 - 继续使用实例 CA 和所选 host 做严格 TLS 校验。私网初始连接设置 30 秒超时，密码输入不占用该时间，成功连接后取消超时上下文；不改变正常 SQL 会话、PUBLIC 或 Starter 的超时行为。
@@ -75,6 +77,8 @@
 - 本轮未改 mgmt、SDK 或云端资源；保留既有未提交改动，未提交或推送。真实私网 TLS/SQL E2E **未执行**，仍需已有私网端点、可达客户端和有效证书链，不能用本地测试替代部署验收。
 
 ## 2026-09-27 Private Endpoint review 修复
+
+> 以下为历史实现记录；Get/List 地址补全方案已由 2026-10-08 的专用 API 方案替代。
 
 - 修正“契约里有字段就代表运行时会返回”的假设：NextGen Global 的 Get/List 原来只组装 PUBLIC/VPC_PEERING，现在补读已有 PrivateLink 服务及连接，将地址交给既有 OpenAPI converter。未新增 API、SDK 字段、资源创建流程或权限逻辑。
 - AWS 使用 ACTIVE 服务的 DNS；GCP/Azure/AliCloud 使用 ACTIVE 且仍在仓库登记的连接域名。私网元数据读取失败时保留原有实例查询；不把服务端 `reachable` 当作客户端网络探测结果。
@@ -133,3 +137,30 @@
 5. mgmt 同步较新目标基线后重跑以上本地门禁及相应集成检查。
 
 因此：当前结果是约定范围的 **P0 命令源码实现完成 + 本地验证通过（全量历史 Buf 差异单列）**，不是全部线上功能已经验收通过。
+## 2026-10-01 PUBLIC DNS probe recovery
+
+- PUBLIC 的已知 DNS 探测失败仅在字段完整、实例 ACTIVE 且额外 GET 确认 `enabled=true` 时降为警告；未知原因、配置关闭/缺失/null、请求失败或无效地址继续阻断。GET 使用原有鉴权并保留请求错误。两个 message 值仅为兼容白名单，不作为通用错误码合同。
+- 只为新放行路径增加密码输入后的 30 秒建连超时；正常 PUBLIC、私网、Starter/Dedicated、严格 CA/域名校验和 SQL 会话行为不变。没有修改共享 SQL helper、API schema、SDK 生成物或后端。
+- 验证通过：`go test -race ./...`、`go vet ./...`、固定版本 golangci-lint v1.64.7、CLI 构建和 `git diff --check`。两份 shell 帮助文档从命令生成，其他历史测试/工作区改动保留。
+- 独立本地 MySQL 8.0.42 + HTTPS API fixture 实测 12 项通过：Premium/Essential V2 × Bearer/Digest × 正常严格 TLS/错误 CA/错误域名。API 强制返回两种 DNS 失败原因；正常连接执行 SQL 并读取非空 TLS cipher，Essential V2 Bearer 另执行 31 秒查询，证明建连超时不限制 SQL 查询。此处是本地集成证据，不代表 staging OAuth DNS 或 Premium CA 已修复。
+- 集成用例 `TestShellPublicDNSRecoverySQL` 默认跳过。复跑需准备独立的本地 MySQL，服务端证书包含 `IP:127.0.0.1` SAN、不能包含 `localhost`，然后设置 `TICLOUD_TEST_MYSQL_ADDR=127.0.0.1:<port>`、`TICLOUD_TEST_MYSQL_CA=<CA PEM path>`；可选 `TICLOUD_TEST_MYSQL_USER/PASSWORD`（默认 root/空密码，仅限隔离本地 fixture）。执行 `go test -race ./internal/cli/nextgen -run '^TestShellPublicDNSRecoverySQL$' -count=1 -v`，无需云端凭据。正常单测不依赖 MySQL。
+
+
+## 2026-10-08 Private Endpoint 专用 API review
+
+- 移除共享 GetCluster 的私网补全；OpenAPI converter 恢复原有 nil reachability 转换行为。保留 OAuth、项目范围校验，以及已有 ListPrivateEndpointConnections 权限 checker 注册。
+- CLI 保留 GetTidb 的 plan/ACTIVE 检查，私网地址改为完整分页读取 ListPrivateEndpointConnections，仅接受连接和服务均 ACTIVE 的合法地址，按 host:port 去重；不依赖详情中的旧地址或默认 false reachability。
+- Review 修正：不能先调用 GetPrivateLinkService，该 API 在多个服务时会拒绝请求。所有云先列连接；仅 AWS 完整空列表才读取 ACTIVE 服务 DNS。已有未就绪连接、403、分页错误都不走兜底；没有公网、peering 或任意地址回退。
+- SDK 使用固定 7.12.0 生成器补充两个既有 GET 及关联模型，不加入网络创建/删除命令。端口分别按连接 string 和服务 int32 解析。
+- 权限边界：私网分支新增对应只读权限需求，每个请求独立经过现有服务端鉴权；按照用户决定，本轮不更换 Management 默认 checker，也不把客户端 GetTidb 当成服务端授权补丁。
+- 单/多地址选择、显式 --endpoint、实例 CA、TLS 主机名校验和密码输入后的 30 秒 SQL 建连超时保持。真实私网 TLS/SQL E2E 仍需可达私网的客户端验证。
+- 本轮验证：Mgmt 两个受影响模块 make generate / make fmt / make lint 和 cluster、privatelink、OpenAPI tidb、privateendpoint 定向测试通过；CLI 全量 go test、v1.64.7 全量 lint、构建及 SDK 包编译通过。SDK 与固定生成器输出一致，已有路径和 schema 保持原样，两份 Shell 文档与 Cobra 生成结果一致。全量 CLI 测试在沙箱内受缓存、测试临时文件及回环监听限制，按允许权限重跑通过。两仓库 diff check 通过，未提交或推送。
+
+
+## 2026-10-08 手动私网地址与发现超时
+
+- 按本轮决定，--endpoint host:port 改为直接连接地址：仅检查格式和端口范围，不检查是否存在于 API 返回列表，并跳过 ListPrivateEndpointConnections / GetPrivateLinkService。这也避开 AWS 空连接列表下的多服务查询限制；未指定地址的自动发现仍使用既有接口。
+- 保留 GetTidb 的权限、plan、ACTIVE 检查及实例 CA 读取；用提供的 host 做严格 TLS 校验。Mgmt 不验证手动 SQL 地址，实际错误来自 DNS/TCP/TLS/SQL；不自动尝试其他地址。
+- 自动发现新增独立 30 秒总预算，覆盖全部分页和 AWS 兜底；尊重更短的调用方 deadline，退出发现函数时取消子 context。地址选择、密码输入与 SQL 会话不共享该预算，SQL 初始连接仍单独限时 30 秒。
+- 新增手动地址跳过发现、保留实例检查、host/port 与 IPv6 解析、所有查询共用 deadline、进行中的分页/服务查询取消、子 context 释放和父 context 保留的回归测试。
+- 本轮验证通过：CLI 全量 go test、NextGen 包固定 v1.64.7 lint、CLI 构建、两份 Shell 手册与 Cobra 生成结果一致、git diff --check。已核对修改前快照：Mgmt 及本次范围外的已有改动保持原样。真实私网 SQL/TLS E2E 未执行。

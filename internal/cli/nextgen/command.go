@@ -16,6 +16,7 @@ package nextgen
 
 import (
 	"fmt"
+	"io"
 	"strconv"
 	"strings"
 
@@ -26,6 +27,7 @@ import (
 	api "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta2/nextgen"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 )
 
 type planSpec struct {
@@ -120,39 +122,73 @@ func actionHelp(plan planSpec, commands []*cobra.Command) string {
 
 // NormalizeActionArgs preserves the action-flag command form in the release
 // contract while keeping the Cobra subcommands as the canonical implementation.
-func NormalizeActionArgs(args []string) ([]string, error) {
+func NormalizeActionArgs(root *cobra.Command, args []string) ([]string, error) {
 	if len(args) > 0 && (args[0] == cobra.ShellCompRequestCmd || args[0] == cobra.ShellCompNoDescRequestCmd) {
-		normalized, err := normalizeActionArgs(args[1:])
+		normalized, err := normalizeActionArgs(root, args[1:])
 		if err != nil {
 			return nil, err
 		}
 		return append([]string{args[0]}, normalized...), nil
 	}
-	return normalizeActionArgs(args)
+	return normalizeActionArgs(root, args)
 }
 
-func normalizeActionArgs(args []string) ([]string, error) {
+func normalizeActionArgs(root *cobra.Command, args []string) ([]string, error) {
 	normalized := append([]string(nil), args...)
-	planIndex := rootCommandIndex(normalized)
-	if planIndex < 0 || !isPlanCommand(normalized[planIndex]) {
+	root.InitDefaultHelpFlag()
+	flags := pflag.NewFlagSet("", pflag.ContinueOnError)
+	flags.SetOutput(io.Discard)
+	flags.AddFlagSet(root.Flags())
+	flags.AddFlagSet(root.PersistentFlags())
+	planIndex := 0
+	for planIndex < len(normalized) && strings.HasPrefix(normalized[planIndex], "-") {
+		if normalized[planIndex] == "--" {
+			return normalized, nil
+		}
+		count, err := flagArgCount(flags, normalized[planIndex:])
+		if err != nil {
+			return normalized, nil // Let Cobra report invalid flags.
+		}
+		planIndex += count
+	}
+	if planIndex == len(normalized) || !isPlanCommand(normalized[planIndex]) {
 		return normalized, nil
 	}
 
-	if hasCanonicalSubcommand(normalized[planIndex+1:]) {
+	plan, _, err := root.Find([]string{normalized[planIndex]})
+	if err != nil || plan == root {
 		return normalized, nil
+	}
+	flags.AddFlagSet(plan.Flags())
+	// Action-specific flags can precede the action, so use their real definitions
+	// to distinguish values from action flags and canonical subcommand names.
+	for _, command := range plan.Commands() {
+		flags.AddFlagSet(command.Flags())
 	}
 
 	actionIndex := -1
 	action := ""
-	for index := planIndex + 1; index < len(normalized); index++ {
+	for index := planIndex + 1; index < len(normalized); {
 		if normalized[index] == "--" {
 			break
+		}
+		if !strings.HasPrefix(normalized[index], "-") || normalized[index] == "-" {
+			command, _, err := plan.Find([]string{normalized[index]})
+			if err == nil && command != plan {
+				return normalized, nil
+			}
+			break
+		}
+		count, err := flagArgCount(flags, normalized[index:])
+		if err != nil {
+			break // Preserve unknown/incomplete flags for Cobra and completion.
 		}
 		candidate, enabled, matched, err := actionCommand(normalized[index])
 		if err != nil {
 			return nil, err
 		}
 		if !matched {
+			index += count
 			continue
 		}
 		if !enabled {
@@ -163,6 +199,7 @@ func normalizeActionArgs(args []string) ([]string, error) {
 		}
 		action = candidate
 		actionIndex = index
+		index += count
 	}
 	if action == "" {
 		return normalized, nil
@@ -176,51 +213,24 @@ func normalizeActionArgs(args []string) ([]string, error) {
 	return result, nil
 }
 
-func rootCommandIndex(args []string) int {
-	for index := 0; index < len(args); index++ {
-		switch {
-		case args[index] == "--profile" || args[index] == "-P":
-			index++
-		case strings.HasPrefix(args[index], "--profile=") || (strings.HasPrefix(args[index], "-P") && len(args[index]) > 2):
-			continue
-		case isRootBooleanFlag(args[index]):
-			continue
-		case strings.HasPrefix(args[index], "-"):
-			return -1
-		default:
-			return index
+// ParseAll recognizes grouped shorthands and attached values without setting
+// the live command's flag values. A separate flag value consumes a second token.
+func flagArgCount(flags *pflag.FlagSet, args []string) (int, error) {
+	ignoreValue := func(*pflag.Flag, string) error { return nil }
+	err := flags.ParseAll(args[:1], ignoreValue)
+	if err == nil {
+		return 1, nil
+	}
+	if len(args) > 1 {
+		if err := flags.ParseAll(args[:2], ignoreValue); err == nil {
+			return 2, nil
 		}
 	}
-	return -1
+	return 0, err
 }
 
 func isPlanCommand(arg string) bool {
 	return arg == premiumPlan.commandName || arg == essentialV2Plan.commandName || arg == essentialV2Plan.aliases[0]
-}
-
-func hasCanonicalSubcommand(args []string) bool {
-	for index := 0; index < len(args); index++ {
-		switch {
-		case args[index] == "--profile" || args[index] == "-P":
-			index++
-		case strings.HasPrefix(args[index], "--profile=") || (strings.HasPrefix(args[index], "-P") && len(args[index]) > 2):
-			continue
-		case isRootBooleanFlag(args[index]):
-			continue
-		default:
-			switch args[index] {
-			case "create", "list", "describe", "update", "delete", "password", "public-endpoint", "shell", "region", "cmek":
-				return true
-			}
-			return false
-		}
-	}
-	return false
-}
-
-func isRootBooleanFlag(arg string) bool {
-	return arg == "--debug" || arg == "-D" || arg == "--no-color" ||
-		strings.HasPrefix(arg, "--debug=") || strings.HasPrefix(arg, "-D=") || strings.HasPrefix(arg, "--no-color=")
 }
 
 func actionCommand(arg string) (action string, enabled bool, matched bool, err error) {

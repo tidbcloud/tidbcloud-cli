@@ -41,6 +41,9 @@ type NextGenClient interface {
 	ResetRootPassword(ctx context.Context, tidbID string, body *nextgen.TidbServiceResetRootPasswordBody) error
 	ListRegions(ctx context.Context, servicePlan nextgen.TidbServiceListTidbsServicePlanParameter, pageSize *int32, pageToken *string) (*nextgen.V1beta2ListRegionsResponse, error)
 	GetCACertificateDownloadURL(ctx context.Context, tidbID string) (*nextgen.V1beta2CaCertificateDownloadUrl, error)
+	ListPrivateEndpointConnections(ctx context.Context, tidbID string, pageSize int32, pageToken string) (*nextgen.Nextgenv1beta2ListPrivateEndpointConnectionsResponse, error)
+	GetPrivateLinkService(ctx context.Context, tidbID string) (*nextgen.Nextgenv1beta2PrivateLinkService, error)
+	GetPublicConnectionSetting(ctx context.Context, tidbID string) (*nextgen.V1beta2PublicConnectionSetting, error)
 	UpdatePublicConnectionSetting(ctx context.Context, tidbID string, body *nextgen.V1beta2PublicConnectionSetting) (*nextgen.V1beta2PublicConnectionSetting, error)
 	GetCmekAccessIAMPrincipal(ctx context.Context, regionID string) (*nextgen.V1beta2CmekAccessIamPrincipal, error)
 	VerifyCmekAccessIAMPrincipal(ctx context.Context, key *nextgen.V1beta2CustomerManagedEncryptionKey) (*nextgen.V1beta2VerifyCmekAccessIamPrincipalResponse, error)
@@ -179,6 +182,11 @@ func (d *NextGenClientDelegate) GetCACertificateDownloadURL(ctx context.Context,
 	return result, parseNextGenError(err, response)
 }
 
+func (d *NextGenClientDelegate) GetPublicConnectionSetting(ctx context.Context, tidbID string) (*nextgen.V1beta2PublicConnectionSetting, error) {
+	result, response, err := d.client.PublicConnectionSettingServiceAPI.PublicConnectionSettingServiceGetPublicConnectionSetting(ctx, tidbID).Execute()
+	return result, parseNextGenError(err, response)
+}
+
 func (d *NextGenClientDelegate) UpdatePublicConnectionSetting(ctx context.Context, tidbID string, body *nextgen.V1beta2PublicConnectionSetting) (*nextgen.V1beta2PublicConnectionSetting, error) {
 	request := d.client.PublicConnectionSettingServiceAPI.PublicConnectionSettingServiceUpdatePublicConnectionSetting(ctx, tidbID)
 	if body != nil {
@@ -199,5 +207,22 @@ func (d *NextGenClientDelegate) GetCmekAccessIAMPrincipal(ctx context.Context, r
 func (d *NextGenClientDelegate) VerifyCmekAccessIAMPrincipal(ctx context.Context, key *nextgen.V1beta2CustomerManagedEncryptionKey) (*nextgen.V1beta2VerifyCmekAccessIamPrincipalResponse, error) {
 	result, response, err := d.client.CustomerManagedEncryptionKeyServiceAPI.CustomerManagedEncryptionKeyServiceVerifyCmekAccessIamPrincipal(ctx).
 		Key(*key).Execute()
+	return result, parseNextGenError(err, response)
+}
+
+func (d *NextGenClientDelegate) ListPrivateEndpointConnections(ctx context.Context, tidbID string, pageSize int32, pageToken string) (*nextgen.Nextgenv1beta2ListPrivateEndpointConnectionsResponse, error) {
+	request := d.client.PrivateEndpointConnectionServiceAPI.PrivateEndpointConnectionServiceListPrivateEndpointConnections(ctx, tidbID)
+	if pageSize > 0 {
+		request = request.PageSize(pageSize)
+	}
+	if pageToken != "" {
+		request = request.PageToken(pageToken)
+	}
+	result, response, err := request.Execute()
+	return result, parseNextGenError(err, response)
+}
+
+func (d *NextGenClientDelegate) GetPrivateLinkService(ctx context.Context, tidbID string) (*nextgen.Nextgenv1beta2PrivateLinkService, error) {
+	result, response, err := d.client.PrivateEndpointConnectionServiceAPI.PrivateEndpointConnectionServiceGetPrivateLinkService(ctx, tidbID).Execute()
 	return result, parseNextGenError(err, response)
 }

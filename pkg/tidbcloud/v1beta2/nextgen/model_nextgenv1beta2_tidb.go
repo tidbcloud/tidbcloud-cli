@@ -37,10 +37,10 @@ type Nextgenv1beta2Tidb struct {
 	State *V1beta1ClusterState `json:"state,omitempty"`
 	// The root password of the TiDB Cloud Premium instance.  This field supports two input formats: - Plaintext password (legacy behavior) - RSA-OAEP-SHA256 encrypted payload prefixed with `rsa_oaep_sha256:`  If the marker prefix is present, the server parses and decrypts the encrypted payload. Any parse/decrypt failure returns an explicit parameter error without plaintext fallback. If the marker prefix is absent, the value is treated as plaintext for backward compatibility.  For plaintext input, the password must be between 8 and 64 characters long and can contain letters, numbers, and special characters.
 	RootPassword *string `json:"rootPassword,omitempty" validate:"regexp=^(rsa_oaep_sha256:.+|.{8,64})$"`
-	// The minimum number of Request Capacity Units (RCUs) for the TiDB Cloud Premium instance.  This field is read-only and is automatically calculated as `max(5000, maxRcu / 4)`.
-	MinRcu *string `json:"minRcu,omitempty"`
-	// The maximum number of Request Capacity Units (RCUs) for the TiDB Cloud Premium instance.
-	MaxRcu string `json:"maxRcu"`
+	// The minimum number of Request Capacity Units (RCUs) for the TiDB Cloud Premium instance.  This field is read-only and is calculated by the service. It is omitted in Elastic Mode, where Baseline RCU is the provisioning and billing floor.
+	MinRcu NullableString `json:"minRcu,omitempty"`
+	// The customer-defined maximum number of Request Capacity Units (RCUs). Requirements depend on service_plan: - Premium and Essential_V2: optional. A positive value selects Max RCU Compatibility Mode. Omitting both   max_rcu and baseline_rcu selects Elastic Mode with the plan default Baseline RCU: 5,000 for Premium and   2,000 for Essential_V2. - BYOC: required and must be greater than zero. - Premium_Reserved: must be omitted. Zero and JSON null are treated as omission and are not clear operations.
+	MaxRcu NullableString `json:"maxRcu,omitempty"`
 	// The plan of the service.  - `Premium`: [TiDB Cloud Premium](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#tidb-cloud-premium)  - `Premium_Reserved`: TiDB Cloud Premium Reserved
 	ServicePlan V1beta1ServicePlan `json:"servicePlan"`
 	// The capacity template ID for Premium Reserved. This field is only accepted when `service_plan` is `Premium_Reserved`; it is not returned in responses.
@@ -73,7 +73,11 @@ type Nextgenv1beta2Tidb struct {
 	TidbVersion *string  `json:"tidbVersion,omitempty"`
 	Tags        []string `json:"tags,omitempty"`
 	// The timestamp when the capacity of the TiDB Cloud Premium instance was last updated, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
-	CapacityUpdateTime   *time.Time `json:"capacityUpdateTime,omitempty"`
+	CapacityUpdateTime *time.Time `json:"capacityUpdateTime,omitempty"`
+	// The optional guaranteed provisioning commitment in Elastic Mode. Premium accepts 5,000, 12,500, or 50,000 RCU. Essential_V2 uses a fixed 2,000 RCU baseline. When neither max_rcu nor baseline_rcu is positive during creation, the service uses the plan default. Zero and JSON null are treated as omission. This field cannot be configured to a positive value together with a positive max_rcu.
+	BaselineRcu NullableString `json:"baselineRcu,omitempty"`
+	// The effective customer-facing capacity mode for Premium and Essential_V2. Other service plans, or capacity records that do not identify exactly one supported mode, return CAPACITY_MODE_UNSPECIFIED.
+	CapacityMode         *TidbCapacityMode `json:"capacityMode,omitempty"`
 	AdditionalProperties map[string]interface{}
 }
 
@@ -83,11 +87,10 @@ type _Nextgenv1beta2Tidb Nextgenv1beta2Tidb
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewNextgenv1beta2Tidb(displayName string, regionId string, maxRcu string, servicePlan V1beta1ServicePlan) *Nextgenv1beta2Tidb {
+func NewNextgenv1beta2Tidb(displayName string, regionId string, servicePlan V1beta1ServicePlan) *Nextgenv1beta2Tidb {
 	this := Nextgenv1beta2Tidb{}
 	this.DisplayName = displayName
 	this.RegionId = regionId
-	this.MaxRcu = maxRcu
 	this.ServicePlan = servicePlan
 	return &this
 }
@@ -340,60 +343,90 @@ func (o *Nextgenv1beta2Tidb) SetRootPassword(v string) {
 	o.RootPassword = &v
 }
 
-// GetMinRcu returns the MinRcu field value if set, zero value otherwise.
+// GetMinRcu returns the MinRcu field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *Nextgenv1beta2Tidb) GetMinRcu() string {
-	if o == nil || IsNil(o.MinRcu) {
+	if o == nil || IsNil(o.MinRcu.Get()) {
 		var ret string
 		return ret
 	}
-	return *o.MinRcu
+	return *o.MinRcu.Get()
 }
 
 // GetMinRcuOk returns a tuple with the MinRcu field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *Nextgenv1beta2Tidb) GetMinRcuOk() (*string, bool) {
-	if o == nil || IsNil(o.MinRcu) {
+	if o == nil {
 		return nil, false
 	}
-	return o.MinRcu, true
+	return o.MinRcu.Get(), o.MinRcu.IsSet()
 }
 
 // HasMinRcu returns a boolean if a field has been set.
 func (o *Nextgenv1beta2Tidb) HasMinRcu() bool {
-	if o != nil && !IsNil(o.MinRcu) {
+	if o != nil && o.MinRcu.IsSet() {
 		return true
 	}
 
 	return false
 }
 
-// SetMinRcu gets a reference to the given string and assigns it to the MinRcu field.
+// SetMinRcu gets a reference to the given NullableString and assigns it to the MinRcu field.
 func (o *Nextgenv1beta2Tidb) SetMinRcu(v string) {
-	o.MinRcu = &v
+	o.MinRcu.Set(&v)
 }
 
-// GetMaxRcu returns the MaxRcu field value
+// SetMinRcuNil sets the value for MinRcu to be an explicit nil
+func (o *Nextgenv1beta2Tidb) SetMinRcuNil() {
+	o.MinRcu.Set(nil)
+}
+
+// UnsetMinRcu ensures that no value is present for MinRcu, not even an explicit nil
+func (o *Nextgenv1beta2Tidb) UnsetMinRcu() {
+	o.MinRcu.Unset()
+}
+
+// GetMaxRcu returns the MaxRcu field value if set, zero value otherwise (both if not set or set to explicit null).
 func (o *Nextgenv1beta2Tidb) GetMaxRcu() string {
-	if o == nil {
+	if o == nil || IsNil(o.MaxRcu.Get()) {
 		var ret string
 		return ret
 	}
-
-	return o.MaxRcu
+	return *o.MaxRcu.Get()
 }
 
-// GetMaxRcuOk returns a tuple with the MaxRcu field value
+// GetMaxRcuOk returns a tuple with the MaxRcu field value if set, nil otherwise
 // and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
 func (o *Nextgenv1beta2Tidb) GetMaxRcuOk() (*string, bool) {
 	if o == nil {
 		return nil, false
 	}
-	return &o.MaxRcu, true
+	return o.MaxRcu.Get(), o.MaxRcu.IsSet()
 }
 
-// SetMaxRcu sets field value
+// HasMaxRcu returns a boolean if a field has been set.
+func (o *Nextgenv1beta2Tidb) HasMaxRcu() bool {
+	if o != nil && o.MaxRcu.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetMaxRcu gets a reference to the given NullableString and assigns it to the MaxRcu field.
 func (o *Nextgenv1beta2Tidb) SetMaxRcu(v string) {
-	o.MaxRcu = v
+	o.MaxRcu.Set(&v)
+}
+
+// SetMaxRcuNil sets the value for MaxRcu to be an explicit nil
+func (o *Nextgenv1beta2Tidb) SetMaxRcuNil() {
+	o.MaxRcu.Set(nil)
+}
+
+// UnsetMaxRcu ensures that no value is present for MaxRcu, not even an explicit nil
+func (o *Nextgenv1beta2Tidb) UnsetMaxRcu() {
+	o.MaxRcu.Unset()
 }
 
 // GetServicePlan returns the ServicePlan field value
@@ -954,6 +987,81 @@ func (o *Nextgenv1beta2Tidb) SetCapacityUpdateTime(v time.Time) {
 	o.CapacityUpdateTime = &v
 }
 
+// GetBaselineRcu returns the BaselineRcu field value if set, zero value otherwise (both if not set or set to explicit null).
+func (o *Nextgenv1beta2Tidb) GetBaselineRcu() string {
+	if o == nil || IsNil(o.BaselineRcu.Get()) {
+		var ret string
+		return ret
+	}
+	return *o.BaselineRcu.Get()
+}
+
+// GetBaselineRcuOk returns a tuple with the BaselineRcu field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+// NOTE: If the value is an explicit nil, `nil, true` will be returned
+func (o *Nextgenv1beta2Tidb) GetBaselineRcuOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return o.BaselineRcu.Get(), o.BaselineRcu.IsSet()
+}
+
+// HasBaselineRcu returns a boolean if a field has been set.
+func (o *Nextgenv1beta2Tidb) HasBaselineRcu() bool {
+	if o != nil && o.BaselineRcu.IsSet() {
+		return true
+	}
+
+	return false
+}
+
+// SetBaselineRcu gets a reference to the given NullableString and assigns it to the BaselineRcu field.
+func (o *Nextgenv1beta2Tidb) SetBaselineRcu(v string) {
+	o.BaselineRcu.Set(&v)
+}
+
+// SetBaselineRcuNil sets the value for BaselineRcu to be an explicit nil
+func (o *Nextgenv1beta2Tidb) SetBaselineRcuNil() {
+	o.BaselineRcu.Set(nil)
+}
+
+// UnsetBaselineRcu ensures that no value is present for BaselineRcu, not even an explicit nil
+func (o *Nextgenv1beta2Tidb) UnsetBaselineRcu() {
+	o.BaselineRcu.Unset()
+}
+
+// GetCapacityMode returns the CapacityMode field value if set, zero value otherwise.
+func (o *Nextgenv1beta2Tidb) GetCapacityMode() TidbCapacityMode {
+	if o == nil || IsNil(o.CapacityMode) {
+		var ret TidbCapacityMode
+		return ret
+	}
+	return *o.CapacityMode
+}
+
+// GetCapacityModeOk returns a tuple with the CapacityMode field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *Nextgenv1beta2Tidb) GetCapacityModeOk() (*TidbCapacityMode, bool) {
+	if o == nil || IsNil(o.CapacityMode) {
+		return nil, false
+	}
+	return o.CapacityMode, true
+}
+
+// HasCapacityMode returns a boolean if a field has been set.
+func (o *Nextgenv1beta2Tidb) HasCapacityMode() bool {
+	if o != nil && !IsNil(o.CapacityMode) {
+		return true
+	}
+
+	return false
+}
+
+// SetCapacityMode gets a reference to the given TidbCapacityMode and assigns it to the CapacityMode field.
+func (o *Nextgenv1beta2Tidb) SetCapacityMode(v TidbCapacityMode) {
+	o.CapacityMode = &v
+}
+
 func (o Nextgenv1beta2Tidb) MarshalJSON() ([]byte, error) {
 	toSerialize, err := o.ToMap()
 	if err != nil {
@@ -984,10 +1092,12 @@ func (o Nextgenv1beta2Tidb) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.RootPassword) {
 		toSerialize["rootPassword"] = o.RootPassword
 	}
-	if !IsNil(o.MinRcu) {
-		toSerialize["minRcu"] = o.MinRcu
+	if o.MinRcu.IsSet() {
+		toSerialize["minRcu"] = o.MinRcu.Get()
 	}
-	toSerialize["maxRcu"] = o.MaxRcu
+	if o.MaxRcu.IsSet() {
+		toSerialize["maxRcu"] = o.MaxRcu.Get()
+	}
 	toSerialize["servicePlan"] = o.ServicePlan
 	if !IsNil(o.ReservedCapacityTemplateId) {
 		toSerialize["reservedCapacityTemplateId"] = o.ReservedCapacityTemplateId
@@ -1037,6 +1147,12 @@ func (o Nextgenv1beta2Tidb) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.CapacityUpdateTime) {
 		toSerialize["capacityUpdateTime"] = o.CapacityUpdateTime
 	}
+	if o.BaselineRcu.IsSet() {
+		toSerialize["baselineRcu"] = o.BaselineRcu.Get()
+	}
+	if !IsNil(o.CapacityMode) {
+		toSerialize["capacityMode"] = o.CapacityMode
+	}
 
 	for key, value := range o.AdditionalProperties {
 		toSerialize[key] = value
@@ -1052,7 +1168,6 @@ func (o *Nextgenv1beta2Tidb) UnmarshalJSON(data []byte) (err error) {
 	requiredProperties := []string{
 		"displayName",
 		"regionId",
-		"maxRcu",
 		"servicePlan",
 	}
 
@@ -1110,6 +1225,8 @@ func (o *Nextgenv1beta2Tidb) UnmarshalJSON(data []byte) (err error) {
 		delete(additionalProperties, "tidbVersion")
 		delete(additionalProperties, "tags")
 		delete(additionalProperties, "capacityUpdateTime")
+		delete(additionalProperties, "baselineRcu")
+		delete(additionalProperties, "capacityMode")
 		o.AdditionalProperties = additionalProperties
 	}
 

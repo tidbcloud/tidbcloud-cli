@@ -119,7 +119,7 @@ func Execute(ctx context.Context) {
 	}
 
 	rootCmd := RootCmd(h)
-	normalizedArgs, err := nextgenCmd.NormalizeActionArgs(os.Args[1:])
+	normalizedArgs, err := nextgenCmd.NormalizeActionArgs(rootCmd, os.Args[1:])
 	if err != nil {
 		fmt.Fprint(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
 		os.Exit(1)

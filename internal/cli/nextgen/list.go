@@ -59,8 +59,12 @@ func listCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 				if instance.CreateTime != nil {
 					createTime = instance.CreateTime.Format(time.RFC3339)
 				}
+				maxRCU := "-"
+				if value, ok := instance.GetMaxRcuOk(); ok && value != nil {
+					maxRCU = *value
+				}
 				rows = append(rows, output.Row{
-					instance.GetTidbId(), instance.DisplayName, string(instance.GetState()), instance.RegionId, instance.MaxRcu, createTime,
+					instance.GetTidbId(), instance.DisplayName, string(instance.GetState()), instance.RegionId, maxRCU, createTime,
 				})
 			}
 			return output.PrintHumanTable(h.IOStreams.Out, columns, rows)

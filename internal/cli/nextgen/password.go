@@ -159,8 +159,8 @@ func validateRootPassword(password string) error {
 	}
 	// Match the byte-length limit enforced by mgmt and Global.
 	length := len(password)
-	if length < 8 || length > 64 || strings.ContainsAny(password, "\r\n") {
-		return fmt.Errorf("root password must be between 8 and 64 characters")
+	if length < 8 || length > 64 {
+		return fmt.Errorf("root password must be between 8 and 64 bytes")
 	}
 	return nil
 }
