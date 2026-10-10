@@ -16,12 +16,14 @@
 package cloud
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
 	"net/http"
 	"net/http/httputil"
 	"os"
+	"strings"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/prop"
@@ -814,10 +816,14 @@ func NewApiClient(rt http.RoundTripper, serverlessEndpoint string, iamEndpoint s
 }
 
 func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {
+	return NewTransportWithDigest(NewDebugTransport(http.DefaultTransport), publicKey, privateKey)
+}
+
+func NewTransportWithDigest(inner http.RoundTripper, publicKey, privateKey string) http.RoundTripper {
 	return &digest.Transport{
 		Username:  publicKey,
 		Password:  privateKey,
-		Transport: NewDebugTransport(http.DefaultTransport),
+		Transport: inner,
 	}
 }
 
@@ -854,7 +860,11 @@ func (dt *DebugTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	debug := os.Getenv(config.DebugEnv) == "true" || os.Getenv(config.DebugEnv) == "1"
 
 	if debug {
-		dump, err := httputil.DumpRequestOut(r, true)
+		requestForDump, err := requestForDebugDump(r)
+		if err != nil {
+			return nil, err
+		}
+		dump, err := httputil.DumpRequestOut(requestForDump, true)
 		if err != nil {
 			return nil, err
 		}
@@ -877,7 +887,53 @@ func (dt *DebugTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	return resp, err
 }
 
+func requestForDebugDump(r *http.Request) (*http.Request, error) {
+	requestForDump := r.Clone(r.Context())
+	if r.Body != nil {
+		if r.GetBody != nil {
+			body, err := r.GetBody()
+			if err != nil {
+				return nil, err
+			}
+			requestForDump.Body = body
+		} else {
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				return nil, err
+			}
+			if err := r.Body.Close(); err != nil {
+				return nil, err
+			}
+			r.Body = io.NopCloser(bytes.NewReader(body))
+			requestForDump.Body = io.NopCloser(bytes.NewReader(body))
+		}
+	}
+	if requestForDump.Header.Get("Authorization") != "" {
+		requestForDump.Header.Set("Authorization", "<redacted>")
+	}
+	if strings.HasSuffix(requestForDump.URL.Path, ":resetRootPassword") && requestForDump.Body != nil {
+		if err := requestForDump.Body.Close(); err != nil {
+			return nil, err
+		}
+		const redactedBody = `{"rootPassword":"<redacted>"}`
+		requestForDump.Body = io.NopCloser(strings.NewReader(redactedBody))
+		requestForDump.ContentLength = int64(len(redactedBody))
+		requestForDump.GetBody = func() (io.ReadCloser, error) {
+			return io.NopCloser(strings.NewReader(redactedBody)), nil
+		}
+	}
+	return requestForDump, nil
+}
+
 func parseError(err error, resp *http.Response) error {
+	return parseErrorWithHTMLPolicy(err, resp, false)
+}
+
+func parseNextGenError(err error, resp *http.Response) error {
+	return parseErrorWithHTMLPolicy(err, resp, true)
+}
+
+func parseErrorWithHTMLPolicy(err error, resp *http.Response, omitHTML bool) error {
 	defer func() {
 		if resp != nil {
 			resp.Body.Close()
@@ -901,7 +957,12 @@ func parseError(err error, resp *http.Response) error {
 	if resp.Header.Get("X-Debug-Trace-Id") != "" {
 		traceId = resp.Header.Get("X-Debug-Trace-Id")
 	}
-	return fmt.Errorf("%s[%s][%s] %s", path, err.Error(), traceId, body)
+	detail := string(body)
+	contentType := resp.Header.Get("Content-Type")
+	if omitHTML && strings.HasPrefix(strings.ToLower(contentType), "text/html") {
+		detail = fmt.Sprintf("unexpected response content type %q (%d-byte body omitted)", contentType, len(body))
+	}
+	return fmt.Errorf("%s[%s][%s] %s", path, err.Error(), traceId, detail)
 }
 
 func (d *ClientDelegate) CreateChangefeed(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceCreateChangefeedBody) (*cdc.Changefeed, error) {

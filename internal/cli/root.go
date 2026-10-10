@@ -24,6 +24,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/auth"
 	configCmd "github.com/tidbcloud/tidbcloud-cli/internal/cli/config"
+	nextgenCmd "github.com/tidbcloud/tidbcloud-cli/internal/cli/nextgen"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/project"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/serverless"
 	"github.com/tidbcloud/tidbcloud-cli/internal/cli/upgrade"
@@ -52,10 +53,31 @@ import (
 
 var ErrMissingCredentials = errors.New("this action requires authentication")
 
+func loadCredentials() (publicKey, privateKey, token string, err error) {
+	publicKey, privateKey = config.GetPublicKey(), config.GetPrivateKey()
+	if publicKey != "" && privateKey != "" {
+		return publicKey, privateKey, "", nil
+	}
+
+	if err = config.ValidateToken(); err != nil {
+		logger.Debug("Failed to validate token", zap.Error(err))
+		color.Yellow("\nTo log in using your TiDB Cloud username and password, run: \n %[1]s auth login\nTo set credentials using API keys, run: \n %[1]s config set public-key <public-key>\n %[1]s config set private-key <private-key>",
+			config.CliName)
+		return "", "", "", ErrMissingCredentials
+	}
+	token, err = config.GetAccessToken()
+	if err != nil {
+		if errors.Is(err, keyring.ErrNotFound) || errors.Is(err, store.ErrNotSupported) {
+			return "", "", "", ErrMissingCredentials
+		}
+		return "", "", "", err
+	}
+	return "", "", token, nil
+}
+
 func Execute(ctx context.Context) {
 	h := &internal.Helper{
 		Client: func() (cloud.TiDBCloudClient, error) {
-			publicKey, privateKey := config.GetPublicKey(), config.GetPrivateKey()
 			serverlessEndpoint := config.GetServerlessEndpoint()
 			if serverlessEndpoint == "" {
 				serverlessEndpoint = cloud.DefaultServerlessEndpoint
@@ -65,35 +87,29 @@ func Execute(ctx context.Context) {
 				iamEndpoint = cloud.DefaultIAMEndpoint
 			}
 
-			var delegate cloud.TiDBCloudClient
-			if publicKey != "" && privateKey != "" {
-				var err error
-				delegate, err = cloud.NewClientDelegateWithApiKey(publicKey, privateKey, serverlessEndpoint, iamEndpoint)
-				if err != nil {
-					return nil, err
-				}
-			} else {
-				err := config.ValidateToken()
-				if err != nil {
-					logger.Debug("Failed to validate token", zap.Error(err))
-					color.Yellow("\nTo log in using your TiDB Cloud username and password, run: \n %[1]s auth login\nTo set credentials using API keys, run: \n %[1]s config set public-key <public-key>\n %[1]s config set private-key <private-key>",
-						config.CliName)
-					return nil, ErrMissingCredentials
-				}
-				token, err := config.GetAccessToken()
-				if err != nil {
-					if errors.Is(err, keyring.ErrNotFound) || errors.Is(err, store.ErrNotSupported) {
-						return nil, ErrMissingCredentials
-					}
-					return nil, err
-				}
-				delegate, err = cloud.NewClientDelegateWithToken(token, serverlessEndpoint, iamEndpoint)
-				if err != nil {
-					return nil, err
-				}
+			publicKey, privateKey, token, err := loadCredentials()
+			if err != nil {
+				return nil, err
 			}
-
-			return delegate, nil
+			if publicKey != "" && privateKey != "" {
+				return cloud.NewClientDelegateWithApiKey(publicKey, privateKey, serverlessEndpoint, iamEndpoint)
+			}
+			return cloud.NewClientDelegateWithToken(token, serverlessEndpoint, iamEndpoint)
+		},
+		NextGenClient: func() (cloud.NextGenClient, error) {
+			endpoint := config.GetNextGenEndpoint()
+			if endpoint == "" {
+				endpoint = cloud.DefaultNextGenEndpoint
+			}
+			caCertPath := config.GetNextGenCACertPath()
+			publicKey, privateKey, token, err := loadCredentials()
+			if err != nil {
+				return nil, err
+			}
+			if publicKey != "" && privateKey != "" {
+				return cloud.NewNextGenClientDelegateWithAPIKey(publicKey, privateKey, endpoint, caCertPath)
+			}
+			return cloud.NewNextGenClientDelegateWithToken(token, endpoint, caCertPath)
 		},
 		Uploader: func(client cloud.TiDBCloudClient) s3.Uploader {
 			return s3.NewUploader(client)
@@ -103,6 +119,12 @@ func Execute(ctx context.Context) {
 	}
 
 	rootCmd := RootCmd(h)
+	normalizedArgs, err := nextgenCmd.NormalizeActionArgs(rootCmd, os.Args[1:])
+	if err != nil {
+		fmt.Fprint(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
+		os.Exit(1)
+	}
+	rootCmd.SetArgs(normalizedArgs)
 	initConfig()
 
 	ctx = telemetry.NewTelemetryContext(ctx)
@@ -195,6 +217,8 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 	rootCmd.AddCommand(auth.AuthCmd(h))
 	rootCmd.AddCommand(configCmd.ConfigCmd(h))
 	rootCmd.AddCommand(serverless.Cmd(h))
+	rootCmd.AddCommand(nextgenCmd.PremiumCmd(h))
+	rootCmd.AddCommand(nextgenCmd.EssentialCmd(h))
 	rootCmd.AddCommand(project.ProjectCmd(h))
 	rootCmd.AddCommand(version.VersionCmd(h))
 	rootCmd.AddCommand(upgrade.Cmd(h))

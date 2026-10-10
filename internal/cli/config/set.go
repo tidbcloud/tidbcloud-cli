@@ -41,7 +41,11 @@ If not, the config in the active profile will be set`, prop.ProfileProperties())
   $ %[1]s config set public-key <public-key>
 
   Set the value of the public-key in the specific profile "test":
-  $ %[1]s config set public-key <public-key> -P test`, config.CliName),
+  $ %[1]s config set public-key <public-key> -P test
+
+  Configure a custom NextGen endpoint and CA certificate for profile "test":
+  $ %[1]s config set nextgen-endpoint https://gateway.example.com -P test
+  $ %[1]s config set nextgen-ca-cert-path /absolute/path/to/ca.pem -P test`, config.CliName),
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			propertyName := args[0]
@@ -54,9 +58,13 @@ If not, the config in the active profile will be set`, prop.ProfileProperties())
 					return fmt.Errorf("no profile is configured, please use `config create` to create a profile")
 				}
 
-				if propertyName == prop.IAMEndpoint || propertyName == prop.ServerlessEndpoint || propertyName == prop.OAuthEndpoint {
-					_, err := prop.ValidateApiUrl(value)
-					if err != nil {
+				switch propertyName {
+				case prop.NextGenEndpoint:
+					if _, err := prop.ValidateNextGenApiUrl(value); err != nil {
+						return err
+					}
+				case prop.IAMEndpoint, prop.ServerlessEndpoint, prop.OAuthEndpoint:
+					if _, err := prop.ValidateApiUrl(value); err != nil {
 						return err
 					}
 				}
