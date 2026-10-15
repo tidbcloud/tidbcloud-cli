@@ -20,11 +20,11 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/http/httputil"
 	"os"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/prop"
+	"github.com/tidbcloud/tidbcloud-cli/internal/redact"
 	"github.com/tidbcloud/tidbcloud-cli/internal/version"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/auditlog"
@@ -842,39 +842,11 @@ func (bt *BearTokenTransport) RoundTrip(r *http.Request) (*http.Response, error)
 	return bt.inner.RoundTrip(r)
 }
 
+// NewDebugTransport wraps inner with a transport that, when TICLOUD_DEBUG is
+// set, prints request/response dumps with credentials masked.
 func NewDebugTransport(inner http.RoundTripper) http.RoundTripper {
-	return &DebugTransport{inner: inner}
-}
-
-type DebugTransport struct {
-	inner http.RoundTripper
-}
-
-func (dt *DebugTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	debug := os.Getenv(config.DebugEnv) == "true" || os.Getenv(config.DebugEnv) == "1"
-
-	if debug {
-		dump, err := httputil.DumpRequestOut(r, true)
-		if err != nil {
-			return nil, err
-		}
-		fmt.Printf("\n%s", string(dump))
-	}
-
-	resp, err := dt.inner.RoundTrip(r)
-	if err != nil {
-		return resp, err
-	}
-
-	if debug {
-		dump, err := httputil.DumpResponse(resp, true)
-		if err != nil {
-			return resp, err
-		}
-		fmt.Printf("%s\n", string(dump))
-	}
-
-	return resp, err
+	return redact.NewDebugTransport(inner, debug)
 }
 
 func parseError(err error, resp *http.Response) error {
