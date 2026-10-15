@@ -18,10 +18,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -263,27 +261,8 @@ func parameterToJson(obj interface{}) (string, error) {
 
 // callAPI do the request.
 func (c *APIClient) callAPI(request *http.Request) (*http.Response, error) {
-	if c.cfg.Debug {
-		dump, err := httputil.DumpRequestOut(request, false)
-		if err != nil {
-			return nil, err
-		}
-		log.Printf("\n%s\n", string(dump))
-	}
-
-	resp, err := c.cfg.HTTPClient.Do(request)
-	if err != nil {
-		return resp, err
-	}
-
-	if c.cfg.Debug {
-		dump, err := httputil.DumpResponse(resp, false)
-		if err != nil {
-			return resp, err
-		}
-		log.Printf("\n%s\n", string(dump))
-	}
-	return resp, err
+	// Debug logging is handled by the HTTP transport to avoid unredacted dumps.
+	return c.cfg.HTTPClient.Do(request)
 }
 
 // Allow modification of underlying config for alternate implementations and testing

@@ -140,6 +140,18 @@ func Headers(h http.Header) http.Header {
 	for k := range out {
 		if _, ok := sensitiveHeaders[strings.ToLower(k)]; ok {
 			out[k] = []string{Mask}
+			continue
+		}
+		switch strings.ToLower(k) {
+		case "location", "referer", "content-location":
+			for i, value := range out[k] {
+				u, err := url.Parse(value)
+				if err != nil {
+					out[k][i] = Mask
+				} else {
+					out[k][i] = URL(u)
+				}
+			}
 		}
 	}
 	return out
@@ -175,11 +187,24 @@ func body(rc *io.ReadCloser, contentType string, contentLength int64) string {
 	}
 	data, err := io.ReadAll(*rc)
 	(*rc).Close()
-	*rc = io.NopCloser(bytes.NewReader(data))
+	reader := io.Reader(bytes.NewReader(data))
+	if err != nil {
+		reader = io.MultiReader(reader, errorReader{err})
+	}
+	*rc = io.NopCloser(reader)
 	if err != nil {
 		return fmt.Sprintf("<body unreadable: %v>", err)
 	}
 	return JSON(data)
+}
+
+// errorReader replays a body read failure after the buffered bytes.
+type errorReader struct {
+	err error
+}
+
+func (r errorReader) Read([]byte) (int, error) {
+	return 0, r.err
 }
 
 // DumpRequest renders r with credentials masked.
