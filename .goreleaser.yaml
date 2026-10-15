@@ -4,6 +4,7 @@ project_name: ticloud
 before:
   hooks:
     - go mod tidy
+    - sh scripts/prepare-installer.sh {{ .Version }} .make/release/install.sh
 builds:
   - <<: &build_defaults
       main: ./cmd/ticloud/main.go
@@ -57,6 +58,13 @@ nfpms:
 
 checksum:
   name_template: 'checksums.txt'
+  extra_files:
+    - glob: .make/release/install.sh
+      name_template: install.sh
+release:
+  extra_files:
+    - glob: .make/release/install.sh
+      name_template: install.sh
 snapshot:
   name_template: "{{ .Version }}"
 
