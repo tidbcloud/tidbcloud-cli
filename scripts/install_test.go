@@ -91,7 +91,7 @@ func TestInstallChecksums(t *testing.T) {
 					binDir := filepath.Join(dir, "installation", "bin")
 					require.NoError(t, os.MkdirAll(commands, 0700))
 					require.NoError(t, os.MkdirAll(binDir, 0700))
-					for _, name := range []string{"tar", "awk", "mktemp", "cp", "rm", "mkdir", "chmod"} {
+					for _, name := range []string{"tar", "gzip", "awk", "mktemp", "cp", "rm", "mkdir", "chmod"} {
 						path, err := exec.LookPath(name)
 						require.NoError(t, err)
 						require.NoError(t, os.Symlink(path, filepath.Join(commands, name)))
@@ -169,6 +169,44 @@ esac
 					require.Equal(t, archiveRepo+"/v"+version+"/"+filename+"\n"+repo+"/v"+version+"/checksums.txt\n", string(requestLog))
 				})
 			}
+		})
+	}
+}
+
+func TestPrepareInstaller(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("the release installer is prepared with /bin/sh")
+	}
+	repo, err := filepath.Abs("..")
+	require.NoError(t, err)
+	sourcePath := filepath.Join(repo, "install.sh")
+	source, err := os.ReadFile(sourcePath)
+	require.NoError(t, err)
+	for _, version := range []string{"1.2.3", "v2.3.4-beta.1"} {
+		t.Run(version, func(t *testing.T) {
+			output := filepath.Join(t.TempDir(), "release", "install.sh")
+			cmd := exec.Command("/bin/sh", "scripts/prepare-installer.sh", version, output)
+			cmd.Dir = repo
+			log, err := cmd.CombinedOutput()
+			require.NoError(t, err, string(log))
+			installer, err := os.ReadFile(output)
+			require.NoError(t, err)
+			require.Contains(t, string(installer), "\nversion=\""+strings.TrimPrefix(version, "v")+"\"\n")
+			require.Contains(t, string(installer), "version=${TICLOUD_VERSION#v}")
+			currentSource, err := os.ReadFile(sourcePath)
+			require.NoError(t, err)
+			require.Equal(t, source, currentSource)
+		})
+	}
+	for _, version := range []string{"", "latest", "1.2.3/other", "1.2.3\nother"} {
+		t.Run("invalid "+version, func(t *testing.T) {
+			output := filepath.Join(t.TempDir(), "install.sh")
+			cmd := exec.Command("/bin/sh", "scripts/prepare-installer.sh", version, output)
+			cmd.Dir = repo
+			log, err := cmd.CombinedOutput()
+			require.Error(t, err)
+			require.Contains(t, string(log), "Invalid release version")
+			require.NoFileExists(t, output)
 		})
 	}
 }
