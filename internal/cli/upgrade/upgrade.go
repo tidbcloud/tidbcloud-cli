@@ -17,8 +17,12 @@ package upgrade
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
+	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
@@ -33,6 +37,11 @@ import (
 	"github.com/pingcap/log"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
+)
+
+const (
+	installerURL    = "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/40c0e2c7ef8b1a2ec0993b6935c01494777f64c5/install.sh"
+	installerSHA256 = "d981d28e244778af2fe3cb63003ae22dd357a0d56e02bf7edbdbea7dd1288f18"
 )
 
 func Cmd(h *internal.Helper) *cobra.Command {
@@ -75,11 +84,14 @@ func Cmd(h *internal.Helper) *cobra.Command {
 
 func updateAndWaitReady(ctx context.Context, h *internal.Helper, newRelease *github.ReleaseInfo) error {
 	fmt.Fprintf(h.IOStreams.Out, "... Upgrading the CLI to version %s\n", newRelease.Version)
+	return downloadAndRunInstaller(ctx, newRelease.Version)
+}
 
+func downloadAndRunInstaller(ctx context.Context, releaseVersion string) error {
 	ctx, cancel := context.WithTimeout(ctx, 1*time.Minute)
 	defer cancel()
 
-	c1 := exec.CommandContext(ctx, "curl", "-sSL", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh") //nolint:gosec
+	c1 := exec.CommandContext(ctx, "curl", "-q", "--proto", "=https", "--proto-redir", "=https", "-fsSL", installerURL)
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
 	c1.Stdout = &stdout
@@ -93,8 +105,16 @@ func updateAndWaitReady(ctx context.Context, h *internal.Helper, newRelease *git
 		fmt.Println(stderr.String())
 		return err
 	}
+	if err := verifyInstallerChecksum(stdout.Bytes(), installerSHA256); err != nil {
+		return err
+	}
 
-	c2 := exec.CommandContext(ctx, "/bin/sh", "-c", stdout.String()) //nolint:gosec
+	c2 := exec.CommandContext(ctx, "/bin/sh", "-c", stdout.String()) //nolint:gosec // The installer checksum is verified before execution.
+	version := ""
+	if releaseVersion != "latest" {
+		version = strings.TrimPrefix(releaseVersion, "v")
+	}
+	c2.Env = append(os.Environ(), "TICLOUD_VERSION="+version)
 	stderr = bytes.Buffer{}
 	c2.Stderr = &stderr
 
@@ -110,46 +130,20 @@ func updateAndWaitReady(ctx context.Context, h *internal.Helper, newRelease *git
 	return nil
 }
 
+func verifyInstallerChecksum(script []byte, expectedChecksum string) error {
+	checksum := sha256.Sum256(script)
+	if hex.EncodeToString(checksum[:]) != expectedChecksum {
+		return errors.New("checksum verification failed for install.sh")
+	}
+	return nil
+}
+
 func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, newRelease *github.ReleaseInfo) error {
 	task := func() tea.Msg {
 		res := make(chan error, 1)
 
 		go func() {
-			timeoutCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
-			defer cancel()
-			c1 := exec.CommandContext(timeoutCtx, "curl", "-sSL", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh") //nolint:gosec
-			var stdout bytes.Buffer
-			var stderr bytes.Buffer
-			c1.Stdout = &stdout
-			c1.Stderr = &stderr
-
-			err := c1.Run()
-			if timeoutCtx.Err() == context.DeadlineExceeded {
-				res <- errors.New("timeout when download the install.sh script")
-				return
-			}
-			if err != nil {
-				fmt.Println(stderr.String())
-				res <- err
-				return
-			}
-
-			c2 := exec.CommandContext(timeoutCtx, "/bin/sh", "-c", stdout.String()) //nolint:gosec
-			stderr = bytes.Buffer{}
-			c2.Stderr = &stderr
-
-			err = c2.Run()
-			if timeoutCtx.Err() == context.DeadlineExceeded {
-				res <- errors.New("timeout when execute the install.sh script")
-				return
-			}
-			if err != nil {
-				fmt.Println(stderr.String())
-				res <- err
-				return
-			}
-
-			res <- nil
+			res <- downloadAndRunInstaller(ctx, newRelease.Version)
 		}()
 
 		ticker := time.NewTicker(1 * time.Second)
