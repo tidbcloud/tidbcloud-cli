@@ -109,6 +109,13 @@ func Any(v interface{}) interface{} {
 			out[i] = Any(val)
 		}
 		return out
+	case string:
+		// Pre-signed URLs in API responses (export download, import upload,
+		// audit log files) carry their signature in the query string.
+		if u, err := url.Parse(t); err == nil && u.Host != "" && (u.RawQuery != "" || u.User != nil) {
+			return URL(u)
+		}
+		return t
 	default:
 		return v
 	}

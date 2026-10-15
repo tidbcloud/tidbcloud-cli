@@ -97,3 +97,18 @@ func TestValueAndAny(t *testing.T) {
 	u, _ = url.Parse("https://alice@h/p?a=1")
 	assert.Equal("https://alice@h/p?a=1", URL(u))
 }
+
+func TestJSONMasksPresignedURLValues(t *testing.T) {
+	assert := require.New(t)
+	const sig = "PRESIGNED_SIG"
+	presigned := "https://b.s3.amazonaws.com/a.csv?X-Amz-Credential=" + sig + "&X-Amz-Signature=" + sig + "&X-Amz-Expires=900"
+	body := `{"downloadUrls":[{"name":"a.csv","url":"` + presigned + `"}],` +
+		`"uploadUrl":["` + presigned + `"],` +
+		`"endpoint":"https://serverless.tidbapi.com","note":"a:b?c"}`
+	got := JSON([]byte(body))
+	assert.NotContains(got, sig)
+	assert.Contains(got, "X-Amz-Expires=900")
+	assert.Contains(got, `"name":"a.csv"`)
+	assert.Contains(got, `"endpoint":"https://serverless.tidbapi.com"`)
+	assert.Contains(got, `"note":"a:b?c"`)
+}
