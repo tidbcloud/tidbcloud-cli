@@ -15,7 +15,9 @@
 package prop
 
 import (
+	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/juju/errors"
 )
@@ -25,6 +27,8 @@ const (
 	PrivateKey         string = "private-key"
 	CurProfile         string = "current-profile"
 	ServerlessEndpoint string = "serverless-endpoint"
+	NextGenEndpoint    string = "nextgen-endpoint"
+	NextGenCACertPath  string = "nextgen-ca-cert-path"
 	IAMEndpoint        string = "iam-endpoint"
 	OAuthEndpoint      string = "oauth-endpoint"
 	OAuthClientID      string = "oauth-client-id"
@@ -42,13 +46,33 @@ func GlobalProperties() []string {
 }
 
 func ProfileProperties() []string {
-	return []string{PublicKey, PrivateKey, ServerlessEndpoint, IAMEndpoint, OAuthEndpoint, OAuthClientID, OAuthClientSecret, TelemetryEnabled}
+	return []string{PublicKey, PrivateKey, ServerlessEndpoint, NextGenEndpoint, NextGenCACertPath, IAMEndpoint, OAuthEndpoint, OAuthClientID, OAuthClientSecret, TelemetryEnabled}
 }
 
 func ValidateApiUrl(value string) (*url.URL, error) {
 	u, err := url.ParseRequestURI(value)
 	if err != nil {
 		return nil, errors.Annotate(err, "api url should format as <schema>://<host>")
+	}
+	return u, nil
+}
+
+func ValidateNextGenApiUrl(value string) (*url.URL, error) {
+	if strings.Contains(value, "#") {
+		return nil, fmt.Errorf("the API URL must not contain a query or fragment")
+	}
+	u, err := ValidateApiUrl(value)
+	if err != nil {
+		return nil, err
+	}
+	if u.Scheme != "https" {
+		return nil, fmt.Errorf("the API URL must use HTTPS")
+	}
+	if u.Host == "" {
+		return nil, fmt.Errorf("the API URL must include a host")
+	}
+	if u.ForceQuery || u.RawQuery != "" || u.Fragment != "" {
+		return nil, fmt.Errorf("the API URL must not contain a query or fragment")
 	}
 	return u, nil
 }
