@@ -1,0 +1,3860 @@
+openapi: 3.0.1
+info:
+  description: "*TiDB Cloud API is in beta.*\n\nThis API manages [TiDB Cloud Premium](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#tidb-cloud-premium)\
+    \ instances. For more information about TiDB Cloud API, see [TiDB Cloud API Overview](https://docs.pingcap.com/api/tidb-cloud-api-overview/).\n\
+    \nThe public connection setting endpoints also support TiDB Cloud Essential V2\
+    \ instances.\n\n# Overview\n\nThe TiDB Cloud Premium API (v1beta2) provides [REST](https://en.wikipedia.org/wiki/REST)\
+    \ endpoints to manage TiDB Cloud Premium instances and related resources.\n\n\
+    You can use this API to manage the following resources:\n\n- **TiDB Cloud Premium\
+    \ instance**: manage the lifecycle and configuration of TiDB Cloud Premium instances,\
+    \ including passwords, CA certificates, and cloud provider information.\n- **Public\
+    \ connection setting**: enable or disable public connections and manage IP access\
+    \ lists for Premium and Essential V2 instances.\n- **Customer-managed encryption\
+    \ key**: retrieve the IAM principal and verify KMS access before creating a Premium\
+    \ instance on AWS or Alibaba Cloud.\n- **Backup**: manage backups for TiDB Cloud\
+    \ Premium instances, including backup-based restore.\n- **Region**: retrieve available\
+    \ regions for deploying TiDB Cloud Premium instances.\n\n# Get Started\n\nThis\
+    \ guide helps you make your first API call to the TiDB Cloud Premium API. You\
+    \ will learn how to authenticate a request, build a request, and interpret the\
+    \ response.\n\n1. Create a [TiDB Cloud account](https://tidbcloud.com/signup)\
+    \ if you do not already have one.\n2. In the [TiDB Cloud console](https://tidbcloud.com/),\
+    \ go to **Organization** > **API Keys** and create an API key. For more information,\
+    \ see [API key management](#section/Authentication/API-key-management).\n3. Make\
+    \ your first API call.\n\n\tTo get all TiDB Cloud Premium instances in your organization,\
+    \ run the following command in your terminal. Replace `YOUR_PUBLIC_KEY` and `YOUR_PRIVATE_KEY`\
+    \ with your own key values.\n\n\t```bash\n\tcurl --digest \\\n\t  --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY'\
+    \ \\\n\t  --request GET \\\n\t  --url 'https://cloud.tidbapi.com/v1beta2/tidbs'\
+    \ \\\n\t  --header 'Accept: application/json'\n\t```\n\n4. The API returns a JSON\
+    \ list of your TiDB Cloud Premium instances. If none exist, the response contains\
+    \ an empty list.\n\n# Authentication\n\nThe TiDB Cloud API supports [HTTP Digest\
+    \ Authentication](https://en.wikipedia.org/wiki/Digest_access_authentication)\
+    \ with API keys and OAuth Bearer tokens. OAuth clients send the token in the `Authorization:\
+    \ Bearer <token>` header. It protects your private key from being sent over the\
+    \ network. For more details about HTTP Digest Authentication, refer to the [IETF\
+    \ RFC](https://datatracker.ietf.org/doc/html/rfc7616).\n\n## API key overview\n\
+    \n- The API key contains a public key and a private key, which act as the username\
+    \ and password required in the HTTP Digest Authentication. The private key only\
+    \ displays upon the key creation.\n- The API key belongs to your organization\
+    \ and acts as the `Organization Owner` role. You can check [permissions of owner](https://docs.pingcap.com/tidbcloud/manage-user-access#configure-member-roles).\n\
+    - You must provide the correct API key in every request. Otherwise, TiDB Cloud\
+    \ responds with a `401` error.\n\n## API key management\n\n### Create an API key\n\
+    \nOnly the **owner** of an organization can create an API key.\n\nTo create an\
+    \ API key in an organization, perform the following steps:\n\n1. In the [TiDB\
+    \ Cloud console](https://tidbcloud.com), switch to your target organization using\
+    \ the combo box in the upper-left corner.\n2. In the left navigation pane, click\
+    \ **Organization Settings** > **API Keys**.\n3. On the **API Keys** page, click\
+    \ **Create API Key**.\n4. Enter a description for your API key.\n5. Configure\
+    \ the role and scope for the API key. For more information about the permissions\
+    \ of a role, see [User roles](https://docs.pingcap.com/tidbcloud/manage-user-access/#user-roles).\n\
+    6. Click **Generate API Key**. Copy and save the public key and the private key.\n\
+    7. Make sure that you have copied and saved the private key in a secure location.\
+    \ The private key only displays upon the creation. After leaving this page, you\
+    \ will not be able to get the full private key again.\n8. Click **Done**.\n\n\
+    ### View details of an API key\n\nTo view details of an API key, perform the following\
+    \ steps:\n\n1. In the [TiDB Cloud console](https://tidbcloud.com), switch to your\
+    \ target organization using the combo box in the upper-left corner.\n2. In the\
+    \ left navigation pane, click **Organization Settings** > **API Keys**.\n3. You\
+    \ can view the details of the API keys on the page.\n\n### Edit an API key\n\n\
+    Only the **owner** of an organization can modify an API key.\n\nTo edit an API\
+    \ key in an organization, perform the following steps:\n\n1. In the [TiDB Cloud\
+    \ console](https://tidbcloud.com), switch to your target organization using the\
+    \ combo box in the upper-left corner.\n2. In the left navigation pane, click **Organization\
+    \ Settings** > **API Keys**.\n3. On the **API Keys** page, click **...** in the\
+    \ API key row that you want to change, and then click **Update Role**.\n4. You\
+    \ can update the description and role of the API key.\n5. Click **Update**.\n\n\
+    ### Delete an API key\n\nOnly the **owner** of an organization can delete an API\
+    \ key.\n\nTo delete an API key in an organization, perform the following steps:\n\
+    \n1. In the [TiDB Cloud console](https://tidbcloud.com), switch to your target\
+    \ organization using the combo box in the upper-left corner.\n2. In the left navigation\
+    \ pane, click **Organization Settings** > **API Keys**.\n3. On the **API Keys**\
+    \ page, click **...** in the API key row that you want to delete, and then click\
+    \ **Delete**.\n4. Click **I understand, delete it.**\n\n# API Changelog\n\nThis\
+    \ changelog lists all changes to the TiDB Cloud Premium API (v1beta2).\n\n<!--\
+    \ In reverse chronological order -->\n\n## 20260924\n\n- Published CMEK IAM principal\
+    \ retrieval and verification APIs for Premium instances on AWS and Alibaba Cloud.\n\
+    \n## 20260923\n\n- Added APIs to get and update public connection settings for\
+    \ Premium and Essential V2 instances.\n\n## 20260428\n\n- Initial release of the\
+    \ TiDB Cloud Premium API (v1beta2), including the following resources and endpoints:\n\
+    \t* TiDB Cloud Premium instance\n\t\t* [List TiDB Cloud Premium instances](#tag/TiDB-Instance/operation/TidbService_ListTidbs)\n\
+    \t\t* [Create a TiDB Cloud Premium instance](#tag/TiDB-Instance/operation/TidbService_CreateTidb)\n\
+    \t\t* [Get a TiDB Cloud Premium instance](#tag/TiDB-Instance/operation/TidbService_GetTidb)\n\
+    \t\t* [Delete a TiDB Cloud Premium instance](#tag/TiDB-Instance/operation/TidbService_DeleteTidb)\n\
+    \t\t* [Update a TiDB Cloud Premium instance](#tag/TiDB-Instance/operation/TidbService_UpdateTidb)\n\
+    \t\t* [Reset the root password of a TiDB Cloud Premium instance](#tag/TiDB-Instance/operation/TidbService_ResetRootPassword)\n\
+    \t\t* [Get cloud provider information for a TiDB Cloud Premium instance](#tag/TiDB-Instance/operation/TidbService_GetCloudProviderInfo)\n\
+    \t\t* [Get the CA certificate download URL for a TiDB Cloud Premium instance](#tag/TiDB-Instance/operation/TidbService_GetCaCertificateDownloadUrl)\n\
+    \t* Backup\n\t\t* [List backups for a TiDB Cloud Premium instance](#tag/Backup/operation/TidbService_ListTidbBackups)\n\
+    \t\t* [Delete a backup for a TiDB Cloud Premium instance](#tag/Backup/operation/TidbService_DeleteTidbBackup)\n\
+    \t\t* [Restore a TiDB Cloud Premium instance from a backup](#tag/Backup/operation/TidbService_RestoreTidb)\n\
+    \t\t* [Get restore status for a TiDB Cloud Premium instance](#tag/Backup/operation/TidbService_GetRestoreStatus)\n\
+    \t* Region\n\t\t* [List regions](#tag/Region/operation/RegionService_ListRegions)\n"
+  title: TiDB Cloud Premium API
+  version: v1beta2
+servers:
+- url: https://cloud.tidbapi.com/v1beta2
+tags:
+- description: "Manage the lifecycle and configuration of TiDB Cloud Premium instances,\
+    \ including passwords, CA certificates, and cloud provider information."
+  name: TiDB Cloud Premium Instance
+- description: Enable or disable public connections and manage IP access lists for
+    Premium and Essential V2 instances.
+  name: PublicConnectionSettingService
+- description: Retrieve the IAM principal and verify customer-managed KMS access for
+    Premium instances on AWS or Alibaba Cloud.
+  name: CustomerManagedEncryptionKeyService
+- description: "Manage backups for TiDB Cloud Premium instances, including backup-based\
+    \ restore."
+  name: Backup
+- description: Retrieve available regions for deploying TiDB Cloud Premium instances.
+  name: Region
+- description: Retrieve existing private connection addresses for Premium and Essential
+    V2 instances.
+  name: PrivateEndpointConnectionService
+paths:
+  /cmeks:principal:
+    get:
+      description: Retrieves the IAM principal required for customer-managed encryption
+        key (CMEK) access. Use this to get the TiDB Cloud account information needed
+        to configure your KMS key policy.
+      operationId: CustomerManagedEncryptionKeyService_GetCmekAccessIamPrincipal
+      parameters:
+      - description: "The region of the Premium instance, for example `aws-us-west-2`."
+        in: query
+        name: regionId
+        required: true
+        schema:
+          type: string
+      - in: query
+        name: servicePlan
+        required: true
+        schema:
+          $ref: '#/components/schemas/TidbService_ListTidbs_servicePlan_parameter'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta2CmekAccessIamPrincipal'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get CMEK IAM principal
+      tags:
+      - CustomerManagedEncryptionKeyService
+  /cmeks:verifyPrincipal:
+    post:
+      description: Verifies that the CMEK IAM principal configuration is valid. Use
+        this to validate your KMS key policy before creating a TiDB Cloud Premium
+        instance with CMEK enabled.
+      operationId: CustomerManagedEncryptionKeyService_VerifyCmekAccessIamPrincipal
+      parameters:
+      - description: |-
+          Optional existing TiDB ID. Omit this when validating CMEK before creating
+          a TiDB; provide it when validating CMEK for an existing TiDB.
+        in: query
+        name: tidbId
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1beta2CustomerManagedEncryptionKey'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta2VerifyCmekAccessIamPrincipalResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Verify CMEK IAM principal
+      tags:
+      - CustomerManagedEncryptionKeyService
+      x-codegen-request-body-name: key
+  /tidbs:
+    get:
+      description: "Lists all TiDB Cloud Premium instances in your organization. You\
+        \ can filter results by service plan, region, name, or ID."
+      operationId: TidbService_ListTidbs
+      parameters:
+      - description: |-
+          The plan of the service. If specified, only TiDB Cloud Premium instances of the specified plan are returned.
+
+          - `Premium`: [TiDB Cloud Premium](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#tidb-cloud-premium)
+
+          - `Premium_Reserved`: TiDB Cloud Premium Reserved
+        in: query
+        name: servicePlan
+        schema:
+          $ref: '#/components/schemas/TidbService_ListTidbs_servicePlan_parameter'
+      - description: "A list of region IDs. If specified, only TiDB Cloud Premium\
+          \ instances in these regions are returned."
+        explode: true
+        in: query
+        name: regionIds
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: "The display name to filter by. If specified, only TiDB Cloud\
+          \ Premium instances whose display name contains this value are returned."
+        in: query
+        name: name
+        schema:
+          type: string
+      - description: "A list of tags. If specified, only TiDB Cloud Premium instances\
+          \ tagged with any of these values are returned."
+        explode: true
+        in: query
+        name: tags
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: "A list of TiDB Cloud Premium instance IDs. If specified, only\
+          \ the ones matching these IDs are returned."
+        explode: true
+        in: query
+        name: tidbIds
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: "A list of resource pool IDs. If specified, only TiDB Cloud BYOC\
+          \ instances in these resource pools are returned."
+        explode: true
+        in: query
+        name: resourcePoolIds
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: "The maximum number of TiDB Cloud Premium instances to return.\
+          \ If not specified, at most 10 will be returned. The maximum value is `100`.\
+          \ Values greater than `100` are set to `100`."
+        in: query
+        name: pageSize
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: |-
+          The pagination token received from a previous [List TiDB Cloud Premium instances](#tag/TiDB-Instance/operation/TidbService_ListTidbs) request. Use this token to retrieve the next page of results.
+
+          **Note**: When paginating, all other parameters must match the original request.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: "The number of TiDB Cloud Premium instances to skip before returning\
+          \ results. If the value exceeds the total number of TiDB Cloud Premium instances,\
+          \ the response is `200` with an empty list and no `nextPageToken`."
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta2ListTidbsResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List TiDB Cloud Premium instances
+      tags:
+      - TiDB Cloud Premium Instance
+      x-code-samples:
+      - label: curl
+        lang: curl
+        source: |-
+          curl --location 'https://cloud.tidbapi.com/v1beta2/tidbs' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
+    post:
+      description: "Creates a new TiDB Cloud Premium instance. If the `tidb.cloud/project`\
+        \ label is provided, the instance will be created in the specified project."
+      operationId: TidbService_CreateTidb
+      parameters:
+      - description: "If set to `true`, the request is validated but not executed.\
+          \ Defaults to `false`."
+        in: query
+        name: validateOnly
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/nextgenv1beta2Tidb'
+        description: The TiDB Cloud Premium instance to create.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/nextgenv1beta2Tidb'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Create a TiDB Cloud Premium instance
+      tags:
+      - TiDB Cloud Premium Instance
+      x-code-samples:
+      - label: curl
+        lang: curl
+        source: |-
+          curl --location 'https://cloud.tidbapi.com/v1beta2/tidbs' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Content-Type: application/json' \
+          --header 'Accept: application/json' \
+          --data '{
+            "displayName": "my-tidb",
+            "regionId": "aws-us-west-2",
+            "maxRcu": 20000,
+            "servicePlan": "Premium"
+          }'
+      x-codegen-request-body-name: tidb
+  /tidbs/{tidbId}:
+    delete:
+      description: Deletes a TiDB Cloud Premium instance by `tidbId`.
+      operationId: TidbService_DeleteTidb
+      parameters:
+      - description: The ID of the TiDB Cloud Premium instance to delete.
+        in: path
+        name: tidbId
+        required: true
+        schema:
+          type: string
+      - description: "If set to `true`, the request is validated but not executed.\
+          \ Defaults to `false`."
+        in: query
+        name: validateOnly
+        schema:
+          type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/nextgenv1beta2Tidb'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Delete a TiDB Cloud Premium instance
+      tags:
+      - TiDB Cloud Premium Instance
+      x-code-samples:
+      - label: curl
+        lang: curl
+        source: |-
+          curl --location --request DELETE 'https://cloud.tidbapi.com/v1beta2/tidbs/{tidb_id}' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
+    get:
+      description: Retrieves details of a specific TiDB Cloud Premium instance.
+      operationId: TidbService_GetTidb
+      parameters:
+      - description: The ID of the TiDB Cloud Premium instance to retrieve.
+        in: path
+        name: tidbId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/nextgenv1beta2Tidb'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get a TiDB Cloud Premium instance
+      tags:
+      - TiDB Cloud Premium Instance
+      x-code-samples:
+      - label: curl
+        lang: curl
+        source: |-
+          curl --location 'https://cloud.tidbapi.com/v1beta2/tidbs/{tidb_id}' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
+  /tidbs/{tidbId}:resumeTidb:
+    post:
+      description: Accepts an asynchronous request to resume a paused TiDB Cloud Premium
+        or Premium Reserved instance. Resuming an instance resumes its underlying
+        resource pool and every instance in that pool. Poll the instance state with
+        GetTidb to observe completion.
+      operationId: TidbService_ResumeTidb
+      parameters:
+      - description: The ID of a paused TiDB Cloud Premium or Premium Reserved instance.
+        in: path
+        name: tidbId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta2ResumeTidbResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Resume a TiDB Cloud Premium instance
+      tags:
+      - TiDB Cloud Premium Instance
+  /tidbs/{tidb.tidbId}:
+    patch:
+      description: "Updates the configuration of a specific TiDB Cloud Premium instance.\
+        \ You can modify the following fields: `displayName` and `maxRcu`."
+      operationId: TidbService_UpdateTidb
+      parameters:
+      - description: The ID of the TiDB Cloud Premium instance to update.
+        in: path
+        name: tidb.tidbId
+        required: true
+        schema:
+          type: string
+      - description: "If set to `true`, the request is validated but not executed.\
+          \ Defaults to `false`."
+        in: query
+        name: validateOnly
+        schema:
+          type: boolean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/The_TiDB_Cloud_Premium_instance_to_update_'
+        description: The TiDB Cloud Premium instance to update.
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/nextgenv1beta2Tidb'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Update a TiDB Cloud Premium instance
+      tags:
+      - TiDB Cloud Premium Instance
+      x-code-samples:
+      - label: curl
+        lang: curl
+        source: |-
+          curl --location --request PATCH 'https://cloud.tidbapi.com/v1beta2/tidbs/{tidb_id}' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Content-Type: application/json' \
+          --header 'Accept: application/json' \
+          --data '{
+            "displayName": "my-updated-tidb",
+            "maxRcu": 40000
+          }'
+      x-codegen-request-body-name: tidb
+  /tidbs/{tidbId}:resetRootPassword:
+    post:
+      description: "Sets a new password for the TiDB Cloud Premium instance's root\
+        \ user. The new password is not returned in the response for security reasons,\
+        \ so save your password in a secure location."
+      operationId: TidbService_ResetRootPassword
+      parameters:
+      - description: The ID of the TiDB Cloud Premium instance for which to reset
+          the root password.
+        in: path
+        name: tidbId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TidbServiceResetRootPasswordBody'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta2ResetRootPasswordResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Reset the root password of a TiDB Cloud Premium instance
+      tags:
+      - TiDB Cloud Premium Instance
+      x-code-samples:
+      - label: curl
+        lang: curl
+        source: |-
+          curl --location 'https://cloud.tidbapi.com/v1beta2/tidbs/{tidb_id}:resetRootPassword' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Content-Type: application/json' \
+          --header 'Accept: application/json' \
+          --data '{
+            "rootPassword": "your-new-password"
+          }'
+      x-codegen-request-body-name: body
+  /tidbs/{tidbId}/cloudProviderInfo:
+    get:
+      description: Retrieves the TiDB Cloud account ID and external ID for the underlying
+        cloud infrastructure of a specific TiDB Cloud Premium instance.
+      operationId: TidbService_GetCloudProviderInfo
+      parameters:
+      - description: The ID of the TiDB Cloud Premium instance for which to retrieve
+          cloud provider information.
+        in: path
+        name: tidbId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta2CloudProviderInfo'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get cloud provider information for a TiDB Cloud Premium instance
+      tags:
+      - TiDB Cloud Premium Instance
+      x-code-samples:
+      - label: curl
+        lang: curl
+        source: |-
+          curl --location 'https://cloud.tidbapi.com/v1beta2/tidbs/{tidb_id}/cloudProviderInfo' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
+  /tidbs/{tidbId}/backups:
+    get:
+      description: "Lists all backups for a specific TiDB Cloud Premium instance.\
+        \ You can filter results by state, region, trigger type, or time range."
+      operationId: TidbService_ListTidbBackups
+      parameters:
+      - description: The ID of the TiDB Cloud Premium instance for which to list backups.
+        in: path
+        name: tidbId
+        required: true
+        schema:
+          type: string
+      - description: |-
+          A list of backup states. If specified, only backups matching these states are returned.
+
+           - UNKNOWN: The backup state is unknown.
+           - PENDING: The backup is pending.
+           - RUNNING: The backup is in progress.
+           - SUCCEEDED: The backup completed successfully.
+           - FAILED: The backup has failed.
+           - CANCELLED: The backup is cancelled.
+        explode: true
+        in: query
+        name: states
+        schema:
+          items:
+            $ref: '#/components/schemas/TidbService_ListTidbBackups_states_parameter_inner'
+          type: array
+        style: form
+      - description: "A list of region IDs. If specified, only backups in these regions\
+          \ are returned."
+        explode: true
+        in: query
+        name: regionIds
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: |-
+          A list of backup trigger types. If specified, only backups matching these trigger types are returned.
+
+           - AUTO: The backup is triggered automatically by TiDB Cloud.
+           - MANUAL: The backup is triggered manually by a user.
+        explode: true
+        in: query
+        name: triggerTypes
+        schema:
+          items:
+            $ref: '#/components/schemas/TidbService_ListTidbBackups_triggerTypes_parameter_inner'
+          type: array
+        style: form
+      - description: "The inclusive start of the backup time range, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)\
+          \ format. If specified, only backups at or after this time are returned."
+        in: query
+        name: startTime
+        schema:
+          format: date-time
+          type: string
+      - description: "The inclusive end of the backup time range, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)\
+          \ format. If specified, only backups at or before this time are returned."
+        in: query
+        name: endTime
+        schema:
+          format: date-time
+          type: string
+      - description: "The maximum number of backups to return. If not specified, at\
+          \ most 10 backups will be returned. The maximum value is `100`. Values greater\
+          \ than `100` are set to `100`."
+        in: query
+        name: pageSize
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: |-
+          The pagination token received from a previous [List backups for a TiDB Cloud Premium instance](#tag/Backup/operation/TidbService_ListTidbBackups) request. Use this token to retrieve the next page of results.
+
+          **Note**: When paginating, all other parameters must match the original request.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: "The number of backups to skip before returning results. If the\
+          \ value exceeds the total number of backups, the response is `200` with\
+          \ an empty list and no `nextPageToken`."
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta2ListTidbBackupsResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List backups for a TiDB Cloud Premium instance
+      tags:
+      - Backup
+      x-code-samples:
+      - label: curl
+        lang: curl
+        source: |-
+          curl --location 'https://cloud.tidbapi.com/v1beta2/tidbs/{tidb_id}/backups' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
+  /tidbs/{tidbId}/backups/{backupId}:
+    delete:
+      description: Deletes a backup by `backupId`.
+      operationId: TidbService_DeleteTidbBackup
+      parameters:
+      - description: The ID of the TiDB Cloud Premium instance.
+        in: path
+        name: tidbId
+        required: true
+        schema:
+          type: string
+      - description: The ID of the backup to delete.
+        in: path
+        name: backupId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Delete a backup for a TiDB Cloud Premium instance
+      tags:
+      - Backup
+      x-code-samples:
+      - label: curl
+        lang: curl
+        source: |-
+          curl --location --request DELETE 'https://cloud.tidbapi.com/v1beta2/tidbs/{tidb_id}/backups/{backup_id}' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
+  /tidbs:restore:
+    post:
+      description: "Restores a new TiDB Cloud Premium instance from a backup. Supported\
+        \ restore modes: `SNAPSHOT`, `PITR`, `DEDICATED_SNAPSHOT`, and `CLASSIC_SNAPSHOT`."
+      operationId: TidbService_RestoreTidb
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1beta2RestoreTidbRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta2RestoreTidbResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Restore a TiDB Cloud Premium instance from a backup
+      tags:
+      - Backup
+      x-code-samples:
+      - label: curl (SNAPSHOT)
+        lang: curl
+        source: |-
+          curl --location 'https://cloud.tidbapi.com/v1beta2/tidbs:restore' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Content-Type: application/json' \
+          --header 'Accept: application/json' \
+          --data '{
+            "tidb": {
+              "displayName": "my-restored-tidb",
+              "regionId": "aws-us-west-2",
+              "maxRcu": 20000,
+              "servicePlan": "Premium"
+            },
+            "sourceTidbId": "{source_tidb_id}",
+            "restoreMode": "SNAPSHOT",
+            "backupId": "{backup_id}"
+          }'
+      - label: curl (PITR)
+        lang: curl
+        source: |-
+          curl --location 'https://cloud.tidbapi.com/v1beta2/tidbs:restore' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Content-Type: application/json' \
+          --header 'Accept: application/json' \
+          --data '{
+            "tidb": {
+              "displayName": "my-restored-tidb",
+              "regionId": "aws-us-west-2",
+              "maxRcu": 20000,
+              "servicePlan": "Premium"
+            },
+            "sourceTidbId": "{source_tidb_id}",
+            "restoreMode": "PITR",
+            "pointInTime": "2023-10-01T12:00:00Z"
+          }'
+      - label: curl (DEDICATED_SNAPSHOT)
+        lang: curl
+        source: |-
+          curl --location 'https://cloud.tidbapi.com/v1beta2/tidbs:restore' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Content-Type: application/json' \
+          --header 'Accept: application/json' \
+          --data '{
+            "tidb": {
+              "displayName": "my-restored-tidb",
+              "regionId": "aws-us-west-2",
+              "maxRcu": 20000,
+              "servicePlan": "Premium"
+            },
+            "sourceTidbId": "{source_tidb_id}",
+            "restoreMode": "DEDICATED_SNAPSHOT",
+            "backupId": "{backup_id}"
+          }'
+      - label: curl (CLASSIC_SNAPSHOT)
+        lang: curl
+        source: |-
+          curl --location 'https://cloud.tidbapi.com/v1beta2/tidbs:restore' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Content-Type: application/json' \
+          --header 'Accept: application/json' \
+          --data '{
+            "tidb": {
+              "displayName": "my-restored-tidb",
+              "regionId": "aws-us-west-2",
+              "maxRcu": 20000,
+              "servicePlan": "Premium"
+            },
+            "restoreMode": "CLASSIC_SNAPSHOT",
+            "classicBackupStorage": {
+              "cloudProvider": "aws",
+              "bucketUri": "s3://my-backup-bucket/tidb-backups/",
+              "auth": {
+                "accessKeyId": "AKIAIOSFODNN7EXAMPLE",
+                "accessKeySecret": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+              }
+            }
+          }'
+      x-codegen-request-body-name: body
+  /tidbs/{tidbId}:getRestoreStatus:
+    get:
+      description: "Retrieves the restore progress of a TiDB Cloud Premium instance,\
+        \ including the completion percentage and any error messages."
+      operationId: TidbService_GetRestoreStatus
+      parameters:
+      - description: The ID of the TiDB Cloud Premium instance.
+        in: path
+        name: tidbId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta2GetRestoreStatusResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get the restore status for a TiDB Cloud Premium instance
+      tags:
+      - Backup
+      x-code-samples:
+      - label: curl
+        lang: curl
+        source: |-
+          curl --location 'https://cloud.tidbapi.com/v1beta2/tidbs/{tidb_id}:getRestoreStatus' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
+  /tidbs/{tidbId}/caCertificateUrl:
+    get:
+      description: Retrieves the download URL for the CA certificate required to establish
+        TLS (Transport Layer Security) connections to a specific TiDB Cloud Premium
+        instance.
+      operationId: TidbService_GetCaCertificateDownloadUrl
+      parameters:
+      - description: The ID of the TiDB Cloud Premium instance for which to retrieve
+          the CA certificate.
+        in: path
+        name: tidbId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta2CaCertificateDownloadUrl'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get the CA certificate download URL for a TiDB Cloud Premium instance
+      tags:
+      - TiDB Cloud Premium Instance
+      x-code-samples:
+      - label: curl
+        lang: curl
+        source: |-
+          curl --location 'https://cloud.tidbapi.com/v1beta2/tidbs/{tidb_id}/caCertificateUrl' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
+  /backups:
+    get:
+      description: "Lists all backups in your organization. You can filter results\
+        \ by TiDB Cloud Premium instance, state, service plan, region, or time range."
+      operationId: BackupService_ListBackups
+      parameters:
+      - description: "A list of TiDB Cloud Premium instance IDs. If specified, only\
+          \ backups belonging to these TiDB Cloud Premium instances are returned."
+        explode: true
+        in: query
+        name: tidbIds
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: |-
+          A list of backup states. If specified, only backups with these states are returned.
+
+           - UNKNOWN: The backup state is unknown.
+           - PENDING: The backup is pending.
+           - RUNNING: The backup is in progress.
+           - SUCCEEDED: The backup completed successfully.
+           - FAILED: The backup has failed.
+           - CANCELLED: The backup is cancelled.
+        explode: true
+        in: query
+        name: states
+        schema:
+          items:
+            $ref: '#/components/schemas/TidbService_ListTidbBackups_states_parameter_inner'
+          type: array
+        style: form
+      - description: "A list of service plans. If specified, only backups belonging\
+          \ to these service plans are returned."
+        explode: true
+        in: query
+        name: servicePlans
+        schema:
+          items:
+            $ref: '#/components/schemas/TidbService_ListTidbs_servicePlan_parameter'
+          type: array
+        style: form
+      - description: "A list of region IDs. If specified, only backups in these regions\
+          \ are returned."
+        explode: true
+        in: query
+        name: regionIds
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - description: "A list of TiDB Cloud Premium instance states. If specified,\
+          \ only backups from TiDB Cloud Premium instances in these states are returned."
+        explode: true
+        in: query
+        name: tidbStates
+        schema:
+          items:
+            $ref: '#/components/schemas/BackupService_ListBackups_tidbStates_parameter_inner'
+          type: array
+        style: form
+      - description: |-
+          A list of trigger types. If specified, only backups with these trigger types are returned.
+
+           - AUTO: The backup is triggered automatically by TiDB Cloud.
+           - MANUAL: The backup is triggered manually by a user.
+        explode: true
+        in: query
+        name: triggerTypes
+        schema:
+          items:
+            $ref: '#/components/schemas/TidbService_ListTidbBackups_triggerTypes_parameter_inner'
+          type: array
+        style: form
+      - description: "The start time of the time range filter. If specified, only\
+          \ backups created after this time are returned."
+        in: query
+        name: startTime
+        schema:
+          format: date-time
+          type: string
+      - description: "The end time of the time range filter. If specified, only backups\
+          \ created before this time are returned."
+        in: query
+        name: endTime
+        schema:
+          format: date-time
+          type: string
+      - description: |-
+          The maximum number of backups to return. If not specified, at most 10 backups will be returned.
+          The maximum value is `100`. Values greater than `100` are set to `100`.
+        in: query
+        name: pageSize
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: |-
+          The pagination token received from a previous `ListBackups` request. Use this token to retrieve the next page of results.
+
+          **Note**: When paginating, all other parameters must match the original request.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: |-
+          The number of individual resources to skip before starting to return results.
+          If the skip value causes the cursor to move past the end of the collection,
+          the response will be 200 OK with an empty result set and no next_page_token.
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta2ListBackupsResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List backups
+      tags:
+      - Backup
+      x-code-samples:
+      - label: curl
+        lang: curl
+        source: |-
+          curl --location 'https://cloud.tidbapi.com/v1beta2/backups' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
+  /backups/{backupId}:
+    delete:
+      description: Deletes a backup by `backupId`.
+      operationId: BackupService_DeleteBackup
+      parameters:
+      - description: The ID of the backup to delete.
+        in: path
+        name: backupId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Delete a backup
+      tags:
+      - Backup
+      x-code-samples:
+      - label: curl
+        lang: curl
+        source: |-
+          curl --location --request DELETE 'https://cloud.tidbapi.com/v1beta2/backups/{backup_id}' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
+  /tidbs/{tidbId}/publicConnectionSetting:
+    get:
+      description: Retrieves the public connection setting for a specific TiDB Cloud
+        Premium or Essential V2 instance.
+      operationId: PublicConnectionSettingService_GetPublicConnectionSetting
+      parameters:
+      - description: Required. The ID of the Tidb.
+        in: path
+        name: tidbId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta2PublicConnectionSetting'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get public connection setting
+      tags:
+      - PublicConnectionSettingService
+    patch:
+      description: Updates the public connection setting for a specific TiDB Cloud
+        Premium or Essential V2 instance. You can enable or disable public connections
+        and manage IP access lists.
+      operationId: PublicConnectionSettingService_UpdatePublicConnectionSetting
+      parameters:
+      - description: Required. The ID of the Tidb.
+        in: path
+        name: tidbId
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1beta2PublicConnectionSetting'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta2PublicConnectionSetting'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Update public connection setting
+      tags:
+      - PublicConnectionSettingService
+      x-codegen-request-body-name: publicConnectionSetting
+  /regions:
+    get:
+      description: Lists the regions where you can create a TiDB Cloud Premium instance.
+        You can filter results by cloud provider or service plan.
+      operationId: RegionService_ListRegions
+      parameters:
+      - description: "The cloud provider. If specified, only regions belonging to\
+          \ the specified cloud provider are returned."
+        in: query
+        name: cloudProvider
+        schema:
+          type: string
+      - description: "The plan of the service. If specified, only regions that support\
+          \ the specified service plan are returned."
+        in: query
+        name: servicePlan
+        schema:
+          $ref: '#/components/schemas/TidbService_ListTidbs_servicePlan_parameter'
+      - description: "The maximum number of regions to return. If not specified, at\
+          \ most 10 regions will be returned. The maximum value is `100`. Values greater\
+          \ than `100` are set to `100`."
+        in: query
+        name: pageSize
+        schema:
+          default: 10
+          format: int32
+          type: integer
+      - description: |-
+          The pagination token received from a previous [List regions](#tag/Region/operation/RegionService_ListRegions) request. Use this token to retrieve the next page of results.
+
+          **Note**: When paginating, all other parameters must match the original request.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: "The number of regions to skip before returning results. If the\
+          \ value exceeds the total number of regions, the response is `200` with\
+          \ an empty list and no `nextPageToken`."
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1beta2ListRegionsResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List regions
+      tags:
+      - Region
+      x-code-samples:
+      - label: curl
+        lang: curl
+        source: |-
+          curl --location 'https://cloud.tidbapi.com/v1beta2/regions' \
+          --digest --user 'YOUR_PUBLIC_KEY:YOUR_PRIVATE_KEY' \
+          --header 'Accept: application/json'
+  /tidbs/{tidbId}/privateEndpointConnections:
+    get:
+      description: Lists all private endpoint connections for a specific TiDB Cloud
+        Premium instance.
+      operationId: PrivateEndpointConnectionService_ListPrivateEndpointConnections
+      parameters:
+      - in: path
+        name: tidbId
+        required: true
+        schema:
+          type: string
+      - description: |-
+          The maximum number of private link connections to return. The service may return fewer than this value.
+          If unspecified, at most X private link connections will be returned.
+          The maximum value is X; values above X will be coerced to X.
+        in: query
+        name: pageSize
+        schema:
+          format: int32
+          type: integer
+      - description: |-
+          A page token, received from a previous `ListPrivateLinkConnections` call.
+          Provide this to retrieve the subsequent page.
+        in: query
+        name: pageToken
+        schema:
+          type: string
+      - description: |-
+          The number of individual resources to skip before starting to return results.
+          If the skip value causes the cursor to move past the end of the collection,
+          the response will be 200 OK with an empty result set and no next_page_token.
+        in: query
+        name: skip
+        schema:
+          format: int32
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/nextgenv1beta2ListPrivateEndpointConnectionsResponse'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: List private endpoint connections
+      tags:
+      - PrivateEndpointConnectionService
+  /tidbs/{tidbId}/privateLinkService:
+    get:
+      description: Retrieves the private link service details for a specific TiDB
+        Cloud Premium instance.
+      operationId: PrivateEndpointConnectionService_GetPrivateLinkService
+      parameters:
+      - in: path
+        name: tidbId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/nextgenv1beta2PrivateLinkService'
+          description: A successful response.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: A request field is invalid.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The credentials cannot be authenticated.
+        "403":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: The authenticated identity does not have permission to access
+            the resource.
+        "429":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: You have exceeded the rate limit.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: Internal server error.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/rpcStatus'
+          description: An unexpected error response.
+      summary: Get private link service
+      tags:
+      - PrivateEndpointConnectionService
+components:
+  schemas:
+    BackupTriggerType:
+      description: |-
+        The trigger type of a backup.
+
+         - AUTO: The backup is triggered automatically by TiDB Cloud.
+         - MANUAL: The backup is triggered manually by a user.
+      enum:
+      - AUTO
+      - MANUAL
+      type: string
+    CmekAccessIamPrincipalAliyunCmekPrincipal:
+      example:
+        accountId: accountId
+      properties:
+        accountId:
+          description: The Alibaba Cloud account ID of the CMEK IAM principal.
+          readOnly: true
+          type: string
+      type: object
+    CmekAccessIamPrincipalAwsCmekPrincipal:
+      example:
+        accountId: accountId
+        externalId: externalId
+      properties:
+        accountId:
+          description: The AWS account ID of the CMEK IAM principal.
+          readOnly: true
+          type: string
+        externalId:
+          description: |-
+            The AWS STS AssumeRole `ExternalId` that must be pinned in the KMS
+            key policy's `Condition` block when granting access to this principal.
+          readOnly: true
+          type: string
+      type: object
+    ConnectionReachabilityDetail:
+      properties:
+        serviceActive:
+          description: Indicates whether the service is active.
+          readOnly: true
+          type: boolean
+        endpointActive:
+          description: Indicates whether the endpoint is active.
+          readOnly: true
+          type: boolean
+        dnsReachable:
+          description: Indicates whether the DNS is reachable.
+          readOnly: true
+          type: boolean
+        message:
+          description: A human-readable message that describes the reachability status.
+          readOnly: true
+          type: string
+      type: object
+    CustomerManagedEncryptionKeyAliyunKms:
+      properties:
+        kmsKeyArn:
+          description: |-
+            The Alibaba Cloud KMS key ARN used for encryption, e.g.
+            `acs:kms:ap-southeast-1:5841052134823325:key/key-sgp68887a54phjt9703ut`.
+          type: string
+      required:
+      - kmsKeyArn
+      type: object
+    CustomerManagedEncryptionKeyAwsKms:
+      properties:
+        kmsKeyArn:
+          description: The Amazon Resource Name (ARN) of the AWS KMS key used for
+            encryption.
+          type: string
+      required:
+      - kmsKeyArn
+      type: object
+    EndpointConnectionType:
+      enum:
+      - PUBLIC
+      - PRIVATE_ENDPOINT
+      - VPC_PEERING
+      type: string
+    RegionCloudProvider:
+      description: |-
+        Enum of cloud provider names.
+
+         - aws: Amazon Web Services.
+         - gcp: Google Cloud Platform.
+         - azure: Microsoft Azure.
+         - alicloud: Alibaba Cloud.
+      enum:
+      - aws
+      - gcp
+      - azure
+      - alicloud
+      type: string
+    ReservedCapacityScope:
+      enum:
+      - DEFAULT
+      - ORG_PRIVATE
+      type: string
+    TidbDualLayerDataEncryption:
+      description: "The dual-layer data encryption configuration for a TiDB Cloud\
+        \ Premium instance. Specify exactly one of the following options: `noEncryption`,\
+        \ `defaultKey`, or `cmek`."
+      properties:
+        noEncryption:
+          description: Disables dual-layer data encryption. The TiDB Cloud Premium
+            instance uses the default encryption provided by the cloud provider.
+          properties: {}
+          type: object
+        defaultKey:
+          description: Enables dual-layer data encryption using the TiDB Cloud default
+            key.
+          properties: {}
+          type: object
+        cmek:
+          allOf:
+          - $ref: '#/components/schemas/v1beta2CustomerManagedEncryptionKey'
+          description: |-
+            Enables dual-layer data encryption using a customer-managed encryption key (CMEK).
+            Configure the key according to the cloud provider:
+            - AWS: set `awsKms` and `awsPrincipal`.
+            - Alibaba Cloud: set `aliyunKms` and `aliyunPrincipal`.
+          type: object
+      type: object
+    TidbEndpoint:
+      example:
+        port: 0
+        egressIps:
+        - egressIps
+        - egressIps
+        host: host
+        connectionReachability: "{}"
+        connectionType: "{}"
+      properties:
+        host:
+          description: |-
+            The hostname of the endpoint.
+
+            When `connectionType` is `"PRIVATE_ENDPOINT"`, the behavior of the `host` field varies by cloud provider:
+            - For AWS, this field is available after the Private Link service is ready.
+            - For Google Cloud and Azure, this field is available after you create a private endpoint connection.
+          readOnly: true
+          type: string
+        port:
+          description: The port number of the endpoint.
+          format: int32
+          readOnly: true
+          type: integer
+        connectionType:
+          allOf:
+          - $ref: '#/components/schemas/EndpointConnectionType'
+          description: |-
+            The connection type of the endpoint.
+
+            - `PUBLIC`: a public endpoint. For more information, see [Network](https://docs.pingcap.com/tidbcloud/connect-to-tidb-instance/#network).
+
+            - `PRIVATE_ENDPOINT`: a private endpoint. For more information, see [Network](https://docs.pingcap.com/tidbcloud/connect-to-tidb-instance/#network).
+
+            - `VPC_PEERING`: a VPC peering endpoint (not yet supported, planned for a future release).
+          type: object
+        connectionReachability:
+          allOf:
+          - $ref: '#/components/schemas/v1beta2ConnectionReachability'
+          description: The reachability status of the endpoint connection.
+          type: object
+        egressIps:
+          description: |-
+            The public egress IP addresses used by the TiDB Cloud Premium instance.
+
+            This field is returned only for public endpoints. You can use these IP addresses
+            to configure allowlists on upstream services when connecting through a public endpoint.
+          items:
+            type: string
+          readOnly: true
+          type: array
+      type: object
+    TidbServiceResetRootPasswordBody:
+      example:
+        rootPassword: my-shining-password
+      properties:
+        rootPassword:
+          description: |-
+            The new root password.
+
+            This field supports two input formats:
+            - Plaintext password (legacy behavior)
+            - RSA-OAEP-SHA256 encrypted payload prefixed with `rsa_oaep_sha256:`
+
+            If the marker prefix is present, the server parses and decrypts the encrypted payload.
+            Any parse/decrypt failure returns an explicit parameter error without plaintext fallback.
+            If the marker prefix is absent, the value is treated as plaintext for backward compatibility.
+
+            For plaintext input, the password must be between 8 and 64 characters long.
+          example: my-shining-password
+          pattern: "^(rsa_oaep_sha256:.+|.{8,64})$"
+          type: string
+      required:
+      - rootPassword
+      type: object
+    nextgenv1beta2Tidb:
+      example:
+        tidbId: tidbId
+        displayName: foo-bar
+        minRcu: minRcu
+        annotations:
+          key: annotations
+        automaticResumeAt: 2000-01-23T04:56:07.000+00:00
+        capacityMode: "{}"
+        capacityUpdateTime: 2000-01-23T04:56:07.000+00:00
+        cloudProvider: "{}"
+        state: "{}"
+        dualLayerDataEncryption: "{}"
+        rootPassword: my-shining-password
+        baselineRcu: baselineRcu
+        reservedCapacity: "{}"
+        reservedCapacityTemplateId: reservedCapacityTemplateId
+        creator: creator
+        endpoints:
+        - port: 0
+          egressIps:
+          - egressIps
+          - egressIps
+          host: host
+          connectionReachability: "{}"
+          connectionType: "{}"
+        - port: 0
+          egressIps:
+          - egressIps
+          - egressIps
+          host: host
+          connectionReachability: "{}"
+          connectionType: "{}"
+        resourcePoolDisplayName: resourcePoolDisplayName
+        updateTime: 2000-01-23T04:56:07.000+00:00
+        maxRcu: maxRcu
+        labels:
+          key: labels
+        tags:
+        - tags
+        - tags
+        regionDisplayName: regionDisplayName
+        servicePlan: "{}"
+        regionId: regionId
+        createTime: 2000-01-23T04:56:07.000+00:00
+        resourcePoolId: resourcePoolId
+        highAvailabilityType: "{}"
+        name: name
+        tidbVersion: tidbVersion
+      properties:
+        name:
+          description: "The unique identifier for the TiDB Cloud Premium instance,\
+            \ which is generated by the API and follows the format `tidbs/{tidbId}`."
+          readOnly: true
+          type: string
+        tidbId:
+          description: The ID of the TiDB Cloud Premium instance.
+          readOnly: true
+          type: string
+        displayName:
+          description: The user-defined name of the TiDB Cloud Premium instance.
+          example: foo-bar
+          maxLength: 64
+          minLength: 4
+          pattern: "^[A-Za-z0-9][-A-Za-z0-9]{2,62}[A-Za-z0-9]$"
+          type: string
+        regionId:
+          description: "The unique identifier of the region where the TiDB Cloud Premium\
+            \ instance is deployed, in the format of `{cloud_provider}-{region_code}`.\
+            \ For example, `aws-us-west-2`."
+          type: string
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/RegionCloudProvider'
+          description: |-
+            The cloud provider where the TiDB Cloud Premium instance is deployed.
+
+            - `"aws"`: Amazon Web Services
+
+            - `"gcp"`: Google Cloud
+
+            - `"azure"`: Microsoft Azure
+
+            - `"alicloud"`: Alibaba Cloud
+          type: object
+        regionDisplayName:
+          description: "The display name of the region where the TiDB Cloud Premium\
+            \ instance is deployed. For example, `Oregon (us-west-2)`."
+          readOnly: true
+          type: string
+        state:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ClusterState'
+          description: The current state of the TiDB Cloud Premium instance.
+          type: object
+        rootPassword:
+          description: |-
+            The root password of the TiDB Cloud Premium instance.
+
+            This field supports two input formats:
+            - Plaintext password (legacy behavior)
+            - RSA-OAEP-SHA256 encrypted payload prefixed with `rsa_oaep_sha256:`
+
+            If the marker prefix is present, the server parses and decrypts the encrypted payload.
+            Any parse/decrypt failure returns an explicit parameter error without plaintext fallback.
+            If the marker prefix is absent, the value is treated as plaintext for backward compatibility.
+
+            For plaintext input, the password must be between 8 and 64 characters long and can contain letters,
+            numbers, and special characters.
+          example: my-shining-password
+          pattern: "^(rsa_oaep_sha256:.+|.{8,64})$"
+          type: string
+        minRcu:
+          description: |-
+            The minimum number of Request Capacity Units (RCUs) for the TiDB Cloud Premium instance.
+
+            This field is read-only and is calculated by the service. It is omitted in Elastic Mode,
+            where Baseline RCU is the provisioning and billing floor.
+          format: int64
+          nullable: true
+          readOnly: true
+          type: string
+        maxRcu:
+          description: |-
+            The customer-defined maximum number of Request Capacity Units (RCUs). Requirements depend on service_plan:
+            - Premium and Essential_V2: optional. A positive value selects Max RCU Compatibility Mode. Omitting both
+              max_rcu and baseline_rcu selects Elastic Mode with the plan default Baseline RCU: 5,000 for Premium and
+              2,000 for Essential_V2.
+            - BYOC: required and must be greater than zero.
+            - Premium_Reserved: must be omitted.
+            Zero and JSON null are treated as omission and are not clear operations.
+          format: int64
+          nullable: true
+          type: string
+        servicePlan:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ServicePlan'
+          description: |-
+            The plan of the service.
+
+            - `Premium`: [TiDB Cloud Premium](https://docs.pingcap.com/tidbcloud/select-cluster-tier/#tidb-cloud-premium)
+
+            - `Premium_Reserved`: TiDB Cloud Premium Reserved
+          type: object
+        reservedCapacityTemplateId:
+          description: |-
+            The capacity template ID for Premium Reserved. This field is only accepted
+            when `service_plan` is `Premium_Reserved`; it is not returned in responses.
+          format: int64
+          type: string
+        reservedCapacity:
+          allOf:
+          - $ref: '#/components/schemas/v1beta2ReservedCapacity'
+          description: |-
+            The current Reserved capacity information. This field is only returned for
+            Premium Reserved instances.
+          type: object
+        resourcePoolId:
+          description: |-
+            The resource pool selected for this TiDB Cloud instance.
+            Currently, this field is only used for TiDB Cloud BYOC instances.
+          nullable: true
+          type: string
+        resourcePoolDisplayName:
+          description: |-
+            The current display name of the selected resource pool.
+            Currently, this field is only returned for TiDB Cloud BYOC instances.
+          nullable: true
+          readOnly: true
+          type: string
+        highAvailabilityType:
+          allOf:
+          - $ref: '#/components/schemas/v1beta2TidbHighAvailabilityType'
+          description: |-
+            The high availability configuration for the TiDB Cloud instance.
+            - `REGIONAL`: high availability across multiple availability zones within a region. For more information, see [Regional high availability architecture](https://docs.pingcap.com/tidbcloud/serverless-high-availability/#regional-high-availability-architecture).
+            - `ZONAL`: high availability within a single availability zone. For more information, see [Zonal high availability architecture](https://docs.pingcap.com/tidbcloud/serverless-high-availability/#zonal-high-availability-architecture).
+            TiDB Cloud Premium and Premium Reserved support only `REGIONAL`.
+            If omitted for TiDB Cloud Essential, the selected resource pool determines the value.
+          type: object
+        annotations:
+          additionalProperties:
+            type: string
+          description: |-
+            The annotations for the TiDB Cloud Premium instance. The following lists some predefined annotations:
+            - `tidb.cloud/has-set-password`: indicates whether the TiDB Cloud Premium instance has a root password set.
+            - `tidb.cloud/available-features`: lists available features of the TiDB Cloud Premium instance.
+          type: object
+        labels:
+          additionalProperties:
+            type: string
+          description: |-
+            The labels for the TiDB Cloud Premium instance.
+            - `tidb.cloud/organization`: the ID of the organization where the TiDB Cloud Premium instance belongs.
+            - `tidb.cloud/project`: the ID of the project where the TiDB Cloud Premium instance belongs.
+          type: object
+        creator:
+          description: The email address or public API key of the user who created
+            the TiDB Cloud Premium instance.
+          readOnly: true
+          type: string
+        createTime:
+          description: "The timestamp when the TiDB Cloud Premium instance was created,\
+            \ in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format."
+          format: date-time
+          readOnly: true
+          type: string
+        updateTime:
+          description: "The timestamp when the TiDB Cloud Premium instance was last\
+            \ updated, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format."
+          format: date-time
+          readOnly: true
+          type: string
+        automaticResumeAt:
+          description: |-
+            The scheduled time when the Resource Pool will automatically resume this instance's pool.
+            This field is set only while the Resource Pool is paused.
+          format: date-time
+          readOnly: true
+          type: string
+        endpoints:
+          description: The connection endpoints for accessing the TiDB Cloud Premium
+            instance.
+          items:
+            $ref: '#/components/schemas/TidbEndpoint'
+          readOnly: true
+          type: array
+        dualLayerDataEncryption:
+          allOf:
+          - $ref: '#/components/schemas/TidbDualLayerDataEncryption'
+          description: The dual-layer data encryption configuration for the TiDB Cloud
+            Premium instance.
+          type: object
+        tidbVersion:
+          description: The version of the TiDB instance.
+          readOnly: true
+          type: string
+        tags:
+          items:
+            type: string
+          type: array
+        capacityUpdateTime:
+          description: "The timestamp when the capacity of the TiDB Cloud Premium\
+            \ instance was last updated, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)\
+            \ format."
+          format: date-time
+          readOnly: true
+          type: string
+        baselineRcu:
+          description: |-
+            The optional guaranteed provisioning commitment in Elastic Mode. Premium accepts
+            5,000, 12,500, or 50,000 RCU. Essential_V2 uses a fixed 2,000 RCU baseline.
+            When neither max_rcu nor baseline_rcu is positive during creation, the service uses the
+            plan default. Zero and JSON null are treated as omission. This field cannot be configured
+            to a positive value together with a positive max_rcu.
+          format: int64
+          nullable: true
+          type: string
+        capacityMode:
+          allOf:
+          - $ref: '#/components/schemas/TidbCapacityMode'
+          description: |-
+            The effective customer-facing capacity mode for Premium and Essential_V2.
+            Other service plans, or capacity records that do not identify exactly one supported mode,
+            return CAPACITY_MODE_UNSPECIFIED.
+          type: object
+      required:
+      - displayName
+      - regionId
+      - servicePlan
+      type: object
+    protobufAny:
+      additionalProperties:
+        type: object
+      description: |-
+        `Any` contains an arbitrary serialized protocol buffer message along with a
+        URL that describes the type of the serialized message.
+
+        Protobuf library provides support to pack/unpack Any values in the form
+        of utility functions or additional generated methods of the Any type.
+
+        Example 1: Pack and unpack a message in C++.
+
+            Foo foo = ...;
+            Any any;
+            any.PackFrom(foo);
+            ...
+            if (any.UnpackTo(&foo)) {
+              ...
+            }
+
+        Example 2: Pack and unpack a message in Java.
+
+            Foo foo = ...;
+            Any any = Any.pack(foo);
+            ...
+            if (any.is(Foo.class)) {
+              foo = any.unpack(Foo.class);
+            }
+            // or ...
+            if (any.isSameTypeAs(Foo.getDefaultInstance())) {
+              foo = any.unpack(Foo.getDefaultInstance());
+            }
+
+         Example 3: Pack and unpack a message in Python.
+
+            foo = Foo(...)
+            any = Any()
+            any.Pack(foo)
+            ...
+            if any.Is(Foo.DESCRIPTOR):
+              any.Unpack(foo)
+              ...
+
+         Example 4: Pack and unpack a message in Go
+
+             foo := &pb.Foo{...}
+             any, err := anypb.New(foo)
+             if err != nil {
+               ...
+             }
+             ...
+             foo := &pb.Foo{}
+             if err := any.UnmarshalTo(foo); err != nil {
+               ...
+             }
+
+        The pack methods provided by protobuf library will by default use
+        'type.googleapis.com/full.type.name' as the type URL and the unpack
+        methods only use the fully qualified type name after the last '/'
+        in the type URL, for example "foo.bar.com/x/y.z" will yield type
+        name "y.z".
+
+        JSON
+        ====
+        The JSON representation of an `Any` value uses the regular
+        representation of the deserialized, embedded message, with an
+        additional field `@type` which contains the type URL. Example:
+
+            package google.profile;
+            message Person {
+              string first_name = 1;
+              string last_name = 2;
+            }
+
+            {
+              "@type": "type.googleapis.com/google.profile.Person",
+              "firstName": <string>,
+              "lastName": <string>
+            }
+
+        If the embedded message type is well-known and has a custom JSON
+        representation, that representation will be embedded adding a field
+        `value` which holds the custom JSON in addition to the `@type`
+        field. Example (for message [google.protobuf.Duration][]):
+
+            {
+              "@type": "type.googleapis.com/google.protobuf.Duration",
+              "value": "1.212s"
+            }
+      example:
+        '@type': '@type'
+      properties:
+        '@type':
+          description: A URL or resource name that uniquely identifies the type of
+            the serialized protocol buffer message.
+          type: string
+      type: object
+    rpcStatus:
+      description: |-
+        The `Status` type defines a logical error model that is suitable for
+        different programming environments, including REST APIs and RPC APIs. It is
+        used by [gRPC](https://github.com/grpc). Each `Status` message contains
+        three pieces of data: error code, error message, and error details.
+
+        You can find out more about this error model and how to work with it in the
+        [API Design Guide](https://cloud.google.com/apis/design/errors).
+      example:
+        code: 0
+        details:
+        - '@type': '@type'
+        - '@type': '@type'
+        message: message
+      properties:
+        code:
+          description: The error code returned with this error.
+          format: int32
+          type: integer
+        message:
+          description: The error message returned with this error.
+          type: string
+        details:
+          description: A list of messages with additional error details.
+          items:
+            $ref: '#/components/schemas/protobufAny'
+          type: array
+      type: object
+    v1beta1ClusterState:
+      description: |-
+        Enum of possible states of a cluster.
+
+         - CREATING: Cluster is being created.
+         - DELETING: Cluster is being deleted.
+         - ACTIVE: Cluster is active for use.
+         - RESTORING: Cluster data is being restored.
+         - MAINTENANCE: Cluster is under maintenance.
+         - DELETED: Cluster has been deleted.
+         - INACTIVE: Cluster is not active, but not being deleted.
+         - UPGRADING: Cluster is being updated.
+        Only for Dedicated Cluster.
+         - IMPORTING: Cluster is being imported.
+        Only for Dedicated Cluster.
+         - MODIFYING: Cluster is being modified.
+        Only for Dedicated Cluster.
+         - PAUSING: Cluster is being paused.
+        Only for Dedicated Cluster.
+         - PAUSED: Cluster is paused.
+        Only for Dedicated Cluster.
+         - RESUMING: Cluster is resuming.
+        Only for Dedicated Cluster.
+      enum:
+      - CREATING
+      - DELETING
+      - ACTIVE
+      - RESTORING
+      - MAINTENANCE
+      - DELETED
+      - INACTIVE
+      - UPGRADING
+      - IMPORTING
+      - MODIFYING
+      - PAUSING
+      - PAUSED
+      - RESUMING
+      type: string
+    v1beta1EngineType:
+      enum:
+      - MYSQL_COMPATIBLE
+      - POSTGRESQL_COMPATIBLE
+      type: string
+    v1beta1Region:
+      description: A representation of a region for deploying TiDB clusters.
+      example:
+        regionId: aws-us-west-2
+        provider: aws
+        displayName: Oregon (us-west-2)
+        cloudProvider: aws
+        name: regions/aws-us-west-2
+        servicePlans:
+        - Premium
+        - Essential_V2
+        - Premium_Reserved
+        supportedServicePlans:
+        - servicePlan: Starter
+          displayName: displayName
+          supportedEngineTypes:
+          - MYSQL_COMPATIBLE
+          - MYSQL_COMPATIBLE
+        - servicePlan: Starter
+          displayName: displayName
+          supportedEngineTypes:
+          - MYSQL_COMPATIBLE
+          - MYSQL_COMPATIBLE
+      properties:
+        name:
+          description: "The unique name of the region, in the format of `regions/{region_id}`.\
+            \ For example, `regions/aws-us-west-2`."
+          example: regions/aws-us-west-2
+          pattern: ^regions/(aws|gcp|azure)-(.+)$
+          type: string
+        regionId:
+          description: "The unique identifier for the region, in the format of `{cloud_provider}-{region_code}`.\
+            \ For example, `aws-us-west-2`."
+          example: aws-us-west-2
+          pattern: "^(aws|gcp|azure|alicloud)-[a-z0-9-]+$"
+          readOnly: true
+          type: string
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/RegionCloudProvider'
+          description: |-
+            The cloud provider that offers the region.
+
+            - `"aws"`: Amazon Web Services
+
+            - `"gcp"`: Google Cloud
+
+            - `"azure"`: Microsoft Azure
+
+            - `"alicloud"`: Alibaba Cloud
+          example: aws
+          type: object
+        displayName:
+          description: "A human-readable name for the region. For example, `Oregon\
+            \ (us-west-2)`."
+          example: Oregon (us-west-2)
+          readOnly: true
+          type: string
+        provider:
+          description: "**Deprecated.** Use `cloudProvider` instead. The name of the\
+            \ cloud provider. For example, `aws`, `gcp`, `azure`, or `alicloud`."
+          example: aws
+          nullable: true
+          readOnly: true
+          title: Deprecated
+          type: string
+        servicePlans:
+          description: "The service plans available in this region. Premium, Essential_V2,\
+            \ and Premium_Reserved can appear together in the same logical region.\
+            \ Starter, Essential, and BYOC are standalone service plans and cannot\
+            \ share a logical region with any other service plan."
+          example:
+          - Premium
+          - Essential_V2
+          - Premium_Reserved
+          items:
+            $ref: '#/components/schemas/v1beta1ServicePlan'
+          readOnly: true
+          title: ServicePlan
+          type: array
+        supportedServicePlans:
+          items:
+            $ref: '#/components/schemas/v1beta1ServicePlanInfo'
+          readOnly: true
+          type: array
+      type: object
+    v1beta1ServicePlan:
+      enum:
+      - Starter
+      - Essential
+      - Premium
+      - BYOC
+      - Dedicated
+      - Premium_Reserved
+      - Essential_V2
+      type: string
+    v1beta1ServicePlanInfo:
+      example:
+        servicePlan: Starter
+        displayName: displayName
+        supportedEngineTypes:
+        - MYSQL_COMPATIBLE
+        - MYSQL_COMPATIBLE
+      properties:
+        servicePlan:
+          $ref: '#/components/schemas/v1beta1ServicePlan'
+        displayName:
+          type: string
+        supportedEngineTypes:
+          items:
+            $ref: '#/components/schemas/v1beta1EngineType'
+          type: array
+      type: object
+    v1beta2Backup:
+      example:
+        encryptionKeyId: encryptionKeyId
+        tidbId: tidbId
+        displayName: displayName
+        description: description
+        customerManaged: true
+        type: "{}"
+        sizeBytes: sizeBytes
+        organizationId: organizationId
+        servicePlan: Premium
+        createTime: 2000-01-23T04:56:07.000+00:00
+        regionId: regionId
+        expirationTime: 2000-01-23T04:56:07.000+00:00
+        id: id
+        state: "{}"
+        triggerType: "{}"
+        backupTs: backupTs
+      properties:
+        id:
+          description: The unique identifier of the backup.
+          readOnly: true
+          type: string
+        tidbId:
+          description: The ID of the TiDB Cloud Premium instance to which the backup
+            belongs.
+          readOnly: true
+          type: string
+        organizationId:
+          description: The ID of the organization to which the backup belongs.
+          readOnly: true
+          type: string
+        servicePlan:
+          allOf:
+          - $ref: '#/components/schemas/v1beta1ServicePlan'
+          description: The service plan of the backup. The possible value is `Premium`.
+          example: Premium
+          type: object
+        displayName:
+          description: The name of the backup.
+          readOnly: true
+          type: string
+        description:
+          description: The description of the backup.
+          type: string
+        createTime:
+          description: "The timestamp when the backup was created, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)\
+            \ format."
+          format: date-time
+          readOnly: true
+          type: string
+        sizeBytes:
+          description: The size of the backup in bytes.
+          format: int64
+          readOnly: true
+          type: string
+        state:
+          allOf:
+          - $ref: '#/components/schemas/v1beta2BackupState'
+          description: The current state of the backup.
+          type: object
+        type:
+          allOf:
+          - $ref: '#/components/schemas/v1beta2BackupType'
+          description: The type of the backup.
+          type: object
+        triggerType:
+          allOf:
+          - $ref: '#/components/schemas/BackupTriggerType'
+          description: The trigger type of the backup.
+          type: object
+        expirationTime:
+          description: "The timestamp when the backup expires, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)\
+            \ format."
+          format: date-time
+          readOnly: true
+          type: string
+        backupTs:
+          description: The backup timestamp.
+          readOnly: true
+          type: string
+        regionId:
+          description: The ID of the region where the backup is stored.
+          readOnly: true
+          type: string
+        customerManaged:
+          description: "Whether the source cluster used a customer-managed key at\
+            \ backup time. Combine with encryption_key_id: \"0\" means not encrypted;\
+            \ non-zero key id with false means SMEK; non-zero key id with true means\
+            \ CMEK."
+          readOnly: true
+          title: |-
+            Whether the source cluster used a customer-managed key at backup time.
+            Combine with `encryption_key_id`:
+            - `encryption_key_id == "0"`: backup was not encrypted
+            - `encryption_key_id != "0" && customer_managed == false`: backup used SMEK
+            - `encryption_key_id != "0" && customer_managed == true`: backup used CMEK
+          type: boolean
+        encryptionKeyId:
+          description: Source cluster encryption key ID at backup time. "0" means
+            no encryption key was used.
+          readOnly: true
+          type: string
+      type: object
+    v1beta2BackupState:
+      description: |-
+        The state of a backup.
+
+         - UNKNOWN: The backup state is unknown.
+         - PENDING: The backup is pending.
+         - RUNNING: The backup is in progress.
+         - SUCCEEDED: The backup completed successfully.
+         - FAILED: The backup has failed.
+         - CANCELLED: The backup is cancelled.
+      enum:
+      - UNKNOWN
+      - PENDING
+      - RUNNING
+      - SUCCEEDED
+      - FAILED
+      - CANCELLED
+      type: string
+    v1beta2BackupStorageAuth:
+      properties:
+        accessKeyId:
+          description: The access key ID used to access the backup storage.
+          type: string
+        accessKeySecret:
+          description: The access key secret used to access the backup storage.
+          type: string
+      required:
+      - accessKeyId
+      - accessKeySecret
+      type: object
+    v1beta2BackupType:
+      description: |-
+        The type of a backup.
+
+         - SNAPSHOT: A full snapshot backup.
+      enum:
+      - SNAPSHOT
+      type: string
+    v1beta2CaCertificateDownloadUrl:
+      example:
+        uri: uri
+      properties:
+        uri:
+          description: The download URL for the CA certificate of the TiDB Cloud Premium
+            instance.
+          readOnly: true
+          type: string
+      type: object
+    v1beta2ClassicBackupStorage:
+      description: The storage configuration for a classic backup.
+      properties:
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/RegionCloudProvider'
+          description: |-
+            The cloud provider where the backup object storage is located.
+
+            **Note**: Currently, only `"aws"` and `"alicloud"` are supported.
+          example: aws
+          type: object
+        regionId:
+          description: |-
+            The region where the backup object storage is located, in the format of `{cloud_provider}-{region_code}`. For example, `alicloud-cn-shanghai`.
+
+            This field is required when `cloud_provider` is `"alicloud"`.
+          type: string
+        bucketUri:
+          description: |-
+            The URI of the backup bucket.
+
+            - For Amazon S3, use the format `s3://{bucket_name}/{path}`. For example, `s3://my-backup-bucket/tidb-backups/`.
+
+            - For Alibaba Cloud OSS, use the format `oss://{bucket_name}/{path}`. For example, `oss://my-backup-bucket/tidb-backups/`.
+          example: s3://my-backup-bucket/tidb-backups/
+          type: string
+        auth:
+          allOf:
+          - $ref: '#/components/schemas/v1beta2BackupStorageAuth'
+          description: The authentication credentials for accessing the backup storage.
+          type: object
+      required:
+      - auth
+      - bucketUri
+      - cloudProvider
+      type: object
+    v1beta2CloudProviderInfo:
+      example:
+        tidbId: tidbId
+        cloudProvider: "{}"
+        nodeRole: nodeRole
+        tidbCloudAccountExternalId: tidbCloudAccountExternalId
+        tidbCloudAccountId: tidbCloudAccountId
+      properties:
+        tidbId:
+          description: The ID of the TiDB Cloud Premium instance.
+          type: string
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/RegionCloudProvider'
+          description: |-
+            The cloud provider where the TiDB Cloud Premium instance is deployed.
+
+            - `"aws"`: Amazon Web Services
+
+            - `"gcp"`: Google Cloud
+
+            - `"azure"`: Microsoft Azure
+
+            - `"alicloud"`: Alibaba Cloud
+          type: object
+        tidbCloudAccountId:
+          description: The TiDB Cloud account ID for the underlying cloud infrastructure
+            of the TiDB Cloud Premium instance.
+          readOnly: true
+          type: string
+        tidbCloudAccountExternalId:
+          description: "The external ID of the TiDB Cloud account, which is used for\
+            \ assuming Identity and Access Management (IAM) roles for cross-account\
+            \ access."
+          readOnly: true
+          type: string
+        nodeRole:
+          description: |-
+            The node role or identity used to grant storage access.
+            For Azure, this is the kubelet identity object ID.
+          readOnly: true
+          type: string
+      required:
+      - tidbId
+      type: object
+    v1beta2CmekAccessIamPrincipal:
+      example:
+        servicePlan: Starter
+        regionId: regionId
+        aws:
+          accountId: accountId
+          externalId: externalId
+        aliyun:
+          accountId: accountId
+      properties:
+        regionId:
+          readOnly: true
+          type: string
+        servicePlan:
+          $ref: '#/components/schemas/v1beta1ServicePlan'
+        aws:
+          $ref: '#/components/schemas/CmekAccessIamPrincipalAwsCmekPrincipal'
+        aliyun:
+          $ref: '#/components/schemas/CmekAccessIamPrincipalAliyunCmekPrincipal'
+      required:
+      - servicePlan
+      type: object
+    v1beta2ConnectionReachability:
+      properties:
+        reachable:
+          description: Indicates whether the endpoint is reachable.
+          readOnly: true
+          type: boolean
+        detail:
+          allOf:
+          - $ref: '#/components/schemas/ConnectionReachabilityDetail'
+          description: The detailed reachability status of the endpoint connection.
+          type: object
+      type: object
+    v1beta2CustomerManagedEncryptionKey:
+      properties:
+        name:
+          description: "The unique name of the CMEK, in the format of `cmeks/{cmek_id}`."
+          readOnly: true
+          type: string
+        customerManagedEncryptionKeyId:
+          description: The ID of the CMEK.
+          readOnly: true
+          type: string
+        regionId:
+          description: "The region where the CMEK is located, in the format of `{cloud_provider}-{region_code}`.\
+            \ For example, `aws-us-west-2`."
+          type: string
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/RegionCloudProvider'
+          description: |-
+            The cloud provider where the CMEK is located.
+
+            - `"aws"`: Amazon Web Services
+
+            - `"gcp"`: Google Cloud (not yet supported, planned for a future release)
+
+            - `"azure"`: Microsoft Azure (not yet supported, planned for a future release)
+
+            - `"alicloud"`: Alibaba Cloud
+          type: object
+        servicePlan:
+          $ref: '#/components/schemas/v1beta1ServicePlan'
+        awsKms:
+          allOf:
+          - $ref: '#/components/schemas/CustomerManagedEncryptionKeyAwsKms'
+          description: The configuration for AWS KMS.
+          type: object
+        aliyunKms:
+          allOf:
+          - $ref: '#/components/schemas/CustomerManagedEncryptionKeyAliyunKms'
+          description: The configuration for Alibaba Cloud KMS.
+          type: object
+        awsPrincipal:
+          allOf:
+          - $ref: '#/components/schemas/CmekAccessIamPrincipalAwsCmekPrincipal'
+          description: AWS IAM principal.
+          type: object
+        aliyunPrincipal:
+          allOf:
+          - $ref: '#/components/schemas/CmekAccessIamPrincipalAliyunCmekPrincipal'
+          description: Alibaba Cloud RAM principal.
+          type: object
+        createTime:
+          description: "The timestamp when the CMEK was created, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601)\
+            \ format."
+          format: date-time
+          readOnly: true
+          type: string
+      required:
+      - regionId
+      - servicePlan
+      type: object
+    v1beta2GetRestoreStatusResponse:
+      example:
+        progress: 0
+        state: "{}"
+        message: message
+      properties:
+        state:
+          allOf:
+          - $ref: '#/components/schemas/v1beta2RestoreState'
+          description: The current state of the restore operation.
+          type: object
+        message:
+          description: The detailed error message if the restore operation fails.
+          readOnly: true
+          type: string
+        progress:
+          description: "The restore progress percentage, from `0` to `100`."
+          format: int32
+          readOnly: true
+          type: integer
+      type: object
+    v1beta2ListBackupsResponse:
+      example:
+        totalSize: 0
+        nextPageToken: nextPageToken
+        backups:
+        - encryptionKeyId: encryptionKeyId
+          tidbId: tidbId
+          displayName: displayName
+          description: description
+          customerManaged: true
+          type: "{}"
+          sizeBytes: sizeBytes
+          organizationId: organizationId
+          servicePlan: Premium
+          createTime: 2000-01-23T04:56:07.000+00:00
+          regionId: regionId
+          expirationTime: 2000-01-23T04:56:07.000+00:00
+          id: id
+          state: "{}"
+          triggerType: "{}"
+          backupTs: backupTs
+        - encryptionKeyId: encryptionKeyId
+          tidbId: tidbId
+          displayName: displayName
+          description: description
+          customerManaged: true
+          type: "{}"
+          sizeBytes: sizeBytes
+          organizationId: organizationId
+          servicePlan: Premium
+          createTime: 2000-01-23T04:56:07.000+00:00
+          regionId: regionId
+          expirationTime: 2000-01-23T04:56:07.000+00:00
+          id: id
+          state: "{}"
+          triggerType: "{}"
+          backupTs: backupTs
+      properties:
+        backups:
+          description: A list of backups that match the query.
+          items:
+            $ref: '#/components/schemas/v1beta2Backup'
+          type: array
+        totalSize:
+          description: The total number of backups that match the query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: |-
+            A token, which can be sent as `pageToken` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
+    v1beta2ListRegionsResponse:
+      example:
+        regions:
+        - regionId: aws-us-west-2
+          provider: aws
+          displayName: Oregon (us-west-2)
+          cloudProvider: aws
+          name: regions/aws-us-west-2
+          servicePlans:
+          - Premium
+          - Essential_V2
+          - Premium_Reserved
+          supportedServicePlans:
+          - servicePlan: Starter
+            displayName: displayName
+            supportedEngineTypes:
+            - MYSQL_COMPATIBLE
+            - MYSQL_COMPATIBLE
+          - servicePlan: Starter
+            displayName: displayName
+            supportedEngineTypes:
+            - MYSQL_COMPATIBLE
+            - MYSQL_COMPATIBLE
+        - regionId: aws-us-west-2
+          provider: aws
+          displayName: Oregon (us-west-2)
+          cloudProvider: aws
+          name: regions/aws-us-west-2
+          servicePlans:
+          - Premium
+          - Essential_V2
+          - Premium_Reserved
+          supportedServicePlans:
+          - servicePlan: Starter
+            displayName: displayName
+            supportedEngineTypes:
+            - MYSQL_COMPATIBLE
+            - MYSQL_COMPATIBLE
+          - servicePlan: Starter
+            displayName: displayName
+            supportedEngineTypes:
+            - MYSQL_COMPATIBLE
+            - MYSQL_COMPATIBLE
+        totalSize: 0
+        nextPageToken: nextPageToken
+      properties:
+        regions:
+          description: A list of regions that match the query.
+          items:
+            $ref: '#/components/schemas/v1beta1Region'
+          type: array
+        totalSize:
+          description: The total number of regions that match the query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: The token to retrieve the next page of results. Use this value
+            as the `pageToken` parameter in the next request. This field is empty
+            when there are no more pages.
+          type: string
+      type: object
+    v1beta2ListTidbBackupsResponse:
+      example:
+        totalSize: 0
+        nextPageToken: nextPageToken
+        backups:
+        - encryptionKeyId: encryptionKeyId
+          tidbId: tidbId
+          displayName: displayName
+          description: description
+          customerManaged: true
+          type: "{}"
+          sizeBytes: sizeBytes
+          organizationId: organizationId
+          servicePlan: Premium
+          createTime: 2000-01-23T04:56:07.000+00:00
+          regionId: regionId
+          expirationTime: 2000-01-23T04:56:07.000+00:00
+          id: id
+          state: "{}"
+          triggerType: "{}"
+          backupTs: backupTs
+        - encryptionKeyId: encryptionKeyId
+          tidbId: tidbId
+          displayName: displayName
+          description: description
+          customerManaged: true
+          type: "{}"
+          sizeBytes: sizeBytes
+          organizationId: organizationId
+          servicePlan: Premium
+          createTime: 2000-01-23T04:56:07.000+00:00
+          regionId: regionId
+          expirationTime: 2000-01-23T04:56:07.000+00:00
+          id: id
+          state: "{}"
+          triggerType: "{}"
+          backupTs: backupTs
+      properties:
+        backups:
+          description: A list of backups that match the query.
+          items:
+            $ref: '#/components/schemas/v1beta2Backup'
+          type: array
+        totalSize:
+          description: The total number of backups that match the query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: The token to retrieve the next page of results. Use this value
+            as the `pageToken` parameter in the next request. This field is empty
+            when there are no more pages.
+          type: string
+      type: object
+    v1beta2ListTidbsResponse:
+      example:
+        tidbs:
+        - tidbId: tidbId
+          displayName: foo-bar
+          minRcu: minRcu
+          annotations:
+            key: annotations
+          automaticResumeAt: 2000-01-23T04:56:07.000+00:00
+          capacityMode: "{}"
+          capacityUpdateTime: 2000-01-23T04:56:07.000+00:00
+          cloudProvider: "{}"
+          state: "{}"
+          dualLayerDataEncryption: "{}"
+          rootPassword: my-shining-password
+          baselineRcu: baselineRcu
+          reservedCapacity: "{}"
+          reservedCapacityTemplateId: reservedCapacityTemplateId
+          creator: creator
+          endpoints:
+          - port: 0
+            egressIps:
+            - egressIps
+            - egressIps
+            host: host
+            connectionReachability: "{}"
+            connectionType: "{}"
+          - port: 0
+            egressIps:
+            - egressIps
+            - egressIps
+            host: host
+            connectionReachability: "{}"
+            connectionType: "{}"
+          resourcePoolDisplayName: resourcePoolDisplayName
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          maxRcu: maxRcu
+          labels:
+            key: labels
+          tags:
+          - tags
+          - tags
+          regionDisplayName: regionDisplayName
+          servicePlan: "{}"
+          regionId: regionId
+          createTime: 2000-01-23T04:56:07.000+00:00
+          resourcePoolId: resourcePoolId
+          highAvailabilityType: "{}"
+          name: name
+          tidbVersion: tidbVersion
+        - tidbId: tidbId
+          displayName: foo-bar
+          minRcu: minRcu
+          annotations:
+            key: annotations
+          automaticResumeAt: 2000-01-23T04:56:07.000+00:00
+          capacityMode: "{}"
+          capacityUpdateTime: 2000-01-23T04:56:07.000+00:00
+          cloudProvider: "{}"
+          state: "{}"
+          dualLayerDataEncryption: "{}"
+          rootPassword: my-shining-password
+          baselineRcu: baselineRcu
+          reservedCapacity: "{}"
+          reservedCapacityTemplateId: reservedCapacityTemplateId
+          creator: creator
+          endpoints:
+          - port: 0
+            egressIps:
+            - egressIps
+            - egressIps
+            host: host
+            connectionReachability: "{}"
+            connectionType: "{}"
+          - port: 0
+            egressIps:
+            - egressIps
+            - egressIps
+            host: host
+            connectionReachability: "{}"
+            connectionType: "{}"
+          resourcePoolDisplayName: resourcePoolDisplayName
+          updateTime: 2000-01-23T04:56:07.000+00:00
+          maxRcu: maxRcu
+          labels:
+            key: labels
+          tags:
+          - tags
+          - tags
+          regionDisplayName: regionDisplayName
+          servicePlan: "{}"
+          regionId: regionId
+          createTime: 2000-01-23T04:56:07.000+00:00
+          resourcePoolId: resourcePoolId
+          highAvailabilityType: "{}"
+          name: name
+          tidbVersion: tidbVersion
+        totalSize: 6
+        nextPageToken: nextPageToken
+      properties:
+        tidbs:
+          description: A list of TiDB Cloud Premium instances that match the query.
+          items:
+            $ref: '#/components/schemas/nextgenv1beta2Tidb'
+          type: array
+        totalSize:
+          description: The total number of TiDB Cloud Premium instances that match
+            the query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: The token to retrieve the next page of results. Use this value
+            as the `pageToken` parameter in the next request. This field is empty
+            when there are no more pages.
+          type: string
+      type: object
+    v1beta2PublicConnectionSetting:
+      example:
+        egressIps:
+        - egressIps
+        - egressIps
+        tidbId: tidbId
+        clearIpAccessList: true
+        name: name
+        enabled: true
+        ipAccessList:
+        - description: description
+          cidrNotation: cidrNotation
+        - description: description
+          cidrNotation: cidrNotation
+      properties:
+        name:
+          readOnly: true
+          title: "Format: tidbs/{tidb_id}/publicConnectionSetting"
+          type: string
+        tidbId:
+          readOnly: true
+          type: string
+        enabled:
+          nullable: true
+          type: boolean
+        ipAccessList:
+          items:
+            $ref: '#/components/schemas/v1beta2PublicConnectionSettingIpAccessList'
+          type: array
+        clearIpAccessList:
+          nullable: true
+          type: boolean
+        egressIps:
+          description: |-
+            The public egress IP addresses used by the TiDB Cloud instance.
+
+            This field is returned only when the public endpoint is enabled. You can use
+            these IP addresses to configure allowlists on upstream services.
+          items:
+            type: string
+          readOnly: true
+          type: array
+      type: object
+    v1beta2PublicConnectionSettingIpAccessList:
+      example:
+        description: description
+        cidrNotation: cidrNotation
+      properties:
+        cidrNotation:
+          type: string
+        description:
+          type: string
+      required:
+      - cidrNotation
+      type: object
+    v1beta2ReservedCapacity:
+      properties:
+        id:
+          format: int64
+          readOnly: true
+          type: string
+        name:
+          readOnly: true
+          type: string
+        templateCode:
+          readOnly: true
+          type: string
+        purchasedVcpu:
+          format: int64
+          readOnly: true
+          type: string
+        peakQps:
+          format: int64
+          readOnly: true
+          type: string
+        workloadType:
+          readOnly: true
+          type: string
+        description:
+          readOnly: true
+          type: string
+        scope:
+          allOf:
+          - $ref: '#/components/schemas/ReservedCapacityScope'
+          type: object
+      type: object
+    v1beta2ResetRootPasswordResponse:
+      type: object
+    v1beta2RestoreMode:
+      description: |-
+        The mode used to restore a TiDB Cloud Premium instance.
+
+         - SNAPSHOT: Restores from native snapshot backup data of a TiDB Cloud Premium instance.
+         - PITR: Restores from native point-in-time recovery (PITR) backup data of a TiDB Cloud Premium instance.
+         - DEDICATED_SNAPSHOT: Restores from snapshot backup data of a TiDB Cloud Dedicated cluster.
+         - CLASSIC_SNAPSHOT: Restores from snapshot backup data stored in object storage of a classic TiDB.
+      enum:
+      - SNAPSHOT
+      - PITR
+      - DEDICATED_SNAPSHOT
+      - CLASSIC_SNAPSHOT
+      type: string
+    v1beta2RestoreState:
+      description: |-
+        The current state of the restore operation.
+
+         - UNKNOWN: The state of the restore operation is unknown.
+         - PENDING: The restore operation is pending.
+         - RUNNING: The restore operation is in progress.
+         - SUCCEEDED: The restore operation completed successfully.
+         - FAILED: The restore operation has failed.
+         - CANCELLED: The restore operation is cancelled.
+      enum:
+      - UNKNOWN
+      - PENDING
+      - RUNNING
+      - SUCCEEDED
+      - FAILED
+      - CANCELLED
+      type: string
+    v1beta2RestoreTidbRequest:
+      properties:
+        tidb:
+          allOf:
+          - $ref: '#/components/schemas/nextgenv1beta2Tidb'
+          description: |-
+            The configuration of the TiDB Cloud Premium instance to create.
+
+            **Note**: Currently, only TiDB Cloud Premium instances with `servicePlan` set to `Premium` are supported.
+          type: object
+        sourceTidbId:
+          description: The ID of the source TiDB Cloud Premium instance containing
+            the backup data.
+          type: string
+        restoreMode:
+          $ref: '#/components/schemas/v1beta2RestoreMode'
+        backupId:
+          description: |-
+            The ID of the backup to restore from.
+
+            This field is required when `restoreMode` is `"SNAPSHOT"` or `"DEDICATED_SNAPSHOT"`.
+          type: string
+        pointInTime:
+          description: |-
+            The point in time to restore data to, in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format.
+
+            This field is required when `restoreMode` is `"PITR"`.
+          format: date-time
+          type: string
+        classicBackupStorage:
+          allOf:
+          - $ref: '#/components/schemas/v1beta2ClassicBackupStorage'
+          description: |-
+            The classic backup storage configuration.
+
+            This field is required when `restoreMode` is `"CLASSIC_SNAPSHOT"`.
+          type: object
+        validateOnly:
+          description: "If set to `true`, the request is validated but not executed.\
+            \ Defaults to `false`."
+          type: boolean
+      required:
+      - restoreMode
+      - tidb
+      type: object
+    v1beta2RestoreTidbResponse:
+      example:
+        tidb: "{}"
+      properties:
+        tidb:
+          allOf:
+          - $ref: '#/components/schemas/nextgenv1beta2Tidb'
+          description: The restored TiDB Cloud Premium instance.
+          type: object
+      type: object
+    v1beta2ResumeTidbResponse:
+      type: object
+    v1beta2TidbHighAvailabilityType:
+      description: |-
+        The high availability configuration for the TiDB Cloud Premium instance.
+
+         - REGIONAL: High availability across multiple availability zones within a region.
+         - ZONAL: High availability within a single availability zone.
+      enum:
+      - REGIONAL
+      - ZONAL
+      type: string
+    v1beta2VerifyCmekAccessIamPrincipalResponse:
+      example:
+        valid: true
+        failReason: failReason
+      properties:
+        valid:
+          type: boolean
+        failReason:
+          type: string
+      type: object
+    TidbCapacityMode:
+      description: |2-
+         - ELASTIC: Elastic Mode with a guaranteed Baseline RCU.
+         - MAX_RCU: Max RCU Compatibility Mode with a customer-defined maximum RCU.
+      enum:
+      - ELASTIC
+      - MAX_RCU
+      type: string
+    nextgenv1beta2ListPrivateEndpointConnectionsResponse:
+      example:
+        privateEndpointConnections:
+        - privateLinkServiceState: "{}"
+          tidbId: tidbId
+          endpointId: endpointId
+          privateEndpointConnectionId: privateEndpointConnectionId
+          privateLinkService: privateLinkService
+          message: message
+          privateIpAddress: privateIpAddress
+          endpointState: "{}"
+          regionDisplayName: regionDisplayName
+          regionId: regionId
+          port: port
+          cloudProvider: "{}"
+          name: name
+          host: host
+          privateDomainName: privateDomainName
+          id: id
+        - privateLinkServiceState: "{}"
+          tidbId: tidbId
+          endpointId: endpointId
+          privateEndpointConnectionId: privateEndpointConnectionId
+          privateLinkService: privateLinkService
+          message: message
+          privateIpAddress: privateIpAddress
+          endpointState: "{}"
+          regionDisplayName: regionDisplayName
+          regionId: regionId
+          port: port
+          cloudProvider: "{}"
+          name: name
+          host: host
+          privateDomainName: privateDomainName
+          id: id
+        totalSize: 0
+        nextPageToken: nextPageToken
+      properties:
+        privateEndpointConnections:
+          items:
+            $ref: '#/components/schemas/nextgenv1beta2PrivateEndpointConnection'
+          type: array
+        totalSize:
+          description: The total number of private link connections that match the
+            query.
+          format: int32
+          type: integer
+        nextPageToken:
+          description: |-
+            A token, which can be sent as `page_token` to retrieve the next page.
+            If this field is omitted, there are no subsequent pages.
+          type: string
+      type: object
+    nextgenv1beta2PrivateEndpointConnection:
+      example:
+        privateLinkServiceState: "{}"
+        tidbId: tidbId
+        endpointId: endpointId
+        privateEndpointConnectionId: privateEndpointConnectionId
+        privateLinkService: privateLinkService
+        message: message
+        privateIpAddress: privateIpAddress
+        endpointState: "{}"
+        regionDisplayName: regionDisplayName
+        regionId: regionId
+        port: port
+        cloudProvider: "{}"
+        name: name
+        host: host
+        privateDomainName: privateDomainName
+        id: id
+      properties:
+        name:
+          readOnly: true
+          title: "Format: tidbs/{tidb_id}/privateEndpointConnections/{private_endpoint_connection_id}"
+          type: string
+        id:
+          readOnly: true
+          type: string
+        tidbId:
+          readOnly: true
+          type: string
+        privateEndpointConnectionId:
+          readOnly: true
+          type: string
+        regionId:
+          description: The region where the private endpoint connection is created.
+          type: string
+        regionDisplayName:
+          readOnly: true
+          type: string
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/RegionCloudProvider'
+          description: The cloud provider for the region.
+          type: object
+        endpointId:
+          description: |-
+            The endpoint ID of the private link connection.
+            For AWS, it's VPC endpoint ID.
+            For GCP, it's private service connect endpoint ID.
+            For Azure, it's private endpoint resource ID.
+            For AliCloud, it's endpoint ID.
+          type: string
+        endpointState:
+          allOf:
+          - $ref: '#/components/schemas/nextgenv1beta2PrivateEndpointConnectionEndpointState'
+          type: object
+        message:
+          readOnly: true
+          type: string
+        privateLinkService:
+          description: The private link service name.
+          readOnly: true
+          type: string
+        privateLinkServiceState:
+          allOf:
+          - $ref: '#/components/schemas/nextgenv1beta2PrivateLinkServiceState'
+          description: The private link service state.
+          type: object
+        host:
+          readOnly: true
+          type: string
+        port:
+          readOnly: true
+          type: string
+        privateDomainName:
+          description: |-
+            Only for AliCloud.
+            Use private endpoint's Domain name to generate new TiDB DNS name.
+          type: string
+        privateIpAddress:
+          description: |-
+            Only for Azure.
+            The private IP address of the private endpoint in the user's vNet.
+          type: string
+      required:
+      - endpointId
+      - regionId
+      type: object
+    nextgenv1beta2PrivateEndpointConnectionEndpointState:
+      description: |2-
+         - PENDING: Customer has posted to TiDB cloud API,
+        but endpoint connection has not been accepted **asynchronously** by TiDB Cloud.
+         - DISCOVERED: Customer has created the endpoint in their vpc, but has not posted to TiDB Cloud API.
+      enum:
+      - PENDING
+      - ACTIVE
+      - DELETING
+      - FAILED
+      - DISCOVERED
+      type: string
+    nextgenv1beta2PrivateLinkServiceState:
+      enum:
+      - CREATING
+      - ACTIVE
+      - DELETING
+      type: string
+    nextgenv1beta2PrivateLinkService:
+      example:
+        regionDisplayName: regionDisplayName
+        serviceDnsName: serviceDnsName
+        regionId: regionId
+        availableZones:
+        - availableZones
+        - availableZones
+        tidbId: tidbId
+        cloudProvider: "{}"
+        name: name
+        servicePort: 0
+        state: "{}"
+        serviceName: serviceName
+      properties:
+        name:
+          title: "Format: tidbs/{tidb_id}/privateLinkService"
+          type: string
+        tidbId:
+          readOnly: true
+          type: string
+        regionId:
+          readOnly: true
+          title: "Format: {cloud_provider}-{region_code}"
+          type: string
+        regionDisplayName:
+          readOnly: true
+          type: string
+        cloudProvider:
+          allOf:
+          - $ref: '#/components/schemas/RegionCloudProvider'
+          type: object
+        serviceName:
+          description: |-
+            For AWS, it's the service name of the Private Link Service.
+            For GCP, it's the resource name of the service attachment.
+            For Azure, it's service resource ID of the Private Link Service.
+            For AliCloud, it's the service name of the Private Link Service.
+          readOnly: true
+          type: string
+        serviceDnsName:
+          description: |-
+            For AWS, it's the fully qualified domain name (FQDN) shared for all private endpoints, despite which VPC the endpoint located in.
+            For GCP, it's the zone name (suffix of FQDN) shared for all private endpoints located in a single VPC network. The format of FQDN is `<endpoint_name>.<service_dns_name>`.
+            For Azure, it's the zone name shared across public internet. The format of FQDN is `<endpoint_name>-<random_hash>.<service_dns_name>`.
+            For AliCloud, it's the endpoint domain name shared for all private endpoints. The format of FQDN is `<endpoint_name>.<service_dns_name>`.
+          readOnly: true
+          type: string
+        availableZones:
+          description: |-
+            Only available for AWS.
+            Same as the `AvailabilityZones` field in response body of
+            `github.com/aws/aws-sdk-go-v2/service/ec2.DescribeVpcEndpointServices` method.
+          items:
+            type: string
+          readOnly: true
+          type: array
+        servicePort:
+          description: The port of the private link service.
+          format: int32
+          readOnly: true
+          type: integer
+        state:
+          allOf:
+          - $ref: '#/components/schemas/nextgenv1beta2PrivateLinkServiceState'
+          type: object
+      type: object
+    TidbService_ListTidbs_servicePlan_parameter:
+      enum:
+      - Starter
+      - Essential
+      - Premium
+      - BYOC
+      - Dedicated
+      - Premium_Reserved
+      - Essential_V2
+      type: string
+    The_TiDB_Cloud_Premium_instance_to_update_:
+      properties:
+        displayName:
+          description: The user-defined name of the TiDB Cloud Premium instance.
+          example: foo-bar
+          maxLength: 64
+          minLength: 4
+          pattern: "^[A-Za-z0-9][-A-Za-z0-9]{2,62}[A-Za-z0-9]$"
+          type: string
+        minRcu:
+          description: |-
+            Deprecated: min_rcu is now automatically managed.
+            Any value provided here will be ignored in favor of max(5000, max_rcu / 4).
+          format: int64
+          readOnly: true
+          type: string
+        maxRcu:
+          description: The maximum number of Request Capacity Units (RCUs) for the
+            TiDB Cloud Premium instance.
+          format: int64
+          type: string
+        reservedCapacityTemplateId:
+          description: The target capacity template ID for Premium Reserved resize.
+          format: int64
+          type: string
+      title: The TiDB Cloud Premium instance to update.
+      type: object
+    TidbService_ListTidbBackups_states_parameter_inner:
+      enum:
+      - UNKNOWN
+      - PENDING
+      - RUNNING
+      - SUCCEEDED
+      - FAILED
+      - CANCELLED
+      type: string
+    TidbService_ListTidbBackups_triggerTypes_parameter_inner:
+      enum:
+      - AUTO
+      - MANUAL
+      type: string
+    BackupService_ListBackups_tidbStates_parameter_inner:
+      enum:
+      - ACTIVE
+      - DELETED
+      type: string
+x-tagGroups:
+- name: Endpoints
+  tags:
+  - TiDB Cloud Premium Instance
+  - PublicConnectionSettingService
+  - CustomerManagedEncryptionKeyService
+  - Backup
+  - Region
+x-original-swagger-version: "2.0"

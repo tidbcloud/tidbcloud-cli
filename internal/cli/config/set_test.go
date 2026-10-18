@@ -180,6 +180,45 @@ func (suite *SetConfigSuite) TestSetConfigWhenNoActiveProfile() {
 	}
 }
 
+func (suite *SetConfigSuite) TestSetNextGenEndpointValidation() {
+	tests := []struct {
+		name      string
+		endpoint  string
+		errString string
+	}{
+		{
+			name:      "reject HTTP endpoint",
+			endpoint:  "http://example.com",
+			errString: "the API URL must use HTTPS",
+		},
+		{
+			name:      "reject endpoint with query",
+			endpoint:  "https://example.com?region=us-west-2",
+			errString: "the API URL must not contain a query or fragment",
+		},
+		{
+			name:      "reject endpoint with empty query",
+			endpoint:  "https://example.com?",
+			errString: "the API URL must not contain a query or fragment",
+		},
+		{
+			name:      "reject endpoint with fragment",
+			endpoint:  "https://example.com#fragment",
+			errString: "the API URL must not contain a query or fragment",
+		},
+	}
+
+	for _, tt := range tests {
+		suite.T().Run(tt.name, func(t *testing.T) {
+			cmd := SetCmd(suite.h)
+			cmd.SetArgs([]string{"nextgen-endpoint", tt.endpoint})
+			err := cmd.Execute()
+			require.EqualError(t, err, tt.errString)
+			require.Empty(t, viper.GetString("test.nextgen-endpoint"))
+		})
+	}
+}
+
 func TestSetConfigSuite(t *testing.T) {
 	suite.Run(t, new(SetConfigSuite))
 }
