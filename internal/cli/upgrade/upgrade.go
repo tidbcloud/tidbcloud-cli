@@ -15,10 +15,15 @@
 package upgrade
 
 import (
+	"bufio"
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
+	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
@@ -29,11 +34,12 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fatih/color"
+	"github.com/hashicorp/go-version"
 	"github.com/juju/errors"
-	"github.com/pingcap/log"
 	"github.com/spf13/cobra"
-	"go.uber.org/zap"
 )
+
+const releaseDownloadURL = "https://github.com/tidbcloud/tidbcloud-cli/releases/download"
 
 func Cmd(h *internal.Helper) *cobra.Command {
 	cmd := &cobra.Command{
@@ -49,12 +55,8 @@ func Cmd(h *internal.Helper) *cobra.Command {
 
 			// When upgrade CLI, we don't need to check the version again after command executes.
 			newRelease, err := github.CheckForUpdate(ctx, false)
-			// If we can't get the latest version, we should upgrade the CLI assuming it's not the latest version.
 			if err != nil {
-				log.Debug("Failed to check for upgrade, upgrade the CLI assuming it's not the latest version", zap.Error(err))
-				newRelease = &github.ReleaseInfo{
-					Version: "latest",
-				}
+				return errors.Annotate(err, "failed to check for CLI updates")
 			}
 
 			if newRelease == nil {
@@ -75,27 +77,33 @@ func Cmd(h *internal.Helper) *cobra.Command {
 
 func updateAndWaitReady(ctx context.Context, h *internal.Helper, newRelease *github.ReleaseInfo) error {
 	fmt.Fprintf(h.IOStreams.Out, "... Upgrading the CLI to version %s\n", newRelease.Version)
+	return downloadAndRunInstaller(ctx, newRelease.Version)
+}
+
+func downloadAndRunInstaller(ctx context.Context, releaseVersion string) error {
+	if _, err := version.NewSemver(releaseVersion); err != nil {
+		return errors.Annotate(err, "invalid release version")
+	}
+	releaseTag := "v" + strings.TrimPrefix(releaseVersion, "v")
 
 	ctx, cancel := context.WithTimeout(ctx, 1*time.Minute)
 	defer cancel()
 
-	c1 := exec.CommandContext(ctx, "curl", "-sSL", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh") //nolint:gosec
-	var stdout bytes.Buffer
-	var stderr bytes.Buffer
-	c1.Stdout = &stdout
-	c1.Stderr = &stderr
-
-	err := c1.Run()
-	if ctx.Err() == context.DeadlineExceeded {
-		return errors.New("timeout when download the install.sh script")
-	}
+	script, err := downloadReleaseAsset(ctx, releaseTag, "install.sh")
 	if err != nil {
-		fmt.Println(stderr.String())
+		return err
+	}
+	checksums, err := downloadReleaseAsset(ctx, releaseTag, "checksums.txt")
+	if err != nil {
+		return err
+	}
+	if err := verifyInstallerChecksum(script, checksums); err != nil {
 		return err
 	}
 
-	c2 := exec.CommandContext(ctx, "/bin/sh", "-c", stdout.String()) //nolint:gosec
-	stderr = bytes.Buffer{}
+	c2 := exec.CommandContext(ctx, "/bin/sh", "-c", string(script)) //nolint:gosec // The installer checksum is verified before execution.
+	c2.Env = append(os.Environ(), "TICLOUD_VERSION="+strings.TrimPrefix(releaseTag, "v"))
+	var stderr bytes.Buffer
 	c2.Stderr = &stderr
 
 	err = c2.Run()
@@ -110,46 +118,59 @@ func updateAndWaitReady(ctx context.Context, h *internal.Helper, newRelease *git
 	return nil
 }
 
+func downloadReleaseAsset(ctx context.Context, releaseTag, asset string) ([]byte, error) {
+	assetURL := releaseDownloadURL + "/" + releaseTag + "/" + asset
+	cmd := exec.CommandContext(ctx, "curl", "-q", "--proto", "=https", "--proto-redir", "=https", "-fsSL", assetURL) //nolint:gosec // The release version is validated before constructing the URL.
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		if ctx.Err() != nil {
+			err = ctx.Err()
+		} else if stderr.Len() != 0 {
+			err = errors.Annotate(err, strings.TrimSpace(stderr.String()))
+		}
+		return nil, errors.Annotatef(err, "failed to download %s for %s", asset, releaseTag)
+	}
+	return stdout.Bytes(), nil
+}
+
+func verifyInstallerChecksum(script, checksums []byte) error {
+	var expectedChecksum []byte
+	scanner := bufio.NewScanner(bytes.NewReader(checksums))
+	for scanner.Scan() {
+		fields := strings.Fields(scanner.Text())
+		if len(fields) != 2 || strings.TrimPrefix(fields[1], "*") != "install.sh" {
+			continue
+		}
+		if expectedChecksum != nil {
+			return errors.New("duplicate checksum for install.sh")
+		}
+		var err error
+		expectedChecksum, err = hex.DecodeString(fields[0])
+		if err != nil || len(expectedChecksum) != sha256.Size {
+			return errors.New("invalid checksum for install.sh")
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return errors.Annotate(err, "failed to read checksums.txt")
+	}
+	if expectedChecksum == nil {
+		return errors.New("missing checksum for install.sh")
+	}
+	checksum := sha256.Sum256(script)
+	if !bytes.Equal(checksum[:], expectedChecksum) {
+		return errors.New("checksum verification failed for install.sh")
+	}
+	return nil
+}
+
 func updateAndSpinnerWait(ctx context.Context, h *internal.Helper, newRelease *github.ReleaseInfo) error {
 	task := func() tea.Msg {
 		res := make(chan error, 1)
 
 		go func() {
-			timeoutCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
-			defer cancel()
-			c1 := exec.CommandContext(timeoutCtx, "curl", "-sSL", "https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh") //nolint:gosec
-			var stdout bytes.Buffer
-			var stderr bytes.Buffer
-			c1.Stdout = &stdout
-			c1.Stderr = &stderr
-
-			err := c1.Run()
-			if timeoutCtx.Err() == context.DeadlineExceeded {
-				res <- errors.New("timeout when download the install.sh script")
-				return
-			}
-			if err != nil {
-				fmt.Println(stderr.String())
-				res <- err
-				return
-			}
-
-			c2 := exec.CommandContext(timeoutCtx, "/bin/sh", "-c", stdout.String()) //nolint:gosec
-			stderr = bytes.Buffer{}
-			c2.Stderr = &stderr
-
-			err = c2.Run()
-			if timeoutCtx.Err() == context.DeadlineExceeded {
-				res <- errors.New("timeout when execute the install.sh script")
-				return
-			}
-			if err != nil {
-				fmt.Println(stderr.String())
-				res <- err
-				return
-			}
-
-			res <- nil
+			res <- downloadAndRunInstaller(ctx, newRelease.Version)
 		}()
 
 		ticker := time.NewTicker(1 * time.Second)
