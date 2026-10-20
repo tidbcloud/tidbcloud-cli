@@ -81,12 +81,12 @@ func (suite *DescribeConfigSuite) TestDescribeConfigArgs() {
 		{
 			name:         "describe config",
 			args:         []string{"test"},
-			stdoutString: "{\n  \"private-key\": \"SDWIOUEOSDSDC\",\n  \"public-key\": \"SDIWODIJQNDKJQW\"\n}\n",
+			stdoutString: "{\n  \"private-key\": \"***\",\n  \"public-key\": \"SDIWODIJQNDKJQW\"\n}\n",
 		},
 		{
 			name:         "describe config case-insensitive",
 			args:         []string{"teSt"},
-			stdoutString: "{\n  \"private-key\": \"SDWIOUEOSDSDC\",\n  \"public-key\": \"SDIWODIJQNDKJQW\"\n}\n",
+			stdoutString: "{\n  \"private-key\": \"***\",\n  \"public-key\": \"SDIWODIJQNDKJQW\"\n}\n",
 		},
 		{
 			name: "describe config with no args",
@@ -143,7 +143,7 @@ func (suite *DescribeConfigSuite) TestDescribeConfigWithSpecialCharacters() {
 		{
 			name:         "describe active profile",
 			args:         []string{"~`!@#$%^&*()_+-={}[]\\|;:,<>/?"},
-			stdoutString: "{\n  \"private-key\": \"SDWIOUEOSDSDC\",\n  \"public-key\": \"SDIWODIJQNDKJQW\"\n}\n",
+			stdoutString: "{\n  \"private-key\": \"***\",\n  \"public-key\": \"SDIWODIJQNDKJQW\"\n}\n",
 		},
 	}
 
