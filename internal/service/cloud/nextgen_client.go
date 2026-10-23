@@ -75,14 +75,14 @@ func nextGenTransport(caCertPath string) (http.RoundTripper, error) {
 	}
 	pem, err := os.ReadFile(caCertPath)
 	if err != nil {
-		return nil, fmt.Errorf("read NextGen CA certificate: %w", err)
+		return nil, fmt.Errorf("read Cloud API CA certificate: %w", err)
 	}
 	roots, err := x509.SystemCertPool()
 	if err != nil {
 		return nil, fmt.Errorf("load system CA certificates: %w", err)
 	}
 	if !roots.AppendCertsFromPEM(pem) {
-		return nil, fmt.Errorf("NextGen CA certificate is not valid PEM")
+		return nil, fmt.Errorf("Cloud API CA certificate is not valid PEM")
 	}
 
 	transport := http.DefaultTransport.(*http.Transport).Clone()
@@ -99,7 +99,7 @@ func nextGenTransport(caCertPath string) (http.RoundTripper, error) {
 }
 
 func newNextGenClientDelegate(rt http.RoundTripper, endpoint string) (*NextGenClientDelegate, error) {
-	u, err := prop.ValidateNextGenApiUrl(endpoint)
+	u, err := prop.ValidateCloudAPIURL(endpoint)
 	if err != nil {
 		return nil, err
 	}

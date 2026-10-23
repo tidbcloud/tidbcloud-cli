@@ -12,10 +12,11 @@ Action-specific flags:
 
           --cmek-key-arn string   The AWS or Alibaba Cloud KMS key ARN. Required with --encryption cmek.
       -n, --display-name string   The display name of the instance.
-          --encryption string     Dual-layer data encryption, one of ["none" "default-key" "cmek"]. (default "none")
-          --max-rcu int           The maximum number of Request Capacity Units (RCUs).
+          --encryption string     Dual-layer data encryption, one of ["none" "default-key" "cmek"]. default-key uses the TiDB Cloud default key; no key value is required. (default "none")
+          --max-rcu int           The maximum number of Request Capacity Units (RCUs). Must be at least the service-calculated minimum; the default calculation is max(5000, max-rcu / 4), subject to organization and plan configuration.
       -o, --output string         Output format, one of ["human" "json"]. For the complete result, please use json format. (default "human")
-      -p, --project-id string     The ID of the project in which the instance will be created. If omitted, the default TiDB X project is used.
+      -p, --project-id string     The positive decimal project ID (not the project name) in which the instance will be created. If neither --project-id nor --project-name is set, the default TiDB X project is used.
+          --project-name string   The exact, case-sensitive name of an accessible project. Must be unique; mutually exclusive with --project-id. Uses the same IAM endpoint as project list.
       -r, --region string         The region ID, for example aws-us-west-2.
 
 --list

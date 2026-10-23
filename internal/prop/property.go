@@ -27,8 +27,8 @@ const (
 	PrivateKey         string = "private-key"
 	CurProfile         string = "current-profile"
 	ServerlessEndpoint string = "serverless-endpoint"
-	NextGenEndpoint    string = "nextgen-endpoint"
-	NextGenCACertPath  string = "nextgen-ca-cert-path"
+	CloudAPIEndpoint   string = "cloud-api-endpoint"
+	CloudAPICACertPath string = "cloud-api-ca-cert-path"
 	IAMEndpoint        string = "iam-endpoint"
 	OAuthEndpoint      string = "oauth-endpoint"
 	OAuthClientID      string = "oauth-client-id"
@@ -46,7 +46,7 @@ func GlobalProperties() []string {
 }
 
 func ProfileProperties() []string {
-	return []string{PublicKey, PrivateKey, ServerlessEndpoint, NextGenEndpoint, NextGenCACertPath, IAMEndpoint, OAuthEndpoint, OAuthClientID, OAuthClientSecret, TelemetryEnabled}
+	return []string{PublicKey, PrivateKey, ServerlessEndpoint, CloudAPIEndpoint, CloudAPICACertPath, IAMEndpoint, OAuthEndpoint, OAuthClientID, OAuthClientSecret, TelemetryEnabled}
 }
 
 func ValidateApiUrl(value string) (*url.URL, error) {
@@ -57,7 +57,7 @@ func ValidateApiUrl(value string) (*url.URL, error) {
 	return u, nil
 }
 
-func ValidateNextGenApiUrl(value string) (*url.URL, error) {
+func ValidateCloudAPIURL(value string) (*url.URL, error) {
 	if strings.Contains(value, "#") {
 		return nil, fmt.Errorf("the API URL must not contain a query or fragment")
 	}

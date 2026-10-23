@@ -18,7 +18,9 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"net/url"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/AlecAivazis/survey/v2"
@@ -50,8 +52,13 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 
 	var loginCmd = &cobra.Command{
 		Use:   "login",
-		Short: "Authenticate with TiDB Cloud",
-		Args:  cobra.NoArgs,
+		Short: "Authenticate with TiDB Cloud using OAuth",
+		Long: `Authenticate with TiDB Cloud using OAuth and save the token to the selected profile.
+This command does not validate API keys. A complete public/private API key pair
+in the selected profile takes precedence over the OAuth token for API requests.
+-P selects a profile for this command only. Use 'ticloud config use <profile-name>'
+to change the default profile for subsequent commands.`,
+		Args: cobra.NoArgs,
 		Example: fmt.Sprintf(`  To log into TiDB Cloud:
   $ %[1]s auth login`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
@@ -63,6 +70,9 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := validateLoginEnvironment(config.GetCloudAPIEndpoint(), config.GetOAuthEndpoint(), config.ActiveProfileName()); err != nil {
+				return err
+			}
 			ctx := cmd.Context()
 
 			if config.GetPublicKey() != "" && config.GetPrivateKey() != "" {
@@ -148,6 +158,44 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 	loginCmd.Flags().BoolVar(&opts.insecureStorage, "insecure-storage", false, "Save authentication credentials in plain text instead of credential store.")
 
 	return loginCmd
+}
+
+// Only compare explicitly configured, known public API environments. Login is
+// also used by Serverless profiles without a Cloud API endpoint, and custom
+// gateways may intentionally use a different OAuth host.
+func validateLoginEnvironment(apiEndpoint, oauthEndpoint, profile string) error {
+	if apiEndpoint == "" {
+		return nil
+	}
+	host := func(endpoint string) string {
+		u, err := url.Parse(endpoint)
+		if err != nil {
+			return ""
+		}
+		return strings.ToLower(u.Hostname())
+	}
+	var environment, expectedOAuth string
+	switch host(apiEndpoint) {
+	case "cloud.tidbapi.com":
+		environment, expectedOAuth = "production", config.OAuthEndpoint
+		if host(oauthEndpoint) != "oauth.staging.tidbcloud.com" {
+			return nil
+		}
+	case "cloud.staging.tidbapi.com":
+		environment, expectedOAuth = "staging", config.StagingOAuthEndpoint
+		if host(oauthEndpoint) != "oauth.tidbcloud.com" {
+			return nil
+		}
+	default:
+		return nil
+	}
+	return fmt.Errorf(`OAuth environment mismatch in profile %q: cloud-api-endpoint uses %s but oauth-endpoint uses the other environment.
+To log in to %[2]s, configure the same profile:
+  %[3]s config set oauth-endpoint %[4]s -P %[1]q
+  %[3]s config set oauth-client-id "" -P %[1]q
+  %[3]s auth login -P %[1]q
+An empty oauth-client-id selects the built-in client ID for the OAuth endpoint.
+If the API environment is unintended, correct cloud-api-endpoint instead.`, profile, environment, config.CliName, expectedOAuth)
 }
 
 func (l LoginOpts) requestForToken(ctx context.Context, result AuthResponse) (*TokenResponse, error) {

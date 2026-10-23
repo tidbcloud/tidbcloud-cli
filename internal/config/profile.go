@@ -17,9 +17,11 @@ package config
 import (
 	stderrors "errors"
 	"fmt"
+	"net/url"
 	"os"
 	"slices"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/config/store"
@@ -119,14 +121,14 @@ func (p *Profile) GetServerlessEndpoint() (newApiUrl string) {
 	return
 }
 
-func GetNextGenEndpoint() (apiUrl string) { return activeProfile.GetNextGenEndpoint() }
-func (p *Profile) GetNextGenEndpoint() string {
-	return viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.NextGenEndpoint))
+func GetCloudAPIEndpoint() (apiUrl string) { return activeProfile.GetCloudAPIEndpoint() }
+func (p *Profile) GetCloudAPIEndpoint() string {
+	return viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.CloudAPIEndpoint))
 }
 
-func GetNextGenCACertPath() string { return activeProfile.GetNextGenCACertPath() }
-func (p *Profile) GetNextGenCACertPath() string {
-	return viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.NextGenCACertPath))
+func GetCloudAPICACertPath() string { return activeProfile.GetCloudAPICACertPath() }
+func (p *Profile) GetCloudAPICACertPath() string {
+	return viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.CloudAPICACertPath))
 }
 
 func GetIAMEndpoint() (apiUrl string) { return activeProfile.GetIAMEndpoint() }
@@ -147,6 +149,10 @@ func GetOAuthClientID() (apiUrl string) { return activeProfile.GetOAuthClientID(
 func (p *Profile) GetOAuthClientID() (clientID string) {
 	clientID = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.OAuthClientID))
 	if clientID == "" {
+		endpoint, err := url.Parse(p.GetOAuthEndpoint())
+		if err == nil && strings.EqualFold(endpoint.Hostname(), "oauth.staging.tidbcloud.com") {
+			return StagingClientID
+		}
 		return ClientID
 	}
 	return

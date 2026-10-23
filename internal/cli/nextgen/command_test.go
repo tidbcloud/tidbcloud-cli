@@ -154,6 +154,22 @@ func TestCreateBindsPlanEncryptionAndProject(t *testing.T) {
 	}
 }
 
+func TestCreateRejectsInvalidProjectIDBeforeClient(t *testing.T) {
+	for _, plan := range []planSpec{premiumPlan, essentialV2Plan} {
+		for _, projectID := range []string{"pavitra-onboarding-123", "0", "-1", "+1", "1.5", " 123", "18446744073709551616"} {
+			t.Run(plan.commandName+"/"+projectID, func(t *testing.T) {
+				h := &internal.Helper{NextGenClient: func() (cloud.NextGenClient, error) {
+					t.Fatal("invalid project ID must be rejected before creating a client")
+					return nil, nil
+				}}
+				command := createCmd(h, plan)
+				command.SetArgs([]string{"--project-id", projectID, "--display-name", "test-instance", "--region", "aws-us-west-2", "--max-rcu", "10000"})
+				require.ErrorContains(t, command.ExecuteContext(context.Background()), "--project-id must be a positive decimal project ID")
+			})
+		}
+	}
+}
+
 func TestCreateOmitsProjectByDefault(t *testing.T) {
 	var captured *api.Nextgenv1beta2Tidb
 	client := &fakeNextGenClient{create: func(_ context.Context, body *api.Nextgenv1beta2Tidb) (*api.Nextgenv1beta2Tidb, error) {

@@ -97,11 +97,11 @@ func Execute(ctx context.Context) {
 			return cloud.NewClientDelegateWithToken(token, serverlessEndpoint, iamEndpoint)
 		},
 		NextGenClient: func() (cloud.NextGenClient, error) {
-			endpoint := config.GetNextGenEndpoint()
+			endpoint := config.GetCloudAPIEndpoint()
 			if endpoint == "" {
 				endpoint = cloud.DefaultNextGenEndpoint
 			}
-			caCertPath := config.GetNextGenCACertPath()
+			caCertPath := config.GetCloudAPICACertPath()
 			publicKey, privateKey, token, err := loadCredentials()
 			if err != nil {
 				return nil, err

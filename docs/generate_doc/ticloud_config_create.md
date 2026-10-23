@@ -19,13 +19,19 @@ ticloud config create [flags]
   To configure a new user profile in non-interactive mode:
   $ ticloud config create --profile-name <profile-name>
 
+  To configure a staging profile for Premium / Essential V2 and OAuth:
+  $ ticloud config create --profile-name staging --environment staging
+
   To configure a new user profile in non-interactive mode with api keys:
   $ ticloud config create --profile-name <profile-name> --public-key <public-key> --private-key <private-key>
 ```
 
+Interactive creation prompts for `prod` or `staging` unless `--environment` is supplied. Non-interactive creation defaults to `prod`. The choice sets `cloud-api-endpoint`, `iam-endpoint`, and `oauth-endpoint`; the OAuth client ID is selected automatically. Legacy `serverless-endpoint` is not configured by this option.
+
 ### Options
 
 ```
+      --environment string    Environment for Premium / Essential V2 and OAuth: prod or staging. (default "prod")
   -h, --help                  help for create
       --private-key string    The private key of the TiDB Cloud API. (optional)
       --profile-name string   The name of the profile, must not contain periods.

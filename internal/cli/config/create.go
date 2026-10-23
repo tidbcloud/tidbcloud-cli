@@ -23,10 +23,13 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/prop"
+	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 	"github.com/tidbcloud/tidbcloud-cli/internal/telemetry"
 	"github.com/tidbcloud/tidbcloud-cli/internal/ui"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 
+	"github.com/AlecAivazis/survey/v2"
+	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/fatih/color"
 
 	"github.com/charmbracelet/bubbles/textinput"
@@ -46,6 +49,7 @@ const (
 
 type CreateOpts struct {
 	interactive bool
+	environment string
 }
 
 func (c CreateOpts) NonInteractiveFlags() []string {
@@ -71,9 +75,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
   To configure a new user profile in non-interactive mode:
   $ %[1]s config create --profile-name <profile-name>
 
+  To configure a staging profile for Premium / Essential V2 and OAuth:
+  $ %[1]s config create --profile-name staging --environment staging
+
   To configure a new user profile in non-interactive mode with api keys:
   $ %[1]s config create --profile-name <profile-name> --public-key <public-key> --private-key <private-key>`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if opts.environment != "prod" && opts.environment != "staging" {
+				return fmt.Errorf("invalid environment %q: choose prod or staging", opts.environment)
+			}
 			flags := opts.NonInteractiveFlags()
 			for _, fn := range flags {
 				f := cmd.Flags().Lookup(fn)
@@ -108,6 +118,20 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 				if !h.IOStreams.CanPrompt {
 					return errors.New("The terminal doesn't support interactive mode, please use non-interactive mode")
+				}
+
+				if !cmd.Flags().Changed("environment") {
+					prompt := &survey.Select{
+						Message: "Environment for Premium / Essential V2 and OAuth:",
+						Options: []string{"prod", "staging"},
+						Default: "prod",
+					}
+					if err := survey.AskOne(prompt, &opts.environment); err != nil {
+						if err == terminal.InterruptErr {
+							return util.InterruptError
+						}
+						return errors.Trace(err)
+					}
 				}
 
 				p := tea.NewProgram(initialCreationInputModel())
@@ -166,6 +190,15 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 
 			viper.Set(fmt.Sprintf("%s.%s", profileName, prop.PublicKey), publicKey)
 			viper.Set(fmt.Sprintf("%s.%s", profileName, prop.PrivateKey), privateKey)
+			apiEndpoint, oauthEndpoint := cloud.DefaultNextGenEndpoint, config.OAuthEndpoint
+			iamEndpoint := cloud.DefaultIAMEndpoint
+			if opts.environment == "staging" {
+				apiEndpoint, oauthEndpoint = "https://cloud.staging.tidbapi.com", config.StagingOAuthEndpoint
+				iamEndpoint = "https://iam.staging.tidbapi.com"
+			}
+			viper.Set(fmt.Sprintf("%s.%s", profileName, prop.CloudAPIEndpoint), apiEndpoint)
+			viper.Set(fmt.Sprintf("%s.%s", profileName, prop.OAuthEndpoint), oauthEndpoint)
+			viper.Set(fmt.Sprintf("%s.%s", profileName, prop.IAMEndpoint), iamEndpoint)
 			viper.Set(prop.CurProfile, profileName)
 			err = viper.WriteConfig()
 			if err != nil {
@@ -180,6 +213,7 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	}
 
 	createCmd.Flags().String(flag.ProfileName, "", "The name of the profile, must not contain periods.")
+	createCmd.Flags().StringVar(&opts.environment, "environment", "prod", "Environment for Premium / Essential V2 and OAuth: prod or staging.")
 	createCmd.Flags().String(flag.PublicKey, "", "The public key of the TiDB Cloud API. (optional)")
 	createCmd.Flags().String(flag.PrivateKey, "", "The private key of the TiDB Cloud API. (optional)")
 	return createCmd

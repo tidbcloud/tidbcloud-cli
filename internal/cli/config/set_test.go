@@ -180,7 +180,36 @@ func (suite *SetConfigSuite) TestSetConfigWhenNoActiveProfile() {
 	}
 }
 
-func (suite *SetConfigSuite) TestSetNextGenEndpointValidation() {
+func (suite *SetConfigSuite) TestSetCloudAPIProperties() {
+	for _, tt := range []struct {
+		property string
+		value    string
+		get      func() string
+	}{
+		{"cloud-api-endpoint", "https://cloud.staging.tidbapi.com", config.GetCloudAPIEndpoint},
+		{"cloud-api-ca-cert-path", "/tmp/management-ca.pem", config.GetCloudAPICACertPath},
+	} {
+		cmd := SetCmd(suite.h)
+		cmd.SetArgs([]string{tt.property, tt.value})
+		require.NoError(suite.T(), cmd.Execute())
+		require.Equal(suite.T(), tt.value, tt.get())
+	}
+
+	// Read the persisted profile without Viper's in-memory overrides.
+	viper.Reset()
+	viper.AddConfigPath(".")
+	viper.SetConfigType("toml")
+	viper.SetConfigName(".tidbcloud-cli")
+	require.NoError(suite.T(), viper.ReadInConfig())
+	require.Equal(suite.T(), "https://cloud.staging.tidbapi.com", config.GetCloudAPIEndpoint())
+	require.Equal(suite.T(), "/tmp/management-ca.pem", config.GetCloudAPICACertPath())
+	config.SetActiveProfile("other")
+	require.Empty(suite.T(), config.GetCloudAPIEndpoint())
+	require.Empty(suite.T(), config.GetCloudAPICACertPath())
+	config.SetActiveProfile("test")
+}
+
+func (suite *SetConfigSuite) TestSetCloudAPIEndpointValidation() {
 	tests := []struct {
 		name      string
 		endpoint  string
@@ -211,10 +240,10 @@ func (suite *SetConfigSuite) TestSetNextGenEndpointValidation() {
 	for _, tt := range tests {
 		suite.T().Run(tt.name, func(t *testing.T) {
 			cmd := SetCmd(suite.h)
-			cmd.SetArgs([]string{"nextgen-endpoint", tt.endpoint})
+			cmd.SetArgs([]string{"cloud-api-endpoint", tt.endpoint})
 			err := cmd.Execute()
 			require.EqualError(t, err, tt.errString)
-			require.Empty(t, viper.GetString("test.nextgen-endpoint"))
+			require.Empty(t, viper.GetString("test.cloud-api-endpoint"))
 		})
 	}
 }

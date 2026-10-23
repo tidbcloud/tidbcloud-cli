@@ -44,9 +44,9 @@ If not, the config in the active profile will be set`, prop.ProfileProperties())
   Set the value of the public-key in the specific profile "test":
   $ %[1]s config set public-key <public-key> -P test
 
-  Configure a custom NextGen endpoint and CA certificate for profile "test":
-  $ %[1]s config set nextgen-endpoint https://gateway.example.com -P test
-  $ %[1]s config set nextgen-ca-cert-path /absolute/path/to/ca.pem -P test`, config.CliName),
+  Configure a custom management API endpoint and CA certificate for Premium / Essential V2 in profile "test" (does not affect database TLS):
+  $ %[1]s config set cloud-api-endpoint https://gateway.example.com -P test
+  $ %[1]s config set cloud-api-ca-cert-path /absolute/path/to/ca.pem -P test`, config.CliName),
 		Args: cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			propertyName := args[0]
@@ -60,8 +60,8 @@ If not, the config in the active profile will be set`, prop.ProfileProperties())
 				}
 
 				switch propertyName {
-				case prop.NextGenEndpoint:
-					if _, err := prop.ValidateNextGenApiUrl(value); err != nil {
+				case prop.CloudAPIEndpoint:
+					if _, err := prop.ValidateCloudAPIURL(value); err != nil {
 						return err
 					}
 				case prop.IAMEndpoint, prop.ServerlessEndpoint, prop.OAuthEndpoint:
