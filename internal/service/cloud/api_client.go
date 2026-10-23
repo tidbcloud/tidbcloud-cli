@@ -16,17 +16,16 @@
 package cloud
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io"
 	"net/http"
-	"net/http/httputil"
 	"os"
 	"strings"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/prop"
+	"github.com/tidbcloud/tidbcloud-cli/internal/redact"
 	"github.com/tidbcloud/tidbcloud-cli/internal/version"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/iam"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta1/serverless/auditlog"
@@ -848,81 +847,11 @@ func (bt *BearTokenTransport) RoundTrip(r *http.Request) (*http.Response, error)
 	return bt.inner.RoundTrip(r)
 }
 
+// NewDebugTransport wraps inner with a transport that, when TICLOUD_DEBUG is
+// set, prints request/response dumps with credentials masked.
 func NewDebugTransport(inner http.RoundTripper) http.RoundTripper {
-	return &DebugTransport{inner: inner}
-}
-
-type DebugTransport struct {
-	inner http.RoundTripper
-}
-
-func (dt *DebugTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	debug := os.Getenv(config.DebugEnv) == "true" || os.Getenv(config.DebugEnv) == "1"
-
-	if debug {
-		requestForDump, err := requestForDebugDump(r)
-		if err != nil {
-			return nil, err
-		}
-		dump, err := httputil.DumpRequestOut(requestForDump, true)
-		if err != nil {
-			return nil, err
-		}
-		fmt.Printf("\n%s", string(dump))
-	}
-
-	resp, err := dt.inner.RoundTrip(r)
-	if err != nil {
-		return resp, err
-	}
-
-	if debug {
-		dump, err := httputil.DumpResponse(resp, true)
-		if err != nil {
-			return resp, err
-		}
-		fmt.Printf("%s\n", string(dump))
-	}
-
-	return resp, err
-}
-
-func requestForDebugDump(r *http.Request) (*http.Request, error) {
-	requestForDump := r.Clone(r.Context())
-	if r.Body != nil {
-		if r.GetBody != nil {
-			body, err := r.GetBody()
-			if err != nil {
-				return nil, err
-			}
-			requestForDump.Body = body
-		} else {
-			body, err := io.ReadAll(r.Body)
-			if err != nil {
-				return nil, err
-			}
-			if err := r.Body.Close(); err != nil {
-				return nil, err
-			}
-			r.Body = io.NopCloser(bytes.NewReader(body))
-			requestForDump.Body = io.NopCloser(bytes.NewReader(body))
-		}
-	}
-	if requestForDump.Header.Get("Authorization") != "" {
-		requestForDump.Header.Set("Authorization", "<redacted>")
-	}
-	if strings.HasSuffix(requestForDump.URL.Path, ":resetRootPassword") && requestForDump.Body != nil {
-		if err := requestForDump.Body.Close(); err != nil {
-			return nil, err
-		}
-		const redactedBody = `{"rootPassword":"<redacted>"}`
-		requestForDump.Body = io.NopCloser(strings.NewReader(redactedBody))
-		requestForDump.ContentLength = int64(len(redactedBody))
-		requestForDump.GetBody = func() (io.ReadCloser, error) {
-			return io.NopCloser(strings.NewReader(redactedBody)), nil
-		}
-	}
-	return requestForDump, nil
+	return redact.NewDebugTransport(inner, debug)
 }
 
 func parseError(err error, resp *http.Response) error {

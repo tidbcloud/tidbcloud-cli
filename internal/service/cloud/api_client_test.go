@@ -22,6 +22,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/tidbcloud/tidbcloud-cli/internal/redact"
 )
 
 type trackingReadCloser struct {
@@ -34,41 +35,23 @@ func (r *trackingReadCloser) Close() error {
 	return nil
 }
 
-func TestRequestForDebugDumpRedactsAuthorizationWithoutMutatingRequest(t *testing.T) {
-	request, err := http.NewRequest(http.MethodPost, "https://example.com", nil)
-	require.NoError(t, err)
-	originalBody := &trackingReadCloser{Reader: strings.NewReader("payload")}
-	request.Body = originalBody
-	request.ContentLength = int64(len("payload"))
-	request.Header.Set("Authorization", "Bearer secret")
-
-	redacted, err := requestForDebugDump(request)
-	require.NoError(t, err)
-	require.True(t, originalBody.closed)
-	require.Equal(t, "<redacted>", redacted.Header.Get("Authorization"))
-	require.Equal(t, "Bearer secret", request.Header.Get("Authorization"))
-	redactedBody, err := io.ReadAll(redacted.Body)
-	require.NoError(t, err)
-	require.Equal(t, "payload", string(redactedBody))
-	originalPayload, err := io.ReadAll(request.Body)
-	require.NoError(t, err)
-	require.Equal(t, "payload", string(originalPayload))
-}
-
-func TestRequestForDebugDumpRedactsRootPasswordWithoutMutatingRequest(t *testing.T) {
+func TestDebugTransportUsesSharedRedaction(t *testing.T) {
+	t.Setenv("TICLOUD_DEBUG", "true")
+	transport, ok := NewDebugTransport(http.DefaultTransport).(*redact.DebugTransport)
+	require.True(t, ok)
+	require.True(t, transport.Debug)
 	const body = `{"rootPassword":"super-secret"}`
 	request, err := http.NewRequest(http.MethodPost, "https://example.com/v1beta2/tidbs/123:resetRootPassword", strings.NewReader(body))
 	require.NoError(t, err)
-
-	redacted, err := requestForDebugDump(request)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Authorization", "Bearer secret")
+	dump := redact.DumpRequest(request)
+	require.NotContains(t, dump, "super-secret")
+	require.NotContains(t, dump, "Bearer secret")
+	require.Equal(t, "Bearer secret", request.Header.Get("Authorization"))
+	payload, err := io.ReadAll(request.Body)
 	require.NoError(t, err)
-	redactedBody, err := io.ReadAll(redacted.Body)
-	require.NoError(t, err)
-	require.JSONEq(t, `{"rootPassword":"<redacted>"}`, string(redactedBody))
-	require.NotContains(t, string(redactedBody), "super-secret")
-	originalBody, err := io.ReadAll(request.Body)
-	require.NoError(t, err)
-	require.JSONEq(t, body, string(originalBody))
+	require.JSONEq(t, body, string(payload))
 }
 
 func TestParseNextGenErrorOmitsHTMLResponseBody(t *testing.T) {
