@@ -19,16 +19,21 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/prop"
 	"github.com/tidbcloud/tidbcloud-cli/internal/version"
 	"github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta2/nextgen"
 )
+
+var errNextGenRedirect = errors.New("Cloud API redirects are not allowed; check the cloud-api-endpoint configuration")
 
 const DefaultNextGenEndpoint = "https://cloud.tidbapi.com"
 
@@ -110,7 +115,15 @@ func newNextGenClientDelegate(rt http.RoundTripper, endpoint string) (*NextGenCl
 	}
 
 	cfg := nextgen.NewConfiguration()
-	cfg.HTTPClient = &http.Client{Transport: rt}
+	cfg.HTTPClient = &http.Client{
+		Transport: rt,
+		Timeout:   30 * time.Second,
+		// Authentication transports reattach credentials on every request.
+		// Never forward credentials or mutation bodies to a redirect target.
+		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
+			return errNextGenRedirect
+		},
+	}
 	cfg.UserAgent = fmt.Sprintf("%s/%s", config.CliName, version.Version)
 	cfg.Servers[0].URL = u.String()
 	return &NextGenClientDelegate{client: nextgen.NewAPIClient(cfg)}, nil
@@ -122,7 +135,7 @@ func (d *NextGenClientDelegate) CreateTiDB(ctx context.Context, body *nextgen.Ne
 		request = request.Tidb(*body)
 	}
 	result, response, err := request.Execute()
-	return result, parseNextGenError(err, response)
+	return result, parseNextGenMutationError(err, response, "list instances to check whether creation succeeded")
 }
 
 func (d *NextGenClientDelegate) ListTiDBs(ctx context.Context, servicePlan nextgen.TidbServiceListTidbsServicePlanParameter, pageSize *int32, pageToken *string) (*nextgen.V1beta2ListTidbsResponse, error) {
@@ -148,12 +161,12 @@ func (d *NextGenClientDelegate) UpdateTiDB(ctx context.Context, tidbID string, b
 		request = request.Tidb(*body)
 	}
 	result, response, err := request.Execute()
-	return result, parseNextGenError(err, response)
+	return result, parseNextGenMutationError(err, response, "describe the instance to check whether the update was applied")
 }
 
 func (d *NextGenClientDelegate) DeleteTiDB(ctx context.Context, tidbID string) (*nextgen.Nextgenv1beta2Tidb, error) {
 	result, response, err := d.client.TiDBCloudPremiumInstanceAPI.TidbServiceDeleteTidb(ctx, tidbID).Execute()
-	return result, parseNextGenError(err, response)
+	return result, parseNextGenMutationError(err, response, "list or describe the instance to check whether deletion was accepted")
 }
 
 func (d *NextGenClientDelegate) ResetRootPassword(ctx context.Context, tidbID string, body *nextgen.TidbServiceResetRootPasswordBody) error {
@@ -162,7 +175,7 @@ func (d *NextGenClientDelegate) ResetRootPassword(ctx context.Context, tidbID st
 		request = request.Body(*body)
 	}
 	_, response, err := request.Execute()
-	return parseNextGenError(err, response)
+	return parseNextGenMutationError(err, response, "verify whether the new password works")
 }
 
 func (d *NextGenClientDelegate) ListRegions(ctx context.Context, servicePlan nextgen.TidbServiceListTidbsServicePlanParameter, pageSize *int32, pageToken *string) (*nextgen.V1beta2ListRegionsResponse, error) {
@@ -193,7 +206,7 @@ func (d *NextGenClientDelegate) UpdatePublicConnectionSetting(ctx context.Contex
 		request = request.PublicConnectionSetting(*body)
 	}
 	result, response, err := request.Execute()
-	return result, parseNextGenError(err, response)
+	return result, parseNextGenMutationError(err, response, "describe the instance to check the public endpoint state")
 }
 
 func (d *NextGenClientDelegate) GetCmekAccessIAMPrincipal(ctx context.Context, regionID string) (*nextgen.V1beta2CmekAccessIamPrincipal, error) {
@@ -225,4 +238,17 @@ func (d *NextGenClientDelegate) ListPrivateEndpointConnections(ctx context.Conte
 func (d *NextGenClientDelegate) GetPrivateLinkService(ctx context.Context, tidbID string) (*nextgen.Nextgenv1beta2PrivateLinkService, error) {
 	result, response, err := d.client.PrivateEndpointConnectionServiceAPI.PrivateEndpointConnectionServiceGetPrivateLinkService(ctx, tidbID).Execute()
 	return result, parseNextGenError(err, response)
+}
+
+// A timeout does not establish whether the server applied a mutation. Preserve
+// the original error for callers and never automatically retry the operation.
+func parseNextGenMutationError(err error, response *http.Response, check string) error {
+	var timeout net.Error
+	if !errors.Is(err, context.DeadlineExceeded) && !(errors.As(err, &timeout) && timeout.Timeout()) {
+		return parseNextGenError(err, response)
+	}
+	if response != nil && response.Body != nil {
+		response.Body.Close()
+	}
+	return fmt.Errorf("Cloud API request timed out; the change may already have been applied. Before retrying, %s: %w", check, err)
 }

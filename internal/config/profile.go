@@ -17,11 +17,9 @@ package config
 import (
 	stderrors "errors"
 	"fmt"
-	"net/url"
 	"os"
 	"slices"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/config/store"
@@ -149,10 +147,6 @@ func GetOAuthClientID() (apiUrl string) { return activeProfile.GetOAuthClientID(
 func (p *Profile) GetOAuthClientID() (clientID string) {
 	clientID = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.OAuthClientID))
 	if clientID == "" {
-		endpoint, err := url.Parse(p.GetOAuthEndpoint())
-		if err == nil && strings.EqualFold(endpoint.Hostname(), "oauth.staging.tidbcloud.com") {
-			return StagingClientID
-		}
 		return ClientID
 	}
 	return

@@ -13,8 +13,8 @@ ticloud essential-v2 password [flags]
   $ ticloud essential-v2 password
   $ ticloud essential-v2 password -c <instance-id>
 
-  Reset the root password non-interactively:
-  $ ticloud essential-v2 password -c <instance-id> --password <password>
+  Reset the root password from a protected file (or pipe from a secret manager):
+  $ ticloud essential-v2 password -c <instance-id> --password-stdin < /path/to/password-file
 ```
 
 ### Options
@@ -22,7 +22,7 @@ ticloud essential-v2 password [flags]
 ```
   -c, --cluster-id string   The ID of the instance. If omitted, select an instance interactively.
   -h, --help                help for password
-      --password string     The new root password. Prefer interactive input to avoid shell history exposure.
+      --password-stdin      Read the new root password from a pipe or file on standard input until EOF; terminal input is rejected. Requires --cluster-id; removes one trailing LF or CRLF. If omitted, prompt with hidden input and confirmation.
 ```
 
 ### Options inherited from parent commands

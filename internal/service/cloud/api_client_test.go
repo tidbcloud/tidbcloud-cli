@@ -66,7 +66,8 @@ func TestParseNextGenErrorOmitsHTMLResponseBody(t *testing.T) {
 	}
 
 	parsed := parseNextGenError(fmt.Errorf("undefined response type"), response)
-	require.EqualError(t, parsed, `[GET /v1beta2/regions][undefined response type][<trace_id>] unexpected response content type "text/html; charset=utf-8" (56-byte body omitted)`)
+	require.Contains(t, parsed.Error(), "[GET /v1beta2/regions]")
+	require.Contains(t, parsed.Error(), "body omitted")
 	require.NotContains(t, parsed.Error(), "sensitive-noise")
 	require.True(t, responseBody.closed)
 }

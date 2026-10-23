@@ -49,6 +49,7 @@ func createCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 		Args:        cobra.NoArgs,
 		Annotations: make(map[string]string),
 		Example: fmt.Sprintf(`  $ %[1]s %[2]s --create --display-name <name> --region <region-id> --max-rcu <max-rcu>
+  $ %[1]s %[2]s --create --display-name <name> --region <region-id> --baseline-rcu <baseline-rcu>
   $ %[1]s %[2]s --create --project-id <project-id> --display-name <name> --region <region-id> --max-rcu <max-rcu>
   $ %[1]s %[2]s --create --display-name <name> --region <region-id> --max-rcu <max-rcu> --encryption default-key`, config.CliName, plan.commandName),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -72,17 +73,17 @@ func createCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if maxRCU <= 0 {
-				return fmt.Errorf("--%s must be greater than zero", flag.MaxRCU)
+			if err := validateCapacityFlags(cmd); err != nil {
+				return err
 			}
 			projectID, err := cmd.Flags().GetString(flag.ProjectID)
 			if err != nil {
 				return err
 			}
-			if projectID != "" {
+			if cmd.Flags().Changed(flag.ProjectID) {
 				id, err := strconv.ParseUint(projectID, 10, 64)
 				if err != nil || id == 0 {
-					return fmt.Errorf("--%s must be a positive decimal project ID (uint64), not a project name", flag.ProjectID)
+					return fmt.Errorf("--%s must be a positive decimal project ID (uint64), not a project name; use %s project list to find IDs or --%s to select by name", flag.ProjectID, config.CliName, projectNameFlag)
 				}
 			}
 			projectName, err := cmd.Flags().GetString(projectNameFlag)
@@ -108,7 +109,12 @@ func createCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 			}
 
 			body := api.NewNextgenv1beta2Tidb(displayName, regionID, plan.servicePlan)
-			body.SetMaxRcu(strconv.FormatInt(maxRCU, 10))
+			if cmd.Flags().Changed(flag.MaxRCU) {
+				body.SetMaxRcu(strconv.FormatInt(maxRCU, 10))
+			} else {
+				baseline, _ := cmd.Flags().GetInt64(baselineRCUFlag)
+				body.SetBaselineRcu(strconv.FormatInt(baseline, 10))
+			}
 			switch encryption {
 			case encryptionNone:
 				body.DualLayerDataEncryption = &api.TidbDualLayerDataEncryption{NoEncryption: map[string]interface{}{}}
@@ -145,12 +151,12 @@ func createCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 						continue
 					}
 					if projectID != "" {
-						return fmt.Errorf("multiple accessible projects named %q; specify --%s instead", projectName, flag.ProjectID)
+						return fmt.Errorf("multiple accessible projects named %q; run %s project list and specify --%s instead", projectName, config.CliName, flag.ProjectID)
 					}
 					projectID = project.GetId()
 				}
 				if projectID == "" {
-					return fmt.Errorf("no accessible project named %q", projectName)
+					return fmt.Errorf("no accessible project named %q; run %s project list with the same profile to find the exact name or ID", projectName, config.CliName)
 				}
 			}
 			if projectID != "" {
@@ -170,6 +176,9 @@ func createCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 			}
 			instance, err := client.CreateTiDB(cmd.Context(), body)
 			if err != nil {
+				if cmd.Flags().Changed(flag.MaxRCU) {
+					return explainRCUError(err, maxRCU, plan)
+				}
 				return err
 			}
 			if err := plan.validate(instance); err != nil {
@@ -188,7 +197,7 @@ func createCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 	command.Flags().StringP(flag.ProjectID, flag.ProjectIDShort, "", "The positive decimal project ID (not the project name) in which the instance will be created. If neither --project-id nor --project-name is set, the default TiDB X project is used.")
 	command.Flags().String(projectNameFlag, "", "The exact, case-sensitive name of an accessible project. Must be unique; mutually exclusive with --project-id. Uses the same IAM endpoint as project list.")
 	command.MarkFlagsMutuallyExclusive(flag.ProjectID, projectNameFlag)
-	command.Flags().Int64(flag.MaxRCU, 0, "The maximum number of Request Capacity Units (RCUs). Must be at least the service-calculated minimum; the default calculation is max(5000, max-rcu / 4), subject to organization and plan configuration.")
+	command.Flags().Int64(flag.MaxRCU, 0, fmt.Sprintf("The maximum number of Request Capacity Units (RCUs). Default minimum: %d RCU; organization-specific limits may differ. No CLI default.", plan.minimumMaxRCU))
 	command.Flags().String(flag.Encryption, encryptionNone, "Dual-layer data encryption, one of [\"none\" \"default-key\"]. default-key uses the TiDB Cloud default key; no key value is required.")
 	if plan.servicePlan == api.V1BETA1SERVICEPLAN_PREMIUM {
 		command.Flags().Lookup(flag.Encryption).Usage = "Dual-layer data encryption, one of [\"none\" \"default-key\" \"cmek\"]. default-key uses the TiDB Cloud default key; no key value is required."
@@ -198,7 +207,9 @@ func createCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 	command.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, flag.OutputHelp)
 	_ = command.MarkFlagRequired(flag.DisplayName)
 	_ = command.MarkFlagRequired(flag.Region)
-	_ = command.MarkFlagRequired(flag.MaxRCU)
+	command.Flags().Int64(baselineRCUFlag, 0, "The guaranteed baseline RCU for Elastic mode. Specify exactly one of --baseline-rcu or --max-rcu; supported values depend on the service plan. No CLI default.")
+	command.MarkFlagsMutuallyExclusive(flag.MaxRCU, baselineRCUFlag)
+	command.MarkFlagsOneRequired(flag.MaxRCU, baselineRCUFlag)
 	return command
 }
 

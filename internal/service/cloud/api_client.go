@@ -891,7 +891,11 @@ func parseErrorWithHTMLPolicy(err error, resp *http.Response, omitHTML bool) err
 	if omitHTML && strings.HasPrefix(strings.ToLower(contentType), "text/html") {
 		detail = fmt.Sprintf("unexpected response content type %q (%d-byte body omitted)", contentType, len(body))
 	}
-	return fmt.Errorf("%s[%s][%s] %s", path, err.Error(), traceId, detail)
+	text := fmt.Sprintf("%s[%s][%s] %s", path, err.Error(), traceId, detail)
+	if omitHTML {
+		return newNextGenAPIError(resp, string(body), err)
+	}
+	return fmt.Errorf("%s", text)
 }
 
 func (d *ClientDelegate) CreateChangefeed(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceCreateChangefeedBody) (*cdc.Changefeed, error) {

@@ -634,7 +634,7 @@
     "/tidbs/{tidb.tidbId}": {
       "patch": {
         "summary": "Update a TiDB Cloud Premium instance",
-        "description": "Updates the configuration of a specific TiDB Cloud Premium instance. You can modify the following fields: `displayName` and `maxRcu`.",
+        "description": "Updates the configuration of a specific TiDB Cloud Premium instance. You can modify the following fields: `displayName`, `maxRcu`, and `baselineRcu`. The two capacity fields are mutually exclusive.",
         "operationId": "TidbService_UpdateTidb",
         "responses": {
           "200": {
@@ -714,6 +714,11 @@
                   "type": "string",
                   "format": "int64",
                   "description": "The maximum number of Request Capacity Units (RCUs) for the TiDB Cloud Premium instance."
+                },
+                "baselineRcu": {
+                  "type": "string",
+                  "format": "int64",
+                  "description": "The guaranteed baseline RCU for Elastic mode; mutually exclusive with maxRcu."
                 },
                 "reservedCapacityTemplateId": {
                   "type": "string",

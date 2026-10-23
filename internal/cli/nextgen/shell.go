@@ -380,7 +380,7 @@ func validateEndpoint(endpoint *api.TidbEndpoint) (*api.TidbEndpoint, error) {
 func downloadCACertificate(ctx context.Context, uri string) (*x509.CertPool, error) {
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
-		return nil, err
+		return nil, &caDownloadError{err}
 	}
 	if request.URL.Scheme != "https" {
 		return nil, fmt.Errorf("the CA certificate download URL must use HTTPS")
@@ -399,7 +399,7 @@ func downloadCACertificate(ctx context.Context, uri string) (*x509.CertPool, err
 	}
 	response, err := httpClient.Do(request)
 	if err != nil {
-		return nil, fmt.Errorf("download CA certificate: %w", err)
+		return nil, &caDownloadError{err}
 	}
 	defer response.Body.Close()
 	if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusMultipleChoices {
@@ -421,3 +421,19 @@ func downloadCACertificate(ctx context.Context, uri string) (*x509.CertPool, err
 	}
 	return roots, nil
 }
+
+// Keep URL-bearing transport errors out of terminal output and telemetry while
+// preserving their identity for cancellation, timeout and TLS checks.
+type caDownloadError struct{ cause error }
+
+func (e *caDownloadError) Error() string {
+	if errors.Is(e.cause, context.Canceled) {
+		return "download CA certificate: request canceled"
+	}
+	var timeout interface{ Timeout() bool }
+	if errors.As(e.cause, &timeout) && timeout.Timeout() {
+		return "download CA certificate: request timed out"
+	}
+	return "download CA certificate: request failed; check network and TLS configuration"
+}
+func (e *caDownloadError) Unwrap() error { return e.cause }

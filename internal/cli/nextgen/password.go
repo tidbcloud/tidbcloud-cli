@@ -16,6 +16,7 @@ package nextgen
 
 import (
 	"fmt"
+	"io"
 	"strings"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
@@ -28,6 +29,7 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
 	"github.com/fatih/color"
+	"github.com/mattn/go-isatty"
 	"github.com/spf13/cobra"
 )
 
@@ -40,6 +42,7 @@ func passwordCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 }
 
 func passwordCmdWithDependencies(h *internal.Helper, plan planSpec, selectInstance instanceSelector, promptPassword rootPasswordPrompter) *cobra.Command {
+	var passwordStdin bool
 	command := &cobra.Command{
 		Use:         "password",
 		Short:       fmt.Sprintf("Reset the root password of a %s instance", plan.displayName),
@@ -49,31 +52,31 @@ func passwordCmdWithDependencies(h *internal.Helper, plan planSpec, selectInstan
   $ %[1]s %[2]s password
   $ %[1]s %[2]s password -c <instance-id>
 
-  Reset the root password non-interactively:
-  $ %[1]s %[2]s password -c <instance-id> --password <password>`, config.CliName, plan.commandName),
+  Reset the root password from a protected file (or pipe from a secret manager):
+  $ %[1]s %[2]s password -c <instance-id> --password-stdin < /path/to/password-file`, config.CliName, plan.commandName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if cmd.Flags().Changed(flag.Password) {
+			if passwordStdin {
 				id, err := cmd.Flags().GetString(flag.ClusterID)
 				if err != nil {
 					return err
 				}
 				if id == "" {
-					return fmt.Errorf("--%s is required when --%s is specified", flag.ClusterID, flag.Password)
+					return fmt.Errorf("--%s is required when --password-stdin is specified", flag.ClusterID)
 				}
 			}
-			if !cmd.Flags().Changed(flag.Password) && !h.IOStreams.CanPrompt {
-				return fmt.Errorf("the terminal doesn't support prompts; use --%s with --%s", flag.Password, flag.ClusterID)
+			if !passwordStdin && !h.IOStreams.CanPrompt {
+				return fmt.Errorf("the terminal doesn't support prompts; use --password-stdin with --%s", flag.ClusterID)
 			}
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if !cmd.Flags().Changed(flag.Password) {
+			if !passwordStdin {
 				cmd.Annotations[telemetry.InteractiveMode] = "true"
 			}
 			var password string
 			var err error
-			if cmd.Flags().Changed(flag.Password) {
-				password, err = cmd.Flags().GetString(flag.Password)
+			if passwordStdin {
+				password, err = readRootPassword(cmd.InOrStdin())
 				if err != nil {
 					return err
 				}
@@ -106,7 +109,7 @@ func passwordCmdWithDependencies(h *internal.Helper, plan planSpec, selectInstan
 				return err
 			}
 
-			if !cmd.Flags().Changed(flag.Password) {
+			if !passwordStdin {
 				password, err = promptPassword()
 				if err != nil {
 					return err
@@ -125,8 +128,30 @@ func passwordCmdWithDependencies(h *internal.Helper, plan planSpec, selectInstan
 		},
 	}
 	command.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the instance. If omitted, select an instance interactively.")
-	command.Flags().String(flag.Password, "", "The new root password. Prefer interactive input to avoid shell history exposure.")
+	command.Flags().BoolVar(&passwordStdin, "password-stdin", false, "Read the new root password from a pipe or file on standard input until EOF; terminal input is rejected. Requires --cluster-id; removes one trailing LF or CRLF. If omitted, prompt with hidden input and confirmation.")
 	return command
+}
+
+func readRootPassword(reader io.Reader) (string, error) {
+	if input, ok := reader.(interface{ Fd() uintptr }); ok {
+		if isatty.IsTerminal(input.Fd()) || isatty.IsCygwinTerminal(input.Fd()) {
+			return "", fmt.Errorf("--password-stdin requires a pipe or file; omit --password-stdin to enter the password with hidden input")
+		}
+	}
+	// Bound input even for the encrypted password format, whose length varies.
+	const maxInput = 1 << 20
+	data, err := io.ReadAll(io.LimitReader(reader, maxInput+1))
+	if err != nil {
+		return "", fmt.Errorf("read password from standard input: %w", err)
+	}
+	if len(data) > maxInput {
+		return "", fmt.Errorf("password input exceeds 1 MiB")
+	}
+	password := string(data)
+	if strings.HasSuffix(password, "\n") {
+		password = strings.TrimSuffix(strings.TrimSuffix(password, "\n"), "\r")
+	}
+	return password, nil
 }
 
 func promptRootPassword() (string, error) {

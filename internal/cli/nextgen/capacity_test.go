@@ -19,16 +19,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 	api "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta2/nextgen"
 
 	"github.com/rodaine/table"
+	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreateStillRequiresMaxRCU(t *testing.T) {
+func TestCreateRequiresExplicitCapacity(t *testing.T) {
 	for _, plan := range []planSpec{premiumPlan, essentialV2Plan} {
 		t.Run(plan.commandName, func(t *testing.T) {
 			h := helperWithNextGenClient(nil)
@@ -38,7 +40,7 @@ func TestCreateStillRequiresMaxRCU(t *testing.T) {
 			}
 			command := createCmd(h, plan)
 			command.SetArgs([]string{"--display-name", "test-instance", "--region", "aws-us-west-2"})
-			require.ErrorContains(t, command.Execute(), `required flag(s) "max-rcu" not set`)
+			require.ErrorContains(t, command.Execute(), `at least one of the flags in the group [max-rcu baseline-rcu] is required`)
 		})
 	}
 }
@@ -64,6 +66,11 @@ func TestListOptionalMaxRCU(t *testing.T) {
 			require.NoError(t, command.Execute())
 			out := h.IOStreams.Out.(*bytes.Buffer).String()
 			require.Regexp(t, `aws-us-west-2\s+`+tc.want, out)
+			require.Contains(t, out, "CapacityMode")
+			require.Contains(t, out, "BaselineRCU")
+			if strings.Contains(tc.fields, "ELASTIC") {
+				require.Regexp(t, `ELASTIC\s+5000`, out)
+			}
 		})
 	}
 }
@@ -97,5 +104,100 @@ func TestRenameElasticInstancePreservesCapacity(t *testing.T) {
 			require.NotContains(t, out, `"maxRcu"`)
 			require.Contains(t, out, `"baselineRcu": "`+baseline+`"`)
 		})
+	}
+}
+
+func TestElasticCapacityRequests(t *testing.T) {
+	for _, plan := range []planSpec{premiumPlan, essentialV2Plan} {
+		for _, action := range []string{"create", "update"} {
+			for _, capacity := range []string{"max-rcu", "baseline-rcu"} {
+				t.Run(plan.commandName+"/"+action+"/"+capacity, func(t *testing.T) {
+					field := "maxRcu"
+					other := "baselineRcu"
+					if capacity == "baseline-rcu" {
+						field, other = other, field
+					}
+					baseline := "5000"
+					if plan.servicePlan == api.V1BETA1SERVICEPLAN_ESSENTIAL_V2 {
+						baseline = "2000"
+					}
+					calls := 0
+					check := func(payload interface{}) {
+						calls++
+						data, err := json.Marshal(payload)
+						require.NoError(t, err)
+						var body map[string]interface{}
+						require.NoError(t, json.Unmarshal(data, &body))
+						require.Equal(t, baseline, body[field])
+						require.NotContains(t, body, other)
+						require.NotContains(t, body, "capacityMode")
+						require.NotContains(t, body, "minRcu")
+					}
+					current := api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", plan.servicePlan)
+					// Exercise both directions of mode switches; only the selected field goes on the wire.
+					if capacity == "max-rcu" {
+						current.SetBaselineRcu(baseline)
+					} else {
+						current.SetMaxRcu("20000")
+					}
+					client := &fakeNextGenClient{
+						get: func(context.Context, string) (*api.Nextgenv1beta2Tidb, error) { return current, nil },
+						create: func(_ context.Context, b *api.Nextgenv1beta2Tidb) (*api.Nextgenv1beta2Tidb, error) {
+							check(b)
+							return current, nil
+						},
+						update: func(_ context.Context, _ string, b *api.TheTiDBCloudPremiumInstanceToUpdate) (*api.Nextgenv1beta2Tidb, error) {
+							check(b)
+							return current, nil
+						},
+					}
+					root := &cobra.Command{Use: "ticloud"}
+					root.AddCommand(cmd(helperWithNextGenClient(client), plan))
+					args := []string{plan.commandName, "--" + capacity, baseline, "--" + action, "-ojson"}
+					if action == "create" {
+						args = append(args, "--display-name", "test-instance", "--region", "aws-us-west-2")
+					} else {
+						args = append(args, "-c", "123")
+					}
+					normalized, err := NormalizeActionArgs(root, args)
+					require.NoError(t, err)
+					root.SetArgs(normalized)
+					require.NoError(t, root.Execute())
+					require.Equal(t, 1, calls)
+				})
+			}
+		}
+	}
+}
+
+func TestInvalidCapacityRejectedBeforeClient(t *testing.T) {
+	for _, plan := range []planSpec{premiumPlan, essentialV2Plan} {
+		for _, action := range []string{"create", "update"} {
+			for _, capacity := range [][]string{
+				{"--baseline-rcu", "0"}, {"--baseline-rcu", "-1"}, {"--baseline-rcu", "invalid"},
+				{"--baseline-rcu", "9223372036854775808"},
+				{"--baseline-rcu", "5000", "--max-rcu", "20000"},
+				{"--baseline-rcu", "0", "--max-rcu", "20000"},
+			} {
+				t.Run(fmt.Sprint(plan.commandName, action, capacity), func(t *testing.T) {
+					h := helperWithNextGenClient(nil)
+					h.NextGenClient = func() (cloud.NextGenClient, error) { t.Fatal("invalid request reached client"); return nil, nil }
+					root := cmd(h, plan)
+					args := append([]string{action}, capacity...)
+					if action == "create" {
+						args = append(args, "--display-name", "test-instance", "--region", "aws-us-west-2")
+					} else {
+						args = append(args, "-c", "123")
+					}
+					args = append(args, "-ojson")
+					root.SetArgs(args)
+					command, err := root.ExecuteC()
+					require.Error(t, err)
+					result, ok := JSONError(command, args, err)
+					require.True(t, ok)
+					require.True(t, json.Valid([]byte(result)))
+				})
+			}
+		}
 	}
 }

@@ -51,11 +51,12 @@ func deleteCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 			}
 
 			if !force {
+				target := fmt.Sprintf("%q (ID: %s, region: %s)", instance.GetDisplayName(), id, instance.GetRegionId())
 				if !h.IOStreams.CanPrompt {
-					return fmt.Errorf("the terminal doesn't support prompts; use --%s to delete the instance", flag.Force)
+					return fmt.Errorf("the terminal doesn't support prompts; verify instance %s and use --%s to delete it", target, flag.Force)
 				}
 				var answer string
-				prompt := &survey.Input{Message: fmt.Sprintf("Type %s to confirm deletion:", color.HiBlueString("yes"))}
+				prompt := &survey.Input{Message: fmt.Sprintf("Permanently delete instance %s? Type %s to confirm:", target, color.HiBlueString("yes"))}
 				if err := survey.AskOne(prompt, &answer); err != nil {
 					if err == terminal.InterruptErr {
 						return util.InterruptError

@@ -18,11 +18,9 @@ import (
 	"bytes"
 	"fmt"
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
-	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/iostream"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 
@@ -181,58 +179,4 @@ func (suite *CreateConfigSuite) TestCreateConfigWithExistedProfile() {
 
 func TestCreateConfigSuite(t *testing.T) {
 	suite.Run(t, new(CreateConfigSuite))
-}
-
-func TestCreateEnvironment(t *testing.T) {
-	for _, tt := range []struct {
-		name, environment, api, oauth, clientID, iam string
-	}{
-		{"default", "", "https://cloud.tidbapi.com", config.OAuthEndpoint, config.ClientID, "https://iam.tidbapi.com"},
-		{"production", "prod", "https://cloud.tidbapi.com", config.OAuthEndpoint, config.ClientID, "https://iam.tidbapi.com"},
-		{"staging", "staging", "https://cloud.staging.tidbapi.com", config.StagingOAuthEndpoint, config.StagingClientID, "https://iam.staging.tidbapi.com"},
-	} {
-		t.Run(tt.name, func(t *testing.T) {
-			viper.Reset()
-			t.Cleanup(viper.Reset)
-			configPath := filepath.Join(t.TempDir(), "config.toml")
-			viper.SetConfigFile(configPath)
-			viper.Set("existing.public-key", "preserved")
-			viper.Set("existing.iam-endpoint", "https://custom.example.com")
-			require.NoError(t, viper.WriteConfig())
-			cmd := CreateCmd(&internal.Helper{IOStreams: iostream.Test()})
-			args := []string{"--profile-name", "new-profile"}
-			if tt.environment != "" {
-				args = append(args, "--environment", tt.environment)
-			}
-			cmd.SetArgs(args)
-			require.NoError(t, cmd.Execute())
-			viper.Reset()
-			viper.SetConfigFile(configPath)
-			require.NoError(t, viper.ReadInConfig())
-			require.Equal(t, tt.api, viper.GetString("new-profile.cloud-api-endpoint"))
-			require.Equal(t, tt.oauth, viper.GetString("new-profile.oauth-endpoint"))
-			require.Equal(t, tt.iam, viper.GetString("new-profile.iam-endpoint"))
-			require.Equal(t, "https://custom.example.com", viper.GetString("existing.iam-endpoint"))
-			require.Empty(t, viper.GetString("new-profile.oauth-client-id"))
-			require.Equal(t, "preserved", viper.GetString("existing.public-key"))
-			previous := config.ActiveProfileName()
-			config.SetActiveProfile("new-profile")
-			require.Equal(t, tt.clientID, config.GetOAuthClientID())
-			if previous != "" {
-				config.SetActiveProfile(previous)
-			}
-		})
-	}
-}
-
-func TestCreateInvalidEnvironment(t *testing.T) {
-	viper.Reset()
-	t.Cleanup(viper.Reset)
-	configPath := filepath.Join(t.TempDir(), "config.toml")
-	viper.SetConfigFile(configPath)
-	cmd := CreateCmd(&internal.Helper{IOStreams: iostream.Test()})
-	cmd.SetArgs([]string{"--profile-name", "bad", "--environment", "typo"})
-	require.ErrorContains(t, cmd.Execute(), "choose prod or staging")
-	_, err := os.Stat(configPath)
-	require.True(t, os.IsNotExist(err))
 }

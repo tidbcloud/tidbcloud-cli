@@ -31,26 +31,29 @@ import (
 )
 
 type planSpec struct {
-	commandName string
-	aliases     []string
-	displayName string
-	servicePlan api.V1beta1ServicePlan
-	queryPlan   api.TidbServiceListTidbsServicePlanParameter
+	minimumMaxRCU int64
+	commandName   string
+	aliases       []string
+	displayName   string
+	servicePlan   api.V1beta1ServicePlan
+	queryPlan     api.TidbServiceListTidbsServicePlanParameter
 }
 
 var premiumPlan = planSpec{
-	commandName: "premium",
-	displayName: "TiDB Cloud Premium",
-	servicePlan: api.V1BETA1SERVICEPLAN_PREMIUM,
-	queryPlan:   api.TIDBSERVICELISTTIDBSSERVICEPLANPARAMETER_PREMIUM,
+	minimumMaxRCU: 5000,
+	commandName:   "premium",
+	displayName:   "TiDB Cloud Premium",
+	servicePlan:   api.V1BETA1SERVICEPLAN_PREMIUM,
+	queryPlan:     api.TIDBSERVICELISTTIDBSSERVICEPLANPARAMETER_PREMIUM,
 }
 
 var essentialV2Plan = planSpec{
-	commandName: "essential-v2",
-	aliases:     []string{"essential"},
-	displayName: "TiDB Cloud Essential V2",
-	servicePlan: api.V1BETA1SERVICEPLAN_ESSENTIAL_V2,
-	queryPlan:   api.TIDBSERVICELISTTIDBSSERVICEPLANPARAMETER_ESSENTIAL_V2,
+	minimumMaxRCU: 2000,
+	commandName:   "essential-v2",
+	aliases:       []string{"essential"},
+	displayName:   "TiDB Cloud Essential V2",
+	servicePlan:   api.V1BETA1SERVICEPLAN_ESSENTIAL_V2,
+	queryPlan:     api.TIDBSERVICELISTTIDBSSERVICEPLANPARAMETER_ESSENTIAL_V2,
 }
 
 func PremiumCmd(h *internal.Helper) *cobra.Command {
@@ -68,9 +71,11 @@ func cmd(h *internal.Helper, plan planSpec) *cobra.Command {
 		Short:   fmt.Sprintf("Manage %s instances", plan.displayName),
 		Example: fmt.Sprintf(`  $ %[1]s %[2]s --create --display-name <name> --region <region-id> --max-rcu <max-rcu>
   $ %[1]s %[2]s --create --project-id <project-id> --display-name <name> --region <region-id> --max-rcu <max-rcu>
+  $ %[1]s %[2]s --create --display-name <name> --region <region-id> --baseline-rcu <baseline-rcu>
   $ %[1]s %[2]s --list
   $ %[1]s %[2]s --describe -c <instance-id>
   $ %[1]s %[2]s --update -c <instance-id> --max-rcu <max-rcu>
+  $ %[1]s %[2]s --update -c <instance-id> --baseline-rcu <baseline-rcu>
   $ %[1]s %[2]s --delete -c <instance-id>
   $ %[1]s %[2]s public-endpoint enable -c <instance-id>
   $ %[1]s %[2]s public-endpoint disable -c <instance-id>

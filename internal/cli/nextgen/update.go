@@ -33,10 +33,10 @@ func updateCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 		Short: fmt.Sprintf("Update a %s instance", plan.displayName),
 		Args:  cobra.NoArgs,
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			if !cmd.Flags().Changed(flag.DisplayName) && !cmd.Flags().Changed(flag.MaxRCU) {
-				return fmt.Errorf("at least one of --%s or --%s must be specified", flag.DisplayName, flag.MaxRCU)
+			if !cmd.Flags().Changed(flag.DisplayName) && !cmd.Flags().Changed(flag.MaxRCU) && !cmd.Flags().Changed(baselineRCUFlag) {
+				return fmt.Errorf("at least one of --%s, --%s or --%s must be specified", flag.DisplayName, flag.MaxRCU, baselineRCUFlag)
 			}
-			return nil
+			return validateCapacityFlags(cmd)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			format, err := validatedOutputFormat(cmd)
@@ -71,6 +71,10 @@ func updateCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 				body.MaxRcu = &value
 			}
 
+			if cmd.Flags().Changed(baselineRCUFlag) {
+				baseline, _ := cmd.Flags().GetInt64(baselineRCUFlag)
+				body.SetBaselineRcu(strconv.FormatInt(baseline, 10))
+			}
 			client, err := h.NextGenClient()
 			if err != nil {
 				return err
@@ -85,6 +89,10 @@ func updateCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 
 			instance, err := client.UpdateTiDB(cmd.Context(), id, body)
 			if err != nil {
+				if cmd.Flags().Changed(flag.MaxRCU) {
+					maxRCU, _ := cmd.Flags().GetInt64(flag.MaxRCU)
+					return explainRCUError(err, maxRCU, plan)
+				}
 				return err
 			}
 			if err := plan.validate(instance); err != nil {
@@ -99,7 +107,9 @@ func updateCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 	}
 	command.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the instance.")
 	command.Flags().StringP(flag.DisplayName, flag.DisplayNameShort, "", "The new display name of the instance.")
-	command.Flags().Int64(flag.MaxRCU, 0, "The new maximum number of Request Capacity Units (RCUs).")
+	command.Flags().Int64(flag.MaxRCU, 0, "The new maximum RCU. Selects MAX_RCU mode, replacing an existing Elastic baseline; subject to server restrictions.")
+	command.Flags().Int64(baselineRCUFlag, 0, "The new guaranteed baseline RCU. Selects Elastic mode, replacing an existing max RCU; subject to server restrictions. Omit both capacity flags to preserve capacity.")
+	command.MarkFlagsMutuallyExclusive(flag.MaxRCU, baselineRCUFlag)
 	command.Flags().StringP(flag.Output, flag.OutputShort, output.HumanFormat, flag.OutputHelp)
 	_ = command.MarkFlagRequired(flag.ClusterID)
 	return command

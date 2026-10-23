@@ -30,6 +30,13 @@ func describeCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 		Short: fmt.Sprintf("Describe a %s instance", plan.displayName),
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			format, err := cmd.Flags().GetString(flag.Output)
+			if err != nil {
+				return err
+			}
+			if format != output.JsonFormat {
+				return fmt.Errorf("unsupported output format: %s (describe supports json only)", format)
+			}
 			id, err := cmd.Flags().GetString(flag.ClusterID)
 			if err != nil {
 				return err
@@ -48,6 +55,7 @@ func describeCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 			return output.PrintJson(h.IOStreams.Out, instance)
 		},
 	}
+	command.Flags().StringP(flag.Output, flag.OutputShort, output.JsonFormat, "Output format: json.")
 	command.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the instance.")
 	_ = command.MarkFlagRequired(flag.ClusterID)
 	return command

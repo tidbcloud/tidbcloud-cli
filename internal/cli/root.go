@@ -53,7 +53,7 @@ import (
 
 var ErrMissingCredentials = errors.New("this action requires authentication")
 
-func loadCredentials() (publicKey, privateKey, token string, err error) {
+func loadCredentials(quiet bool) (publicKey, privateKey, token string, err error) {
 	publicKey, privateKey = config.GetPublicKey(), config.GetPrivateKey()
 	if publicKey != "" && privateKey != "" {
 		return publicKey, privateKey, "", nil
@@ -61,8 +61,10 @@ func loadCredentials() (publicKey, privateKey, token string, err error) {
 
 	if err = config.ValidateToken(); err != nil {
 		logger.Debug("Failed to validate token", zap.Error(err))
-		color.Yellow("\nTo log in using your TiDB Cloud username and password, run: \n %[1]s auth login\nTo set credentials using API keys, run: \n %[1]s config set public-key <public-key>\n %[1]s config set private-key <private-key>",
-			config.CliName)
+		if !quiet {
+			color.Yellow("\nTo log in using your TiDB Cloud username and password, run: \n %[1]s auth login\nTo set credentials using API keys, run: \n %[1]s config set public-key <public-key>\n %[1]s config set private-key <private-key>",
+				config.CliName)
+		}
 		return "", "", "", ErrMissingCredentials
 	}
 	token, err = config.GetAccessToken()
@@ -76,6 +78,7 @@ func loadCredentials() (publicKey, privateKey, token string, err error) {
 }
 
 func Execute(ctx context.Context) {
+	var jsonErrors bool
 	h := &internal.Helper{
 		Client: func() (cloud.TiDBCloudClient, error) {
 			serverlessEndpoint := config.GetServerlessEndpoint()
@@ -87,7 +90,7 @@ func Execute(ctx context.Context) {
 				iamEndpoint = cloud.DefaultIAMEndpoint
 			}
 
-			publicKey, privateKey, token, err := loadCredentials()
+			publicKey, privateKey, token, err := loadCredentials(jsonErrors)
 			if err != nil {
 				return nil, err
 			}
@@ -102,7 +105,7 @@ func Execute(ctx context.Context) {
 				endpoint = cloud.DefaultNextGenEndpoint
 			}
 			caCertPath := config.GetCloudAPICACertPath()
-			publicKey, privateKey, token, err := loadCredentials()
+			publicKey, privateKey, token, err := loadCredentials(jsonErrors)
 			if err != nil {
 				return nil, err
 			}
@@ -121,16 +124,27 @@ func Execute(ctx context.Context) {
 	rootCmd := RootCmd(h)
 	normalizedArgs, err := nextgenCmd.NormalizeActionArgs(rootCmd, os.Args[1:])
 	if err != nil {
-		fmt.Fprint(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
+		command, _, _ := rootCmd.Find(os.Args[1:])
+		if text, ok := nextgenCmd.JSONError(command, os.Args[1:], err); ok {
+			fmt.Fprintln(h.IOStreams.Out, text)
+		} else {
+			fmt.Fprint(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
+		}
 		os.Exit(1)
 	}
 	rootCmd.SetArgs(normalizedArgs)
+	selectedCommand, _, _ := rootCmd.Find(normalizedArgs)
+	jsonErrors = nextgenCmd.UsesJSONOutput(selectedCommand, normalizedArgs)
 	initConfig()
 
 	ctx = telemetry.NewTelemetryContext(ctx)
-	if err := rootCmd.ExecuteContext(ctx); err != nil {
+	if command, err := rootCmd.ExecuteContextC(ctx); err != nil {
 		telemetry.FinishTrackingCommand(telemetry.TrackOptions{Err: err})
-		fmt.Fprint(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
+		if text, ok := nextgenCmd.JSONError(command, normalizedArgs, err); ok {
+			fmt.Fprintln(h.IOStreams.Out, text)
+		} else {
+			fmt.Fprint(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
+		}
 		if errors.Is(err, util.InterruptError) {
 			os.Exit(130)
 		}

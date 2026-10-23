@@ -664,7 +664,7 @@ paths:
   /tidbs/{tidb.tidbId}:
     patch:
       description: "Updates the configuration of a specific TiDB Cloud Premium instance.\
-        \ You can modify the following fields: `displayName` and `maxRcu`."
+        \ You can modify the following fields: `displayName`, `maxRcu`, and `baselineRcu`. The two capacity fields are mutually exclusive."
       operationId: TidbService_UpdateTidb
       parameters:
       - description: The ID of the TiDB Cloud Premium instance to update.
@@ -3822,6 +3822,10 @@ components:
         maxRcu:
           description: The maximum number of Request Capacity Units (RCUs) for the
             TiDB Cloud Premium instance.
+          format: int64
+          type: string
+        baselineRcu:
+          description: The guaranteed baseline RCU for Elastic mode; mutually exclusive with maxRcu.
           format: int64
           type: string
         reservedCapacityTemplateId:

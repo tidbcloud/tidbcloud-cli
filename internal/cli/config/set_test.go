@@ -186,7 +186,7 @@ func (suite *SetConfigSuite) TestSetCloudAPIProperties() {
 		value    string
 		get      func() string
 	}{
-		{"cloud-api-endpoint", "https://cloud.staging.tidbapi.com", config.GetCloudAPIEndpoint},
+		{"cloud-api-endpoint", "https://gateway.example.com", config.GetCloudAPIEndpoint},
 		{"cloud-api-ca-cert-path", "/tmp/management-ca.pem", config.GetCloudAPICACertPath},
 	} {
 		cmd := SetCmd(suite.h)
@@ -201,7 +201,7 @@ func (suite *SetConfigSuite) TestSetCloudAPIProperties() {
 	viper.SetConfigType("toml")
 	viper.SetConfigName(".tidbcloud-cli")
 	require.NoError(suite.T(), viper.ReadInConfig())
-	require.Equal(suite.T(), "https://cloud.staging.tidbapi.com", config.GetCloudAPIEndpoint())
+	require.Equal(suite.T(), "https://gateway.example.com", config.GetCloudAPIEndpoint())
 	require.Equal(suite.T(), "/tmp/management-ca.pem", config.GetCloudAPICACertPath())
 	config.SetActiveProfile("other")
 	require.Empty(suite.T(), config.GetCloudAPIEndpoint())

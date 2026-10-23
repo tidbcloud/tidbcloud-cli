@@ -51,7 +51,7 @@ func listCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 				return output.PrintJson(h.IOStreams.Out, &api.V1beta2ListTidbsResponse{Tidbs: instances, TotalSize: &totalSize})
 			}
 
-			columns := []output.Column{"ID", "DisplayName", "State", "Region", "MaxRCU", "CreateTime"}
+			columns := []output.Column{"ID", "DisplayName", "State", "Region", "MaxRCU", "CreateTime", "CapacityMode", "BaselineRCU"}
 			rows := make([]output.Row, 0, len(instances))
 			for i := range instances {
 				instance := &instances[i]
@@ -63,8 +63,16 @@ func listCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 				if value, ok := instance.GetMaxRcuOk(); ok && value != nil {
 					maxRCU = *value
 				}
+				baseline := "-"
+				if value, ok := instance.GetBaselineRcuOk(); ok && value != nil {
+					baseline = *value
+				}
+				mode := string(instance.GetCapacityMode())
+				if mode == "" {
+					mode = "-"
+				}
 				rows = append(rows, output.Row{
-					instance.GetTidbId(), instance.DisplayName, string(instance.GetState()), instance.RegionId, maxRCU, createTime,
+					instance.GetTidbId(), instance.DisplayName, string(instance.GetState()), instance.RegionId, maxRCU, createTime, mode, baseline,
 				})
 			}
 			return output.PrintHumanTable(h.IOStreams.Out, columns, rows)

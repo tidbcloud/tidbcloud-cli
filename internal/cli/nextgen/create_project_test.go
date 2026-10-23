@@ -96,6 +96,9 @@ func TestCreateProjectName(t *testing.T) {
 				err := command.ExecuteContext(context.Background())
 				if tc.wantError != "" {
 					require.ErrorContains(t, err, tc.wantError)
+					if !tc.listError && !tc.secondPageError {
+						require.ErrorContains(t, err, "ticloud project list")
+					}
 					require.False(t, created)
 				} else {
 					require.NoError(t, err)
@@ -122,15 +125,15 @@ func TestCreateProjectNameRejectsInvalidFlagsBeforeClient(t *testing.T) {
 	}
 }
 
-// Exercise persisted profile endpoints with real SDK clients. The transport
-// intercepts every request, so this test never contacts either environment.
+// Exercise default profile routing with real SDK clients. The transport
+// intercepts every request, so this test never contacts the network.
 type projectRoutingTransport func(*http.Request) (*http.Response, error)
 
 func (f projectRoutingTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	return f(r)
 }
 
-func TestCreateProjectNameUsesStagingProfileEndpoints(t *testing.T) {
+func TestCreateProjectNameUsesProductionDefaults(t *testing.T) {
 	for _, plan := range []planSpec{premiumPlan, essentialV2Plan} {
 		t.Run(plan.commandName, func(t *testing.T) {
 			previousProfile := config.ActiveProfileName()
@@ -145,12 +148,17 @@ func TestCreateProjectNameUsesStagingProfileEndpoints(t *testing.T) {
 			viper.SetConfigFile(configPath)
 			require.NoError(t, viper.WriteConfig())
 			setup := configCmd.CreateCmd(&internal.Helper{IOStreams: iostream.Test()})
-			setup.SetArgs([]string{"--profile-name", "staging-test", "--environment", "staging"})
+			setup.SetArgs([]string{"--profile-name", "default-test"})
 			require.NoError(t, setup.Execute())
 			viper.Reset()
 			viper.SetConfigFile(configPath)
 			require.NoError(t, viper.ReadInConfig())
-			config.SetActiveProfile("staging-test")
+			config.SetActiveProfile("default-test")
+			require.Empty(t, config.GetIAMEndpoint())
+			require.Empty(t, config.GetCloudAPIEndpoint())
+			require.Equal(t, config.OAuthEndpoint, config.GetOAuthEndpoint())
+			require.Equal(t, config.ClientID, config.GetOAuthClientID())
+			require.Nil(t, setup.Flags().Lookup("environment"))
 
 			var requests []string
 			http.DefaultTransport = projectRoutingTransport(func(r *http.Request) (*http.Response, error) {
@@ -158,11 +166,11 @@ func TestCreateProjectNameUsesStagingProfileEndpoints(t *testing.T) {
 				require.Equal(t, "Bearer test-token", r.Header.Get("Authorization"))
 				var body string
 				switch r.URL.Host {
-				case "iam.staging.tidbapi.com":
+				case "iam.tidbapi.com":
 					require.Equal(t, http.MethodGet, r.Method)
 					require.Equal(t, "/v1beta1/projects", r.URL.Path)
 					body = `{"projects":[{"id":"456","name":"my-project"}]}`
-				case "cloud.staging.tidbapi.com":
+				case "cloud.tidbapi.com":
 					require.Equal(t, http.MethodPost, r.Method)
 					require.Equal(t, "/v1beta2/tidbs", r.URL.Path)
 					payload, err := io.ReadAll(r.Body)
@@ -180,16 +188,69 @@ func TestCreateProjectNameUsesStagingProfileEndpoints(t *testing.T) {
 			h := &internal.Helper{
 				IOStreams: iostream.Test(), QueryPageSize: 10,
 				Client: func() (cloud.TiDBCloudClient, error) {
-					return cloud.NewClientDelegateWithToken("test-token", cloud.DefaultServerlessEndpoint, config.GetIAMEndpoint())
+					endpoint := config.GetIAMEndpoint()
+					if endpoint == "" {
+						endpoint = cloud.DefaultIAMEndpoint
+					}
+					return cloud.NewClientDelegateWithToken("test-token", cloud.DefaultServerlessEndpoint, endpoint)
 				},
 				NextGenClient: func() (cloud.NextGenClient, error) {
-					return cloud.NewNextGenClientDelegateWithToken("test-token", config.GetCloudAPIEndpoint(), "")
+					endpoint := config.GetCloudAPIEndpoint()
+					if endpoint == "" {
+						endpoint = cloud.DefaultNextGenEndpoint
+					}
+					return cloud.NewNextGenClientDelegateWithToken("test-token", endpoint, "")
 				},
 			}
 			command := createCmd(h, plan)
 			command.SetArgs([]string{"--project-name", "my-project", "--display-name", "test-instance", "--region", "aws-us-west-2", "--max-rcu", "10000", "--output", "json"})
 			require.NoError(t, command.ExecuteContext(context.Background()))
-			require.Equal(t, []string{"GET iam.staging.tidbapi.com/v1beta1/projects", "POST cloud.staging.tidbapi.com/v1beta2/tidbs"}, requests)
+			require.Equal(t, []string{"GET iam.tidbapi.com/v1beta1/projects", "POST cloud.tidbapi.com/v1beta2/tidbs"}, requests)
 		})
+	}
+}
+
+func TestCreateProjectNameRejectsRepeatedPageTokens(t *testing.T) {
+	for _, plan := range []planSpec{premiumPlan, essentialV2Plan} {
+		for _, tokens := range [][]string{
+			{"page-2", "page-2"},
+			{"page-2", "page-3", "page-2"},
+		} {
+			for _, firstName := range []string{"other", "my-project"} {
+				t.Run(plan.commandName+"/"+strings.Join(tokens, "/")+"/"+firstName, func(t *testing.T) {
+					h := helperWithNextGenClient(nil)
+					h.NextGenClient = func() (cloud.NextGenClient, error) {
+						t.Fatal("incomplete project lookup must not reach the instance client")
+						return nil, nil
+					}
+					calls := 0
+					h.Client = func() (cloud.TiDBCloudClient, error) {
+						return projectLookupClient{list: func(_ context.Context, size *int32, token *string) (*iam.ApiListProjectsRsp, error) {
+							require.Less(t, calls, len(tokens), "must stop when a page token repeats")
+							require.Equal(t, int32(h.QueryPageSize), *size)
+							if calls == 0 {
+								require.Nil(t, token)
+							} else {
+								require.Equal(t, tokens[calls-1], *token)
+							}
+							next := tokens[calls]
+							calls++
+							page := &iam.ApiListProjectsRsp{NextPageToken: &next}
+							if calls == 1 {
+								id := "123"
+								page.Projects = []iam.ApiProject{{Id: &id, Name: &firstName}}
+							}
+							return page, nil
+						}}, nil
+					}
+					command := createCmd(h, plan)
+					command.SetArgs([]string{"--project-name", "my-project", "--display-name", "test-instance", "--region", "aws-us-west-2", "--max-rcu", "10000"})
+					err := command.ExecuteContext(context.Background())
+					require.ErrorContains(t, err, "resolve project name")
+					require.ErrorContains(t, err, "project list returned a repeated next page token")
+					require.Equal(t, len(tokens), calls)
+				})
+			}
+		}
 	}
 }

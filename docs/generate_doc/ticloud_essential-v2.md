@@ -10,9 +10,10 @@ Action-specific flags:
 
 --create
 
+          --baseline-rcu int      The guaranteed baseline RCU for Elastic mode. Specify exactly one of --baseline-rcu or --max-rcu; supported values depend on the service plan. No CLI default.
       -n, --display-name string   The display name of the instance.
           --encryption string     Dual-layer data encryption, one of ["none" "default-key"]. default-key uses the TiDB Cloud default key; no key value is required. (default "none")
-          --max-rcu int           The maximum number of Request Capacity Units (RCUs). Must be at least the service-calculated minimum; the default calculation is max(5000, max-rcu / 4), subject to organization and plan configuration.
+          --max-rcu int           The maximum number of Request Capacity Units (RCUs). Default minimum: 2000 RCU; organization-specific limits may differ. No CLI default.
       -o, --output string         Output format, one of ["human" "json"]. For the complete result, please use json format. (default "human")
       -p, --project-id string     The positive decimal project ID (not the project name) in which the instance will be created. If neither --project-id nor --project-name is set, the default TiDB X project is used.
           --project-name string   The exact, case-sensitive name of an accessible project. Must be unique; mutually exclusive with --project-id. Uses the same IAM endpoint as project list.
@@ -25,12 +26,14 @@ Action-specific flags:
 --describe
 
       -c, --cluster-id string   The ID of the instance.
+      -o, --output string       Output format: json. (default "json")
 
 --update
 
+          --baseline-rcu int      The new guaranteed baseline RCU. Selects Elastic mode, replacing an existing max RCU; subject to server restrictions. Omit both capacity flags to preserve capacity.
       -c, --cluster-id string     The ID of the instance.
       -n, --display-name string   The new display name of the instance.
-          --max-rcu int           The new maximum number of Request Capacity Units (RCUs).
+          --max-rcu int           The new maximum RCU. Selects MAX_RCU mode, replacing an existing Elastic baseline; subject to server restrictions.
       -o, --output string         Output format, one of ["human" "json"]. For the complete result, please use json format. (default "human")
 
 --delete
@@ -43,9 +46,11 @@ Action-specific flags:
 ```
   $ ticloud essential-v2 --create --display-name <name> --region <region-id> --max-rcu <max-rcu>
   $ ticloud essential-v2 --create --project-id <project-id> --display-name <name> --region <region-id> --max-rcu <max-rcu>
+  $ ticloud essential-v2 --create --display-name <name> --region <region-id> --baseline-rcu <baseline-rcu>
   $ ticloud essential-v2 --list
   $ ticloud essential-v2 --describe -c <instance-id>
   $ ticloud essential-v2 --update -c <instance-id> --max-rcu <max-rcu>
+  $ ticloud essential-v2 --update -c <instance-id> --baseline-rcu <baseline-rcu>
   $ ticloud essential-v2 --delete -c <instance-id>
   $ ticloud essential-v2 public-endpoint enable -c <instance-id>
   $ ticloud essential-v2 public-endpoint disable -c <instance-id>

@@ -25,6 +25,8 @@ type TheTiDBCloudPremiumInstanceToUpdate struct {
 	MinRcu *string `json:"minRcu,omitempty"`
 	// The maximum number of Request Capacity Units (RCUs) for the TiDB Cloud Premium instance.
 	MaxRcu *string `json:"maxRcu,omitempty"`
+	// The guaranteed baseline RCU for Elastic mode; mutually exclusive with maxRcu.
+	BaselineRcu *string `json:"baselineRcu,omitempty"`
 	// The target capacity template ID for Premium Reserved resize.
 	ReservedCapacityTemplateId *string `json:"reservedCapacityTemplateId,omitempty"`
 	AdditionalProperties       map[string]interface{}
@@ -145,6 +147,38 @@ func (o *TheTiDBCloudPremiumInstanceToUpdate) SetMaxRcu(v string) {
 	o.MaxRcu = &v
 }
 
+// GetBaselineRcu returns the BaselineRcu field value if set, zero value otherwise.
+func (o *TheTiDBCloudPremiumInstanceToUpdate) GetBaselineRcu() string {
+	if o == nil || IsNil(o.BaselineRcu) {
+		var ret string
+		return ret
+	}
+	return *o.BaselineRcu
+}
+
+// GetBaselineRcuOk returns a tuple with the BaselineRcu field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *TheTiDBCloudPremiumInstanceToUpdate) GetBaselineRcuOk() (*string, bool) {
+	if o == nil || IsNil(o.BaselineRcu) {
+		return nil, false
+	}
+	return o.BaselineRcu, true
+}
+
+// HasBaselineRcu returns a boolean if a field has been set.
+func (o *TheTiDBCloudPremiumInstanceToUpdate) HasBaselineRcu() bool {
+	if o != nil && !IsNil(o.BaselineRcu) {
+		return true
+	}
+
+	return false
+}
+
+// SetBaselineRcu gets a reference to the given string and assigns it to the BaselineRcu field.
+func (o *TheTiDBCloudPremiumInstanceToUpdate) SetBaselineRcu(v string) {
+	o.BaselineRcu = &v
+}
+
 // GetReservedCapacityTemplateId returns the ReservedCapacityTemplateId field value if set, zero value otherwise.
 func (o *TheTiDBCloudPremiumInstanceToUpdate) GetReservedCapacityTemplateId() string {
 	if o == nil || IsNil(o.ReservedCapacityTemplateId) {
@@ -193,6 +227,9 @@ func (o TheTiDBCloudPremiumInstanceToUpdate) ToMap() (map[string]interface{}, er
 	if !IsNil(o.MinRcu) {
 		toSerialize["minRcu"] = o.MinRcu
 	}
+	if !IsNil(o.BaselineRcu) {
+		toSerialize["baselineRcu"] = o.BaselineRcu
+	}
 	if !IsNil(o.MaxRcu) {
 		toSerialize["maxRcu"] = o.MaxRcu
 	}
@@ -224,6 +261,7 @@ func (o *TheTiDBCloudPremiumInstanceToUpdate) UnmarshalJSON(data []byte) (err er
 		delete(additionalProperties, "displayName")
 		delete(additionalProperties, "minRcu")
 		delete(additionalProperties, "maxRcu")
+		delete(additionalProperties, "baselineRcu")
 		delete(additionalProperties, "reservedCapacityTemplateId")
 		o.AdditionalProperties = additionalProperties
 	}

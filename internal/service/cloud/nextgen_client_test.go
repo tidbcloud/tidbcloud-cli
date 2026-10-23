@@ -19,6 +19,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"encoding/pem"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -26,7 +27,9 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync/atomic"
 	"testing"
+	"time"
 
 	api "github.com/tidbcloud/tidbcloud-cli/pkg/tidbcloud/v1beta2/nextgen"
 
@@ -426,5 +429,129 @@ func TestNextGenPrivateEndpointReadContract(t *testing.T) {
 				})
 			}
 		}
+	}
+}
+
+func TestNextGenClientRejectsRedirects(t *testing.T) {
+	for _, status := range []int{301, 302, 303, 307, 308} {
+		for _, target := range []string{
+			"https://other.example/collect",
+			"http://api.example/collect",
+			"https://api.example/collect",
+		} {
+			t.Run(fmt.Sprintf("%d/%s", status, target), func(t *testing.T) {
+				calls := 0
+				transport := roundTripFunc(func(r *http.Request) (*http.Response, error) {
+					calls++
+					if calls > 1 {
+						t.Fatal("redirect must not forward credentials or the password body")
+					}
+					require.Equal(t, "Bearer synthetic-token", r.Header.Get("Authorization"))
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					require.Contains(t, string(body), "synthetic-password")
+					return &http.Response{
+						StatusCode: status,
+						Header:     http.Header{"Location": []string{target}},
+						Body:       io.NopCloser(strings.NewReader("")),
+						Request:    r,
+					}, nil
+				})
+				client, err := newNextGenClientDelegate(NewTransportWithBearToken(transport, "synthetic-token"), "https://api.example")
+				require.NoError(t, err)
+				err = client.ResetRootPassword(context.Background(), "123", api.NewTidbServiceResetRootPasswordBody("synthetic-password"))
+				require.ErrorContains(t, err, "Cloud API redirects are not allowed")
+				require.NotContains(t, err.Error(), "synthetic-token")
+				require.NotContains(t, err.Error(), "synthetic-password")
+				require.Equal(t, 1, calls)
+			})
+		}
+	}
+}
+
+func TestNextGenClientRequestTimeout(t *testing.T) {
+	operations := []struct {
+		name  string
+		check string
+		call  func(context.Context, *NextGenClientDelegate) error
+	}{
+		{"read", "", func(ctx context.Context, c *NextGenClientDelegate) error {
+			_, err := c.GetTiDB(ctx, "123")
+			return err
+		}},
+		{"create", "list instances", func(ctx context.Context, c *NextGenClientDelegate) error {
+			_, err := c.CreateTiDB(ctx, api.NewNextgenv1beta2Tidb("test-instance", "aws-us-west-2", api.V1BETA1SERVICEPLAN_PREMIUM))
+			return err
+		}},
+		{"update", "describe the instance", func(ctx context.Context, c *NextGenClientDelegate) error {
+			_, err := c.UpdateTiDB(ctx, "123", api.NewTheTiDBCloudPremiumInstanceToUpdate())
+			return err
+		}},
+		{"delete", "deletion was accepted", func(ctx context.Context, c *NextGenClientDelegate) error {
+			_, err := c.DeleteTiDB(ctx, "123")
+			return err
+		}},
+		{"password", "verify whether the new password works", func(ctx context.Context, c *NextGenClientDelegate) error {
+			return c.ResetRootPassword(ctx, "123", api.NewTidbServiceResetRootPasswordBody("synthetic-password"))
+		}},
+		{"public endpoint", "public endpoint state", func(ctx context.Context, c *NextGenClientDelegate) error {
+			_, err := c.UpdatePublicConnectionSetting(ctx, "123", api.NewV1beta2PublicConnectionSetting())
+			return err
+		}},
+	}
+	for _, bodyStalls := range []bool{false, true} {
+		for _, op := range operations {
+			t.Run(fmt.Sprintf("%s/body-stalls=%t", op.name, bodyStalls), func(t *testing.T) {
+				var calls atomic.Int32
+				server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					calls.Add(1)
+					_, _ = io.Copy(io.Discard, r.Body)
+					if bodyStalls {
+						w.Header().Set("Content-Type", "application/json")
+						w.WriteHeader(http.StatusOK)
+						w.(http.Flusher).Flush()
+					}
+					<-r.Context().Done()
+				}))
+				defer server.Close()
+				client, err := newNextGenClientDelegate(server.Client().Transport, server.URL)
+				require.NoError(t, err)
+				require.Equal(t, 30*time.Second, client.client.GetConfig().HTTPClient.Timeout)
+				// Exercise the real HTTP timeout without waiting 30 seconds.
+				client.client.GetConfig().HTTPClient.Timeout = 100 * time.Millisecond
+				err = op.call(context.Background(), client)
+				require.ErrorContains(t, err, "context deadline exceeded")
+				if op.check != "" {
+					require.ErrorIs(t, err, context.DeadlineExceeded)
+				}
+				require.Equal(t, int32(1), calls.Load(), "must not retry")
+				if op.check != "" {
+					require.ErrorContains(t, err, "the change may already have been applied")
+					require.ErrorContains(t, err, op.check)
+				} else {
+					require.NotContains(t, err.Error(), "the change may already have been applied")
+				}
+				require.NotContains(t, err.Error(), "synthetic-password")
+			})
+		}
+	}
+}
+
+func TestNextGenClientHonorsEarlierDeadline(t *testing.T) {
+	client, err := newNextGenClientDelegate(roundTripFunc(func(r *http.Request) (*http.Response, error) {
+		<-r.Context().Done()
+		return nil, r.Context().Err()
+	}), "https://api.example")
+	require.NoError(t, err)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	defer cancel()
+	_, err = client.DeleteTiDB(ctx, "123")
+	require.ErrorIs(t, err, context.DeadlineExceeded)
+	require.ErrorContains(t, err, "Before retrying")
+}
+
+func TestNextGenMutationNonTimeoutErrorsUnchanged(t *testing.T) {
+	for _, err := range []error{nil, context.Canceled, errors.New("connection refused")} {
+		require.Equal(t, err, parseNextGenMutationError(err, nil, "check instance state"))
 	}
 }

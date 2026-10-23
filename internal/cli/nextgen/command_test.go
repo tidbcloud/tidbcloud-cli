@@ -156,7 +156,7 @@ func TestCreateBindsPlanEncryptionAndProject(t *testing.T) {
 
 func TestCreateRejectsInvalidProjectIDBeforeClient(t *testing.T) {
 	for _, plan := range []planSpec{premiumPlan, essentialV2Plan} {
-		for _, projectID := range []string{"pavitra-onboarding-123", "0", "-1", "+1", "1.5", " 123", "18446744073709551616"} {
+		for _, projectID := range []string{"", "pavitra-onboarding-123", "0", "-1", "+1", "1.5", " 123", "18446744073709551616"} {
 			t.Run(plan.commandName+"/"+projectID, func(t *testing.T) {
 				h := &internal.Helper{NextGenClient: func() (cloud.NextGenClient, error) {
 					t.Fatal("invalid project ID must be rejected before creating a client")
@@ -275,7 +275,7 @@ func TestPlanGuardRejectsCrossPlanOperation(t *testing.T) {
 			{"delete", "-c", "tidb-1", "--force"},
 			{"shell", "-c", "tidb-1", "--password", "test-password"},
 			{"shell", "-c", "tidb-1", "--connection-type", "private-endpoint"},
-			{"password", "-c", "tidb-1", "--password", "test-password"},
+			{"password", "-c", "tidb-1"},
 			{"public-endpoint", "enable", "-c", "tidb-1"},
 			{"public-endpoint", "disable", "-c", "tidb-1", "--force"},
 		} {
@@ -321,6 +321,9 @@ func TestDeleteRequiresConfirmationOrForce(t *testing.T) {
 					require.Equal(t, 1, deletes)
 				} else {
 					require.ErrorContains(t, err, "terminal doesn't support prompts")
+					require.ErrorContains(t, err, "test-instance")
+					require.ErrorContains(t, err, "ID: tidb-1")
+					require.ErrorContains(t, err, "region: aws-us-west-2")
 					require.Zero(t, deletes)
 				}
 			})

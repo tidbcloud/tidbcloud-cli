@@ -32,33 +32,6 @@ type ProfileSuite struct {
 	suite.Suite
 }
 
-func TestOAuthClientIDByEndpoint(t *testing.T) {
-	for _, tt := range []struct {
-		name, endpoint, override, want string
-	}{
-		{"default production", "", "", ClientID},
-		{"explicit production", OAuthEndpoint, "", ClientID},
-		{"staging", StagingOAuthEndpoint, "", StagingClientID},
-		{"staging URL normalization", "https://OAUTH.STAGING.TIDBCLOUD.COM:443/", "", StagingClientID},
-		{"explicit override", StagingOAuthEndpoint, "custom-client", "custom-client"},
-		{"custom endpoint retains default", "https://auth.example.com", "", ClientID},
-		{"custom endpoint override", "https://auth.example.com", "custom-client", "custom-client"},
-		{"no suffix matching", "https://oauth.staging.tidbcloud.com.example.com", "", ClientID},
-		{"invalid URL", "://invalid", "", ClientID},
-	} {
-		t.Run(tt.name, func(t *testing.T) {
-			viper.Reset()
-			t.Cleanup(viper.Reset)
-			p := &Profile{name: "test"}
-			viper.Set("test.oauth-endpoint", tt.endpoint)
-			viper.Set("test.oauth-client-id", tt.override)
-			// Selection must use the OAuth endpoint, not the resource API endpoint.
-			viper.Set("test.cloud-api-endpoint", "https://cloud.tidbapi.com")
-			require.Equal(t, tt.want, p.GetOAuthClientID())
-		})
-	}
-}
-
 func (suite *ProfileSuite) SetupTest() {
 	if err := os.Setenv("NO_COLOR", "true"); err != nil {
 		suite.T().Error(err)
