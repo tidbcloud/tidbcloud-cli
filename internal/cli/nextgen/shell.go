@@ -215,7 +215,7 @@ func shellCmdWithSelector(h *internal.Helper, plan planSpec, selectInstance inst
 	}
 	command.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the instance.")
 	command.Flags().StringP(flag.User, flag.UserShort, "", "The SQL user name. The default is root.")
-	command.Flags().String(flag.Password, "", "The password of the SQL user.")
+	command.Flags().String(flag.Password, "", "The password of the SQL user. Command-line values can be exposed in process arguments and shell history; omit this flag to enter the password through a hidden prompt.")
 	command.Flags().StringVar(&connection, "connection-type", "public", "The connection type: public or private-endpoint. Does not configure networking.")
 	command.Flags().StringVar(&address, "endpoint", "", "Connect directly to host:port without private endpoint discovery or existence checks. Requires --connection-type private-endpoint; TLS certificate verification remains enabled.")
 	return command

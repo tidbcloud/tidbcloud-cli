@@ -224,3 +224,53 @@ func TestRCUHelpUsesPlanMinimum(t *testing.T) {
 		})
 	}
 }
+
+func TestPrivateEndpointDefaultJSONErrors(t *testing.T) {
+	for _, plan := range []planSpec{premiumPlan, essentialV2Plan} {
+		for _, action := range []string{"service", "list", "bind", "describe", "unbind"} {
+			for _, format := range []string{"", "json", "human"} {
+				t.Run(plan.commandName+"/"+action+"/"+format, func(t *testing.T) {
+					root := cmd(helperWithNextGenClient(nil), plan)
+					args := []string{"private-endpoint", action, "-c", "invalid-id"}
+					if format != "" {
+						args = append(args, "-o", format)
+					}
+					selected, _, err := root.Find(args)
+					require.NoError(t, err)
+					require.Equal(t, format != "human", UsesJSONOutput(selected, args))
+					require.Equal(t, "json", selected.Flags().Lookup("output").Value.String(), "must not mutate flags before execution")
+					root.SilenceErrors, root.SilenceUsage = true, true
+					root.SetArgs(args)
+					executed, err := root.ExecuteC()
+					require.Error(t, err)
+					text, ok := JSONError(executed, args, err)
+					require.Equal(t, format != "human", ok)
+					if ok {
+						require.True(t, json.Valid([]byte(text)))
+					}
+				})
+			}
+		}
+	}
+}
+
+func TestExistingCommandsKeepDefaultErrorFormat(t *testing.T) {
+	root := &cobra.Command{Use: "ticloud"}
+	root.AddCommand(PremiumCmd(helperWithNextGenClient(nil)), EssentialCmd(helperWithNextGenClient(nil)))
+	legacy := &cobra.Command{Use: "serverless"}
+	legacy.Flags().StringP("output", "o", "json", "")
+	root.AddCommand(legacy)
+	for _, args := range [][]string{{"premium", "describe"}, {"premium", "shell"}, {"premium", "password"}, {"premium", "public-endpoint", "enable"}, {"essential-v2", "describe"}, {"serverless"}} {
+		selected, _, err := root.Find(args)
+		require.NoError(t, err)
+		require.False(t, UsesJSONOutput(selected, args), "%v", args)
+	}
+}
+
+func TestShellHelpWarnsAboutPasswordArguments(t *testing.T) {
+	for _, plan := range []planSpec{premiumPlan, essentialV2Plan} {
+		command := shellCmd(helperWithNextGenClient(nil), plan)
+		require.Contains(t, command.Flags().Lookup("password").Usage, "shell history")
+		require.Contains(t, command.Flags().Lookup("password").Usage, "hidden prompt")
+	}
+}

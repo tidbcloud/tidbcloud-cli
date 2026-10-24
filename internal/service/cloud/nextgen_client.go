@@ -38,6 +38,10 @@ var errNextGenRedirect = errors.New("Cloud API redirects are not allowed; check 
 const DefaultNextGenEndpoint = "https://cloud.tidbapi.com"
 
 type NextGenClient interface {
+	CreatePrivateEndpointConnection(context.Context, string, *nextgen.Nextgenv1beta2PrivateEndpointConnection) (*nextgen.Nextgenv1beta2PrivateEndpointConnection, error)
+	GetPrivateEndpointConnection(context.Context, string, string) (*nextgen.Nextgenv1beta2PrivateEndpointConnection, error)
+	DeletePrivateEndpointConnection(context.Context, string, string) (*nextgen.Nextgenv1beta2PrivateEndpointConnection, error)
+
 	CreateTiDB(ctx context.Context, body *nextgen.Nextgenv1beta2Tidb) (*nextgen.Nextgenv1beta2Tidb, error)
 	ListTiDBs(ctx context.Context, servicePlan nextgen.TidbServiceListTidbsServicePlanParameter, pageSize *int32, pageToken *string) (*nextgen.V1beta2ListTidbsResponse, error)
 	GetTiDB(ctx context.Context, tidbID string) (*nextgen.Nextgenv1beta2Tidb, error)
@@ -251,4 +255,17 @@ func parseNextGenMutationError(err error, response *http.Response, check string)
 		response.Body.Close()
 	}
 	return fmt.Errorf("Cloud API request timed out; the change may already have been applied. Before retrying, %s: %w", check, err)
+}
+
+func (d *NextGenClientDelegate) CreatePrivateEndpointConnection(ctx context.Context, id string, body *nextgen.Nextgenv1beta2PrivateEndpointConnection) (*nextgen.Nextgenv1beta2PrivateEndpointConnection, error) {
+	result, response, err := d.client.PrivateEndpointConnectionServiceAPI.CreateConnection(ctx, id, body)
+	return result, parseNextGenMutationError(err, response, "list private endpoint connections to check whether binding succeeded")
+}
+func (d *NextGenClientDelegate) GetPrivateEndpointConnection(ctx context.Context, id, connectionID string) (*nextgen.Nextgenv1beta2PrivateEndpointConnection, error) {
+	result, response, err := d.client.PrivateEndpointConnectionServiceAPI.GetConnection(ctx, id, connectionID)
+	return result, parseNextGenError(err, response)
+}
+func (d *NextGenClientDelegate) DeletePrivateEndpointConnection(ctx context.Context, id, connectionID string) (*nextgen.Nextgenv1beta2PrivateEndpointConnection, error) {
+	result, response, err := d.client.PrivateEndpointConnectionServiceAPI.DeleteConnection(ctx, id, connectionID)
+	return result, parseNextGenMutationError(err, response, "list private endpoint connections to check whether unbinding was accepted")
 }

@@ -34,6 +34,8 @@ func publicEndpointCmd(h *internal.Helper, plan planSpec) *cobra.Command {
 	command := &cobra.Command{
 		Use:   "public-endpoint",
 		Short: fmt.Sprintf("Manage the public endpoint of a %s instance", plan.displayName),
+		Args:  cobra.NoArgs,
+		RunE:  func(cmd *cobra.Command, args []string) error { return cmd.Help() },
 	}
 	command.AddCommand(publicEndpointActionCmd(h, plan, true, selectInstance, confirmDisablePublicEndpoint))
 	command.AddCommand(publicEndpointActionCmd(h, plan, false, selectInstance, confirmDisablePublicEndpoint))

@@ -90,6 +90,13 @@ func UsesJSONOutput(command *cobra.Command, args []string) bool {
 		}
 	}
 	format := ""
+	// Only the new private endpoint commands opt into default JSON errors.
+	// Keep the explicit-output behavior of existing commands unchanged.
+	if parent := command.Parent(); parent != nil && parent.Name() == "private-endpoint" {
+		if outputFlag := command.Flags().Lookup(flag.Output); outputFlag != nil {
+			format = outputFlag.DefValue
+		}
+	}
 	if parseErr := flags.ParseAll(args, func(f *pflag.Flag, value string) error {
 		if f.Name == flag.Output {
 			format = value

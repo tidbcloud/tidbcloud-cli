@@ -38,6 +38,7 @@ generate-v1beta2-nextgen-client: install-openapi-generator ## Generate NextGen v
 	@echo "==> Generating NextGen v1beta2 client"
 	rm -rf pkg/tidbcloud/v1beta2/nextgen
 	cd tools/openapi-generator && npx openapi-generator-cli generate --inline-schema-options RESOLVE_INLINE_ENUMS=true --inline-schema-name-mappings CustomerManagedEncryptionKeyService_GetCmekAccessIamPrincipal_servicePlan_parameter=TidbService_ListTidbs_servicePlan_parameter --additional-properties=withGoMod=false,enumClassPrefix=true,disallowAdditionalPropertiesIfNotPresent=false --global-property=apiTests=false,apiDocs=false,modelDocs=false,modelTests=false -i ../../pkg/tidbcloud/v1beta2/nextgen.swagger.json -g go -o ../../pkg/tidbcloud/v1beta2/nextgen --package-name nextgen -c go/config.yaml --openapi-generator-ignore-list .travis.yml,git_push.sh
+	cp tools/openapi-generator/go/extensions/nextgen/private_endpoint_connection.go.tmpl pkg/tidbcloud/v1beta2/nextgen/private_endpoint_connection.go
 	cd pkg && go fmt ./tidbcloud/v1beta2/nextgen/... && goimports -w ./tidbcloud/v1beta2/nextgen
 
 .PHONY: generate-v1beta1-serverless-client

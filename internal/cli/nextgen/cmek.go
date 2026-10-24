@@ -29,7 +29,11 @@ import (
 )
 
 func cmekCmd(h *internal.Helper) *cobra.Command {
-	root := &cobra.Command{Use: "cmek", Short: "Configure customer-managed encryption for Premium instances"}
+	root := &cobra.Command{
+		Use: "cmek", Short: "Configure customer-managed encryption for Premium instances",
+		Args: cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error { return cmd.Help() },
+	}
 	principal := &cobra.Command{
 		Use:   "principal",
 		Short: "Get the IAM principal for your KMS key policy",

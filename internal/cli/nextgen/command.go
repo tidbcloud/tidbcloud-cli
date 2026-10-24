@@ -69,6 +69,8 @@ func cmd(h *internal.Helper, plan planSpec) *cobra.Command {
 		Use:     plan.commandName,
 		Aliases: plan.aliases,
 		Short:   fmt.Sprintf("Manage %s instances", plan.displayName),
+		Args:    cobra.NoArgs,
+		RunE:    func(cmd *cobra.Command, args []string) error { return cmd.Help() },
 		Example: fmt.Sprintf(`  $ %[1]s %[2]s --create --display-name <name> --region <region-id> --max-rcu <max-rcu>
   $ %[1]s %[2]s --create --project-id <project-id> --display-name <name> --region <region-id> --max-rcu <max-rcu>
   $ %[1]s %[2]s --create --display-name <name> --region <region-id> --baseline-rcu <baseline-rcu>
@@ -96,6 +98,7 @@ func cmd(h *internal.Helper, plan planSpec) *cobra.Command {
 	root.AddCommand(shellCmd(h, plan))
 	root.AddCommand(passwordCmd(h, plan))
 	root.AddCommand(publicEndpointCmd(h, plan))
+	root.AddCommand(privateEndpointCmd(h, plan))
 	root.AddCommand(regionCmd(h, plan))
 	if plan.servicePlan == api.V1BETA1SERVICEPLAN_PREMIUM {
 		root.AddCommand(cmekCmd(h))

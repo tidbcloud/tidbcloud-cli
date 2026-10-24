@@ -203,3 +203,31 @@ func TestMalformedSuccessResponsesHaveSafeFailureMessage(t *testing.T) {
 		})
 	}
 }
+
+func TestPrivateEndpointErrorsSafeForTerminalAndJSON(t *testing.T) {
+	oldTransport := http.DefaultTransport
+	t.Cleanup(func() { http.DefaultTransport = oldTransport })
+	http.DefaultTransport = redactionTransport(func(r *http.Request) (*http.Response, error) {
+		return &http.Response{StatusCode: 400, Status: "400 Bad Request", Header: http.Header{"Content-Type": {"application/json"}}, Body: io.NopCloser(strings.NewReader(`{"message":"invalid endpoint","password":"private-endpoint-secret","token":"private-endpoint-token"}`)), Request: r}, nil
+	})
+	client, err := cloud.NewNextGenClientDelegateWithToken("test-token", "https://api.example.test", "")
+	require.NoError(t, err)
+	for _, action := range []string{"get", "delete", "create"} {
+		var e error
+		switch action {
+		case "get":
+			_, e = client.GetPrivateEndpointConnection(context.Background(), "123", "c1")
+		case "delete":
+			_, e = client.DeletePrivateEndpointConnection(context.Background(), "123", "c1")
+		case "create":
+			_, e = client.CreatePrivateEndpointConnection(context.Background(), "123", nil)
+		}
+		require.Error(t, e)
+		encoded, ok := marshalJSONError(e)
+		require.True(t, ok)
+		require.True(t, json.Valid([]byte(encoded)))
+		require.NotContains(t, e.Error(), "private-endpoint-secret")
+		require.NotContains(t, encoded, "private-endpoint-secret")
+		require.NotContains(t, encoded, "private-endpoint-token")
+	}
+}

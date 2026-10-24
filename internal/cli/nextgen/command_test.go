@@ -35,6 +35,10 @@ import (
 )
 
 type fakeNextGenClient struct {
+	bindPrivate   func(context.Context, string, *api.Nextgenv1beta2PrivateEndpointConnection) (*api.Nextgenv1beta2PrivateEndpointConnection, error)
+	getPrivate    func(context.Context, string, string) (*api.Nextgenv1beta2PrivateEndpointConnection, error)
+	unbindPrivate func(context.Context, string, string) (*api.Nextgenv1beta2PrivateEndpointConnection, error)
+
 	listPrivate    func(context.Context, string, int32, string) (*api.Nextgenv1beta2ListPrivateEndpointConnectionsResponse, error)
 	privateService func(context.Context, string) (*api.Nextgenv1beta2PrivateLinkService, error)
 	create         func(context.Context, *api.Nextgenv1beta2Tidb) (*api.Nextgenv1beta2Tidb, error)
@@ -643,6 +647,44 @@ func TestActionFlagsAreRegistered(t *testing.T) {
 	}
 }
 
+func TestCommandGroupsRejectUnknownOperationsAndPreserveHelp(t *testing.T) {
+	for _, group := range [][]string{
+		{"premium"}, {"essential-v2"}, {"essential"},
+		{"premium", "public-endpoint"}, {"essential-v2", "public-endpoint"},
+		{"premium", "cmek"},
+	} {
+		for _, operation := range []string{"import", "export", "not-a-command", "", "--help"} {
+			t.Run(fmt.Sprint(group)+"/"+operation, func(t *testing.T) {
+				h := helperWithNextGenClient(&fakeNextGenClient{})
+				h.NextGenClient = func() (cloud.NextGenClient, error) {
+					t.Fatal("command validation and help must not access the API")
+					return nil, nil
+				}
+				root := &cobra.Command{Use: "ticloud", SilenceErrors: true, SilenceUsage: true}
+				root.AddCommand(PremiumCmd(h), EssentialCmd(h))
+				args := append([]string(nil), group...)
+				if operation != "" {
+					args = append(args, operation)
+				}
+				args, err := NormalizeActionArgs(root, args)
+				require.NoError(t, err)
+				root.SetArgs(args)
+				var out bytes.Buffer
+				root.SetOut(&out)
+				root.SetErr(&out)
+				err = root.Execute()
+				if operation == "" || operation == "--help" {
+					require.NoError(t, err)
+					require.Contains(t, out.String(), "Usage:")
+				} else {
+					require.ErrorContains(t, err, "unknown command")
+					require.ErrorContains(t, err, operation)
+				}
+			})
+		}
+	}
+}
+
 func TestActionHelpUsesPublicFlagSyntax(t *testing.T) {
 	command := PremiumCmd(helperWithNextGenClient(&fakeNextGenClient{}))
 	create, _, err := command.Find([]string{"create"})
@@ -663,4 +705,14 @@ func (f *fakeNextGenClient) ListPrivateEndpointConnections(ctx context.Context, 
 
 func (f *fakeNextGenClient) GetPrivateLinkService(ctx context.Context, id string) (*api.Nextgenv1beta2PrivateLinkService, error) {
 	return f.privateService(ctx, id)
+}
+
+func (f *fakeNextGenClient) CreatePrivateEndpointConnection(ctx context.Context, id string, b *api.Nextgenv1beta2PrivateEndpointConnection) (*api.Nextgenv1beta2PrivateEndpointConnection, error) {
+	return f.bindPrivate(ctx, id, b)
+}
+func (f *fakeNextGenClient) GetPrivateEndpointConnection(ctx context.Context, id, c string) (*api.Nextgenv1beta2PrivateEndpointConnection, error) {
+	return f.getPrivate(ctx, id, c)
+}
+func (f *fakeNextGenClient) DeletePrivateEndpointConnection(ctx context.Context, id, c string) (*api.Nextgenv1beta2PrivateEndpointConnection, error) {
+	return f.unbindPrivate(ctx, id, c)
 }
