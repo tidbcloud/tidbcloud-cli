@@ -180,6 +180,74 @@ func (suite *SetConfigSuite) TestSetConfigWhenNoActiveProfile() {
 	}
 }
 
+func (suite *SetConfigSuite) TestSetCloudAPIProperties() {
+	for _, tt := range []struct {
+		property string
+		value    string
+		get      func() string
+	}{
+		{"cloud-api-endpoint", "https://gateway.example.com", config.GetCloudAPIEndpoint},
+		{"cloud-api-ca-cert-path", "/tmp/management-ca.pem", config.GetCloudAPICACertPath},
+	} {
+		cmd := SetCmd(suite.h)
+		cmd.SetArgs([]string{tt.property, tt.value})
+		require.NoError(suite.T(), cmd.Execute())
+		require.Equal(suite.T(), tt.value, tt.get())
+	}
+
+	// Read the persisted profile without Viper's in-memory overrides.
+	viper.Reset()
+	viper.AddConfigPath(".")
+	viper.SetConfigType("toml")
+	viper.SetConfigName(".tidbcloud-cli")
+	require.NoError(suite.T(), viper.ReadInConfig())
+	require.Equal(suite.T(), "https://gateway.example.com", config.GetCloudAPIEndpoint())
+	require.Equal(suite.T(), "/tmp/management-ca.pem", config.GetCloudAPICACertPath())
+	config.SetActiveProfile("other")
+	require.Empty(suite.T(), config.GetCloudAPIEndpoint())
+	require.Empty(suite.T(), config.GetCloudAPICACertPath())
+	config.SetActiveProfile("test")
+}
+
+func (suite *SetConfigSuite) TestSetCloudAPIEndpointValidation() {
+	tests := []struct {
+		name      string
+		endpoint  string
+		errString string
+	}{
+		{
+			name:      "reject HTTP endpoint",
+			endpoint:  "http://example.com",
+			errString: "the API URL must use HTTPS",
+		},
+		{
+			name:      "reject endpoint with query",
+			endpoint:  "https://example.com?region=us-west-2",
+			errString: "the API URL must not contain a query or fragment",
+		},
+		{
+			name:      "reject endpoint with empty query",
+			endpoint:  "https://example.com?",
+			errString: "the API URL must not contain a query or fragment",
+		},
+		{
+			name:      "reject endpoint with fragment",
+			endpoint:  "https://example.com#fragment",
+			errString: "the API URL must not contain a query or fragment",
+		},
+	}
+
+	for _, tt := range tests {
+		suite.T().Run(tt.name, func(t *testing.T) {
+			cmd := SetCmd(suite.h)
+			cmd.SetArgs([]string{"cloud-api-endpoint", tt.endpoint})
+			err := cmd.Execute()
+			require.EqualError(t, err, tt.errString)
+			require.Empty(t, viper.GetString("test.cloud-api-endpoint"))
+		})
+	}
+}
+
 func TestSetConfigSuite(t *testing.T) {
 	suite.Run(t, new(SetConfigSuite))
 }

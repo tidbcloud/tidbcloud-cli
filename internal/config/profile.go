@@ -119,6 +119,16 @@ func (p *Profile) GetServerlessEndpoint() (newApiUrl string) {
 	return
 }
 
+func GetCloudAPIEndpoint() (apiUrl string) { return activeProfile.GetCloudAPIEndpoint() }
+func (p *Profile) GetCloudAPIEndpoint() string {
+	return viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.CloudAPIEndpoint))
+}
+
+func GetCloudAPICACertPath() string { return activeProfile.GetCloudAPICACertPath() }
+func (p *Profile) GetCloudAPICACertPath() string {
+	return viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.CloudAPICACertPath))
+}
+
 func GetIAMEndpoint() (apiUrl string) { return activeProfile.GetIAMEndpoint() }
 func (p *Profile) GetIAMEndpoint() string {
 	return viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.IAMEndpoint))

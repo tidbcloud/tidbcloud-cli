@@ -677,6 +677,7 @@ func RetrieveProjects(ctx context.Context, pageSize int64, d TiDBCloudClient) (i
 	var items []iam.ApiProject
 	pageSizeInt32 := int32(pageSize)
 	var pageToken *string
+	seenTokens := make(map[string]struct{})
 
 	// loop to get all projects
 	for {
@@ -690,6 +691,10 @@ func RetrieveProjects(ctx context.Context, pageSize int64, d TiDBCloudClient) (i
 		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
+		if _, ok := seenTokens[*pageToken]; ok {
+			return 0, nil, fmt.Errorf("project list returned a repeated next page token")
+		}
+		seenTokens[*pageToken] = struct{}{}
 	}
 	return int64(len(items)), items, nil
 }
