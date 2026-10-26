@@ -1,6 +1,6 @@
 module github.com/tidbcloud/tidbcloud-cli
 
-go 1.24.0
+go 1.27.3
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6

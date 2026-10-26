@@ -58,7 +58,7 @@ func main() {
 
 	latestTag = strings.TrimPrefix(latestTag, "v")
 	file = regexp.MustCompile("version=\".*\"").ReplaceAll(file, []byte(fmt.Sprintf("version=\"%s\"", latestTag)))
-	err = os.WriteFile("install.sh", file, 0600)
+	err = os.WriteFile("install.sh", file, 0600) //nolint:gosec // The path is the constant "install.sh".
 	if err != nil {
 		log.Fatalf("Failed to write install.sh file: %s", err.Error())
 	}
