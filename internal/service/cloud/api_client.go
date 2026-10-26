@@ -21,6 +21,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/prop"
@@ -814,10 +815,14 @@ func NewApiClient(rt http.RoundTripper, serverlessEndpoint string, iamEndpoint s
 }
 
 func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {
+	return NewTransportWithDigest(NewDebugTransport(http.DefaultTransport), publicKey, privateKey)
+}
+
+func NewTransportWithDigest(inner http.RoundTripper, publicKey, privateKey string) http.RoundTripper {
 	return &digest.Transport{
 		Username:  publicKey,
 		Password:  privateKey,
-		Transport: NewDebugTransport(http.DefaultTransport),
+		Transport: inner,
 	}
 }
 
@@ -850,6 +855,14 @@ func NewDebugTransport(inner http.RoundTripper) http.RoundTripper {
 }
 
 func parseError(err error, resp *http.Response) error {
+	return parseErrorWithHTMLPolicy(err, resp, false)
+}
+
+func parseNextGenError(err error, resp *http.Response) error {
+	return parseErrorWithHTMLPolicy(err, resp, true)
+}
+
+func parseErrorWithHTMLPolicy(err error, resp *http.Response, omitHTML bool) error {
 	defer func() {
 		if resp != nil {
 			resp.Body.Close()
@@ -873,7 +886,16 @@ func parseError(err error, resp *http.Response) error {
 	if resp.Header.Get("X-Debug-Trace-Id") != "" {
 		traceId = resp.Header.Get("X-Debug-Trace-Id")
 	}
-	return fmt.Errorf("%s[%s][%s] %s", path, err.Error(), traceId, body)
+	detail := string(body)
+	contentType := resp.Header.Get("Content-Type")
+	if omitHTML && strings.HasPrefix(strings.ToLower(contentType), "text/html") {
+		detail = fmt.Sprintf("unexpected response content type %q (%d-byte body omitted)", contentType, len(body))
+	}
+	text := fmt.Sprintf("%s[%s][%s] %s", path, err.Error(), traceId, detail)
+	if omitHTML {
+		return newNextGenAPIError(resp, string(body), err)
+	}
+	return fmt.Errorf("%s", text)
 }
 
 func (d *ClientDelegate) CreateChangefeed(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceCreateChangefeedBody) (*cdc.Changefeed, error) {

@@ -50,8 +50,13 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 
 	var loginCmd = &cobra.Command{
 		Use:   "login",
-		Short: "Authenticate with TiDB Cloud",
-		Args:  cobra.NoArgs,
+		Short: "Authenticate with TiDB Cloud using OAuth",
+		Long: `Authenticate with TiDB Cloud using OAuth and save the token to the selected profile.
+This command does not validate API keys. A complete public/private API key pair
+in the selected profile takes precedence over the OAuth token for API requests.
+-P selects a profile for this command only. Use 'ticloud config use <profile-name>'
+to change the default profile for subsequent commands.`,
+		Args: cobra.NoArgs,
 		Example: fmt.Sprintf(`  To log into TiDB Cloud:
   $ %[1]s auth login`, config.CliName),
 		PreRunE: func(cmd *cobra.Command, args []string) error {
