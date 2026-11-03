@@ -15,7 +15,11 @@
 package auth
 
 import (
+	"net/http"
+
+	"github.com/go-resty/resty/v2"
 	"github.com/tidbcloud/tidbcloud-cli/internal"
+	"github.com/tidbcloud/tidbcloud-cli/internal/prop"
 
 	"github.com/spf13/cobra"
 )
@@ -44,4 +48,21 @@ func AuthCmd(h *internal.Helper) *cobra.Command {
 	authCmd.AddCommand(LogoutCmd(h))
 	authCmd.AddCommand(WhoamiCmd(h))
 	return authCmd
+}
+
+// Validate each outgoing request, including redirects, so endpoints loaded
+// directly from the config cannot send credentials over HTTP.
+type httpsTransport struct {
+	inner http.RoundTripper
+}
+
+func (t httpsTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	if _, err := prop.ValidateApiUrl(req.URL.String()); err != nil {
+		return nil, err
+	}
+	return t.inner.RoundTrip(req)
+}
+
+func newAuthClient() *resty.Client {
+	return resty.New().SetTransport(httpsTransport{inner: http.DefaultTransport})
 }

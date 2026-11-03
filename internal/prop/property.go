@@ -50,5 +50,8 @@ func ValidateApiUrl(value string) (*url.URL, error) {
 	if err != nil {
 		return nil, errors.Annotate(err, "api url should format as <schema>://<host>")
 	}
+	if u.Scheme != "https" || u.Hostname() == "" {
+		return nil, errors.New("api url must use HTTPS and include a host")
+	}
 	return u, nil
 }

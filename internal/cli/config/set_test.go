@@ -183,3 +183,12 @@ func (suite *SetConfigSuite) TestSetConfigWhenNoActiveProfile() {
 func TestSetConfigSuite(t *testing.T) {
 	suite.Run(t, new(SetConfigSuite))
 }
+
+func (suite *SetConfigSuite) TestRejectHTTPEndpoints() {
+	for _, property := range []string{"serverless-endpoint", "iam-endpoint", "oauth-endpoint"} {
+		cmd := SetCmd(suite.h)
+		cmd.SetArgs([]string{property, "http://example.com"})
+		require.ErrorContains(suite.T(), cmd.Execute(), "api url must use HTTPS")
+		require.Empty(suite.T(), viper.GetString("test."+property))
+	}
+}

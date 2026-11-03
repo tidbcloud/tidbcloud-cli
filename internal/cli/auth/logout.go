@@ -38,7 +38,7 @@ type LogoutOpts struct {
 
 func LogoutCmd(h *internal.Helper) *cobra.Command {
 	opts := LogoutOpts{
-		client: resty.New(),
+		client: newAuthClient(),
 	}
 	var logoutCmd = &cobra.Command{
 		Use:   "logout",

@@ -45,7 +45,7 @@ type LoginOpts struct {
 
 func LoginCmd(h *internal.Helper) *cobra.Command {
 	opts := LoginOpts{
-		client: resty.New(),
+		client: newAuthClient(),
 	}
 
 	var loginCmd = &cobra.Command{
