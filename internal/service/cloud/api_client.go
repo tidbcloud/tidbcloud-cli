@@ -873,7 +873,7 @@ func parseError(err error, resp *http.Response) error {
 	if resp.Header.Get("X-Debug-Trace-Id") != "" {
 		traceId = resp.Header.Get("X-Debug-Trace-Id")
 	}
-	return fmt.Errorf("%s[%s][%s] %s", path, err.Error(), traceId, body)
+	return fmt.Errorf("%s[%s][%s] %s", path, resp.Status, traceId, redact.JSON(body))
 }
 
 func (d *ClientDelegate) CreateChangefeed(ctx context.Context, clusterId string, body *cdc.ChangefeedServiceCreateChangefeedBody) (*cdc.Changefeed, error) {

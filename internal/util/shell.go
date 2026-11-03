@@ -22,6 +22,9 @@ import (
 	"io"
 	"os"
 	"os/user"
+	"strings"
+
+	"github.com/tidbcloud/tidbcloud-cli/internal/redact"
 
 	"github.com/go-sql-driver/mysql"
 	isatty "github.com/mattn/go-isatty"
@@ -62,7 +65,7 @@ func ExecuteSqlDialog(ctx context.Context, clusterType, userName, host, port str
 	}
 
 	if err = h.Open(ctx, dsn); err != nil {
-		return fmt.Errorf("can't open connection to %s: %s", dsn, err.Error())
+		return connectionError(dsn, err)
 	}
 
 	if err = h.Run(); err != io.EOF {
@@ -113,4 +116,10 @@ func generateDsnWithoutPassword(clusterType string, userName string, host string
 		return "", InterruptError
 	}
 	return dsn, err
+}
+
+func connectionError(dsn string, err error) error {
+	// The driver may also include the original DSN in its error.
+	detail := strings.ReplaceAll(err.Error(), dsn, "<DSN omitted>")
+	return fmt.Errorf("can't open connection: %s", redact.Text(detail))
 }

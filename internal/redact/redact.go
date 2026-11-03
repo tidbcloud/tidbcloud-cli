@@ -23,6 +23,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strings"
 )
 
@@ -259,4 +260,18 @@ func (dt *DebugTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 		fmt.Printf("%s\n", DumpResponse(resp))
 	}
 	return resp, err
+}
+
+var diagnosticURL = regexp.MustCompile(`[a-zA-Z][a-zA-Z0-9+.-]*://[^\s<>"']+`)
+
+// Text masks credentials in URLs embedded in diagnostic messages. It does not
+// attempt to identify arbitrary secrets in free text.
+func Text(message string) string {
+	return diagnosticURL.ReplaceAllStringFunc(message, func(value string) string {
+		u, err := url.Parse(value)
+		if err != nil {
+			return Mask
+		}
+		return URL(u)
+	})
 }
