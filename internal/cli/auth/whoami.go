@@ -44,7 +44,7 @@ var wg sync.WaitGroup
 
 func WhoamiCmd(h *internal.Helper) *cobra.Command {
 	opts := WhoamiOpts{
-		client: resty.New(),
+		client: newAuthClient(),
 	}
 	var whoamiCmd = &cobra.Command{
 		Use:   "whoami",
