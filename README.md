@@ -7,7 +7,6 @@ The `ticloud` command line tool brings deploy cluster requests, and other TiDB C
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
     - [macOS and Linux](#macos-and-linux)
-      - [Installing via script](#installing-via-script)
       - [Installing via TiUP](#installing-via-tiup)
     - [Manually](#manually)
     - [GitHub Action](#github-action)
@@ -22,12 +21,6 @@ The `ticloud` command line tool brings deploy cluster requests, and other TiDB C
 
 ### macOS and Linux
 
-#### Installing via script
-
-```shell
-curl https://raw.githubusercontent.com/tidbcloud/tidbcloud-cli/main/install.sh | sh
-```
-
 #### Installing via [TiUP](https://tiup.io/)
 
 ```shell
@@ -36,7 +29,7 @@ tiup install cloud
 
 ### Manually
 
-Download the pre-compiled binaries from the [releases](https://github.com/tidbcloud/tidbcloud-cli/releases/latest) page and copy to the desired location.
+Download the pre-compiled binaries from the [releases](https://github.com/tidbcloud/tidbcloud-cli/releases/latest) page through a trusted connection and copy to the desired location. Release checksums detect corruption but do not authenticate downloads if the release source or connection is compromised. Automatic self-upgrade is unavailable until release authentication is supported.
 
 ### GitHub Action
 

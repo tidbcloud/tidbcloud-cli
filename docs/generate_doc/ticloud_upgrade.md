@@ -1,6 +1,6 @@
 ## ticloud upgrade
 
-Upgrade the CLI to the latest version
+Show how to upgrade the CLI
 
 ```
 ticloud upgrade [flags]

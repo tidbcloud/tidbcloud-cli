@@ -181,7 +181,7 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 					if config.IsUnderTiUP {
 						fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use \"tiup update cloud\" to update to the latest version"))
 					} else {
-						fmt.Fprintln(h.IOStreams.Out, color.GreenString("Use \"ticloud upgrade\" to upgrade to the latest version"))
+						fmt.Fprintln(h.IOStreams.Out, color.GreenString("Download the latest version from https://github.com/tidbcloud/tidbcloud-cli/releases"))
 					}
 				}
 			}
@@ -207,7 +207,8 @@ func RootCmd(h *internal.Helper) *cobra.Command {
 
 func shouldCheckNewRelease(cmd *cobra.Command) bool {
 	cmdPrefixShouldSkip := []string{
-		fmt.Sprintf("%s %s", config.CliName, "update")}
+		fmt.Sprintf("%s %s", config.CliName, "update"),
+		fmt.Sprintf("%s %s", config.CliName, "upgrade")}
 	for _, p := range cmdPrefixShouldSkip {
 		if strings.HasPrefix(cmd.CommandPath(), p) {
 			return false

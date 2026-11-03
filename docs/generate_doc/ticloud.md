@@ -22,5 +22,5 @@ ticloud is a CLI library for communicating with TiDB Cloud's API.
 * [ticloud config](ticloud_config.md)	 - Configure and manage your user profiles
 * [ticloud project](ticloud_project.md)	 - Manage projects
 * [ticloud serverless](ticloud_serverless.md)	 - Manage TiDB Cloud Serverless clusters
-* [ticloud upgrade](ticloud_upgrade.md)	 - Upgrade the CLI to the latest version
+* [ticloud upgrade](ticloud_upgrade.md)	 - Show how to upgrade the CLI
 
