@@ -143,13 +143,12 @@ func withInstaller(installer *string) eventOpt {
 	}
 }
 
-func withError(err error) eventOpt {
+func withError(_ error) eventOpt {
 	return func(event Event) {
 		event.Properties["result"] = "ERROR"
 
-		errorMessage := strings.Split(err.Error(), "\n")[0] // only first line
-
-		event.Properties["error"] = errorMessage
+		// Free-form errors may contain credentials or customer data. Report
+		// failure without transmitting the diagnostic message.
 	}
 }
 

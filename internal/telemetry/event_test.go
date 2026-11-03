@@ -210,11 +210,11 @@ func (suite *EventSuite) TestWithProjectID_NoFlag() {
 }
 
 func (suite *EventSuite) TestWithError() {
-	e := newEvent(withError(errors.New("test")))
+	e := newEvent(withError(errors.New("password=telemetry-secret\nsecond line")))
 
 	a := require.New(suite.T())
 	a.Equal("ERROR", e.Properties["result"])
-	a.Equal("test", e.Properties["error"])
+	a.NotContains(e.Properties, "error")
 }
 
 func TestEventSuite(t *testing.T) {

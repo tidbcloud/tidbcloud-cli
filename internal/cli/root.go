@@ -34,6 +34,7 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/iostream"
 	"github.com/tidbcloud/tidbcloud-cli/internal/log"
 	"github.com/tidbcloud/tidbcloud-cli/internal/prop"
+	"github.com/tidbcloud/tidbcloud-cli/internal/redact"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/aws/s3"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/cloud"
 	"github.com/tidbcloud/tidbcloud-cli/internal/service/github"
@@ -108,7 +109,7 @@ func Execute(ctx context.Context) {
 	ctx = telemetry.NewTelemetryContext(ctx)
 	if err := rootCmd.ExecuteContext(ctx); err != nil {
 		telemetry.FinishTrackingCommand(telemetry.TrackOptions{Err: err})
-		fmt.Fprint(h.IOStreams.Out, color.RedString("Error: %s\n", err.Error()))
+		fmt.Fprint(h.IOStreams.Out, color.RedString("Error: %s\n", redact.Text(err.Error())))
 		if errors.Is(err, util.InterruptError) {
 			os.Exit(130)
 		}
