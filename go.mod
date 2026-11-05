@@ -34,6 +34,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	github.com/tailscale/hujson v0.0.0-20250605163823-992244df8c5a
 	github.com/tidbcloud/tidbcloud-cli/pkg v0.0.1
+	github.com/xo/dburl v0.23.1
 	github.com/xo/usql v0.19.2
 	github.com/zalando/go-keyring v0.2.3
 	go.einride.tech/aip v0.67.1
@@ -104,7 +105,6 @@ require (
 	github.com/spf13/cast v1.6.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
-	github.com/xo/dburl v0.23.1 // indirect
 	github.com/xo/tblfmt v0.13.1 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
 	github.com/yookoala/realpath v1.0.0 // indirect
