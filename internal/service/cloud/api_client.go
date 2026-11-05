@@ -17,10 +17,12 @@ package cloud
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
 	"github.com/tidbcloud/tidbcloud-cli/internal/prop"
@@ -740,7 +742,8 @@ func (d *ClientDelegate) DetachPrivateLinkDomains(ctx context.Context, clusterId
 
 func NewApiClient(rt http.RoundTripper, serverlessEndpoint string, iamEndpoint string) (*branch.APIClient, *cluster.APIClient, *br.APIClient, *imp.APIClient, *export.APIClient, *iam.APIClient, *auditlog.APIClient, *cdc.APIClient, *privatelink.APIClient, *migration.APIClient, error) {
 	httpclient := &http.Client{
-		Transport: rt,
+		Transport:     rt,
+		CheckRedirect: checkAPIRedirect,
 	}
 
 	// v1beta1 api (serverless)
@@ -811,6 +814,28 @@ func NewApiClient(rt http.RoundTripper, serverlessEndpoint string, iamEndpoint s
 		export.NewAPIClient(exportCfg), iam.NewAPIClient(iamCfg),
 		auditlog.NewAPIClient(auditLogCfg), cdc.NewAPIClient(cdcCfg),
 		privatelink.NewAPIClient(privateLinkCfg), migration.NewAPIClient(migrationCfg), nil
+}
+
+// checkAPIRedirect confines credentials to the initial request's HTTPS origin.
+// Auth transports attach credentials on every hop, so header stripping alone
+// cannot prevent credentials from being sent to another origin.
+func checkAPIRedirect(req *http.Request, via []*http.Request) error {
+	if len(via) >= 10 {
+		return errors.New("stopped after 10 redirects")
+	}
+	origin := via[0].URL
+	originPort, targetPort := origin.Port(), req.URL.Port()
+	if originPort == "" {
+		originPort = "443"
+	}
+	if targetPort == "" {
+		targetPort = "443"
+	}
+	if req.URL.Scheme != "https" || origin.Scheme != "https" ||
+		!strings.EqualFold(req.URL.Hostname(), origin.Hostname()) || targetPort != originPort {
+		return errors.New("API redirect must remain on the same HTTPS origin")
+	}
+	return nil
 }
 
 func NewDigestTransport(publicKey, privateKey string) http.RoundTripper {
