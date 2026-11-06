@@ -20,8 +20,10 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"net/http"
 	"os"
 	"sort"
+	"strings"
 	"sync"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
@@ -165,7 +167,8 @@ type UploaderImpl struct {
 func NewUploader(client cloud.TiDBCloudClient) Uploader {
 	httpClient := resty.New()
 	debug := os.Getenv(config.DebugEnv) != ""
-	httpClient.SetTransport(redact.NewDebugTransport(httpClient.GetClient().Transport, debug))
+	httpClient.SetTransport(uploadTransport{inner: redact.NewDebugTransport(httpClient.GetClient().Transport, debug)})
+	httpClient.GetClient().CheckRedirect = checkUploadRedirect
 	u := &UploaderImpl{
 		PartSize:          DefaultUploadPartSize,
 		Concurrency:       DefaultUploadConcurrency,
@@ -179,6 +182,39 @@ func NewUploader(client cloud.TiDBCloudClient) Uploader {
 	u.partPool = newByteSlicePool(u.PartSize)
 
 	return u
+}
+
+// Validate every upload request before sending file contents, including redirects.
+type uploadTransport struct {
+	inner http.RoundTripper
+}
+
+func (t uploadTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	if req.URL.Scheme != "https" || req.URL.Hostname() == "" {
+		return nil, errors.New("upload URL must use HTTPS and include a host")
+	}
+	return t.inner.RoundTrip(req)
+}
+
+// Pre-signed URLs may use a different origin from the API, but redirects must
+// keep the file contents on the original upload URL's HTTPS origin.
+func checkUploadRedirect(req *http.Request, via []*http.Request) error {
+	if len(via) >= 10 {
+		return errors.New("stopped after 10 redirects")
+	}
+	origin := via[0].URL
+	originPort, targetPort := origin.Port(), req.URL.Port()
+	if originPort == "" {
+		originPort = "443"
+	}
+	if targetPort == "" {
+		targetPort = "443"
+	}
+	if req.URL.Scheme != "https" || origin.Scheme != "https" ||
+		!strings.EqualFold(req.URL.Hostname(), origin.Hostname()) || targetPort != originPort {
+		return errors.New("upload redirect must remain on the same HTTPS origin")
+	}
+	return nil
 }
 
 // Upload uploads an object to S3, intelligently buffering large
