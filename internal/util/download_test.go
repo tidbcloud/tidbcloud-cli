@@ -15,11 +15,91 @@
 package util
 
 import (
+	"fmt"
+	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
+
+type downloadTestTransport func(*http.Request) (*http.Response, error)
+
+func (f downloadTestTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	return f(req)
+}
+
+func TestGetResponseDestinations(t *testing.T) {
+	const origin = "https://storage.example/start?X-Amz-Signature=test%2Bsignature"
+	const final = "https://storage.example/file"
+	const body = "synthetic-export-data"
+	for _, status := range []int{301, 302, 303, 307, 308} {
+		for _, tc := range []struct {
+			name         string
+			initial      string
+			redirects    map[string]string
+			wantRequests int
+			wantError    bool
+		}{
+			{name: "HTTPS", initial: origin, wantRequests: 1},
+			{name: "HTTP", initial: "http://storage.example/file", wantError: true},
+			{name: "other scheme", initial: "ftp://storage.example/file", wantError: true},
+			{name: "missing host", initial: "https:///file", wantError: true},
+			{name: "HTTP loopback", initial: "http://127.0.0.1:8080/file", wantError: true},
+			{name: "relative redirect", initial: origin, redirects: map[string]string{origin: "/file"}, wantRequests: 2},
+			{name: "same origin", initial: origin, redirects: map[string]string{origin: final}, wantRequests: 2},
+			{name: "equivalent origin", initial: origin, redirects: map[string]string{origin: "https://STORAGE.example:443/file"}, wantRequests: 2},
+			{name: "cross host", initial: origin, redirects: map[string]string{origin: "https://attacker.example/file"}, wantRequests: 1, wantError: true},
+			{name: "cross port", initial: origin, redirects: map[string]string{origin: "https://storage.example:8443/file"}, wantRequests: 1, wantError: true},
+			{name: "downgrade", initial: origin, redirects: map[string]string{origin: "http://storage.example/file"}, wantRequests: 1, wantError: true},
+			{name: "loopback redirect", initial: origin, redirects: map[string]string{origin: "http://127.0.0.1:8080/file"}, wantRequests: 1, wantError: true},
+			{name: "link local redirect", initial: origin, redirects: map[string]string{origin: "http://169.254.169.254/file"}, wantRequests: 1, wantError: true},
+			{name: "second hop", initial: origin, redirects: map[string]string{origin: final, final: "https://attacker.example/file"}, wantRequests: 2, wantError: true},
+			{name: "redirect loop", initial: origin, redirects: map[string]string{origin: origin}, wantRequests: 10, wantError: true},
+		} {
+			t.Run(fmt.Sprintf("%d/%s", status, tc.name), func(t *testing.T) {
+				var reached []string
+				original := http.DefaultTransport
+				// Replace network I/O, retaining the production HTTPS transport
+				// and redirect policy in GetResponse. No network is used.
+				http.DefaultTransport = downloadTestTransport(func(req *http.Request) (*http.Response, error) {
+					reached = append(reached, req.URL.String())
+					require.Equal(t, http.MethodGet, req.Method)
+					header := http.Header{}
+					code := http.StatusOK
+					if location, ok := tc.redirects[req.URL.String()]; ok {
+						header.Set("Location", location)
+						code = status
+					}
+					return &http.Response{
+						StatusCode: code, Header: header, ContentLength: int64(len(body)),
+						Body: io.NopCloser(strings.NewReader(body)), Request: req,
+					}, nil
+				})
+				t.Cleanup(func() { http.DefaultTransport = original })
+				resp, err := GetResponse(tc.initial, false)
+				require.Len(t, reached, tc.wantRequests)
+				if len(reached) > 0 {
+					require.Equal(t, tc.initial, reached[0])
+				}
+				if tc.wantError {
+					require.Error(t, err)
+					require.Nil(t, resp)
+					return
+				}
+				require.NoError(t, err)
+				defer resp.Body.Close()
+				got, err := io.ReadAll(resp.Body)
+				require.NoError(t, err)
+				require.Equal(t, body, string(got))
+			})
+		}
+	}
+}
 
 func TestCreateFileAllowsRelativeDestinations(t *testing.T) {
 	tests := []struct {

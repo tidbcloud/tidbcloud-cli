@@ -35,12 +35,15 @@ import (
 
 func TestDebugTransportPreservesResponseReadError(t *testing.T) {
 	const body = `{"name":"partial"}`
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	srv := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Content-Length", "100")
 		_, _ = io.WriteString(w, body)
 	}))
 	defer srv.Close()
+	originalTransport := http.DefaultTransport
+	http.DefaultTransport = srv.Client().Transport
+	t.Cleanup(func() { http.DefaultTransport = originalTransport })
 
 	for _, debug := range []bool{false, true} {
 		t.Run(fmt.Sprintf("debug=%t", debug), func(t *testing.T) {
@@ -104,11 +107,11 @@ func TestDownloadRedirectMasksURLHeaders(t *testing.T) {
 		t.Run(fmt.Sprintf("relative=%t", relative), func(t *testing.T) {
 			const body = "column\nvalue\n"
 			received := make(chan *http.Request, 1)
-			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			srv := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				if r.URL.Path == "/start" {
 					location := "/file?X-Amz-Signature=DESTINATION_SIGNATURE&plain=1"
 					if !relative {
-						location = "http://" + r.Host + location
+						location = "https://" + r.Host + location
 					}
 					w.Header().Set("Location", location)
 					w.WriteHeader(http.StatusFound)
@@ -119,6 +122,9 @@ func TestDownloadRedirectMasksURLHeaders(t *testing.T) {
 				_, _ = io.WriteString(w, body)
 			}))
 			defer srv.Close()
+			originalTransport := http.DefaultTransport
+			http.DefaultTransport = srv.Client().Transport
+			t.Cleanup(func() { http.DefaultTransport = originalTransport })
 
 			dump := captureStdout(t, func() {
 				resp, err := util.GetResponse(srv.URL+"/start?X-Amz-Signature=ORIGINAL_SIGNATURE", true)
