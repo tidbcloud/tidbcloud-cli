@@ -16,6 +16,7 @@ package util
 
 import (
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -26,15 +27,15 @@ import (
 	"unicode"
 
 	"github.com/tidbcloud/tidbcloud-cli/internal/redact"
-
-	"github.com/go-resty/resty/v2"
 )
 
-// GetResponse returns the response of a given AWS per-signed URL
+// GetResponse returns the response of a given AWS pre-signed URL.
 func GetResponse(url string, debug bool) (*http.Response, error) {
-	httpClient := resty.New()
-	httpClient.SetTransport(redact.NewDebugTransport(httpClient.GetClient().Transport, debug))
-	resp, err := httpClient.GetClient().Get(url) // nolint:gosec
+	httpClient := &http.Client{
+		Transport:     downloadTransport{inner: redact.NewDebugTransport(http.DefaultTransport, debug)},
+		CheckRedirect: checkDownloadRedirect,
+	}
+	resp, err := httpClient.Get(url)
 	if err != nil {
 		return nil, err
 	}
@@ -61,6 +62,39 @@ func GetResponse(url string, debug bool) (*http.Response, error) {
 		return nil, fmt.Errorf("file is empty")
 	}
 	return resp, nil
+}
+
+// Validate every request before sending pre-signed URL credentials.
+type downloadTransport struct {
+	inner http.RoundTripper
+}
+
+func (t downloadTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	if req.URL.Scheme != "https" || req.URL.Hostname() == "" {
+		return nil, errors.New("download URL must use HTTPS and include a host")
+	}
+	return t.inner.RoundTrip(req)
+}
+
+// Storage URLs can differ from the API origin, but redirects must remain on
+// the original download URL's HTTPS origin.
+func checkDownloadRedirect(req *http.Request, via []*http.Request) error {
+	if len(via) >= 10 {
+		return errors.New("stopped after 10 redirects")
+	}
+	origin := via[0].URL
+	originPort, targetPort := origin.Port(), req.URL.Port()
+	if originPort == "" {
+		originPort = "443"
+	}
+	if targetPort == "" {
+		targetPort = "443"
+	}
+	if req.URL.Scheme != "https" || origin.Scheme != "https" ||
+		!strings.EqualFold(req.URL.Hostname(), origin.Hostname()) || targetPort != originPort {
+		return errors.New("download redirect must remain on the same HTTPS origin")
+	}
+	return nil
 }
 
 // CreateFile creates a file if it does not exist
