@@ -253,3 +253,37 @@ func TestCreateFileRejectsSymlinkedParentOutsideBase(t *testing.T) {
 		t.Fatalf("expected no file outside base, stat error = %v", statErr)
 	}
 }
+
+func TestDownloadDestinationsAreOwnerOnly(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("POSIX permission bits are not supported on Windows")
+	}
+	dir := filepath.Join(t.TempDir(), "exports", "2026")
+	require.NoError(t, CreateFolder(dir))
+	for _, d := range []string{filepath.Dir(dir), dir} {
+		info, err := os.Stat(d)
+		require.NoError(t, err)
+		require.Equal(t, os.FileMode(0700), info.Mode().Perm(), d)
+	}
+
+	file, err := CreateFile(dir, "a.sql.gz")
+	require.NoError(t, err)
+	require.NoError(t, file.Close())
+	info, err := os.Stat(filepath.Join(dir, "a.sql.gz"))
+	require.NoError(t, err)
+	require.Equal(t, os.FileMode(0600), info.Mode().Perm())
+}
+
+func TestCreateFolderKeepsExistingDirectoryMode(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("POSIX permission bits are not supported on Windows")
+	}
+	dir := filepath.Join(t.TempDir(), "shared")
+	require.NoError(t, os.Mkdir(dir, 0700))
+	require.NoError(t, os.Chmod(dir, 0755))
+
+	require.NoError(t, CreateFolder(dir))
+	info, err := os.Stat(dir)
+	require.NoError(t, err)
+	require.Equal(t, os.FileMode(0755), info.Mode().Perm())
+}
