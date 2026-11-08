@@ -238,6 +238,9 @@ func initConfig() {
 		color.Red("Failed to create home directory: %s", err)
 		os.Exit(1)
 	}
+	// The directory holds API keys. A failure (for example, a directory owned
+	// by another user or a read-only file system) keeps the previous behavior.
+	_ = config.RestrictPermissions(path, 0700)
 
 	// Search config in home directory with name ".tidbcloud-cli" (without extension).
 	viper.AddConfigPath(path)
@@ -258,4 +261,7 @@ func initConfig() {
 		color.Red("Failed to read config file: %s", err.Error())
 		os.Exit(1)
 	}
+	// viper applies 0600 only when it creates the file; an existing file keeps
+	// its mode across writes.
+	_ = config.RestrictPermissions(viper.ConfigFileUsed(), 0600)
 }
