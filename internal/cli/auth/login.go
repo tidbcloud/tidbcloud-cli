@@ -65,7 +65,9 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 
-			if config.GetPublicKey() != "" && config.GetPrivateKey() != "" {
+			// This is advisory; an unavailable API key must not prevent OAuth login.
+			privateKey, _ := config.GetPrivateKey()
+			if config.GetPublicKey() != "" && privateKey != "" {
 				color.HiYellow("\nDetect an API key already set in %s profile! Note it will take precedence over auth token\n\n", config.ActiveProfileName())
 				prompt := &survey.Confirm{
 					Message: color.BlueString("The login will not take effect, continue to login?"),

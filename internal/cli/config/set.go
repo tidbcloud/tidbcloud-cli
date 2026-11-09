@@ -30,6 +30,7 @@ import (
 )
 
 func SetCmd(h *internal.Helper) *cobra.Command {
+	var secureStorage bool
 	var setCmd = &cobra.Command{
 		Use:   "set <property-name> <value>",
 		Short: "Configure specific properties of the active profile",
@@ -47,6 +48,9 @@ If not, the config in the active profile will be set`, prop.ProfileProperties())
 		RunE: func(cmd *cobra.Command, args []string) error {
 			propertyName := args[0]
 			value := args[1]
+			if secureStorage && propertyName != prop.PrivateKey {
+				return fmt.Errorf("--secure-storage is only supported for private-key")
+			}
 
 			var res string
 			if slices.Contains(prop.ProfileProperties(), propertyName) {
@@ -61,7 +65,13 @@ If not, the config in the active profile will be set`, prop.ProfileProperties())
 						return err
 					}
 				}
-				viper.Set(fmt.Sprintf("%s.%s", curP, propertyName), value)
+				if propertyName == prop.PrivateKey {
+					if err := config.SetPrivateKey(curP, value, secureStorage); err != nil {
+						return err
+					}
+				} else {
+					viper.Set(fmt.Sprintf("%s.%s", curP, propertyName), value)
+				}
 				res = fmt.Sprintf("Set profile `%s` property `%s` to value `%s` successfully", curP, propertyName, redact.Value(propertyName, value))
 			} else {
 				return fmt.Errorf("unrecognized property `%s`, use `config set --help` to find available properties", propertyName)
@@ -77,5 +87,6 @@ If not, the config in the active profile will be set`, prop.ProfileProperties())
 		},
 	}
 
+	setCmd.Flags().BoolVar(&secureStorage, "secure-storage", false, "Store the API private key in the OS credential store instead of the config file.")
 	return setCmd
 }

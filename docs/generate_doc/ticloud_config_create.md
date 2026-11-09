@@ -30,6 +30,7 @@ ticloud config create [flags]
       --private-key string    The private key of the TiDB Cloud API. (optional)
       --profile-name string   The name of the profile, must not contain periods.
       --public-key string     The public key of the TiDB Cloud API. (optional)
+      --secure-storage        Store the API private key in the OS credential store instead of the config file.
 ```
 
 ### Options inherited from parent commands

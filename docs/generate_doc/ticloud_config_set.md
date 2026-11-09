@@ -27,7 +27,8 @@ ticloud config set <property-name> <value> [flags]
 ### Options
 
 ```
-  -h, --help   help for set
+  -h, --help             help for set
+      --secure-storage   Store the API private key in the OS credential store instead of the config file.
 ```
 
 ### Options inherited from parent commands

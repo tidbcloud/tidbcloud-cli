@@ -121,7 +121,7 @@ func setStateEntry(stateFilePath string, t time.Time, r ReleaseInfo) error {
 		return err
 	}
 
-	err = os.MkdirAll(filepath.Dir(stateFilePath), 0755)
+	err = os.MkdirAll(filepath.Dir(stateFilePath), 0700)
 	if err != nil {
 		return err
 	}

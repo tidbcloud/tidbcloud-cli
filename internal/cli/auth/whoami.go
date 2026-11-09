@@ -107,7 +107,9 @@ func WhoamiCmd(h *internal.Helper) *cobra.Command {
 			fmt.Fprintln(h.IOStreams.Out, "User Name:", userInfo.Username)
 			fmt.Fprintln(h.IOStreams.Out, "Org Name:", orgInfo.Orgname)
 
-			if config.GetPublicKey() != "" && config.GetPrivateKey() != "" {
+			// This is advisory; an unavailable API key does not invalidate OAuth.
+			privateKey, _ := config.GetPrivateKey()
+			if config.GetPublicKey() != "" && privateKey != "" {
 				color.HiYellow("\nDetect an API key already set in %s profile! Note it will take precedence over auth token.", config.ActiveProfileName())
 				color.HiYellow(fmt.Sprintf("Use `%s config create --profile-name <profile-name>` to create a new profile and login again.", config.CliName))
 			}
