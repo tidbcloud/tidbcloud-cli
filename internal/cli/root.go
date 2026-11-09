@@ -56,11 +56,7 @@ var ErrMissingCredentials = errors.New("this action requires authentication")
 func Execute(ctx context.Context) {
 	h := &internal.Helper{
 		Client: func() (cloud.TiDBCloudClient, error) {
-			publicKey := config.GetPublicKey()
-			privateKey, err := config.GetPrivateKey()
-			if err != nil {
-				return nil, err
-			}
+			publicKey, privateKey := config.GetPublicKey(), config.GetPrivateKey()
 			serverlessEndpoint := config.GetServerlessEndpoint()
 			if serverlessEndpoint == "" {
 				serverlessEndpoint = cloud.DefaultServerlessEndpoint

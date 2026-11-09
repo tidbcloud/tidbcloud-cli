@@ -21,7 +21,6 @@ import (
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
-	"github.com/tidbcloud/tidbcloud-cli/internal/config/store"
 	"github.com/tidbcloud/tidbcloud-cli/internal/flag"
 	"github.com/tidbcloud/tidbcloud-cli/internal/prop"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
@@ -129,19 +128,12 @@ func DeleteCmd(h *internal.Helper) *cobra.Command {
 				return errors.Trace(err)
 			}
 
+			defer file.Close()
+
 			s := t.String()
 			_, err = file.WriteString(s)
-			closeErr := file.Close()
 			if err != nil {
 				return errors.Trace(err)
-			}
-			if closeErr != nil {
-				return errors.Trace(closeErr)
-			}
-			if viper.GetString(fmt.Sprintf("%s.%s", curProfileName, prop.PrivateKeyStorage)) == "keyring" {
-				if err := store.DeleteAPIPrivateKey(curProfileName); err != nil {
-					return errors.Annotate(err, "profile deleted, but its API private key could not be removed from the credential store")
-				}
 			}
 
 			fmt.Fprintln(h.IOStreams.Out, color.GreenString("Profile %s deleted successfully", curProfileName))

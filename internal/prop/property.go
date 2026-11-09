@@ -32,10 +32,9 @@ const (
 	TelemetryEnabled   string = "telemetry-enabled"
 
 	// shall not be set by user
-	TokenExpiredAt    string = "token-expired-at"
-	TokenType         string = "token-type"
-	AccessToken       string = "access-token"
-	PrivateKeyStorage string = "private-key-storage"
+	TokenExpiredAt string = "token-expired-at"
+	TokenType      string = "token-type"
+	AccessToken    string = "access-token"
 )
 
 func GlobalProperties() []string {

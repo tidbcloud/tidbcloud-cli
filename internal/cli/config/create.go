@@ -55,7 +55,6 @@ func (c CreateOpts) NonInteractiveFlags() []string {
 }
 
 func CreateCmd(h *internal.Helper) *cobra.Command {
-	var secureStorage bool
 	opts := CreateOpts{
 		interactive: true,
 	}
@@ -165,10 +164,8 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 				return fmt.Errorf("profile %s already exists, use `config set` to modify", profileName)
 			}
 
-			if err := config.SetPrivateKey(profileName, privateKey, secureStorage); err != nil {
-				return err
-			}
 			viper.Set(fmt.Sprintf("%s.%s", profileName, prop.PublicKey), publicKey)
+			viper.Set(fmt.Sprintf("%s.%s", profileName, prop.PrivateKey), privateKey)
 			viper.Set(prop.CurProfile, profileName)
 			err = viper.WriteConfig()
 			if err != nil {
@@ -185,7 +182,6 @@ func CreateCmd(h *internal.Helper) *cobra.Command {
 	createCmd.Flags().String(flag.ProfileName, "", "The name of the profile, must not contain periods.")
 	createCmd.Flags().String(flag.PublicKey, "", "The public key of the TiDB Cloud API. (optional)")
 	createCmd.Flags().String(flag.PrivateKey, "", "The private key of the TiDB Cloud API. (optional)")
-	createCmd.Flags().BoolVar(&secureStorage, "secure-storage", false, "Store the API private key in the OS credential store instead of the config file.")
 	return createCmd
 }
 

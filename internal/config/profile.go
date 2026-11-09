@@ -107,27 +107,10 @@ func (p *Profile) GetPublicKey() (publicKey string) {
 	return
 }
 
-func GetPrivateKey() (string, error) { return activeProfile.GetPrivateKey() }
-func (p *Profile) GetPrivateKey() (string, error) {
-	if viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.PrivateKeyStorage)) == "keyring" {
-		return store.GetAPIPrivateKey(p.name)
-	}
-	return viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.PrivateKey)), nil
-}
-
-// SetPrivateKey preserves legacy storage unless secure storage was requested or
-// the profile already uses it. The caller persists the config with WriteConfig.
-func SetPrivateKey(profile, privateKey string, secureStorage bool) error {
-	if secureStorage || viper.GetString(fmt.Sprintf("%s.%s", profile, prop.PrivateKeyStorage)) == "keyring" {
-		if err := store.SetAPIPrivateKey(profile, privateKey); err != nil {
-			return err
-		}
-		viper.Set(fmt.Sprintf("%s.%s", profile, prop.PrivateKeyStorage), "keyring")
-		viper.Set(fmt.Sprintf("%s.%s", profile, prop.PrivateKey), "")
-		return nil
-	}
-	viper.Set(fmt.Sprintf("%s.%s", profile, prop.PrivateKey), privateKey)
-	return nil
+func GetPrivateKey() (privateKey string) { return activeProfile.GetPrivateKey() }
+func (p *Profile) GetPrivateKey() (privateKey string) {
+	privateKey = viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.PrivateKey))
+	return
 }
 
 func GetServerlessEndpoint() (apiUrl string) { return activeProfile.GetServerlessEndpoint() }
@@ -173,7 +156,7 @@ func SaveAccessToken(expireAt time.Time, tokenType string, token string, insecur
 }
 func (p *Profile) SaveAccessToken(expireAt time.Time, tokenType string, token string, insecureStorageUsed bool) error {
 	// Clean up the previous oauth_token from the config file or keyring, if there were one
-	err := p.DeleteAccessToken()
+	err := DeleteAccessToken()
 	if err != nil {
 		return err
 	}
@@ -206,21 +189,12 @@ func GetAccessToken() (string, error) {
 	return activeProfile.GetAccessToken()
 }
 func (p *Profile) GetAccessToken() (string, error) {
-	return p.getAccessToken(store.Get)
-}
-
-func (p *Profile) getAccessToken(load func(string) (string, error)) (string, error) {
-	token, err := load(p.name)
-	if err == nil && token != "" {
+	token := viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.AccessToken))
+	if token != "" {
 		return token, nil
 	}
 
-	// Preserve --insecure-storage and configurations used on hosts without a
-	// usable keyring, while preferring a securely stored token when available.
-	if plaintext := viper.GetString(fmt.Sprintf("%s.%s", p.name, prop.AccessToken)); plaintext != "" {
-		return plaintext, nil
-	}
-	return token, err
+	return store.Get(p.name)
 }
 
 func ValidateToken() error {
@@ -291,10 +265,6 @@ func (p *Profile) DeleteAccessToken() error {
 	err = viper.ReadInConfig()
 	if err != nil {
 		return err
-	}
-	// ReadInConfig does not clear values previously set with viper.Set.
-	for _, property := range []string{prop.AccessToken, prop.TokenType, prop.TokenExpiredAt} {
-		viper.Set(fmt.Sprintf("%s.%s", p.name, property), nil)
 	}
 
 	err = store.Delete(p.name)

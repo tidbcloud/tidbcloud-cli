@@ -15,7 +15,6 @@ The `ticloud` command line tool brings deploy cluster requests, and other TiDB C
     - [Config a profile](#config-a-profile)
     - [Create a cluster](#create-a-cluster)
   - [Documentation](#documentation)
-  - [Credential storage](#credential-storage)
   - [Telemetry](#telemetry)
   - [Roadmap](#roadmap)
 
@@ -75,42 +74,6 @@ tiup cloud serverless create
 ## Documentation
 
 Please check the CLI help for more information.
-
-## Credential storage
-
-API private keys are stored in `~/.ticloud/config` by default for compatibility
-with existing scripts and environments without an OS credential store. On
-Unix-like systems, the CLI restricts the directory to `0700` and the config
-file to `0600`. These permissions do not encrypt the file.
-
-To store a new profile's API private key in the OS credential store, use:
-
-```shell
-ticloud config create --secure-storage
-```
-
-To move an existing profile's private key to the credential store, set it again:
-
-```shell
-ticloud config set private-key <private-key> --secure-storage
-```
-
-Add `-P <profile-name>` to select a different profile. A successful secure write
-removes the plaintext private key from the config. The public key and a
-`private-key-storage = "keyring"` marker remain in the config. Existing profiles
-are not migrated automatically. Later private-key updates continue to use the
-credential store even without `--secure-storage`, and deleting the profile
-also removes its stored private key. Secure writes and reads report credential
-store errors rather than silently falling back to plaintext or OAuth.
-
-Secure storage requires a working OS credential store; copying the config alone
-does not transfer the private key. To clear an API private key, use
-`ticloud config set private-key ''`.
-
-OAuth tokens use the OS credential store by default. `auth login --insecure-storage`
-explicitly enables plaintext token storage. When both stores
-contain a token, the credential store takes precedence; plaintext remains usable
-when no token can be loaded from the credential store.
 
 ## Telemetry
 
