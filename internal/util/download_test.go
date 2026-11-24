@@ -15,6 +15,7 @@
 package util
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -31,6 +32,42 @@ type downloadTestTransport func(*http.Request) (*http.Response, error)
 
 func (f downloadTestTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return f(req)
+}
+
+func TestGetResponseKeepsSignedURLAndStorageErrorOutOfDiagnostics(t *testing.T) {
+	const signedURL = "https://storage.example/export?X-Amz-Signature=TEST_SIGNATURE"
+	original := http.DefaultTransport
+	t.Cleanup(func() { http.DefaultTransport = original })
+
+	t.Run("request timeout", func(t *testing.T) {
+		http.DefaultTransport = downloadTestTransport(func(req *http.Request) (*http.Response, error) {
+			require.Equal(t, signedURL, req.URL.String())
+			return nil, context.DeadlineExceeded
+		})
+		resp, err := GetResponse(signedURL, false)
+		if resp != nil {
+			defer resp.Body.Close()
+		}
+		require.Nil(t, resp)
+		require.ErrorIs(t, err, context.DeadlineExceeded)
+		require.EqualError(t, err, "download request timed out")
+	})
+
+	t.Run("storage response", func(t *testing.T) {
+		http.DefaultTransport = downloadTestTransport(func(req *http.Request) (*http.Response, error) {
+			body := `<Error><Code>AccessDenied</Code><Message>TEST_STORAGE_DETAIL</Message></Error>`
+			return &http.Response{
+				StatusCode: http.StatusForbidden, Header: http.Header{}, Request: req,
+				Body: io.NopCloser(strings.NewReader(body)), ContentLength: int64(len(body)),
+			}, nil
+		})
+		resp, err := GetResponse(signedURL, false)
+		if resp != nil {
+			defer resp.Body.Close()
+		}
+		require.Nil(t, resp)
+		require.EqualError(t, err, "download failed with HTTP status 403")
+	})
 }
 
 func TestGetResponseDestinations(t *testing.T) {

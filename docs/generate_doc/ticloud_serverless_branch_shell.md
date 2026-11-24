@@ -33,7 +33,7 @@ ticloud serverless branch shell [flags]
   -b, --branch-id string    The ID of the branch.
   -c, --cluster-id string   The ID of the cluster.
   -h, --help                help for shell
-      --password string     The password of the user.
+      --password string     The password of the user. Command-line values can be exposed in process arguments and shell history; omit this flag to enter the password through a hidden prompt.
   -u, --user string         A specific user for login if not using the default user.
 ```
 

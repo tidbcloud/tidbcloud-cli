@@ -28,6 +28,7 @@ import (
 
 	"github.com/tidbcloud/tidbcloud-cli/internal"
 	"github.com/tidbcloud/tidbcloud-cli/internal/config"
+	"github.com/tidbcloud/tidbcloud-cli/internal/redact"
 	"github.com/tidbcloud/tidbcloud-cli/internal/util"
 )
 
@@ -85,13 +86,22 @@ type downloadResult struct {
 }
 
 func (r *downloadResult) GetResult() string {
-	if r.status == Succeeded {
-		return fmt.Sprintf("%s success", r.name)
+	return formatDownloadResult(r.name, r.status, r.err)
+}
+
+func formatDownloadResult(name string, status JobStatus, err error) string {
+	if status == Succeeded {
+		return util.SanitizeTerminalText(name) + " success"
 	}
-	if r.err == nil {
-		return fmt.Sprintf("%s %s", r.name, r.status)
+	return formatDownloadStatus(name, status, err)
+}
+
+func formatDownloadStatus(name string, status JobStatus, err error) string {
+	result := util.SanitizeTerminalText(name) + " " + string(status)
+	if err != nil {
+		result += ": " + util.SanitizeTerminalText(redact.Text(err.Error()))
 	}
-	return fmt.Sprintf("%s %s: %s", r.name, r.status, r.err.Error())
+	return result
 }
 
 func (d *downloadPool) Start() error {
@@ -183,14 +193,14 @@ func (d *downloadPool) consume() {
 				// set result to channel
 				if err != nil {
 					if strings.Contains(err.Error(), "file already exists") {
-						fmt.Fprintf(d.h.IOStreams.Out, "download %s skipped: %s\n", job.fileName, err.Error())
+						fmt.Fprintf(d.h.IOStreams.Out, "download %s\n", formatDownloadStatus(job.fileName, Skipped, err))
 						d.results <- &downloadResult{name: job.fileName, err: err, status: Skipped}
 					} else {
-						fmt.Fprintf(d.h.IOStreams.Out, "download %s failed: %s\n", job.fileName, err.Error())
+						fmt.Fprintf(d.h.IOStreams.Out, "download %s\n", formatDownloadStatus(job.fileName, Failed, err))
 						d.results <- &downloadResult{name: job.fileName, err: err, status: Failed}
 					}
 				} else {
-					fmt.Fprintf(d.h.IOStreams.Out, "download %s succeeded | %s\n", job.fileName, humanize.IBytes(uint64(job.size)))
+					fmt.Fprintf(d.h.IOStreams.Out, "download %s | %s\n", formatDownloadStatus(job.fileName, Succeeded, nil), humanize.IBytes(uint64(job.size)))
 					d.results <- &downloadResult{name: job.fileName, err: nil, status: Succeeded}
 				}
 			}()

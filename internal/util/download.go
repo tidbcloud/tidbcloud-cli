@@ -15,10 +15,11 @@
 package util
 
 import (
-	"encoding/xml"
+	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
-	"io"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -29,6 +30,12 @@ import (
 	"github.com/tidbcloud/tidbcloud-cli/internal/redact"
 )
 
+var (
+	errDownloadURL           = errors.New("download URL must use HTTPS and include a host")
+	errDownloadRedirect      = errors.New("download redirect must remain on the same HTTPS origin")
+	errDownloadRedirectLimit = errors.New("stopped after 10 redirects")
+)
+
 // GetResponse returns the response of a given AWS pre-signed URL.
 func GetResponse(url string, debug bool) (*http.Response, error) {
 	httpClient := &http.Client{
@@ -37,25 +44,12 @@ func GetResponse(url string, debug bool) (*http.Response, error) {
 	}
 	resp, err := httpClient.Get(url)
 	if err != nil {
-		return nil, err
+		return nil, &downloadRequestError{cause: err}
 	}
 	if resp.StatusCode != http.StatusOK {
-		// read the body to get the error message
-		body, err := io.ReadAll(resp.Body)
 		resp.Body.Close()
-		if err != nil {
-			return nil, fmt.Errorf("receiving status of %d", resp.StatusCode)
-		}
-		type AwsError struct {
-			Code    string `xml:"Code"`
-			Message string `xml:"Message"`
-		}
-		v := AwsError{}
-		err = xml.Unmarshal(body, &v)
-		if err != nil {
-			return nil, fmt.Errorf("receiving status of %d", resp.StatusCode)
-		}
-		return nil, fmt.Errorf("receiving status of %d. code: %s, message: %s", resp.StatusCode, v.Code, v.Message)
+		// Storage error bodies can echo the signed request or its credentials.
+		return nil, fmt.Errorf("download failed with HTTP status %d", resp.StatusCode)
 	}
 	if resp.ContentLength <= 0 {
 		resp.Body.Close()
@@ -64,6 +58,36 @@ func GetResponse(url string, debug bool) (*http.Response, error) {
 	return resp, nil
 }
 
+// Request errors may include the full URL, including a redirect target.
+// Render known failure reasons and keep the original error for errors.Is/As.
+type downloadRequestError struct{ cause error }
+
+func (e *downloadRequestError) Error() string {
+	var dns *net.DNSError
+	var cert *tls.CertificateVerificationError
+	var timeout net.Error
+	switch {
+	case errors.Is(e.cause, errDownloadURL):
+		return errDownloadURL.Error()
+	case errors.Is(e.cause, errDownloadRedirect):
+		return errDownloadRedirect.Error()
+	case errors.Is(e.cause, errDownloadRedirectLimit):
+		return errDownloadRedirectLimit.Error()
+	case errors.Is(e.cause, context.Canceled):
+		return "download request canceled"
+	case errors.As(e.cause, &timeout) && timeout.Timeout():
+		return "download request timed out"
+	case errors.As(e.cause, &dns):
+		return "download request failed: could not resolve the host"
+	case errors.As(e.cause, &cert):
+		return "download request failed: TLS certificate verification failed"
+	default:
+		return "download request failed: check the URL, network, and TLS settings"
+	}
+}
+
+func (e *downloadRequestError) Unwrap() error { return e.cause }
+
 // Validate every request before sending pre-signed URL credentials.
 type downloadTransport struct {
 	inner http.RoundTripper
@@ -71,7 +95,7 @@ type downloadTransport struct {
 
 func (t downloadTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	if req.URL.Scheme != "https" || req.URL.Hostname() == "" {
-		return nil, errors.New("download URL must use HTTPS and include a host")
+		return nil, errDownloadURL
 	}
 	return t.inner.RoundTrip(req)
 }
@@ -80,7 +104,7 @@ func (t downloadTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 // the original download URL's HTTPS origin.
 func checkDownloadRedirect(req *http.Request, via []*http.Request) error {
 	if len(via) >= 10 {
-		return errors.New("stopped after 10 redirects")
+		return errDownloadRedirectLimit
 	}
 	origin := via[0].URL
 	originPort, targetPort := origin.Port(), req.URL.Port()
@@ -92,7 +116,7 @@ func checkDownloadRedirect(req *http.Request, via []*http.Request) error {
 	}
 	if req.URL.Scheme != "https" || origin.Scheme != "https" ||
 		!strings.EqualFold(req.URL.Hostname(), origin.Hostname()) || targetPort != originPort {
-		return errors.New("download redirect must remain on the same HTTPS origin")
+		return errDownloadRedirect
 	}
 	return nil
 }

@@ -196,7 +196,7 @@ The connection forces the [ANSI SQL mode](https://dev.mysql.com/doc/refman/8.0/e
 	}
 
 	shellCmd.Flags().StringP(flag.ClusterID, flag.ClusterIDShort, "", "The ID of the cluster.")
-	shellCmd.Flags().String(flag.Password, "", "The password of the user.")
+	shellCmd.Flags().String(flag.Password, "", "The password of the user. Command-line values can be exposed in process arguments and shell history; omit this flag to enter the password through a hidden prompt.")
 	shellCmd.Flags().StringP(flag.User, flag.UserShort, "", "A specific user for login if not using the default user.")
 	return shellCmd
 }
