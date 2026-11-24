@@ -25,6 +25,7 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+	"unicode"
 )
 
 const Mask = "***"
@@ -113,8 +114,12 @@ func Any(v interface{}) interface{} {
 	case string:
 		// Pre-signed URLs in API responses (export download, import upload,
 		// audit log files) carry their signature in the query string.
-		if u, err := url.Parse(t); err == nil && u.Host != "" && (u.RawQuery != "" || u.User != nil) {
-			return URL(u)
+		// url.Parse also accepts whitespace in query strings; prose starting
+		// with a URL must instead redact each embedded URL separately.
+		if !strings.ContainsFunc(t, unicode.IsSpace) {
+			if u, err := url.Parse(t); err == nil && u.Host != "" && (u.RawQuery != "" || u.User != nil) {
+				return URL(u)
+			}
 		}
 		// Diagnostic strings can embed URLs in prose, including inside nested
 		// error details. Redact them before JSON encoding escapes separators.
@@ -264,7 +269,7 @@ func (dt *DebugTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	return resp, err
 }
 
-var diagnosticURL = regexp.MustCompile(`[a-zA-Z][a-zA-Z0-9+.-]*://[^\s<>"']+`)
+var diagnosticURL = regexp.MustCompile(`[a-zA-Z][a-zA-Z0-9+.-]*://[^\s\p{Z}\x{0085}\v<>"']+`)
 
 // Text masks credentials in URLs embedded in diagnostic messages. It does not
 // attempt to identify arbitrary secrets in free text.

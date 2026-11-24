@@ -143,3 +143,36 @@ func TestAnyMasksURLsEmbeddedInNestedText(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, before, after, "redaction must not mutate caller-owned data")
 }
+
+func TestAnyMasksURLsAtStartOfDiagnosticText(t *testing.T) {
+	for _, separator := range []string{" failed see ", "\nretry ", "\u00a0retry "} {
+		t.Run(separator, func(t *testing.T) {
+			prefix := "https://docs.example.test/help?language=en" + separator
+			message := prefix + "https://storage.example/export?X-Amz-Signature=signature-secret&X-Amz-Expires=900"
+			original := map[string]interface{}{
+				"details": []interface{}{map[string]interface{}{"message": message}},
+			}
+			safe := Any(original).(map[string]interface{})
+			got := safe["details"].([]interface{})[0].(map[string]interface{})["message"].(string)
+			require.NotContains(t, got, "signature-secret")
+			require.Contains(t, got, prefix)
+			require.Contains(t, got, "X-Amz-Expires=900")
+			body, err := json.Marshal(original)
+			require.NoError(t, err)
+			require.NotContains(t, JSON(body), "signature-secret")
+			require.Equal(t, message, original["details"].([]interface{})[0].(map[string]interface{})["message"])
+		})
+	}
+}
+
+func TestAnyPreservesWholeURLRedaction(t *testing.T) {
+	for _, value := range []string{
+		"https://alice:password-secret'part@example.test/export?sig=signature-secret&plain=1",
+		"//alice:password-secret@example.test/export?sig=signature-secret&plain=1",
+	} {
+		got := Any(value).(string)
+		require.NotContains(t, got, "password-secret")
+		require.NotContains(t, got, "signature-secret")
+		require.Contains(t, got, "plain=1")
+	}
+}

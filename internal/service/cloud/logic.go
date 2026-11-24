@@ -1337,7 +1337,7 @@ func RetrievePrivateLinkConnections(ctx context.Context, clusterID string, pageS
 		if pageToken == nil || *pageToken == "" {
 			break
 		}
-		resp, err := d.ListPrivateLinkConnections(ctx, clusterID, &pageSize, pageToken)
+		resp, err = d.ListPrivateLinkConnections(ctx, clusterID, &pageSize, pageToken)
 		if err != nil {
 			return nil, errors.Trace(err)
 		}
