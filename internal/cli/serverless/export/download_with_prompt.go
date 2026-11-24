@@ -62,13 +62,7 @@ type FileJob struct {
 }
 
 func (f *FileJob) GetResult() string {
-	if f.status == Succeeded {
-		return fmt.Sprintf("%s success", f.name)
-	}
-	if f.err == nil {
-		return fmt.Sprintf("%s %s", f.name, f.status)
-	}
-	return fmt.Sprintf("%s %s: %s", f.name, f.status, f.err.Error())
+	return formatDownloadResult(f.name, f.status, f.err)
 }
 
 func (f *FileJob) GetStatus() JobStatus {
@@ -201,21 +195,12 @@ func (m *ProcessDownloadModel) View() string {
 	// print finished jobs
 	succeededCount := 0
 	for _, f := range m.jobInfo.finishedJobs {
-		if f.status == Succeeded {
+		switch f.status {
+		case Succeeded:
 			succeededCount++
-			viewString += fmt.Sprintf("download %s succeeded\n", f.name)
-		} else if f.status == Failed {
-			var errMsg string
-			if f.err != nil {
-				errMsg = f.err.Error()
-			}
-			viewString += fmt.Sprintf("download %s failed: %s\n", f.name, errMsg)
-		} else if f.status == Skipped {
-			var errMsg string
-			if f.err != nil {
-				errMsg = f.err.Error()
-			}
-			viewString += fmt.Sprintf("download %s skipped: %s\n", f.name, errMsg)
+			viewString += fmt.Sprintf("download %s\n", formatDownloadStatus(f.name, f.status, nil))
+		case Failed, Skipped:
+			viewString += fmt.Sprintf("download %s\n", formatDownloadStatus(f.name, f.status, f.err))
 		}
 	}
 	// print process bar

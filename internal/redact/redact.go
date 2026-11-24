@@ -116,7 +116,9 @@ func Any(v interface{}) interface{} {
 		if u, err := url.Parse(t); err == nil && u.Host != "" && (u.RawQuery != "" || u.User != nil) {
 			return URL(u)
 		}
-		return t
+		// Diagnostic strings can embed URLs in prose, including inside nested
+		// error details. Redact them before JSON encoding escapes separators.
+		return Text(t)
 	default:
 		return v
 	}

@@ -26,6 +26,11 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// releaseTagPattern matches the tags this project publishes (for example
+// "v1.2.3" or "v1.2.3-rc.1+dev"). Anything outside it must never reach
+// install.sh, because the value is interpolated into an executable script.
+var releaseTagPattern = regexp.MustCompile(`^v[0-9][0-9A-Za-z.+-]*$`)
+
 func main() {
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
@@ -44,22 +49,32 @@ func main() {
 		log.Fatal("Can't get the latest release from Github api.")
 	}
 
-	latestTag := *latestRelease.TagName
-	err = os.WriteFile("latest-version", []byte(latestTag), 0600)
-	if err != nil {
-		log.Fatalf("Failed to write latest-version file: %s", err.Error())
+	if err := updateManifest(*latestRelease.TagName); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func updateManifest(latestTag string) error {
+	if !releaseTagPattern.MatchString(latestTag) {
+		return fmt.Errorf("refusing unsafe release tag %q", latestTag)
 	}
 
 	// update the version in the installation script
 	file, err := os.ReadFile("install.sh")
 	if err != nil {
-		log.Fatalf("failed to open install.sh: %s", err.Error())
+		return fmt.Errorf("failed to open install.sh: %w", err)
 	}
-
-	latestTag = strings.TrimPrefix(latestTag, "v")
-	file = regexp.MustCompile("version=\".*\"").ReplaceAll(file, []byte(fmt.Sprintf("version=\"%s\"", latestTag)))
+	versionLine := regexp.MustCompile(`(?m)^version="[^"]*"$`)
+	if len(versionLine.FindAllIndex(file, -1)) != 1 {
+		return fmt.Errorf("install.sh must contain exactly one version assignment")
+	}
+	file = versionLine.ReplaceAllLiteral(file, []byte(fmt.Sprintf("version=\"%s\"", strings.TrimPrefix(latestTag, "v"))))
+	if err := os.WriteFile("latest-version", []byte(latestTag), 0600); err != nil {
+		return fmt.Errorf("failed to write latest-version: %w", err)
+	}
 	err = os.WriteFile("install.sh", file, 0600) //nolint:gosec // The path is the constant "install.sh".
 	if err != nil {
-		log.Fatalf("Failed to write install.sh file: %s", err.Error())
+		return fmt.Errorf("failed to write install.sh: %w", err)
 	}
+	return nil
 }

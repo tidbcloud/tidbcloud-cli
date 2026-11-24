@@ -15,8 +15,6 @@
 package util
 
 import (
-	"strings"
-
 	exec "golang.org/x/sys/execabs"
 )
 
@@ -28,9 +26,11 @@ func OpenBrowser(goos, url string) *exec.Cmd {
 	case "darwin":
 		args = append(args, url)
 	case "windows":
-		exe, _ = exec.LookPath("cmd")
-		r := strings.NewReplacer("&", "^&")
-		args = append(args, "/c", "start", r.Replace(url))
+		// rundll32 with FileProtocolHandler opens the URL through the shell
+		// without a command interpreter, so URL metacharacters such as |, <,
+		// >, ^ and % cannot be interpreted as shell syntax.
+		exe = "rundll32"
+		args = append(args, "url.dll,FileProtocolHandler", url)
 	default:
 		exe = linuxExe()
 		args = append(args, url)

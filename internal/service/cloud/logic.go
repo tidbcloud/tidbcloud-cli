@@ -673,10 +673,35 @@ func GetSelectedSQLUser(ctx context.Context, clusterID string, pageSize int64, c
 	return res.(*SQLUser).UserName, nil
 }
 
+// seenPageTokens guards pagination loops against a server that repeats a
+// non-empty next page token, which would otherwise loop forever while
+// appending results to memory.
+type seenPageTokens struct {
+	tokens map[string]struct{}
+}
+
+func newSeenPageTokens() *seenPageTokens {
+	return &seenPageTokens{tokens: make(map[string]struct{})}
+}
+
+// check reports an error when the same non-empty token is returned again.
+// A nil or empty token ends pagination and always passes.
+func (s *seenPageTokens) check(token *string, entity string) error {
+	if util.IsNilOrEmpty(token) {
+		return nil
+	}
+	if _, ok := s.tokens[*token]; ok {
+		return fmt.Errorf("%s list returned a repeated next page token", entity)
+	}
+	s.tokens[*token] = struct{}{}
+	return nil
+}
+
 func RetrieveProjects(ctx context.Context, pageSize int64, d TiDBCloudClient) (int64, []iam.ApiProject, error) {
 	var items []iam.ApiProject
 	pageSizeInt32 := int32(pageSize)
 	var pageToken *string
+	seen := newSeenPageTokens()
 
 	// loop to get all projects
 	for {
@@ -687,6 +712,9 @@ func RetrieveProjects(ctx context.Context, pageSize int64, d TiDBCloudClient) (i
 		items = append(items, projects.Projects...)
 
 		pageToken = projects.NextPageToken
+		if err := seen.check(pageToken, "project"); err != nil {
+			return 0, nil, err
+		}
 		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
@@ -709,8 +737,12 @@ func RetrieveClusters(ctx context.Context, pID string, pageSize int64, d TiDBClo
 		return 0, nil, errors.Trace(err)
 	}
 	items = append(items, clusters.Clusters...)
+	seen := newSeenPageTokens()
 	for {
 		pageToken = clusters.NextPageToken
+		if err := seen.check(pageToken, "cluster"); err != nil {
+			return 0, nil, err
+		}
 		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
@@ -734,8 +766,12 @@ func RetrieveBranches(ctx context.Context, cID string, pageSize int64, d TiDBClo
 	}
 	items = append(items, branches.Branches...)
 	// loop to get all branches
+	seen := newSeenPageTokens()
 	for {
 		pageToken = branches.NextPageToken
+		if err := seen.check(pageToken, "branch"); err != nil {
+			return 0, nil, err
+		}
 		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
@@ -760,8 +796,12 @@ func RetrieveExports(ctx context.Context, cID string, pageSize int64, d TiDBClou
 	}
 	items = append(items, exports.Exports...)
 	// loop to get all branches
+	seen := newSeenPageTokens()
 	for {
 		pageToken = exports.NextPageToken
+		if err := seen.check(pageToken, "export task"); err != nil {
+			return 0, nil, err
+		}
 		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
@@ -784,8 +824,12 @@ func RetrieveServerlessBackups(ctx context.Context, cID string, pageSize int32, 
 	}
 	items = append(items, backups.Backups...)
 	// loop to get all backups
+	seen := newSeenPageTokens()
 	for {
 		pageToken = backups.NextPageToken
+		if err := seen.check(pageToken, "backup"); err != nil {
+			return 0, nil, err
+		}
 		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
@@ -808,8 +852,12 @@ func RetrieveImports(context context.Context, cID string, pageSize int64, d TiDB
 	}
 	items = append(items, imports.Imports...)
 	var pageToken *string
+	seen := newSeenPageTokens()
 	for {
 		pageToken = imports.NextPageToken
+		if err := seen.check(pageToken, "import task"); err != nil {
+			return 0, nil, err
+		}
 		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
@@ -827,6 +875,7 @@ func RetrieveSQLUsers(ctx context.Context, cID string, pageSize int64, d TiDBClo
 
 	pageSizeInt32 := int32(pageSize)
 	var pageToken *string
+	seen := newSeenPageTokens()
 	// loop to get all SQL users
 	for {
 		sqlUsers, err := d.ListSQLUsers(ctx, cID, &pageSizeInt32, pageToken)
@@ -836,6 +885,9 @@ func RetrieveSQLUsers(ctx context.Context, cID string, pageSize int64, d TiDBClo
 		items = append(items, sqlUsers.SqlUsers...)
 
 		pageToken = sqlUsers.NextPageToken
+		if err := seen.check(pageToken, "SQL user"); err != nil {
+			return 0, nil, err
+		}
 		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
@@ -900,8 +952,12 @@ func GetAllExportFiles(ctx context.Context, cID string, eID string, d TiDBCloudC
 		return nil, errors.Trace(err)
 	}
 	items = append(items, exportFilesResp.Files...)
+	seen := newSeenPageTokens()
 	for {
 		pageToken = exportFilesResp.NextPageToken
+		if err := seen.check(pageToken, "export file"); err != nil {
+			return nil, err
+		}
 		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
@@ -942,8 +998,12 @@ func GetOneDateAuditLogs(ctx context.Context, cID, date string, d TiDBCloudClien
 		return nil, errors.Trace(err)
 	}
 	auditLogs = append(auditLogs, resp.AuditLogFiles...)
+	seen := newSeenPageTokens()
 	for {
 		pageToken = resp.NextPageToken
+		if err := seen.check(pageToken, "audit log"); err != nil {
+			return nil, err
+		}
 		if util.IsNilOrEmpty(pageToken) {
 			break
 		}
@@ -1020,8 +1080,12 @@ func GetSelectedChangefeed(ctx context.Context, clusterID string, pageSize int64
 			Type: string(item.Sink.Type),
 		})
 	}
+	seen := newSeenPageTokens()
 	for {
 		pageToken = resp.NextPageToken
+		if err := seen.check(pageToken, "changefeed"); err != nil {
+			return nil, err
+		}
 		if pageToken == nil || *pageToken == "" {
 			break
 		}
@@ -1093,7 +1157,11 @@ func GetSelectedMigration(ctx context.Context, clusterID string, pageSize int64,
 		}
 	}
 	appendMigrationTaskItems(resp.Migrations)
+	seen := newSeenPageTokens()
 	for resp.NextPageToken != nil && *resp.NextPageToken != "" {
+		if err := seen.check(resp.NextPageToken, "migration task"); err != nil {
+			return nil, err
+		}
 		resp, err = client.ListMigrations(ctx, clusterID, &pageSizeInt32, resp.NextPageToken, nil)
 		if err != nil {
 			return nil, errors.Trace(err)
@@ -1260,8 +1328,12 @@ func RetrievePrivateLinkConnections(ctx context.Context, clusterID string, pageS
 
 	items := make([]privatelink.PrivateLinkConnection, 0)
 	items = append(items, resp.PrivateLinkConnections...)
+	seen := newSeenPageTokens()
 	for {
 		pageToken = resp.NextPageToken
+		if err := seen.check(pageToken, "private link connection"); err != nil {
+			return nil, err
+		}
 		if pageToken == nil || *pageToken == "" {
 			break
 		}

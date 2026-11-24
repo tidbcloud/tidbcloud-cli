@@ -18,8 +18,12 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"net/url"
 	"runtime"
+	"strconv"
+	"strings"
 	"time"
+	"unicode"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/terminal"
@@ -111,6 +115,9 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 			if !response.IsSuccess() {
 				return errors.Errorf("Failed to authorize device, code: %s, body: %s", response.Status(), string(response.Body()))
 			}
+			if err := validateVerificationURL(result.VerificationURIComplete); err != nil {
+				return err
+			}
 
 			if h.IOStreams.CanPrompt {
 				fmt.Fprintln(h.IOStreams.Out, "Attempting to automatically open the authorization page in your default browser.")
@@ -148,6 +155,26 @@ func LoginCmd(h *internal.Helper) *cobra.Command {
 	loginCmd.Flags().BoolVar(&opts.insecureStorage, "insecure-storage", false, "Save authentication credentials in plain text instead of credential store.")
 
 	return loginCmd
+}
+
+// Device authorization URLs are printed and handed to the OS. Validate before
+// either action, and never echo a rejected URL containing an authorization code.
+func validateVerificationURL(value string) error {
+	invalid := errors.New("invalid authorization URL: expected an absolute HTTPS URL without credentials, whitespace, or control characters")
+	if strings.Contains(value, `\`) || strings.ContainsFunc(value, func(r rune) bool { return unicode.IsControl(r) || unicode.IsSpace(r) }) {
+		return invalid
+	}
+	u, err := url.ParseRequestURI(value)
+	if err != nil || u.Scheme != "https" || u.Hostname() == "" || u.User != nil || strings.HasSuffix(u.Host, ":") {
+		return invalid
+	}
+	if port := u.Port(); port != "" {
+		number, err := strconv.ParseUint(port, 10, 16)
+		if err != nil || number == 0 {
+			return invalid
+		}
+	}
+	return nil
 }
 
 func (l LoginOpts) requestForToken(ctx context.Context, result AuthResponse) (*TokenResponse, error) {

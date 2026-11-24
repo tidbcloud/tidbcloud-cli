@@ -16,6 +16,7 @@ package redact
 
 import (
 	"bytes"
+	"encoding/json"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -111,4 +112,34 @@ func TestJSONMasksPresignedURLValues(t *testing.T) {
 	assert.Contains(got, `"name":"a.csv"`)
 	assert.Contains(got, `"endpoint":"https://serverless.tidbapi.com"`)
 	assert.Contains(got, `"note":"a:b?c"`)
+}
+
+func TestAnyMasksURLsEmbeddedInNestedText(t *testing.T) {
+	message := "failed to fetch https://storage.example/export?X-Amz-Signature=s3-secret&X-Amz-Expires=900"
+	detail := "retry https://storage.example/export?X-Goog-Signature=gcs-secret or https://alice:password-secret@example.test/export?sig=azure-secret"
+	original := map[string]interface{}{
+		"message": message,
+		"details": []interface{}{map[string]interface{}{"note": detail, "token": "token-secret"}},
+		"count":   json.Number("1372813089454840200"),
+		"enabled": true,
+		"empty":   nil,
+		"note":    "request failed; see https://docs.example.test/help?language=en",
+	}
+	before, err := json.Marshal(original)
+	require.NoError(t, err)
+	safe := Any(original).(map[string]interface{})
+	data, err := json.Marshal(safe)
+	require.NoError(t, err)
+	for _, secret := range []string{"s3-secret", "gcs-secret", "password-secret", "azure-secret", "token-secret"} {
+		require.NotContains(t, string(data), secret)
+	}
+	require.Contains(t, safe["message"], "failed to fetch https://storage.example/export?")
+	require.Contains(t, safe["message"], "X-Amz-Expires=900")
+	require.Contains(t, safe["details"].([]interface{})[0].(map[string]interface{})["note"], "retry ")
+	for _, key := range []string{"count", "enabled", "empty", "note"} {
+		require.Equal(t, original[key], safe[key])
+	}
+	after, err := json.Marshal(original)
+	require.NoError(t, err)
+	require.Equal(t, before, after, "redaction must not mutate caller-owned data")
 }
